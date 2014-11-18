@@ -20,20 +20,14 @@ import org.talend.jobscript.Column;
 public class TLogRow extends InputComponent {
 
     public TLogRow() {
-        super();
+        super("tLogRow", "tLogRow_1");
     }
 
     @Override
     public String generate(List<Column> columns) {
         String toReturn = "addComponent {" + "\n";
 
-        toReturn += "setComponentDefinition {" + "\n";
-        toReturn += "TYPE: \"tLogRow\"," + "\n";
-        toReturn += "NAME: \"tLogRow_1\"," + "\n";
-        toReturn += "POSITION: 480, 64," + "\n";
-        toReturn += "SIZE: 32, 32," + "\n";
-        toReturn += "OFFSETLABEL: 0, 0" + "\n";
-        toReturn += "}" + "\n";
+        toReturn += getComponentDefinition();
 
         toReturn += "setSettings {" + "\n";
         toReturn += "BASIC_MODE: \"false\"," + "\n";
@@ -60,7 +54,7 @@ public class TLogRow extends InputComponent {
         toReturn += "}" + "\n";
 
         toReturn += "addSchema {" + "\n";
-        toReturn += "NAME: \"tLogRow_1\"," + "\n";
+        toReturn += "NAME: \"" + componentName + "\"," + "\n";
         toReturn += "TYPE: \"FLOW\"" + "\n";
         for (Column column : columns) {
             toReturn += "addColumn {" + "\n";

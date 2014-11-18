@@ -24,7 +24,7 @@ public class TFileInputExcel extends InputComponent {
     private String       sheetname;
 
     public TFileInputExcel(String filePath, String sheetname) {
-        super();
+        super("tFileInputExcel", "tFileInputExcel_1");
         this.filePath = filePath;
         this.sheetname = sheetname;
     }
@@ -33,19 +33,13 @@ public class TFileInputExcel extends InputComponent {
     public String generate(List<Column> columns) {
         String toReturn = "addComponent {" + "\n";
 
-        toReturn += "setComponentDefinition {" + "\n";
-        toReturn += "TYPE: \"tFileInputExcel\"," + "\n";
-        toReturn += "NAME: \"tFileInputExcel_1\"," + "\n";
-        toReturn += "POSITION: 96, 64," + "\n";
-        toReturn += "SIZE: 32, 32," + "\n";
-        toReturn += "OFFSETLABEL: 0, 0" + "\n";
-        toReturn += "}" + "\n";
+        toReturn += getComponentDefinition();
 
         toReturn += "setSettings {" + "\n";
         toReturn += "VERSION_2007: \"false\"," + "\n";
         toReturn += "FILENAME : \"\\\"" + filePath + "\\\"\"," + "\n";
         toReturn += "ALL_SHEETS: \"false\"," + "\n";
-        toReturn += "SHEETLIST {\nSHEETNAME : \"\\\"Sheet1\\\"\",\n USE_REGEX : \"false\"\n}," + "\n";
+        toReturn += "SHEETLIST {\nSHEETNAME : \"\\\"" + sheetname + "\\\"\",\n USE_REGEX : \"false\"\n}," + "\n";
         toReturn += "HEADER: \"1\"," + "\n";
         toReturn += "FOOTER: \"0\"," + "\n";
         toReturn += "AFFECT_EACH_SHEET: \"false\"," + "\n";
@@ -78,14 +72,12 @@ public class TFileInputExcel extends InputComponent {
         toReturn += "NOVALIDATE_ON_CELL : \"false\"," + "\n";
         toReturn += "SUPPRESS_WARN : \"false\"," + "\n";
         toReturn += "GENERATION_MODE : \"USER_MODE\"," + "\n";
-//        toReturn += "LABEL : \"MyInput\"," + "\n";
         toReturn += "CONNECTION_FORMAT : \"row\"" + "\n";
         toReturn += "}" + "\n";
 
         toReturn += "addSchema {" + "\n";
-        toReturn += "NAME: \"tFileInputExcel_1\"," + "\n";
+        toReturn += "NAME: \"" + componentName + "\"," + "\n";
         toReturn += "TYPE: \"FLOW\"" + "\n";
-        // toReturn += "LABEL: \"metadata\"" + "\n";
         for (Column column : columns) {
             toReturn += "addColumn {" + "\n";
             toReturn += "NAME: \"" + column.name + "\",\n TYPE: \"" + column.type

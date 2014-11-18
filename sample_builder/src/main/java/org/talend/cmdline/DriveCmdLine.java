@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.jobscript;
+package org.talend.cmdline;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,8 +18,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.talend.jobscript.Column;
+import org.talend.jobscript.JobScriptBuilder;
+import org.talend.jobscript.components.TFileInputExcel;
+import org.talend.jobscript.components.TLogRow;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -32,12 +35,17 @@ public class DriveCmdLine {
      */
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        List<Column> columns = new ArrayList<Column>();
-        columns.add(new Column("Prenom", "id_String"));
-        columns.add(new Column("Nom", "id_String"));
-        columns.add(new Column("Arrivee", "id_Date"));
-        JobScriptBuilder jobScriptBuilder = new JobScriptBuilder().addHeader().addContexts().addParameters()
-                .addInputComponents(columns).addConnection(columns).addSubJob();
+        TFileInputExcel tFileInputExcel = new TFileInputExcel(
+                "/home/stephane/talend/a_trier/test_files/users.xls", "Sheet1");
+
+        JobScriptBuilder jobScriptBuilder = new JobScriptBuilder();
+        jobScriptBuilder.addComponent(tFileInputExcel);
+        jobScriptBuilder.addComponent(new TLogRow());
+        jobScriptBuilder.addColumn(new Column("Prenom", "id_String"));
+        jobScriptBuilder.addColumn(new Column("Nom", "id_String"));
+        jobScriptBuilder.addColumn(new Column("Arrivee", "id_Date"));
+
+        jobScriptBuilder.build();
 
         File jobScript = File.createTempFile("JS_", ".jobscript", new File("/tmp"));
         // File jobScript = new File("/tmp", "JS_generated.txt");

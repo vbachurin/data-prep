@@ -20,29 +20,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.talend.StringsUtils;
-import org.talend.jobscript.components.TFileInputExcel;
-import org.talend.jobscript.components.TLogRow;
+import org.talend.jobscript.components.InputComponent;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 public class JobScriptBuilder {
 
+    private List<InputComponent> components = new ArrayList<>();
+
+    private List<Column>         columns    = new ArrayList<>();
+
     private String jobScript = "";
+
+    public boolean addComponent(InputComponent component) {
+        return components.add(component);
+    }
+
+    public boolean addColumn(Column column) {
+        return columns.add(column);
+    }
+
+    public void build() {
+        addHeader().addContexts().addParameters()
+                .addInputComponents().addConnection().addSubJob();
+    }
 
     @Override
     public String toString() {
         return jobScript;
     }
 
-    public JobScriptBuilder addHeader() {
+    protected JobScriptBuilder addHeader() {
         String header = "SCRIPT_VERSION=4.2,";
 
         jobScript += header + "\n";
         return this;
     }
 
-    public JobScriptBuilder addContexts() {
+    protected JobScriptBuilder addContexts() {
         String toReturn = "DEFAULT_CONTEXT: Default," + "\n";
         toReturn += "ContextType {" + "\n";
         toReturn += "NAME: Default" + "\n";
@@ -52,7 +68,7 @@ public class JobScriptBuilder {
         return this;
     }
 
-    public JobScriptBuilder addFile(String filename) {
+    protected JobScriptBuilder addFile(String filename) {
         URL url = this.getClass().getResource(filename);
         try {
             File file = new File(url.toURI());
@@ -68,28 +84,24 @@ public class JobScriptBuilder {
         return this;
     }
 
-    public JobScriptBuilder addParameters() {
+    protected JobScriptBuilder addParameters() {
         return this.addFile("jobScript_parameters.txt");
     }
 
-    public JobScriptBuilder addInputComponents(List<Column> columns) {
-        final TFileInputExcel tFileInputExcel = new TFileInputExcel(
-                "/home/stephane/talend/a_trier/test_files/users.xls", "Sheet1");
-        this.jobScript += tFileInputExcel.generate(columns);
-
-        final TLogRow tLogRow = new TLogRow();
-        this.jobScript += tLogRow.generate(columns);
-
+    protected JobScriptBuilder addInputComponents() {
+        for (InputComponent component : components) {
+            this.jobScript += component.generate(columns);
+        }
         return this;
     }
 
-    public JobScriptBuilder addConnection(List<Column> columns) {
+    protected JobScriptBuilder addConnection() {
         String toReturn = "addConnection {" + "\n";
         toReturn += "TYPE: \"FLOW\"," + "\n";
         toReturn += "NAME: \"row1\"," + "\n";
-        toReturn += "METANAME: \"tFileInputExcel_1\"," + "\n";
-        toReturn += "SOURCE: \"tFileInputExcel_1\"," + "\n";
-        toReturn += "TARGET: \"tLogRow_1\"," + "\n";
+        toReturn += "METANAME: \"" + components.get(0).getComponentName() + "\"," + "\n";
+        toReturn += "SOURCE: \"" + components.get(0).getComponentName() + "\"," + "\n";
+        toReturn += "TARGET: \"" + components.get(1).getComponentName() + "\"," + "\n";
         toReturn += "OFFSETLABEL: 0, 0," + "\n";
         toReturn += "UNIQUE_NAME: \"row1\"," + "\n";
         toReturn += "TRACES_CONNECTION_FILTER {" + "\n";
@@ -105,9 +117,9 @@ public class JobScriptBuilder {
         return this;
     }
 
-    public JobScriptBuilder addSubJob() {
+    protected JobScriptBuilder addSubJob() {
         String toReturn = "addSubjob {" + "\n";
-        toReturn += "NAME: \"tFileInputExcel_1\"" + "\n";
+        toReturn += "NAME: \"" + components.get(0).getComponentName() + "\"" + "\n";
         toReturn += "SUBJOB_TITLE_COLOR: \"160;190;240\"," + "\n";
         toReturn += "SUBJOB_COLOR: \"220;220;250\"" + "\n";
         toReturn += "}";
@@ -116,14 +128,4 @@ public class JobScriptBuilder {
         return this;
     }
 
-    public static void main(String[] args) {
-        List<Column> columns = new ArrayList<Column>();
-        columns.add(new Column("Prenom", "id_String"));
-        columns.add(new Column("Nom", "id_String"));
-        columns.add(new Column("Arrivee", "id_Date"));
-        JobScriptBuilder jobScriptBuilder = new JobScriptBuilder().addHeader().addContexts().addParameters()
-                .addInputComponents(columns).addConnection(columns).addSubJob();
-
-        System.out.println(jobScriptBuilder);
-    }
 }
