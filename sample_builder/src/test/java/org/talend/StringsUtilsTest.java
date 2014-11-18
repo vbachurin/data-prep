@@ -18,8 +18,18 @@ import org.junit.Test;
 public class StringsUtilsTest {
 
     @Test
-    public void testRemoveLastChars() {
+    public void testRemoveLastCharsString() {
         Assert.assertEquals("taga", StringsUtils.removeLastChars("tagada", 2));
     }
 
+    @Test
+    public void testRemoveLastCharsStringBuilder() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ta");
+        sb.append("ga");
+        sb.append("da");
+
+        StringsUtils.removeLastChars(sb, 2);
+        Assert.assertEquals("taga", sb.toString());
+    }
 }

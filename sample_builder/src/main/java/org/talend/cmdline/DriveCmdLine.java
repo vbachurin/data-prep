@@ -24,9 +24,6 @@ import org.talend.jobscript.JobScriptBuilder;
 import org.talend.jobscript.components.TFileInputExcel;
 import org.talend.jobscript.components.TFileOutputDelimited;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-
 public class DriveCmdLine {
 
     /**
@@ -36,20 +33,21 @@ public class DriveCmdLine {
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
         TFileInputExcel tFileInputExcel = new TFileInputExcel(
-                "/home/stephane/talend/a_trier/test_files/users.xls", "Sheet1");
+                "/home/stephane/talend/a_trier/test_files/revenus.xls", "Sheet1");
 
         JobScriptBuilder jobScriptBuilder = new JobScriptBuilder();
+
         jobScriptBuilder.addComponent(tFileInputExcel);
         jobScriptBuilder.addComponent(new TFileOutputDelimited("/tmp/out.csv"));
-        jobScriptBuilder.addColumn(new Column("Prenom", "id_String"));
-        jobScriptBuilder.addColumn(new Column("Nom", "id_String"));
-        jobScriptBuilder.addColumn(new Column("Arrivee", "id_Date"));
 
-        jobScriptBuilder.build();
+        jobScriptBuilder.addColumn(new Column("id", "id_Integer"));
+        jobScriptBuilder.addColumn(new Column("id_customer", "id_Integer"));
+        jobScriptBuilder.addColumn(new Column("revenu", "id_Integer"));
+        jobScriptBuilder.addColumn(new Column("when", "id_Date"));
+
 
         File jobScript = File.createTempFile("JS_", ".jobscript", new File("/tmp"));
-        // File jobScript = new File("/tmp", "JS_generated.txt");
-        Files.write(jobScriptBuilder.toString(), jobScript, Charsets.UTF_8);
+        jobScriptBuilder.generateJobScript(jobScript);
 
         long end = System.currentTimeMillis();
         System.out.println("Generated <" + jobScript.getAbsolutePath() + "> in " + (end - start) + " ms");
@@ -59,8 +57,6 @@ public class DriveCmdLine {
         String commandLogon = "logonProject --project-name P1 --user-login stef@talend.com --user-password p";
         String commandCreate = "createJob " + jobName + " --script_file " + jobScript.getAbsolutePath()
                 + " --over_write";
-        // commandCreate = "createJob " + jobName + " --script_file " + "/tmp/reference.txt" + " --over_write";
-        // commandCreate = "createJob " + jobName + " --script_file " + "/tmp/generated.txt" + " --over_write";
         String commandExecute = "executeJob " + jobName + " --interpreter /usr/bin/java";
 
         boolean executed = true;

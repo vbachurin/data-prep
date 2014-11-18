@@ -19,4 +19,7 @@ public class StringsUtils {
         return src.substring(0, src.length() - n);
     }
 
+    public static StringBuilder removeLastChars(StringBuilder src, int n) {
+        return src.delete(src.length() - n, src.length());
+    }
 }
