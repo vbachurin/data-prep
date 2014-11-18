@@ -22,7 +22,7 @@ import java.net.Socket;
 import org.talend.jobscript.Column;
 import org.talend.jobscript.JobScriptBuilder;
 import org.talend.jobscript.components.TFileInputExcel;
-import org.talend.jobscript.components.TLogRow;
+import org.talend.jobscript.components.TFileOutputDelimited;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -40,7 +40,7 @@ public class DriveCmdLine {
 
         JobScriptBuilder jobScriptBuilder = new JobScriptBuilder();
         jobScriptBuilder.addComponent(tFileInputExcel);
-        jobScriptBuilder.addComponent(new TLogRow());
+        jobScriptBuilder.addComponent(new TFileOutputDelimited("/tmp/out.csv"));
         jobScriptBuilder.addColumn(new Column("Prenom", "id_String"));
         jobScriptBuilder.addColumn(new Column("Nom", "id_String"));
         jobScriptBuilder.addColumn(new Column("Arrivee", "id_Date"));
