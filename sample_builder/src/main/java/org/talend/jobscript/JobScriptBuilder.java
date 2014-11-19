@@ -93,23 +93,28 @@ public class JobScriptBuilder {
     }
 
     protected void addConnection() {
-        jobScript.append("addConnection {" + "\n");
-        jobScript.append("TYPE: \"FLOW\"," + "\n");
-        jobScript.append("NAME: \"row1\"," + "\n");
-        jobScript.append("METANAME: \"" + components.get(0).getComponentName() + "\"," + "\n");
-        jobScript.append("SOURCE: \"" + components.get(0).getComponentName() + "\"," + "\n");
-        jobScript.append("TARGET: \"" + components.get(1).getComponentName() + "\"," + "\n");
-        jobScript.append("OFFSETLABEL: 0, 0," + "\n");
-        jobScript.append("UNIQUE_NAME: \"row1\"," + "\n");
-        jobScript.append("TRACES_CONNECTION_FILTER {" + "\n");
-        for (Column column : columns) {
-            jobScript.append("   TRACE_COLUMN : \"" + column.name + "\"," + "\n");
-            jobScript.append("   TRACE_COLUMN_CHECKED : \"true\"," + "\n");
-            jobScript.append("   TRACE_COLUMN_CONDITION : \"\",\n");
+        for (int i = 1; i < components.size(); i++) {
+            jobScript.append("addConnection {" + "\n");
+            jobScript.append("TYPE: \"FLOW\"," + "\n");
+            jobScript.append("NAME: \"row" + i + "\"," + "\n");
+
+            jobScript.append("METANAME: \"" + components.get(i - 1).getComponentName() + "\"," + "\n");
+            jobScript.append("SOURCE: \"" + components.get(i - 1).getComponentName() + "\"," + "\n");
+            jobScript.append("TARGET: \"" + components.get(i).getComponentName() + "\"," + "\n");
+
+            jobScript.append("OFFSETLABEL: 0, 0," + "\n");
+            jobScript.append("UNIQUE_NAME: \"row" + i + "\"," + "\n");
+            jobScript.append("TRACES_CONNECTION_FILTER {" + "\n");
+            for (Column column : columns) {
+                jobScript.append("   TRACE_COLUMN : \"" + column.name + "\"," + "\n");
+                jobScript.append("   TRACE_COLUMN_CHECKED : \"true\"," + "\n");
+                jobScript.append("   TRACE_COLUMN_CONDITION : \"\",\n");
+            }
+            StringsUtils.removeLastChars(jobScript, 2);
+            jobScript.append("\n}" + "\n");
+            jobScript.append("}" + "\n");
         }
-        StringsUtils.removeLastChars(jobScript, 2);
-        jobScript.append("\n}" + "\n");
-        jobScript.append("}" + "\n");
+
     }
 
     protected void addSubJob() {

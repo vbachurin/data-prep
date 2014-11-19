@@ -23,6 +23,7 @@ import org.talend.jobscript.Column;
 import org.talend.jobscript.JobScriptBuilder;
 import org.talend.jobscript.components.TFileInputExcel;
 import org.talend.jobscript.components.TFileOutputDelimited;
+import org.talend.jobscript.components.TReservoirSampling;
 
 public class DriveCmdLine {
 
@@ -38,6 +39,7 @@ public class DriveCmdLine {
         JobScriptBuilder jobScriptBuilder = new JobScriptBuilder();
 
         jobScriptBuilder.addComponent(tFileInputExcel);
+        jobScriptBuilder.addComponent(new TReservoirSampling(5));
         jobScriptBuilder.addComponent(new TFileOutputDelimited("/tmp/out.csv"));
 
         jobScriptBuilder.addColumn(new Column("id", "id_Integer"));
@@ -52,6 +54,7 @@ public class DriveCmdLine {
         long end = System.currentTimeMillis();
         System.out.println("Generated <" + jobScript.getAbsolutePath() + "> in " + (end - start) + " ms");
 
+        // TODO change job name to support multithread
         String jobName = "Job_from_script";
         String commandInit = "initLocal";
         String commandLogon = "logonProject --project-name P1 --user-login stef@talend.com --user-password p";
