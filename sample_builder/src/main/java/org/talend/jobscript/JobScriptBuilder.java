@@ -74,11 +74,9 @@ public class JobScriptBuilder {
             for (String currentLine : Files.readLines(file, Charsets.UTF_8)) {
                 jobScript.append(currentLine + "\n");
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
+            // TODO manage this better
             e.printStackTrace();
-        } catch (URISyntaxException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
         }
     }
 
