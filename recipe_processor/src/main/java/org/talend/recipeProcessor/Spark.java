@@ -9,9 +9,9 @@ import java.util.List;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.api.java.JavaSchemaRDD;
 import org.apache.spark.sql.api.java.Row;
 import org.talend.recipeProcessor.spark.Concat;
+import org.talend.recipeProcessor.spark.Sort;
 import org.talend.recipeProcessor.spark.SparkSqlOperation;
 import org.talend.recipeProcessor.spark.UpperCase;
 
@@ -47,6 +47,8 @@ public class Spark {
 					operation = new UpperCase("name");
 				} else if (asked.equals("concat")) {
 					operation = new Concat(Arrays.asList("name", "dept"));
+				} else if (asked.equals("sort")) {
+					operation = new Sort("name");
 				}
 				if (operation != null) {
 					long start = System.currentTimeMillis();
