@@ -34,8 +34,8 @@ public class JobScriptBuilder {
 
 	public boolean addComponent(AbstractComponent component) {
 		if (component.getInputSchema().isEmpty() && !components.isEmpty()) {
-			component
-					.setInputSchema(CollectionsUtils.last(components).getOutputSchema());
+			component.setInputSchema(CollectionsUtils.last(components)
+					.getOutputSchema());
 		}
 		return components.add(component);
 	}
@@ -84,8 +84,10 @@ public class JobScriptBuilder {
 	}
 
 	protected void addInputComponents() {
+		int position = 1;
 		for (AbstractComponent component : components) {
-			jobScript.append(component.generate());
+			jobScript.append(component.generate(position));
+			position++;
 		}
 	}
 

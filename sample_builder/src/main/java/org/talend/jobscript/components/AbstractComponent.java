@@ -36,13 +36,13 @@ public abstract class AbstractComponent {
 		this.setInputSchema(Arrays.asList(columns));
 	}
 
-	public abstract String generate();
+	public abstract String generate(int position);
 
-	protected String getComponentDefinition() {
+	protected String getComponentDefinition(int position) {
 		String toReturn = "setComponentDefinition {" + "\n";
 		toReturn += "TYPE: \"" + componentType + "\"," + "\n";
 		toReturn += "NAME: \"" + componentName + "\"," + "\n";
-		toReturn += "POSITION: 96, 64," + "\n";
+		toReturn += "POSITION: " + (-96 + 192 * position) + ", 64," + "\n";
 		toReturn += "SIZE: 32, 32," + "\n";
 		toReturn += "OFFSETLABEL: 0, 0" + "\n";
 		toReturn += "}" + "\n";

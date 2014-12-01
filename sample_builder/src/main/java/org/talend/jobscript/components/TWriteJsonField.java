@@ -31,10 +31,10 @@ public class TWriteJsonField extends AbstractComponent {
 	}
 
 	@Override
-	public String generate() {
+	public String generate(int position) {
 		String toReturn = "addComponent {" + "\n";
 
-		toReturn += getComponentDefinition();
+		toReturn += getComponentDefinition(position);
 
 		toReturn += "setSettings {" + "\n";
 		toReturn += "JSONFIELD: \"content\"," + "\n";

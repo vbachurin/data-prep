@@ -24,10 +24,10 @@ public class TLogRow extends AbstractComponent {
     }
 
     @Override
-    public String generate() {
+    public String generate(int position) {
         String toReturn = "addComponent {" + "\n";
 
-        toReturn += getComponentDefinition();
+        toReturn += getComponentDefinition(position);
 
         toReturn += "setSettings {" + "\n";
         toReturn += "BASIC_MODE: \"false\"," + "\n";
