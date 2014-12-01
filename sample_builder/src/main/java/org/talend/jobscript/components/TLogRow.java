@@ -17,14 +17,14 @@ import java.util.List;
 import org.talend.StringsUtils;
 import org.talend.jobscript.Column;
 
-public class TLogRow extends InputComponent {
+public class TLogRow extends AbstractComponent {
 
     public TLogRow() {
         super("tLogRow", "tLogRow_1");
     }
 
     @Override
-    public String generate(List<Column> columns) {
+    public String generate() {
         String toReturn = "addComponent {" + "\n";
 
         toReturn += getComponentDefinition();
@@ -43,7 +43,7 @@ public class TLogRow extends InputComponent {
         toReturn += "USE_FIXED_LENGTH: \"false\"," + "\n";
 
         toReturn += "LENGTHS{" + "\n";
-        for (Column column : columns) {
+        for (Column column : inputSchema) {
             toReturn += "   SCHEMA_COLUMN : \"" + column.name + "\"," + "\n";
             toReturn += "   LENGTH : \"10\",\n";
         }
@@ -53,16 +53,7 @@ public class TLogRow extends InputComponent {
         toReturn += "CONNECTION_FORMAT: \"row\"" + "\n";
         toReturn += "}" + "\n";
 
-        toReturn += "addSchema {" + "\n";
-        toReturn += "NAME: \"" + componentName + "\"," + "\n";
-        toReturn += "TYPE: \"FLOW\"" + "\n";
-        for (Column column : columns) {
-            toReturn += "addColumn {" + "\n";
-            toReturn += "NAME: \"" + column.name + "\",\n TYPE: \"" + column.type
-                    + "\",\nNULLABLE: true,\nCOMMENT: \"\",\nPATTERN: \"\\\"dd-MM-yyyy\\\"\",\nSOURCETYPE: \"\"" + "\n";
-            toReturn += "}" + "\n";
-        }
-        toReturn += "}" + "\n";
+        toReturn = addSchema( toReturn);
 
         toReturn += "}" + "\n";
 

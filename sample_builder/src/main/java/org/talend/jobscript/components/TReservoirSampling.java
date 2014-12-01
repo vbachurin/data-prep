@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.talend.jobscript.Column;
 
-public class TReservoirSampling extends InputComponent {
+public class TReservoirSampling extends AbstractComponent {
 
     private int size = 10;
 
@@ -26,7 +26,7 @@ public class TReservoirSampling extends InputComponent {
     }
 
     @Override
-    public String generate(List<Column> columns) {
+    public String generate() {
         String toReturn = "addComponent {" + "\n";
 
         toReturn += getComponentDefinition();
@@ -37,20 +37,13 @@ public class TReservoirSampling extends InputComponent {
         toReturn += "CONNECTION_FORMAT: \"row\"" + "\n";
         toReturn += "}" + "\n";
 
-        toReturn += "addSchema {" + "\n";
-        toReturn += "NAME: \"" + componentName + "\"," + "\n";
-        toReturn += "TYPE: \"FLOW\"" + "\n";
-        for (Column column : columns) {
-            toReturn += "addColumn {" + "\n";
-            toReturn += "NAME: \"" + column.name + "\",\n TYPE: \"" + column.type
-                    + "\",\nNULLABLE: true,\nCOMMENT: \"\",\nPATTERN: \"\\\"dd-MM-yyyy\\\"\",\nSOURCETYPE: \"\"" + "\n";
-            toReturn += "}" + "\n";
-        }
-        toReturn += "}" + "\n";
+        toReturn = addSchema( toReturn);
 
         toReturn += "}" + "\n";
 
         return toReturn;
     }
+
+	
 
 }

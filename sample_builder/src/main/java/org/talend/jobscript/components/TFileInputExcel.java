@@ -17,20 +17,21 @@ import java.util.List;
 import org.talend.StringsUtils;
 import org.talend.jobscript.Column;
 
-public class TFileInputExcel extends InputComponent {
+public class TFileInputExcel extends AbstractComponent {
 
     private String       filePath;
 
     private String       sheetname;
 
-    public TFileInputExcel(String filePath, String sheetname) {
-        super("tFileInputExcel", "tFileInputExcel_1");
+    public TFileInputExcel(String filePath, String sheetname,
+			Column... columns) {
+        super("tFileInputExcel", "tFileInputExcel_1",columns);
         this.filePath = filePath;
         this.sheetname = sheetname;
     }
 
     @Override
-    public String generate(List<Column> columns) {
+    public String generate() {
         String toReturn = "addComponent {" + "\n";
 
         toReturn += getComponentDefinition();
@@ -50,7 +51,7 @@ public class TFileInputExcel extends InputComponent {
         toReturn += "DECIMAL_SEPARATOR: \"\\\".\\\"\"," + "\n";
         toReturn += "TRIMALL: \"false\"," + "\n";
         toReturn += "TRIMSELECT {" + "\n";
-        for (Column column : columns) {
+        for (Column column : inputSchema) {
             toReturn += "   SCHEMA_COLUMN : \"" + column.name + "\"," + "\n";
             toReturn += "   TRIM : \"false\",\n";
         }
@@ -58,7 +59,7 @@ public class TFileInputExcel extends InputComponent {
         toReturn += "\n}," + "\n";
         toReturn += "CONVERTDATETOSTRING : \"false\"," + "\n";
         toReturn += "DATESELECT {" + "\n";
-        for (Column column : columns) {
+        for (Column column : inputSchema) {
             toReturn += "   SCHEMA_COLUMN : \"" + column.name + "\"," + "\n";
             toReturn += "   CONVERTDATE : \"false\"," + "\n";
             toReturn += "   PATTERN : \"\\\"MM-dd-yyyy\\\"\",\n";
@@ -75,21 +76,12 @@ public class TFileInputExcel extends InputComponent {
         toReturn += "CONNECTION_FORMAT : \"row\"" + "\n";
         toReturn += "}" + "\n";
 
-        toReturn += "addSchema {" + "\n";
-        toReturn += "NAME: \"" + componentName + "\"," + "\n";
-        toReturn += "TYPE: \"FLOW\"" + "\n";
-        for (Column column : columns) {
-            toReturn += "addColumn {" + "\n";
-            toReturn += "NAME: \"" + column.name + "\",\n TYPE: \"" + column.type
-                    + "\",\nNULLABLE: true,\nCOMMENT: \"\",\nPATTERN: \"\\\"dd-MM-yyyy\\\"\",\nSOURCETYPE: \"\"\n";
-            toReturn += "}" + "\n";
-        }
-        toReturn += "}" + "\n";
+        toReturn = addSchema( toReturn);
 
         toReturn += "addSchema {" + "\n";
         toReturn += "NAME: \"REJECT\"," + "\n";
         toReturn += "TYPE: \"REJECT\"" + "\n";
-        for (Column column : columns) {
+        for (Column column : inputSchema) {
             toReturn += "addColumn {" + "\n";
             toReturn += "NAME: \"" + column.name + "\",\n TYPE: \"" + column.type
                     + "\",\nNULLABLE: true,\nCOMMENT: \"\",\nPATTERN: \"\\\"dd/MM/yyyy\\\"\"\n";
