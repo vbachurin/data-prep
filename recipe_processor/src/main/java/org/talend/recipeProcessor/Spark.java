@@ -21,7 +21,9 @@ public class Spark {
 		SparkConf conf = new SparkConf().setAppName("test").setMaster("local");
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		JavaRDD<String> people = sc
-				.textFile("/home/stef/talend/test_files/people.json");
+				.textFile("/home/stef/talend/test_files/customers_10k.json");
+
+		System.out.println(people.count());
 		//
 		// Model model = new Model();
 		// model.table = "people";
@@ -44,11 +46,12 @@ public class Spark {
 
 				SparkSqlOperation operation = null;
 				if (asked.equals("upper")) {
-					operation = new UpperCase("name");
+					operation = new UpperCase("firstname");
 				} else if (asked.equals("concat")) {
-					operation = new Concat(Arrays.asList("name", "dept"));
+					operation = new Concat(Arrays.asList("firstname",
+							"lastname"));
 				} else if (asked.equals("sort")) {
-					operation = new Sort("name");
+					operation = new Sort("city");
 				}
 				if (operation != null) {
 					long start = System.currentTimeMillis();
@@ -56,7 +59,7 @@ public class Spark {
 					List<String> collect = people.collect();
 					System.out.println("In "
 							+ (System.currentTimeMillis() - start) + " ms");
-					System.out.println(collect);
+					System.out.println(collect.subList(0, 10));
 
 				}
 			}
