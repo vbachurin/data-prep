@@ -32,6 +32,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/stef/Downloads/spark-1.1.1-bin-cdh4/lib/spark-assembly-1.1.1-hadoop2.0.0-mr1-cdh4.2.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
