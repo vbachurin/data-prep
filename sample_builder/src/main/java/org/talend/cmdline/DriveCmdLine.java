@@ -39,7 +39,7 @@ public class DriveCmdLine {
 		 **************************************************************************************/
 		long start = System.currentTimeMillis();
 		TFileInputExcel tFileInputExcel = new TFileInputExcel(
-				"/home/stef/talend/test_files/revenus.xls", "Sheet1",
+				"/home/stef/talend/test_files/revenus_65k.xls", "Sheet1",
 				new Column("id", "id_Integer"), new Column("id_customer",
 						"id_Integer"), new Column("revenu", "id_Integer"),
 				new Column("when", "id_Date"));
