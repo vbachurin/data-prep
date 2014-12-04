@@ -1,17 +1,14 @@
 package org.talend.recipeProcessor;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Set;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 
-public class Mongo implements RecipeProcessor {
+public class Mongo {// implements RecipeProcessor {
 
 	public static void main(String[] args) throws UnknownHostException {
 		MongoClient mongoClient = new MongoClient();
@@ -23,16 +20,10 @@ public class Mongo implements RecipeProcessor {
 		}
 		DBCollection coll = db.getCollection("preparation_step1");
 
-		BasicDBObject updateQuery = new BasicDBObject().append("$toUpper","city");
+		BasicDBObject updateQuery = new BasicDBObject().append("$toUpper",
+				"city");
 
 		coll.update(new BasicDBObject(), updateQuery, false, true);
-	}
-
-	@Override
-	public void upperCase(File source, File target, String column)
-			throws IOException {
-		// TODO Auto-generated method stub
-
 	}
 
 }

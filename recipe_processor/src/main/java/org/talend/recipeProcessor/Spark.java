@@ -23,8 +23,9 @@ public class Spark {
 		JavaRDD<String> people = sc
 				.textFile("/home/stef/talend/test_files/customers_10k.json");
 
+		people.cache();
 		System.out.println(people.count());
-		//
+
 		// Model model = new Model();
 		// model.table = "people";
 		// model.columns = Arrays.asList("name", "age", "dept");

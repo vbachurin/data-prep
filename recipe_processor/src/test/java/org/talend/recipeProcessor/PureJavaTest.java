@@ -1,7 +1,5 @@
 package org.talend.recipeProcessor;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -17,12 +15,12 @@ public class PureJavaTest {
 	}
 
 	private void test(File source) throws IOException {
-		long duration1 = test(source, new PureJava());
-		long duration2 = test(source, new Spark());
-		System.out.println("PureJava - " + duration1 + " ms for file "
-				+ source.getName());
-		System.out.println("Spark - " + duration2 + " ms for file "
-				+ source.getName());
+		// long duration1 = test(source, new PureJava());
+		// long duration2 = test(source, new Spark());
+		// System.out.println("PureJava - " + duration1 + " ms for file "
+		// + source.getName());
+		// System.out.println("Spark - " + duration2 + " ms for file "
+		// + source.getName());
 	}
 
 	@Test
