@@ -19,13 +19,12 @@ import org.talend.jobscript.Column;
 
 public class TFileInputExcel extends AbstractComponent {
 
-    private String       filePath;
+    private String filePath;
 
-    private String       sheetname;
+    private String sheetname;
 
-    public TFileInputExcel(String filePath, String sheetname,
-			Column... columns) {
-        super("tFileInputExcel", "tFileInputExcel_1",columns);
+    public TFileInputExcel(String filePath, String sheetname, Column... columns) {
+        super("tFileInputExcel", "tFileInputExcel_1", columns);
         this.filePath = filePath;
         this.sheetname = sheetname;
     }
@@ -76,7 +75,7 @@ public class TFileInputExcel extends AbstractComponent {
         toReturn += "CONNECTION_FORMAT : \"row\"" + "\n";
         toReturn += "}" + "\n";
 
-        toReturn = addSchema( toReturn);
+        toReturn = addSchema(toReturn);
 
         toReturn += "addSchema {" + "\n";
         toReturn += "NAME: \"REJECT\"," + "\n";

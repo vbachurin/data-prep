@@ -37,13 +37,11 @@ public class TReservoirSampling extends AbstractComponent {
         toReturn += "CONNECTION_FORMAT: \"row\"" + "\n";
         toReturn += "}" + "\n";
 
-        toReturn = addSchema( toReturn);
+        toReturn = addSchema(toReturn);
 
         toReturn += "}" + "\n";
 
         return toReturn;
     }
-
-	
 
 }

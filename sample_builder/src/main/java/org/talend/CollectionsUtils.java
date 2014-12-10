@@ -14,10 +14,9 @@ package org.talend;
 
 import java.util.List;
 
-
 public class CollectionsUtils {
 
-    public static <T> T last(List<T> source){
-    	return source.get(source.size()-1);
+    public static <T> T last(List<T> source) {
+        return source.get(source.size() - 1);
     }
 }

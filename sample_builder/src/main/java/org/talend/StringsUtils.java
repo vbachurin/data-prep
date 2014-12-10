@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend;
 
-
 public class StringsUtils {
 
     public static String removeLastChars(String src, int n) {

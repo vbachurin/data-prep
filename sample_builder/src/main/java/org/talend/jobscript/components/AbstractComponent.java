@@ -20,72 +20,67 @@ import org.talend.jobscript.Column;
 
 public abstract class AbstractComponent {
 
-	protected String componentType;
+    protected String componentType;
 
-	protected String componentName;
+    protected String componentName;
 
-	protected List<Column> inputSchema = new ArrayList<>();
+    protected List<Column> inputSchema = new ArrayList<>();
 
-	protected List<Column> outputSchema = new ArrayList<>();
+    protected List<Column> outputSchema = new ArrayList<>();
 
-	public AbstractComponent(String componentType, String componentName,
-			Column... columns) {
-		super();
-		this.componentType = componentType;
-		this.componentName = componentName;
-		this.setInputSchema(Arrays.asList(columns));
-	}
+    public AbstractComponent(String componentType, String componentName, Column... columns) {
+        super();
+        this.componentType = componentType;
+        this.componentName = componentName;
+        this.setInputSchema(Arrays.asList(columns));
+    }
 
-	public abstract String generate(int position);
+    public abstract String generate(int position);
 
-	protected String getComponentDefinition(int position) {
-		String toReturn = "setComponentDefinition {" + "\n";
-		toReturn += "TYPE: \"" + componentType + "\"," + "\n";
-		toReturn += "NAME: \"" + componentName + "\"," + "\n";
-		toReturn += "POSITION: " + (-96 + 192 * position) + ", 64," + "\n";
-		toReturn += "SIZE: 32, 32," + "\n";
-		toReturn += "OFFSETLABEL: 0, 0" + "\n";
-		toReturn += "}" + "\n";
-		return toReturn;
-	}
+    protected String getComponentDefinition(int position) {
+        String toReturn = "setComponentDefinition {" + "\n";
+        toReturn += "TYPE: \"" + componentType + "\"," + "\n";
+        toReturn += "NAME: \"" + componentName + "\"," + "\n";
+        toReturn += "POSITION: " + (-96 + 192 * position) + ", 64," + "\n";
+        toReturn += "SIZE: 32, 32," + "\n";
+        toReturn += "OFFSETLABEL: 0, 0" + "\n";
+        toReturn += "}" + "\n";
+        return toReturn;
+    }
 
-	protected String addSchema(String toReturn) {
-		toReturn += "addSchema {" + "\n";
-		toReturn += "NAME: \"" + componentName + "\"," + "\n";
-		toReturn += "TYPE: \"FLOW\"" + "\n";
-		for (Column column : outputSchema) {
-			toReturn += "addColumn {" + "\n";
-			toReturn += "NAME: \""
-					+ column.name
-					+ "\",\n TYPE: \""
-					+ column.type
-					+ "\",\nNULLABLE: true,\nCOMMENT: \"\",\nPATTERN: \"\\\"dd-MM-yyyy\\\"\",\nSOURCETYPE: \"\""
-					+ "\n";
-			toReturn += "}" + "\n";
-		}
-		toReturn += "}" + "\n";
-		return toReturn;
-	}
+    protected String addSchema(String toReturn) {
+        toReturn += "addSchema {" + "\n";
+        toReturn += "NAME: \"" + componentName + "\"," + "\n";
+        toReturn += "TYPE: \"FLOW\"" + "\n";
+        for (Column column : outputSchema) {
+            toReturn += "addColumn {" + "\n";
+            toReturn += "NAME: \"" + column.name + "\",\n TYPE: \"" + column.type
+                    + "\",\nNULLABLE: true,\nCOMMENT: \"\",\nPATTERN: \"\\\"dd-MM-yyyy\\\"\",\nSOURCETYPE: \"\"" + "\n";
+            toReturn += "}" + "\n";
+        }
+        toReturn += "}" + "\n";
+        return toReturn;
+    }
 
-	public String getComponentType() {
-		return componentType;
-	}
+    public String getComponentType() {
+        return componentType;
+    }
 
-	public String getComponentName() {
-		return componentName;
-	}
+    public String getComponentName() {
+        return componentName;
+    }
 
-	public void setInputSchema(List<Column> columns) {
-		this.inputSchema = columns;
-		this.outputSchema = columns;
-	}
+    public void setInputSchema(List<Column> columns) {
+        this.inputSchema = columns;
+        this.outputSchema = columns;
+    }
 
-	public List<Column> getInputSchema() {
-		return inputSchema;
-	}
+    public List<Column> getInputSchema() {
+        return inputSchema;
+    }
 
-	public List<Column> getOutputSchema() {
-		return outputSchema;
-	}
+    public List<Column> getOutputSchema() {
+        return outputSchema;
+    }
 
 }

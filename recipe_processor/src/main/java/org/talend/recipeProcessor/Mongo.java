@@ -10,20 +10,19 @@ import com.mongodb.MongoClient;
 
 public class Mongo {// implements RecipeProcessor {
 
-	public static void main(String[] args) throws UnknownHostException {
-		MongoClient mongoClient = new MongoClient();
-		DB db = mongoClient.getDB("test");
-		Set<String> colls = db.getCollectionNames();
+    public static void main(String[] args) throws UnknownHostException {
+        MongoClient mongoClient = new MongoClient();
+        DB db = mongoClient.getDB("test");
+        Set<String> colls = db.getCollectionNames();
 
-		for (String s : colls) {
-			System.out.println(s);
-		}
-		DBCollection coll = db.getCollection("preparation_step1");
+        for (String s : colls) {
+            System.out.println(s);
+        }
+        DBCollection coll = db.getCollection("preparation_step1");
 
-		BasicDBObject updateQuery = new BasicDBObject().append("$toUpper",
-				"city");
+        BasicDBObject updateQuery = new BasicDBObject().append("$toUpper", "city");
 
-		coll.update(new BasicDBObject(), updateQuery, false, true);
-	}
+        coll.update(new BasicDBObject(), updateQuery, false, true);
+    }
 
 }

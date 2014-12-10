@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Model {
 
-	public String table;
-	
-	public List<String> columns;
-	
+    public String table;
+
+    public List<String> columns;
+
 }

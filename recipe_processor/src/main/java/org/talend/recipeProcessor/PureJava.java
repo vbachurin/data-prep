@@ -9,29 +9,30 @@ import com.google.common.io.LineProcessor;
 
 public class PureJava implements RecipeProcessor {
 
-	private class MyClass {
-		int nbLines = 0;
-		StringBuilder lines = new StringBuilder();
-	}
+    private class MyClass {
 
-	public void upperCase(File source, String column) throws IOException {
-		File target = File.createTempFile("java-", "");
-		MyClass processedLines = Files.readLines(source, Charsets.UTF_8,
-				new LineProcessor<MyClass>() {
+        int nbLines = 0;
 
-					MyClass toReturn = new MyClass();
+        StringBuilder lines = new StringBuilder();
+    }
 
-					public boolean processLine(String line) throws IOException {
-						toReturn.nbLines++;
-						toReturn.lines.append(line.toUpperCase() + "\n");
-						return true;
-					}
+    public void upperCase(File source, String column) throws IOException {
+        File target = File.createTempFile("java-", "");
+        MyClass processedLines = Files.readLines(source, Charsets.UTF_8, new LineProcessor<MyClass>() {
 
-					public MyClass getResult() {
-						return toReturn;
-					}
-				});
-		Files.write(processedLines.lines.toString(), target, Charsets.UTF_8);
-	}
+            MyClass toReturn = new MyClass();
+
+            public boolean processLine(String line) throws IOException {
+                toReturn.nbLines++;
+                toReturn.lines.append(line.toUpperCase() + "\n");
+                return true;
+            }
+
+            public MyClass getResult() {
+                return toReturn;
+            }
+        });
+        Files.write(processedLines.lines.toString(), target, Charsets.UTF_8);
+    }
 
 }

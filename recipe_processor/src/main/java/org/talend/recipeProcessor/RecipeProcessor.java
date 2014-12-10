@@ -5,6 +5,6 @@ import java.io.IOException;
 
 public interface RecipeProcessor {
 
-	public void upperCase(File source, String column) throws IOException;
-	
+    public void upperCase(File source, String column) throws IOException;
+
 }

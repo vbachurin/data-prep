@@ -18,56 +18,54 @@ import org.talend.recipeProcessor.spark.UpperCase;
 
 public class SparlSQL {
 
-	public static void main(String[] args) throws IOException {
-		SparkConf conf = new SparkConf().setAppName("test").setMaster("local");
-		JavaSparkContext sc = new JavaSparkContext(conf);
-		JavaSQLContext sqlContext = new org.apache.spark.sql.api.java.JavaSQLContext(
-				sc);
-		JavaSchemaRDD people = sqlContext
-				.jsonFile("/home/stef/talend/test_files/people.json");
+    public static void main(String[] args) throws IOException {
+        SparkConf conf = new SparkConf().setAppName("test").setMaster("local");
+        JavaSparkContext sc = new JavaSparkContext(conf);
+        JavaSQLContext sqlContext = new org.apache.spark.sql.api.java.JavaSQLContext(sc);
+        JavaSchemaRDD people = sqlContext.jsonFile("/home/stef/talend/test_files/people.json");
 
-		people.printSchema();
-		people.registerTempTable("people");
+        people.printSchema();
+        people.registerTempTable("people");
 
-		Model model = new Model();
-		model.table = "people";
-		model.columns = Arrays.asList("name", "age", "dept");
+        Model model = new Model();
+        model.table = "people";
+        model.columns = Arrays.asList("name", "age", "dept");
 
-		String asked = "";
-		InputStreamReader isr = new InputStreamReader(System.in);
-		BufferedReader br = new BufferedReader(isr);
+        String asked = "";
+        InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(isr);
 
-		while (asked != null && !asked.equals("q")) {
-			if (!asked.equals("")) {
-				System.out.println(" - " + asked);
+        while (asked != null && !asked.equals("q")) {
+            if (!asked.equals("")) {
+                System.out.println(" - " + asked);
 
-				SparkSqlOperation operation = null;
-				if (asked.equals("upper")) {
-					operation = new UpperCase("name");
-				} else if (asked.equals("concat")) {
-					operation = new Concat(Arrays.asList("name", "dept"));
-				}
-				if (operation != null) {
-					String sql = operation.buildSql(model);
-					System.out.println("### " + sql);
-					JavaSchemaRDD prep = sqlContext.sql(sql);
-					List<String> prepNames = prep.map(
-							(row) -> "Row: " + rowToString(row)).collect();
-					prep.printSchema();prep.registerTempTable("people");
-					System.out.println(prepNames);
-				}
-			}
+                SparkSqlOperation operation = null;
+                if (asked.equals("upper")) {
+                    operation = new UpperCase("name");
+                } else if (asked.equals("concat")) {
+                    operation = new Concat(Arrays.asList("name", "dept"));
+                }
+                if (operation != null) {
+                    String sql = operation.buildSql(model);
+                    System.out.println("### " + sql);
+                    JavaSchemaRDD prep = sqlContext.sql(sql);
+                    List<String> prepNames = prep.map((row) -> "Row: " + rowToString(row)).collect();
+                    prep.printSchema();
+                    prep.registerTempTable("people");
+                    System.out.println(prepNames);
+                }
+            }
 
-			System.out.print(" ? ");
-			asked = br.readLine();
-		}
-	}
+            System.out.print(" ? ");
+            asked = br.readLine();
+        }
+    }
 
-	private static String rowToString(Row row) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < row.length(); i++) {
-			sb.append(row.get(i) + "/");
-		}
-		return sb.toString();
-	}
+    private static String rowToString(Row row) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < row.length(); i++) {
+            sb.append(row.get(i) + "/");
+        }
+        return sb.toString();
+    }
 }
