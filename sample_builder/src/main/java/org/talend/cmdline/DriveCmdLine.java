@@ -22,9 +22,8 @@ import java.net.Socket;
 import org.talend.jobscript.Column;
 import org.talend.jobscript.JobScriptBuilder;
 import org.talend.jobscript.components.TFileInputExcel;
-import org.talend.jobscript.components.TFileOutputDelimited;
+import org.talend.jobscript.components.TMongoDbOutput;
 import org.talend.jobscript.components.TReservoirSampling;
-import org.talend.jobscript.components.TWriteJsonField;
 
 public class DriveCmdLine {
 
@@ -45,9 +44,11 @@ public class DriveCmdLine {
         JobScriptBuilder jobScriptBuilder = new JobScriptBuilder();
 
         jobScriptBuilder.addComponent(tFileInputExcel);
-        jobScriptBuilder.addComponent(new TReservoirSampling(50));
-        jobScriptBuilder.addComponent(new TWriteJsonField());
-        jobScriptBuilder.addComponent(new TFileOutputDelimited("/tmp/out_from_jobscript.json", false));
+        jobScriptBuilder.addComponent(new TReservoirSampling(10));
+        jobScriptBuilder.addComponent(new TMongoDbOutput("localhost", 27017, "test", "sample"));
+
+        // jobScriptBuilder.addComponent(new TWriteJsonField());
+        // jobScriptBuilder.addComponent(new TFileOutputDelimited("/tmp/out_from_jobscript.json", false));
 
         // Write the jobscript in file
         File jobScript = File.createTempFile("JS_", ".jobscript", new File("/tmp"));
@@ -62,19 +63,27 @@ public class DriveCmdLine {
         // TODO change job name to support multithread
         String jobName = "Job_from_script";
         String commandInit = "initLocal";
+        String createProject = "createProject --project-name SAMPLE --project-description desc --project-author stef@talend.com --project-author-password p --project-language java";
         String commandLogon = "logonProject --project-name SAMPLE --user-login stef@talend.com --user-password p";
         String commandCreate = "createJob " + jobName + " --script_file " + jobScript.getAbsolutePath() + " --over_write";
         String commandExecute = "executeJob " + jobName + " --interpreter /usr/bin/java";
 
         boolean executed = true;
-        // if (executed)
+        // if (executed) {
         // waitCommand(8002, commandInit);
-        // if (executed)
+        // }
+        // if (executed) {
+        // waitCommand(8002, createProject);
+        // }
+        // if (executed) {
         // executed = waitCommand(8002, commandLogon);
-        if (executed)
+        // }
+        if (executed) {
             executed = waitCommand(8002, commandCreate);
-        if (executed)
+        }
+        if (executed) {
             executed = waitCommand(8002, commandExecute);
+        }
     }
 
     public static boolean waitCommand(int port, String command) throws Exception {
