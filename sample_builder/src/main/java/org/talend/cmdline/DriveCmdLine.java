@@ -21,9 +21,11 @@ import java.net.Socket;
 
 import org.talend.jobscript.Column;
 import org.talend.jobscript.JobScriptBuilder;
+import org.talend.jobscript.components.TFileInputDelimited;
 import org.talend.jobscript.components.TFileInputExcel;
-import org.talend.jobscript.components.TMongoDbOutput;
+import org.talend.jobscript.components.TFileOutputDelimited;
 import org.talend.jobscript.components.TReservoirSampling;
+import org.talend.jobscript.components.TWriteJsonField;
 
 public class DriveCmdLine {
 
@@ -41,14 +43,20 @@ public class DriveCmdLine {
                 new Column("id", "id_Integer"), new Column("id_customer", "id_Integer"), new Column("revenu", "id_Integer"),
                 new Column("when", "id_Date"));
 
+        TFileInputDelimited tFileInputDelimited = new TFileInputDelimited("/home/stef/talend/test_files/customers_100k.csv",
+                new Column("id", "id_Integer"), new Column("firstname", "id_String"), new Column("lastname", "id_String"),
+                new Column("state", "id_String"), new Column("registration", "id_Date"), new Column("city", "id_String"),
+                new Column("birth", "id_Date"), new Column("nbCommands", "id_Integer"), new Column("avgAmount", "id_Float"));
+
         JobScriptBuilder jobScriptBuilder = new JobScriptBuilder();
 
-        jobScriptBuilder.addComponent(tFileInputExcel);
-        jobScriptBuilder.addComponent(new TReservoirSampling(10));
-        jobScriptBuilder.addComponent(new TMongoDbOutput("localhost", 27017, "test", "sample"));
+        // jobScriptBuilder.addComponent(tFileInputExcel);
+        jobScriptBuilder.addComponent(tFileInputDelimited);
+        jobScriptBuilder.addComponent(new TReservoirSampling(100));
+        // jobScriptBuilder.addComponent(new TMongoDbOutput("localhost", 27017, "test", "sample"));
 
-        // jobScriptBuilder.addComponent(new TWriteJsonField());
-        // jobScriptBuilder.addComponent(new TFileOutputDelimited("/tmp/out_from_jobscript.json", false));
+        jobScriptBuilder.addComponent(new TWriteJsonField());
+        jobScriptBuilder.addComponent(new TFileOutputDelimited("/home/stef/talend/test_files/customers_100.json", false));
 
         // Write the jobscript in file
         File jobScript = File.createTempFile("JS_", ".jobscript", new File("/tmp"));
