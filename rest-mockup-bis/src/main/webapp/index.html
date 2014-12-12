@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="people" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>My AngularJS App</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">
+  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/main.css">
+  <link rel="stylesheet" href="app.css">
+
+    <!-- build:css css/third-party.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="lib/dependencies/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="lib/dependencies/css/ng-grid.min.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css css/application.css -->
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <!-- endbuild -->
+
+    <!-- build:js lib/third-party.js -->
+    <!-- bower:js -->
+    <script src="lib/dependencies/jquery.min.js"></script>
+    <script src="lib/dependencies/angular.min.js"></script>
+    <script src="lib/dependencies/angular-resource.min.js"></script>
+    <script src="lib/dependencies/ng-grid-2.0.11.min.js"></script>
+    <script src="lib/dependencies/ui-bootstrap-tpls.min.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js script/all.js -->
+    <script src="app.js"></script>
+    <!-- endbuild -->
+
+</head>
+<body ng-controller="PeoplesCtrl">
+
+  <h1>Voici une très magnifique maquete</h1>
+
+  <button ng-click="loadFile()">Load</button>
+
+  <table border="1">
+  <thead>
+  <tr><td>Id</td><td>Firstname</td><td>Lastname</td><td>State</td><td>Registration</td><td>City</td><td>Birth</td><td>Nb commands</td><td>Average amount</td></tr>
+  </thead>
+  <tr ng-repeat="people in peoples">
+    <td>{{people.id}}</td>
+    <td>{{people.firstname}}</td>
+    <td>{{people.lastname}}</td>
+    <td>{{people.state}}</td>
+    <td>{{people.registration}}</td>
+    <td>{{people.city}}</td>
+    <td>{{people.birth}}</td>
+    <td>{{people.nbCommands}}</td>
+    <td>{{people.avgAmount}}</td>
+  </tr>
+  </table>
+
+</body>
+</html>
