@@ -2,65 +2,137 @@
 <!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" ng-app="people" class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" ng-app="people" class="no-js">
+<!--<![endif]-->
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>My AngularJS App</title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/main.css">
-  <link rel="stylesheet" href="app.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Talend - Data Skaker</title>
+<link rel="stylesheet" media="screen" href="css/bootstrap.css">
+<link rel="stylesheet" media="screen" href="css/bootstrap-theme.css">
+<link rel="stylesheet" media="screen" href="css/main.css">
+<link rel="shortcut icon" type="image/png" href="images/favicon.png">
+<script type='text/javascript' src="js/jquery-1.11.1.min.js"></script>
+<script type='text/javascript' src="js/bootstrap.min.js"></script>
+<script type='text/javascript' src="js/sample.js"></script>
 
-    <!-- build:css css/third-party.css -->
-    <!-- bower:css -->
-    <link rel="stylesheet" href="lib/dependencies/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="lib/dependencies/css/ng-grid.min.css" />
-    <!-- endbower -->
-    <!-- endbuild -->
+<!-- build:js lib/third-party.js -->
+<!-- bower:js -->
+<script src="lib/dependencies/jquery.min.js"></script>
+<script src="lib/dependencies/angular.min.js"></script>
+<script src="lib/dependencies/angular-resource.min.js"></script>
+<script src="lib/dependencies/ng-grid-2.0.11.min.js"></script>
+<script src="lib/dependencies/ui-bootstrap-tpls.min.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
 
-    <!-- build:css css/application.css -->
-    <link rel="stylesheet" type="text/css" href="css/style.css"/>
-    <!-- endbuild -->
-
-    <!-- build:js lib/third-party.js -->
-    <!-- bower:js -->
-    <script src="lib/dependencies/jquery.min.js"></script>
-    <script src="lib/dependencies/angular.min.js"></script>
-    <script src="lib/dependencies/angular-resource.min.js"></script>
-    <script src="lib/dependencies/ng-grid-2.0.11.min.js"></script>
-    <script src="lib/dependencies/ui-bootstrap-tpls.min.js"></script>
-    <!-- endbower -->
-    <!-- endbuild -->
-
-    <!-- build:js script/all.js -->
-    <script src="app.js"></script>
-    <!-- endbuild -->
+<!-- build:js script/all.js -->
+<script src="app.js"></script>
+<!-- endbuild -->
 
 </head>
 <body ng-controller="PeoplesCtrl">
 
-  <h1>Voici une très magnifique maquete</h1>
+  <nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container-fluid t-top-bar">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span
+            class="icon-bar"></span>
+        </button>
+        <a class=" t-top-link navbar-brand" href="/">HOME</a>
+      </div>
 
-  <button ng-click="loadFile()">Load</button>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse top-background" id="bs-example-navbar-collapse-1">
+        <ul class="t-top-link nav navbar-nav">
+          <li id="link1"><a href="/">FLOWS</a></li>
+          <li id="link2"><a href="/">DATA SHAKER</a></li>
+          <li id="link3"><a href="/">ACTIVITY</a></li>
+          <li id="link4"><a href="/">MANAGE</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid">
+    <section id="page_title">
+      <h1 class="main_title">SFDC - My Best Customers</h1>
+      <h5 class="main_description">This is the monthly extract of my SFDC customers, usually around 50k lines</h5>
+      <br class="clear">
+    </section>
+    <section>
+      <form class="form-inline" role="form">
+        <div class="t-p">
+          <p>Hey! Try out these available actions:</p>
+        </div>
+        <div class="form-group">
+          <button type="button" class="t-btn" id="button1" ng-click="loadFileJson()">Load file from Json</button>
+        </div>
+        <div class="form-group">
+          <button type="button" class="t-btn" id="button7" ng-click="loadFile()">Load file from java</button>
+        </div>
+        <div class="form-group">
+          <button type="button" class="t-btn" id="button2">Remove</button>
+        </div>
+        <div class="form-group">
+          <button type="button" class="t-btn" id="button3">Split</button>
+        </div>
+        <div class="form-group">
+          <button type="button" class="t-btn" id="button4">Filter</button>
+        </div>
+        <div class="form-group">
+          <button type="button" class="t-btn" id="button5">Concatenate</button>
+        </div>
+        <div class="form-group">
+          <button type="button" class="t-btn" id="button6">Keep</button>
+        </div>
+      </form>
+      <p>&nbsp;</p>
+    </section>
+    <section>
+      <div>
+        <table class="table table-bordered table-hover table-condensed" id="mytable">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>State</th>
+              <th>Registration</th>
+              <th>City</th>
+              <th>Birth</th>
+              <th>Nb Commands</th>
+              <th>Avg Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="people in peoples">
+              <td>{{people.id}}</td>
+              <td>{{people.firstname}}</td>
+              <td>{{people.lastname}}</td>
+              <td>{{people.state}}</td>
+              <td>{{people.registration}}</td>
+              <td>{{people.city}}</td>
+              <td>{{people.birth}}</td>
+              <td>{{people.nbCommands}}</td>
+              <td>{{people.avgAmount}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section>
+      <hr class="clear">
+    </section>
+  </div>
 
-  <table border="1">
-  <thead>
-  <tr><td>Id</td><td>Firstname</td><td>Lastname</td><td>State</td><td>Registration</td><td>City</td><td>Birth</td><td>Nb commands</td><td>Average amount</td></tr>
-  </thead>
-  <tr ng-repeat="people in peoples">
-    <td>{{people.id}}</td>
-    <td>{{people.firstname}}</td>
-    <td>{{people.lastname}}</td>
-    <td>{{people.state}}</td>
-    <td>{{people.registration}}</td>
-    <td>{{people.city}}</td>
-    <td>{{people.birth}}</td>
-    <td>{{people.nbCommands}}</td>
-    <td>{{people.avgAmount}}</td>
-  </tr>
-  </table>
+  <footer>
+    <div>
+      <span>© 2014 Talend. All Rights Reserved.</span>
+    </div>
+  </footer>
 
 </body>
 </html>

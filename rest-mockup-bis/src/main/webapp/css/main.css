@@ -1,0 +1,84 @@
+@CHARSET "UTF-8";
+
+.dc-chart g.row text {
+	fill: black;
+}
+
+#dockerdemo-activities.dc-chart g.row text {
+	font-size: 30px;
+}
+
+body{
+	font-family: "Source Sans Pro";
+	font-weight: normal;
+}
+
+h1, h5{
+	font-weight: 200;
+}
+
+h5 {
+	color: #AEAEAE;
+}
+
+th{
+	text-transform: uppercase;
+	font-weight: normal;
+	font-size: .90em;
+	background-color: #c6d5e2;
+	color: #266092;
+}
+
+th:hover {
+  	background-color: #CECECE;
+}
+
+td{
+	font-family: "Courier New";
+	color: #636363;
+	font-size: .80em;
+	height: 20px;
+}
+
+td:hover {
+  background-color: #CECECE;
+}
+
+.form-inline{
+	border-right: 20px;
+}
+
+.t-top-bar{
+	background-image: url('../images/talend_logo.png');
+	background-repeat: no-repeat;
+	background-color: #555963;
+	padding-left: 205px;
+	padding-top: 10px;
+	border: 0px;	
+	height: 60px;
+}
+
+.t-top-link{
+	font-size:  .80em;
+	color: white!important;
+	padding-right: 20px;
+}
+
+.navbar-nav > li > a{
+	text-shadow: 0 2px 0 rgba(255, 255, 255, .0);
+	color: white!important;
+}
+
+.t-p{
+	font-size: 1.5em;
+	font-weight: 200;
+}
+
+.t-btn{
+	border: 2px solid;
+    border-radius: 5px;
+	padding: 0px 10px;	
+	background-color: #236192;
+	text-transform: uppercase;
+	color: white;	
+	height: 40px;
