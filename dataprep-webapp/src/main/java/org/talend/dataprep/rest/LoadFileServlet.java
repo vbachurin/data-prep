@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.talend.dataprep.common.EasyFiles;
 import org.talend.dataprep.common.StringsUtils;
 
 import com.google.common.base.Charsets;

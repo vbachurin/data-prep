@@ -10,9 +10,11 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.rest;
+package org.talend.dataprep.common;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * created by stef on Dec 11, 2014 Detailled comment
@@ -20,7 +22,12 @@ import java.io.File;
  */
 public class EasyFiles {
 
-    public static File getFile(String path) {
-        return new File(EasyFiles.class.getClassLoader().getResource(path).getFile());
+    public static File getFile(String path) throws IOException {
+        URL resource = EasyFiles.class.getClassLoader().getResource(path);
+        if (resource != null) {
+            return new File(resource.getFile());
+        } else {
+            throw new IOException();
+        }
     }
 }
