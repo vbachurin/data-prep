@@ -1,23 +1,22 @@
-# Java EE 7 - Angular - Sample Application #
+# Talend Data-prep web-application aka Talend Data Shaker
+## How to run
+### Prerequisites
+1. Maven
+2. Java 7
+3. Tomcat
+4. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
 
-## How to run ? ##
+### Build
+in _checkouts/data-prep/dataprep-webapp_ call maven build
+   mvn clean package
 
-* You need JDK 7 or higher, Maven 3 and Wildfly 8 to run the application.
+### Deploy
+#### One shot
+1. Copy _target/dataprep-webapp-1.0.m0-SNAPSHOT.war_ in _tomcat_path/webapps as dataprep-webapp.war_
+2. Restart Tomcat or reload only this application
+### Perennial (linux)
+Create a symbolic link in _tomcat/webapps_ to _target/dataprep-webapp-1.0.m0-SNAPSHOT.war_
+    ln -s <checkouts>/data-prep/dataprep-webapp/target/dataprep-webapp-1.0.m0-SNAPSHOT.war dataprep-webapp.war
 
-* Build the code using Maven with the command: `mvn clean install`.
-
-* Copy the file javaee7-angular-3.1.war from target directory to your Wildfly installation folder /standalone/deployments
-
-* Start Wildfly and go to http://localhost:8080/javaee7-angular-3.1/
-
-## Javascript Package Management (optional) ##
-
-* The required JS libraries are included in the project, but it also possible to manage them with the next steps.
-
-* You need NPM. Please go to http://nodejs.org/download/ to get a copy.
-
-* Once NPM is installed run the command `npm install`.
-
-* Install Grunt `npm install -g grunt-cli`  for more information please go to http://gruntjs.com/getting-started.
-
-* Run the command 'grunt' to download all the web dependencies and build an optimized version of the project.
+### Access
+Open in your favorite browser [http://localhost:8080/dataprep-webapp](http://localhost:8080/dataprep-webapp)
