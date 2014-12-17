@@ -94,7 +94,7 @@ td:hover {
 
 /* for low resolution display */
 .t-top-bar {
-	background-image: url('../images/talend_logo.png');
+	background-image: url('../../../images/talend_logo.png');
 	background-repeat: no-repeat;
 	background-color: #555963;
 	padding-left: 205px;
@@ -109,7 +109,7 @@ screen and (-webkit-min-device-pixel-ratio: 1.5),
 screen and (-moz-min-device-pixel-ratio: 1.5),
 screen and (min-device-pixel-ratio: 1.5) {
 	.t-top-bar {
-		background-image: url('../images/talend_logo_high_res.png');
+		background-image: url('../../../images/talend_logo_high_res.png');
 		background-size: contain;
 	}
 }
