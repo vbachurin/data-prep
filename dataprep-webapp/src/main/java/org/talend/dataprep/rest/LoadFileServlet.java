@@ -12,14 +12,21 @@
 // ============================================================================
 package org.talend.dataprep.rest;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.JsonNodeFactory;
+import org.codehaus.jackson.node.ObjectNode;
 import org.talend.dataprep.common.EasyFiles;
 import org.talend.dataprep.common.StringsUtils;
 
@@ -40,28 +47,49 @@ public class LoadFileServlet extends HttpServlet {
 
         PrintWriter out = resp.getWriter();
         try {
-            String output = Files.readLines(EasyFiles.getFile("customers_1k.json"), Charsets.UTF_8, new LineProcessor<String>() {
+            File records = EasyFiles.getFile("customers_1k.json");
 
-                StringBuilder sb = new StringBuilder("[");
-
-                @Override
-                public boolean processLine(String line) throws IOException {
-                    sb.append(line + ",");
-                    return true;
-                }
-
-                @Override
-                public String getResult() {
-                    StringsUtils.removeLastChars(sb, 1);
-                    sb.append("]");
-                    return sb.toString();
-                }
-            });
-
-            out.print(output);
+            out.print(buildFullJson(records));
         } catch (Exception e) {
             e.printStackTrace(resp.getWriter());
         }
         out.close();
+    }
+
+    protected static String buildFullJson(File records) throws IOException {
+        String output = Files.readLines(records, Charsets.UTF_8, new LineProcessor<String>() {
+
+            StringBuilder sb = new StringBuilder("[");
+
+            @Override
+            public boolean processLine(String line) throws IOException {
+                sb.append(line + ",");
+                return true;
+            }
+
+            @Override
+            public String getResult() {
+                StringsUtils.removeLastChars(sb, 1);
+                sb.append("]");
+                return sb.toString();
+            }
+        });
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode oNode = JsonNodeFactory.instance.objectNode();
+        oNode.put("records", mapper.readTree(output));
+        ArrayNode columns = oNode.putArray("columns");
+
+        JsonNode firstRecord = oNode.get("records").iterator().next();
+
+        Iterator<String> fields = firstRecord.getFieldNames();
+        while (fields.hasNext()) {
+            String column = fields.next();
+            ObjectNode cNode = JsonNodeFactory.instance.objectNode();
+            cNode.put("id", column);
+            columns.add(cNode);
+        }
+
+        return oNode.toString();
     }
 }

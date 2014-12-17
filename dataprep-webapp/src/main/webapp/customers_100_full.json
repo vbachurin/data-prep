@@ -1,3 +1,17 @@
+{
+  "columns":
+  [
+{"id":"id"},
+{"id":"firstname"},
+{"id":"lastname"},
+{"id":"state"},
+{"id":"registration"},
+{"id":"city"},
+{"id":"birth"},
+{"id":"nbCommands"},
+{"id":"avgAmount"}
+]
+,"records":
 [
 {"id":"88522","firstname":"Dwight","lastname":"Ford","state":"WA","registration":"04-04-2008","city":"Topeka","birth":"25-06-1957","nbCommands":"98","avgAmount":"55.4"},
 {"id":"70057","firstname":"Lyndon","lastname":"Roosevelt","state":"DE","registration":"16-09-2007","city":"Baton Rouge","birth":"15-06-1976","nbCommands":"89","avgAmount":"73.4"},
@@ -11,3 +25,4 @@
 {"id":"88866","firstname":"John","lastname":"McKinley","state":"OH","registration":"04-05-2008","city":"Dover","birth":"09-06-1968","nbCommands":"74","avgAmount":"18.6"},
 {"id":"74866","firstname":"Bill","lastname":"Monroe","state":"GA","registration":"01-03-2007","city":"Dover","birth":"17-11-1948","nbCommands":"41","avgAmount":"64.8"}
 ]
+}

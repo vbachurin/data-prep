@@ -1,18 +1,20 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-var app = angular.module('people', []);
+var app = angular.module('data-prep', []);
 
-app.controller('PeoplesCtrl', function($scope, $http) {
+app.controller('RecordsCtrl', function($scope, $http) {
 	
 	$scope.loadFile = function() {
 		$http.get('ranking').success(function(data) {
-			$scope.peoples = data;
+			$scope.columns = data.columns;
+			$scope.records = data.records;
 		});
 	};
 	$scope.loadFileJson = function() {
-		$http.get('customers_100.json').success(function(data) {
-			$scope.peoples = data;
+		$http.get('customers_100_full.json').success(function(data) {
+			$scope.columns = data.columns;
+			$scope.records = data.records;
 		});
 	};
 });
