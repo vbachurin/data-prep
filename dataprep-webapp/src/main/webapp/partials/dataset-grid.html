@@ -1,0 +1,32 @@
+<section>
+  <div>
+    <table class="table table-bordered table-hover table-condensed" id="mytable">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>State</th>
+          <th>Registration</th>
+          <th>City</th>
+          <th>Birth</th>
+          <th>Nb Commands</th>
+          <th>Avg Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="people in peoples">
+          <td>{{people.id}}</td>
+          <td>{{people.firstname}}</td>
+          <td>{{people.lastname}}</td>
+          <td>{{people.state}}</td>
+          <td>{{people.registration}}</td>
+          <td>{{people.city}}</td>
+          <td>{{people.birth}}</td>
+          <td>{{people.nbCommands}}</td>
+          <td>{{people.avgAmount}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
