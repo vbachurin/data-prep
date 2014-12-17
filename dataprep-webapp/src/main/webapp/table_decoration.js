@@ -1,4 +1,4 @@
-	function loadTableFeedbackStyles() {
+function loadTableFeedbackStyles() {
 				
 		// MAKE THE TABLE COLUMN RESIZABLE
 		$("#mytable").resizableColumns();
@@ -25,10 +25,11 @@
 		$('th').bind( "click", function(){
 
 		    var selectedCol = parseInt($(this).index());	    
+		    
 		    parseTable(selectedCol, -1);
 		    
 		});	
-		
+	
 		// TABLE BODY ON CLICK
 		$('td').bind( "click", function(){
 
@@ -38,7 +39,7 @@
 		    parseTable(selectedCol, selectedRow);
 		    
 		});	
-
+		
 		function parseTable(selectedColIndex, selectedRowIndex) {
 
 		    var $header = $("#mytable thead tr th");

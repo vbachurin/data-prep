@@ -77,13 +77,13 @@ td:hover {
 
 /*header rollover */
 .th-rollover {
-    background-color: #a4bed7;
+    background-color: #a4bed7!important;
     cursor: cell;
 }
 
 /*body rollover */
 .rollover {
-    background-color: #f5f5f5;
+    background-color: #f5f5f5!important; 
     color: #707690;
     cursor: cell;
 }
