@@ -11,4 +11,12 @@
 		<servlet-name>RankingServlet</servlet-name>
 		<url-pattern>/ranking</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>UploadServlet</servlet-name>
+		<servlet-class>org.talend.dataprep.rest.UploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UploadServlet</servlet-name>
+		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
 </web-app>

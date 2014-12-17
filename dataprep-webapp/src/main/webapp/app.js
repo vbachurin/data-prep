@@ -25,3 +25,9 @@ app.directive('datasetGrid', function() {
 		templateUrl: 'partials/dataset-grid.html'
 	};
 });
+app.directive('importLocalFile', function() {
+	return {
+		restrict: 'E',
+		templateUrl: 'partials/import-local-file.html'
+	};
+});
