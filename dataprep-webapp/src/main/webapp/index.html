@@ -7,21 +7,23 @@
 <!--<![endif]-->
 <head>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <title>Talend - Data Shaker</title>
-    
-    <link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap.min.css">
-    <link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap-theme.css">
-    <link rel="stylesheet" media="screen" href="lib/dependencies/css/jquery.resizableColumns.css">
-    <link rel="stylesheet" media="screen" href="lib/dependencies/css/ng-grid.min.css">
-    <link rel="stylesheet" media="screen" href="lib/dependencies/css/main.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link rel="shortcut icon" type="image/png" href="images/favicon.png">
+<title>Talend - Data Shaker</title>
 
-	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic' rel='stylesheet' type='text/css'>
-    
+<link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap.min.css">
+<link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap-theme.css">
+<link rel="stylesheet" media="screen" href="lib/dependencies/css/jquery.resizableColumns.css">
+<link rel="stylesheet" media="screen" href="lib/dependencies/css/ng-grid.min.css">
+<link rel="stylesheet" media="screen" href="lib/dependencies/css/main.css">
+
+<link rel="shortcut icon" type="image/png" href="images/favicon.png">
+
+<link
+  href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic'
+  rel='stylesheet' type='text/css'>
+
 <!-- build:js lib/third-party.js -->
 <!-- bower:js -->
 <script src="lib/dependencies/js/angular-resource.min.js"></script>
@@ -38,65 +40,69 @@
 <script src="table_decoration.js"></script>
 <script src="app.js"></script>
 <!-- endbuild -->
-    
+
 </head>
 <body ng-controller="RecordsCtrl">
 
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid t-top-bar">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">HOME</a><li>
-            <li class="divider-vertical"></li>
-            <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">FLOWS</a><li>
-            <li class="divider-vertical"></li>
-            <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">DATA SHAKER</a><li>
-            <li class="divider-vertical"></li>
-            <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">ACTIVITY</a><li>
-            <li class="divider-vertical"></li>
-            <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">MANAGE</a><li>
-         </ul>
-         <ul class="nav navbar-nav navbar-right">
-            <li class="divider-vertical"></li>
-            <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">MARKETPLACE</a></li>
-            <li class="divider-vertical"></li>
-            <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">COMMUNITY</a></li>
-            <li class="divider-vertical"></li>
-            <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">SUPPORT</a></li>
-            <li class="divider-vertical"></li>
-           	<li class="dropdown">
-              <a href="#" class="dropdown-toggle t-top-link " data-toggle="dropdown" role="button" aria-expanded="false">PROFILE <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#">LOGOUT</a><li>
-                <li><a href="#">EDIT</a></li>
-              </ul>
-            </li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid t-top-bar">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+          aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span
+            class="icon-bar"></span>
+        </button>
       </div>
-    </nav>
-    <div class="container-fluid t-container">
-        <section id="page_title">
-            <h1 class="main_title">SFDC - My Best Customers</h1>
-            <h5 class="main_description">This is the monthly extract of my SFDC customers, usually around 50k lines</h5>
-            <br class="clear">
-        </section>
-        <section> 
-            <form class="form-inline" role="form">
-                <div class="t-p">
-					<p>Hey! Try out these available actions on this data subset: </p>
-               </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">HOME</a>
+          <li>
+          <li class="divider-vertical"></li>
+          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">FLOWS</a>
+          <li>
+          <li class="divider-vertical"></li>
+          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">DATA SHAKER</a>
+          <li>
+          <li class="divider-vertical"></li>
+          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">ACTIVITY</a>
+          <li>
+          <li class="divider-vertical"></li>
+          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">MANAGE</a>
+          <li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="divider-vertical"></li>
+          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">MARKETPLACE</a></li>
+          <li class="divider-vertical"></li>
+          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">COMMUNITY</a></li>
+          <li class="divider-vertical"></li>
+          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">SUPPORT</a></li>
+          <li class="divider-vertical"></li>
+          <li class="dropdown"><a href="#" class="dropdown-toggle t-top-link " data-toggle="dropdown" role="button"
+            aria-expanded="false">PROFILE <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">LOGOUT</a>
+              <li>
+              <li><a href="#">EDIT</a></li>
+            </ul></li>
+        </ul>
+        <form class="navbar-form navbar-right">
+          <input type="text" class="form-control" placeholder="Search...">
+        </form>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid t-container">
+    <section id="page_title">
+      <h1 class="main_title">SFDC - My Best Customers</h1>
+      <h5 class="main_description">This is the monthly extract of my SFDC customers, usually around 50k lines</h5>
+      <br class="clear">
+    </section>
+    <section>
+      <form class="form-inline" role="form">
+        <div class="t-p">
+          <p>Hey! Try out these available actions on this data subset:</p>
+        </div>
         <div class="form-group">
           <button type="button" class="t-btn" id="button1" ng-click="loadFileJson()">Load file from Json</button>
         </div>
@@ -104,7 +110,7 @@
           <button type="button" class="t-btn" id="button7" ng-click="loadFile()">Load file from java</button>
         </div>
         <div class="form-group">
-          <button type="button" class="t-btn" id="button2" onclick="loadTableFeedbackStyles()>Refrfesh</button>
+          <button type="button" class="t-btn" id="button2" onclick="loadTableFeedbackStyles()">Refresh</button>
         </div>
         <div class="form-group">
           <button type="button" class="t-btn" id="button3">Split</button>
@@ -128,11 +134,11 @@
     </section>
   </div>
 
-    <footer class="footer">
-        <div>
-            <span>© 2014 Talend. All Rights Reserved.</span>
-        </div>
-    </footer>
+  <footer class="footer">
+    <div>
+      <span>© 2014 Talend. All Rights Reserved.</span>
+    </div>
+  </footer>
 
 </body>
 </html>
