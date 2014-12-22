@@ -15,7 +15,6 @@ package org.talend.dataprep.dataprepschemaanasysis;
 import static org.junit.Assert.*;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.junit.Test;
 import org.talend.dataprep.common.EasyFiles;
@@ -26,14 +25,13 @@ import org.talend.dataprep.common.EasyFiles;
  */
 public class TypeGuessingTest {
 
-    /**
-     * Test method for {@link org.talend.dataprep.dataprepschemaanasysis.TypeGuessing#guessFileType(java.io.File)}.
-     * 
-     * @throws IOException
-     */
     @Test
-    public void testGuessFileType() throws FileNotFoundException {
+    public void testGuessFileTypeCsv() throws FileNotFoundException {
         assertEquals(KnownTypes.CSV, TypeGuessing.guessFileType(EasyFiles.getFile("tagada.csv")));
     }
 
+    @Test
+    public void testGuessFileTypeXls() throws FileNotFoundException {
+        assertEquals(KnownTypes.XLS, TypeGuessing.guessFileType(EasyFiles.getFile("tagada.xls")));
+    }
 }

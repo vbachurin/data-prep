@@ -14,6 +14,8 @@ package org.talend.dataprep.dataprepschemaanasysis;
 
 import java.io.File;
 
+import com.google.common.io.Files;
+
 /**
  * created by stef on Dec 22, 2014 Detailled comment
  *
@@ -21,6 +23,13 @@ import java.io.File;
 public class TypeGuessing {
 
     public static KnownTypes guessFileType(File file) {
-        return KnownTypes.CSV;
+        switch (Files.getFileExtension(file.getName()).toLowerCase()) {
+        case "csv":
+            return KnownTypes.CSV;
+        case "xls":
+            return KnownTypes.XLS;
+        default:
+            return null;
+        }
     }
 }
