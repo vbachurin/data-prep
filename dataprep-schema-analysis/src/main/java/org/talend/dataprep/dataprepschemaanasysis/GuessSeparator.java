@@ -25,22 +25,29 @@ public class GuessSeparator {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-
         File file = new File("/home/stef/talend/test_files/customers_1k.csv");
         Separator guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
         System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
 
         start = System.currentTimeMillis();
-
         file = new File("/home/stef/talend/test_files/customers_10k.csv");
         guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
         System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
 
         start = System.currentTimeMillis();
-
         file = new File("/home/stef/talend/test_files/customers_100k.csv");
         guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
         System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
+
+        start = System.currentTimeMillis();
+        file = new File("/home/stef/talend/test_files/customers_10k_comma.csv");
+        guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
+        System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
+
+        start = System.currentTimeMillis();
+        file = new File("/home/stef/talend/test_files/customers_10k_space.csv");
+        guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
+        System.out.println("<" + guessSeparator.separator + "> in " + (System.currentTimeMillis() - start) + " ms");
 
     }
 }
