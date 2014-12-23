@@ -9,14 +9,14 @@ app.controller('RecordsCtrl', function($scope, $http) {
 		$http.get('ranking').success(function(data) {
 			$scope.columns = data.columns;
 			$scope.records = data.records;
-			loadTableFeedbackStyles();
+//			loadTableFeedbackStyles();
 		});
 	};
 	$scope.loadFileJson = function() {
 		$http.get('customers_100_full.json').success(function(data) {
 			$scope.columns = data.columns;
 			$scope.records = data.records;
-			loadTableFeedbackStyles();
+//			loadTableFeedbackStyles();
 		});
 	};
 	

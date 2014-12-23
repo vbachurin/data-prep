@@ -183,13 +183,6 @@ screen and (min-device-pixel-ratio: 1.5) {
 	}
 }
 
-/* .navbar-inverse { */
-/* 	background-image: linear-gradient(to bottom, #555963 55%, #555963 100%);	 */
-/* } */
-
-/* .navbar-inverse .navbar-collapse { */
-/* 	background-image: linear-gradient(to bottom, #555963 55%, #555963 100%);	 */
-/* } */
 
 .navbar-default {
 	background-image: linear-gradient(to bottom, #555964 0%, rgba(85, 89, 100, 0.46) 100%);
@@ -255,9 +248,38 @@ screen and (min-device-pixel-ratio: 1.5) {
 }
 
 .table {
-width: 100%;
-max-width: 100%;
-margin-bottom: 20px;
+
+}
+
+.reset{
+	padding: 0px!important;
+	font-size: 0;	
+}
+
+.quality_bar{
+	background: white!important;
+	height: 15px!important;
+}
+
+.record_OK{
+	background-color: rgba(138, 188, 0, 0.6);  /* Light Green  */
+	height: 100%!important;
+	display: inline-block!important;
+	cursor: pointer;	
+}
+
+.record_EMPTY{
+	background-color: white!important;
+	height: 100%!important;
+	display: inline-block!important;
+	cursor: pointer;	
+}
+
+.record_NOK{
+	background-color: rgba(247, 168, 0, 0.6);    /* Light Orange  */
+	height: 100%!important;
+	display: inline-block!important;	
+	cursor: pointer;	
 }
 
 /* For a sticky footer at the bottom */
