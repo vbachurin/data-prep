@@ -4,8 +4,8 @@
          "id":"id",
          "quality":{
             "empty":22,
-            "invalid":68,
-            "valid":100
+            "invalid":8,
+            "valid":580
          },
          "type":"integer"
       },
@@ -21,18 +21,18 @@
       {
          "id":"lastname",
          "quality":{
-            "empty":2,
+            "empty":22,
             "invalid":8,
-            "valid":90
+            "valid":580
          },
          "type":"string"
       },
       {
          "id":"state",
          "quality":{
-            "empty":10,
-            "invalid":80,
-            "valid":10
+            "empty":22,
+            "invalid":8,
+            "valid":580
          },
          "type":"string"
       },
@@ -75,9 +75,9 @@
       {
          "id":"avgAmount",
          "quality":{
-            "empty":2,
+            "empty":22,
             "invalid":8,
-            "valid":90
+            "valid":580
          },
          "type":"float"
       }
