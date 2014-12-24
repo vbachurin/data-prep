@@ -59,12 +59,15 @@ public class LoadFileServlet extends HttpServlet {
     protected static String buildFullJson(File records) throws IOException {
         String output = Files.readLines(records, Charsets.UTF_8, new LineProcessor<String>() {
 
+            int n = 0;
+
             StringBuilder sb = new StringBuilder("[");
 
             @Override
             public boolean processLine(String line) throws IOException {
                 sb.append(line + ",");
-                return true;
+                n++;
+                return (n < 50);
             }
 
             @Override
@@ -87,7 +90,35 @@ public class LoadFileServlet extends HttpServlet {
             String column = fields.next();
             ObjectNode cNode = JsonNodeFactory.instance.objectNode();
             cNode.put("id", column);
+
+            switch (column) {
+            case "id":
+            case "nbCommands":
+                cNode.put("type", "integer");
+                break;
+            case "firstname":
+            case "lastname":
+            case "state":
+            case "city":
+                cNode.put("type", "string");
+                break;
+            case "registration":
+            case "birth":
+                cNode.put("type", "date");
+                break;
+            case "avgAmount":
+                cNode.put("type", "float");
+                break;
+            default:
+                break;
+            }
             columns.add(cNode);
+
+            ObjectNode quality = JsonNodeFactory.instance.objectNode();
+            quality.put("valid", 580);
+            quality.put("invalid", 8);
+            quality.put("empty", 22);
+            cNode.put("quality", quality);
         }
 
         return oNode.toString();
