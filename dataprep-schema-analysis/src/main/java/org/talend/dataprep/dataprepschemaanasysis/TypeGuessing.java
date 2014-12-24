@@ -10,24 +10,26 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.common;
+package org.talend.dataprep.dataprepschemaanasysis;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URL;
+
+import com.google.common.io.Files;
 
 /**
- * created by stef on Dec 11, 2014 Detailled comment
+ * created by stef on Dec 22, 2014 Detailled comment
  *
  */
-public class EasyFiles {
+public class TypeGuessing {
 
-    public static File getFile(String path) throws FileNotFoundException {
-        URL resource = EasyFiles.class.getClassLoader().getResource(path);
-        if (resource != null) {
-            return new File(resource.getFile());
-        } else {
-            throw new FileNotFoundException();
+    public static KnownTypes guessFileType(File file) {
+        switch (Files.getFileExtension(file.getName()).toLowerCase()) {
+        case "csv":
+            return KnownTypes.CSV;
+        case "xls":
+            return KnownTypes.XLS;
+        default:
+            return null;
         }
     }
 }

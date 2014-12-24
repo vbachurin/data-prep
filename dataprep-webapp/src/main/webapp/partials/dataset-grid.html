@@ -3,7 +3,7 @@
     <table class="table table-bordered table-hover table-condensed table-striped" id="mytable">
       <thead>
         <tr>
-          <th ng-repeat="column in columns">{{column.id}}</th>
+          <th ng-repeat="column in columns">{{column.id}}<br/>{{column.type}}<br/>{{column.quality.valid}}/{{column.quality.invalid}}/{{column.quality.empty}}</th>
         </tr>
       </thead>
       <tbody>
