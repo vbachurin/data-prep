@@ -5,13 +5,13 @@
         <tr>
           <th ng-repeat="column in columns" class="reset">
           	<div class="header">
-          		<div>
+	       		<div>
 	          	   <div class="header_title">{{column.id}}</div>
 	          	   <div class="header_caret">
 	          	   		<span class="caret"></span>
-          			</div>
-	          	   </div>
-          	   <div class="header_type">{{column.type}}</div>
+	       			</div>
+	       		</div>
+		        <div class="header_type">{{column.type}}</div>
 			</div>
 			<div class="quality_bar">
           	   <div class="record_OK" style="width: {{column.quality.valid}}%;" title="This column contains {{column.quality.valid}}% of valid records. Click here to select them"></div>
