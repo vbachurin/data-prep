@@ -263,13 +263,13 @@ screen and (min-device-pixel-ratio: 1.5) {
 	padding: 5px 10px 5px 5px!important;
 }
 
+.header .caret {
+	padding: 0px 0px 2px 0px;
+}
+
 .header_title{
 	height: 100%!important;
 	display: inline-block!important;
-}
-
-.header .caret {
-	padding: 0px 0px 2px 0px;
 }
 
 .header_type{
@@ -308,14 +308,13 @@ screen and (min-device-pixel-ratio: 1.5) {
 	cursor: pointer;	
 }
 
-/* For a sticky footer at the bottom */
+/* For a fixed footer at the bottom */
 .footer {
   	background-color: #555964;
   	padding: 5px 0px 0px 10px;
   	color: white;
-	position: absolute;
-  	bottom: 0;
   	width: 100%;
   /* Set the fixed height of the footer here */
   	height: 30px;
+  	min-height: 30px;
 }
