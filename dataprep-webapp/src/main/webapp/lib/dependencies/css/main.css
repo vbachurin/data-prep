@@ -93,6 +93,10 @@ td:hover {
 	margin-right: 20px;
 }
 
+.shadowed {
+    -webkit-filter: drop-shadow(0px 1px 1px #1f2024);
+}
+
 /* for low resolution display */
 .t-top-bar-logo {
 	background-image: url('../../../images/talend_logo.png');
@@ -112,7 +116,7 @@ td:hover {
 
 .t-top-bar_folder {
 	background-image: url('../../../images/top_link_folder.png');
-	background-repeat: no-repeat;
+	background-repeat: no-repeat;	
 	margin: 5px 10px -10px 10px!important;
 	width: 40px; 
 }
@@ -258,7 +262,7 @@ screen and (min-device-pixel-ratio: 1.5) {
 
 .quality_bar{
 	background: white!important;
-	height: 15px!important;
+	height: 10px!important;
 }
 
 .record_OK{
