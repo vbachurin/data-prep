@@ -9,6 +9,7 @@
 }
 
 .navbar-inverse {
+/* 	background-color: white; */
 	border-color: #DEDEDE;	
 }
 
@@ -111,11 +112,21 @@ td:hover {
 }
 
 .t-top-bar {
-	background-image: url('../../../images/background.png');
-	background-repeat: x-repeat;
 	background-color: #555963;
-	padding-top: 5px;
-    -webkit-filter: drop-shadow(0px 10px 10px #99999a);
+	padding: 0px 0px 0px 0px!important;
+}
+
+.t-top-banner{
+/*  	background-image: url('../../../images/background.png'); */
+/* 	background-repeat: x-repeat; */
+    padding: 10px 20px 5px 15px!important;
+	box-shadow: 0 2px 8px rgba(0,0,0,.6);
+}
+
+.t-top-toolbar{
+	background-color: #eeeeef!important;
+    padding: 15px 20px 15px 20px!important;
+	box-shadow: 0 2px 8px rgba(0,0,0,.6);
 }
 
 .t-top-bar_folder {
@@ -166,8 +177,8 @@ screen and (min-device-pixel-ratio: 1.5) {
 		background-image: url('../../../images/high_res/talend_logo.png');
 	}
 	.t-top-bar {
-		background-image: url('../../../images/high_res/background.png');
-		background-size: contain;
+/* 		background-image: url('../../../images/high_res/background.png'); */
+/* 		background-size: contain; */
 	}
 	.t-top-bar_folder {
 		background-image: url('../../../images/high_res/top_link_folder.png');
@@ -237,7 +248,7 @@ screen and (min-device-pixel-ratio: 1.5) {
 }
 
 .t-container {
-	padding-top: 80px;	
+	padding-top: 150px;	
 }
 
 .t-p {
@@ -246,13 +257,13 @@ screen and (min-device-pixel-ratio: 1.5) {
 }
 
 .t-btn {
-	border: 2px solid;
+	border: 1px solid;
     border-radius: 5px;
 	padding: 0px 10px;	
 	background-color: #236192;
 	text-transform: uppercase;
 	color: white;	
-	height: 40px;
+	height: 36px;
 }
 
 .table {
