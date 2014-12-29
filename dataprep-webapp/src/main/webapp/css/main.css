@@ -8,6 +8,11 @@
 	font-size: 30px;
 }
 
+.navbar-inverse {
+/* 	background-color: white; */
+	border-color: #DEDEDE;	
+}
+
 body {
 	font-family: "Source Sans Pro";
 	font-weight: normal;
@@ -83,7 +88,7 @@ td:hover {
 
 /*body rollover */
 .rollover {
-    background-color: #f5f5f5;
+    background-color: #f5f5f5; 
     color: #707690;
     cursor: cell;
 }
@@ -92,34 +97,74 @@ td:hover {
 	margin-right: 20px;
 }
 
+.shadowed {
+    -webkit-filter: drop-shadow(0px 1px 1px #1f2024);
+}
+
 /* for low resolution display */
+
 .t-top-bar {
+	background-color: white;
+	padding: 0px 0px 0px 0px!important;
+}
+
+.t-top-banner{
+	background-image: linear-gradient(to bottom, #777a83 20%, #555964 100%);
+    padding: 5px 20px 0px 15px!important;
+    -webkit-filter: drop-shadow(0px 2px 4px rgba(0,0,0,.4));
+}
+
+.t-top-bar-logo {
 	background-image: url('../images/talend_logo.png');
 	background-repeat: no-repeat;
-	background-color: #555963;
-	padding-left: 205px;
-	padding-top: 10px;
-	border: 0px;	
-	height: 60px;
+	background-size: contain;
+	width: 130px;
+	margin:  4px 0px -8px -12px!important;
 }
 
-/* for high resolution display */
-@media
-screen and (-webkit-min-device-pixel-ratio: 1.5),
-screen and (-moz-min-device-pixel-ratio: 1.5),
-screen and (min-device-pixel-ratio: 1.5) {
-	.t-top-bar {
-		background-image: url('../images/talend_logo_high_res.png');
-		background-size: contain;
-	}
+.t-top-bar_folder {
+	background-image: url('../images/top_link_folder.png');
+	background-repeat: no-repeat;	
+	margin: 3px 10px -10px 10px!important;
+	width: 40px; 
 }
 
-.navbar-inverse {
-	background-image: linear-gradient(to bottom, #555963 55%, #555963 100%);	
+.t-top-bar_marketplace {
+	background-image: url('../images/top_link_marketplace.png');
+	background-repeat: no-repeat;
+	margin: 3px 10px -10px 10px!important;
+	width: 40px; 
 }
 
-.navbar-inverse .navbar-collapse {
-	background-image: linear-gradient(to bottom, #555963 55%, #555963 100%);	
+.t-top-bar_share {
+	background-image: url('../images/top_link_share.png');
+	background-repeat: no-repeat;
+	margin: 3px 40px -10px 10px!important;
+	width: 40px; 
+}
+
+.t-top-bar_notification {
+	background-image: url('../images/top_link_notification.png');
+	background-repeat: no-repeat;
+	margin: 3px 10px -10px 10px!important;
+	width: 40px; 
+}
+
+.t-top-bar_profile {
+	background-image: url('../images/top_link_profile.png');
+	background-repeat: no-repeat;
+	margin: 3px 20px -10px 10px!important;
+	width: 40px;
+}
+
+.t-top-bar_profile .caret {
+	margin: -12px 0px 5px 25px;
+}
+
+.t-top-toolbar{
+	background-color: #eeeeef!important;
+    padding: 15px 20px 15px 20px!important;
+	box-shadow: 0 2px 8px rgba(0,0,0,.6);
 }
 
 .navbar-default {
@@ -136,6 +181,10 @@ screen and (min-device-pixel-ratio: 1.5) {
 	margin-right: 12px;
 }
 
+.t-top-image-link{
+	padding-top: 6px!important;
+}
+
 .t-top-link {
 	font-size:  .80em;
 	color: white!important;
@@ -146,13 +195,18 @@ screen and (min-device-pixel-ratio: 1.5) {
 	margin-right: 120px;	
 }
 
+.t-search-bar{
+}
+
 .t-search-inputfield {
 	background-color: white!important; 
-	margin-top: 7px;
-	height: 30px;	
+	margin-top: -4px;
+	height: 32px;
+	width: 450px!important;
 	font-weight: 300;
 	font-size: 0.9em;	
-	margin-right: 15px;
+	margin-right: auto;
+	margin-left: 250px;
 }
 
 .navbar-nav > li > a {
@@ -161,7 +215,7 @@ screen and (min-device-pixel-ratio: 1.5) {
 }
 
 .t-container {
-	padding-top: 80px;	
+	padding-top: 150px;	
 }
 
 .t-p {
@@ -170,29 +224,131 @@ screen and (min-device-pixel-ratio: 1.5) {
 }
 
 .t-btn {
-	border: 2px solid;
+	border: 1px solid;
     border-radius: 5px;
 	padding: 0px 10px;	
 	background-color: #236192;
 	text-transform: uppercase;
 	color: white;	
-	height: 40px;
+	height: 36px;
+}
+
+.t-btn-import-new-file{
+	background-image: url('../images/import_new_file.png');
+	background-repeat: no-repeat;
+	background-position: 10px 5px;
+	padding: 0px 10px 0px 45px; 
+	background-color: #b6be00;
 }
 
 .table {
-width: 100%;
-max-width: 100%;
-margin-bottom: 20px;
 }
 
-/* For a sticky footer at the bottom */
+.reset{
+	padding: 0px!important;
+}
+
+.header{
+	padding: 5px 5px 5px 5px!important;
+}
+
+.header_title{
+	height: 100%!important;
+	display: table-cell!important;
+	padding: 0px 3px 0px 0px!important;
+}
+
+.header_caret{
+	height: 100%!important;
+	display: table-cell!important;
+}
+
+.header_title:hover, .header_caret .caret:hover{
+	cursor: pointer;
+}
+
+.header_type{
+	height: 100%!important;
+/* 	display: inline-block!important; */
+	text-transform: lowercase;
+	font-weight: 300;
+	font-size: 0.8em;
+	text-align: right;
+}
+
+.quality_bar{
+	font-size: 0;	
+	background: white!important;
+	height: 12px!important;    /* height of the QUALITY BAR   */
+}
+
+.record_OK, .record_EMPTY, .record_NOK {
+    max-width: 84%;
+    min-width: 8%;
+}
+
+.record_OK{
+	background-color: rgba(138, 188, 0, 0.6);  /* Light Green  */
+	height: 100%!important;
+	display: inline-block!important;
+	cursor: pointer;	
+}
+
+.record_EMPTY{
+	background-color: white!important;
+	height: 100%!important;
+	display: inline-block!important;
+	cursor: pointer;	
+}
+
+.record_NOK{
+	background-color: rgba(247, 168, 0, 0.6);    /* Light Orange  */
+	height: 100%!important;
+	display: inline-block!important;	
+	cursor: pointer;	
+}
+
+/* For a fixed footer at the bottom */
 .footer {
   	background-color: #555964;
   	padding: 5px 0px 0px 10px;
   	color: white;
-	position: absolute;
-  	bottom: 0;
   	width: 100%;
   /* Set the fixed height of the footer here */
   	height: 30px;
+  	min-height: 30px;
+}
+
+/* for high resolution display */
+@media
+screen and (-webkit-min-device-pixel-ratio: 1.5),
+screen and (-moz-min-device-pixel-ratio: 1.5),
+screen and (min-device-pixel-ratio: 1.5) {
+	.t-top-bar-logo {
+		background-image: url('../images/high_res/talend_logo.png');
+	}
+	.t-top-bar_folder {
+		background-image: url('../images/high_res/top_link_folder.png');
+		background-size: contain;
+	}
+	.t-top-bar_marketplace {
+		background-image: url('../images/high_res/top_link_marketplace.png');
+		background-size: contain;
+	}
+	.t-top-bar_share {
+		background-image: url('../images/high_res/top_link_share.png');
+		background-size: contain;
+	}
+	.t-top-bar_notification {
+		background-image: url('../images/high_res/top_link_notification.png');
+		background-size: contain;
+	}
+	.t-top-bar_profile {
+		background-image: url('../images/high_res/top_link_profile.png');
+		background-size: contain;
+	}
+	.t-btn-import-new-file{
+		background-image: url('../images/high_res/import_new_file.png');
+		background-size: 26px 24px;
+	}
 }

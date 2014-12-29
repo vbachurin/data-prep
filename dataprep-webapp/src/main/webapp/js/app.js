@@ -13,7 +13,7 @@ app.controller('RecordsCtrl', function($scope, $http) {
 		});
 	};
 	$scope.loadFileJson = function() {
-		$http.get('customers_100_full.json').success(function(data) {
+		$http.get('json/customers_100_full.json').success(function(data) {
 			$scope.columns = data.columns;
 			$scope.records = data.records;
 //			loadTableFeedbackStyles();
