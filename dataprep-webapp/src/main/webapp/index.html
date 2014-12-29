@@ -53,56 +53,34 @@
             class="icon-bar"></span>
         </button>
       </div>
-      <div id="navbar" class="navbar-collapse collapse">
+      <div id="navbar" class="navbar-collapse collapse t-top-banner">
         <ul class="nav navbar-nav">
-          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">HOME</a>
-          <li>
-          <li class="divider-vertical"></li>
-          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">FLOWS</a>
-          <li>
-          <li class="divider-vertical"></li>
-          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">DATA SHAKER</a>
-          <li>
-          <li class="divider-vertical"></li>
-          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">ACTIVITY</a>
-          <li>
-          <li class="divider-vertical"></li>
-          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">MANAGE</a>
-          <li>
+          <li><a class="t-top-bar-logo shadowed navbar-brand" href="http://dev.talend.com"></a></li>
+        <form class="navbar-form navbar-right">
+          <input type="text" class="form-control t-search-inputfield" placeholder="Search anything here...">
+        </form>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li class="divider-vertical"></li>
-          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">MARKETPLACE</a></li>
-          <li class="divider-vertical"></li>
-          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">COMMUNITY</a></li>
-          <li class="divider-vertical"></li>
-          <li><a class=" t-top-link navbar-brand" href="http://dev.talend.com">SUPPORT</a></li>
-          <li class="divider-vertical"></li>
-          <li class="dropdown"><a href="#" class="dropdown-toggle t-top-link " data-toggle="dropdown" role="button"
-            aria-expanded="false">PROFILE <span class="caret"></span></a>
+          <li><a class="t-top-bar_folder shadowed navbar-brand" href="http://dev.talend.com"></a></li>
+          <li><a class="t-top-bar_marketplace shadowed navbar-brand" href="http://dev.talend.com"></a></li>
+          <li><a class="t-top-bar_share shadowed navbar-brand" href="http://dev.talend.com"></a></li>
+          <li><a class="t-top-bar_notification shadowed navbar-brand" href="http://dev.talend.com"></a></li>
+          <li class="dropdown"><a href="#" class="dropdown-toggle shadowed t-top-bar_profile" data-toggle="dropdown" role="button"
+            aria-expanded="false"><span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="#">LOGOUT</a>
               <li>
               <li><a href="#">EDIT</a></li>
             </ul></li>
         </ul>
-        <form class="navbar-form navbar-right">
-          <input type="text" class="form-control" placeholder="Search...">
-        </form>
+
       </div>
-    </div>
-  </nav>
-  <div class="container-fluid t-container">
-    <section id="page_title">
-      <h1 class="main_title">SFDC - My Best Customers</h1>
-      <h5 class="main_description">This is the monthly extract of my SFDC customers, usually around 50k lines</h5>
-      <br class="clear">
-    </section>
-    <section>
+        	<div class="t-top-toolbar">
+  	    <section>
       <form class="form-inline" role="form">
-        <div class="t-p">
-          <p>Hey! Try out these available actions on this data subset:</p>
-        </div>
+<!--         <div class="t-p"> -->
+<!--           <p>Hey! Try out these available actions on this data subset:</p> -->
+<!--         </div> -->
         <div class="form-group">
           <button type="button" class="t-btn" id="button1" ng-click="loadFileJson()">Load file from Json</button>
         </div>
@@ -125,20 +103,34 @@
           <button type="button" class="t-btn" id="button6">Keep</button>
         </div>
       </form>
-      <p>&nbsp;</p>
+<!--       <p>&nbsp;</p> -->
     </section>
-    <import-local-file></import-local-file>
+    </div>
+    </div>
+
+  </nav>
+  <div class="container-fluid t-container">
+<!--     <section id="page_title"> -->
+<!--       <h1 class="main_title">SFDC - My Best Customers</h1> -->
+<!--       <h5 class="main_description">This is the monthly extract of my SFDC customers, usually around 50k lines</h5> -->
+<!--       <br class="clear"> -->
+<!--     </section> -->
+
+<!--     <import-local-file></import-local-file> -->
     <dataset-grid></dataset-grid>
     <section>
       <hr class="clear">
     </section>
   </div>
 
-  <footer class="footer">
-    <div>
-      <span>© 2014 Talend. All Rights Reserved.</span>
-    </div>
-  </footer>
+	<div id="footer" class="container">
+	    <nav class="navbar navbar-default navbar-fixed-bottom footer">
+	        <div class="navbar-inner navbar-content-center">
+	      		<span>© 2014 Talend. All Rights Reserved.</span>
+	        </div>
+	    </nav>
+	</div>
 
 </body>
 </html>
+
