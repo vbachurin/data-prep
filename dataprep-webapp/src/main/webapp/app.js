@@ -19,7 +19,7 @@ app.controller('RecordsCtrl', function($scope, $http) {
 //			loadTableFeedbackStyles();
 		});
 	};
-	
+	$scope.loadFileJson();
 });
 
 app.controller('ColumnCtrl', ['$scope', function($scope) {
