@@ -102,31 +102,24 @@ td:hover {
 }
 
 /* for low resolution display */
-.t-top-bar-logo {
-	background-image: url('../../../images/talend_logo.png');
-	background-repeat: no-repeat;
-	background-size: contain;
-	width: 250px;
-	margin-top: -5px;
-	margin-left: 0px;
-}
 
 .t-top-bar {
-	background-color: #555963;
+	background-color: white;
 	padding: 0px 0px 0px 0px!important;
 }
 
 .t-top-banner{
-/*  	background-image: url('../../../images/background.png'); */
-/* 	background-repeat: x-repeat; */
-    padding: 10px 20px 5px 15px!important;
-	box-shadow: 0 2px 8px rgba(0,0,0,.6);
+	background-image: linear-gradient(to bottom, #777a83 20%, #555964 100%);
+    padding: 5px 20px 0px 15px!important;
+    -webkit-filter: drop-shadow(0px 2px 4px rgba(0,0,0,.4));
 }
 
-.t-top-toolbar{
-	background-color: #eeeeef!important;
-    padding: 15px 20px 15px 20px!important;
-	box-shadow: 0 2px 8px rgba(0,0,0,.6);
+.t-top-bar-logo {
+	background-image: url('../../../images/talend_logo.png');
+	background-repeat: no-repeat;
+	background-size: contain;
+	width: 130px;
+	margin:  4px 0px -8px -12px!important;
 }
 
 .t-top-bar_folder {
@@ -168,6 +161,12 @@ td:hover {
 	margin: -12px 0px 5px 25px;
 }
 
+.t-top-toolbar{
+	background-color: #eeeeef!important;
+    padding: 15px 20px 15px 20px!important;
+	box-shadow: 0 2px 8px rgba(0,0,0,.6);
+}
+
 /* for high resolution display */
 @media
 screen and (-webkit-min-device-pixel-ratio: 1.5),
@@ -175,10 +174,6 @@ screen and (-moz-min-device-pixel-ratio: 1.5),
 screen and (min-device-pixel-ratio: 1.5) {
 	.t-top-bar-logo {
 		background-image: url('../../../images/high_res/talend_logo.png');
-	}
-	.t-top-bar {
-/* 		background-image: url('../../../images/high_res/background.png'); */
-/* 		background-size: contain; */
 	}
 	.t-top-bar_folder {
 		background-image: url('../../../images/high_res/top_link_folder.png');
@@ -201,7 +196,6 @@ screen and (min-device-pixel-ratio: 1.5) {
 		background-size: contain;
 	}
 }
-
 
 .navbar-default {
 	background-image: linear-gradient(to bottom, #555964 0%, rgba(85, 89, 100, 0.46) 100%);
@@ -231,15 +225,18 @@ screen and (min-device-pixel-ratio: 1.5) {
 	margin-right: 120px;	
 }
 
+.t-search-bar{
+}
+
 .t-search-inputfield {
 	background-color: white!important; 
-	margin-top: -5px;
-	height: 35px;
+	margin-top: -4px;
+	height: 32px;
 	width: 450px!important;
 	font-weight: 300;
 	font-size: 0.9em;	
-	margin-right: 15px;
-	margin-left: 200Px;
+	margin-right: auto;
+	margin-left: 250px;
 }
 
 .navbar-nav > li > a {
@@ -267,7 +264,6 @@ screen and (min-device-pixel-ratio: 1.5) {
 }
 
 .table {
-
 }
 
 .reset{
@@ -292,7 +288,6 @@ screen and (min-device-pixel-ratio: 1.5) {
 .header_title:hover, .header_caret .caret:hover{
 	cursor: pointer;
 }
-
 
 .header_type{
 	height: 100%!important;
