@@ -1,0 +1,23 @@
+<div class="header" ng-controller="ColumnCtrl">
+  <div>
+    <div class="header_title">{{column.id}}</div>
+    <div class="header_caret">
+      <span class="caret"></span>
+    </div>
+  </div>
+  <div class="header_type">{{column.type}}</div>
+</div>
+<div class="quality_bar">
+  <div
+    class="record_OK"
+    style="width: {{column.quality.valid_percent}}%;"
+    title="This column contains {{column.quality.valid}} valid records ({{column.quality.valid_percent}}% of a total of {{column.total}}). Click here to select them"></div>
+  <div
+    class="record_EMPTY"
+    style="width: {{column.quality.empty_percent}}%;"
+    title="This column contains {{column.quality.empty}} empty records ({{column.quality.empty_percent}}% of a total of {{column.total}}). Click here to select them"></div>
+  <div
+    class="record_NOK"
+    style="width: {{column.quality.invalid_percent}}%;"
+    title="This column contains {{column.quality.invalid}} invalid records ({{column.quality.invalid_percent}}% of a total of {{column.total}}). Click here to select them"></div>
+</div>

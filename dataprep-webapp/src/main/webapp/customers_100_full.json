@@ -5,16 +5,16 @@
          "quality":{
             "empty":22,
             "invalid":68,
-            "valid":10
+            "valid":100
          },
          "type":"integer"
       },
       {
          "id":"firstname",
          "quality":{
-            "empty":12,
+            "empty":2,
             "invalid":8,
-            "valid":80
+            "valid":580
          },
          "type":"string"
       },

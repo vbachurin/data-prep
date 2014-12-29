@@ -309,6 +309,11 @@ screen and (min-device-pixel-ratio: 1.5) {
 	height: 12px!important;    /* height of the QUALITY BAR   */
 }
 
+.record_OK, .record_EMPTY, .record_NOK {
+    max-width: 84%;
+    min-width: 8%;
+}
+
 .record_OK{
 	background-color: rgba(138, 188, 0, 0.6);  /* Light Green  */
 	height: 100%!important;

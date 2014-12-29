@@ -22,10 +22,25 @@ app.controller('RecordsCtrl', function($scope, $http) {
 	
 });
 
+app.controller('ColumnCtrl', ['$scope', function($scope) {
+	$scope.column.total = $scope.column.quality.valid + $scope.column.quality.empty + $scope.column.quality.invalid;
+	
+	$scope.column.quality.empty_percent = Math.ceil($scope.column.quality.empty * 100 / $scope.column.total);
+	$scope.column.quality.invalid_percent = Math.ceil($scope.column.quality.invalid * 100 / $scope.column.total);
+	
+	$scope.column.quality.valid_percent = 100 - $scope.column.quality.empty_percent - $scope.column.quality.invalid_percent;
+}]);
+
 app.directive('datasetGrid', function() {
 	return {
 		restrict: 'E',
 		templateUrl: 'partials/dataset-grid.html'
+	};
+});
+app.directive('datasetColumn', function() {
+	return {
+		restrict: 'A',
+		templateUrl: 'partials/dataset-column.html'
 	};
 });
 app.directive('importLocalFile', function() {
