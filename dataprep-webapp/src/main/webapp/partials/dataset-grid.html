@@ -1,28 +1,41 @@
 <section>
   <div>
-    <table class="table table-bordered table-hover table-condensed table-striped" id="mytable">
+    <table
+      class="table table-bordered table-hover table-condensed table-striped"
+      id="mytable">
       <thead>
         <tr>
-          <th ng-repeat="column in columns" class="reset">
-          	<div class="header">
-	       		<div>
-	          	   <div class="header_title">{{column.id}}</div>
-	          	   <div class="header_caret">
-	          	   		<span class="caret"></span>
-	       			</div>
-	       		</div>
-		        <div class="header_type">{{column.type}}</div>
-			</div>
-			<div class="quality_bar">
-          	   <div class="record_OK" style="width: {{column.quality.valid}}%;" title="This column contains {{column.quality.valid}}% of valid records. Click here to select them"></div>
-          	   <div class="record_EMPTY" style="width: {{column.quality.empty}}%;" title="This column contains {{column.quality.empty}}% of empty records. Click here to select them"></div>
-               <div class="record_NOK" style="width: {{column.quality.invalid}}%;" title="This column contains {{column.quality.invalid}}% of invalid records. Click here to select them"></div>
-	      	</div>
-	     </th>
-       </tr>
+          <th
+            ng-repeat="column in columns"
+            class="reset">
+            <div class="header">
+              <div>
+                <div class="header_title">{{column.id}}</div>
+                <div class="header_caret">
+                  <span class="caret"></span>
+                </div>
+              </div>
+              <div class="header_type">{{column.type}}</div>
+            </div>
+            <div class="quality_bar">
+              <div
+                class="record_OK"
+                style="width: {{column.quality.valid}}%;"
+                title="This column contains {{column.quality.valid}}% of valid records. Click here to select them"></div>
+              <div
+                class="record_EMPTY"
+                style="width: {{column.quality.empty}}%;"
+                title="This column contains {{column.quality.empty}}% of empty records. Click here to select them"></div>
+              <div
+                class="record_NOK"
+                style="width: {{column.quality.invalid}}%;"
+                title="This column contains {{column.quality.invalid}}% of invalid records. Click here to select them"></div>
+            </div>
+          </th>
+        </tr>
       </thead>
       <tbody>
-         <tr ng-repeat="record in records">
+        <tr ng-repeat="record in records">
           <td ng-repeat="column in columns">{{record[column.id]}}</td>
         </tr>
       </tbody>
