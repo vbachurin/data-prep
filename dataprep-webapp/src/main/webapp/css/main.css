@@ -33,12 +33,12 @@ th {
 	text-transform: uppercase;
 	font-weight: normal;
 	font-size: .90em;
-    cursor: cell;
+    cursor: default;
 }
 
 th:hover {
   	background-color: #f5f5f5;
-    cursor: cell;
+    cursor: default;
 }
 
 td {
@@ -83,7 +83,7 @@ td:hover {
 /*header rollover */
 .th-rollover {
     background-color: #a4bed7;
-    cursor: cell;
+    cursor: default;
 }
 
 /*body rollover */
@@ -153,12 +153,24 @@ td:hover {
 .t-top-bar_profile {
 	background-image: url('../images/top_link_profile.png');
 	background-repeat: no-repeat;
-	margin: 3px 20px -10px 10px!important;
-	width: 40px;
+	margin: 3px 10px -10px 10px!important;
+	padding-bottom: 20px!important;
+	width: 52px;
 }
 
-.t-top-bar_profile .caret {
-	margin: -12px 0px 5px 25px;
+.navbar-inverse .navbar-nav>.open>a, 
+.navbar-inverse .navbar-nav>.open>a:hover, 
+.navbar-inverse .navbar-nav>.open>a:focus,
+.navbar-inverse .navbar-nav>.active>a {
+	background-image: url('../images/top_link_profile.png');
+}
+
+.navbar-nav>li>.dropdown-menu {
+	margin-top: 9px;
+}
+
+.navbar-right .dropdown-menu {
+	right: 9px;
 }
 
 .t-top-toolbar{
@@ -241,6 +253,8 @@ td:hover {
 	background-color: #b6be00;
 }
 
+/* GRID STYLE DEFINITION */
+
 .table {
 }
 
@@ -249,7 +263,12 @@ td:hover {
 }
 
 .header{
-	padding: 5px 5px 5px 5px!important;
+	border: 1px solid transparent;
+	cursor: default;
+}
+
+.header:hover{
+	border: 1px solid gray;
 }
 
 .header_title{
@@ -264,7 +283,7 @@ td:hover {
 }
 
 .header_title:hover, .header_caret .caret:hover{
-	cursor: pointer;
+	cursor: default;
 }
 
 .header_type{
@@ -288,24 +307,41 @@ td:hover {
 }
 
 .record_OK{
+	border: 1px solid transparent;
 	background-color: rgba(138, 188, 0, 0.6);  /* Light Green  */
 	height: 100%!important;
 	display: inline-block!important;
-	cursor: pointer;	
+	/* cursor: pointer;	 */
+}
+
+.record_OK:hover {
+	background-color: rgba(138, 188, 0, 0.8);  /* Strong Green  */
+	border: 1px solid gray;
 }
 
 .record_EMPTY{
+	border: 1px solid transparent;
 	background-color: white!important;
 	height: 100%!important;
 	display: inline-block!important;
-	cursor: pointer;	
+	/* cursor: pointer;	 */
+}
+
+.record_EMPTY:hover{
+	background-color: #EEEEEE;  /* Light Gray  */
+	border: 1px solid gray;
 }
 
 .record_NOK{
+	border: 1px solid transparent;
 	background-color: rgba(247, 168, 0, 0.6);    /* Light Orange  */
 	height: 100%!important;
 	display: inline-block!important;	
-	cursor: pointer;	
+	/* cursor: pointer;	 */
+}
+.record_NOK:hover{
+	background-color: rgba(247, 168, 0, 0.8);  /* Strong Orange  */
+	border: 1px solid gray;
 }
 
 /* For a fixed footer at the bottom */
@@ -351,4 +387,41 @@ screen and (min-device-pixel-ratio: 1.5) {
 		background-image: url('../images/high_res/import_new_file.png');
 		background-size: 26px 24px;
 	}
+}
+
+.t-font-zero{
+	font-size: 0px;
+}
+
+.t-dropdown-toggle-quality-bar {
+	background-color: transparent;
+	height: 14px;
+	/* cursor: pointer;	 */
+}
+
+.t-dropdown-toggle-header{
+	background-color: transparent;
+	padding: 5px 5px 5px 5px!important;
+	/* cursor: pointer;	 */
+}
+
+.t-dropdown-menu{
+	text-transform: none;
+	box-shadow: 0px 6px 8px rgba(0,0,0,.4);
+}
+
+.t-dropdown-menu>li>a {
+	font-size: 0.9em;
+}
+
+.t-dropdown-menu>li>a:hover, .t-dropdown-menu>li>a:focus {
+	color: white;
+	background-color: #E40F0F;
+	background-image: -webkit-linear-gradient(top,#b6be00 100%,#b6be00 100%);
+	background-image: -o-linear-gradient(top,#b6be00 100%,#b6be00 100%);
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#b6be00),to(#b6be00));
+	background-image: linear-gradient(to bottom,#b6be00 100%,#b6be00 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b6be00', endColorstr='#b6be00', GradientType=0);
+	background-repeat: repeat-x;
+	cursor: default;	
 }

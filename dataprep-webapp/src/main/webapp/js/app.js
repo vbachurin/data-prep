@@ -49,3 +49,11 @@ app.directive('importLocalFile', function() {
 		templateUrl: 'partials/import-local-file.html'
 	};
 });
+
+app.filter('upperCase', function(){
+   return function(input){
+      var str = input;
+      var res = str.toUpperCase();
+      return res; 
+   };
+});

@@ -13,7 +13,7 @@
 <title>Talend - Data Shaker</title>
 
 <link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap.min.css">
-<link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap-theme.css">
+<link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap-theme.min.css">
 <link rel="stylesheet" media="screen" href="lib/dependencies/css/jquery.resizableColumns.css">
 <link rel="stylesheet" media="screen" href="lib/dependencies/css/ng-grid.min.css">
 <link rel="stylesheet" media="screen" href="css/main.css">
@@ -28,8 +28,8 @@
 <!-- bower:js -->
 <script src="lib/dependencies/js/angular-resource.min.js"></script>
 <script src="lib/dependencies/js/angular.min.js"></script>
+<script src="lib/dependencies/js/jquery.min.js"></script> <!-- needs to be on top of bootstrap.min.js to make popup works correctly -->
 <script src="lib/dependencies/js/bootstrap.min.js"></script>
-<script src="lib/dependencies/js/jquery.min.js"></script>
 <script src="lib/dependencies/js/jquery.resizableColumns.js"></script>
 <script src="lib/dependencies/js/ng-grid-2.0.11.min.js"></script>
 <script src="lib/dependencies/js/ui-bootstrap-tpls.min.js"></script>
@@ -42,10 +42,13 @@
 <!-- endbuild -->
 
 </head>
+
 <body ng-controller="RecordsCtrl">
 
   <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  
     <div class="container-fluid t-top-bar">
+    
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false"
           aria-controls="navbar">
@@ -53,84 +56,78 @@
             class="icon-bar"></span>
         </button>
       </div>
+      
       <div id="navbar" class="navbar-collapse collapse t-top-banner">
+      
         <ul class="nav navbar-nav">
           <li><a class="t-top-bar-logo shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-        <form class="navbar-form navbar-right">
-          <input type="text" class="form-control t-search-inputfield" placeholder="Search anything here...">
-        </form>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control t-search-inputfield" placeholder="Search anything here...">
+          </form>
         </ul>
+        
         <ul class="nav navbar-nav navbar-right">
           <li><a class="t-top-bar_folder shadowed navbar-brand" href="http://dev.talend.com"></a></li>
           <li><a class="t-top-bar_marketplace shadowed navbar-brand" href="http://dev.talend.com"></a></li>
           <li><a class="t-top-bar_share shadowed navbar-brand" href="http://dev.talend.com"></a></li>
           <li><a class="t-top-bar_notification shadowed navbar-brand" href="http://dev.talend.com"></a></li>
           <li class="dropdown"><a href="#" class="dropdown-toggle shadowed t-top-bar_profile" data-toggle="dropdown" role="button"
-            aria-expanded="false"><span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="#">LOGOUT</a>
-             <li><a href="#">EDIT</a></li>
+            aria-expanded="false"></a>
+            <ul class="dropdown-menu t-dropdown-menu" role="menu">
+              <li><a href="#">Logout</a>
+			  <li class="divider"></li>
+              <li><a href="#">Edit Profile</a></li>
             </ul>
-            </li>
+          </li>
         </ul>
-
+        
       </div>
-        	<div class="t-top-toolbar">
+      
+      <div class="t-top-toolbar">
   	    <section>
-      <form class="form-inline" role="form">
-<!--         <div class="t-p"> -->
-<!--           <p>Hey! Try out these available actions on this data subset:</p> -->
-<!--         </div> -->
-        <div class="form-group">
-          <button type="button" class="t-btn t-btn-import-new-file" id="button1" ng-click="loadFileJson()">Import New File</button>
-        </div>
-        <div class="form-group">
-          <button type="button" class="t-btn" id="button7" ng-click="loadFile()">Load file from java</button>
-        </div>
-        <div class="form-group">
-          <button type="button" class="t-btn" id="button2" onclick="loadTableFeedbackStyles()">Refresh</button>
-        </div>
-        <div class="form-group">
-          <button type="button" class="t-btn" id="button3">Split</button>
-        </div>
-        <div class="form-group">
-          <button type="button" class="t-btn" id="button4">Filter</button>
-        </div>
-        <div class="form-group">
-          <button type="button" class="t-btn" id="button5">Concatenate</button>
-        </div>
-        <div class="form-group">
-          <button type="button" class="t-btn" id="button6">Keep</button>
-        </div>
-      </form>
-<!--       <p>&nbsp;</p> -->
-    </section>
-    </div>
+	      <form class="form-inline" role="form">
+	        <div class="form-group">
+	          <button type="button" class="t-btn t-btn-import-new-file" id="button1" ng-click="loadFileJson()">Import New File</button>
+	        </div>
+	        <div class="form-group">
+	          <button type="button" class="t-btn" id="button7" ng-click="loadFile()">Load file from java</button>
+	        </div>
+	        <div class="form-group">
+	          <button type="button" class="t-btn" id="button2" onclick="loadTableFeedbackStyles()">Refresh</button>
+	        </div>
+	        <div class="form-group">
+	          <button type="button" class="t-btn" id="button3">Split</button>
+	        </div>
+	        <div class="form-group">
+	          <button type="button" class="t-btn" id="button4">Filter</button>
+	        </div>
+	        <div class="form-group">
+	          <button type="button" class="t-btn" id="button5">Concatenate</button>
+	        </div>
+	        <div class="form-group">
+	          <button type="button" class="t-btn" id="button6">Keep</button>
+	        </div>
+	      </form>
+    	</section>
+      </div>
+      
     </div>
 
   </nav>
+  
   <div class="container-fluid t-container">
-<!--     <section id="page_title"> -->
-<!--       <h1 class="main_title">SFDC - My Best Customers</h1> -->
-<!--       <h5 class="main_description">This is the monthly extract of my SFDC customers, usually around 50k lines</h5> -->
-<!--       <br class="clear"> -->
-<!--     </section> -->
-
-<!--     <import-local-file></import-local-file> -->
-    <dataset-grid></dataset-grid>
-    <section>
-      <hr class="clear">
-    </section>
+    <dataset-grid/>
   </div>
 
-	<div id="footer" class="container">
-	    <nav class="navbar navbar-default navbar-fixed-bottom footer">
-	        <div class="navbar-inner navbar-content-center">
-	      		<span>© 2014 Talend. All Rights Reserved.</span>
-	        </div>
-	    </nav>
-	</div>
+  <div id="footer" class="container">
+    <nav class="navbar navbar-default navbar-fixed-bottom footer">
+      <div class="navbar-inner navbar-content-center">
+        <span>© 2014 Talend. All Rights Reserved.</span>
+      </div>
+    </nav>
+  </div>
 
 </body>
+
 </html>
 
