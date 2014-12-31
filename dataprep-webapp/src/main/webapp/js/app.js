@@ -13,13 +13,13 @@ app.controller('RecordsCtrl', function($scope, $http) {
 		});
 	};
 	$scope.loadFileJson = function() {
-		$http.get('customers_100_full.json').success(function(data) {
+		$http.get('json/customers_100_full.json').success(function(data) {
 			$scope.columns = data.columns;
 			$scope.records = data.records;
 //			loadTableFeedbackStyles();
 		});
 	};
-	
+	$scope.loadFileJson();
 });
 
 app.controller('ColumnCtrl', ['$scope', function($scope) {
@@ -48,4 +48,12 @@ app.directive('importLocalFile', function() {
 		restrict: 'E',
 		templateUrl: 'partials/import-local-file.html'
 	};
+});
+
+app.filter('upperCase', function(){
+   return function(input){
+      var str = input;
+      var res = str.toUpperCase();
+      return res; 
+   };
 });
