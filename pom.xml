@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.talend.dataprep</groupId>
-    <artifactId>dataprep-parent</artifactId>
-    <version>1.0.m0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>dataprep :: dataprep Parent</name>
-    <description>dataprep parent pom</description>
-    <modules>
-        <module>dataprep-common</module>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.
+0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.talend.dataprep</groupId>
+	<artifactId>dataprep-parent</artifactId>
+	<version>1.0.m0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>dataprep :: dataprep Parent</name>
+	<description>dataprep parent pom</description>
+
+	<modules>
+		<module>dataprep-common</module>
         <module>dataprep-webapp</module>
-        <module>dataprep-dataset</module>
-    </modules>
+        <module>dataprep-schema-analysis</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>1.9.13</version>
+		</dependency>
+	</dependencies>
 </project>

@@ -12,10 +12,6 @@
 // ============================================================================
 package org.talend.dataprep.dataprepschemaanasysis;
 
-import java.io.File;
-
-import com.google.refine.importers.SeparatorBasedImporter;
-import com.google.refine.importers.SeparatorBasedImporter.Separator;
 
 /**
  * created by stef on Dec 22, 2014 Detailled comment
@@ -24,30 +20,30 @@ import com.google.refine.importers.SeparatorBasedImporter.Separator;
 public class GuessSeparator {
 
     public static void main(String[] args) {
-        long start = System.currentTimeMillis();
-        File file = new File("/home/stef/talend/test_files/customers_1k.csv");
-        Separator guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
-        System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
-
-        start = System.currentTimeMillis();
-        file = new File("/home/stef/talend/test_files/customers_10k.csv");
-        guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
-        System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
-
-        start = System.currentTimeMillis();
-        file = new File("/home/stef/talend/test_files/customers_100k.csv");
-        guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
-        System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
-
-        start = System.currentTimeMillis();
-        file = new File("/home/stef/talend/test_files/customers_10k_comma.csv");
-        guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
-        System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
-
-        start = System.currentTimeMillis();
-        file = new File("/home/stef/talend/test_files/customers_10k_space.csv");
-        guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
-        System.out.println("<" + guessSeparator.separator + "> in " + (System.currentTimeMillis() - start) + " ms");
+        // long start = System.currentTimeMillis();
+        // File file = new File("/home/stef/talend/test_files/customers_1k.csv");
+        // Separator guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
+        // System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
+        //
+        // start = System.currentTimeMillis();
+        // file = new File("/home/stef/talend/test_files/customers_10k.csv");
+        // guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
+        // System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
+        //
+        // start = System.currentTimeMillis();
+        // file = new File("/home/stef/talend/test_files/customers_100k.csv");
+        // guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
+        // System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
+        //
+        // start = System.currentTimeMillis();
+        // file = new File("/home/stef/talend/test_files/customers_10k_comma.csv");
+        // guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
+        // System.out.println(guessSeparator.separator + " in " + (System.currentTimeMillis() - start) + " ms");
+        //
+        // start = System.currentTimeMillis();
+        // file = new File("/home/stef/talend/test_files/customers_10k_space.csv");
+        // guessSeparator = SeparatorBasedImporter.guessSeparator(file, null);
+        // System.out.println("<" + guessSeparator.separator + "> in " + (System.currentTimeMillis() - start) + " ms");
 
     }
 }

@@ -59,17 +59,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>18.0</version>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
@@ -78,11 +67,6 @@
 			<groupId>org.talend.dataprep</groupId>
 			<artifactId>dataprep-common</artifactId>
 			<version>1.0.m0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-jaxrs</artifactId>
-			<version>1.9.13</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
