@@ -1,9 +1,11 @@
 # Talend Data Preparation - Data Set Service
 ![alt text](http://www.talend.com/sites/all/themes/talend_responsive/images/logo.png "Talend")
 
-> Contents
-
 This folder contains the REST service to all Data Set related operations (creation, removal...).
+
+## Prerequisites
+
+You need Java *7* (or higher) and Maven 3.x (tested with 3.1.1 on Fedora).
 
 ## Usage
 To build and start an instance of the data set service, you just have to run this command:
