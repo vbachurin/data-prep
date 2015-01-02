@@ -9,7 +9,6 @@ import org.codehaus.jackson.JsonGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,9 +18,7 @@ import org.talend.dataprep.dataset.objects.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.Session;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,32 +30,28 @@ import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
 public class DataSetService {
 
-    private final JsonFactory   factory = new JsonFactory();
+    private final JsonFactory         factory = new JsonFactory();
 
     @Autowired
-    JmsTemplate                 jmsTemplate;
+    JmsTemplate                       jmsTemplate;
 
     @Autowired
     private DataSetMetadataRepository dataSetMetadataRepository;
 
     @Autowired
-    private DataSetContentStore store;
+    private DataSetContentStore       store;
 
     @Autowired
-    private DataSetContentStore contentStore;
+    private DataSetContentStore       contentStore;
 
     private static void queueEvents(final String id, JmsTemplate template) {
         String[] destinations = { Destinations.SCHEMA_ANALYSIS_DESTINATION, Destinations.INDEXING_DESTINATION };
         for (String destination : destinations) {
-            template.send(destination, new MessageCreator() {
-
-                @Override
-                public Message createMessage(Session session) throws JMSException {
-                    Message message = session.createMessage();
-                    message.setStringProperty("dataset.id", id); //$NON-NLS-1
+            template.send(destination, session -> {
+                Message message = session.createMessage();
+                message.setStringProperty("dataset.id", id); //$NON-NLS-1
                     return message;
-                }
-            });
+                });
         }
     }
 
@@ -97,6 +90,9 @@ public class DataSetService {
     public void get(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
             HttpServletResponse response) {
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        if (dataSetMetadata == null) {
+            return; // No data set, returns empty content.
+        }
         try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
             generator.writeStartObject();
             // Write columns
