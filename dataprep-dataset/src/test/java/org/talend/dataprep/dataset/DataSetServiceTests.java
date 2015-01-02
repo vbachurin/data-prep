@@ -2,6 +2,7 @@ package org.talend.dataprep.dataset;
 
 import com.jayway.restassured.RestAssured;
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.CustomTypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,12 +14,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.dataset.service.Destinations;
+import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +31,9 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -35,13 +42,16 @@ import static org.junit.Assert.assertThat;
 public class DataSetServiceTests {
 
     @Value("${local.server.port}")
-    public int        port;
+    public int                port;
 
     @Autowired
-    JmsTemplate       jmsTemplate;
+    JmsTemplate               jmsTemplate;
 
     @Autowired
     DataSetMetadataRepository dataSetMetadataRepository;
+
+    @Autowired
+    DataSetContentStore contentStore;
 
     private static void assertQueueMessages(String dataSetId, JmsTemplate template) throws JMSException {
         // Asserts on messages that should posted to queues after insert of a new data set.
@@ -68,11 +78,11 @@ public class DataSetServiceTests {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(new DataSetMetadata(id1));
+        dataSetMetadataRepository.add(id(id1).build());
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[\"" + id1 + "\"]"));
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(new DataSetMetadata(id2));
+        dataSetMetadataRepository.add(id(id2).build());
         when().get("/datasets").then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids, hasItems(id1, id2));
@@ -91,18 +101,18 @@ public class DataSetServiceTests {
     @Test
     public void testGet() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(new DataSetMetadata(expectedId));
+        DataSetMetadata dataSetMetadata = id(expectedId).build();
+        dataSetMetadataRepository.add(dataSetMetadata);
+        contentStore.store(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         when().get("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
-        String content = when().get("/datasets/{id}", expectedId).asString();
-        assertThat(content, equalTo("[\"" + expectedId + "\"]"));
     }
 
     @Test
     public void testDelete() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(new DataSetMetadata(expectedId));
+        dataSetMetadataRepository.add(id(expectedId).build());
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int before = dataSetMetadataRepository.size();
@@ -119,4 +129,36 @@ public class DataSetServiceTests {
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId, jmsTemplate);
     }
+
+    @Test
+    public void test1() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        InputStream content = when().get("/datasets/{id}", dataSetId).asInputStream();
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
+        assertNotNull(expected);
+        assertThat(content, new InputStreamEqualTo(expected));
+        assertQueueMessages(dataSetId, jmsTemplate);
+    }
+
+    class InputStreamEqualTo extends CustomTypeSafeMatcher<InputStream> {
+
+        private final InputStream expected;
+
+        public InputStreamEqualTo(InputStream expected) {
+            super("Input stream are the same.");
+            this.expected = expected;
+        }
+
+        @Override
+        protected boolean matchesSafely(InputStream item) {
+            try {
+                return IOUtils.contentEquals(item, expected);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+    }
+
 }
