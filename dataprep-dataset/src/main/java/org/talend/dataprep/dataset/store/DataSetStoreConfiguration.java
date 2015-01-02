@@ -7,6 +7,11 @@ import org.springframework.context.annotation.Configuration;
 public class DataSetStoreConfiguration {
 
     @Bean
+    public DataSetContentStore getContentStore() {
+        return new LocalDataSetContentStore();
+    }
+
+    @Bean
     public DataSetRepository getStore() {
         return new InMemoryDataSetRepository();
     }
