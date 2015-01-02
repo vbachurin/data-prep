@@ -1,6 +1,7 @@
 package org.talend.dataprep.dataset;
 
 import com.jayway.restassured.RestAssured;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,14 +10,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSet;
 import org.talend.dataprep.dataset.store.DataSetRepository;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
 import java.util.List;
 import java.util.UUID;
 
+import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static org.hamcrest.CoreMatchers.*;
@@ -28,11 +34,24 @@ import static org.junit.Assert.assertThat;
 @IntegrationTest({ "server.port=0" })
 public class DataSetServiceTests {
 
+    @Value("${local.server.port}")
+    public int        port;
+
+    @Autowired
+    JmsTemplate       jmsTemplate;
+
     @Autowired
     DataSetRepository dataSetRepository;
 
-    @Value("${local.server.port}")
-    public int                    port;
+    private static void assertQueueMessages(String dataSetId, JmsTemplate template) throws JMSException {
+        // Asserts on messages that should posted to queues after insert of a new data set.
+        Message indexMessage = template.receive(Destinations.INDEXING_DESTINATION);
+        assertThat(indexMessage, notNullValue());
+        assertThat(indexMessage.getStringProperty("dataset.id"), is(dataSetId));
+        Message schemaAnalysisMessage = template.receive(Destinations.SCHEMA_ANALYSIS_DESTINATION);
+        assertThat(schemaAnalysisMessage, notNullValue());
+        assertThat(schemaAnalysisMessage.getStringProperty("dataset.id"), is(dataSetId));
+    }
 
     @Before
     public void setUp() {
@@ -45,7 +64,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testList() {
+    public void testList() throws Exception {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
@@ -60,19 +79,21 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testCreate() {
+    public void testCreate() throws Exception {
         int before = dataSetRepository.size();
-        when().post("/datasets").then().statusCode(HttpStatus.OK.value());
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetRepository.size();
         assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId, jmsTemplate);
     }
 
     @Test
-    public void testGet() {
-        when().post("/datasets").then().statusCode(HttpStatus.OK.value());
+    public void testGet() throws Exception {
+        String expectedId = UUID.randomUUID().toString();
+        dataSetRepository.add(new DataSet(expectedId));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
-        String expectedId = ids.get(0);
         when().get("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
         String content = when().get("/datasets/{id}", expectedId).asString();
         assertThat(content, equalTo("[\"" + expectedId + "\"]"));
@@ -80,10 +101,10 @@ public class DataSetServiceTests {
 
     @Test
     public void testDelete() throws Exception {
-        when().post("/datasets").then().statusCode(HttpStatus.OK.value());
+        String expectedId = UUID.randomUUID().toString();
+        dataSetRepository.add(new DataSet(expectedId));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
-        String expectedId = ids.get(0);
         int before = dataSetRepository.size();
         when().delete("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
         int after = dataSetRepository.size();
@@ -92,9 +113,10 @@ public class DataSetServiceTests {
 
     @Test
     public void testUpdate() throws Exception {
-        when().put("/datasets/{id}", "123456").then().statusCode(HttpStatus.OK.value());
-        when().post("/datasets").then().statusCode(HttpStatus.OK.value());
+        String dataSetId = "123456";
+        when().put("/datasets/{id}", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("");
-        assertThat(ids, hasItem("123456"));
+        assertThat(ids, hasItem(dataSetId));
+        assertQueueMessages(dataSetId, jmsTemplate);
     }
 }
