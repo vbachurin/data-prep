@@ -14,8 +14,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.dataset.service.Destinations;
-import org.talend.dataprep.dataset.store.DataSet;
-import org.talend.dataprep.dataset.store.DataSetRepository;
+import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-@IntegrationTest({ "server.port=0" })
+@IntegrationTest
 public class DataSetServiceTests {
 
     @Value("${local.server.port}")
@@ -41,7 +41,7 @@ public class DataSetServiceTests {
     JmsTemplate       jmsTemplate;
 
     @Autowired
-    DataSetRepository dataSetRepository;
+    DataSetMetadataRepository dataSetMetadataRepository;
 
     private static void assertQueueMessages(String dataSetId, JmsTemplate template) throws JMSException {
         // Asserts on messages that should posted to queues after insert of a new data set.
@@ -60,7 +60,7 @@ public class DataSetServiceTests {
 
     @org.junit.After
     public void tearDown() {
-        dataSetRepository.clear();
+        dataSetMetadataRepository.clear();
     }
 
     @Test
@@ -68,11 +68,11 @@ public class DataSetServiceTests {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
-        dataSetRepository.add(new DataSet(id1));
+        dataSetMetadataRepository.add(new DataSetMetadata(id1));
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[\"" + id1 + "\"]"));
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
-        dataSetRepository.add(new DataSet(id2));
+        dataSetMetadataRepository.add(new DataSetMetadata(id2));
         when().get("/datasets").then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids, hasItems(id1, id2));
@@ -80,10 +80,10 @@ public class DataSetServiceTests {
 
     @Test
     public void testCreate() throws Exception {
-        int before = dataSetRepository.size();
+        int before = dataSetMetadataRepository.size();
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
-        int after = dataSetRepository.size();
+        int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
         assertQueueMessages(dataSetId, jmsTemplate);
     }
@@ -91,7 +91,7 @@ public class DataSetServiceTests {
     @Test
     public void testGet() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        dataSetRepository.add(new DataSet(expectedId));
+        dataSetMetadataRepository.add(new DataSetMetadata(expectedId));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         when().get("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
@@ -102,12 +102,12 @@ public class DataSetServiceTests {
     @Test
     public void testDelete() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        dataSetRepository.add(new DataSet(expectedId));
+        dataSetMetadataRepository.add(new DataSetMetadata(expectedId));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
-        int before = dataSetRepository.size();
+        int before = dataSetMetadataRepository.size();
         when().delete("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
-        int after = dataSetRepository.size();
+        int after = dataSetMetadataRepository.size();
         assertThat(before - after, is(1));
     }
 
