@@ -39,6 +39,15 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     }
 
     @Override
+    public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
+        try {
+            return new FileInputStream(getFile(dataSetMetadata));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Data set content #" + dataSetMetadata.getId() + " was not found.");
+        }
+    }
+
+    @Override
     public void delete(DataSetMetadata dataSetMetadata) {
         if (!getFile(dataSetMetadata).delete()) {
             throw new RuntimeException("Unable to delete data set content #" + dataSetMetadata.getId());

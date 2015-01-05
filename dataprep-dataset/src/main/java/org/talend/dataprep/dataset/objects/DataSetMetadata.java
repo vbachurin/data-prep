@@ -13,6 +13,8 @@ public class DataSetMetadata {
 
     private final RowMetadata rowMetadata;
 
+    private final DataSetLifecycle lifecycle = new DataSetLifecycle();
+
     private DataSetMetadata(String id, RowMetadata rowMetadata) {
         this.id = id;
         this.rowMetadata = rowMetadata;
@@ -24,6 +26,10 @@ public class DataSetMetadata {
 
     public RowMetadata getRow() {
         return rowMetadata;
+    }
+
+    public DataSetLifecycle getLifecycle() {
+        return lifecycle;
     }
 
     public static class Builder {

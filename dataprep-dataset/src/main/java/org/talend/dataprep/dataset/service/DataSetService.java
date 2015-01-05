@@ -44,8 +44,8 @@ public class DataSetService {
     @Autowired
     private DataSetContentStore       contentStore;
 
-    private static void queueEvents(final String id, JmsTemplate template) {
-        String[] destinations = { Destinations.SCHEMA_ANALYSIS_DESTINATION, Destinations.INDEXING_DESTINATION };
+    private static void queueEvents(String id, JmsTemplate template) {
+        String[] destinations = { Destinations.SCHEMA_ANALYSIS, Destinations.INDEXING};
         for (String destination : destinations) {
             template.send(destination, session -> {
                 Message message = session.createMessage();

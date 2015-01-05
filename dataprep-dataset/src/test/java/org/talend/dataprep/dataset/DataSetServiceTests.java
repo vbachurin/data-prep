@@ -11,16 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.dataset.objects.DataSetLifecycle;
 import org.talend.dataprep.dataset.objects.DataSetMetadata;
-import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,22 +43,15 @@ public class DataSetServiceTests {
     public int                port;
 
     @Autowired
-    JmsTemplate               jmsTemplate;
-
-    @Autowired
     DataSetMetadataRepository dataSetMetadataRepository;
 
     @Autowired
     DataSetContentStore contentStore;
 
-    private static void assertQueueMessages(String dataSetId, JmsTemplate template) throws JMSException {
-        // Asserts on messages that should posted to queues after insert of a new data set.
-        Message indexMessage = template.receive(Destinations.INDEXING_DESTINATION);
-        assertThat(indexMessage, notNullValue());
-        assertThat(indexMessage.getStringProperty("dataset.id"), is(dataSetId));
-        Message schemaAnalysisMessage = template.receive(Destinations.SCHEMA_ANALYSIS_DESTINATION);
-        assertThat(schemaAnalysisMessage, notNullValue());
-        assertThat(schemaAnalysisMessage.getStringProperty("dataset.id"), is(dataSetId));
+    private void assertQueueMessages(String dataSetId) throws JMSException {
+        DataSetLifecycle lifecycle = dataSetMetadataRepository.get(dataSetId).getLifecycle();
+        assertThat(lifecycle.contentIndexed(), is(true));
+        assertThat(lifecycle.schemaAnalyzed(), is(true));
     }
 
     @Before
@@ -95,7 +86,7 @@ public class DataSetServiceTests {
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
-        assertQueueMessages(dataSetId, jmsTemplate);
+        assertQueueMessages(dataSetId);
     }
 
     @Test
@@ -127,7 +118,7 @@ public class DataSetServiceTests {
         when().put("/datasets/{id}", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids, hasItem(dataSetId));
-        assertQueueMessages(dataSetId, jmsTemplate);
+        assertQueueMessages(dataSetId);
     }
 
     @Test
@@ -138,7 +129,7 @@ public class DataSetServiceTests {
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
         assertNotNull(expected);
         assertThat(content, new InputStreamEqualTo(expected));
-        assertQueueMessages(dataSetId, jmsTemplate);
+        assertQueueMessages(dataSetId);
     }
 
     class InputStreamEqualTo extends CustomTypeSafeMatcher<InputStream> {
