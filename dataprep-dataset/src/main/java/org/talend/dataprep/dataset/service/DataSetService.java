@@ -45,7 +45,7 @@ public class DataSetService {
     private DataSetContentStore       contentStore;
 
     private static void queueEvents(String id, JmsTemplate template) {
-        String[] destinations = { Destinations.SCHEMA_ANALYSIS, Destinations.INDEXING};
+        String[] destinations = { Destinations.SCHEMA_ANALYSIS, Destinations.CONTENT_ANALYSIS};
         for (String destination : destinations) {
             template.send(destination, session -> {
                 Message message = session.createMessage();
@@ -78,10 +78,10 @@ public class DataSetService {
         DataSetMetadata dataSetMetadata = id(id).build();
         // Save data set content
         store.store(dataSetMetadata, dataSetContent);
-        // Queue events (schema analysis, content indexing for search...)
-        queueEvents(id, jmsTemplate);
         // Create the new data set
         dataSetMetadataRepository.add(dataSetMetadata);
+        // Queue events (schema analysis, content indexing for search...)
+        queueEvents(id, jmsTemplate);
         return id;
     }
 
@@ -96,24 +96,27 @@ public class DataSetService {
         try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
             generator.writeStartObject();
             // Write columns
-            generator.writeFieldName("columns");
+            generator.writeFieldName("columns"); //$NON-NLS-1
             generator.writeStartArray();
             for (ColumnMetadata column : dataSetMetadata.getRow().getColumns()) {
                 generator.writeStartObject();
                 {
                     // Column name
-                    generator.writeStringField("id", column.getName());
+                    generator.writeStringField("id", column.getName()); //$NON-NLS-1
                     // Column quality
-                    generator.writeFieldName("quality");
-                    generator.writeStartObject();
-                    {
-                        generator.writeNumberField("empty", 0);
-                        generator.writeNumberField("invalid", 0);
-                        generator.writeNumberField("valid", 0);
+                    if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+                        generator.writeFieldName("quality"); //$NON-NLS-1
+                        generator.writeStartObject();
+                        {
+                            generator.writeNumberField("empty", 0); //$NON-NLS-1
+                            generator.writeNumberField("invalid", 0); //$NON-NLS-1
+                            generator.writeNumberField("valid", 0); //$NON-NLS-1
+                        }
+                        generator.writeEndObject();
                     }
-                    generator.writeEndObject();
                     // Column type
-                    generator.writeStringField("type", column.getType().getName());
+                    String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getType().getName() : "N/A"; //$NON-NLS-1
+                    generator.writeStringField("type", typeName); //$NON-NLS-1
                 }
                 generator.writeEndObject();
             }

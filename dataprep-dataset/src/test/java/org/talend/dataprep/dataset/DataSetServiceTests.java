@@ -18,7 +18,6 @@ import org.talend.dataprep.dataset.objects.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import javax.jms.JMSException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,10 +47,12 @@ public class DataSetServiceTests {
     @Autowired
     DataSetContentStore contentStore;
 
-    private void assertQueueMessages(String dataSetId) throws JMSException {
+    private void assertQueueMessages(String dataSetId) throws Exception {
+        Thread.sleep(200); // TODO Ugly, need a client to lock until all operations are done
         DataSetLifecycle lifecycle = dataSetMetadataRepository.get(dataSetId).getLifecycle();
         assertThat(lifecycle.contentIndexed(), is(true));
         assertThat(lifecycle.schemaAnalyzed(), is(true));
+        assertThat(lifecycle.qualityAnalyzed(), is(true));
     }
 
     @Before

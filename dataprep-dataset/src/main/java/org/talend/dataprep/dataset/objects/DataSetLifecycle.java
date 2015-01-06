@@ -6,6 +6,8 @@ public class DataSetLifecycle {
 
     private boolean schemaAnalyzed;
 
+    private boolean qualityAnalyzed;
+
     public void contentIndexed(boolean contentAnalyzed) {
         this.contentAnalyzed = contentAnalyzed;
     }
@@ -20,5 +22,13 @@ public class DataSetLifecycle {
 
     public boolean schemaAnalyzed() {
         return schemaAnalyzed;
+    }
+
+    public void qualityAnalyzed(boolean qualityAnalyzed) {
+        this.qualityAnalyzed = qualityAnalyzed;
+    }
+
+    public boolean qualityAnalyzed() {
+        return qualityAnalyzed;
     }
 }

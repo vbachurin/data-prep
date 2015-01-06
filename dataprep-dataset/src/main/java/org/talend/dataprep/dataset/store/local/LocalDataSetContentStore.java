@@ -34,7 +34,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Data set content #" + dataSetMetadata.getId() + " was not found.");
+            LOGGER.warn("File '" + getFile(dataSetMetadata) + "' does not exist.");
+            return new ByteArrayInputStream(new byte[0]);
         }
     }
 
@@ -43,7 +44,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Data set content #" + dataSetMetadata.getId() + " was not found.");
+            LOGGER.warn("File '" + getFile(dataSetMetadata) + "' does not exist.");
+            return new ByteArrayInputStream(new byte[0]);
         }
     }
 
