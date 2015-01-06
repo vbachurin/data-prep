@@ -5,7 +5,7 @@ This folder contains the REST service to all Data Set related operations (creati
 
 ## Prerequisites
 
-You need Java *8* (or higher) and Maven 3.x (tested with 3.1.1 on Fedora).
+You need Java *8* (or higher) and Maven 3.x (tested with 3.2.2 on Fedora 21 with OpenJDK 1.8.0_25-b18).
 
 ## Usage
 To build and start an instance of the data set service, you just have to run this command:
