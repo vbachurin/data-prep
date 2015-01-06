@@ -3,6 +3,7 @@
 | _Project_                  | _Description_ |
 |:-------------------------|-------------|
 | dataprep-common          | *everything (utilities) common to all projects but not related to dataprep business* |
+| dataprep-dataset         | *back-end service for data set operations (create, update, content index, get data set metadata...)* |
 | dataprep-schema-analysis | *stuff used to analyse (format, separator, schema, to-json) input data* |
 | dataprep-webapp          | *web app client and dev server (real server will in another project)* |
 | json_evaluation          | *evaluation of different json lib performance (jackson is identified as the faster). To remove?* |
@@ -12,4 +13,4 @@
 ## build
 - All project are maven based.
 - A parent in pom build the web-app and its dependencies.
-- Some special actions are required for grefine dependencies: *TODO describe these steps here*
+- Some special actions are required to refine dependencies: *TODO describe these steps here*
