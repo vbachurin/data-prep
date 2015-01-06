@@ -51,8 +51,12 @@ public class LocalDataSetContentStore implements DataSetContentStore {
 
     @Override
     public void delete(DataSetMetadata dataSetMetadata) {
-        if (!getFile(dataSetMetadata).delete()) {
-            throw new RuntimeException("Unable to delete data set content #" + dataSetMetadata.getId());
+        if (getFile(dataSetMetadata).exists()) {
+            if (!getFile(dataSetMetadata).delete()) {
+                throw new RuntimeException("Unable to delete data set content #" + dataSetMetadata.getId());
+            }
+        } else {
+            LOGGER.warn("Data set #" + dataSetMetadata.getId() + " has no content.");
         }
     }
 }

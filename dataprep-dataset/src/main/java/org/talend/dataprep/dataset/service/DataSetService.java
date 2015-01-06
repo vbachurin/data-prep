@@ -140,7 +140,11 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
-        dataSetMetadataRepository.remove(dataSetId);
+        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        if (metadata != null) {
+            contentStore.delete(metadata);
+            dataSetMetadataRepository.remove(dataSetId);
+        }
     }
 
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)

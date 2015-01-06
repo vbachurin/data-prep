@@ -6,6 +6,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from
+ * data set content:
+ * <ul>
+ *     <li>Metadata information: see {@link #getRow()}</li>
+ *     <li>Current progress on content processing:: see {@link #getLifecycle()}</li>
+ * </ul>
+ */
 public class DataSetMetadata {
 
     @Id
