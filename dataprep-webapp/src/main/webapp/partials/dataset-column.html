@@ -20,7 +20,9 @@
 
 
 <div class="quality_bar">
-   <div  class="record_OK" style="width: {{column.quality.valid_percent}}%;" title="This column contains {{column.quality.valid}} valid records ({{column.quality.valid_percent}}% of a total of {{column.total}}). Click here to see options; Double click to directly select them.">
+   <div  class="record_OK"
+         style="width: {{column.quality.valid_percent}}%;"
+         title="{{column.quality.valid}} valid records ({{column.quality.valid_percent}}%)">
       
 <!-- 	START DROPDOWN LIST FOR VALID VALUES -->
      <div class="dropdown">
@@ -33,7 +35,8 @@
   
    </div>
 
-   <div class="record_EMPTY" style="width: {{column.quality.empty_percent}}%;"> 
+   <div class="record_EMPTY" style="width: {{column.quality.empty_percent}}%;"
+        title="{{column.quality.empty}} empty records ({{column.quality.empty_percent}}%)"> 
    
 <!-- 	START DROPDOWN LIST FOR EMPTY VALUES -->
      <div class="dropdown">
@@ -52,7 +55,7 @@
   <div
     class="record_NOK"
     style="width: {{column.quality.invalid_percent}}%;"
-    title="This column contains {{column.quality.invalid}} invalid records ({{column.quality.invalid_percent}}% of a total of {{column.total}}). Click here to see options; Double click to directly select them.">
+    title="{{column.quality.invalid}} invalid records ({{column.quality.invalid_percent}}%)">
        
 <!-- 	START DROPDOWN LIST FOR INVALID VALUES -->
      <div class="dropdown">
