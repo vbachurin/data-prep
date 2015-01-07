@@ -21,4 +21,7 @@ public class RowMetadata {
         return columnMetadata;
     }
 
+    public void setColumns(List<ColumnMetadata> columnMetadata) {
+        this.columnMetadata = columnMetadata;
+    }
 }

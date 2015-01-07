@@ -39,13 +39,10 @@ public class DataSetService {
     private DataSetMetadataRepository dataSetMetadataRepository;
 
     @Autowired
-    private DataSetContentStore       store;
-
-    @Autowired
     private DataSetContentStore       contentStore;
 
     private static void queueEvents(String id, JmsTemplate template) {
-        String[] destinations = { Destinations.SCHEMA_ANALYSIS, Destinations.CONTENT_ANALYSIS};
+        String[] destinations = { Destinations.SCHEMA_ANALYSIS, Destinations.CONTENT_ANALYSIS };
         for (String destination : destinations) {
             template.send(destination, session -> {
                 Message message = session.createMessage();
@@ -77,7 +74,7 @@ public class DataSetService {
         final String id = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = id(id).build();
         // Save data set content
-        store.store(dataSetMetadata, dataSetContent);
+        contentStore.store(dataSetMetadata, dataSetContent);
         // Create the new data set
         dataSetMetadataRepository.add(dataSetMetadata);
         // Queue events (schema analysis, content indexing for search...)
@@ -95,42 +92,43 @@ public class DataSetService {
         }
         try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
             generator.writeStartObject();
-            // Write columns
-            generator.writeFieldName("columns"); //$NON-NLS-1
-            generator.writeStartArray();
-            for (ColumnMetadata column : dataSetMetadata.getRow().getColumns()) {
-                generator.writeStartObject();
-                {
-                    // Column name
-                    generator.writeStringField("id", column.getName()); //$NON-NLS-1
-                    // Column quality
-                    if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
-                        generator.writeFieldName("quality"); //$NON-NLS-1
-                        generator.writeStartObject();
-                        {
-                            generator.writeNumberField("empty", 0); //$NON-NLS-1
-                            generator.writeNumberField("invalid", 0); //$NON-NLS-1
-                            generator.writeNumberField("valid", 0); //$NON-NLS-1
+            {
+                // Write columns
+                generator.writeFieldName("columns"); //$NON-NLS-1
+                generator.writeStartArray();
+                for (ColumnMetadata column : dataSetMetadata.getRow().getColumns()) {
+                    generator.writeStartObject();
+                    {
+                        // Column name
+                        generator.writeStringField("id", column.getName()); //$NON-NLS-1
+                        // Column quality
+                        if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+                            generator.writeFieldName("quality"); //$NON-NLS-1
+                            generator.writeStartObject();
+                            {
+                                generator.writeNumberField("empty", 0); //$NON-NLS-1
+                                generator.writeNumberField("invalid", 0); //$NON-NLS-1
+                                generator.writeNumberField("valid", 0); //$NON-NLS-1
+                            }
+                            generator.writeEndObject();
                         }
-                        generator.writeEndObject();
+                        // Column type
+                        String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getType().getName() : "N/A"; //$NON-NLS-1
+                        generator.writeStringField("type", typeName); //$NON-NLS-1
                     }
-                    // Column type
-                    String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getType().getName() : "N/A"; //$NON-NLS-1
-                    generator.writeStringField("type", typeName); //$NON-NLS-1
+                    generator.writeEndObject();
                 }
-                generator.writeEndObject();
+                generator.writeEndArray();
+                // Records
+                generator.writeFieldName("records");
+                generator.flush(); // <- Important! Flush before dumping records!
+                response.getOutputStream().write(':');
+                // Put here content as provided by data set store
+                try (InputStream content = contentStore.get(dataSetMetadata)) {
+                    IOUtils.copy(content, response.getOutputStream());
+                }
             }
-            generator.writeEndArray();
-            // Records
-            generator.writeFieldName("records");
-            generator.writeStartArray();
-            generator.flush(); // <- Important! Flush before dumping records!
-            // Put here content as provided by data set store
-            try (InputStream content = contentStore.get(dataSetMetadata)) {
-                IOUtils.copy(content, response.getOutputStream());
-            }
-            // Ends the array
-            generator.writeEndArray();
+            generator.writeEndObject();
             generator.flush();
         } catch (IOException e) {
             throw new RuntimeException("Unexpected I/O exception during message output.", e);

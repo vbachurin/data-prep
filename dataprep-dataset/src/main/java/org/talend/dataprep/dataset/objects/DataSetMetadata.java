@@ -7,23 +7,27 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from
- * data set content:
+ * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
+ * set content:
  * <ul>
- *     <li>Metadata information: see {@link #getRow()}</li>
- *     <li>Current progress on content processing:: see {@link #getLifecycle()}</li>
+ * <li>Metadata information: see {@link #getRow()}</li>
+ * <li>Current progress on content processing:: see {@link #getLifecycle()}</li>
  * </ul>
+ * 
+ * @see org.talend.dataprep.dataset.objects.DataSetMetadata.Builder
  */
 public class DataSetMetadata {
 
     @Id
-    private final String id;
+    private final String           id;
 
-    private final RowMetadata rowMetadata;
+    private final RowMetadata      rowMetadata;
 
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
-    private DataSetMetadata(String id, RowMetadata rowMetadata) {
+    private final DataSetContent   content   = new DataSetContent();
+
+    public DataSetMetadata(String id, RowMetadata rowMetadata) {
         this.id = id;
         this.rowMetadata = rowMetadata;
     }
@@ -40,9 +44,13 @@ public class DataSetMetadata {
         return lifecycle;
     }
 
+    public DataSetContent getContent() {
+        return content;
+    }
+
     public static class Builder {
 
-        private final String id;
+        private final String             id;
 
         private ColumnMetadata.Builder[] columnBuilders;
 

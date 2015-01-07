@@ -16,7 +16,7 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
     }
 
     @Override
-    public void add(DataSetMetadata dataSetMetadata) {
+    public synchronized void add(DataSetMetadata dataSetMetadata) {
         store.put(dataSetMetadata.getId(), dataSetMetadata);
     }
 

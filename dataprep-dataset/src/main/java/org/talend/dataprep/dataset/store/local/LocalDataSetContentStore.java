@@ -3,7 +3,9 @@ package org.talend.dataprep.dataset.store.local;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.talend.dataprep.dataset.objects.DataSetContent;
 import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.dataset.service.analysis.schema.Serializer;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 
 import java.io.*;
@@ -31,12 +33,9 @@ public class LocalDataSetContentStore implements DataSetContentStore {
 
     @Override
     public InputStream get(DataSetMetadata dataSetMetadata) {
-        try {
-            return new FileInputStream(getFile(dataSetMetadata));
-        } catch (FileNotFoundException e) {
-            LOGGER.warn("File '" + getFile(dataSetMetadata) + "' does not exist.");
-            return new ByteArrayInputStream(new byte[0]);
-        }
+        DataSetContent content = dataSetMetadata.getContent();
+        Serializer serializer = content.getContentType().getSerializer();
+        return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
     }
 
     @Override

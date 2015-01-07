@@ -2,7 +2,6 @@ package org.talend.dataprep.dataset;
 
 import com.jayway.restassured.RestAssured;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.CustomTypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,6 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
@@ -45,10 +43,10 @@ public class DataSetServiceTests {
     DataSetMetadataRepository dataSetMetadataRepository;
 
     @Autowired
-    DataSetContentStore contentStore;
+    DataSetContentStore       contentStore;
 
     private void assertQueueMessages(String dataSetId) throws Exception {
-        Thread.sleep(200); // TODO Ugly, need a client to lock until all operations are done
+        Thread.sleep(1000); // TODO Ugly, need a client to lock until all operations are done
         DataSetLifecycle lifecycle = dataSetMetadataRepository.get(dataSetId).getLifecycle();
         assertThat(lifecycle.contentIndexed(), is(true));
         assertThat(lifecycle.schemaAnalyzed(), is(true));
@@ -126,31 +124,23 @@ public class DataSetServiceTests {
     public void test1() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
         assertNotNull(expected);
-        assertThat(content, new InputStreamEqualTo(expected));
+        String contentAsString = IOUtils.toString(content);
+        assertThat(contentAsString, is(IOUtils.toString(expected)));
+    }
+
+    @Test
+    public void test2() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada2.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}", dataSetId).asInputStream();
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
+        assertNotNull(expected);
+        String contentAsString = IOUtils.toString(content);
+        assertThat(contentAsString, is(IOUtils.toString(expected)));
     }
-
-    class InputStreamEqualTo extends CustomTypeSafeMatcher<InputStream> {
-
-        private final InputStream expected;
-
-        public InputStreamEqualTo(InputStream expected) {
-            super("Input stream are the same.");
-            this.expected = expected;
-        }
-
-        @Override
-        protected boolean matchesSafely(InputStream item) {
-            try {
-                return IOUtils.contentEquals(item, expected);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-    }
-
 }

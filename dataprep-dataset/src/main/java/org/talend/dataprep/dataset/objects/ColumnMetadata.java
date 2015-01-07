@@ -15,7 +15,7 @@ public class ColumnMetadata {
 
     private final String name;
 
-    private final Type   type;
+    private Type   type;
 
     private ColumnMetadata(String name, Type type) {
         this.name = name;
@@ -54,6 +54,10 @@ public class ColumnMetadata {
         int result = name.hashCode();
         result = 31 * result + type.hashCode();
         return result;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public static class Builder {
