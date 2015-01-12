@@ -143,4 +143,21 @@ public class DataSetServiceTests {
         String contentAsString = IOUtils.toString(content);
         assertThat(contentAsString, is(IOUtils.toString(expected)));
     }
+
+    @Test
+    public void test3() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        // Update
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
+                .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId);
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}", dataSetId).asInputStream();
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test2.json");
+        assertNotNull(expected);
+        String contentAsString = IOUtils.toString(content);
+        assertThat(contentAsString, is(IOUtils.toString(expected)));
+    }
+
 }

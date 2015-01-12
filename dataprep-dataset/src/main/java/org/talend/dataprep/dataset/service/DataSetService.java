@@ -150,7 +150,10 @@ public class DataSetService {
     public void update(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @ApiParam(value = "content") InputStream dataSetContent) {
-        dataSetMetadataRepository.add(id(dataSetId).build());
+        DataSetMetadata dataSetMetadata = id(dataSetId).build();
+        // Save data set content
+        contentStore.store(dataSetMetadata, dataSetContent);
+        dataSetMetadataRepository.add(dataSetMetadata);
         // Content was changed, so queue events (schema analysis, content indexing for search...)
         queueEvents(dataSetId, jmsTemplate);
     }
