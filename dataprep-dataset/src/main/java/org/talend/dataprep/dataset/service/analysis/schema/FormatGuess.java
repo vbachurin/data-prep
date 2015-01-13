@@ -1,5 +1,7 @@
 package org.talend.dataprep.dataset.service.analysis.schema;
 
+import java.beans.Transient;
+
 /**
  * Represents a "guess" for a data set content format (e.g. CSV, Excel...).
  * 
@@ -21,6 +23,7 @@ public interface FormatGuess {
      * @return A {@link org.talend.dataprep.dataset.service.analysis.schema.SchemaParser} that allowed data prep to read
      * {@link org.talend.dataprep.dataset.objects.ColumnMetadata column metadata} information from the data set.
      */
+    @Transient
     SchemaParser getSchemaParser();
 
     /**
@@ -28,5 +31,6 @@ public interface FormatGuess {
      * underlying data set content into JSON stream.
      * @see org.talend.dataprep.dataset.store.DataSetContentStore#get(org.talend.dataprep.dataset.objects.DataSetMetadata)
      */
+    @Transient
     Serializer getSerializer();
 }

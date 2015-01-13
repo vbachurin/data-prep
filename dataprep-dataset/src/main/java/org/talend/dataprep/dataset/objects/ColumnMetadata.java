@@ -6,20 +6,25 @@ import org.talend.dataprep.dataset.objects.type.Type;
 /**
  * Represents information about a column in a data set. It includes:
  * <ul>
- *     <li>Name ({@link #getName()})</li>
- *     <li>Type ({@link #getType()})</li>
+ * <li>Name ({@link #getName()})</li>
+ * <li>Type ({@link #getTypeName()})</li>
  * </ul>
  * @see org.talend.dataprep.dataset.objects.ColumnMetadata.Builder
  */
 public class ColumnMetadata {
 
-    private final String name;
+    private String name;
 
-    private Type   type;
+    private String typeName;
 
-    private ColumnMetadata(String name, Type type) {
+    // Needed when objects are read back from the db.
+    public ColumnMetadata() {
+        // Do not remove!
+    }
+
+    public ColumnMetadata(String name, String typeName) {
         this.name = name;
-        this.type = type;
+        this.typeName = typeName;
     }
 
     /**
@@ -33,8 +38,12 @@ public class ColumnMetadata {
      * @return The column's type. It never returns <code>null</code>.
      * @see org.talend.dataprep.dataset.objects.type.Type
      */
-    public Type getType() {
-        return type;
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     @Override
@@ -46,18 +55,14 @@ public class ColumnMetadata {
             return false;
         }
         ColumnMetadata that = (ColumnMetadata) o;
-        return name.equals(that.name) && type.equals(that.type);
+        return name.equals(that.name) && typeName.equals(that.typeName);
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + type.hashCode();
+        result = 31 * result + typeName.hashCode();
         return result;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 
     public static class Builder {
@@ -87,7 +92,7 @@ public class ColumnMetadata {
         }
 
         public ColumnMetadata build() {
-            return new ColumnMetadata(name, type);
+            return new ColumnMetadata(name, type.getName());
         }
     }
 }

@@ -175,7 +175,7 @@ public class DataSetService {
                             generator.writeEndObject();
                         }
                         // Column type
-                        String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getType().getName() : "N/A"; //$NON-NLS-1
+                        String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getTypeName() : "N/A"; //$NON-NLS-1
                         generator.writeStringField("type", typeName); //$NON-NLS-1
                     }
                     generator.writeEndObject();
