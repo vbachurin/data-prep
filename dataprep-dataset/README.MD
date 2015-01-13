@@ -41,6 +41,12 @@ Look for this line in the log:
 ```
 (it defaults to "in-memory" value when nothing is specified).
 
+By default, service looks for a Mongo DB instance running on localhost and default port. You may override these settings using properties
+during startup. For example, the following command will connect to a Mongo DB instance running on "mongoserver" and port "27017":
+```
+$ mvn -Ddataset.metadata.store=mongodb -Dspring.data.mongodb.host=mongoserver -Dspring.data.mongodb.port=27017 clean spring-boot:run
+```
+
 ## Data set content storage
 Current implementation stores content to <i>${java.io.tmpdir}/talend/tdp/datasets/</i>.
 
