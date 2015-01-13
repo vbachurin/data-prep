@@ -76,3 +76,4 @@ src/main/webapp/lib/bower
 temp
 build
 /.DS_Store
+.settings
