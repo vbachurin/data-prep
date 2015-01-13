@@ -1,4 +1,4 @@
-#![alt text](http://www.talend.com/sites/all/themes/talend_responsive/images/logo.png "Talend") Data Preparation Project
+#![alt text](http://www.talend.com/sites/all/themes/talend_responsive/images/logo.png "Talend") Data Preparation Project [![Build Status](https://magnum.travis-ci.com/Talend/data-prep.svg?token=pZH8ZcJXLuMxijJexq7J&branch=feature/travis)](https://magnum.travis-ci.com/Talend/data-prep)
 
 | _Project_                  | _Description_ |
 |:-------------------------|-------------|
