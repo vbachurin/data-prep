@@ -19,6 +19,7 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,13 +69,13 @@ public class DataSetServiceTests {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(id(id1).build());
-        when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[\"" + id1 + "\"]"));
+        dataSetMetadataRepository.add(id(id1).name("name1").author("anonymous").created(new Date(0)).build());
+        when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[{\"id\":\"" + id1 + "\",\"name\":\"name1\",\"author\":\"anonymous\",\"created\":\"01-01-1970 01:01\"}]"));
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(id(id2).build());
+        dataSetMetadataRepository.add(id(id2).name("name2").author("anonymous").created(new Date(0)).build());
         when().get("/datasets").then().statusCode(HttpStatus.OK.value());
-        List<String> ids = from(when().get("/datasets").asString()).get("");
+        List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItems(id1, id2));
     }
 
@@ -115,7 +116,7 @@ public class DataSetServiceTests {
     public void testUpdate() throws Exception {
         String dataSetId = "123456";
         when().put("/datasets/{id}", dataSetId).then().statusCode(HttpStatus.OK.value());
-        List<String> ids = from(when().get("/datasets").asString()).get("");
+        List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId);
     }
@@ -125,7 +126,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
@@ -137,7 +138,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada2.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
@@ -153,7 +154,7 @@ public class DataSetServiceTests {
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId);
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test2.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);

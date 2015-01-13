@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,8 +28,17 @@ public class DataSetMetadata {
 
     private final DataSetContent   content   = new DataSetContent();
 
-    public DataSetMetadata(String id, RowMetadata rowMetadata) {
+    private String                 name;
+
+    private String                 author;
+
+    private Date                   creationDate;
+
+    public DataSetMetadata(String id, String name, String author, Date creationDate, RowMetadata rowMetadata) {
         this.id = id;
+        this.name = name;
+        this.author = author;
+        this.creationDate = creationDate;
         this.rowMetadata = rowMetadata;
     }
 
@@ -48,11 +58,29 @@ public class DataSetMetadata {
         return content;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
     public static class Builder {
 
         private final String             id;
 
         private ColumnMetadata.Builder[] columnBuilders;
+
+        private String                   author = "anonymous";
+
+        private String                   name = "";
+
+        private Date                     createdDate = new Date(System.currentTimeMillis());
 
         public Builder(String id) {
             this.id = id;
@@ -60,6 +88,21 @@ public class DataSetMetadata {
 
         public static DataSetMetadata.Builder id(String id) {
             return new Builder(id);
+        }
+
+        public DataSetMetadata.Builder author(String author) {
+            this.author = author;
+            return this;
+        }
+
+        public DataSetMetadata.Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public DataSetMetadata.Builder created(Date createdDate) {
+            this.createdDate = createdDate;
+            return this;
         }
 
         public DataSetMetadata.Builder row(ColumnMetadata.Builder... columns) {
@@ -78,7 +121,7 @@ public class DataSetMetadata {
                 columns = Collections.emptyList();
             }
             RowMetadata row = new RowMetadata(columns);
-            return new DataSetMetadata(id, row);
+            return new DataSetMetadata(id, name, author, createdDate, row);
         }
 
     }
