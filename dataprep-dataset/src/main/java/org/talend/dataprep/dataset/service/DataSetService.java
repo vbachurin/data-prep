@@ -177,9 +177,9 @@ public class DataSetService {
                             generator.writeFieldName("quality"); //$NON-NLS-1
                             generator.writeStartObject();
                             {
-                                generator.writeNumberField("empty", 2); //$NON-NLS-1
-                                generator.writeNumberField("invalid", 8); //$NON-NLS-1
-                                generator.writeNumberField("valid", 90); //$NON-NLS-1
+                                generator.writeNumberField("empty", 5); //$NON-NLS-1
+                                generator.writeNumberField("invalid", 10); //$NON-NLS-1
+                                generator.writeNumberField("valid", 72); //$NON-NLS-1
                             }
                             generator.writeEndObject();
                         }
