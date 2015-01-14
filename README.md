@@ -1,5 +1,10 @@
-#![alt text](http://www.talend.com/sites/all/themes/talend_responsive/images/logo.png "Talend") Data Preparation Project [![Build Status](https://magnum.travis-ci.com/Talend/data-prep.svg?token=pZH8ZcJXLuMxijJexq7J&branch=feature/travis)](https://magnum.travis-ci.com/Talend/data-prep)
+#![alt text](http://www.talend.com/sites/all/themes/talend_responsive/images/logo.png "Talend") Data Preparation Project 
+## Build statuses
+| _Branches_                  | _Status_ |
+|:-------------------------|-------------|
+| master                  | [![Build Status](https://magnum.travis-ci.com/Talend/data-prep.svg?token=pZH8ZcJXLuMxijJexq7J&branch=master)](https://magnum.travis-ci.com/Talend/data-prep) |
 
+## Folders description
 | _Project_                  | _Description_ |
 |:-------------------------|-------------|
 | [dataprep-common](dataprep-common)          | *everything (utilities) common to all projects but not related to dataprep business* |
@@ -10,7 +15,7 @@
 | [recipe_processor](recipe_processor)         | *currently different tests of the Spark engine + other technos tests (SparkSql)* |
 | [sample_builder](sample_builder)           | *Talend job builder (based on jobscript) [file/stream] -> [sampling/json file]* |
 
-## build
+## Build
 - All project are maven based.
 - A parent in pom build the web-app and its dependencies.
 - See [dataprep-dataset](/dataprep-dataset/) for specific build instructions
