@@ -13,6 +13,12 @@ class MeteredInputStream extends InputStream {
         this.delegate = delegate;
     }
 
+    private void updateVolume(int read) {
+        if (read > 0) {
+            volume += read;
+        }
+    }
+
     @Override
     public int read() throws IOException {
         try {
@@ -24,20 +30,16 @@ class MeteredInputStream extends InputStream {
 
     @Override
     public int read(byte[] bytes) throws IOException {
-        try {
-            return delegate.read(bytes);
-        } finally {
-            volume += bytes.length;
-        }
+        int read = delegate.read(bytes);
+        updateVolume(read);
+        return read;
     }
 
     @Override
     public int read(byte[] bytes, int i, int i1) throws IOException {
-        try {
-            return delegate.read(bytes, i, i1);
-        } finally {
-            volume += bytes.length;
-        }
+        int read = delegate.read(bytes, i, i1);
+        updateVolume(read);
+        return read;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.talend.dataprep.metrics;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -7,7 +8,6 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,37 +19,40 @@ import java.io.InputStream;
 @Aspect
 public class Aspects {
 
-    @Autowired
-    MetricRepository repository;
-
     private static final Log LOGGER = LogFactory.getLog(Aspects.class);
+    @Autowired
+    MetricRepository         repository;
 
     static String getCategory(Class<?> clazz, String method) throws NoSuchMethodException {
         return clazz.getName() + '.' + method;
     }
 
-    @Around("execution(* *(..)) && @annotation(timed)")
-    public Object timed(ProceedingJoinPoint pjp, Timed timed) throws Throwable {
-        long start = System.currentTimeMillis();
-        try {
-            return pjp.proceed(pjp.getArgs());
-        } finally {
-            long time = System.currentTimeMillis() - start;
-            Signature signature = pjp.getSignature();
-            String category = getCategory(signature.getDeclaringType(), signature.getName());
-            repository.set(new Metric<Number>(category + ".time", time)); //$NON-NLS-1
-        }
+    private static UserMetric<Long> buildTimeMetric(ProceedingJoinPoint pjp, long time) throws NoSuchMethodException {
+        Signature signature = pjp.getSignature();
+        String category = getCategory(signature.getDeclaringType(), signature.getName());
+        UserMetric<Long> metric = new UserMetric<Long>(category + ".time", time);
+        return userMetric(metric);
     }
 
-    @Around("execution(* *(..)) && @annotation(userMetered)")
-    public Object userMetered(ProceedingJoinPoint pjp, UserMetered userMetered) throws Throwable {
+    private static UserMetric<Long> buildVolumeMetric(ProceedingJoinPoint pjp, long volume) throws NoSuchMethodException {
+        Signature signature = pjp.getSignature();
+        String category = getCategory(signature.getDeclaringType(), signature.getName());
+        UserMetric<Long> metric = new UserMetric<Long>(category + ".volume", volume);
+        return userMetric(metric);
+    }
+
+    public static <T extends Number> UserMetric<T> userMetric(UserMetric<T> metric) {
         // Get authentication information
         String userName;
         String remoteAddress;
         String sessionId;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            LOGGER.error("Unauthenticated operation access (see stack trace for calls).", new RuntimeException());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Unauthenticated operation access call stack.", new RuntimeException(StringUtils.EMPTY));
+            } else {
+                LOGGER.error("Unauthenticated operation access (enable DEBUG for detailed error).");
+            }
             userName = "N/A";
             remoteAddress = "N/A";
             sessionId = "N/A";
@@ -74,7 +77,23 @@ public class Aspects {
                 sessionId = "N/A";
             }
         }
-        return pjp.proceed(pjp.getArgs());
+        // Set information in user metric
+        metric.setUser(userName);
+        metric.setOrganization(StringUtils.EMPTY);
+        metric.setRemoteAddress(remoteAddress);
+        metric.setSessionId(sessionId);
+        return metric;
+    }
+
+    @Around("execution(* *(..)) && @annotation(timed)")
+    public Object timed(ProceedingJoinPoint pjp, Timed timed) throws Throwable {
+        long start = System.currentTimeMillis();
+        try {
+            return pjp.proceed(pjp.getArgs());
+        } finally {
+            long time = System.currentTimeMillis() - start;
+            repository.set(buildTimeMetric(pjp, time));
+        }
     }
 
     @Around("execution(* *(..)) && @annotation(volumeMetered)")
@@ -97,7 +116,7 @@ public class Aspects {
             MeteredInputStream meteredInputStream = new MeteredInputStream((InputStream) args[argumentIndex]);
             args[argumentIndex] = meteredInputStream;
             Object o = pjp.proceed(args);
-            // registry.meter(pjp.getSignature().toLongString() + ".volume").mark(meteredInputStream.getVolume());
+            repository.set(buildVolumeMetric(pjp, meteredInputStream.getVolume()));
             return o;
         } else {
             return pjp.proceed(args);

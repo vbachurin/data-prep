@@ -5,7 +5,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class TimeMeasured {
 
-    private int delay = 0;
+    private int     delay = 0;
+
     private boolean error;
 
     public void setDelay(int delay) {

@@ -8,7 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 public class Configuration {
 
     @Bean
-    public TimeMeasured getTimeMeasuredClass() {
+    public TimeMeasured getTimeMeasured() {
         return new TimeMeasured();
     }
+
+    @Bean
+    public VolumeMeasured getVolumeMeasured() { return new VolumeMeasured();}
 }
