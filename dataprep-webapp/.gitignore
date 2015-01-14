@@ -77,4 +77,10 @@ temp
 build
 /.DS_Store
 .settings
-.classpath
+classpath
+node_modules/
+bower_components/
+.sass-cache/
+.tmp/
+dist/
+
