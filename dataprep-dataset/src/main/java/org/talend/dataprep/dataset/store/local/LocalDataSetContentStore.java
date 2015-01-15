@@ -15,8 +15,21 @@ public class LocalDataSetContentStore implements DataSetContentStore {
 
     private static final Log LOGGER = LogFactory.getLog(LocalDataSetContentStore.class);
 
-    private static File getFile(DataSetMetadata dataSetMetadata) {
-        return new File(System.getProperty("java.io.tmpdir") + "/talend/tdp/datasets/" + dataSetMetadata.getId()); //$NON-NLS-1  //$NON-NLS-2 
+    private final String storeLocation;
+
+    public LocalDataSetContentStore(String storeLocation) {
+        if (storeLocation == null) {
+            throw new IllegalArgumentException("Store location cannot be null.");
+        }
+        if (!storeLocation.endsWith("/")) { //$NON-NLS-1$
+            storeLocation += "/"; //$NON-NLS-1$
+        }
+        LOGGER.info("Content store location: " + storeLocation);
+        this.storeLocation = storeLocation;
+    }
+
+    private File getFile(DataSetMetadata dataSetMetadata) {
+        return new File(storeLocation + dataSetMetadata.getId());
     }
 
     @Override
@@ -63,7 +76,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     @Override
     public void clear() {
         try {
-            FileUtils.deleteDirectory(new File(System.getProperty("java.io.tmpdir") + "/talend/tdp/datasets/"));
+            FileUtils.deleteDirectory(new File(storeLocation));
         } catch (IOException e) {
             throw new RuntimeException("Unable to clear content store.", e);
         }
