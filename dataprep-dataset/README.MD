@@ -53,9 +53,9 @@ Current implementation stores content to <i>${java.io.tmpdir}/talend/tdp/dataset
 ## Build a Docker image
 This project can be packages as a Docker image. You simply have to run:
 ```
-$ mvn install
+$ mvn -Pdocker install
 ```
-Running this command performs the following:
+By default, the profile 'docker' isn't active, you need to explicitly enable it ("-Pdocker"). Running this command performs the following:
 * Compiles sources.
 * Packages all classes.
 * Build a docker image that run the services with name "talend/dataprep-dataset:${version}" (e.g. "talend/dataprep-dataset:1.0.M0-SNAPSHOT").
