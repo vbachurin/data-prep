@@ -73,7 +73,7 @@ public class DataSetServiceTests {
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
         dataSetMetadataRepository.add(id(id1).name("name1").author("anonymous").created(new Date(0)).build());
-        when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[{\"id\":\"" + id1 + "\",\"name\":\"name1\",\"author\":\"anonymous\",\"created\":\"01-01-1970 01:01\"}]"));
+        when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[{\"id\":\"" + id1 + "\",\"name\":\"name1\",\"author\":\"anonymous\",\"created\":\"01-01-1970 00:01\"}]"));
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
         dataSetMetadataRepository.add(id(id2).name("name2").author("anonymous").created(new Date(0)).build());

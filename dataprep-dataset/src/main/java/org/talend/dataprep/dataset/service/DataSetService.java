@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
@@ -42,6 +43,10 @@ public class DataSetService {
 
     @Autowired
     private DataSetContentStore           contentStore;
+
+    static {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
+    }
 
     private static void queueEvents(String id, JmsTemplate template) {
         String[] destinations = { Destinations.SCHEMA_ANALYSIS, Destinations.CONTENT_ANALYSIS };
@@ -98,7 +103,7 @@ public class DataSetService {
     }
 
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see.")
+    @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     public void list(HttpServletResponse response) {
         Iterable<DataSetMetadata> dataSets = dataSetMetadataRepository.list();
         try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
