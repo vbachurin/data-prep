@@ -51,4 +51,9 @@ public interface DataSetContentStore {
      * @param dataSetMetadata The data set to delete.
      */
     void delete(DataSetMetadata dataSetMetadata);
+
+    /**
+     * Removes all stored content. No recovery operation is expected.
+     */
+    void clear();
 }

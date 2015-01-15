@@ -1,5 +1,6 @@
 package org.talend.dataprep.dataset.store.local;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +57,15 @@ public class LocalDataSetContentStore implements DataSetContentStore {
             }
         } else {
             LOGGER.warn("Data set #" + dataSetMetadata.getId() + " has no content.");
+        }
+    }
+
+    @Override
+    public void clear() {
+        try {
+            FileUtils.deleteDirectory(new File(System.getProperty("java.io.tmpdir") + "/talend/tdp/datasets/"));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to clear content store.", e);
         }
     }
 }

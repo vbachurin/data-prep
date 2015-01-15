@@ -57,11 +57,14 @@ public class DataSetServiceTests {
     @Before
     public void setUp() {
         RestAssured.port = port;
+        dataSetMetadataRepository.clear();
+        contentStore.clear();
     }
 
     @org.junit.After
     public void tearDown() {
         dataSetMetadataRepository.clear();
+        contentStore.clear();
     }
 
     @Test
@@ -150,7 +153,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        // Update
+        // Update content
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId);
         assertQueueMessages(dataSetId);
@@ -159,6 +162,11 @@ public class DataSetServiceTests {
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
         assertThat(contentAsString, is(IOUtils.toString(expected)));
+        // Update name
+        String expectedName = "testOfADataSetName";
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
+                .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "?name=" + expectedName);
+        assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is(expectedName));
     }
 
 }
