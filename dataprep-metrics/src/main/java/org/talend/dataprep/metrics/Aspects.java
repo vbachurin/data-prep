@@ -20,6 +20,7 @@ import java.io.InputStream;
 public class Aspects {
 
     private static final Log LOGGER = LogFactory.getLog(Aspects.class);
+
     @Autowired
     MetricRepository         repository;
 
@@ -102,7 +103,7 @@ public class Aspects {
         int argumentIndex = -1;
         for (Object o : pjp.getArgs()) {
             argumentIndex++;
-            if (InputStream.class.isAssignableFrom(o.getClass())) {
+            if (o != null && InputStream.class.isAssignableFrom(o.getClass())) {
                 break;
             }
         }

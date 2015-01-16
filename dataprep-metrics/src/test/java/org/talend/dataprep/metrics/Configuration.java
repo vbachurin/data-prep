@@ -1,5 +1,7 @@
 package org.talend.dataprep.metrics;
 
+import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -13,5 +15,13 @@ public class Configuration {
     }
 
     @Bean
-    public VolumeMeasured getVolumeMeasured() { return new VolumeMeasured();}
+    public VolumeMeasured getVolumeMeasured() {
+        return new VolumeMeasured();
+    }
+
+    @Bean
+    MetricRepository getRepository() {
+        return new InMemoryMetricRepository();
+    }
+
 }

@@ -15,6 +15,8 @@ import org.talend.dataprep.dataset.objects.ColumnMetadata;
 import org.talend.dataprep.dataset.objects.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.metrics.Timed;
+import org.talend.dataprep.metrics.VolumeMetered;
 
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
@@ -104,6 +106,7 @@ public class DataSetService {
 
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
+    @Timed
     public void list(HttpServletResponse response) {
         Iterable<DataSetMetadata> dataSets = dataSetMetadataRepository.list();
         try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
@@ -124,7 +127,9 @@ public class DataSetService {
 
     @RequestMapping(value = "/datasets", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
-    public String create(@ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(value = "name", defaultValue = "", required = false) String name,
+    @Timed
+    @VolumeMetered
+    public String create(@ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @ApiParam(value = "content") InputStream dataSetContent) {
         final String id = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = id(id).name(name).author(getUserName()).created(new Date(System.currentTimeMillis()))
@@ -140,6 +145,7 @@ public class DataSetService {
 
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
+    @Timed
     public void get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
@@ -204,6 +210,7 @@ public class DataSetService {
 
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
+    @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata != null) {
@@ -214,6 +221,8 @@ public class DataSetService {
 
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    @Timed
+    @VolumeMetered
     public void update(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
