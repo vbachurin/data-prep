@@ -18,8 +18,6 @@ import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 @ContextConfiguration(classes = { Aspects.class, Configuration.class })
 public class TimedAspectTests {
 
-    private static final int PRECISION = 50;
-
     @Autowired
     TimeMeasured             timeMeasured;
 
@@ -39,13 +37,14 @@ public class TimedAspectTests {
         timeMeasured.run();
         Metric<?> runTime = repository.findOne(Aspects.getCategory(TimeMeasured.class, "run") + ".time");
         assertNotNull(runTime);
-        assertThat(runTime.getValue().intValue(), Matchers.lessThan(PRECISION));
+        int noDelayValue = runTime.getValue().intValue();
         // Set delay = 1s
         timeMeasured.setDelay(1000);
         timeMeasured.run();
         runTime = repository.findOne(Aspects.getCategory(TimeMeasured.class, "run") + ".time");
         assertNotNull(runTime);
-        assertThat(runTime.getValue().intValue(), Matchers.lessThan(1000 + PRECISION));
+        int oneSecondDelayValue = runTime.getValue().intValue();
+        assertThat(oneSecondDelayValue, Matchers.greaterThan(noDelayValue));
     }
 
     @Test
@@ -61,7 +60,7 @@ public class TimedAspectTests {
         }
         Metric<?> runTime = repository.findOne(Aspects.getCategory(TimeMeasured.class, "run") + ".time");
         assertNotNull(runTime);
-        assertThat(runTime.getValue().intValue(), Matchers.lessThan(PRECISION));
+        int noDelayValue = runTime.getValue().intValue();
         // Set delay = 1s
         timeMeasured.setDelay(1000);
         try {
@@ -72,6 +71,7 @@ public class TimedAspectTests {
         }
         runTime = repository.findOne(Aspects.getCategory(TimeMeasured.class, "run") + ".time");
         assertNotNull(runTime);
-        assertThat(runTime.getValue().intValue(), Matchers.lessThan(1000 + PRECISION));
+        int oneSecondDelayValue = runTime.getValue().intValue();
+        assertThat(oneSecondDelayValue, Matchers.greaterThan(noDelayValue));
     }
 }
