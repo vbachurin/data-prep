@@ -21,6 +21,7 @@ app.controller('RecordsCtrl', function($scope, $http) {
 	
 	$scope.datasets = [];
 	$scope.listDatasets();
+	$scope.openDataset('4689c3b7-9276-4766-8352-689ecc082fe9');
 });
 
 app.controller('ColumnCtrl', ['$scope', function($scope) {
