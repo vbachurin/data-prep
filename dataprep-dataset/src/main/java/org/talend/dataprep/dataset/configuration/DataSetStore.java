@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.dataset.store.hdfs.HDFSContentStore;
 import org.talend.dataprep.dataset.store.local.InMemoryDataSetMetadataRepository;
 import org.talend.dataprep.dataset.store.local.LocalDataSetContentStore;
 import org.talend.dataprep.dataset.store.mongo.MongoDataSetMetadataRepository;
@@ -29,23 +30,26 @@ public class DataSetStore implements EnvironmentAware {
     @Bean
     public DataSetContentStore getContentStore() {
         LOGGER.info("Data Set content store: " + contentStoreConfiguration);
-        String localStoreLocation = environment.getProperty("dataset.content.store.local.location"); //$NON-NLS-1$
-        if ("local".equalsIgnoreCase(contentStoreConfiguration)) { //$NON-NLS-1$
-            return new LocalDataSetContentStore(localStoreLocation);
-        } else {
-            return new LocalDataSetContentStore(localStoreLocation);
+        switch (contentStoreConfiguration) {
+            case "hdfs": //$NON-NLS-1$
+                String hdfsStoreLocation = environment.getProperty("dataset.content.store.hdfs.location"); //$NON-NLS-1$
+                return new HDFSContentStore(hdfsStoreLocation);
+            case "local": //$NON-NLS-1$
+            default:
+                String localStoreLocation = environment.getProperty("dataset.content.store.local.location"); //$NON-NLS-1$
+                return new LocalDataSetContentStore(localStoreLocation);
         }
     }
 
     @Bean
     public DataSetMetadataRepository getStore() {
         LOGGER.info("Data Set metadata store: " + metadataStoreConfiguration);
-        if ("mongodb".equalsIgnoreCase(metadataStoreConfiguration)) { //$NON-NLS-1$
-            return new MongoDataSetMetadataRepository();
-        } else if ("in-memory".equalsIgnoreCase(metadataStoreConfiguration)) { //$NON-NLS-1$
-            return new InMemoryDataSetMetadataRepository();
-        } else {
-            return new InMemoryDataSetMetadataRepository();
+        switch (metadataStoreConfiguration) {
+            case "mongodb": //$NON-NLS-1$
+                return new MongoDataSetMetadataRepository();
+            case "in-memory": //$NON-NLS-1$
+            default:
+                return new InMemoryDataSetMetadataRepository();
         }
     }
 

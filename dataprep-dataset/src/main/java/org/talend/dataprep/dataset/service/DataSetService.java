@@ -108,6 +108,7 @@ public class DataSetService {
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
     public void list(HttpServletResponse response) {
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         Iterable<DataSetMetadata> dataSets = dataSetMetadataRepository.list();
         try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
             generator.writeStartArray();
@@ -130,7 +131,9 @@ public class DataSetService {
     @Timed
     @VolumeMetered
     public String create(@ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
-            @ApiParam(value = "content") InputStream dataSetContent) {
+            @ApiParam(value = "content") InputStream dataSetContent,
+            HttpServletResponse response) {
+        response.setHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE); //$NON-NLS-1$
         final String id = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = id(id).name(name).author(getUserName()).created(new Date(System.currentTimeMillis()))
                 .build();
@@ -150,8 +153,10 @@ public class DataSetService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
             HttpServletResponse response) {
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         if (dataSetMetadata == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return; // No data set, returns empty content.
         }
         try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
@@ -211,7 +216,8 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
-    public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
+    public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId,
+                       HttpServletResponse response) {
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata != null) {
             contentStore.delete(metadata);
@@ -226,7 +232,8 @@ public class DataSetService {
     public void update(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
-            @ApiParam(value = "content") InputStream dataSetContent) {
+            @ApiParam(value = "content") InputStream dataSetContent,
+            HttpServletResponse response) {
         DataSetMetadata.Builder builder = id(dataSetId);
         if (name != null) {
             builder = builder.name(name);
