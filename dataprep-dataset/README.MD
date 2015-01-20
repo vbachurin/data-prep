@@ -48,7 +48,10 @@ $ mvn -Ddataset.metadata.store=mongodb -Dspring.data.mongodb.host=mongoserver -D
 ```
 
 ## Data set content storage
-Current implementation stores content to <i>${java.io.tmpdir}/talend/tdp/datasets/</i>.
+Current implementation stores content to <i>${java.io.tmpdir}/talend/tdp/datasets/</i>. You may customize this path using the property "dataset.content.store.local.location" as follows:
+```
+$ mvn -Ddataset.content.store.local.location=/home/user/permanent_store/
+```
 
 ## Build a Docker image
 This project can be packages as a Docker image. You simply have to run:
