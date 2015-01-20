@@ -10,6 +10,7 @@
         <relativePath/>
         <!-- lookup parent from repository -->
     </parent>
+    <groupId>org.talend.dataprep</groupId>
     <artifactId>dataprep-metrics</artifactId>
     <version>1.0.M0-SNAPSHOT</version>
     <name>dataprep-metrics</name>

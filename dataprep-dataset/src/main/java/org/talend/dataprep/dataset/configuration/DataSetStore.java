@@ -14,9 +14,9 @@ import org.talend.dataprep.dataset.store.local.LocalDataSetContentStore;
 import org.talend.dataprep.dataset.store.mongo.MongoDataSetMetadataRepository;
 
 @Configuration
-public class DataSetStoreConfiguration implements EnvironmentAware {
+public class DataSetStore implements EnvironmentAware {
 
-    private static final Log LOGGER = LogFactory.getLog(DataSetStoreConfiguration.class);
+    private static final Log LOGGER = LogFactory.getLog(DataSetStore.class);
 
     @Value("${dataset.metadata.store}")
     private String           metadataStoreConfiguration;

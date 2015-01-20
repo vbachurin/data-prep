@@ -28,7 +28,7 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
+            <groupId>org.talend.dataprep</groupId>
             <artifactId>dataprep-metrics</artifactId>
             <version>1.0.M0-SNAPSHOT</version>
         </dependency>
