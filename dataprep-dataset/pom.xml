@@ -197,7 +197,7 @@
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
                             <baseImage>dockerfile/java:oracle-java8</baseImage>
-                            <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+                            <cmd>java -jar /${project.build.finalName}.jar</cmd>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>

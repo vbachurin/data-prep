@@ -1,0 +1,24 @@
+mongodb:
+    image: dockerfile/mongodb
+    volumes:
+        - runtime/mongodb:/data/db
+    ports:
+        - "27017:27017"
+nginx:
+    image: jwilder/nginx-proxy
+    volumes:
+        - /var/run/docker.sock:/tmp/docker.sock
+    ports:
+        - "80:80"
+dataset:
+    image: talend/dataprep-dataset:1.0.M0-SNAPSHOT
+    volumes:
+        - conf/dataset:/data/config
+        - runtime/dataset/store:/store
+    expose:
+        - 8080
+    links:
+        - mongodb
+    environment:
+        VIRTUAL_HOST: dataset.tdp.talend.lan
+        VIRTUAL_PORT: 8080
