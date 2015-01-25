@@ -3,84 +3,46 @@
 
 This folder contains a library to monitor REST services usage. It monitors:
 * User information
-* Volume information (e
+* Volume information (e.g. the amount of data exchanged between client and server).
 
 ## Prerequisites
 
 You need Java *8* (or higher) and Maven 3.x (tested with 3.2.2 on Fedora 21 with OpenJDK 1.8.0_25-b18).
 
 ## Usage
-To build and start an instance of the data set service, you just have to run this command:
+Simply add the Maven dependency to the project you'd like to use metrics:
 ```
-$ mvn -Dserver.port=8080 clean spring-boot:run
+<dependency>
+    <groupId>org.talend.dataprep</groupId>
+    <artifactId>dataprep-metrics</artifactId>
+    <version>1.0.M0-SNAPSHOT</version>
+</dependency>
 ```
-This will start a server listening on port 8080 (you may customize the server port with the property server.port).
-If no "server.port" argument is specified, it defaults to 8080.
+In your application, add the @EnableMonitoring annotation to a Spring @Configuration class. such as:
+```
+package org.talend.dataprep.dataset.configuration;
 
-It is also possible to start on a random port:
-```
-$ mvn -Dserver.port=0 clean spring-boot:run
-```
-You should look in the console the line that indicates the port:
-```
-$ mvn -Dserver.port=0 clean spring-boot:run
-... (many lines omitted) ...
-2014-12-31 10:27:04.499  INFO 8426 --- [lication.main()] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 58996/http
-2014-12-31 10:27:04.501  INFO 8426 --- [lication.main()] org.talend.dataprep.dataset.Application  : Started Application in 7.297 seconds (JVM running for 10.494)
-```
-(in this example, server started on port 58996).
+import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.repository.MetricRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.talend.dataprep.metrics.configuration.EnableMonitoring;
 
-## Data set information storage
+@Configuration
+@EnableMonitoring
+public class Monitoring {
 
-By default (for ease of deployment), all data set related information is stored in memory (information such as id, column metadata...).
-You may switch to a local Mongo DB instance with the property "dataset.metadata.store".
+    @Bean
+    MetricRepository getRepository() {
+        return new InMemoryMetricRepository();
+    }
+}
 ```
-$ mvn -Ddataset.metadata.store=mongodb clean spring-boot:run
-```
-Look for this line in the log:
-```
-2015-01-06 12:03:57.459  INFO 13798 --- [lication.main()] o.t.d.d.c.DataSetStoreConfiguration      : Data Set metadata store: mongodb
-```
-(it defaults to "in-memory" value when nothing is specified).
+The configuration class must provide a org.springframework.boot.actuate.metrics.writer.MetricWriter and
+a org.springframework.boot.actuate.metrics.reader.MetricReader instance (or a org.springframework.boot.actuate.metrics.repository.MetricRepository,
+since it implements both).
 
-## Data set content storage
-Current implementation stores content to <i>${java.io.tmpdir}/talend/tdp/datasets/</i>.
-
-## Build a Docker image
-This project can be packages as a Docker image. You simply have to run:
-```
-$ mvn install
-```
-Running this command performs the following:
-* Compiles sources.
-* Packages all classes.
-* Build a docker image that run the services with name "talend/dataprep-dataset:${version}" (e.g. "talend/dataprep-dataset:1.0.M0-SNAPSHOT").
-After "mvn install" completes, run the following command to quickly test the build:
-```
-$ docker -p 8080:8080 run talend/dataprep-dataset:latest
-```
-This runs the latest image version and forwards image's port 8080 to localhost 8080. After initialization, go to http://localhost:8080.
-
-### Multiple instances
-To run multiple instances, you may use the command:
-```
-[fhuaulme@tlnd-fhuaulme ~]$ docker run -p 8080 -d talend/dataprep-dataset:1.0.M0-SNAPSHOT
-336c348ba4dd683d859938b3caee2d7f6c5742e33d06debce8fbbd57ff3de9c4
-[fhuaulme@tlnd-fhuaulme ~]$ docker run -p 8080 -d talend/dataprep-dataset:1.0.M0-SNAPSHOT
-578d7da8218abcf90f8ac4c72dab33c29311e202dbfca17ac3b74cd6737def89
-[fhuaulme@tlnd-fhuaulme ~]$ docker run -p 8080 -d talend/dataprep-dataset:1.0.M0-SNAPSHOT
-234a75e85f109d185efc6c6640a763869abc641ccf1f3bd03e105b9be1ea6801
-[fhuaulme@tlnd-fhuaulme ~]$ docker ps
-CONTAINER ID        IMAGE                                     COMMAND                CREATED             STATUS              PORTS                     NAMES
-234a75e85f10        talend/dataprep-dataset:1.0.M0-SNAPSHOT   "java -jar /dataprep   5 seconds ago       Up 4 seconds        0.0.0.0:49158->8080/tcp   angry_heisenberg
-578d7da8218a        talend/dataprep-dataset:1.0.M0-SNAPSHOT   "java -jar /dataprep   8 seconds ago       Up 7 seconds        0.0.0.0:49157->8080/tcp   thirsty_yonath
-336c348ba4dd        talend/dataprep-dataset:1.0.M0-SNAPSHOT   "java -jar /dataprep   10 seconds ago      Up 9 seconds        0.0.0.0:49156->8080/tcp   insane_hopper
-```
-There are 3 instances of the same image accessible from http://localhost:49156, http://localhost:49157, http://localhost:49158.
-
-## Documentation
-REST service is self documented. Once started, go to http://localhost:8080 (modify 8080 if you choose a different port)
-and then expand 'datasets' category. You can explore and even test the REST interface from this web page.
+You may look to unit test classes of this project for usage examples.
 
 ## License
 
