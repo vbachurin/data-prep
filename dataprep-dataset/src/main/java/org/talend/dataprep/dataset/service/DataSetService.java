@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.dataset.objects.ColumnMetadata;
 import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.dataset.objects.Quality;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.metrics.Timed;
@@ -182,11 +183,12 @@ public class DataSetService {
                         // Column quality
                         if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
                             generator.writeFieldName("quality"); //$NON-NLS-1
+                            Quality quality = column.getQuality();
                             generator.writeStartObject();
                             {
-                                generator.writeNumberField("empty", 5); //$NON-NLS-1
-                                generator.writeNumberField("invalid", 10); //$NON-NLS-1
-                                generator.writeNumberField("valid", 72); //$NON-NLS-1
+                                generator.writeNumberField("empty", quality.getEmpty()); //$NON-NLS-1
+                                generator.writeNumberField("invalid", quality.getInvalid()); //$NON-NLS-1
+                                generator.writeNumberField("valid", quality.getValid()); //$NON-NLS-1
                             }
                             generator.writeEndObject();
                         }

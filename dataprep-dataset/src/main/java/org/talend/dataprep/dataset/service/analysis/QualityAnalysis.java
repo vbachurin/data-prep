@@ -1,20 +1,19 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.dataset.objects.ColumnMetadata;
 import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.dataset.objects.Quality;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import java.io.IOException;
-import java.io.InputStream;
 
 @Component
 public class QualityAnalysis {
@@ -37,13 +36,14 @@ public class QualityAnalysis {
                     throw new IllegalStateException(
                             "Schema information must be computed before quality analysis can be performed.");
                 }
-                try (InputStream content = store.getAsRaw(metadata)) {
-                    IOUtils.toString(content); // Consumes raw content
-                    metadata.getLifecycle().qualityAnalyzed(true);
-                    repository.add(metadata);
-                } catch (IOException e) {
-                    throw new RuntimeException("Unable to read data set content.");
+                for (ColumnMetadata column : metadata.getRow().getColumns()) {
+                    Quality quality = column.getQuality();
+                    quality.setEmpty(5);
+                    quality.setInvalid(10);
+                    quality.setValid(72);
                 }
+                metadata.getLifecycle().qualityAnalyzed(true);
+                repository.add(metadata);
             } else {
                 LOGGER.info("Unable to analyze quality of data set #" + dataSetId + ": seems to be removed.");
             }

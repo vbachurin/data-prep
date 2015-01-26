@@ -13,6 +13,8 @@ import org.talend.dataprep.dataset.objects.type.Type;
  */
 public class ColumnMetadata {
 
+    private final Quality quality = new Quality();
+
     private String name;
 
     private String typeName;
@@ -63,6 +65,10 @@ public class ColumnMetadata {
         int result = name.hashCode();
         result = 31 * result + typeName.hashCode();
         return result;
+    }
+
+    public Quality getQuality() {
+        return quality;
     }
 
     public static class Builder {
