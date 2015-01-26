@@ -21,7 +21,7 @@ gulp.task('injector:css:preprocessor', function () {
   return gulp.src('src/index.scss')
     .pipe($.inject(gulp.src([
         'src/**/*.scss',
-        '!src/index.scss',
+        '!src/index.scss'
       ], {read: false}), {
       transform: function(filePath) {
         filePath = filePath.replace('src/', '');
@@ -47,7 +47,7 @@ gulp.task('injector:css', ['styles'], function () {
 });
 
 gulp.task('scripts', function () {
-  return gulp.src('src/{app,components}/**/*.js')
+  return gulp.src('src/**/*.js')
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'));
 });
@@ -70,7 +70,7 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
 });
 
 gulp.task('partials', ['consolidate'], function () {
-  return gulp.src(['src/{app,components}/**/*.html', '.tmp/{app,components}/**/*.html'])
+  return gulp.src(['src/**/*.html', '.tmp/**/*.html'])
     .pipe($.minifyHtml({
       empty: true,
       spare: true,
@@ -141,7 +141,16 @@ gulp.task('misc', function () {
 });
 
 gulp.task('clean', function (done) {
-  $.del(['dist/', '.tmp/'], done);
+  $.del(['dist/', '.tmp/', 'dev/'], done);
 });
 
 gulp.task('build', ['html', 'images', 'fonts', 'misc']);
+
+gulp.task('build:dev', ['clean','consolidate', 'injector:css', 'injector:js'], function(){
+  return gulp.src([
+    'src/**/*.*',
+    '.tmp/**/*.*',
+    '!src/**/*.scss',
+    '!src/**/*.jade',
+  ]).pipe(gulp.dest('dev/'));
+});
