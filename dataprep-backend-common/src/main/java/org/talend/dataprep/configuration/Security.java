@@ -1,4 +1,4 @@
-package org.talend.dataprep.dataset.configuration;
+package org.talend.dataprep.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

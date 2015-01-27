@@ -1,4 +1,4 @@
-package org.talend.dataprep.dataset;
+package org.talend.dataprep.transformation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,3 +14,4 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 }
+

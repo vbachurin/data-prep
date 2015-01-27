@@ -1,4 +1,4 @@
-package org.talend.dataprep.dataset.service;
+package org.talend.dataprep.configuration;
 
 import org.springframework.stereotype.Component;
 

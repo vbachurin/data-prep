@@ -26,6 +26,7 @@
     </repositories>
     <modules>
         <module>../dataprep-backend-common</module>
+        <module>../dataprep-transformation</module>
         <module>../dataprep-dataset</module>
         <module>../dataprep-metrics</module>
     </modules>
