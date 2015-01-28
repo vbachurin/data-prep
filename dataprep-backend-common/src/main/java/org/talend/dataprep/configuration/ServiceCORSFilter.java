@@ -13,7 +13,7 @@ public class ServiceCORSFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
-        if (request.getServletPath().startsWith("/datasets")) { //$NON-NLS-1
+        if (request.getServletPath().startsWith("/datasets") || request.getServletPath().startsWith("/transform")) { //$NON-NLS-1 //$NON-NLS-2$
             response.setHeader("Access-Control-Allow-Origin", "*"); //$NON-NLS-1 //$NON-NLS-2
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE"); //$NON-NLS-1 //$NON-NLS-2
             response.setHeader("Access-Control-Max-Age", "3600"); //$NON-NLS-1 //$NON-NLS-2
