@@ -8,8 +8,9 @@
 `npm install -g bower gulp`
 
 (You may have to use sudo before the command)
-3. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
-4. go to _checkouts/data-prep/dataprep-webapp_ and type the following command
+
+4. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
+5. go to _checkouts/data-prep/dataprep-webapp_ and type the following command
 
 `npm install`
 
@@ -23,7 +24,17 @@ when in folder _checkouts/data-prep/dataprep-webapp_ type the command
 This will precompile jade and scss templates, update the index.html with all the css, and javascript available. 
 Then it will start a web server usually on port 3000 and watch any code change to refresh the browser. 
 
-### Build
+### Build a standalone dev distrib
+
+run
+`gulp build:dev`
+
+### Build a standalone prod distrib
+WARNING : this is not working right now.
+run
+`gulp build`
+
+### Build a war
 in _checkouts/data-prep/dataprep-webapp_ call maven build
 
 `mvn clean package`
