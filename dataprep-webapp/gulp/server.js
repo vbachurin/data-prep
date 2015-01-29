@@ -35,13 +35,12 @@ gulp.task('serve', ['watch'], function () {
     '.tmp',
     'src'
   ], [
-    '.tmp/{app,components}/**/*.css',
-    'src/{app,components}/**/*.js',
+    '.tmp/**/*.css',
+    'src/**/*.js',
     'src/assets/images/**/*',
     '.tmp/*.html',
-    '.tmp/{app,components}/**/*.html',
-    'src/*.html',
-    'src/{app,components}/**/*.html'
+    '.tmp/**/*.html',
+    'src/**/*.html'
   ]);
 });
 

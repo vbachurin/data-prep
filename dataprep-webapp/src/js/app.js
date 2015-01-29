@@ -1,9 +1,7 @@
 'use strict';
 
-// Declare app level module which depends on views, and components
-var app = angular.module('data-prep', []);
-
-app.controller('RecordsCtrl', function($scope, $http) {
+angular.module('data-prep')
+.controller('RecordsCtrl', function($scope, $http) {
 	
 	$scope.openDataset = function(id) {
 		$http.get('http://10.42.10.99:8081/datasets/'+id+'?metadata=false').success(function(data) {
@@ -22,9 +20,8 @@ app.controller('RecordsCtrl', function($scope, $http) {
 	$scope.datasets = [];
 	$scope.listDatasets();
 	$scope.openDataset('4689c3b7-9276-4766-8352-689ecc082fe9');
-});
-
-app.controller('ColumnCtrl', ['$scope', function($scope) {
+})
+.controller('ColumnCtrl', ['$scope', function($scope) {
 	var MIN_PERCENT = 10;
 	
 	$scope.column.total = $scope.column.quality.valid + $scope.column.quality.empty + $scope.column.quality.invalid;
@@ -40,34 +37,32 @@ app.controller('ColumnCtrl', ['$scope', function($scope) {
 	
 	$scope.column.quality.valid_percent = 100 - $scope.column.quality.empty_percent - $scope.column.quality.invalid_percent;
 	$scope.column.quality.valid_percent_width = 100 - $scope.column.quality.empty_percent_width - $scope.column.quality.invalid_percent_width;
-}]);
-
-app.directive('datasetGrid', function() {
+}])
+.directive('datasetGrid', function() {
 	return {
 		restrict: 'E',
 		templateUrl: 'partials/dataset-grid.html'
 	};
-});
-app.directive('datasetColumn', function() {
+})
+.directive('datasetColumn', function() {
 	return {
 		restrict: 'A',
 		templateUrl: 'partials/dataset-column.html'
 	};
-});
-app.directive('importLocalFile', function() {
+})
+.directive('importLocalFile', function() {
 	return {
 		restrict: 'E',
 		templateUrl: 'partials/import-local-file.html'
 	};
-});
-app.directive('datasetsList', function() {
+})
+.directive('datasetsList', function() {
 	return {
 		restrict: 'E',
 		templateUrl: 'partials/datasets-list.html'
 	};
-});
-
-app.filter('upperCase', function(){
+})
+.filter('upperCase', function(){
    return function(input){
       var str = input;
       var res = str.toUpperCase();

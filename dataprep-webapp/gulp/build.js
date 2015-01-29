@@ -7,40 +7,38 @@ var $ = require('gulp-load-plugins')({
 });
 
 gulp.task('styles', ['wiredep', 'injector:css:preprocessor'], function () {
-  return gulp.src(['src/app/index.scss', 'src/app/vendor.scss'])
+  return gulp.src(['src/**/*.scss'])
     .pipe($.sass({style: 'expanded'}))
     .on('error', function handleError(err) {
       console.error(err.toString());
       this.emit('end');
     })
     .pipe($.autoprefixer())
-    .pipe(gulp.dest('.tmp/app/'));
+    .pipe(gulp.dest('.tmp/'));
 });
 
 gulp.task('injector:css:preprocessor', function () {
-  return gulp.src('src/app/index.scss')
+  return gulp.src('src/index.scss')
     .pipe($.inject(gulp.src([
-        'src/{app,components}/**/*.scss',
-        '!src/app/index.scss',
-        '!src/app/vendor.scss'
+        'src/**/*.scss',
+        '!src/index.scss',
       ], {read: false}), {
       transform: function(filePath) {
-        filePath = filePath.replace('src/app/', '');
-        filePath = filePath.replace('src/components/', '../components/');
+        filePath = filePath.replace('src/', '');
+//        filePath = filePath.replace('src/components/', '../components/');
         return '@import \'' + filePath + '\';';
       },
       starttag: '// injector',
       endtag: '// endinjector',
       addRootSlash: false
     }))
-    .pipe(gulp.dest('src/app/'));
+    .pipe(gulp.dest('src/'));
 });
 
 gulp.task('injector:css', ['styles'], function () {
   return gulp.src('src/index.html')
     .pipe($.inject(gulp.src([
-        '.tmp/{app,components}/**/*.css',
-        '!.tmp/app/vendor.css'
+        '.tmp/**/*.css'
       ], {read: false}), {
       ignorePath: '.tmp',
       addRootSlash: false
@@ -57,14 +55,17 @@ gulp.task('scripts', function () {
 gulp.task('injector:js', ['scripts', 'injector:css'], function () {
   return gulp.src(['src/index.html', '.tmp/index.html'])
     .pipe($.inject(gulp.src([
-      'src/{app,components}/**/*.js',
-      '!src/{app,components}/**/*.spec.js',
-      '!src/{app,components}/**/*_test.js',
-      '!src/{app,components}/**/*.mock.js'
-    ]).pipe($.angularFilesort()), {
-      ignorePath: 'src',
-      addRootSlash: false
-    }))
+		  'src/**/*.js',
+		  '!src/**/*.spec.js',
+		  '!src/**/*_test.js',
+		  '!src/**/*.mock.js',
+		  '!src/lib/**/*.*'
+		])
+//		.pipe($.debug({title: 'files to be injected:'}))
+		.pipe($.angularFilesort()), {
+		  ignorePath: 'src',
+		  addRootSlash: false
+		}))
     .pipe(gulp.dest('src/'));
 });
 

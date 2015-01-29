@@ -1,142 +1,74 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<html lang="en" ng-app="data-prep" class="no-js">
-<!--<![endif]-->
-<head>
+<!doctype html>
+<html lang="en" class="no-js" ng-app="data-prep">
+  <head>
+    <meta charset="utf-8">
+    <title>Talend - Data Shaker</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+	<link rel="shortcut icon" type="image/png" href="images/favicon.png">    
+    
+    <!-- build:css({.tmp,src}) styles/vendor.css -->
 
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- bower:css -->
+    <link rel="stylesheet" href="../bower_components/bootstrap-css-only/css/bootstrap.css" />
+    <link rel="stylesheet" href="../bower_components/angular-grid/ng-grid.css" />
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    
 
-<title>Talend - Data Shaker</title>
+    <!-- build:css({.tmp,src}) styles/app.css -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="css/main.css">
+    <!-- endinject -->
+    <!-- endbuild -->
 
-<link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap.min.css">
-<link rel="stylesheet" media="screen" href="lib/dependencies/css/bootstrap-theme.min.css">
-<link rel="stylesheet" media="screen" href="lib/dependencies/css/jquery.resizableColumns.css">
-<link rel="stylesheet" media="screen" href="lib/dependencies/css/ng-grid.min.css">
-<link rel="stylesheet" media="screen" href="css/main.css">
+    <!-- build:js scripts/modernizr.js -->
+    <script src="../bower_components/modernizr/modernizr.js"></script>
+    <!-- endbuild -->
+  </head>
+  <body>
+    <!--[if lt IE 10]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
 
-<link rel="shortcut icon" type="image/png" href="images/favicon.png">
+    <div ui-view></div>
 
-<link
-  href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic'
-  rel='stylesheet' type='text/css'>
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X');ga('send','pageview');
+    </script>
 
-<!-- build:js lib/third-party.js -->
-<!-- bower:js -->
-<script src="../bower_components/jquery/dist/jquery.js"></script>
-<script src="../bower_components/modernizr/modernizr.js"></script>
-<script src="../bower_components/angular/angular.js"></script>
-<script src="../bower_components/angular-animate/angular-animate.js"></script>
-<script src="../bower_components/angular-touch/angular-touch.js"></script>
-<script src="../bower_components/angular-sanitize/angular-sanitize.js"></script>
-<script src="../bower_components/angular-resource/angular-resource.js"></script>
-<script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-<script src="../bower_components/angular-grid/build/ng-grid.js"></script>
-<!-- endbower -->
-<!-- endbuild -->
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="../bower_components/jquery/jquery.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-resource/angular-resource.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-grid/build/ng-grid.js"></script>
+    <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
 
-<!-- build:js script/all.js -->
-<script src="js/table_decoration.js"></script>
-<script src="js/app.js"></script>
-<!-- endbuild -->
+    <!-- build:js({.tmp,src}) scripts/app.js -->
+    <!-- inject:js -->
+    <script src="js/table-decoration.js"></script>
+    <script src="index.js"></script>
+    <script src="js/app.js"></script>
+    <script src="home/home-controller.js"></script>
+    <!-- endinject -->
 
-</head>
+    <!-- inject:partials -->
+    <!-- angular templates will be automatically converted in js and inserted here -->
+    <!-- endinject -->
+    <!-- endbuild -->
 
-<body ng-controller="RecordsCtrl">
-
-  <div>
-	  <nav id="topbar" class="navbar navbar-default navbar-static-top" role="navigation">
-	  
-	    <div class="container">
-	    
-<!-- 	      <div class="navbar-header"> -->
-<!-- 	        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" -->
-<!-- 	          aria-controls="navbar"> -->
-<!-- 	          <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span -->
-<!-- 	            class="icon-bar"></span> -->
-<!-- 	        </button> -->
-<!-- 	      </div> -->
-	      
-	      <div id="navbar" class="navbar-collapse collapse t-top-banner">
-	      
-	        <ul class="nav navbar-nav">
-	          <li><a class="t-top-bar-logo shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-	          <form class="navbar-form navbar-right">
-	            <input type="text" class="form-control t-search-inputfield" placeholder="Search anything here...">
-	          </form>
-	        </ul>
-	        
-	        <ul class="nav navbar-nav navbar-right">
-	          <li><a class="t-top-bar_folder shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-	          <li><a class="t-top-bar_marketplace shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-	          <li><a class="t-top-bar_share shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-	          <li><a class="t-top-bar_notification shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-	          <li class="dropdown"><a href="#" class="dropdown-toggle shadowed t-top-bar_profile" data-toggle="dropdown" role="button"
-	            aria-expanded="false"></a>
-	            <ul class="dropdown-menu t-dropdown-menu" role="menu">
-	              <li><a href="#">Logout</a>
-				  <li class="divider"></li>
-	              <li><a href="#">Edit Profile</a></li>
-	            </ul>
-	          </li>
-	        </ul>
-	        
-	      </div>
-	  </nav>	      
-  </div>
-  <div>
-	  <nav id="navigationbar" class="navbar navbar-default navbar-static-top" role="navigation">
-	  
-	    <div class="container">
-	    
-<!-- 	      <div class="navbar-header"> -->
-<!-- 	        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" -->
-<!-- 	          aria-controls="navbar"> -->
-<!-- 	          <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span -->
-<!-- 	            class="icon-bar"></span> -->
-<!-- 	        </button> -->
-<!-- 	      </div> -->
-	      
-	      <div class="navbar-collapse collapse">
-	      
-	        <ul class="nav navbar-nav">
-		      <div >
-		  	    <section>
-			      <form class="form-inline" role="form">
-			        <div class="form-group">
-			          <button type="button" class="t-btn t-btn-import-new-file" id="button1" ng-click="loadFileJson()">Import New File</button>
-			        </div>
-		<!-- 	        FOR DEMO PURPOSE ONLY -->
-			        <div class="form-group">
-			        	<img src="images/images/breadcrumb.png" alt="this is a fake breadcrumb for demo purpose" height="42" width="565">
-			        </div>
-			      </form>
-		    	</section>
-		      </div>
-	        </ul>
-	      </div>
-	  </nav>	      
-  </div>
-
-  </div>
-  
-  <div class="container t-container">
-    <datasets-list></datasets-list>
-    <dataset-grid></dataset-grid>
-  </div>
-
-  <div id="footer" class="container">
-    <nav class="navbar navbar-default navbar-fixed-bottom footer">
-      <div class="navbar-inner navbar-content-center">
-        <span>© 2014 Talend. All Rights Reserved.</span>
-      </div>
-    </nav>
-  </div>
-
-</body>
-
+  </body>
 </html>
-

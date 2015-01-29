@@ -1,10 +1,27 @@
 # Talend Data-prep web-application aka Talend Data Shaker
 ## How to run
 ### Prerequisites
-1. Maven
-2. Java 7
-3. Tomcat
-4. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
+1. nodejs : http://nodejs.org/
+2. npm : it should be install with the above node
+3. install development tools using this command :
+ 
+`npm install -g bower gulp`
+
+(You may have to use sudo before the command)
+3. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
+4. go to _checkouts/data-prep/dataprep-webapp_ and type the following command
+
+`npm install`
+
+This will install all the dev package for dataprep as well as third party librairies required by this application.
+
+### Run
+when in folder _checkouts/data-prep/dataprep-webapp_ type the command
+
+`gulp serve`
+
+This will precompile jade and scss templates, update the index.html with all the css, and javascript available. 
+Then it will start a web server usually on port 3000 and watch any code change to refresh the browser. 
 
 ### Build
 in _checkouts/data-prep/dataprep-webapp_ call maven build
