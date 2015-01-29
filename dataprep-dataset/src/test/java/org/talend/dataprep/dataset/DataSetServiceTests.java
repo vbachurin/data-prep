@@ -68,6 +68,14 @@ public class DataSetServiceTests {
     }
 
     @Test
+    public void testCORSHeaders() throws Exception {
+        when().get("/datasets").then().header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
+                .header("Access-Control-Max-Age", "3600")
+                .header("Access-Control-Allow-Headers", "x-requested-with");
+    }
+
+    @Test
     public void testList() throws Exception {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
