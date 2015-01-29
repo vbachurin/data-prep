@@ -7,7 +7,7 @@
 ###############################################################################
 
 # create new docker ubuntu container
-sudo docker run -i -t ubuntu /bin/bash # drops you into container as root
+docker run -i ubuntu /bin/bash << EOF # drops you into container as root
 
 # update and install all required packages (no sudo required as root)
 # https://gist.github.com/isaacs/579814#file-only-git-all-the-way-sh
@@ -38,3 +38,4 @@ sudo npm install -g bower gulp
 # optional, check locations and packages are correct
 which node; node -v; which npm; npm -v; \
 npm ls -g --depth=0
+EOF
