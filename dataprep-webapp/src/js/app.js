@@ -38,28 +38,10 @@ angular.module('data-prep')
 	$scope.column.quality.valid_percent = 100 - $scope.column.quality.empty_percent - $scope.column.quality.invalid_percent;
 	$scope.column.quality.valid_percent_width = 100 - $scope.column.quality.empty_percent_width - $scope.column.quality.invalid_percent_width;
 }])
-.directive('datasetGrid', function() {
-	return {
-		restrict: 'E',
-		templateUrl: 'partials/dataset-grid.html'
-	};
-})
-.directive('datasetColumn', function() {
-	return {
-		restrict: 'A',
-		templateUrl: 'partials/dataset-column.html'
-	};
-})
 .directive('importLocalFile', function() {
 	return {
 		restrict: 'E',
 		templateUrl: 'partials/import-local-file.html'
-	};
-})
-.directive('datasetsList', function() {
-	return {
-		restrict: 'E',
-		templateUrl: 'partials/datasets-list.html'
 	};
 })
 .filter('upperCase', function(){
