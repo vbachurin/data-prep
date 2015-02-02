@@ -4,7 +4,7 @@
       <td colspan="3" class="t-demo-inventory-list-header">Sorted by Name</td>
    </tr>
   </thead>
-  <tbody ng-repeat="dataset in datasets" ng-click="openDataset(dataset.id)">
+  <tbody ng-repeat="dataset in datasets" ng-click="select({datasetid : dataset.id})">
     <tr>
       <td rowspan="2" class="t-demo-inventory-list-icon">
       	<img src="images/csv_file.png" class="t-demo-inventory-list-icon-img"/>
