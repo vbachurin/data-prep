@@ -11,9 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.dataset.objects.ColumnMetadata;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
-import org.talend.dataprep.dataset.objects.Quality;
+import org.talend.dataprep.api.ColumnMetadata;
+import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.Quality;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.metrics.Timed;
@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
+import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -36,16 +36,16 @@ public class DataSetService {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-DD-YYYY HH:mm"); //$NON-NLS-1
 
-    private final JsonFactory             factory     = new JsonFactory();
+    private final JsonFactory factory = new JsonFactory();
 
     @Autowired
-    JmsTemplate                           jmsTemplate;
+    JmsTemplate jmsTemplate;
 
     @Autowired
-    private DataSetMetadataRepository     dataSetMetadataRepository;
+    private DataSetMetadataRepository dataSetMetadataRepository;
 
     @Autowired
-    private DataSetContentStore           contentStore;
+    private DataSetContentStore contentStore;
 
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
@@ -81,10 +81,10 @@ public class DataSetService {
      * Write "general" information about the <code>dataSetMetadata</code> to the JSON <code>generator</code>. General
      * information covers:
      * <ul>
-     * <li>Id: see {@link org.talend.dataprep.dataset.objects.DataSetMetadata#getId()}</li>
-     * <li>Name: see {@link org.talend.dataprep.dataset.objects.DataSetMetadata#getName()}</li>
-     * <li>Author: see {@link org.talend.dataprep.dataset.objects.DataSetMetadata#getAuthor()}</li>
-     * <li>Date of creation: see {@link org.talend.dataprep.dataset.objects.DataSetMetadata#getCreationDate()}</li>
+     * <li>Id: see {@link org.talend.dataprep.api.DataSetMetadata#getId()}</li>
+     * <li>Name: see {@link org.talend.dataprep.api.DataSetMetadata#getName()}</li>
+     * <li>Author: see {@link org.talend.dataprep.api.DataSetMetadata#getAuthor()}</li>
+     * <li>Date of creation: see {@link org.talend.dataprep.api.DataSetMetadata#getCreationDate()}</li>
      * </ul>
      * </p>
      * <p>
@@ -92,8 +92,7 @@ public class DataSetService {
      * </p>
      * 
      * @param generator The JSON generator this methods writes to.
-     * @param dataSetMetadata The {@link org.talend.dataprep.dataset.objects.DataSetMetadata metadata} to get
-     * information from.
+     * @param dataSetMetadata The {@link org.talend.dataprep.api.DataSetMetadata metadata} to get information from.
      * @throws IOException In case method can't successfully write to <code>generator</code>.
      */
     private static void writeDataSetInformation(JsonGenerator generator, DataSetMetadata dataSetMetadata) throws IOException {
@@ -131,15 +130,15 @@ public class DataSetService {
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
     @Timed
     @VolumeMetered
-    public String create(@ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
-            @ApiParam(value = "content") InputStream dataSetContent,
-            HttpServletResponse response) {
+    public String create(
+            @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
+            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE); //$NON-NLS-1$
         final String id = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = id(id).name(name).author(getUserName()).created(new Date(System.currentTimeMillis()))
                 .build();
         // Save data set content
-        contentStore.store(dataSetMetadata, dataSetContent);
+        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
         // Create the new data set
         dataSetMetadataRepository.add(dataSetMetadata);
         // Queue events (schema analysis, content indexing for search...)
@@ -147,7 +146,7 @@ public class DataSetService {
         return id;
     }
 
-    @RequestMapping(value = "/datasets/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
     public void get(
@@ -218,8 +217,9 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
-    public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId,
-                       HttpServletResponse response) {
+    public void delete(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId,
+            HttpServletResponse response) {
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata != null) {
             contentStore.delete(metadata);
@@ -227,24 +227,63 @@ public class DataSetService {
         }
     }
 
-    @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/datasets/{id}/raw", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
     @Timed
     @VolumeMetered
-    public void update(
+    public void updateRawDataSet(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
-            @ApiParam(value = "content") InputStream dataSetContent,
-            HttpServletResponse response) {
+            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
         DataSetMetadata.Builder builder = id(dataSetId);
         if (name != null) {
             builder = builder.name(name);
         }
         DataSetMetadata dataSetMetadata = builder.build();
         // Save data set content
-        contentStore.store(dataSetMetadata, dataSetContent);
+        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
         dataSetMetadataRepository.add(dataSetMetadata);
         // Content was changed, so queue events (schema analysis, content indexing for search...)
         queueEvents(dataSetId, jmsTemplate);
     }
+
+    @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
+    @Timed
+    @VolumeMetered
+    public void updateContent(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
+            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
+            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
+        DataSetMetadata.Builder builder = id(dataSetId);
+        if (name != null) {
+            builder = builder.name(name);
+        }
+        DataSetMetadata dataSetMetadata = builder.build();
+        // Save data set content
+        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
+        dataSetMetadataRepository.add(dataSetMetadata);
+        // Content was changed, so queue events (schema analysis, content indexing for search...)
+        queueEvents(dataSetId, jmsTemplate);
+    }
+
+    @RequestMapping(value = "/datasets/{id}/versions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get data set versions", notes = "Get a list of data set versions.")
+    @Timed
+    public void listDataSetVersions(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId,
+            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
+            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
+        DataSetMetadata.Builder builder = id(dataSetId);
+        if (name != null) {
+            builder = builder.name(name);
+        }
+        DataSetMetadata dataSetMetadata = builder.build();
+        // Save data set content
+        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
+        dataSetMetadataRepository.add(dataSetMetadata);
+        // Content was changed, so queue events (schema analysis, content indexing for search...)
+        queueEvents(dataSetId, jmsTemplate);
+    }
+
 }

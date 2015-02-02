@@ -5,9 +5,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.dataset.objects.ColumnMetadata;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
-import org.talend.dataprep.dataset.objects.Quality;
+import org.talend.dataprep.api.ColumnMetadata;
+import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.Quality;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -18,13 +18,13 @@ import javax.jms.Message;
 @Component
 public class QualityAnalysis {
 
-    public static final Log   LOGGER = LogFactory.getLog(QualityAnalysis.class);
+    public static final Log LOGGER = LogFactory.getLog(QualityAnalysis.class);
 
     @Autowired
     DataSetMetadataRepository repository;
 
     @Autowired
-    DataSetContentStore       store;
+    DataSetContentStore store;
 
     @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
     public void indexDataSet(Message message) {

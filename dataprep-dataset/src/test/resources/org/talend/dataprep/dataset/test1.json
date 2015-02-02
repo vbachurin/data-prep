@@ -1,1 +1,76 @@
-{"columns":[{"id":"id","quality":{"empty":5,"invalid":10,"valid":72},"type":"integer"},{"id":"firstname","quality":{"empty":5,"invalid":10,"valid":72},"type":"string"},{"id":"lastname","quality":{"empty":5,"invalid":10,"valid":72},"type":"string"},{"id":"age","quality":{"empty":5,"invalid":10,"valid":72},"type":"integer"},{"id":"date-of-birth","quality":{"empty":5,"invalid":10,"valid":72},"type":"string"},{"id":"alive","quality":{"empty":5,"invalid":10,"valid":72},"type":"string"}],"records":[{"id":"1","firstname":"Lennon","lastname":"John","age":"40","date-of-birth":"10/09/1940","alive":"false"},{"id":"2","firstname":"Bowie","lastname":"David","age":"67","date-of-birth":"01/08/1947","alive":"true"}]}
+{
+  "columns": [
+    {
+      "id": "id",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "integer"
+    },
+    {
+      "id": "firstname",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "lastname",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "age",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "integer"
+    },
+    {
+      "id": "date-of-birth",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "alive",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    }
+  ],
+  "records": [
+    {
+      "id": "1",
+      "firstname": "Lennon",
+      "lastname": "John",
+      "age": "40",
+      "date-of-birth": "10/09/1940",
+      "alive": "false"
+    },
+    {
+      "id": "2",
+      "firstname": "Bowie",
+      "lastname": "David",
+      "age": "67",
+      "date-of-birth": "01/08/1947",
+      "alive": "true"
+    }
+  ]
+}

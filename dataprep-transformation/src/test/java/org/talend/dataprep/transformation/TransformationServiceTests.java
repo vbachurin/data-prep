@@ -70,4 +70,17 @@ public class TransformationServiceTests {
                 .post("/transform?actions=" + actions).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
+
+    @Test
+    public void testAction3() throws Exception {
+        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("action1.json"));
+        String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test2.json"));
+        long currentTimeMillis = System.currentTimeMillis();
+        {
+            given().body(initialContent).queryParam("Content-Type", "text/json").when()
+                            .post("/transform?actions=" + actions).asString();
+        }
+        System.out.println((System.currentTimeMillis() -currentTimeMillis));
+    }
+
 }

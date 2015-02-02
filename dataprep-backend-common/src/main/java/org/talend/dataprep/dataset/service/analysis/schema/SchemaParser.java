@@ -1,0 +1,25 @@
+package org.talend.dataprep.dataset.service.analysis.schema;
+
+import org.talend.dataprep.api.ColumnMetadata;
+
+import java.io.InputStream;
+import java.util.List;
+
+/**
+ * Represents a class able to parse a data set content and return a list of
+ * {@link org.talend.dataprep.api.ColumnMetadata metadata} out of it.
+ */
+public interface SchemaParser {
+
+    /**
+     * Parses the provided content and extract {@link org.talend.dataprep.api.ColumnMetadata column} information.
+     * Implementations are encouraged to returns as fast as possible from this method (possibly without processing the
+     * whole <code>content</code> parameter).
+     * 
+     * @param content The data set content. It should never be <code>null</code>.
+     * @return A list of {@link org.talend.dataprep.api.ColumnMetadata metadata}. When no column name/type can be
+     * created, implementations are expected to generate names and select
+     * {@link org.talend.dataprep.api.type.Types#STRING string} as type.
+     */
+    List<ColumnMetadata> parse(InputStream content);
+}

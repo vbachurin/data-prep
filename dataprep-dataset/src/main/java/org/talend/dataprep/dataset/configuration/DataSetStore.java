@@ -20,10 +20,10 @@ public class DataSetStore implements EnvironmentAware {
     private static final Log LOGGER = LogFactory.getLog(DataSetStore.class);
 
     @Value("${dataset.metadata.store}")
-    private String           metadataStoreConfiguration;
+    private String metadataStoreConfiguration;
 
     @Value("${dataset.content.store}")
-    private String           contentStoreConfiguration;
+    private String contentStoreConfiguration;
 
     private Environment environment;
 
@@ -31,13 +31,13 @@ public class DataSetStore implements EnvironmentAware {
     public DataSetContentStore getContentStore() {
         LOGGER.info("Data Set content store: " + contentStoreConfiguration);
         switch (contentStoreConfiguration) {
-            case "hdfs": //$NON-NLS-1$
-                String hdfsStoreLocation = environment.getProperty("dataset.content.store.hdfs.location"); //$NON-NLS-1$
-                return new HDFSContentStore(hdfsStoreLocation);
-            case "local": //$NON-NLS-1$
-            default:
-                String localStoreLocation = environment.getProperty("dataset.content.store.local.location"); //$NON-NLS-1$
-                return new LocalDataSetContentStore(localStoreLocation);
+        case "hdfs": //$NON-NLS-1$
+            String hdfsStoreLocation = environment.getProperty("dataset.content.store.hdfs.location"); //$NON-NLS-1$
+            return new HDFSContentStore(hdfsStoreLocation);
+        case "local": //$NON-NLS-1$
+        default:
+            String localStoreLocation = environment.getProperty("dataset.content.store.local.location"); //$NON-NLS-1$
+            return new LocalDataSetContentStore(localStoreLocation);
         }
     }
 
@@ -45,11 +45,11 @@ public class DataSetStore implements EnvironmentAware {
     public DataSetMetadataRepository getStore() {
         LOGGER.info("Data Set metadata store: " + metadataStoreConfiguration);
         switch (metadataStoreConfiguration) {
-            case "mongodb": //$NON-NLS-1$
-                return new MongoDataSetMetadataRepository();
-            case "in-memory": //$NON-NLS-1$
-            default:
-                return new InMemoryDataSetMetadataRepository();
+        case "mongodb": //$NON-NLS-1$
+            return new MongoDataSetMetadataRepository();
+        case "in-memory": //$NON-NLS-1$
+        default:
+            return new InMemoryDataSetMetadataRepository();
         }
     }
 

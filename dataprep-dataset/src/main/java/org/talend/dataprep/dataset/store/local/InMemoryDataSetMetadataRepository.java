@@ -1,6 +1,6 @@
 package org.talend.dataprep.dataset.store.local;
 
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import java.util.HashMap;

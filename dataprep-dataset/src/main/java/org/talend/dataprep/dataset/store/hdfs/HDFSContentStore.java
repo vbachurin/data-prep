@@ -7,8 +7,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.talend.dataprep.dataset.objects.DataSetContent;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.api.DataSetContent;
+import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.service.analysis.schema.Serializer;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 
@@ -19,11 +19,11 @@ import java.net.URI;
 
 public class HDFSContentStore implements DataSetContentStore {
 
-    private static final Log     LOGGER         = LogFactory.getLog(HDFSContentStore.class);
+    private static final Log LOGGER = LogFactory.getLog(HDFSContentStore.class);
 
     private static final String HDFS_DIRECTORY = "talend/tdp/datasets/"; //$NON-NLS-1$
 
-    private final FileSystem    fileSystem;
+    private final FileSystem fileSystem;
 
     public HDFSContentStore(String hdfsStoreLocation) {
         try {
@@ -39,7 +39,12 @@ public class HDFSContentStore implements DataSetContentStore {
     }
 
     @Override
-    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
+    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent) {
+
+    }
+
+    @Override
+    public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try (FSDataOutputStream outputStream = fileSystem.create(getPath(dataSetMetadata))) {
             IOUtils.copy(dataSetContent, outputStream);
             outputStream.flush();

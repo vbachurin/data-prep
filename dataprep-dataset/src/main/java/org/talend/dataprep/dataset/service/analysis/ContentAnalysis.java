@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -19,13 +19,13 @@ import java.io.InputStream;
 @Component
 public class ContentAnalysis {
 
-    private static final Log  LOG = LogFactory.getLog(ContentAnalysis.class);
+    private static final Log LOG = LogFactory.getLog(ContentAnalysis.class);
 
     @Autowired
     DataSetMetadataRepository repository;
 
     @Autowired
-    DataSetContentStore       store;
+    DataSetContentStore store;
 
     @JmsListener(destination = Destinations.CONTENT_ANALYSIS)
     public void indexDataSet(Message message) {

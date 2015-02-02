@@ -15,7 +15,8 @@
 		<module>dataprep-webapp</module>
 		<module>dataprep-schema-analysis</module>
 		<module>dataprep-backend</module>
-  </modules>
+		<module>dataprep-services</module>
+	</modules>
 
 	<build>
 		<plugins>

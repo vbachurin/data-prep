@@ -12,8 +12,8 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.talend.dataprep.dataset.objects.DataSetLifecycle;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.api.DataSetLifecycle;
+import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
@@ -29,7 +29,7 @@ import static com.jayway.restassured.path.json.JsonPath.from;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
+import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -38,13 +38,13 @@ import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
 public class DataSetServiceTests {
 
     @Value("${local.server.port}")
-    public int                port;
+    public int port;
 
     @Autowired
     DataSetMetadataRepository dataSetMetadataRepository;
 
     @Autowired
-    DataSetContentStore       contentStore;
+    DataSetContentStore contentStore;
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         Thread.sleep(1000); // TODO Ugly, need a client to lock until all operations are done
@@ -70,8 +70,7 @@ public class DataSetServiceTests {
     @Test
     public void testCORSHeaders() throws Exception {
         when().get("/datasets").then().header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
-                .header("Access-Control-Max-Age", "3600")
+                .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE").header("Access-Control-Max-Age", "3600")
                 .header("Access-Control-Allow-Headers", "x-requested-with");
     }
 
@@ -81,7 +80,11 @@ public class DataSetServiceTests {
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
         dataSetMetadataRepository.add(id(id1).name("name1").author("anonymous").created(new Date(0)).build());
-        when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[{\"id\":\"" + id1 + "\",\"name\":\"name1\",\"author\":\"anonymous\",\"created\":\"01-01-1970 00:00\"}]"));
+        when().get("/datasets")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(equalTo("[{\"id\":\"" + id1
+                        + "\",\"name\":\"name1\",\"author\":\"anonymous\",\"created\":\"01-01-1970 00:00\"}]"));
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
         dataSetMetadataRepository.add(id(id2).name("name2").author("anonymous").created(new Date(0)).build());
@@ -105,10 +108,10 @@ public class DataSetServiceTests {
         String expectedId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = id(expectedId).build();
         dataSetMetadataRepository.add(dataSetMetadata);
-        contentStore.store(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
+        contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
-        when().get("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
+        when().get("/datasets/{id}/content", expectedId).then().statusCode(HttpStatus.OK.value());
     }
 
     @Test
@@ -126,10 +129,18 @@ public class DataSetServiceTests {
     @Test
     public void testUpdate() throws Exception {
         String dataSetId = "123456";
-        when().put("/datasets/{id}", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId);
+    }
+
+    @Test
+    public void testVersions() throws Exception {
+        String dataSetId = "123456";
+        when().put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
+        assertQueueMessages(dataSetId);
+        when().put("/datasets/{id}/content", dataSetId).then().statusCode(HttpStatus.OK.value());
     }
 
     @Test
@@ -137,7 +148,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}/content?metadata=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
@@ -149,7 +160,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada2.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}/content?metadata=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
@@ -165,7 +176,7 @@ public class DataSetServiceTests {
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId);
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}/content?metadata=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test2.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);

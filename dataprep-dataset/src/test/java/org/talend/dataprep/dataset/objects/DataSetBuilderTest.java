@@ -2,15 +2,17 @@ package org.talend.dataprep.dataset.objects;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-import org.talend.dataprep.dataset.objects.type.Types;
+import org.talend.dataprep.api.ColumnMetadata;
+import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.type.Types;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.talend.dataprep.dataset.objects.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
+import static org.talend.dataprep.api.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
 
 public class DataSetBuilderTest {
 

@@ -4,8 +4,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.talend.dataprep.dataset.objects.DataSetContent;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.api.DataSetContent;
+import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.service.analysis.schema.Serializer;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 
@@ -33,7 +33,12 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     }
 
     @Override
-    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
+    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent) {
+
+    }
+
+    @Override
+    public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try {
             File dataSetFile = getFile(dataSetMetadata);
             org.apache.commons.io.FileUtils.touch(dataSetFile);

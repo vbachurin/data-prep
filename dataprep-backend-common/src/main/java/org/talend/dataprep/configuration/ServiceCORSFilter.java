@@ -24,18 +24,19 @@ import java.util.Set;
 @Component
 public class ServiceCORSFilter implements Filter, ApplicationContextAware {
 
-    public static final Log LOGGER = LogFactory.getLog(ServiceCORSFilter.class);
+    private static final Log LOGGER = LogFactory.getLog(ServiceCORSFilter.class);
+
     private final Set<String> serviceRootPaths = new HashSet<>();
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
         serviceRootPaths.stream().filter(sharedPath -> request.getServletPath().startsWith(sharedPath)).forEach(sharedPath -> {
-            response.setHeader("Access-Control-Allow-Origin", "*"); //$NON-NLS-1 //$NON-NLS-2
-            response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE"); //$NON-NLS-1 //$NON-NLS-2
-            response.setHeader("Access-Control-Max-Age", "3600"); //$NON-NLS-1 //$NON-NLS-2
-            response.setHeader("Access-Control-Allow-Headers", "x-requested-with"); //$NON-NLS-1 //$NON-NLS-2
-        });
+                response.setHeader("Access-Control-Allow-Origin", "*"); //$NON-NLS-1 //$NON-NLS-2$
+                response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE"); //$NON-NLS-1 //$NON-NLS-2$
+                response.setHeader("Access-Control-Max-Age", "3600"); //$NON-NLS-1 //$NON-NLS-2$
+                response.setHeader("Access-Control-Allow-Headers", "x-requested-with"); //$NON-NLS-1 //$NON-NLS-2$
+            });
         chain.doFilter(req, res);
     }
 
