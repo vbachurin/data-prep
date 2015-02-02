@@ -76,8 +76,6 @@ src/main/webapp/lib/bower
 temp
 build
 /.DS_Store
-.settings
-classpath
 node_modules/
 bower_components/
 .sass-cache/
@@ -85,3 +83,4 @@ bower_components/
 dist/
 dev/
 node/
+
