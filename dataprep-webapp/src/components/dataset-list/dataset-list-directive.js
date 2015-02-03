@@ -6,9 +6,12 @@ angular.module('data-prep')
 		restrict: 'E',
 		scope : {
 			datasets : '=',
-			select : '&onSelect'
+			select : '&onSelect',
+                        'delete' : '&onDelete'
 		},
+
 		templateUrl: 'components/dataset-list/dataset-list-directive.html'
 	};
 })
 ;
+

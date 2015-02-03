@@ -4,7 +4,7 @@
       <td colspan="3" class="t-demo-inventory-list-header">Sorted by Name</td>
    </tr>
   </thead>
-  <tbody ng-repeat="dataset in datasets" ng-click="select({datasetid : dataset.id})">
+  <tbody ng-repeat="dataset in datasets">
     <tr>
       <td rowspan="2" class="t-demo-inventory-list-icon">
       	<img src="images/csv_file.png" class="t-demo-inventory-list-icon-img"/>
@@ -18,7 +18,7 @@
               <td class="t-demo-right-divider"><button type="button" class="t-btn t-demo-btn t-demo-btn-pushto" ng-click=""></button></td>
               <td><button type="button" class="t-btn t-demo-btn t-demo-btn-favorite" ng-click=""></button></td>
               <td class="t-demo-right-divider"><button type="button" class="t-btn t-demo-btn t-demo-btn-share" ng-click=""></button></td>
-              <td class="t-demo-right-divider"><button type="button" class="t-btn t-demo-btn t-demo-btn-remove" ng-click=""></button></td>
+              <td class="t-demo-right-divider"><button type="button" class="t-btn t-demo-btn t-demo-btn-remove" ng-click="delete({dataset : dataset})"></button></td>
               <td><button type="button" class="t-btn t-demo-btn t-demo-btn-more" ng-click=""></button></td>
             </tr>	
           </tbody> 
@@ -30,3 +30,4 @@
     </tr>
   </tbody>
 </table>
+

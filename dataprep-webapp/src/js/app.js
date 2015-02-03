@@ -16,9 +16,17 @@ angular.module('data-prep')
 			$scope.datasets = data;
 		});
 	};
+
+	$scope.deleteDataset = function(dataset) {
+        	if (confirm('Are you sure to delete dataset "'+dataset.name+'" (Cannot be undone)?')) {
+			$http.delete('http://10.42.10.99:8081/datasets/'+dataset.id).success(function(data) {
+        	 		$scope.listDatasets();
+			});
+		}
+	};
 	
 	$scope.datasets = [];
-	$scope.listDatasets();
+        $scope.listDatasets();
 	$scope.openDataset('4689c3b7-9276-4766-8352-689ecc082fe9');
 })
 .controller('ColumnCtrl', ['$scope', function($scope) {
