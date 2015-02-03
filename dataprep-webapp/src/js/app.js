@@ -2,9 +2,11 @@
 
 angular.module('data-prep')
 .controller('RecordsCtrl', function($scope, $http) {
+
+        var datasetServiceUrl = 'http://10.42.10.99:8081/datasets';
 	
 	$scope.openDataset = function(id) {
-		$http.get('http://10.42.10.99:8081/datasets/'+id+'?metadata=false').success(function(data) {
+		$http.get(datasetServiceUrl+'/'+id+'?metadata=false').success(function(data) {
 			$scope.columns = data.columns;
 			$scope.records = data.records;
 //			loadTableFeedbackStyles();
@@ -12,14 +14,14 @@ angular.module('data-prep')
 	};
 	
 	$scope.listDatasets = function() {
-		$http.get('http://10.42.10.99:8081/datasets').success(function(data) {
+		$http.get(datasetServiceUrl).success(function(data) {
 			$scope.datasets = data;
 		});
 	};
 
 	$scope.deleteDataset = function(dataset) {
         	if (confirm('Are you sure to delete dataset "'+dataset.name+'" (Cannot be undone)?')) {
-			$http.delete('http://10.42.10.99:8081/datasets/'+dataset.id).success(function(data) {
+			$http.delete(datasetServiceUrl+'/'+dataset.id).success(function(data) {
         	 		$scope.listDatasets();
 			});
 		}
