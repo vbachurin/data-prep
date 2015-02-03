@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('data-prep')
-.controller('RecordsCtrl', function($scope, $http) {
+.controller('RecordsCtrl', function($rootScope, $scope, $http) {
 	
 	$scope.openDataset = function(id) {
 		$http.get('http://10.42.10.99:8081/datasets/'+id+'?metadata=false').success(function(data) {
@@ -10,15 +10,8 @@ angular.module('data-prep')
 //			loadTableFeedbackStyles();
 		});
 	};
-	
-	$scope.listDatasets = function() {
-		$http.get('http://10.42.10.99:8081/datasets').success(function(data) {
-			$scope.datasets = data;
-		});
-	};
-	
+
 	$scope.datasets = [];
-	$scope.listDatasets();
 	$scope.openDataset('4689c3b7-9276-4766-8352-689ecc082fe9');
 })
 .controller('ColumnCtrl', ['$scope', function($scope) {
