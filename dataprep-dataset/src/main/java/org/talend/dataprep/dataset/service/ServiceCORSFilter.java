@@ -15,7 +15,7 @@ public class ServiceCORSFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         if (request.getServletPath().startsWith("/datasets")) { //$NON-NLS-1
             response.setHeader("Access-Control-Allow-Origin", "*"); //$NON-NLS-1 //$NON-NLS-2
-            response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE"); //$NON-NLS-1 //$NON-NLS-2
+            response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT"); //$NON-NLS-1 //$NON-NLS-2
             response.setHeader("Access-Control-Max-Age", "3600"); //$NON-NLS-1 //$NON-NLS-2
             response.setHeader("Access-Control-Allow-Headers", "x-requested-with"); //$NON-NLS-1 //$NON-NLS-2
         }
