@@ -19,16 +19,14 @@ angular.module('data-prep')
 		});
 	};
 
-	$scope.deleteDataset = function(dataset) {
-        	if (confirm('Are you sure to delete dataset "'+dataset.name+'" (Cannot be undone)?')) {
-			$http.delete(datasetServiceUrl+'/'+dataset.id).success(function(data) {
-        	 		$scope.listDatasets();
-			});
-		}
-	};
+	$scope.deleteDataset = function(id) {
+		$http.delete(datasetServiceUrl+'/'+id).success(function(data) {
+            $scope.listDatasets();
+		});
+    };
 	
 	$scope.datasets = [];
-        $scope.listDatasets();
+    $scope.listDatasets();
 	$scope.openDataset('4689c3b7-9276-4766-8352-689ecc082fe9');
 })
 .controller('ColumnCtrl', ['$scope', function($scope) {
@@ -54,6 +52,23 @@ angular.module('data-prep')
 		templateUrl: 'partials/import-local-file.html'
 	};
 })
+.directive('ngConfirmClick', [
+    function(){
+        return {
+            priority: -1,
+            restrict: 'A',
+            link: function(scope, element, attrs){
+                element.bind('click', function(e){
+                    var message = attrs.ngConfirmClick;
+                    if(message && !confirm(message)){
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                    }
+                });
+            }
+        }
+    }
+])
 .filter('upperCase', function(){
    return function(input){
       var str = input;

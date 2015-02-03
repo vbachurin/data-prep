@@ -18,7 +18,7 @@
               <td class="t-demo-right-divider"><button type="button" class="t-btn t-demo-btn t-demo-btn-pushto" ng-click=""></button></td>
               <td><button type="button" class="t-btn t-demo-btn t-demo-btn-favorite" ng-click=""></button></td>
               <td class="t-demo-right-divider"><button type="button" class="t-btn t-demo-btn t-demo-btn-share" ng-click=""></button></td>
-              <td class="t-demo-right-divider"><button type="button" class="t-btn t-demo-btn t-demo-btn-remove" ng-click="delete({dataset : dataset})"></button></td>
+              <td class="t-demo-right-divider"><button type="button" class="t-btn t-demo-btn t-demo-btn-remove" ng-click="delete({datasetid : dataset.id})" ng-confirm-click="You are going to permanetly delete dataset '{{dataset.name}}'. This operation cannot be undone. Are you sure?"></button></td>
               <td><button type="button" class="t-btn t-demo-btn t-demo-btn-more" ng-click=""></button></td>
             </tr>	
           </tbody> 
