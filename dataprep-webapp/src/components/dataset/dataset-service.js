@@ -1,5 +1,4 @@
 /*global jQuery:false */
-/*global _:false */
 
 (function() {
     'use strict';
@@ -51,6 +50,23 @@
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
             });
+        };
+
+        /**
+         * Delete the dataset
+         * @param dataset
+         * @returns promise
+         */
+        this.deleteDataset = function(dataset) {
+            return $http.delete(RestURLs.datasetUrl + '/' + dataset.id);
+        };
+
+        /**
+         * Get the dataset content
+         * @param dataset
+         */
+        this.getData = function(dataset) {
+            return $http.get(RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({metadata: false}));
         };
     }
 

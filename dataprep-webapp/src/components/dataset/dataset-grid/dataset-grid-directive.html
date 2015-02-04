@@ -1,0 +1,19 @@
+<section>
+    <div ng-if="dataset">
+        File: {{ dataset.name }} | {{ data.length }} lines
+        <table class="table table-bordered table-hover table-condensed table-striped datagrid" id="mytable">
+            <thead>
+            <tr>
+                <th ng-repeat="column in data.columns track by $index" class="reset">
+                    <dataset-column-header column="column"></dataset-column-header>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="record in data.records track by $index">
+                <td ng-repeat="column in data.columns track by $index">{{ record[column.id] }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>

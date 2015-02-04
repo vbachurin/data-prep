@@ -3,14 +3,14 @@
 
     function DatasetsUploadList() {
         return {
-            templateUrl: 'components/dataset-upload-list/dataset-upload-list-directive.html',
+            templateUrl: 'components/dataset/dataset-upload-list/dataset-upload-list-directive.html',
             restrict: 'E',
             scope: {
                 datasets: '='
             }
-        }
+        };
     }
 
-    angular.module('data-prep')
+    angular.module('data-prep-dataset')
         .directive('datasetsUploadList', DatasetsUploadList);
 })();

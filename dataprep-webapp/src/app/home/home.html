@@ -1,10 +1,16 @@
-<div ng-controller="RecordsCtrl">
+<div>
 
     <div ng-include="'app/home/home-subheader.html'"></div>
 
     <div class="container t-container">
         <datasets-upload-list datasets="homeCtrl.uploadingDatasets"></datasets-upload-list>
-        <datasets-list datasets="datasets" on-select="openDataset(datasetid)" on-delete="deleteDataset(datasetid)"></datasets-list>
-        <dataset-grid></dataset-grid>
+
+        <datasets-list
+                datasets="homeCtrl.datasets"
+                on-select="homeCtrl.openDataset(dataset)"
+                on-delete="homeCtrl.deleteDataset(dataset)"></datasets-list>
+
+        <dataset-grid dataset="homeCtrl.selectedDataset"
+                      data="homeCtrl.selectedData"></dataset-grid>
     </div>
 </div>

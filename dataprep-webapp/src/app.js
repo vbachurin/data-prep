@@ -20,16 +20,13 @@ angular.module('data-prep',
         $stateProvider
             .state('nav', {
                 abstract: true,
-                templateUrl: "components/navbar/navbar.html"
+                templateUrl: 'components/navbar/navbar.html'
             })
             .state('nav.home', {
                 url: '/home',
                 templateUrl: 'app/home/home.html',
                 controller: 'HomeCtrl',
-                controllerAs: 'homeCtrl',
-                resolve: {datasets: function(DatasetService) {
-                    return DatasetService.getDatasets();
-                }}
+                controllerAs: 'homeCtrl'
             });
 
         $urlRouterProvider.otherwise('/home');

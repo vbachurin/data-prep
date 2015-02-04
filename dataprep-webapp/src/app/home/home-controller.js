@@ -1,7 +1,9 @@
+/*global _:false */
+
 (function() {
     'use strict';
 
-    function HomeCtrl($window, DatasetService, datasets) {
+    function HomeCtrl($window, DatasetService) {
         var vm = this;
 
         /**
@@ -12,8 +14,25 @@
 
         /**
          * Dataset list
+         * @type {Array}
          */
-        vm.datasets = datasets || [];
+        vm.datasets = [];
+        DatasetService.getDatasets()
+            .then(function(data) {
+                vm.datasets = data;
+            });
+
+        /**
+         * Selected dataset
+         * @type {{id: string, name: string}}
+         */
+        vm.selectedDataset = null;
+
+        /**
+         * Selected dataset data
+         * @type {{columns: Array, records: Array}}
+         */
+        vm.selectedData = null;
 
         /**
          * Refresh dataset list
@@ -37,11 +56,16 @@
          * Open the upload file input
          */
         vm.openDatasetFileSelection = function() {
-            document.getElementById('datasetFile').click();
+            angular.element('#datasetFile').trigger('click');
         };
 
+        /**
+         * Get unique name by adding '(num)' at the end
+         * @param name - requested name
+         * @returns string - the resulting name
+         */
         var getUniqueName = function(name) {
-            var cleanedName = name.replace(/\([0-1]+\)$/, "").trim();
+            var cleanedName = name.replace(/\([0-1]+\)$/, '').trim();
             var result = cleanedName;
 
             var index = 1;
@@ -66,12 +90,12 @@
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
-                .then(function(data) {
+                .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     vm.refreshDatasets();
                     $window.alert('Dataset "' + dataset.name + '" updated');
                 })
-                .catch(function(err) {
+                .catch(function() {
                     dataset.error = true;
                     $window.alert('An error occurred');
                 });
@@ -88,12 +112,12 @@
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
-                .then(function(data) {
+                .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     vm.refreshDatasets();
                     $window.alert('Dataset "' + dataset.name + '" created');
                 })
-                .catch(function(err) {
+                .catch(function() {
                     dataset.error = true;
                     $window.alert('An error occurred');
                 });
@@ -106,8 +130,8 @@
             var file = vm.datasetFile[0];
 
             // remove file extension and ask final name
-            var name = file.name.replace(/\.[^/.]+$/, "");
-            name = $window.prompt("Enter the dataset name", name) || name;
+            var name = file.name.replace(/\.[^/.]+$/, '');
+            name = $window.prompt('Enter the dataset name', name) || name;
 
             // if the name exists, ask for update or creation
             var existingDataset = getDatasetByName(name);
@@ -120,6 +144,32 @@
             }
         };
 
+        /**
+         * Delete a dataset
+         * @param dataset - the dataset to delete
+         */
+        vm.deleteDataset = function(dataset) {
+            DatasetService.deleteDataset(dataset)
+                .success(function() {
+                    if(dataset === vm.selectedDataset) {
+                        vm.selectedDataset = null;
+                        vm.selectedData = null;
+                    }
+                    vm.refreshDatasets();
+                });
+        };
+
+        /**
+         * Get the selected dataset
+         * @param dataset - the selected dataset
+         */
+        vm.openDataset = function(dataset) {
+            DatasetService.getData(dataset)
+                .success(function(data) {
+                    vm.selectedDataset = dataset;
+                    vm.selectedData = data;
+                });
+        };
     }
 
     angular.module('data-prep')
