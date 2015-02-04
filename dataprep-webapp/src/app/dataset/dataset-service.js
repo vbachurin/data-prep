@@ -1,14 +1,15 @@
 /*global jQuery:false */
+/*global _:false */
 
 (function() {
     'use strict';
 
-    function DatasetService($upload, $http) {
+    function DatasetService($upload, $http, RestURLs) {
         /**
          * Get the dataset list
          */
         this.getDatasets = function() {
-            return $http.get('http://10.42.10.99:8081/datasets')
+            return $http.get(RestURLs.datasetUrl)
                 .then(function(res) {
                     return res.data;
                 });
@@ -32,7 +33,7 @@
          */
         this.createDataset = function(dataset) {
             return $upload.http({
-                url: 'http://10.42.10.99:8081/datasets?' + jQuery.param({name: dataset.name}),
+                url: RestURLs.datasetUrl + '?' + jQuery.param({name: dataset.name}),
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
             });
@@ -45,7 +46,7 @@
          */
         this.updateDataset = function(dataset) {
             return $upload.http({
-                url: 'http://10.42.10.99:8081/datasets/' + dataset.id + '?' + jQuery.param({name: dataset.name}),
+                url: RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({name: dataset.name}),
                 method: 'PUT',
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
@@ -53,6 +54,6 @@
         };
     }
 
-    angular.module('data-prep')
+    angular.module('data-prep-dataset')
         .service('DatasetService', DatasetService);
 })();
