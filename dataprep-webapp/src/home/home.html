@@ -69,9 +69,18 @@
                                 <section>
                                     <form class="form-inline" role="form">
                                         <div class="form-group">
-                                            <button type="button" class="t-btn t-btn-import-new-file" id="button1"
-                                                    ng-click="loadFileJson()">Import New File
+                                            <button type="button" class="t-btn t-btn-import-new-file" id="button1" ng-click="homeCtrl.openDatasetFileSelection()">
+                                                Import New File
                                             </button>
+                                            <input type="file"
+                                                   id="datasetFile"
+                                                   name="datasetFile"
+                                                   class="ng-hide"
+                                                   ng-file-select
+                                                   accept="*.csv"
+                                                   ng-model="homeCtrl.datasetFile"
+                                                   ng-file-change="homeCtrl.uploadDatasetFile()"/>
+
                                         </div>
                                         <!-- 	        FOR DEMO PURPOSE ONLY -->
                                         <div class="form-group">
@@ -90,6 +99,7 @@
     </div>
 
     <div class="container t-container">
+        <datasets-upload-list datasets="homeCtrl.uploadingDatasets"></datasets-upload-list>
         <datasets-list datasets="datasets" on-select="openDataset(datasetid)" on-delete="deleteDataset(datasetid)"></datasets-list>
         <dataset-grid></dataset-grid>
     </div>

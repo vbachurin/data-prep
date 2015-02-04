@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('data-prep')
-.controller('RecordsCtrl', function($scope, $http) {
+    .controller('RecordsCtrl', function($rootScope, $scope, $http) {
 
         var datasetServiceUrl = 'http://10.42.10.99:8081/datasets';
 	
