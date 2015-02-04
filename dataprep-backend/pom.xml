@@ -29,6 +29,7 @@
         <module>../dataprep-transformation</module>
         <module>../dataprep-dataset</module>
         <module>../dataprep-metrics</module>
+        <module>../dataprep-services</module>
     </modules>
     <dependencyManagement>
         <dependencies>

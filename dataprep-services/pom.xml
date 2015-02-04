@@ -12,6 +12,11 @@
     <name>dataprep-services</name>
     <dependencies>
         <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-core</artifactId>
+            <version>1.4.0-RC6</version>
+        </dependency>
+        <dependency>
             <groupId>org.talend.dataprep</groupId>
             <artifactId>dataprep-metrics</artifactId>
         </dependency>
