@@ -12,6 +12,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.dataset.objects.ColumnMetadata;
 import org.talend.dataprep.dataset.objects.DataSetLifecycle;
 import org.talend.dataprep.dataset.objects.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -29,6 +30,7 @@ import static com.jayway.restassured.path.json.JsonPath.from;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -48,10 +50,21 @@ public class DataSetServiceTests {
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         Thread.sleep(1000); // TODO Ugly, need a client to lock until all operations are done
-        DataSetLifecycle lifecycle = dataSetMetadataRepository.get(dataSetId).getLifecycle();
+        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        DataSetLifecycle lifecycle = metadata.getLifecycle();
         assertThat(lifecycle.contentIndexed(), is(true));
         assertThat(lifecycle.schemaAnalyzed(), is(true));
         assertThat(lifecycle.qualityAnalyzed(), is(true));
+        // Quality number assertions (TODO: temporary, values to be provided by actual analysis)
+        // Test condition empty < invalid < valid
+        List<ColumnMetadata> columns = metadata.getRow().getColumns();
+        for (ColumnMetadata column : columns) {
+            int valid = column.getQuality().getValid();
+            int invalid = column.getQuality().getInvalid();
+            int empty = column.getQuality().getEmpty();
+            assertTrue(empty < invalid);
+            assertTrue(invalid < valid);
+        }
     }
 
     @Before
@@ -129,7 +142,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}?metadata=false&columns=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
@@ -141,7 +154,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada2.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}?metadata=false&columns=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
@@ -157,7 +170,7 @@ public class DataSetServiceTests {
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId);
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}?metadata=false&columns=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test2.json");
         assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);

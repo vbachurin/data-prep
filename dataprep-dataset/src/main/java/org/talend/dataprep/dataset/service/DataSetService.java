@@ -152,6 +152,7 @@ public class DataSetService {
     @Timed
     public void get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
+            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
@@ -173,32 +174,34 @@ public class DataSetService {
                     generator.writeEndObject();
                 }
                 // Write columns
-                generator.writeFieldName("columns"); //$NON-NLS-1
-                generator.writeStartArray();
-                for (ColumnMetadata column : dataSetMetadata.getRow().getColumns()) {
-                    generator.writeStartObject();
-                    {
-                        // Column name
-                        generator.writeStringField("id", column.getName()); //$NON-NLS-1
-                        // Column quality
-                        if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
-                            generator.writeFieldName("quality"); //$NON-NLS-1
-                            Quality quality = column.getQuality();
-                            generator.writeStartObject();
-                            {
-                                generator.writeNumberField("empty", quality.getEmpty()); //$NON-NLS-1
-                                generator.writeNumberField("invalid", quality.getInvalid()); //$NON-NLS-1
-                                generator.writeNumberField("valid", quality.getValid()); //$NON-NLS-1
+                if (columns) {
+                    generator.writeFieldName("columns"); //$NON-NLS-1
+                    generator.writeStartArray();
+                    for (ColumnMetadata column : dataSetMetadata.getRow().getColumns()) {
+                        generator.writeStartObject();
+                        {
+                            // Column name
+                            generator.writeStringField("id", column.getName()); //$NON-NLS-1
+                            // Column quality
+                            if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+                                generator.writeFieldName("quality"); //$NON-NLS-1
+                                Quality quality = column.getQuality();
+                                generator.writeStartObject();
+                                {
+                                    generator.writeNumberField("empty", quality.getEmpty()); //$NON-NLS-1
+                                    generator.writeNumberField("invalid", quality.getInvalid()); //$NON-NLS-1
+                                    generator.writeNumberField("valid", quality.getValid()); //$NON-NLS-1
+                                }
+                                generator.writeEndObject();
                             }
-                            generator.writeEndObject();
+                            // Column type
+                            String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getTypeName() : "N/A"; //$NON-NLS-1
+                            generator.writeStringField("type", typeName); //$NON-NLS-1
                         }
-                        // Column type
-                        String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getTypeName() : "N/A"; //$NON-NLS-1
-                        generator.writeStringField("type", typeName); //$NON-NLS-1
+                        generator.writeEndObject();
                     }
-                    generator.writeEndObject();
+                    generator.writeEndArray();
                 }
-                generator.writeEndArray();
                 // Records
                 generator.writeFieldName("records");
                 generator.flush(); // <- Important! Flush before dumping records!

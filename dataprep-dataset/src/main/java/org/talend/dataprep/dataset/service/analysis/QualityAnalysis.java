@@ -14,6 +14,7 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import java.util.Random;
 
 @Component
 public class QualityAnalysis {
@@ -38,9 +39,14 @@ public class QualityAnalysis {
                 }
                 for (ColumnMetadata column : metadata.getRow().getColumns()) {
                     Quality quality = column.getQuality();
-                    quality.setEmpty(5);
-                    quality.setInvalid(10);
-                    quality.setValid(72);
+                    // Computes random quality
+                    Random random = new Random();
+                    int valid = 50 + random.nextInt(20);
+                    int invalid = 25 + random.nextInt(5);
+                    int empty = 100 - valid - invalid;
+                    quality.setValid(valid);
+                    quality.setInvalid(invalid);
+                    quality.setEmpty(empty);
                 }
                 metadata.getLifecycle().qualityAnalyzed(true);
                 repository.add(metadata);
