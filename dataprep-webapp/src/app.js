@@ -18,8 +18,12 @@ angular.module('data-prep',
 
     .config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider
-            .state('home', {
-                url: '/',
+            .state('nav', {
+                abstract: true,
+                templateUrl: "components/navbar/navbar.html"
+            })
+            .state('nav.home', {
+                url: '/home',
                 templateUrl: 'app/home/home.html',
                 controller: 'HomeCtrl',
                 controllerAs: 'homeCtrl',
@@ -28,6 +32,6 @@ angular.module('data-prep',
                 }}
             });
 
-        $urlRouterProvider.otherwise('/');
+        $urlRouterProvider.otherwise('/home');
     })
 ;
