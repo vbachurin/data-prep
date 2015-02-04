@@ -1,0 +1,74 @@
+<div class="header dropdown">
+	<div class="dropdown-toggle t-dropdown-toggle-header" type="button" id="dropdownHeader" data-toggle="dropdown" aria-expanded="true"  ng-controller="ColumnCtrl">
+	  <div>
+	    <div class=" header_title">{{column.id}}</div>
+	    <div class=" header_caret"><span class=" dropdown-toggle caret"></span></div>
+	  </div>
+	  <div class=" header_type">{{column.type}}</div>
+	</div>
+
+<!-- 	START DROPDOWN LIST FOR HEADER DROPDOWN -->
+      <ul class="dropdown-menu t-dropdown-menu" role="menu" aria-labelledby="dropdownHeader">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Hide Column {{column.id | upperCase }}</a></li>
+        <li class="divider"></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Split first Space</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Uppercase</a></li>
+      </ul>
+<!--     END DROPDOWN LIST -->
+
+</div>
+
+
+<div class="quality_bar">
+   <div  class="record_OK"
+         style="width: {{column.quality.valid_percent_width}}%;"
+         title="{{column.quality.valid}} valid records ({{column.quality.valid_percent}}%)">
+      
+<!-- 	START DROPDOWN LIST FOR VALID VALUES -->
+     <div class="dropdown">
+      <div class="dropdown-toggle t-dropdown-toggle-quality-bar" type="button" id="dropdownValid" data-toggle="dropdown" aria-expanded="true"></div>
+      <ul class="dropdown-menu t-dropdown-menu" role="menu" aria-labelledby="dropdownValid">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Select Valid Records for {{column.id | upperCase }}</a></li>
+      </ul>
+     </div>
+<!--     END DROPDOWN LIST -->
+  
+   </div>
+
+   <div class="record_EMPTY" style="width: {{column.quality.empty_percent_width}}%;"
+        title="{{column.quality.empty}} empty records ({{column.quality.empty_percent}}%)"> 
+   
+<!-- 	START DROPDOWN LIST FOR EMPTY VALUES -->
+     <div class="dropdown">
+      <div class="dropdown-toggle t-dropdown-toggle-quality-bar" type="button" id="dropdownEmpty" data-toggle="dropdown" aria-expanded="true"></div>
+      <ul class="dropdown-menu t-dropdown-menu" role="menu" aria-labelledby="dropdownEmpty">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Select Empty Records for {{column.id | upperCase }}</a></li>
+        <li class="divider"></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Fill Empty records with Top adjacent value</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Fill Empty records with Bottom adjacent value</a></li>
+      </ul>
+     </div>
+<!--     END DROPDOWN LIST -->
+   
+   </div>
+   
+  <div
+    class="record_NOK"
+    style="width: {{column.quality.invalid_percent_width}}%;"
+    title="{{column.quality.invalid}} invalid records ({{column.quality.invalid_percent}}%)">
+       
+<!-- 	START DROPDOWN LIST FOR INVALID VALUES -->
+     <div class="dropdown">
+      <div class="dropdown-toggle t-dropdown-toggle-quality-bar" type="button" id="dropdownInvalid" data-toggle="dropdown" aria-expanded="true"></div>
+      <ul class="dropdown-menu t-dropdown-menu" role="menu" aria-labelledby="dropdownInvalid">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Select Invalid Records for {{column.id | upperCase }}</a></li>
+        <li class="divider"></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Replace Invalid Records with Top adjacent value</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Replace Invalid Records with Bottom adjacent value</a></li>
+      </ul>
+     </div>
+<!--     END DROPDOWN LIST -->
+  
+  </div>
+  
+</div>

@@ -76,5 +76,11 @@ src/main/webapp/lib/bower
 temp
 build
 /.DS_Store
-.settings
-.classpath
+node_modules/
+bower_components/
+.sass-cache/
+.tmp/
+dist/
+dev/
+node/
+
