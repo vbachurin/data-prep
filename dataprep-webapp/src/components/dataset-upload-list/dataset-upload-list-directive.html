@@ -1,0 +1,18 @@
+<table>
+    <tbody >
+    <tr data-ng-repeat-start="dataset in datasets track by $index">
+        <td rowspan="2" class="t-demo-inventory-list-icon">
+            <img src="images/csv_file.png" class="t-demo-inventory-list-icon-img"/>
+        </td>
+        <td class="t-demo-inventory-list-name">{{dataset.name}}</td>
+    </tr>
+    <tr data-ng-repeat-end data-ng-switch="dataset.error">
+        <td data-ng-switch-when="false" class="t-demo-inventory-list-description">
+            {{ dataset.progress }} %
+        </td>
+        <td data-ng-switch-when="true" class="t-demo-inventory-list-description error">
+            Upload error. <a>Retry <i class="glyphicon glyphicon-retweet"></i></a>
+        </td>
+    </tr>
+    </tbody>
+</table>
