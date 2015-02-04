@@ -34,7 +34,7 @@ import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
 public class DataSetService {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-DD-YYYY HH:mm"); //$NON-NLS-1
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
 
     private final JsonFactory             factory     = new JsonFactory();
 
