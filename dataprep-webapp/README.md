@@ -20,23 +20,22 @@ This will install all the dev package for dataprep as well as third party librai
 The file structure is inspired by yeoman project called generator-gulp-angular : https://github.com/Swiip/generator-gulp-angular
 
 <pre>
-.
-├── README.md                               <- this file.
-├── bower.json                              <- javascript app external dependencies.
-├── bower.json_latest_angular_no_boostrap   <- js dependencies without bootstrap and using the latest angular (no used today).
-├── bower_components                        <- untracked generated folder where external javascript dependencies are located.
-├── coverage                                <- untracked generated folder where karma istanbul plugin will put coverage files.
-├── dev                                     <- untracked generated folder where you find an autonomous deployment of the app dev.
-├── docker.base.dev.img                     <- dockefile generated to create a base image with npm, bower, git.
-├── gulp                                    <- folder that contains all build files.
-├── gulpfile.js                             <- gulp initial file.
-├── node                                    <- untracked generated folder created when using maven.
-├── node_modules                            <- untracked generated folder for gulp build node modules.
-├── karma.conf.js                           <- unit tests configuration.
-├── package.json                            <- npm description for build tools dependencies.
-├── pom.xml                                 <- maven description file.
-├── src                                     <- sources.
-└── target                                  <- untracked generated folder for maven build.
+├── README.md                               - this file
+├── bower.json                              - javascript app external dependencies
+├── bower.json_latest_angular_no_boostrap   - js dependencies without bootstrap and using the latest angular (no used today)
+├── bower_components/                       - untracked generated folder where external javascript dependencies are located
+├── coverage/                               - untracked generated folder where karma istanbul plugin will put coverage files
+├── dev/                                    - untracked generated folder where you find an autonomous deployment of the app dev
+├── docker.base.dev.img/                    - dockefile generated to create a base image with npm, bower, git
+├── gulp/                                   - folder that contains all build files
+├── gulpfile.js                             - gulp initial file
+├── node/                                   - untracked generated folder created when using maven
+├── node_modules/                           - untracked generated folder for gulp build node modules
+├── karma.conf.js                           - unit tests configuration
+├── package.json                            - npm description for build tools dependencies
+├── pom.xml                                 - maven description file
+├── src/                                    - sources
+└── target/                                 - untracked generated folder for maven build
 </pre>
 
 
@@ -44,58 +43,57 @@ The file structure is inspired by yeoman project called generator-gulp-angular :
 The source file structure is based on the [Best Practice Recommendations for Angular App Structure](https://docs.google.com/document/d/1XXMvReO8-Awi1EZXAXS4PzDzdNvV6pGcuaF4Q9821Es/pub), except for css files that have their own structure
 
 <pre>
-.
-├── app                                         <- app source folder
-│   ├── home                                    <- home page sources
-│       ├── home.html                           <- home page
-│       ├── home-controller.js                  <- home page controller
-│       ├── home-controller-spec.js             <- home page controller unit tests
-│       ├── home-subheader.html                 <- home page subheader included in home.html
-│   ├── ...                                     <- other page folder
+├── app                                         - app source folder
+│   ├── home                                    - home page sources
+│       ├── home.html                           - home page
+│       ├── home-controller.js                  - home page controller
+│       ├── home-controller-spec.js             - home page controller unit tests
+│       ├── home-subheader.html                 - home page subheader included in home.html
+│   ├── ...                                     - other page folder
 │
-├── assets                                      <- assets source folder
-│   ├── fonts                                   <- fonts folder
-│   └── images                                  <- images folder
+├── assets                                      - assets source folder
+│   ├── fonts                                   - fonts folder
+│   └── images                                  - images folder
 │
-├── components                                  <- reusable components folder
-│   ├── dataset                                 <- dataset module folder
-│       ├── dataset-grid                        <- dataset module folder
+├── components                                  - reusable components folder
+│   ├── dataset                                 - dataset module folder
+│       ├── dataset-grid                        - dataset module folder
 │           ├── ...
-│           ├── dataset-grid-directive.html     <- data grid directive template
-│           ├── dataset-grid-directive.js       <- data grid directive
-│           └── dataset-grid-directive.spec.js  <- data grid directive unit tests
+│           ├── dataset-grid-directive.html     - data grid directive template
+│           ├── dataset-grid-directive.js       - data grid directive
+│           └── dataset-grid-directive.spec.js  - data grid directive unit tests
 │       ├── ...
-│       ├── dataset-module.js                   <- dataset angular module
-│       ├── dataset-service.js                  <- dataset angular service registered in dataset module
-│       └── dataset-service.spec.js             <- dataset service unit tests
+│       ├── dataset-module.js                   - dataset angular module
+│       ├── dataset-service.js                  - dataset angular service registered in dataset module
+│       └── dataset-service.spec.js             - dataset service unit tests
 │
-│   ├── utils                                   <- filters, constants, ...
-│   ├── ...                                     <- other component folder
+│   ├── utils                                   - filters, constants, ...
+│   ├── ...                                     - other component folder
 │
-├── css                                         <- style folder
-│   ├── base                                    <- base styles (reset, typography, ...)
-│       ├── _base.scss                          <- file that only imports all base styles
-│       └── ...                                 <- other base styles, imported in _base.scss
-│   ├── components                              <- components styles (Buttons, Carousel, Cover, Dropdown, ...)
-│       ├── _components.scss                    <- file that only imports all components styles
-│       └── ...                                 <- other components styles, imported in _components.scss
-│   ├── layout                                  <- layout styles (Navigation, Grid system, Header, Footer, Sidebar, Forms, ...)
-│       ├── _layout.scss                        <- file that only imports all layout styles
-│       └── ...                                 <- other layout styles, imported in _layout.scss
-│   ├── pages                                   <- pages specific styles (home page, ...)
-│       ├── _pages.scss                         <- file that only imports all pages styles
-│       └── ...                                 <- other pages styles, imported in _pages.scss
-│   ├── utils                                   <- utils styles (Mixins, Colors, ...)
-│       ├── _utils.scss                         <- file that only imports all utils styles
-│       └── ...                                 <- other utils styles, imported in _utils.scss
-│   ├── vendors                                 <- vendors styles (third party frameworks)
-│       ├── _vendors.scss                       <- file that only imports all vendors styles
-│       └── ...                                 <- other vendors styles, imported in _vendors.scss
-│   └── main.scss                               <- main scss that only imports _base.scss, _components.scss, _layout.scss, _pages.scss, _utils.scss, _vendors.scss
+├── css                                         - style folder
+│   ├── base                                    - base styles (reset, typography, ...)
+│       ├── _base.scss                          - file that only imports all base styles
+│       └── ...                                 - other base styles, imported in _base.scss
+│   ├── components                              - components styles (Buttons, Carousel, Cover, Dropdown, ...)
+│       ├── _components.scss                    - file that only imports all components styles
+│       └── ...                                 - other components styles, imported in _components.scss
+│   ├── layout                                  - layout styles (Navigation, Grid system, Header, Footer, Sidebar, Forms, ...)
+│       ├── _layout.scss                        - file that only imports all layout styles
+│       └── ...                                 - other layout styles, imported in _layout.scss
+│   ├── pages                                   - pages specific styles (home page, ...)
+│       ├── _pages.scss                         - file that only imports all pages styles
+│       └── ...                                 - other pages styles, imported in _pages.scss
+│   ├── utils                                   - utils styles (Mixins, Colors, ...)
+│       ├── _utils.scss                         - file that only imports all utils styles
+│       └── ...                                 - other utils styles, imported in _utils.scss
+│   ├── vendors                                 - vendors styles (third party frameworks)
+│       ├── _vendors.scss                       - file that only imports all vendors styles
+│       └── ...                                 - other vendors styles, imported in _vendors.scss
+│   └── main.scss                               - main scss that only imports _base.scss, _components.scss, _layout.scss, _pages.scss, _utils.scss, _vendors.scss
 │
-├── app.js                                      <- main module
-├── app.spec.js                                 <- main module config unit tests
-└── index.html                                  <- main page
+├── app.js                                      - main module
+├── app.spec.js                                 - main module config unit tests
+└── index.html                                  - main page
 </pre>
 
 ### build structure
