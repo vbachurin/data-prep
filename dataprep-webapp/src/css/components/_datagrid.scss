@@ -1,0 +1,27 @@
+.datagrid {
+  th {
+    background-color: $datagrid-header-bkg;
+    color: $datagrid-header;
+    text-transform: uppercase;
+    font-weight: normal;
+    font-size: .90em;
+    cursor: default;
+
+    &:hover {
+      background-color: $datagrid-header-bkg-active;
+      cursor: default;
+    }
+  }
+
+  td {
+    font-family: "Courier New";
+    color: $datagrid-cell;
+    font-size: .80em;
+    height: 20px;
+
+    &:hover {
+      background-color: $datagrid-cell-bkg-active;
+      cursor: cell;
+    }
+  }
+}
