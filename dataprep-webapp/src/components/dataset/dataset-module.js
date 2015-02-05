@@ -1,5 +1,5 @@
 (function() {
     'use strict';
 
-    angular.module('data-prep-dataset', []);
+    angular.module('data-prep-dataset', ['data-prep-utils']);
 })();

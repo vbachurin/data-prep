@@ -66,7 +66,10 @@
          * @param dataset
          */
         this.getData = function(dataset) {
-            return $http.get(RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({metadata: false}));
+            return $http.get(RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({metadata: false}))
+                .then(function(res) {
+                    return res.data;
+                });
         };
     }
 

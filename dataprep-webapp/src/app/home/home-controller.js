@@ -17,10 +17,6 @@
          * @type {Array}
          */
         vm.datasets = [];
-        DatasetService.getDatasets()
-            .then(function(data) {
-                vm.datasets = data;
-            });
 
         /**
          * Selected dataset
@@ -150,7 +146,7 @@
          */
         vm.deleteDataset = function(dataset) {
             DatasetService.deleteDataset(dataset)
-                .success(function() {
+                .then(function() {
                     if(dataset === vm.selectedDataset) {
                         vm.selectedDataset = null;
                         vm.selectedData = null;
@@ -165,11 +161,13 @@
          */
         vm.openDataset = function(dataset) {
             DatasetService.getData(dataset)
-                .success(function(data) {
+                .then(function(data) {
                     vm.selectedDataset = dataset;
                     vm.selectedData = data;
                 });
         };
+
+        vm.refreshDatasets();
     }
 
     angular.module('data-prep')
