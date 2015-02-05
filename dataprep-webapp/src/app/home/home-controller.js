@@ -1,5 +1,3 @@
-/*global _:false */
-
 (function() {
     'use strict';
 

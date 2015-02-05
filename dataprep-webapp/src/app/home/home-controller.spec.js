@@ -20,7 +20,7 @@ describe('Home controller', function() {
             return ctrl;
         };
 
-        spyOn(DatasetService, 'getDatasets').and.callFake(function() {return $q.when(datasets)});
+        spyOn(DatasetService, 'getDatasets').and.callFake(function() {return $q.when(datasets);});
     }));
 
     it('should get dataset on creation', inject(function(DatasetService) {
@@ -74,8 +74,8 @@ describe('Home controller', function() {
 
             //then
             expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
-            expect(ctrl.selectedDataset).toBeTruthy()
-            expect(ctrl.selectedData).toBeTruthy()
+            expect(ctrl.selectedDataset).toBeTruthy();
+            expect(ctrl.selectedData).toBeTruthy();
             expect(DatasetService.getDatasets).toHaveBeenCalled();
         }));
 
@@ -97,5 +97,5 @@ describe('Home controller', function() {
             expect(ctrl.selectedDataset).toBe(dataset);
             expect(ctrl.selectedData).toBeTruthy(data);
         }));
-    })
+    });
 });

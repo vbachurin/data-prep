@@ -6,8 +6,7 @@
             'data-prep-utils', //utils components: constants, filters, ...
             'data-prep-dataset', //dataset getter, manipulation, etc
 
-            'ui.router',
-            'angularFileUpload' //file upload with progress support
+            'ui.router'
         ])
 
         .config(function ($stateProvider, $urlRouterProvider) {
