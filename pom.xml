@@ -16,7 +16,6 @@
 -->
 		<module>dataprep-schema-analysis</module>
 		<module>dataprep-backend</module>
-		<module>dataprep-services</module>
 	</modules>
 
 	<build>
