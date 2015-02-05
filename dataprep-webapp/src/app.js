@@ -3,19 +3,12 @@
 
     angular.module('data-prep',
         [
-            'data-prep-utils', //utils, constants
+            'data-prep-utils', //utils components: constants, filters, ...
             'data-prep-dataset', //dataset getter, manipulation, etc
 
             'ui.router',
             'angularFileUpload' //file upload with progress support
         ])
-
-        .config(['$compileProvider', 'disableDebug', function ($compileProvider, disableDebug) {
-            if(disableDebug) {
-                console.log('disable debug mode');
-                $compileProvider.debugInfoEnabled(false);
-            }
-        }])
 
         .config(function ($stateProvider, $urlRouterProvider) {
             $stateProvider
