@@ -19,7 +19,7 @@
 .navbar-inverse .navbar-nav>.open>a:hover,
 .navbar-inverse .navbar-nav>.open>a:focus,
 .navbar-inverse .navbar-nav>.active>a {
-  background-image: url('../images/top_link_profile.png');
+  background-image: url('../../assets/images/top_link_profile.png');
 }
 
 #topbar.navbar-default {
@@ -51,38 +51,38 @@
 }
 
 .t-top-bar-logo {
-  background: url('../../images/talend_logo.png') no-repeat;
+  background: url('../../assets/images/talend_logo.png') no-repeat;
   background-size: contain;
   width: 130px;
   margin: 4px 100px -8px -12px !important;
 }
 
 .t-top-bar_folder {
-  background: url('../../images/top_link_folder.png') no-repeat;
+  background: url('../../assets/images/top_link_folder.png') no-repeat;
   margin: 3px 10px -10px 10px !important;
   width: 40px;
 }
 
 .t-top-bar_marketplace {
-  background: url('../../images/top_link_marketplace.png') no-repeat;
+  background: url('../../assets/images/top_link_marketplace.png') no-repeat;
   margin: 3px 10px -10px 10px !important;
   width: 40px;
 }
 
 .t-top-bar_share {
-  background: url('../../images/top_link_share.png') no-repeat;
+  background: url('../../assets/images/top_link_share.png') no-repeat;
   margin: 3px 40px -10px 10px !important;
   width: 40px;
 }
 
 .t-top-bar_notification {
-  background: url('../../images/top_link_notification.png') no-repeat;
+  background: url('../../assets/images/top_link_notification.png') no-repeat;
   margin: 3px 10px -10px 10px !important;
   width: 40px;
 }
 
 .t-top-bar_profile {
-  background: url('../../images/top_link_profile.png') no-repeat;
+  background: url('../../assets/images/top_link_profile.png') no-repeat;
   margin: 3px 10px -10px 10px !important;
   padding-bottom: 20px !important;
   width: 52px;
@@ -111,30 +111,30 @@ screen and (-webkit-min-device-pixel-ratio: 1.5),
 screen and (-moz-min-device-pixel-ratio: 1.5),
 screen and (min-device-pixel-ratio: 1.5) {
   .t-top-bar-logo {
-    background-image: url('../../images/high_res/talend_logo.png');
+    background-image: url('../../assets/images/high_res/talend_logo.png');
   }
   .t-top-bar_folder {
-    background-image: url('../../images/high_res/top_link_folder.png');
+    background-image: url('../../assets/images/high_res/top_link_folder.png');
     background-size: contain;
   }
   .t-top-bar_marketplace {
-    background-image: url('../../images/high_res/top_link_marketplace.png');
+    background-image: url('../../assets/images/high_res/top_link_marketplace.png');
     background-size: contain;
   }
   .t-top-bar_share {
-    background-image: url('../../images/high_res/top_link_share.png');
+    background-image: url('../../assets/images/high_res/top_link_share.png');
     background-size: contain;
   }
   .t-top-bar_notification {
-    background-image: url('../../images/high_res/top_link_notification.png');
+    background-image: url('../../assets/images/high_res/top_link_notification.png');
     background-size: contain;
   }
   .t-top-bar_profile {
-    background-image: url('../../images/high_res/top_link_profile.png');
+    background-image: url('../../assets/images/high_res/top_link_profile.png');
     background-size: contain;
   }
   .t-btn-import-new-file{
-    background-image: url('../../images/high_res/import_new_file.png');
+    background-image: url('../../assets/images/high_res/import_new_file.png');
     background-size: 26px 24px;
   }
 }
