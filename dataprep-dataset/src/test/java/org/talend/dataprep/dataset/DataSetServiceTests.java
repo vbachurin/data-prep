@@ -137,14 +137,6 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testVersions() throws Exception {
-        String dataSetId = "123456";
-        when().put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
-        assertQueueMessages(dataSetId);
-        when().put("/datasets/{id}/content", dataSetId).then().statusCode(HttpStatus.OK.value());
-    }
-
-    @Test
     public void test1() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
@@ -175,7 +167,7 @@ public class DataSetServiceTests {
         assertQueueMessages(dataSetId);
         // Update content
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
-                .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId);
+                .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw");
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false", dataSetId).asInputStream();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("test2.json");
@@ -185,7 +177,7 @@ public class DataSetServiceTests {
         // Update name
         String expectedName = "testOfADataSetName";
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
-                .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "?name=" + expectedName);
+                .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw?name=" + expectedName);
         assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is(expectedName));
     }
 

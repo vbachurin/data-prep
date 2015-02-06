@@ -1,0 +1,16 @@
+{
+  "actions": [
+    {
+      "action": "uppercase",
+      "parameters": {
+        "column_name": "lastname"
+      }
+    },
+    {
+      "action": "uppercase",
+      "parameters": {
+        "column_name": "firstname"
+      }
+    }
+  ]
+}

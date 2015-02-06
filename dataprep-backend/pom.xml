@@ -29,7 +29,7 @@
         <module>../dataprep-transformation</module>
         <module>../dataprep-dataset</module>
         <module>../dataprep-metrics</module>
-        <module>../dataprep-services</module>
+        <module>../dataprep-api</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -97,6 +97,11 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>com.netflix.hystrix</groupId>
+                <artifactId>hystrix-core</artifactId>
+                <version>1.4.0-RC6</version>
+            </dependency>
+            <dependency>
                 <groupId>org.talend.dataprep</groupId>
                 <artifactId>dataprep-metrics</artifactId>
                 <version>1.0.m0-SNAPSHOT</version>
@@ -104,6 +109,16 @@
             <dependency>
                 <groupId>org.talend.dataprep</groupId>
                 <artifactId>dataprep-backend-common</artifactId>
+                <version>1.0.m0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.dataprep</groupId>
+                <artifactId>dataprep-transformation</artifactId>
+                <version>1.0.m0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.talend.dataprep</groupId>
+                <artifactId>dataprep-dataset</artifactId>
                 <version>1.0.m0-SNAPSHOT</version>
             </dependency>
             <dependency>

@@ -1,4 +1,4 @@
-package org.talend.dataprep.services.configuration;
+package org.talend.dataprep.api.configuration;
 
 import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
 import com.mangofactory.swagger.models.dto.ApiInfo;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration("org.talend.dataprep.api.configuration")
 @EnableSwagger
 public class Documentation {
 
@@ -22,8 +22,8 @@ public class Documentation {
 
     @Bean
     public SwaggerSpringMvcPlugin customImplementation() {
-        ApiInfo apiInfo = new ApiInfo("Talend Data Preparation - Application Services (AS)",
-                "This service exposes high level services usually involving services orchestration.", StringUtils.EMPTY, StringUtils.EMPTY,
+        ApiInfo apiInfo = new ApiInfo("Talend Data Preparation - API",
+                "This service exposes high level services that may involve services orchestration.", StringUtils.EMPTY, StringUtils.EMPTY,
                 StringUtils.EMPTY, StringUtils.EMPTY);
         return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(".*api.*"); //$NON-NLS-1
     }

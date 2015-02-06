@@ -14,7 +14,6 @@
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
-            <version>1.4.0-RC6</version>
         </dependency>
         <dependency>
             <groupId>org.talend.dataprep</groupId>
@@ -62,8 +61,23 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.jayway.restassured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.talend.dataprep</groupId>
+            <artifactId>dataprep-transformation</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.talend.dataprep</groupId>
+            <artifactId>dataprep-dataset</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

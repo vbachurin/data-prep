@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
+
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -25,6 +28,10 @@ public class TransformationServiceTests {
     @Value("${local.server.port}")
     public int port;
 
+    private static String encode(String actions) throws UnsupportedEncodingException {
+        return Base64.getEncoder().encodeToString(actions.getBytes("UTF-8"));
+    }
+
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -34,8 +41,7 @@ public class TransformationServiceTests {
     public void testCORSHeaders() throws Exception {
         when().post("/transform").then().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600")
-                .header("Access-Control-Allow-Headers", "x-requested-with");
+                .header("Access-Control-Max-Age", "3600").header("Access-Control-Allow-Headers", "x-requested-with");
     }
 
     @Test
@@ -57,7 +63,7 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1_action1.json"));
         String transformedContent = given().body(initialContent).queryParam("Content-Type", "text/json").when()
-                .post("/transform?actions=" + actions).asString();
+                .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -67,7 +73,7 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1_action2.json"));
         String transformedContent = given().body(initialContent).queryParam("Content-Type", "text/json").when()
-                .post("/transform?actions=" + actions).asString();
+                .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -75,12 +81,8 @@ public class TransformationServiceTests {
     public void testAction3() throws Exception {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("action1.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test2.json"));
-        long currentTimeMillis = System.currentTimeMillis();
-        {
-            given().body(initialContent).queryParam("Content-Type", "text/json").when()
-                            .post("/transform?actions=" + actions).asString();
-        }
-        System.out.println((System.currentTimeMillis() -currentTimeMillis));
+        given().body(initialContent).queryParam("Content-Type", "text/json").when().post("/transform?actions=" + encode(actions))
+                .asString();
     }
 
 }

@@ -3,6 +3,8 @@ package org.talend.dataprep.transformation.service;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +18,7 @@ import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
@@ -27,11 +30,11 @@ public class TransformationService {
     @ApiOperation(value = "Transform input data", notes = "This service return the input data transformed using the supplied actions.")
     @VolumeMetered
     public void transform(
-            @ApiParam(value = "Actions to perform on content") @RequestParam(value = "actions", defaultValue = "", required = false) String actions,
+            @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions,
             @ApiParam(value = "Data set content as JSON") InputStream content,
             HttpServletResponse response) {
         try {
-            Transformer transformer = factory.get(actions);
+            Transformer transformer = factory.get(new String(Base64.getDecoder().decode(actions)));
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
             throw new RuntimeException("Unable to process JSON input", e);
