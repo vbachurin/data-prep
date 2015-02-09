@@ -11,9 +11,7 @@
     <!-- build:css({.tmp,src}) styles/vendor.css -->
 
     <!-- bower:css -->
-    <link rel="stylesheet" href="../bower_components/bootstrap-css-only/css/bootstrap.css" />
     <link rel="stylesheet" href="../bower_components/angular-grid/ng-grid.css" />
-    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -21,7 +19,7 @@
 
     <!-- build:css({.tmp,src}) styles/app.css -->
     <!-- inject:css -->
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="main.css">
     <!-- endinject -->
     <!-- endbuild -->
 
@@ -37,13 +35,12 @@
 
     <ui-view></ui-view>
 
-    <div id="footer" class="container">
-        <nav class="navbar navbar-default navbar-fixed-bottom footer">
-            <div class="navbar-inner navbar-content-center">
-                <span>© 2015 Talend. All Rights Reserved.</span>
-            </div>
-        </nav>
-    </div>
+    <footer class="footer" role="contentinfo">
+        <div class="copyright">
+            © 2015 Talend. All Rights Reserved.
+        </div>
+    </footer>
+
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     <script>
@@ -68,18 +65,18 @@
     <script src="../bower_components/modernizr/modernizr.js"></script>
     <script src="../bower_components/jquery/jquery.js"></script>
     <script src="../bower_components/angular/angular.js"></script>
-    <script src="../bower_components/angular-resource/angular-resource.js"></script>
-    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="../bower_components/angular-grid/build/ng-grid.js"></script>
+    <script src="../bower_components/angular-resource/angular-resource.js"></script>
     <script src="../bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="../bower_components/ng-file-upload/angular-file-upload.js"></script>
     <script src="../bower_components/lodash/lodash.js"></script>
+    <script src="../bower_components/ng-file-upload/angular-file-upload.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
     <!-- build:js({.tmp,src}) scripts/app.js -->
     <!-- inject:js -->
+    <script src="components/widgets/widget-module.js"></script>
+    <script src="components/widgets/modal/widget-modal-directive.js"></script>
     <script src="components/utils/utils-module.js"></script>
     <script src="components/utils/filters/confirm-click-directive.js"></script>
     <script src="components/utils/constants/utils-rest-urls-constants.js"></script>
@@ -90,6 +87,8 @@
     <script src="components/dataset/dataset-grid/table-decoration.js"></script>
     <script src="components/dataset/dataset-grid/dataset-grid-directive.js"></script>
     <script src="components/dataset/dataset-grid/dataset-column-header-directive.js"></script>
+    <script src="components/navbar/navbar-module.js"></script>
+    <script src="components/navbar/navbar-controller.js"></script>
     <script src="components/dataset/dataset-service.js"></script>
     <script src="app.js"></script>
     <script src="app/rest/rest-error-message-interceptor-factory.js"></script>

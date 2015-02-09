@@ -1,35 +1,31 @@
-<div>
-    <nav id="topbar" class="navbar navbar-default navbar-static-top" role="navigation">
-
-        <div class="container">
-            <div id="navbar" class="navbar-collapse collapse t-top-banner">
-                <ul class="nav navbar-nav">
-                    <li><a class="t-top-bar-logo shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-                    <form class="navbar-form navbar-right">
-                        <input type="text" class="form-control t-search-inputfield"
-                               placeholder="Search anything here...">
-                    </form>
-                </ul>
-
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a class="t-top-bar_folder shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-                    <li><a class="t-top-bar_marketplace shadowed navbar-brand" href="http://dev.talend.com"></a>
-                    </li>
-                    <li><a class="t-top-bar_share shadowed navbar-brand" href="http://dev.talend.com"></a></li>
-                    <li><a class="t-top-bar_notification shadowed navbar-brand"
-                           href="http://dev.talend.com"></a></li>
-                    <li class="dropdown"><a class="dropdown-toggle shadowed t-top-bar_profile"
-                                            data-toggle="dropdown" role="button"
-                                            aria-expanded="false"></a>
-                        <ul class="dropdown-menu t-dropdown-menu" role="menu">
-                            <li><a href="#">Logout</a>
-                            <li class="divider"></li>
-                            <li><a href="#">Edit Profile</a></li>
-                        </ul>
-                    </li>
-                </ul>
+<header class="navigation" role="banner">
+    <div class="navigation-wrapper">
+        <a href="http://dev.talend.com" class="logo-wrapper">
+            <span class="logo"></span>
+        </a>
+        <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">MENU</a>
+        <nav role="navigation">
+            <ul id="js-navigation-menu" class="navigation-menu show">
+                <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_folder"></a></li>
+                <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_marketplace"></a></li>
+                <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_share"></a></li>
+                <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_notification"></a></li>
+                <li class="nav-link more"><a href="javascript:void(0)" class="icon t-top-bar_profile nomore"></a>
+                    <ul class="submenu">
+                        <li><a href="javascript:void(0)">Logout</a></li>
+                        <li class="divider"></li>
+                        <li><a href="javascript:void(0)">Edit profil</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div class="navigation-tools">
+            <div class="search-bar">
+                <form role="search">
+                    <input type="search" placeholder="Search anything here" />
+                </form>
             </div>
         </div>
-    </nav>
-</div>
-<ui-view></ui-view>
+    </div>
+</header>
+<ui-view class="container"></ui-view>

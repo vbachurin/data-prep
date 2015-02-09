@@ -1,14 +1,14 @@
 'use strict';
 
 var gulp = require('gulp');
+var sass = require('gulp-ruby-sass');
 
 var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
 });
 
 gulp.task('styles', ['wiredep', 'injector:css:preprocessor'], function () {
-  return gulp.src(['src/**/*.scss'])
-    .pipe($.sass({style: 'expanded'}))
+  return (sass('src/css/', {style: 'expanded'}))
     .on('error', function handleError(err) {
       console.error(err.toString());
       this.emit('end');

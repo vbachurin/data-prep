@@ -1,38 +1,28 @@
-<div>
-<nav id="navigationbar" class="navbar navbar-default navbar-static-top" role="navigation">
+<header class="subheader">
+    <div class="subheader-wrapper">
+        <ul class="">
+            <li class="primary">
+                    <button type="button" class="t-btn t-btn-import-new-file" id="button1"
+                            ng-click="homeCtrl.openDatasetFileSelection()">
+                        Import New File
+                    </button>
+                    <input type="file"
+                           id="datasetFile"
+                           name="datasetFile"
+                           class="ng-hide"
+                           ng-file-select
+                           accept="*.csv"
+                           ng-model="homeCtrl.datasetFile"
+                           ng-file-change="homeCtrl.uploadDatasetFile()"/>
+            </li>
 
-    <div class="container">
-        <div class="navbar-collapse collapse">
-
-            <ul class="nav navbar-nav">
-                <div>
-                    <section>
-                        <form class="form-inline" role="form">
-                            <div class="form-group">
-                                <button type="button" class="t-btn t-btn-import-new-file" id="button1" ng-click="homeCtrl.openDatasetFileSelection()">
-                                    Import New File
-                                </button>
-                                <input type="file"
-                                       id="datasetFile"
-                                       name="datasetFile"
-                                       class="ng-hide"
-                                       ng-file-select
-                                       accept="*.csv"
-                                       ng-model="homeCtrl.datasetFile"
-                                       ng-file-change="homeCtrl.uploadDatasetFile()"/>
-
-                            </div>
-                            <!-- 	        FOR DEMO PURPOSE ONLY -->
-                            <div class="form-group">
-                                <img src="assets/images/images/breadcrumb.png"
-                                     alt="this is a fake breadcrumb for demo purpose" height="42"
-                                     width="565">
-                            </div>
-                        </form>
-                    </section>
-                </div>
-            </ul>
-        </div>
+            
+            <!-- 	        FOR DEMO PURPOSE ONLY -->
+            <li>
+                <img src="assets/images/images/breadcrumb.png"
+                     alt="this is a fake breadcrumb for demo purpose" height="42"
+                     width="565">
+            </li>
+        </ul>
     </div>
-</nav>
-</div>
+</header>

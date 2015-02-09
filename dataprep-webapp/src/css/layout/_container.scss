@@ -1,3 +1,17 @@
-.t-container {
-  padding-top: 0px;
+.container {
+  @include outer-container;
+}
+
+.wide-container {
+  @include outer-container;
+  width: 100%;
+  max-width: 100%;
+}
+
+.container-with-menu {
+  @include span-columns(8);
+
+  @include media ($large-screen) {
+    @include span-columns(10);
+  }
 }
