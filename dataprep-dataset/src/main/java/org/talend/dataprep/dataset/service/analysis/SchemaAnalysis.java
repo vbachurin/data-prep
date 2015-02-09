@@ -17,8 +17,11 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 
 @Component
@@ -61,6 +64,23 @@ public class SchemaAnalysis {
                 Collections.sort(orderedGuess, (g1, g2) -> ((int) (g2.getConfidence() - g1.getConfidence())));
                 FormatGuess bestGuess = orderedGuess.get(0);
                 DataSetContent dataSetContent = metadata.getContent();
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(store.getAsRaw(metadata)));
+                try {
+                    String line = "";
+                    int lineCount = 0;
+                    while ((line = br.readLine()) != null) {
+                        lineCount++;
+                    }
+                    dataSetContent.setLines(lineCount);
+                } catch (NumberFormatException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+
                 dataSetContent.setContentType(bestGuess);
                 dataSetContent.setContentTypeCandidates(orderedGuess); // Remember format guesses
                 repository.add(metadata);

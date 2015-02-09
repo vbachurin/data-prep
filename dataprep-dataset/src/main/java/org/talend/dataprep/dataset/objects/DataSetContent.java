@@ -7,6 +7,8 @@ import java.util.List;
 
 public class DataSetContent {
 
+    private int                     lines;
+
     private final List<FormatGuess> contentTypes = new LinkedList<>();
 
     private FormatGuess             contentType;
@@ -23,4 +25,13 @@ public class DataSetContent {
     public void setContentType(FormatGuess contentType) {
         this.contentType = contentType;
     }
+
+    public int getLines() {
+        return this.lines;
+    }
+
+    public void setLines(int lines) {
+        this.lines = lines;
+    }
+
 }
