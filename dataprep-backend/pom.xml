@@ -30,6 +30,8 @@
         <module>../dataprep-dataset</module>
         <module>../dataprep-metrics</module>
         <module>../dataprep-api</module>
+        <module>../dataprep-platform</module>
+        <module>../dataprep-platform-tests</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -145,6 +147,11 @@
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
                 <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.3.6</version>
             </dependency>
             <!-- SWAGGER DEPENDENCIES -->
             <dependency>
