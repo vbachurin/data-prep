@@ -3,7 +3,6 @@
 
     angular.module('data-prep',
         [
-            'data-prep-navbar', //navbar
             'data-prep-utils', //utils components: constants, filters, ...
             'data-prep-dataset', //dataset getter, manipulation, etc
             
@@ -16,8 +15,7 @@
             $stateProvider
                 .state('nav', {
                     abstract: true,
-                    templateUrl: 'components/navbar/navbar.html',
-                    controller: 'NavbarCtrl'
+                    templateUrl: 'components/navbar/navbar.html'
                 })
                 .state('nav.home', {
                     url: '/home',

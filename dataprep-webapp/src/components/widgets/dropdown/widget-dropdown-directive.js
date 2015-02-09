@@ -12,10 +12,10 @@
      *          <div class="grid-header-type">{{ column.type }}</div>
      *      </div>
      *      <ul class="dropdown-menu">
-     *          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Hide Column {{ column.id | uppercase }}</a></li>
+     *          <li role="presentation"><a role="menuitem" href="#">Hide Column {{ column.id | uppercase }}</a></li>
      *          <li class="divider"></li>
-     *          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Split first Space</a></li>
-     *          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Uppercase</a></li>
+     *          <li role="presentation"><a role="menuitem"href="#">Split first Space</a></li>
+     *          <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>
      *      </ul>
      * </div>
      * </talend-dropdown>
@@ -24,6 +24,7 @@
      * Class 'dropdown-button' : add a caret at the end off element
      * Class 'dropdown-menu' : menu
      * Class 'dorpdown-menu > li' : menu items
+     * Class 'dorpdown-menu > li.divider' : menu items divider
      *
      * @returns directive
      */
@@ -51,7 +52,12 @@
                 var hasClass = menu.hasClass('show-menu');
                 hideAllDropDowns();
 
-                hasClass ? menu.removeClass('show-menu') : menu.addClass('show-menu');
+                if(hasClass) {
+                    menu.removeClass('show-menu');   
+                }
+                else {
+                    menu.addClass('show-menu');
+                }
             });
             //hide menu on menu item select
             iElement.find('.dropdown-menu > li').click(hideMenu);
