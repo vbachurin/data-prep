@@ -1,12 +1,13 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,14 @@ public class ContentAnalysis {
             DataSetMetadata metadata = repository.get(dataSetId);
             if (metadata != null) {
                 try (InputStream content = store.getAsRaw(metadata)) {
-                    IOUtils.toString(content); // Consumes raw content
+                    BufferedReader br = new BufferedReader(new InputStreamReader(store.getAsRaw(metadata)));
+                    String line = "";
+                    int lineCount = 0;
+                    while ((line = br.readLine()) != null) {
+                        lineCount++;
+                    }
+                    metadata.getContent().setLines(lineCount);
+
                     metadata.getLifecycle().contentIndexed(true);
                     repository.add(metadata);
                 } catch (IOException e) {
