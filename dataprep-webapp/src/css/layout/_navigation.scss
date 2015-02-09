@@ -9,7 +9,7 @@ header.navigation {
   $navigation-background-bottom: rgb(85, 89, 100);
   $navigation-color: black;
   $navigation-submenu-background: white;
-  $navigation-submenu-background-hover: rgba(138, 188, 0, 0.8);
+  $navigation-submenu-background-hover: $menus-hover;
 
   a {
     text-decoration: none;
@@ -292,12 +292,12 @@ header.navigation {
       }
       
       &.divider {
-        height: 0px;
-        margin: 0px;
+        height: 0;
+        margin: 0;
+        padding: 0;
 
         @include media($large-screen) {
           height: 1px;
-          margin: 9px 0;
           overflow: hidden;
           background-color: #e5e5e5;
         }
