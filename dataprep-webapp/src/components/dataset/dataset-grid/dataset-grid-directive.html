@@ -1,7 +1,7 @@
 <section>
     <div ng-if="dataset">
         File: {{ dataset.name }} | {{ data.length }} lines
-        <table class="table table-bordered table-hover table-condensed table-striped datagrid" id="mytable">
+        <table class="datagrid">
             <thead>
             <tr>
                 <th ng-repeat="column in data.columns track by $index">
