@@ -105,6 +105,7 @@ public class DataSetService {
         generator.writeStringField("id", dataSetMetadata.getId()); //$NON-NLS-1
         generator.writeStringField("name", dataSetMetadata.getName()); //$NON-NLS-1
         generator.writeStringField("author", dataSetMetadata.getAuthor()); //$NON-NLS-1
+        generator.writeStringField("lines", "" + dataSetMetadata.getContent().getLines()); //$NON-NLS-1
         synchronized (DATE_FORMAT) {
             generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1
         }
