@@ -1,0 +1,112 @@
+$hover-color: #c9d7e4;
+$border-color: #CECECE;
+$action-hover-background: #a1b2c2;
+
+.inventory {
+  width: 100%;
+  table-layout: auto;
+  font-size: 0.9em;
+  
+  th {
+    text-align: right;
+    padding: 5px;
+    border-bottom: 1px solid $border-color;
+    height: 22px;
+    font-weight: 300;
+  }
+
+  tbody:hover {
+    background-color: $hover-color;
+  }
+
+  .inventory-icon {
+    width: 50px;
+    padding: 5px;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .inventory-title {
+    padding: 5px 5px 0;
+    border: none;
+    font-weight: 700;
+    font-size: 1.1em;
+    text-transform: uppercase;
+  }
+
+  .inventory-description {
+    padding: 0 5px 5px 5px;
+    border-bottom: 1px solid $border-color;
+    font-weight: 300;
+    font-size: 0.9em;
+    color: $secondary-text;
+  }
+
+  .inventory-actions {
+    padding: 0;
+    width:1px;
+    border-bottom: 1px solid $border-color;
+
+    table {
+      border: none;
+      table-layout: auto;
+      margin: 0;
+      width: auto;
+
+      td {
+        padding: 10px;
+        text-align: center;
+        width: 50px;
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+.t-btn-transparent{
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 42px;
+  width: 40px;
+  border: 5px solid transparent;
+
+  outline: none;
+
+  &:active, 
+  &:focus {
+    background-color: transparent;
+    background-repeat: no-repeat;
+  }
+  &:hover {
+    background-color: $action-hover-background;
+  }
+}
+
+.t-right-divider{
+  border-right: 1px solid white;
+}
+
+.t-btn-shaker{
+  background-image: url('../../assets/images/shaker.png');
+}
+
+.t-btn-pushto{
+  background-image: url('../../assets/images/pushto.png');
+  width: 60px;
+}
+
+.t-btn-favorite{
+  background-image: url('../../assets/images/favorite.png');
+}
+
+.t-btn-share{
+  background-image: url('../../assets/images/share.png');
+}
+
+.t-btn-remove{
+  background-image: url('../../assets/images/remove.png');
+}
+
+.t-btn-more{
+  background-image: url('../../assets/images/more.png');
+}

@@ -1,0 +1,25 @@
+$subheader-height: 51px;
+$subheader-background: #EEEEEF;
+
+.subheader {
+  background-color: $subheader-background;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+  
+  .subheader-wrapper {
+    @include outer-container;
+
+    ul {
+      padding-top: 10px;
+      
+      li {
+        float: left;
+        
+        &.primary {
+          padding-right: 30px;
+        }
+      }
+      
+    }
+  }
+  
+}

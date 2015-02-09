@@ -1,16 +1,28 @@
 <div>
-
     <div ng-include="'app/home/home-subheader.html'"></div>
+    
+    <div class="wide-container">
+        <div class="side-menu">
+            <ul>
+                <li><a href="javascript:void(0)" class="selected">All Folders</a></li>
+                <li><a href="javascript:void(0)">Most Recent Files</a></li>
+                <li><a href="javascript:void(0)">All Shaked Files</a></li>
+                <li><a href="javascript:void(0)">Favorites</a></li>
+            </ul>
+        </div>
 
-    <div class="container t-container">
-        <datasets-upload-list datasets="homeCtrl.uploadingDatasets"></datasets-upload-list>
+        <div class="container-with-menu">
+            <datasets-upload-list datasets="homeCtrl.uploadingDatasets"></datasets-upload-list>
 
-        <datasets-list
-                datasets="homeCtrl.datasets"
-                on-select="homeCtrl.openDataset(dataset)"
-                on-delete="homeCtrl.deleteDataset(dataset)"></datasets-list>
+            <datasets-list
+                    datasets="homeCtrl.datasets"
+                    on-select="homeCtrl.openDataset(dataset)"
+                    on-delete="homeCtrl.deleteDataset(dataset)"></datasets-list>
 
-        <dataset-grid dataset="homeCtrl.selectedDataset"
-                      data="homeCtrl.selectedData"></dataset-grid>
+            <dataset-grid dataset="homeCtrl.selectedDataset"
+                          data="homeCtrl.selectedData"></dataset-grid>
+
+        </div>
     </div>
+
 </div>

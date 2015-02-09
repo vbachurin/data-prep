@@ -33,6 +33,7 @@
     "expect": false,
     "spyOn": false,
     "jQuery": false,
+    "$": false,
     "_": false
   }
 }

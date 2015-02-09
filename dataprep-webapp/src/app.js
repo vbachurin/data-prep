@@ -5,6 +5,8 @@
         [
             'data-prep-utils', //utils components: constants, filters, ...
             'data-prep-dataset', //dataset getter, manipulation, etc
+            
+            'talend.widget', //compoonents widget built on bourbon (modal, dropdown, ...)
 
             'ui.router'
         ])

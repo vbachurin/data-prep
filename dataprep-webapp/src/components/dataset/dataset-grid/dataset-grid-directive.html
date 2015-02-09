@@ -1,10 +1,10 @@
 <section>
     <div ng-if="dataset">
         File: {{ dataset.name }} | {{ data.length }} lines
-        <table class="table table-bordered table-hover table-condensed table-striped datagrid" id="mytable">
+        <table class="datagrid">
             <thead>
             <tr>
-                <th ng-repeat="column in data.columns track by $index" class="reset">
+                <th ng-repeat="column in data.columns track by $index">
                     <dataset-column-header column="column"></dataset-column-header>
                 </th>
             </tr>
