@@ -1,0 +1,49 @@
+.quality-bar {
+  $ok-color: rgb(138, 188, 0);
+  $empty-color: transparent;
+  $nok-color: rgb(247, 168, 0);
+
+  height: 14px;
+  
+  .sub-bar {
+    border: 1px solid transparent;
+    height: 100%;
+    float: left;
+
+    &:hover {
+      border: 1px solid grey;
+    }
+
+    .quality-bar-menu {
+      @include menu-list;
+    }
+  }
+  
+  .record-ok {
+    @extend .sub-bar;
+    background-color: transparentize($ok-color, 0.4);
+    
+    &:hover {
+      background-color: $ok-color;
+    }
+  }
+  
+  .record-empty {
+    @extend .sub-bar;
+    background-color: transparentize($empty-color, 0.4);
+
+    &:hover {
+      background-color: $empty-color;
+    }
+  }
+  
+  .record-nok {
+    @extend .sub-bar;
+    background-color: transparentize($nok-color, 0.4);
+
+    &:hover {
+      background-color: $nok-color;
+    }
+  }
+
+}

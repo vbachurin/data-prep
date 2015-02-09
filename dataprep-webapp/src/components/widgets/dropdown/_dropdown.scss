@@ -1,0 +1,84 @@
+.dropdown {
+  ///////////////////////////////////////////////////////////////////////////////////
+  $base-border-color: gainsboro !default;
+  $base-border-radius: 3px !default;
+  $base-line-height: 1.5em !default;
+  $base-background-color: white !default;
+  $dark-gray: #333 !default;
+  $large-screen: em(860) !default;
+  $base-font-color: $dark-gray !default;
+
+  line-height: $base-line-height;
+  height: 100%;
+  
+  ul {
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    list-style: none;
+  }
+  //////////////////////////////////////////////////////////////////////////////////
+
+  $dropdown-color: $base-font-color;
+  $dropdown-description-color: lighten($dropdown-color, 40%);
+  $dropdown-border: 1px solid silver;
+  $dropdown-background: $base-background-color;
+  $dropdown-background-hover: darken($dropdown-background, 3%);
+  $dropdown-inner-border: 1px solid silver;
+  $dropdown-height: 40px;
+  $dropdown-padding: 1em;
+  $dropdown-distance-from-menu: 50px;
+  $dropdown-arrow-top-distance: 0;
+
+  .dropdown-action {
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+  }
+
+  .dropdown-button:after {
+    content: "\25BE";
+    margin-left: 5px;
+  }
+
+  .dropdown-menu {
+    @include transition (all 0.2s ease-in-out);
+    background: $dropdown-background;
+    border-radius: $base-border-radius;
+    border: $dropdown-border;
+    box-shadow: 0 6px 8px transparentize(black, 0.8);
+    color: $dropdown-color;
+    cursor: pointer;
+    display: none;
+    overflow: visible;
+    position: absolute;
+    z-index: 99999;
+  }
+
+  .dropdown-menu li {
+    border-bottom: $dropdown-inner-border;
+    color: $dropdown-color;
+    padding: $dropdown-padding / 2;
+  }
+
+  .dropdown-menu li:hover {
+    background: $dropdown-background-hover;
+  }
+
+  .dropdown-menu li:first-child {
+    border-top-left-radius: $base-border-radius;
+    border-top-right-radius: $base-border-radius;
+  }
+
+  .dropdown-menu li:last-child {
+    border: none;
+    border-bottom-left-radius: $base-border-radius;
+    border-bottom-right-radius: $base-border-radius;
+  }
+
+  .show-menu {
+    display: block;
+  }
+}

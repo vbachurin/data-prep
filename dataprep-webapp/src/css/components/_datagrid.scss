@@ -6,22 +6,42 @@
   $datagrid-cell: #6c6c6c;
   $datagrid-cell-bkg-active: #e1e1e1;
   
+  table-layout: auto;
+
   th {
+    padding-bottom: 0;
+  }
+  
+  .grid-header {
     background-color: $datagrid-header-bkg;
+    border: 1px solid rgb(221, 221, 221);
     color: $datagrid-header;
     text-transform: uppercase;
     font-weight: normal;
-    font-size: .90em;
+    font-size: 0.9em;
     cursor: default;
+    padding: 5px 5px 0;
 
     &:hover {
       background-color: $datagrid-header-bkg-active;
+      border: 1px solid gray;
       cursor: default;
+    }
+
+    .grid-header-type {
+      height: 100%;
+      text-transform: lowercase;
+      font-size: 0.8em;
+      text-align: right;
+    }
+
+    .grid-header-menu {
+      @include menu-list;
     }
   }
 
   td {
-    font-family: "Courier New";
+    font-family: $monospace;
     color: $datagrid-cell;
     font-size: .80em;
     height: 20px;

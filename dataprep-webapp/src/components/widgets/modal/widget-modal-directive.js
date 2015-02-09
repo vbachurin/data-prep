@@ -5,7 +5,7 @@
     return {
       restrict: 'EA',
       transclude: true,
-      templateUrl: 'components/widgets/modal.html',
+      templateUrl: 'components/widgets/modal/modal.html',
       scope: {
         state: '='
       },
