@@ -2,24 +2,22 @@
   "name": "data-prep",
   "version": "1.0.0",
   "authors": [
-    "Talend."
+    "Talend"
   ],
-  "description": "dataprep JavaScript dependencies.",
+  "description": "Data-prep",
   "private": true,
   "dependencies": {
     "angular": "~1.2.x",
-    "angular-resource": "~1.2.x",
-    "jquery": "~1.9.1",
-    "angular-bootstrap": "~0.11.0",
-    "bootstrap-css-only": "3.2.0",
     "angular-grid": "~2.0.11",
+    "angular-resource": "~1.2.x",
     "angular-ui-router": "~0.2.13",
-    "bootstrap": "~3.3.2",
+    "jquery": "~1.9.1",
+    "lodash": "~3.1.0",
     "modernizr": "~2.8.3",
-    "ng-file-upload": "~2.2.2",
-    "lodash": "~3.1.0"
+    "ng-file-upload": "~2.2.2"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.x"
+    
   }
 }

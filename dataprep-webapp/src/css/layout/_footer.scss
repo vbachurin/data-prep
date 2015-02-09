@@ -1,9 +1,35 @@
 .footer {
-  background-color: #555964;
-  padding: 5px 0px 0px 10px;
-  color: white;
-  width: 100%;
-  /* Set the fixed height of the footer here */
+  ///////////////////////////////////////////////////////////////////////////////////
+  $base-spacing: 5px !default;
+  $footer-background: #555964;
+  $footer-color: white;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    line-height: 1.5em;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  a {
+    text-decoration: none;
+  }
+  //////////////////////////////////////////////////////////////////////////////////
+
+  $footer-color: white;
+  $footer-link-color: transparentize($footer-color, 0.6);
+  $footer-disclaimer-color: transparentize($footer-color, 0.6);
+
+  background: $footer-background;
+  color: $footer-color;
+  padding: $base-spacing;
   height: 30px;
-  min-height: 30px;
+  width: 100%;
+  display: inline-block;
+  
+  position: fixed;
+  bottom: 0;
 }

@@ -1,4 +1,11 @@
 .datagrid {
+  $datagrid-header: #266092;
+  $datagrid-header-bkg: #c6d5e2;
+  $datagrid-header-bkg-active: #f5f5f5;
+
+  $datagrid-cell: #6c6c6c;
+  $datagrid-cell-bkg-active: #e1e1e1;
+  
   th {
     background-color: $datagrid-header-bkg;
     color: $datagrid-header;

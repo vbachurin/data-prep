@@ -1,140 +1,375 @@
-.navbar-nav {
-  li {
-    .dropdown-menu {
-      margin-top: 9px;
+header.navigation {
+  ///////////////////////////////////////////////////////////////////////////////////
+  $base-border-color: gainsboro !default;
+  $base-border-radius: 3px !default;
+  $base-accent-color: #477DCA !default;
+  $dark-gray: #333 !default;
+
+  $navigation-background-top: rgba(85, 89, 100, 0.8);
+  $navigation-background-bottom: rgb(85, 89, 100);
+  $navigation-color: black;
+  $navigation-submenu-background: white;
+  $navigation-submenu-background-hover: rgba(138, 188, 0, 0.8);
+
+  a {
+    text-decoration: none;
+  }
+  //////////////////////////////////////////////////////////////////////////////////
+
+  $navigation-padding: 1em;
+  $navigation-background: $dark-gray;
+  $navigation-color-hover: white;
+  $navigation-height: 51px;
+  $navigation-search-border: 1px solid darken($navigation-background, 5);
+  $navigation-active-link-color: transparentize(white, 0.5);
+  $navigation-submenu-padding: 1em;
+  $navigation-submenu-width: 12em;
+  $horizontal-bar-mode: $large-screen;
+
+  @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
+  border-bottom: 1px solid darken($navigation-background, 10);
+  min-height: $navigation-height;
+  width: 100%;
+  z-index: 999;
+
+  .navigation-wrapper {
+    @include clearfix;
+    @include outer-container;
+    position: relative;
+    z-index: 9999;
+  }
+
+  .logo-wrapper {
+    float: left;
+    padding-top: 10px;
+    padding-left: $navigation-padding;
+    padding-right: 2em;
+    height: $navigation-height;
+    
+    
+    .logo {
+      float: left;
+      
+      background: url('../../assets/images/talend_logo.png') no-repeat;
+      background-size: contain;
+      width: 130px;
+      height: $navigation-height - 10;
+    }
+  }
+  
+
+  // Mobile view
+
+  .navigation-menu-button {
+    color: $navigation-color;
+    display: block;
+    float: right;
+    font-weight: 700;
+    line-height: $navigation-height;
+    margin: 0;
+    padding-right: 1em;
+    text-transform: uppercase;
+
+    @include media ($horizontal-bar-mode) {
+      display: none;
+    }
+
+    &:focus,
+    &:hover {
+      color: $navigation-color-hover;
+    }
+  }
+
+  // Nav menu
+
+  nav {
+    float: none;
+    min-height: $navigation-height;
+    z-index: 9999999;
+
+    @include media ($horizontal-bar-mode) {
+      float: right;
+    }
+  }
+
+  ul.navigation-menu {
+    -webkit-transform-style: preserve-3d; // stop webkit flicker
+    clear: both;
+    display: none;
+    margin: 0 auto;
+    overflow: visible;
+    padding: 0;
+    width: 100%;
+    z-index: 9999;
+
+    &.show {
+      display: block;
+    }
+
+    @include media ($horizontal-bar-mode) {
+      display: inline;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  // The nav items
+
+  ul li.nav-link {
+    background: $navigation-background;
+    display: block;
+    line-height: $navigation-height;
+    overflow: hidden;
+    padding-right: 0.8em;
+    text-align: right;
+    width: 100%;
+    z-index: 9999;
+
+    @include media ($horizontal-bar-mode) {
+      background: transparent;
+      display: inline;
+      line-height: $navigation-height;
+      text-decoration: none;
+      width: auto;
     }
 
     a {
-      text-shadow: 0 2px 0 rgba(255, 255, 255, .0);
-      color: white !important;
+      color: $navigation-color;
+      display: inline-block;
+      font-weight: 400;
+
+      @include media ($horizontal-bar-mode) {
+        padding-right: 1em;
+      }
+
+      &:focus,
+      &:hover {
+        color: $navigation-color-hover;
+      }
+
+      &.icon {
+        width: 40px;
+        height: 35px;
+        position: relative;
+        top: 10px;
+        @include filter(drop-shadow(0px 1px 1px #1f2024));
+
+        &.t-top-bar_folder {
+          background: url('../../assets/images/top_link_folder.png') no-repeat center;
+        }
+
+        &.t-top-bar_marketplace {
+          background: url('../../assets/images/top_link_marketplace.png') no-repeat;
+        }
+
+        &.t-top-bar_share {
+          background: url('../../assets/images/top_link_share.png') no-repeat;
+        }
+
+        &.t-top-bar_notification {
+          background: url('../../assets/images/top_link_notification.png') no-repeat;
+        }
+
+        &.t-top-bar_profile {
+          background: url('../../assets/images/top_link_profile.png') no-repeat;
+          width: 52px;
+        }
+      }
     }
   }
-}
 
-.navbar-right .dropdown-menu {
-  right: 9px;
-}
-
-.navbar-inverse .navbar-nav>.open>a,
-.navbar-inverse .navbar-nav>.open>a:hover,
-.navbar-inverse .navbar-nav>.open>a:focus,
-.navbar-inverse .navbar-nav>.active>a {
-  background-image: url('../../assets/images/top_link_profile.png');
-}
-
-#topbar.navbar-default {
-  background-image: linear-gradient(to bottom, rgba(85, 89, 100, 0.8) 0%, rgba(85, 89, 100, 1.0) 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 5px rgba(0, 0, 0, .075);
-  background-color: #e7e7e7;
-  border-color: #e7e7e7;
-  margin-bottom: 0px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.6);
-}
-
-#navigationbar.navbar-default {
-  background-image: linear-gradient(to top, rgba(85, 89, 100, 0.0) 0%, rgba(85, 89, 100, 0.0) 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 5px rgba(0, 0, 0, .075);
-  background-color: #EEEEEF;
-  border-color: #e7e7e7;
-  box-shadow: 0 2px 8px rgba(0,0,0,.5);
-  padding: 8px 20px 8px 20px!important;
-}
-
-
-.t-top-bar {
-  background-color: white;
-  padding: 0px 0px 0px 0px !important;
-}
-
-.t-top-banner {
-  padding: 5px 20px 0px 15px !important;
-}
-
-.t-top-bar-logo {
-  background: url('../../assets/images/talend_logo.png') no-repeat;
-  background-size: contain;
-  width: 130px;
-  margin: 4px 100px -8px -12px !important;
-}
-
-.t-top-bar_folder {
-  background: url('../../assets/images/top_link_folder.png') no-repeat;
-  margin: 3px 10px -10px 10px !important;
-  width: 40px;
-}
-
-.t-top-bar_marketplace {
-  background: url('../../assets/images/top_link_marketplace.png') no-repeat;
-  margin: 3px 10px -10px 10px !important;
-  width: 40px;
-}
-
-.t-top-bar_share {
-  background: url('../../assets/images/top_link_share.png') no-repeat;
-  margin: 3px 40px -10px 10px !important;
-  width: 40px;
-}
-
-.t-top-bar_notification {
-  background: url('../../assets/images/top_link_notification.png') no-repeat;
-  margin: 3px 10px -10px 10px !important;
-  width: 40px;
-}
-
-.t-top-bar_profile {
-  background: url('../../assets/images/top_link_profile.png') no-repeat;
-  margin: 3px 10px -10px 10px !important;
-  padding-bottom: 20px !important;
-  width: 52px;
-}
-
-.t-top-toolbar {
-  background-color: #eeeeef !important;
-  padding: 8px 20px 8px 20px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .6);
-}
-
-.t-search-inputfield {
-  background-color: white !important;
-  margin-top: -4px;
-  height: 32px;
-  width: 450px !important;
-  font-weight: 300;
-  font-size: 0.9em;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-/* for high resolution display */
-@media
-screen and (-webkit-min-device-pixel-ratio: 1.5),
-screen and (-moz-min-device-pixel-ratio: 1.5),
-screen and (min-device-pixel-ratio: 1.5) {
-  .t-top-bar-logo {
-    background-image: url('../../assets/images/high_res/talend_logo.png');
+  .active-nav-item a {
+    border-bottom: 1px solid $navigation-active-link-color;
+    padding-bottom: 3px;
   }
-  .t-top-bar_folder {
-    background-image: url('../../assets/images/high_res/top_link_folder.png');
-    background-size: contain;
+
+  // Sub menus
+
+  li.more.nav-link {
+    padding-right: 0;
+
+    @include media($large-screen) {
+      padding-right: $navigation-submenu-padding;
+    }
+
+    a {
+      font-size: 0.9em;
+      
+      &:hover {
+        background-color: $navigation-submenu-background-hover;
+      }
+    }
+
+    > a {
+      padding-right: 0.6em;
+    }
+
+    > a:after {
+      @include position(absolute, auto -0.4em auto auto);
+      content: '\25BE';
+      color: $navigation-color;
+    }
+
+    > a.nomore:after {
+      content: '';
+    }
   }
-  .t-top-bar_marketplace {
-    background-image: url('../../assets/images/high_res/top_link_marketplace.png');
-    background-size: contain;
+
+  li.more {
+    overflow: visible;
+    padding-right: 0;
+
+    a {
+      padding-right: 0.8em;
+    }
+
+    > a {
+      padding-right: 1.6em;
+      position: relative;
+
+      @include media($large-screen) {
+        margin-right: $navigation-submenu-padding;
+      }
+
+      &:after {
+        content: '›';
+        font-size: 1.2em;
+        position: absolute;
+        right: $navigation-submenu-padding / 2;
+      }
+    }
+
+    &:focus > .submenu,
+    &:hover > .submenu {
+      display: block;
+    }
+
+    @include media($horizontal-bar-mode) {
+      padding-right: 0.8em;
+      position: relative;
+    }
   }
-  .t-top-bar_share {
-    background-image: url('../../assets/images/high_res/top_link_share.png');
-    background-size: contain;
+
+  ul.submenu {
+    display: none;
+    padding-left: 0;
+
+    box-shadow: 0px 6px 8px rgba(0,0,0,.4);
+
+    @include media($horizontal-bar-mode) {
+      left: -$navigation-submenu-padding;
+      position: absolute;
+      top: 1.5em;
+    }
+
+    .submenu {
+      @include media($horizontal-bar-mode) {
+        left: $navigation-submenu-width - 0.2em;
+        top: 0;
+      }
+    }
+
+    li {
+      display: block;
+      padding-right: 0;
+
+      @include media($horizontal-bar-mode) {
+        line-height: $navigation-height / 1.3;
+      }
+
+      a {
+        background-color: $navigation-submenu-background;
+        display: inline-block;
+        text-align: right;
+        width: 100%;
+
+        @include media($horizontal-bar-mode) {
+          background-color: $navigation-submenu-background;
+          padding-left: $navigation-submenu-padding;
+          text-align: left;
+          width: $navigation-submenu-width;
+        }
+      }
+      
+      &.divider {
+        height: 0px;
+        margin: 0px;
+
+        @include media($large-screen) {
+          height: 1px;
+          margin: 9px 0;
+          overflow: hidden;
+          background-color: #e5e5e5;
+        }
+      }
+    }
   }
-  .t-top-bar_notification {
-    background-image: url('../../assets/images/high_res/top_link_notification.png');
-    background-size: contain;
+
+  .navigation-tools {
+    background: #505050;
+    clear: both;
+    display: block;
+    height: $navigation-height;
+    padding-left: $navigation-padding / 2;
+    padding-right: $navigation-padding;
+
+    @include media($large-screen) {
+      background: transparent;
+      clear: none;
+      float: right;
+      width: 45%;
+    }
   }
-  .t-top-bar_profile {
-    background-image: url('../../assets/images/high_res/top_link_profile.png');
-    background-size: contain;
+
+  .sign-up {
+    @include button(flat, $base-accent-color);
+    display: inline;
+    float: right;
+    font-size: 0.8em;
+    margin-top: 1em;
+    padding: 0.75em 1em;
+    text-transform: uppercase;
   }
-  .t-btn-import-new-file{
-    background-image: url('../../assets/images/high_res/import_new_file.png');
-    background-size: 26px 24px;
+
+  // Search bar
+
+  .search-bar {
+    $search-bar-border-color: $base-border-color;
+    $search-bar-border: 1px solid $search-bar-border-color;
+
+    float: left;
+    padding: 0.85em 0.6em 0.7em 0.6em;
+    width: 100%;
+
+    form {
+      position: relative;
+
+      input[type=search] {
+        @include box-sizing(border-box);
+        border-radius: $base-border-radius * 2;
+        border: $navigation-search-border;
+        color: $navigation-color;
+        font-size: 0.9em;
+        font-style: italic;
+        margin: 0;
+        padding: 0.5em 0.8em;
+        width: 100%;
+
+        @include media($large-screen) {
+          width: 100%;
+        }
+      }
+    }
+
+    @include media($horizontal-bar-mode) {
+      display: inline-block;
+      position: relative;
+      width: 100%;
+
+      input {
+        @include box-sizing(border-box);
+        display: block;
+      }
+    }
   }
 }
