@@ -48,10 +48,21 @@ public class DataSetServiceTests {
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         Thread.sleep(1000); // TODO Ugly, need a client to lock until all operations are done
-        DataSetLifecycle lifecycle = dataSetMetadataRepository.get(dataSetId).getLifecycle();
+        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        DataSetLifecycle lifecycle = metadata.getLifecycle();
         assertThat(lifecycle.contentIndexed(), is(true));
         assertThat(lifecycle.schemaAnalyzed(), is(true));
         assertThat(lifecycle.qualityAnalyzed(), is(true));
+        // Quality number assertions (TODO: temporary, values to be provided by actual analysis)
+        // Test condition empty < invalid < valid
+        List<ColumnMetadata> columns = metadata.getRow().getColumns();
+        for (ColumnMetadata column : columns) {
+            int valid = column.getQuality().getValid();
+            int invalid = column.getQuality().getInvalid();
+            int empty = column.getQuality().getEmpty();
+            assertTrue(empty < invalid);
+            assertTrue(invalid < valid);
+        }
     }
 
     @Before
