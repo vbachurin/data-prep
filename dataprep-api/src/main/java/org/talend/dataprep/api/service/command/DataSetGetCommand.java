@@ -1,0 +1,53 @@
+package org.talend.dataprep.api.service.command;
+
+import com.netflix.hystrix.HystrixCommand;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.talend.dataprep.api.service.DataPreparationAPI;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+public class DataSetGetCommand extends HystrixCommand<InputStream> {
+
+    private final String contentServiceUrl;
+
+    private final HttpClient client;
+
+    private final boolean metadata;
+
+    private final String dataSetId;
+
+    private final boolean columns;
+
+    public DataSetGetCommand(HttpClient client, String contentServiceUrl, String dataSetId, boolean metadata, boolean columns) {
+        super(DataPreparationAPI.TRANSFORM_GROUP);
+        this.contentServiceUrl = contentServiceUrl;
+        this.client = client;
+        this.metadata = metadata;
+        this.dataSetId = dataSetId;
+        this.columns = columns;
+    }
+
+    @Override
+    protected InputStream getFallback() {
+        return new ByteArrayInputStream(new byte[0]);
+    }
+
+    @Override
+    protected InputStream run() throws Exception {
+        HttpGet contentRetrieval = new HttpGet(contentServiceUrl + "/" + dataSetId + "/content/?metadata=" + metadata + "&columns=" + columns);
+        HttpResponse response = client.execute(contentRetrieval);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode >= 200) {
+            if (statusCode == HttpStatus.SC_NO_CONTENT) {
+                return new ByteArrayInputStream(new byte[0]);
+            } else if (statusCode == HttpStatus.SC_OK) {
+                return response.getEntity().getContent();
+            }
+        }
+        throw new RuntimeException("Unable to retrieve content.");
+    }
+}

@@ -7,9 +7,9 @@
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>dataprep-services</artifactId>
+    <artifactId>dataprep-api</artifactId>
     <packaging>jar</packaging>
-    <name>dataprep-services</name>
+    <name>dataprep-api</name>
     <dependencies>
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
@@ -34,7 +34,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.3.6</version>
         </dependency>
         <!-- SWAGGER DEPENDENCIES -->
         <dependency>

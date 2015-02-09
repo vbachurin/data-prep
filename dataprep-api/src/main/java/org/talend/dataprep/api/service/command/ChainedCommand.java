@@ -1,8 +1,8 @@
-package org.talend.dataprep.api.service;
+package org.talend.dataprep.api.service.command;
 
 import com.netflix.hystrix.HystrixCommand;
 
-abstract class ChainedCommand<O, I> extends HystrixCommand<O> {
+public abstract class ChainedCommand<O, I> extends HystrixCommand<O> {
 
     private HystrixCommand<I> input;
 
