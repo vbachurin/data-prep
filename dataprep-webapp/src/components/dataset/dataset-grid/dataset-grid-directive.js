@@ -8,7 +8,10 @@
             scope: {
                 dataset: '=',
                 data: '='
-            }
+            },
+            bindToController: true,
+            controllerAs: 'datagridCtrl',
+            controller: function() {}
         };
     }
 

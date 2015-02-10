@@ -7,7 +7,10 @@
             restrict: 'E',
             scope: {
                 datasets: '='
-            }
+            },
+            bindToController: true,
+            controllerAs: 'uploadListCtrl',
+            controller: function() {}
         };
     }
 

@@ -6,10 +6,18 @@
             'data-prep-utils', //utils components: constants, filters, ...
             'data-prep-dataset', //dataset getter, manipulation, etc
             
-            'talend.widget', //compoonents widget built on bourbon (modal, dropdown, ...)
+            'talend.widget', //components widget built on bourbon (modal, dropdown, ...)
 
             'ui.router'
         ])
+
+        .config(['$httpProvider', '$compileProvider', 'disableDebug', function ($httpProvider, $compileProvider, disableDebug) {
+            $httpProvider.useApplyAsync(true);
+
+            if(disableDebug) {
+                $compileProvider.debugInfoEnabled(false);
+            }
+        }])
 
         .config(function ($stateProvider, $urlRouterProvider) {
             $stateProvider
