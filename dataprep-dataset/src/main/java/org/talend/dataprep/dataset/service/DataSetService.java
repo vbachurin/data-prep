@@ -4,6 +4,8 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
 public class DataSetService {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
+
+    private static final Log LOG = LogFactory.getLog(DataSetService.class);
 
     private final JsonFactory factory = new JsonFactory();
 
@@ -160,6 +164,13 @@ public class DataSetService {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return; // No data set, returns empty content.
         }
+        if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
+            // Schema is not yet ready (but eventually will, returns 202 to indicate this).
+            LOG.info("Data set #" + dataSetId + " not yet ready for service.");
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            return;
+        }
+
         try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
             generator.writeStartObject();
             {
