@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function DatasetService($upload, $http, RestURLs) {
+    function DatasetService($rootScope, $upload, $http, RestURLs) {
         var self = this;
         
         /**
@@ -66,9 +66,13 @@
          * @param datasetId - dataset id
          */
         self.getDataFromId = function(datasetId, metadata) {
+            $rootScope.$emit('talend.loading.start');
             return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?' + jQuery.param({metadata: metadata}))
                 .then(function(res) {
                     return res.data;
+                })
+                .finally(function() {
+                    $rootScope.$emit('talend.loading.stop');
                 });
         };
     }
