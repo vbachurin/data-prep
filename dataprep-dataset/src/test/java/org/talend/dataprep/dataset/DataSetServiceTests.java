@@ -1,14 +1,19 @@
 package org.talend.dataprep.dataset;
 
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.*;
+import static com.jayway.restassured.RestAssured.*;
+import static com.jayway.restassured.path.json.JsonPath.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.*;
+import uk.co.datumedge.hamcrest.json.SameJSONAs;
 
-import com.jayway.restassured.RestAssured;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.JsonNodeFactory;
-import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,19 +31,7 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.path.json.JsonPath.from;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.talend.dataprep.dataset.objects.DataSetMetadata.Builder.id;
+import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -74,6 +67,18 @@ public class DataSetServiceTests {
         }
     }
 
+    /**
+     * Utilities method to assert that an expected json contained in a file matches a result.
+     * 
+     * @param fileNameExpected the name of the file that contains the expected json, must be in this package ressources
+     * @return a SameJSONAs to use like in assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
+     */
+    private SameJSONAs<? super String> sameJSONAsFile(String fileNameExpected) throws Exception {
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream(fileNameExpected);
+        assertNotNull(expected);
+        return SameJSONAs.sameJSONAs(IOUtils.toString(expected)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
+    }
+
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -93,11 +98,16 @@ public class DataSetServiceTests {
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
         dataSetMetadataRepository.add(id(id1).name("name1").author("anonymous").created(new Date(0)).build());
-        when().get("/datasets")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body(equalTo("[{\"id\":\"" + id1
-                        + "\",\"name\":\"name1\",\"author\":\"anonymous\",\"records\":0,\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":\"01-01-1970 00:00\"}]"));
+
+        String expected = "[{\"id\":\""
+                + id1
+                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":\"01-01-1970 00:00\"}]";
+
+        InputStream content = when().get("/datasets").asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        assertThat(contentAsString, SameJSONAs.sameJSONAs(expected).allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
+
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
         dataSetMetadataRepository.add(id(id2).name("name2").author("anonymous").created(new Date(0)).build());
@@ -154,10 +164,9 @@ public class DataSetServiceTests {
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}?metadata=false&columns=false", dataSetId).asInputStream();
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
-        assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
-        assertThat(contentAsString, is(IOUtils.toString(expected)));
+
+        assertThat(contentAsString, sameJSONAsFile("test1.json"));
     }
 
     @Test
@@ -166,10 +175,9 @@ public class DataSetServiceTests {
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}?metadata=false&columns=false", dataSetId).asInputStream();
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
-        assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
-        assertThat(contentAsString, is(IOUtils.toString(expected)));
+
+        assertThat(contentAsString, sameJSONAsFile("test1.json"));
     }
 
     @Test
@@ -182,10 +190,8 @@ public class DataSetServiceTests {
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId);
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}?metadata=false&columns=false", dataSetId).asInputStream();
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test2.json");
-        assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
-        assertThat(contentAsString, is(IOUtils.toString(expected)));
+        assertThat(contentAsString, sameJSONAsFile("test2.json"));
         // Update name
         String expectedName = "testOfADataSetName";
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
@@ -201,21 +207,9 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jNode = mapper.readTree(contentAsString);
-        ObjectNode oNode = JsonNodeFactory.instance.objectNode();
-        oNode.putAll((ObjectNode) jNode);
-
-        assertTrue(oNode.has("metadata"));
-
-        assertTrue(oNode.get("metadata").has("records"));
-        assertEquals(2, oNode.get("metadata").get("records").getIntValue());
-
-        assertTrue(oNode.get("metadata").has("nbLinesHeader"));
-        assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
-
-        assertTrue(oNode.get("metadata").has("nbLinesFooter"));
-        assertEquals(0, oNode.get("metadata").get("nbLinesFooter").getIntValue());
+        assertThat(contentAsString,
+                SameJSONAs.sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
+                .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
     }
 
     @Test
@@ -226,21 +220,7 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jNode = mapper.readTree(contentAsString);
-        ObjectNode oNode = JsonNodeFactory.instance.objectNode();
-        oNode.putAll((ObjectNode) jNode);
-
-        assertTrue(oNode.has("metadata"));
-
-        assertTrue(oNode.get("metadata").has("records"));
-        assertEquals(100, oNode.get("metadata").get("records").getIntValue());
-
-        assertTrue(oNode.get("metadata").has("nbLinesHeader"));
-        assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
-
-        assertTrue(oNode.get("metadata").has("nbLinesFooter"));
-        assertEquals(0, oNode.get("metadata").get("nbLinesFooter").getIntValue());
+        assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
     }
 
     @Test
@@ -251,29 +231,21 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jNode = mapper.readTree(contentAsString);
-        ObjectNode oNode = JsonNodeFactory.instance.objectNode();
-        oNode.putAll((ObjectNode) jNode);
-
-        assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
+        assertThat(contentAsString,
+                SameJSONAs.sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
                 .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/{id}", dataSetId).then()
                 .statusCode(HttpStatus.OK.value());
+        assertQueueMessages(dataSetId);
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
-        assertQueueMessages(dataSetId);
 
         content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
         contentAsString = IOUtils.toString(content);
-        jNode = mapper.readTree(contentAsString);
-        oNode = JsonNodeFactory.instance.objectNode();
-        oNode.putAll((ObjectNode) jNode);
 
-        assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":100,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
-                .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
+        assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
     }
 
 }
