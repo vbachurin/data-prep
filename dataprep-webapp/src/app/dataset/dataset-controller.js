@@ -1,7 +1,9 @@
 (function() {
+    'use strict';
+    
     function DatasetCtrl(datasetDetails) {
         var vm = this;
-        vm.metadata = datasetDetails.metadata
+        vm.metadata = datasetDetails.metadata;
         vm.data = datasetDetails;
     }
     
