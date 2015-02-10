@@ -1,7 +1,6 @@
 .side-menu {
   ///////////////////////////////////////////////////////////////////////////////////
   $base-accent-color: #477DCA !default;
-  $dark-gray: #333 !default;
 
   ul {
     padding: 0;
@@ -17,16 +16,15 @@
   }
   //////////////////////////////////////////////////////////////////////////////////
 
-  $sliding-menu-border-color: $dark-gray;
+  $sliding-menu-border-color: white;
   $sliding-menu-background: lighten($sliding-menu-border-color, 5%);
-  $sliding-menu-color: #fff;
+  $sliding-menu-color: black;
   $sliding-menu-border: 1px solid $sliding-menu-border-color;
   $sliding-menu-background-hover: $base-accent-color;
   $sliding-menu-color-hover: #fff;
   $sliding-menu-background-focus: lighten($sliding-menu-background, 5%);
 
   background: $sliding-menu-background;
-  z-index: 999999;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
@@ -37,16 +35,17 @@
     padding: 1em 1em 1em 2.5em;
 
     &:focus {
-      background-color: $sliding-menu-background-focus;
+      background-color: $action-hover-background;
     }
 
     &:hover {
-      background-color: $sliding-menu-background-hover;
+      background-color: $action-hover-background;
       color: $sliding-menu-color-hover;
     }
     
     &.selected {
       font-weight: bold;
+      background-color: $action-hover-background;
     }
   }
 }

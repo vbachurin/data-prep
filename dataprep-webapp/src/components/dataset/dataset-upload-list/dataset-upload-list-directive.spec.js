@@ -24,8 +24,8 @@ describe('Dataset upload list directive', function() {
 
         //when
         var element = createElement(scope);
-        var names = element.find('td.t-demo-inventory-list-name');
-        var progress = element.find('td.t-demo-inventory-list-description');
+        var names = element.find('td.inventory-title');
+        var progress = element.find('td.inventory-description');
 
         //then
         expect(names.length).toBe(1);
@@ -42,8 +42,8 @@ describe('Dataset upload list directive', function() {
 
         //when
         var element = createElement(scope);
-        var names = element.find('td.t-demo-inventory-list-name');
-        var progress = element.find('td.t-demo-inventory-list-description');
+        var names = element.find('td.inventory-title');
+        var progress = element.find('td.inventory-description');
 
         //then
         expect(names.length).toBe(1);
@@ -62,8 +62,8 @@ describe('Dataset upload list directive', function() {
 
         //when
         var element = createElement(scope);
-        var names = element.find('td.t-demo-inventory-list-name');
-        var progress = element.find('td.t-demo-inventory-list-description');
+        var names = element.find('td.inventory-title');
+        var progress = element.find('td.inventory-description');
 
         //then
         expect(names.length).toBe(3);
