@@ -10,8 +10,30 @@ nginx:
         - /var/run/docker.sock:/tmp/docker.sock
     ports:
         - "80:80"
+api:
+    image: talend/dataprep-api:1.0.m0-SNAPSHOT
+    volumes:
+        - conf/api:/data/config
+    expose:
+        - 8888
+    links:
+        - transform
+        - dataset
+    environment:
+        VIRTUAL_HOST: api.tdp.talend.lan
+        VIRTUAL_PORT: 8888
+transform:
+    image: talend/dataprep-transformation:1.0.m0-SNAPSHOT
+    volumes:
+        - conf/transform:/data/config
+        - runtime/dataset/store:/store
+    expose:
+        - 8180
+    environment:
+        VIRTUAL_HOST: transformation.tdp.talend.lan
+        VIRTUAL_PORT: 8180
 dataset:
-    image: talend/dataprep-dataset:1.0.M0-SNAPSHOT
+    image: talend/dataprep-dataset:1.0.m0-SNAPSHOT
     volumes:
         - conf/dataset:/data/config
         - runtime/dataset/store:/store
