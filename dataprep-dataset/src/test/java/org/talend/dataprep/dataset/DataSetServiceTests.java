@@ -1,5 +1,7 @@
 package org.talend.dataprep.dataset;
 
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.*;
+
 import com.jayway.restassured.RestAssured;
 
 import org.apache.commons.io.IOUtils;
@@ -23,7 +25,6 @@ import org.talend.dataprep.dataset.objects.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import uk.co.datumedge.hamcrest.json.SameJSONAs;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -255,9 +256,8 @@ public class DataSetServiceTests {
         ObjectNode oNode = JsonNodeFactory.instance.objectNode();
         oNode.putAll((ObjectNode) jNode);
 
-        assertThat(contentAsString,
-                SameJSONAs.sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
-                        .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
+        assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
+                .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/{id}", dataSetId).then()
@@ -272,9 +272,8 @@ public class DataSetServiceTests {
         oNode = JsonNodeFactory.instance.objectNode();
         oNode.putAll((ObjectNode) jNode);
 
-        assertThat(contentAsString,
-                SameJSONAs.sameJSONAs("{\"metadata\":{\"records\":100,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
-                        .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
+        assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":100,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
+                .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
     }
 
 }
