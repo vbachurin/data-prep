@@ -15,13 +15,24 @@
             $stateProvider
                 .state('nav', {
                     abstract: true,
-                    templateUrl: 'components/navbar/navbar.html'
+                    templateUrl: 'app/navbar/navbar.html'
                 })
                 .state('nav.home', {
                     url: '/home',
                     templateUrl: 'app/home/home.html',
                     controller: 'HomeCtrl',
                     controllerAs: 'homeCtrl'
+                })
+                .state('nav.dataset', {
+                    url: '/dataset/:datasetId',
+                    templateUrl: 'app/dataset/dataset.html',
+                    controller: 'DatasetCtrl',
+                    controllerAs: 'datasetCtrl',
+                    resolve:{
+                        datasetDetails: ['$stateParams', 'DatasetService', function($stateParams, DatasetService) {
+                            return DatasetService.getDataFromId($stateParams.datasetId, true);
+                        }]
+                    }
                 });
 
             $urlRouterProvider.otherwise('/home');
