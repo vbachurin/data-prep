@@ -1,12 +1,17 @@
 # Talend Data-prep web-application aka Talend Data Shaker
 ## How to run
 ### Prerequisites
-1. gem : https://rubygems.org/
+1. sass : to install saas you need to install 
+  * ruby : https://www.ruby-lang.org/fr/downloads/
+     on linux : `sudo apt-get install ruby1.9.1`
+     on mac : `brew install ruby`
+  * gem : with ruby you can install gem, dowload the zip, unzip it, go into the root dir and use the command : `ruby setup.rb`
+  * install sass using gem : `gem install sass`
 2. nodejs : http://nodejs.org/
 3. npm : it should be install with the above node
 4. install development tools using these commands :
 
-`gem install sass`
+
 
 `npm install -g bower gulp`
 
