@@ -42,10 +42,12 @@ public class DataSetGetCommand extends HystrixCommand<InputStream> {
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
-            if (statusCode == HttpStatus.SC_NO_CONTENT) {
+            if (statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_ACCEPTED) {
+                // Immediately release connection
+                contentRetrieval.releaseConnection();
                 return new ByteArrayInputStream(new byte[0]);
             } else if (statusCode == HttpStatus.SC_OK) {
-                return response.getEntity().getContent();
+                return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
         throw new RuntimeException("Unable to retrieve content.");

@@ -5,8 +5,9 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,11 +26,13 @@ import java.io.InputStream;
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
 public class DataPreparationAPI {
 
-    public static final HystrixCommandGroupKey TRANSFORM_GROUP = () -> "transform"; //$NON-NLS-1$
+    public static final HystrixCommandGroupKey TRANSFORM_GROUP = HystrixCommandGroupKey.Factory.asKey("transform"); //$NON-NLS-1$
 
-    public static final HystrixCommandGroupKey DATASET_GROUP = () -> "dataset"; //$NON-NLS-1$
+    public static final HystrixCommandGroupKey DATASET_GROUP = HystrixCommandGroupKey.Factory.asKey("dataset"); //$NON-NLS-1$
 
-    private static final HttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+    private static final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+
+    private static final Log LOG = LogFactory.getLog(DataPreparationAPI.class);
 
     @Value("${transformation.service.url}")
     private String transformServiceUrl;
@@ -38,8 +41,8 @@ public class DataPreparationAPI {
     private String contentServiceUrl;
 
     public DataPreparationAPI() {
-        HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter();
-        setter.withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD);
+        connectionManager.setMaxTotal(50);
+        connectionManager.setDefaultMaxPerRoute(50);
     }
 
     @RequestMapping(value = "/api/transform/{id}/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,6 +53,9 @@ public class DataPreparationAPI {
             HttpServletResponse response) {
         if (dataSetId == null) {
             throw new IllegalArgumentException("Data set id cannot be null.");
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Transforming dataset id #" + dataSetId + " (pool: " + connectionManager.getTotalStats() + ")...");
         }
         // Configure transformation flow
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
@@ -63,6 +69,9 @@ public class DataPreparationAPI {
         } catch (Exception e) {
             throw new RuntimeException("Unable to transform data set #" + dataSetId + ".", e);
         }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Transformation of dataset id #" + dataSetId + " done.");
+        }
     }
 
     @RequestMapping(value = "/api/datasets", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -70,9 +79,16 @@ public class DataPreparationAPI {
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @ApiParam(value = "content") InputStream dataSetContent) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating dataset (pool: " + connectionManager.getTotalStats() + ")...");
+        }
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
         HystrixCommand<String> creation = new CreateDataSet(client, contentServiceUrl, name, dataSetContent);
-        return creation.execute();
+        String result = creation.execute();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Dataset creation done.");
+        }
+        return result;
     }
 
     @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -81,9 +97,16 @@ public class DataPreparationAPI {
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
             @ApiParam(value = "content") InputStream dataSetContent) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating or updating dataset #" + id + " (pool: " + connectionManager.getTotalStats() + ")...");
+        }
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
         HystrixCommand<String> creation = new CreateOrUpdateDataSet(client, contentServiceUrl, id, name, dataSetContent);
-        return creation.execute();
+        String result = creation.execute();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Dataset creation or update for #" + id + " done.");
+        }
+        return result;
     }
 
     @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -92,12 +115,18 @@ public class DataPreparationAPI {
                     @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
                     @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             HttpServletResponse response) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Requesting dataset #" + id + " (pool: " + connectionManager.getTotalStats() + ")...");
+        }
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
         DataSetGetCommand retrievalCommand = new DataSetGetCommand(client, contentServiceUrl, id, metadata, columns);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
             outputStream.flush();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Request dataset #" + id + " (pool: " + connectionManager.getTotalStats() + ") done.");
+            }
         } catch (Exception e) {
             throw new RuntimeException("Unable to retrieve content for id #" + id + ".", e);
         }

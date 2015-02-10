@@ -34,6 +34,6 @@ public class TransformCommand extends ChainedCommand<InputStream, InputStream> {
         String uri = transformServiceUrl + "/?actions=" + Base64.getEncoder().encodeToString(actions.getBytes("UTF-8")); //$NON-NLS-1$ //$NON-NLS-2$
         HttpPost transformationCall = new HttpPost(uri);
         transformationCall.setEntity(new InputStreamEntity(getInput()));
-        return client.execute(transformationCall).getEntity().getContent();
+        return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(), transformationCall::releaseConnection);
     }
 }

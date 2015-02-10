@@ -41,15 +41,19 @@ public class CreateOrUpdateDataSet extends HystrixCommand<String> {
     @Override
     protected String run() throws Exception {
         HttpPut contentCreation = new HttpPut(contentServiceUrl + "/" + id + "/raw/?name=" + name); //$NON-NLS-1$ //$NON-NLS-2$
-        contentCreation.setEntity(new InputStreamEntity(dataSetContent));
-        HttpResponse response = client.execute(contentCreation);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= 200) {
-            if (statusCode == HttpStatus.SC_NO_CONTENT) {
-                return StringUtils.EMPTY;
-            } else if (statusCode == HttpStatus.SC_OK) {
-                return IOUtils.toString(response.getEntity().getContent());
+        try {
+            contentCreation.setEntity(new InputStreamEntity(dataSetContent));
+            HttpResponse response = client.execute(contentCreation);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 200) {
+                if (statusCode == HttpStatus.SC_NO_CONTENT) {
+                    return StringUtils.EMPTY;
+                } else if (statusCode == HttpStatus.SC_OK) {
+                    return IOUtils.toString(response.getEntity().getContent());
+                }
             }
+        } finally {
+            contentCreation.releaseConnection();
         }
         throw new RuntimeException("Unable to create content.");
     }

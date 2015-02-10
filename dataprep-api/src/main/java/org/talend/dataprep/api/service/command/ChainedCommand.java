@@ -12,7 +12,7 @@ public abstract class ChainedCommand<O, I> extends HystrixCommand<O> {
     }
 
     public I getInput() {
-        return input.observe().toBlocking().first();
+        return input.execute();
     }
 
 }
