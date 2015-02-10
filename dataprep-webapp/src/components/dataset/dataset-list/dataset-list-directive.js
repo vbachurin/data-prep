@@ -10,7 +10,10 @@
                     datasets : '=',
                     select : '&onSelect',
                     delete : '&onDelete'
-                }
+                },
+                bindToController: true,
+                controllerAs: 'datasetListCtrl',
+                controller: function() {}
             };
         });
 })();
