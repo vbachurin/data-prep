@@ -1,9 +1,9 @@
 package org.talend.dataprep.dataset.service.analysis.schema;
 
-import org.springframework.stereotype.Component;
-
 import java.io.*;
 import java.util.*;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {

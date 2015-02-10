@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.service.command;
 
-import com.netflix.hystrix.HystrixCommand;
+import java.io.InputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -10,7 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.talend.dataprep.api.service.DataPreparationAPI;
 
-import java.io.InputStream;
+import com.netflix.hystrix.HystrixCommand;
 
 public class CreateDataSet extends HystrixCommand<String> {
 

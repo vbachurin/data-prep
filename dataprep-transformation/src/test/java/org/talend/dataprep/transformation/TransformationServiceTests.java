@@ -1,6 +1,12 @@
 package org.talend.dataprep.transformation;
 
-import com.jayway.restassured.RestAssured;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,12 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Base64;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)

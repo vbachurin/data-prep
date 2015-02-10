@@ -1,11 +1,11 @@
 package org.talend.dataprep.api;
 
-import org.springframework.data.annotation.Id;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.data.annotation.Id;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data

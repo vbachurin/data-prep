@@ -1,6 +1,20 @@
 package org.talend.dataprep.dataset;
 
-import com.jayway.restassured.RestAssured;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.path.json.JsonPath.from;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,20 +32,7 @@ import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.path.json.JsonPath.from;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
+import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -84,8 +85,7 @@ public class DataSetServiceTests {
     public void testCORSHeaders() throws Exception {
         when().get("/datasets").then().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600")
-                .header("Access-Control-Allow-Headers", "x-requested-with");
+                .header("Access-Control-Max-Age", "3600").header("Access-Control-Allow-Headers", "x-requested-with");
     }
 
     @Test

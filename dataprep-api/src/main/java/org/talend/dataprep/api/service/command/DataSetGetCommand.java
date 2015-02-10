@@ -1,14 +1,15 @@
 package org.talend.dataprep.api.service.command;
 
-import com.netflix.hystrix.HystrixCommand;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.talend.dataprep.api.service.DataPreparationAPI;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import com.netflix.hystrix.HystrixCommand;
 
 public class DataSetGetCommand extends HystrixCommand<InputStream> {
 
@@ -38,7 +39,8 @@ public class DataSetGetCommand extends HystrixCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval = new HttpGet(contentServiceUrl + "/" + dataSetId + "/content/?metadata=" + metadata + "&columns=" + columns);
+        HttpGet contentRetrieval = new HttpGet(contentServiceUrl + "/" + dataSetId + "/content/?metadata=" + metadata
+                + "&columns=" + columns);
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {

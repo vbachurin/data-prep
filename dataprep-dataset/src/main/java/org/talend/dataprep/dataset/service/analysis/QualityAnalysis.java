@@ -1,5 +1,10 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import java.util.Random;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +16,6 @@ import org.talend.dataprep.api.Quality;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import java.util.Random;
 
 @Component
 public class QualityAnalysis {

@@ -1,5 +1,7 @@
 package org.talend.dataprep.dataset.store.local;
 
+import java.io.*;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -8,8 +10,6 @@ import org.talend.dataprep.api.DataSetContent;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.service.analysis.schema.Serializer;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
-
-import java.io.*;
 
 public class LocalDataSetContentStore implements DataSetContentStore {
 

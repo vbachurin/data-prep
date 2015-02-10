@@ -1,10 +1,6 @@
 package org.talend.dataprep.dataset.service.analysis.schema;
 
-import au.com.bytecode.opencsv.CSVReader;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.talend.dataprep.api.ColumnMetadata;
-import org.talend.dataprep.api.type.Types;
+import static org.talend.dataprep.api.ColumnMetadata.Builder.column;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,7 +9,12 @@ import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.talend.dataprep.api.ColumnMetadata.Builder.column;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator;
+import org.talend.dataprep.api.ColumnMetadata;
+import org.talend.dataprep.api.type.Types;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 class CSVFormatGuess implements FormatGuess {
 

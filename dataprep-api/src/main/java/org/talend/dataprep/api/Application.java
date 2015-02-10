@@ -1,7 +1,7 @@
 package org.talend.dataprep.api;
 
-import com.netflix.hystrix.Hystrix;
-import com.netflix.hystrix.HystrixCommandProperties;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.concurrent.TimeUnit;
+import com.netflix.hystrix.Hystrix;
 
 @Configuration
 @ComponentScan(basePackages = "org.talend.dataprep")

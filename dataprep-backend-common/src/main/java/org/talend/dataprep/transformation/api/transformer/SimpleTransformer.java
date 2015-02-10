@@ -1,16 +1,16 @@
 package org.talend.dataprep.transformation.api.transformer;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.talend.dataprep.api.DataSetRow;
-import org.talend.dataprep.transformation.api.action.Action;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
+import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.transformation.api.action.Action;
 
 class SimpleTransformer implements Transformer {
 

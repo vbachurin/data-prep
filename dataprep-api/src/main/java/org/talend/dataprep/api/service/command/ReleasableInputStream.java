@@ -1,10 +1,10 @@
 package org.talend.dataprep.api.service.command;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 class ReleasableInputStream extends InputStream {
 

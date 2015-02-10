@@ -1,9 +1,9 @@
 package org.talend.dataprep.dataset.service.analysis.schema;
 
-import org.talend.dataprep.api.ColumnMetadata;
-
 import java.io.InputStream;
 import java.util.List;
+
+import org.talend.dataprep.api.ColumnMetadata;
 
 /**
  * Represents a class able to parse a data set content and return a list of

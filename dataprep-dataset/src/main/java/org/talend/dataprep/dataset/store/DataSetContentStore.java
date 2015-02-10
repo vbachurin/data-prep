@@ -1,8 +1,8 @@
 package org.talend.dataprep.dataset.store;
 
-import org.talend.dataprep.api.DataSetMetadata;
-
 import java.io.InputStream;
+
+import org.talend.dataprep.api.DataSetMetadata;
 
 public interface DataSetContentStore {
 

@@ -1,5 +1,12 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +21,6 @@ import org.talend.dataprep.dataset.service.analysis.schema.FormatGuesser;
 import org.talend.dataprep.dataset.service.analysis.schema.SchemaParser;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
 
 @Component
 public class SchemaAnalysis {

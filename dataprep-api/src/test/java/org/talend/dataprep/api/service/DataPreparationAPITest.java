@@ -1,8 +1,10 @@
 package org.talend.dataprep.api.service;
 
-import com.jayway.restassured.RestAssured;
-import com.netflix.hystrix.HystrixCommandProperties;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+
 import junit.framework.TestCase;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
@@ -18,8 +20,7 @@ import org.talend.dataprep.api.Application;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
+import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -99,6 +100,5 @@ public class DataPreparationAPITest extends TestCase {
         String transformed = when().post("/api/transform/" + dataSetId + "/?actions=" + actions).asString();
         assertEquals(expectedContent, transformed);
     }
-
 
 }

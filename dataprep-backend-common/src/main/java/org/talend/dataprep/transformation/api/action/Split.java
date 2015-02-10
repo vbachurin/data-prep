@@ -1,11 +1,11 @@
 package org.talend.dataprep.transformation.api.action;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.api.DataSetRow;
-
-import java.util.Iterator;
-import java.util.Map;
 
 class Split implements Action {
 

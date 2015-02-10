@@ -1,9 +1,9 @@
 package org.talend.dataprep.api;
 
-import org.talend.dataprep.dataset.service.analysis.schema.FormatGuess;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import org.talend.dataprep.dataset.service.analysis.schema.FormatGuess;
 
 public class DataSetContent {
 

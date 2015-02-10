@@ -1,5 +1,11 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,11 +16,6 @@ import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import java.io.IOException;
-import java.io.InputStream;
 
 @Component
 public class ContentAnalysis {

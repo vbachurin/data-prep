@@ -1,13 +1,14 @@
 package org.talend.dataprep.api.service.command;
 
-import com.netflix.hystrix.HystrixCommand;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Base64;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Base64;
+import com.netflix.hystrix.HystrixCommand;
 
 public class TransformCommand extends ChainedCommand<InputStream, InputStream> {
 
@@ -34,6 +35,7 @@ public class TransformCommand extends ChainedCommand<InputStream, InputStream> {
         String uri = transformServiceUrl + "/?actions=" + Base64.getEncoder().encodeToString(actions.getBytes("UTF-8")); //$NON-NLS-1$ //$NON-NLS-2$
         HttpPost transformationCall = new HttpPost(uri);
         transformationCall.setEntity(new InputStreamEntity(getInput()));
-        return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(), transformationCall::releaseConnection);
+        return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(),
+                transformationCall::releaseConnection);
     }
 }

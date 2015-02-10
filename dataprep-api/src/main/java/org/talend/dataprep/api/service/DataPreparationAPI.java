@@ -1,9 +1,10 @@
 package org.talend.dataprep.api.service;
 
-import com.netflix.hystrix.*;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import java.io.InputStream;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,9 +19,11 @@ import org.talend.dataprep.api.service.command.CreateOrUpdateDataSet;
 import org.talend.dataprep.api.service.command.DataSetGetCommand;
 import org.talend.dataprep.api.service.command.TransformCommand;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -48,9 +51,8 @@ public class DataPreparationAPI {
     @RequestMapping(value = "/api/transform/{id}/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transforms a data set given data set id. This operation retrieves data set content and pass it to the transformation service.", notes = "Returns the data set modified with the provided actions.")
     public void transform(
-            @RequestParam(value = "actions", defaultValue = "", required = false) @ApiParam(value = "Actions to perform on data set (as JSON format).")  String actions,
-            @PathVariable(value = "id") @ApiParam(value = "Data set id.") String dataSetId,
-            HttpServletResponse response) {
+            @RequestParam(value = "actions", defaultValue = "", required = false) @ApiParam(value = "Actions to perform on data set (as JSON format).") String actions,
+            @PathVariable(value = "id") @ApiParam(value = "Data set id.") String dataSetId, HttpServletResponse response) {
         if (dataSetId == null) {
             throw new IllegalArgumentException("Data set id cannot be null.");
         }
@@ -111,9 +113,10 @@ public class DataPreparationAPI {
 
     @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id.", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Get a data set based on given id.")
-    public void get(@ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
-                    @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-                    @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
+    public void get(
+            @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
+            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
+            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #" + id + " (pool: " + connectionManager.getTotalStats() + ")...");

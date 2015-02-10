@@ -1,8 +1,8 @@
 package org.talend.dataprep.dataset.service.analysis.schema;
 
-import org.talend.dataprep.api.DataSetMetadata;
-
 import java.io.InputStream;
+
+import org.talend.dataprep.api.DataSetMetadata;
 
 /**
  * Represents a class able to serialize a data set content into JSON.

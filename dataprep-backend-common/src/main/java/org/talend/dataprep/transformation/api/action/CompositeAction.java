@@ -1,11 +1,11 @@
 package org.talend.dataprep.transformation.api.action;
 
-import org.codehaus.jackson.JsonNode;
-import org.talend.dataprep.api.DataSetRow;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.codehaus.jackson.JsonNode;
+import org.talend.dataprep.api.DataSetRow;
 
 class CompositeAction implements Action {
 
