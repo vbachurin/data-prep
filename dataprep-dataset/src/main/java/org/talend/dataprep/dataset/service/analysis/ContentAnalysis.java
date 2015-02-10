@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.DataSetContent;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -42,7 +43,11 @@ public class ContentAnalysis {
                     while ((line = br.readLine()) != null) {
                         lineCount++;
                     }
-                    metadata.getContent().setLines(lineCount);
+                    DataSetContent datasetContent = metadata.getContent();
+                    datasetContent.setNbLinesInHeader(1);
+                    datasetContent.setNbLinesInFooter(0);
+                    datasetContent.setNbRecords(lineCount - datasetContent.getNbLinesInHeader()
+                            - datasetContent.getNbLinesInFooter());
 
                     metadata.getLifecycle().contentIndexed(true);
                     repository.add(metadata);

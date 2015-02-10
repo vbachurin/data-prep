@@ -14,8 +14,13 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import com.jayway.restassured.RestAssured;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.JsonNodeFactory;
+import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +37,7 @@ import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import com.jayway.restassured.RestAssured;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -98,7 +103,7 @@ public class DataSetServiceTests {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(equalTo("[{\"id\":\"" + id1
-                        + "\",\"name\":\"name1\",\"author\":\"anonymous\",\"created\":\"01-01-1970 00:00\"}]"));
+                        + "\",\"name\":\"name1\",\"author\":\"anonymous\",\"records\":0,\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":\"01-01-1970 00:00\"}]"));
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
         dataSetMetadataRepository.add(id(id2).name("name2").author("anonymous").created(new Date(0)).build());
@@ -193,6 +198,33 @@ public class DataSetServiceTests {
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw?name=" + expectedName);
         assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is(expectedName));
+    }
+
+    @Test
+    public void testNbLines() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
+        assertNotNull(expected);
+        String contentAsString = IOUtils.toString(content);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jNode = mapper.readTree(contentAsString);
+        ObjectNode oNode = JsonNodeFactory.instance.objectNode();
+        oNode.putAll((ObjectNode) jNode);
+
+        assertTrue(oNode.has("metadata"));
+
+        assertTrue(oNode.get("metadata").has("records"));
+        assertEquals(2, oNode.get("metadata").get("records").getIntValue());
+
+        assertTrue(oNode.get("metadata").has("nbLinesHeader"));
+        assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
+
+        assertTrue(oNode.get("metadata").has("nbLinesFooter"));
+        assertEquals(0, oNode.get("metadata").get("nbLinesFooter").getIntValue());
     }
 
 }
