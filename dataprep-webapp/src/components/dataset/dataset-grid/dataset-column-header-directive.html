@@ -1,11 +1,11 @@
 <talend-dropdown>
     <div class="dropdown-container grid-header">
         <div class="dropdown-action">
-            <div class="grid-header-title dropdown-button">{{ column.id }}</div>
-            <div class="grid-header-type">{{ column.type }}</div>
+            <div class="grid-header-title dropdown-button">{{ datasetHeaderCtrl.column.id }}</div>
+            <div class="grid-header-type">{{ datasetHeaderCtrl.column.type }}</div>
         </div>
         <ul class="dropdown-menu grid-header-menu">
-            <li role="presentation"><a role="menuitem" href="#">Hide Column {{ column.id | uppercase }}</a></li>
+            <li role="presentation"><a role="menuitem" href="#">Hide Column {{ datasetHeaderCtrl.column.id | uppercase }}</a></li>
             <li class="divider"></li>
             <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>
             <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>
@@ -16,25 +16,25 @@
 <div class="quality-bar">
     <div talend-dropdown
          class="record-ok"
-         style="width: {{ column.quality.validPercentWidth }}%;"
-         title="{{ column.quality.valid }} valid records ({{ column.quality.validPercent }}%)">
+         style="width: {{ datasetHeaderCtrl.column.quality.validPercentWidth }}%;"
+         title="{{ datasetHeaderCtrl.column.quality.valid }} valid records ({{ datasetHeaderCtrl.column.quality.validPercent }}%)">
 
         <div class="dropdown-action"></div>
         <ul class="dropdown-menu quality-bar-menu" role="menu">
             <li role="presentation">
-                <a role="menuitem" href="#">Select Valid Records for {{ column.id | uppercase }}</a>
+                <a role="menuitem" href="#">Select Valid Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a>
             </li>
         </ul>
     </div>
 
     <div talend-dropdown
          class="record-empty"
-         style="width: {{ column.quality.emptyPercentWidth }}%;"
-         title="{{ column.quality.empty }} empty records ({{ column.quality.emptyPercent }}%)">
+         style="width: {{ datasetHeaderCtrl.column.quality.emptyPercentWidth }}%;"
+         title="{{ datasetHeaderCtrl.column.quality.empty }} empty records ({{ datasetHeaderCtrl.column.quality.emptyPercent }}%)">
 
         <div class="dropdown-action"></div>
         <ul class="dropdown-menu quality-bar-menu" role="menu" >
-            <li role="presentation"><a role="menuitem" href="#">Select Empty Records for {{ column.id | uppercase }}</a></li>
+            <li role="presentation"><a role="menuitem" href="#">Select Empty Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a></li>
             <li class="divider"></li>
             <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Top adjacent value</a></li>
             <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Bottom adjacent value</a></li>
@@ -42,12 +42,12 @@
     </div>
 
     <div class="record-nok" talend-dropdown
-         style="width: {{ column.quality.invalidPercentWidth }}%;"
-         title="{{ column.quality.invalid }} invalid records ({{ column.quality.invalidPercent }}%)">
+         style="width: {{ datasetHeaderCtrl.column.quality.invalidPercentWidth }}%;"
+         title="{{ datasetHeaderCtrl.column.quality.invalid }} invalid records ({{ datasetHeaderCtrl.column.quality.invalidPercent }}%)">
 
         <div class="dropdown-action"></div>
         <ul class="dropdown-menu quality-bar-menu" role="menu" >
-            <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{ column.id | uppercase }}</a></li>
+            <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a></li>
             <li class="divider"></li>
             <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Top adjacent value</a></li>
             <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Bottom adjacent value</a></li>

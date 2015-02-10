@@ -5,7 +5,7 @@
     </tr>
     </thead>
     
-    <tbody ng-repeat="dataset in datasets track by $index">
+    <tbody ng-repeat="dataset in datasetListCtrl.datasets track by $index">
     <tr>
         <td rowspan="2" class="inventory-icon" width="40px">
             <img src="assets/images/csv_file.png" />
@@ -15,13 +15,13 @@
             <table>
                 <tbody>
                 <tr>
-                    <td><button class="t-btn t-btn-transparent t-btn-shaker" ng-click="select({dataset : dataset})"></button></td>
+                    <td><button class="t-btn t-btn-transparent t-btn-shaker" ng-click="datasetListCtrl.select({dataset : dataset})"></button></td>
                     <td class="t-right-divider"><button type="button" class="t-btn t-btn-transparent t-btn-pushto" ng-click=""></button></td>
                     <td><button type="button" class="t-btn t-btn-transparent t-btn-favorite" ng-click=""></button></td>
                     <td class="t-right-divider"><button type="button" t-btn-transparent class="t-btn t-btn-transparent t-btn-share" ng-click=""></button></td>
                     <td class="t-right-divider">
                         <button type="button" class="t-btn t-btn-transparent t-btn-remove"
-                                ng-click="delete({dataset : dataset})"
+                                ng-click="datasetListCtrl.delete({dataset : dataset})"
                                 ng-confirm-click="You are going to permanetly delete dataset '{{dataset.name}}'. This operation cannot be undone. Are you sure?"></button>
                     </td>
                     <td><button type="button" class="t-btn t-btn-transparent t-btn-more" ng-click=""></button></td>
