@@ -196,8 +196,6 @@ public class DataSetServiceTests {
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
-        assertNotNull(expected);
         String contentAsString = IOUtils.toString(content);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -209,6 +207,80 @@ public class DataSetServiceTests {
 
         assertTrue(oNode.get("metadata").has("records"));
         assertEquals(2, oNode.get("metadata").get("records").getIntValue());
+
+        assertTrue(oNode.get("metadata").has("nbLinesHeader"));
+        assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
+
+        assertTrue(oNode.get("metadata").has("nbLinesFooter"));
+        assertEquals(0, oNode.get("metadata").get("nbLinesFooter").getIntValue());
+    }
+
+    @Test
+    public void testNbLines2() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jNode = mapper.readTree(contentAsString);
+        ObjectNode oNode = JsonNodeFactory.instance.objectNode();
+        oNode.putAll((ObjectNode) jNode);
+
+        assertTrue(oNode.has("metadata"));
+
+        assertTrue(oNode.get("metadata").has("records"));
+        assertEquals(100, oNode.get("metadata").get("records").getIntValue());
+
+        assertTrue(oNode.get("metadata").has("nbLinesHeader"));
+        assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
+
+        assertTrue(oNode.get("metadata").has("nbLinesFooter"));
+        assertEquals(0, oNode.get("metadata").get("nbLinesFooter").getIntValue());
+    }
+
+    @Test
+    public void testNbLinesUpdate() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jNode = mapper.readTree(contentAsString);
+        ObjectNode oNode = JsonNodeFactory.instance.objectNode();
+        oNode.putAll((ObjectNode) jNode);
+
+        assertTrue(oNode.has("metadata"));
+
+        assertTrue(oNode.get("metadata").has("records"));
+        assertEquals(2, oNode.get("metadata").get("records").getIntValue());
+
+        assertTrue(oNode.get("metadata").has("nbLinesHeader"));
+        assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
+
+        assertTrue(oNode.get("metadata").has("nbLinesFooter"));
+        assertEquals(0, oNode.get("metadata").get("nbLinesFooter").getIntValue());
+
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
+                .queryParam("Content-Type", "text/csv").when().put("/datasets/{id}", dataSetId).then()
+                .statusCode(HttpStatus.OK.value());
+        List<String> ids = from(when().get("/datasets").asString()).get("id");
+        assertThat(ids, hasItem(dataSetId));
+        assertQueueMessages(dataSetId);
+
+        content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        contentAsString = IOUtils.toString(content);
+        jNode = mapper.readTree(contentAsString);
+        oNode = JsonNodeFactory.instance.objectNode();
+        oNode.putAll((ObjectNode) jNode);
+
+        assertTrue(oNode.has("metadata"));
+
+        assertTrue(oNode.get("metadata").has("records"));
+        assertEquals(100, oNode.get("metadata").get("records").getIntValue());
 
         assertTrue(oNode.get("metadata").has("nbLinesHeader"));
         assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
