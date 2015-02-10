@@ -23,6 +23,8 @@ import org.talend.dataprep.dataset.objects.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
+import uk.co.datumedge.hamcrest.json.SameJSONAs;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Date;
@@ -253,16 +255,9 @@ public class DataSetServiceTests {
         ObjectNode oNode = JsonNodeFactory.instance.objectNode();
         oNode.putAll((ObjectNode) jNode);
 
-        assertTrue(oNode.has("metadata"));
-
-        assertTrue(oNode.get("metadata").has("records"));
-        assertEquals(2, oNode.get("metadata").get("records").getIntValue());
-
-        assertTrue(oNode.get("metadata").has("nbLinesHeader"));
-        assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
-
-        assertTrue(oNode.get("metadata").has("nbLinesFooter"));
-        assertEquals(0, oNode.get("metadata").get("nbLinesFooter").getIntValue());
+        assertThat(contentAsString,
+                SameJSONAs.sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
+                        .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/{id}", dataSetId).then()
@@ -277,16 +272,9 @@ public class DataSetServiceTests {
         oNode = JsonNodeFactory.instance.objectNode();
         oNode.putAll((ObjectNode) jNode);
 
-        assertTrue(oNode.has("metadata"));
-
-        assertTrue(oNode.get("metadata").has("records"));
-        assertEquals(100, oNode.get("metadata").get("records").getIntValue());
-
-        assertTrue(oNode.get("metadata").has("nbLinesHeader"));
-        assertEquals(1, oNode.get("metadata").get("nbLinesHeader").getIntValue());
-
-        assertTrue(oNode.get("metadata").has("nbLinesFooter"));
-        assertEquals(0, oNode.get("metadata").get("nbLinesFooter").getIntValue());
+        assertThat(contentAsString,
+                SameJSONAs.sameJSONAs("{\"metadata\":{\"records\":100,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
+                        .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
     }
 
 }
