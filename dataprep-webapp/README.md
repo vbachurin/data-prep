@@ -1,16 +1,19 @@
 # Talend Data-prep web-application aka Talend Data Shaker
 ## How to run
 ### Prerequisites
-1. nodejs : http://nodejs.org/
-2. npm : it should be install with the above node
-3. install development tools using this command :
- 
+1. gem : https://rubygems.org/
+2. nodejs : http://nodejs.org/
+3. npm : it should be install with the above node
+4. install development tools using these commands :
+
+`gem install sass`
+
 `npm install -g bower gulp`
 
 (You may have to use sudo before the command)
 
-4. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
-5. go to _checkouts/data-prep/dataprep-webapp_ and type the following command
+5. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
+6. go to _checkouts/data-prep/dataprep-webapp_ and type the following command
 
 `npm install`
 
