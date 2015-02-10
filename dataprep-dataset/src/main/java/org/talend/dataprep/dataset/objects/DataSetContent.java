@@ -7,7 +7,11 @@ import java.util.List;
 
 public class DataSetContent {
 
-    private int                     lines;
+    private int                     nbRecords;
+
+    private int                     nbLinesInHeader;
+
+    private int                     nbLinesInFooter;
 
     private final List<FormatGuess> contentTypes = new LinkedList<>();
 
@@ -26,12 +30,28 @@ public class DataSetContent {
         this.contentType = contentType;
     }
 
-    public int getLines() {
-        return this.lines;
+    public int getNbRecords() {
+        return this.nbRecords;
     }
 
-    public void setLines(int lines) {
-        this.lines = lines;
+    public void setNbRecords(int lines) {
+        this.nbRecords = lines;
+    }
+
+    public int getNbLinesInHeader() {
+        return this.nbLinesInHeader;
+    }
+
+    public void setNbLinesInHeader(int nbLinesInHeader) {
+        this.nbLinesInHeader = nbLinesInHeader;
+    }
+
+    public int getNbLinesInFooter() {
+        return this.nbLinesInFooter;
+    }
+
+    public void setNbLinesInFooter(int nbLinesInFooter) {
+        this.nbLinesInFooter = nbLinesInFooter;
     }
 
 }
