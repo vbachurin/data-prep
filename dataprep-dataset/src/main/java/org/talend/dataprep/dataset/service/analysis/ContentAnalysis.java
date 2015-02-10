@@ -1,11 +1,11 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.dataset.objects.DataSetContent;
 import org.talend.dataprep.dataset.objects.DataSetMetadata;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -13,8 +13,11 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 @Component
 public class ContentAnalysis {
@@ -34,7 +37,18 @@ public class ContentAnalysis {
             DataSetMetadata metadata = repository.get(dataSetId);
             if (metadata != null) {
                 try (InputStream content = store.getAsRaw(metadata)) {
-                    IOUtils.toString(content); // Consumes raw content
+                    BufferedReader br = new BufferedReader(new InputStreamReader(store.getAsRaw(metadata)));
+                    String line = "";
+                    int lineCount = 0;
+                    while ((line = br.readLine()) != null) {
+                        lineCount++;
+                    }
+                    DataSetContent datasetContent = metadata.getContent();
+                    datasetContent.setNbLinesInHeader(1);
+                    datasetContent.setNbLinesInFooter(0);
+                    datasetContent.setNbRecords(lineCount - datasetContent.getNbLinesInHeader()
+                            - datasetContent.getNbLinesInFooter());
+
                     metadata.getLifecycle().contentIndexed(true);
                     repository.add(metadata);
                 } catch (IOException e) {
