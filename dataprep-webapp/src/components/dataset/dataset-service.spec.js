@@ -109,7 +109,7 @@ describe('Dataset Service', function() {
     it('should call dataset get rest service', inject(function($rootScope, DatasetService, RestURLs) {
         //given
         var result = null;
-        var dataset = {name: 'my dataset', id: 'e85afAa78556d5425bc2'};
+        var datasetId = 'e85afAa78556d5425bc2';
         var data = [{column: [], records: []}];
 
         $httpBackend
@@ -117,7 +117,7 @@ describe('Dataset Service', function() {
             .respond(200, data);
 
         //when
-        DatasetService.getData(dataset).then(function(data) {
+        DatasetService.getDataFromId(datasetId, false).then(function(data) {
             result = data;
         });
         $httpBackend.flush();
