@@ -125,7 +125,8 @@ public class DataSetServiceTests {
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
-        when().get("/datasets/{id}/content", expectedId).then().statusCode(HttpStatus.OK.value());
+        int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
+        assertTrue(statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
     }
 
     @Test
