@@ -1,10 +1,16 @@
 <div class="modal" ng-class="::{fullscreen:talendModalCtrl.fullscreen}">
     <input class="modal-state" ng-model="talendModalCtrl.state" type="checkbox"/>
 
-    <div class="modal-window" ng-click="talendModalCtrl.hide()">
+    <div class="modal-window talend-modal-close">
 
-        <div class="modal-inner">
-            <label class="modal-close talend-modal-close" ng-show="::(talendModalCtrl.closeButton)"></label>
+        <div class="modal-inner" ng-switch="talendModalCtrl.fullscreen">
+            <span ng-if="::(talendModalCtrl.closeButton)">
+                <label class="modal-close talend-modal-close" 
+                       ng-switch-when="false"></label>
+                <label class="modal-header-close talend-modal-close" 
+                       ng-switch-when="true"></label>
+            </span>
+
             <ng-transclude></ng-transclude>
         </div>
     </div>

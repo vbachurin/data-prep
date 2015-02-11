@@ -1,6 +1,6 @@
-'use strict';
-
 describe('Dropdown directive', function () {
+    'use strict';
+
     var scope, element;
 
     beforeEach(module('talend.widget'));
