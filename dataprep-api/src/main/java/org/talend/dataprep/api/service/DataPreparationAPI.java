@@ -21,6 +21,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.talend.dataprep.metrics.Timed;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -139,11 +140,30 @@ public class DataPreparationAPI {
             LOG.debug("Listing datasets (pool: " + connectionManager.getTotalStats() + ")...");
         }
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        DataSetListCommand retrievalCommand = new DataSetListCommand(client, contentServiceUrl);
+        DataSetListCommand listCommand = new DataSetListCommand(client, contentServiceUrl);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
+            IOUtils.copyLarge(listCommand.execute(), outputStream);
             outputStream.flush();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Listing datasets (pool: " + connectionManager.getTotalStats() + ") done.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to list datasets.", e);
+        }
+    }
+
+    @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
+    @Timed
+    public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Delete dataset #" + dataSetId + " (pool: " + connectionManager.getTotalStats() + ")...");
+        }
+        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        DataSetDeleteCommand deleteCommand = new DataSetDeleteCommand(client, contentServiceUrl, dataSetId);
+        try {
+            deleteCommand.execute();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listing datasets (pool: " + connectionManager.getTotalStats() + ") done.");
             }

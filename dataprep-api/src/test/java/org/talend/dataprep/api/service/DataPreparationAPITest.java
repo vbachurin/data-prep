@@ -110,5 +110,18 @@ public class DataPreparationAPITest extends TestCase {
         assertTrue(list.contains(dataSetId));
     }
 
+    @Test
+    public void testDataSetDelete() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
+        assertNotNull(dataSetId);
+        String list = when().get("/api/datasets").asString();
+        assertTrue(list.contains(dataSetId));
+        when().delete("/api/datasets/" + dataSetId).asString();
+        list = when().get("/api/datasets").asString();
+        assertEquals("[]", list);
+    }
+
+
 
 }
