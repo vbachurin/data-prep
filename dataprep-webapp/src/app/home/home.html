@@ -16,6 +16,7 @@
 
             <datasets-list
                     datasets="homeCtrl.datasets"
+                    on-open="homeCtrl.openData(dataset)"
                     on-delete="homeCtrl.deleteDataset(dataset)"></datasets-list>
         </div>
 
@@ -32,4 +33,19 @@
         </div>
     </div>
 
+    <talend-modal fullscreen="true"
+                  state="homeCtrl.showDataModal"
+                  close-button="true">
+        <div class="modal-header">
+            <ul>
+                <li>header 1</li>
+                <li>header 2</li>
+            </ul>
+        </div>
+
+        <div class="modal-body">
+            <dataset-grid metadata="homeCtrl.lastSelectedMetadata"
+                          data="homeCtrl.lastSelectedData"></dataset-grid>
+        </div>
+    </talend-modal>
 </div>

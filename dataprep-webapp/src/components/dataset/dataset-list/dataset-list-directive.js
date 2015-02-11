@@ -8,6 +8,7 @@
                 templateUrl: 'components/dataset/dataset-list/dataset-list-directive.html',
                 scope : {
                     datasets : '=',
+                    open : '&onOpen',
                     delete : '&onDelete'
                 },
                 bindToController: true,

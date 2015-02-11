@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function HomeCtrl($window, DatasetService) {
+    function HomeCtrl($window, $q, DatasetService) {
         var vm = this;
 
         /**
@@ -16,6 +16,24 @@
          */
         vm.datasets = [];
 
+        /**
+         * Last selected dataset metadata
+         * @type {dataset}
+         */
+        vm.lastSelectedMetadata = null;
+
+        /**
+         * Last selected records and columns
+         * @type {data}
+         */
+        vm.lastSelectedData = null;
+
+        /**
+         * Data modal state flag
+         * @type {boolean}
+         */
+        vm.showDataModal = false;
+        
         /**
          * Refresh dataset list
          */
@@ -135,6 +153,27 @@
                 .then(function() {
                     vm.refreshDatasets();
                 });
+        };
+
+        /**
+         * Get the dataset data and display data modal
+         * @param dataset
+         */
+        vm.openData = function(dataset) {
+            var getDataPromise;
+            if(vm.lastSelectedMetadata && dataset.id === vm.lastSelectedMetadata.id) {
+                getDataPromise = $q.when(true);
+            }
+            else {
+                getDataPromise = DatasetService.getDataFromId(dataset.id, false)
+                    .then(function(data) {
+                        vm.lastSelectedMetadata = dataset;
+                        vm.lastSelectedData = data;
+                    });
+            }
+            getDataPromise.then(function() {
+                vm.showDataModal = true;
+            });
         };
 
         vm.refreshDatasets();
