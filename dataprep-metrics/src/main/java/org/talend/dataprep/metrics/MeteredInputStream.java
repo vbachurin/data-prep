@@ -7,7 +7,7 @@ class MeteredInputStream extends InputStream {
 
     private final InputStream delegate;
 
-    private long              volume;
+    private long volume;
 
     MeteredInputStream(InputStream delegate) {
         this.delegate = delegate;

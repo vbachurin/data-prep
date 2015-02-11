@@ -1,10 +1,10 @@
 package org.talend.dataprep.dataset.store.local;
 
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
-import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 public class InMemoryDataSetMetadataRepository implements DataSetMetadataRepository {
 

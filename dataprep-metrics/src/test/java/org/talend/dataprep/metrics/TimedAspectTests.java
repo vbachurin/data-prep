@@ -1,5 +1,9 @@
 package org.talend.dataprep.metrics;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,19 +14,15 @@ import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Aspects.class, Configuration.class })
 public class TimedAspectTests {
 
     @Autowired
-    TimeMeasured             timeMeasured;
+    TimeMeasured timeMeasured;
 
     @Autowired
-    MetricRepository         repository;
+    MetricRepository repository;
 
     @Test
     public void testNoRun() throws Exception {

@@ -1,10 +1,10 @@
 package org.talend.dataprep.dataset.store.mongo;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
-import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
 import java.util.Collections;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 public class MongoDataSetMetadataRepository implements DataSetMetadataRepository {
 

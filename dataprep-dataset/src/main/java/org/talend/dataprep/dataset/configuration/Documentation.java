@@ -1,15 +1,16 @@
 package org.talend.dataprep.dataset.configuration;
 
-import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
-import com.mangofactory.swagger.models.dto.ApiInfo;
-import com.mangofactory.swagger.plugin.EnableSwagger;
-import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
+import com.mangofactory.swagger.models.dto.ApiInfo;
+import com.mangofactory.swagger.plugin.EnableSwagger;
+import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
+
+@Configuration("org.talend.dataprep.dataset.configuration")
 @EnableSwagger
 public class Documentation {
 
@@ -25,6 +26,6 @@ public class Documentation {
         ApiInfo apiInfo = new ApiInfo("Talend Data Preparation - Data Set Service (DSS)",
                 "This service exposes operations on data sets (creation, remove...).", StringUtils.EMPTY, StringUtils.EMPTY,
                 StringUtils.EMPTY, StringUtils.EMPTY);
-        return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(".*dataset.*"); //$NON-NLS-1
+        return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(".*datasets.*"); //$NON-NLS-1
     }
 }

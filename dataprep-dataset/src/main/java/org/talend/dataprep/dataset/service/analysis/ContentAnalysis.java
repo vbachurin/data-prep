@@ -1,34 +1,34 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.dataset.objects.DataSetContent;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
-import org.talend.dataprep.dataset.service.Destinations;
-import org.talend.dataprep.dataset.store.DataSetContentStore;
-import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.DataSetContent;
+import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.dataset.service.Destinations;
+import org.talend.dataprep.dataset.store.DataSetContentStore;
+import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+
 @Component
 public class ContentAnalysis {
 
-    private static final Log  LOG = LogFactory.getLog(ContentAnalysis.class);
+    private static final Log LOG = LogFactory.getLog(ContentAnalysis.class);
 
     @Autowired
     DataSetMetadataRepository repository;
 
     @Autowired
-    DataSetContentStore       store;
+    DataSetContentStore store;
 
     @JmsListener(destination = Destinations.CONTENT_ANALYSIS)
     public void indexDataSet(Message message) {

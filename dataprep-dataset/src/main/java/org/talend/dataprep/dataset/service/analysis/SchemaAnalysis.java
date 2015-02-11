@@ -1,43 +1,47 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.dataset.objects.DataSetContent;
-import org.talend.dataprep.dataset.objects.DataSetMetadata;
+import org.talend.dataprep.api.DataSetContent;
+import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.service.Destinations;
-import org.talend.dataprep.dataset.service.analysis.schema.SchemaParser;
 import org.talend.dataprep.dataset.service.analysis.schema.FormatGuess;
 import org.talend.dataprep.dataset.service.analysis.schema.FormatGuesser;
+import org.talend.dataprep.dataset.service.analysis.schema.SchemaParser;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
 
 @Component
 public class SchemaAnalysis {
 
-    private static final Log  LOG      = LogFactory.getLog(SchemaAnalysis.class);
+    private static final Log LOG = LogFactory.getLog(SchemaAnalysis.class);
 
     @Autowired
-    JmsTemplate               jmsTemplate;
+    JmsTemplate jmsTemplate;
 
     @Autowired
     DataSetMetadataRepository repository;
 
     @Autowired
-    DataSetContentStore       store;
+    DataSetContentStore store;
 
     @Autowired
-    List<FormatGuesser>       guessers = new LinkedList<>();
+    List<FormatGuesser> guessers = new LinkedList<>();
 
     @JmsListener(destination = Destinations.SCHEMA_ANALYSIS)
     public void analyseDataSetSchema(Message message) {

@@ -1,3 +1,4 @@
+#!/bin/sh
 ###############################################################################
 # Version 1: using â€˜apt-get installâ€™
 # Installs using apt-get

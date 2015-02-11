@@ -1,5 +1,7 @@
 package org.talend.dataprep.metrics;
 
+import java.io.InputStream;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,15 +16,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
-import java.io.InputStream;
-
 @Aspect
 public class Aspects {
 
     private static final Log LOGGER = LogFactory.getLog(Aspects.class);
 
     @Autowired
-    MetricRepository         repository;
+    MetricRepository repository;
 
     static String getCategory(Class<?> clazz, String method) throws NoSuchMethodException {
         return clazz.getName() + '.' + method;
@@ -31,14 +31,14 @@ public class Aspects {
     private static UserMetric<Long> buildTimeMetric(ProceedingJoinPoint pjp, long time) throws NoSuchMethodException {
         Signature signature = pjp.getSignature();
         String category = getCategory(signature.getDeclaringType(), signature.getName());
-        UserMetric<Long> metric = new UserMetric<Long>(category + ".time", time);
+        UserMetric<Long> metric = new UserMetric<>(category + ".time", time);
         return userMetric(metric);
     }
 
     private static UserMetric<Long> buildVolumeMetric(ProceedingJoinPoint pjp, long volume) throws NoSuchMethodException {
         Signature signature = pjp.getSignature();
         String category = getCategory(signature.getDeclaringType(), signature.getName());
-        UserMetric<Long> metric = new UserMetric<Long>(category + ".volume", volume);
+        UserMetric<Long> metric = new UserMetric<>(category + ".volume", volume);
         return userMetric(metric);
     }
 
