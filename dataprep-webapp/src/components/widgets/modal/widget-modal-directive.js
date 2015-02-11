@@ -3,7 +3,7 @@
 
     /**
      * Modal window with 2 modes : normal (default) | fullscreen
-     *  
+     *
      * <talend-modal fullscreen="false"
      *              state="homeCtrl.dataModalSmall"
      *              close-button="true">
@@ -24,13 +24,13 @@
      *          Body content
      *      </div>
      * </talend-modal>
-     * 
+     *
      * All mode :
      * Element 'talend-modal' > Class 'fullscreen' : false (default)
      * Element 'talend-modal' > Class 'state' : variable binding that represents the state (true = opened, false = closed)
      * Element 'talend-modal' > Class 'close-button' : close button on top right
      * Element 'talend-modal' > Class 'talend-modal-close' : close action on click
-     * 
+     *
      * Fullscreen mode :
      * Element 'modal-header' : header content
      * Element 'modal-header' > ul > li : header item

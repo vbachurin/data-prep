@@ -12,7 +12,7 @@
   $large-screen: em(860) !default;
   $base-font-color: $dark-gray !default;
   $background-transparent: rgba(0,0,0, 0.70);
-  
+
   $navigation-background-top: rgba(85, 89, 100, 0.8);
   $navigation-background-bottom: rgb(85, 89, 100);
   $navigation-border: #333;
@@ -228,7 +228,7 @@
           }
         }
       }
-      
+
       .modal-body {
         @include calc(height, "100% - #{$navigation-height} - #{$body-margin}");
         @include calc(width, "100% - 2 * #{$body-margin}");
