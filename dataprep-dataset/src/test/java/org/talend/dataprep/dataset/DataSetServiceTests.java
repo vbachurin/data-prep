@@ -228,7 +228,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
         assertThat(contentAsString,
@@ -241,7 +241,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
         assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
@@ -252,7 +252,7 @@ public class DataSetServiceTests {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
         assertThat(contentAsString,
@@ -260,13 +260,11 @@ public class DataSetServiceTests {
                 .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
-                .queryParam("Content-Type", "text/csv").when().put("/datasets/{id}", dataSetId).then()
-                .statusCode(HttpStatus.OK.value());
-        assertQueueMessages(dataSetId);
-        List<String> ids = from(when().get("/datasets").asString()).get("id");
-        assertThat(ids, hasItem(dataSetId));
+                .queryParam("Content-Type", "text/csv").when().put("/datasets/{id}/raw", dataSetId).asString();
 
-        content = when().get("/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        assertQueueMessages(dataSetId);
+
+        content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         contentAsString = IOUtils.toString(content);
 
         assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
