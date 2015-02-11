@@ -15,7 +15,10 @@ class LowerCase implements Action {
 
     @Override
     public void perform(DataSetRow row) {
-        row.set(column, row.get(column).toLowerCase());
+        String value = row.get(column);
+        if (value != null) {
+            row.set(column, value.toLowerCase());
+        }
     }
 
     @Override

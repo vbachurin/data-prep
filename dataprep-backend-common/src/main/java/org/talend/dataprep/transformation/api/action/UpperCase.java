@@ -15,7 +15,10 @@ class UpperCase implements Action {
 
     @Override
     public void perform(DataSetRow row) {
-        row.set(column, row.get(column).toUpperCase());
+        String value = row.get(column);
+        if (value != null) {
+            row.set(column, value.toUpperCase());
+        }
     }
 
     @Override
