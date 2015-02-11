@@ -101,4 +101,14 @@ public class DataPreparationAPITest extends TestCase {
         assertEquals(expectedContent, transformed);
     }
 
+    @Test
+    public void testDataSetList() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
+        assertNotNull(dataSetId);
+        String list = when().get("/api/datasets").asString();
+        assertTrue(list.contains(dataSetId));
+    }
+
+
 }

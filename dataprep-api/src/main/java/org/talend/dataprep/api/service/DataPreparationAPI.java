@@ -14,10 +14,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.service.command.CreateDataSet;
-import org.talend.dataprep.api.service.command.CreateOrUpdateDataSet;
-import org.talend.dataprep.api.service.command.DataSetGetCommand;
-import org.talend.dataprep.api.service.command.TransformCommand;
+import org.talend.dataprep.api.service.command.*;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
@@ -132,6 +129,26 @@ public class DataPreparationAPI {
             }
         } catch (Exception e) {
             throw new RuntimeException("Unable to retrieve content for id #" + id + ".", e);
+        }
+    }
+
+    @RequestMapping(value = "/api/datasets", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List data sets.", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Returns a list of data sets the user can use.")
+    public void list(HttpServletResponse response) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing datasets (pool: " + connectionManager.getTotalStats() + ")...");
+        }
+        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        DataSetListCommand retrievalCommand = new DataSetListCommand(client, contentServiceUrl);
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
+            outputStream.flush();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Listing datasets (pool: " + connectionManager.getTotalStats() + ") done.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to list datasets.", e);
         }
     }
 
