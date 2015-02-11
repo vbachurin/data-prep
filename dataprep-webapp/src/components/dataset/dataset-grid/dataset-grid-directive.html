@@ -1,16 +1,16 @@
 <div>
-    File: {{ metadata.name }} | {{ data.length }} lines
+    File: {{ datagridCtrl.metadata.name }} | {{ datagridCtrl.metadata.records }} lines
     <table class="datagrid">
         <thead>
         <tr>
-            <th ng-repeat="column in data.columns track by $index">
+            <th ng-repeat="column in datagridCtrl.data.columns track by $index">
                 <dataset-column-header column="column"></dataset-column-header>
             </th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="record in data.records track by $index">
-            <td ng-repeat="column in data.columns track by $index">{{ record[column.id] }}</td>
+        <tr ng-repeat="record in datagridCtrl.data.records track by $index">
+            <td ng-repeat="column in datagridCtrl.data.columns track by $index">{{ record[column.id] }}</td>
         </tr>
         </tbody>
     </table>

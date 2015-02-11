@@ -14,18 +14,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.*;
-import static com.jayway.restassured.RestAssured.*;
-import static com.jayway.restassured.path.json.JsonPath.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 import uk.co.datumedge.hamcrest.json.SameJSONAs;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -44,9 +33,6 @@ import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-
-
-import static org.junit.Assert.*;
 import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
