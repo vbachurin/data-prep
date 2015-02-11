@@ -6,7 +6,7 @@
             restrict: 'E',
             templateUrl: 'components/dataset/dataset-grid/dataset-grid-directive.html',
             scope: {
-                dataset: '=',
+                metadata: '=',
                 data: '='
             },
             bindToController: true,

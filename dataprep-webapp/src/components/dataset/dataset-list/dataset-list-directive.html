@@ -15,7 +15,7 @@
             <table>
                 <tbody>
                 <tr>
-                    <td><button class="t-btn t-btn-transparent t-btn-shaker" ng-click="datasetListCtrl.select({dataset : dataset})"></button></td>
+                    <td><a class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.dataset({datasetId: '{{dataset.id}}'})"></a></td>
                     <td class="t-right-divider"><button type="button" class="t-btn t-btn-transparent t-btn-pushto" ng-click=""></button></td>
                     <td><button type="button" class="t-btn t-btn-transparent t-btn-favorite" ng-click=""></button></td>
                     <td class="t-right-divider"><button type="button" t-btn-transparent class="t-btn t-btn-transparent t-btn-share" ng-click=""></button></td>

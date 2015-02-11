@@ -1,11 +1,13 @@
 (function() {
     'use strict';
 
-    function DatasetService($upload, $http, RestURLs) {
+    function DatasetService($rootScope, $upload, $http, RestURLs) {
+        var self = this;
+        
         /**
          * Get the dataset list
          */
-        this.getDatasets = function() {
+        self.getDatasets = function() {
             return $http.get(RestURLs.datasetUrl)
                 .then(function(res) {
                     return res.data;
@@ -19,7 +21,7 @@
          * @param id - the dataset id (used to update existing dataset)
          * @returns {{name: string, progress: number, file: *, error: boolean}}
          */
-        this.fileToDataset = function(file, name, id) {
+        self.fileToDataset = function(file, name, id) {
             return {name: name, progress: 0, file: file, error: false, id: id};
         };
 
@@ -28,7 +30,7 @@
          * @param dataset
          * @returns $upload promise
          */
-        this.createDataset = function(dataset) {
+        self.createDataset = function(dataset) {
             return $upload.http({
                 url: RestURLs.datasetUrl + '?' + jQuery.param({name: dataset.name}),
                 headers: {'Content-Type': 'text/plain'},
@@ -41,7 +43,7 @@
          * @param dataset
          * @returns $upload promise
          */
-        this.updateDataset = function(dataset) {
+        self.updateDataset = function(dataset) {
             return $upload.http({
                 url: RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({name: dataset.name}),
                 method: 'PUT',
@@ -55,18 +57,22 @@
          * @param dataset
          * @returns promise
          */
-        this.deleteDataset = function(dataset) {
+        self.deleteDataset = function(dataset) {
             return $http.delete(RestURLs.datasetUrl + '/' + dataset.id);
         };
 
         /**
          * Get the dataset content
-         * @param dataset
+         * @param datasetId - dataset id
          */
-        this.getData = function(dataset) {
-            return $http.get(RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({metadata: false}))
+        self.getDataFromId = function(datasetId, metadata) {
+            $rootScope.$emit('talend.loading.start');
+            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?' + jQuery.param({metadata: metadata}))
                 .then(function(res) {
                     return res.data;
+                })
+                .finally(function() {
+                    $rootScope.$emit('talend.loading.stop');
                 });
         };
     }

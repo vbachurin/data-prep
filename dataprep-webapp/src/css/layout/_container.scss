@@ -3,15 +3,25 @@
 }
 
 .wide-container {
-  @include outer-container;
   width: 100%;
-  max-width: 100%;
 }
 
-.container-with-menu {
-  @include span-columns(8);
+.flex {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  x-align-items: stretch;
+}
 
-  @include media ($large-screen) {
-    @include span-columns(10);
-  }
+.flex-menu {
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+  height: 85vh;
+  flex: 0 0 240px;
+}
+
+.flex-center {
+  width: 100%;
+  padding: 0;
 }

@@ -17,18 +17,6 @@
         vm.datasets = [];
 
         /**
-         * Selected dataset
-         * @type {{id: string, name: string}}
-         */
-        vm.selectedDataset = null;
-
-        /**
-         * Selected dataset data
-         * @type {{columns: Array, records: Array}}
-         */
-        vm.selectedData = null;
-
-        /**
          * Refresh dataset list
          */
         vm.refreshDatasets = function() {
@@ -145,23 +133,7 @@
         vm.deleteDataset = function(dataset) {
             DatasetService.deleteDataset(dataset)
                 .then(function() {
-                    if(dataset === vm.selectedDataset) {
-                        vm.selectedDataset = null;
-                        vm.selectedData = null;
-                    }
                     vm.refreshDatasets();
-                });
-        };
-
-        /**
-         * Get the selected dataset
-         * @param dataset - the selected dataset
-         */
-        vm.openDataset = function(dataset) {
-            DatasetService.getData(dataset)
-                .then(function(data) {
-                    vm.selectedDataset = dataset;
-                    vm.selectedData = data;
                 });
         };
 
