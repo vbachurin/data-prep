@@ -79,6 +79,11 @@
             <artifactId>dataprep-dataset</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>uk.co.datumedge</groupId>
+            <artifactId>hamcrest-json</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>

@@ -8,13 +8,13 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import uk.co.datumedge.hamcrest.json.SameJSONAs;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -32,6 +32,8 @@ import org.talend.dataprep.api.DataSetLifecycle;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+
+import uk.co.datumedge.hamcrest.json.SameJSONAs;
 
 import com.jayway.restassured.RestAssured;
 
@@ -78,7 +80,7 @@ public class DataSetServiceTests {
     private SameJSONAs<? super String> sameJSONAsFile(String fileNameExpected) throws Exception {
         InputStream expected = DataSetServiceTests.class.getResourceAsStream(fileNameExpected);
         assertNotNull(expected);
-        return SameJSONAs.sameJSONAs(IOUtils.toString(expected)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
+        return sameJSONAs(IOUtils.toString(expected)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
     }
 
     @Before
@@ -115,7 +117,7 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets").asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        assertThat(contentAsString, SameJSONAs.sameJSONAs(expected).allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
+        assertThat(contentAsString, sameJSONAs(expected).allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
@@ -217,8 +219,7 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        assertThat(contentAsString,
-                SameJSONAs.sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
+        assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
                 .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
     }
 
@@ -241,8 +242,7 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        assertThat(contentAsString,
-                SameJSONAs.sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
+        assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
                 .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
