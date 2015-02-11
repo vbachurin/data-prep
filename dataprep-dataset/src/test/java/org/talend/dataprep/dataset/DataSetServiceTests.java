@@ -66,7 +66,7 @@ public class DataSetServiceTests {
             int valid = column.getQuality().getValid();
             int invalid = column.getQuality().getInvalid();
             int empty = column.getQuality().getEmpty();
-            assertTrue(empty < invalid);
+            assertTrue(empty <= invalid);
             assertTrue(invalid < valid);
         }
     }
