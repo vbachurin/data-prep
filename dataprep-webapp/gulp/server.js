@@ -30,7 +30,8 @@ function browserSyncInit(baseDir, files, browser) {
 
 }
 
-gulp.task('serve', ['watch'], function () {
+gulp.task('serve', ['clean'], function () {
+  gulp.start('watch');
   browserSyncInit([
     '.tmp',
     'src'

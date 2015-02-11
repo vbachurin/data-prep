@@ -2,7 +2,7 @@
 
 var gulp = require('gulp');
 
-gulp.task('watch', ['clean', 'consolidate', 'wiredep', 'injector:css', 'injector:js'] ,function () {
+gulp.task('watch', ['consolidate', 'wiredep', 'injector:css', 'injector:js'] ,function () {
   gulp.watch('src/**/*.scss', ['injector:css']);
   gulp.watch('src/**/*.js', ['injector:js']);
   gulp.watch('src/assets/images/**/*', ['images']);
