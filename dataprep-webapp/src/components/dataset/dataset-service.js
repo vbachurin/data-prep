@@ -46,7 +46,7 @@
         self.updateDataset = function(dataset) {
             return $upload.http({
                 url: RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({name: dataset.name}),
-                method: 'PUT',
+                method: 'POST',
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
             });
