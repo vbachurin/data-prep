@@ -1,9 +1,6 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -36,11 +33,9 @@ public class ContentAnalysis {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1
             DataSetMetadata metadata = repository.get(dataSetId);
             if (metadata != null) {
-                try (InputStream content = store.getAsRaw(metadata)) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(store.getAsRaw(metadata)));
-                    String line = "";
+                try (BufferedReader content = new BufferedReader(new InputStreamReader(store.getAsRaw(metadata)))) {
                     int lineCount = 0;
-                    while ((line = br.readLine()) != null) {
+                    while (content.readLine() != null) {
                         lineCount++;
                     }
                     DataSetContent datasetContent = metadata.getContent();
