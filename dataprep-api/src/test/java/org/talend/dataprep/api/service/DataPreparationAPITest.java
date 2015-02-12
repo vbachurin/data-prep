@@ -2,6 +2,10 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static org.junit.Assert.*;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.*;
+
+import java.io.InputStream;
 
 import junit.framework.TestCase;
 
@@ -17,8 +21,11 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.Application;
+import org.talend.dataprep.dataset.DataSetServiceTests;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+
+import uk.co.datumedge.hamcrest.json.SameJSONAs;
 
 import com.jayway.restassured.RestAssured;
 
@@ -122,6 +129,26 @@ public class DataPreparationAPITest extends TestCase {
         assertEquals("[]", list);
     }
 
+    /**
+     * Utilities method to assert that an expected json contained in a file matches a result.
+     * 
+     * @param fileNameExpected the name of the file that contains the expected json, must be in this package ressources
+     * @return a SameJSONAs to use like in assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
+     */
+    private SameJSONAs<? super String> sameJSONAsFile(String fileNameExpected) throws Exception {
+        InputStream expected = DataPreparationAPITest.class.getResourceAsStream(fileNameExpected);
+        assertNotNull(expected);
+        return sameJSONAs(IOUtils.toString(expected)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
+    }
 
+    @Test
+    public void testDataSetCreate() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "tagada").asString();
+        InputStream content = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        assertThat(contentAsString, sameJSONAsFile("testCreate_expected.json"));
+    }
 
 }

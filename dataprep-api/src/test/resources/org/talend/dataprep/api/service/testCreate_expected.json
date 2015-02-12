@@ -1,0 +1,27 @@
+{
+   "metadata":{
+      "name":"tagada",
+      "author":"anonymousUser",
+      "records":2,
+      "nbLinesHeader":1,
+      "nbLinesFooter":0,
+   },
+   "records":[
+      {
+         "id":"1",
+         "firstname":"Lennon",
+         "lastname":"John",
+         "age":"40",
+         "date-of-birth":"10/09/1940",
+         "alive":"false"
+      },
+      {
+         "id":"2",
+         "firstname":"Bowie",
+         "lastname":"David",
+         "age":"67",
+         "date-of-birth":"01/08/1947",
+         "alive":"true"
+      }
+   ]
+}

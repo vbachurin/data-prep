@@ -1,3 +1,12 @@
-#!/bin/sh
-docker stop $(docker ps -a -q) > /dev/null
-docker rm $(docker ps -a -q) > /dev/null
+#!/bin/bash
+
+DOCKER_IDS=`docker ps --all --filter name=tdp --quiet`
+
+if [[ -z "$DOCKER_IDS" ]]; then
+  echo 'no docker containers to stop'
+else
+  echo 'docker containers to stop: '$DOCKER_IDS
+  docker stop $DOCKER_IDS > /dev/null
+  docker rm $DOCKER_IDS > /dev/null
+fi
+
