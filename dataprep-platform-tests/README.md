@@ -3,6 +3,8 @@
 
 This folder contains a Gatling project for backend service stress testing.
 
-To test it out, simply execute the following command:
-
-    $mvn -Pperformance-tests clean gatling:execute
+To test it out, you need to specify a scenario to run:
+```
+    $mvn -Pperformance-tests gatling:execute -Dgatling.simulationClass=dataprep.Scenario2
+```
+(look in classes available in src/test/scala/dataprep for valid scenario names).
