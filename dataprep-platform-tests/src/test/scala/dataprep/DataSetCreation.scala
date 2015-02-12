@@ -7,7 +7,8 @@ import scala.concurrent.duration._
 
 class DataSetCreation extends Simulation {
   val httpConf = http
-    .baseURL("http://api.tdp.talend.lan/")
+    .warmUp("http://localhost:8888/")
+    .baseURL("http://localhost:8888/")
     .acceptHeader("application/json,application/xml;q=0.9,*/*;q=0.8") // Here are the common headers
     .doNotTrackHeader("1")
   val scn = scenario("Create / Read / No Op Transform")
@@ -18,7 +19,7 @@ class DataSetCreation extends Simulation {
         .asLongAs(session => session.get("dataset_get_status").as[Integer].equals(202)) {
         exec(http("read_2").get("api/datasets/${dataset}").check(status.saveAs("dataset_get_status")))
           .pause(500 millis)
-      }
+        }
         .exec(http("transform").post("api/transform/${dataset}/"))
         .pause(500 millis)
     }

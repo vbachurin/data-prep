@@ -4,16 +4,12 @@ mongodb:
         - runtime/mongodb:/data/db
     ports:
         - "27017:27017"
-nginx:
-    image: jwilder/nginx-proxy
-    volumes:
-        - /var/run/docker.sock:/tmp/docker.sock
-    ports:
-        - "80:80"
 api:
     image: talend/dataprep-api:1.0.m0-SNAPSHOT
     expose:
         - 8888
+    ports:
+        - "8888:8888"
     links:
         - transform
         - dataset
@@ -21,8 +17,6 @@ api:
         TDP_API_SERVER_PORT: 8888
         TDP_API_DATASET_SERVICE_URL: http://${DATASET_PORT_8080_TCP_ADDR}:${DATASET_PORT_8080_TCP_PORT}/datasets
         TDP_API_TRANSFORMATION_SERVICE_URL: http://${TRANSFORM_PORT_8180_TCP_ADDR}:${TRANSFORM_1_PORT_8180_TCP_PORT}/transform
-        VIRTUAL_HOST: api.tdp.talend.lan
-        VIRTUAL_PORT: 8888
 transform:
     image: talend/dataprep-transformation:1.0.m0-SNAPSHOT
     volumes:
@@ -31,8 +25,6 @@ transform:
         - 8180
     environment:
         TDP_TRANSFORMATION_SERVER_PORT: 8180
-        VIRTUAL_HOST: transformation.tdp.talend.lan
-        VIRTUAL_PORT: 8180
 dataset:
     image: talend/dataprep-dataset:1.0.m0-SNAPSHOT
     volumes:
@@ -48,5 +40,3 @@ dataset:
         TDP_DATASET_CONTENT_STORE_LOCAL_LOCATION: /store
         TDP_DATASET_MONGODB_HOST: ${MONGODB_PORT_27017_TCP_ADDR}
         TDP_DATASET_MONGODB_PORT: ${MONGODB_PORT_27017_TCP_PORT}
-        VIRTUAL_HOST: dataset.tdp.talend.lan
-        VIRTUAL_PORT: 8080
