@@ -44,7 +44,9 @@ public class LocalDataSetContentStore implements DataSetContentStore {
             org.apache.commons.io.FileUtils.touch(dataSetFile);
             FileOutputStream fos = new FileOutputStream(dataSetFile);
             IOUtils.copy(dataSetContent, fos);
-            LOGGER.info("Data set #" + dataSetMetadata.getId() + " stored to '" + dataSetFile + "'.");
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Data set #" + dataSetMetadata.getId() + " stored to '" + dataSetFile + "'.");
+            }
         } catch (IOException e) {
             throw new RuntimeException("Unable to save data set in temporary directory.", e);
         }

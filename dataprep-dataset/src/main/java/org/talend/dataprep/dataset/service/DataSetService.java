@@ -171,7 +171,9 @@ public class DataSetService {
         }
         if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
             // Schema is not yet ready (but eventually will, returns 202 to indicate this).
-            LOG.info("Data set #" + dataSetId + " not yet ready for service.");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Data set #" + dataSetId + " not yet ready for service.");
+            }
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return;
         }
