@@ -59,7 +59,7 @@ public class ActionParser {
             } else {
                 return new DefaultAction(); // Should not happen, but no action means no op.
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Unable to parse actions in '" + actions + "'.", e);
         }
     }
