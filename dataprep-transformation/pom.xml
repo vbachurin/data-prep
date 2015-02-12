@@ -86,7 +86,7 @@
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
                             <baseImage>dockerfile/java:oracle-java8</baseImage>
-                            <cmd>java -jar /${project.build.finalName}.jar</cmd>
+                            <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>
