@@ -1,6 +1,7 @@
 package org.talend.dataprep.dataset.service.analysis;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -35,8 +36,8 @@ public class QualityAnalysis {
             DataSetMetadata metadata = repository.get(dataSetId);
             if (metadata != null) {
                 if (!metadata.getLifecycle().schemaAnalyzed()) {
-                    throw new IllegalStateException(
-                            "Schema information must be computed before quality analysis can be performed.");
+                    LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
+                    return; // no acknowledge to allow re-poll.
                 }
                 for (ColumnMetadata column : metadata.getRow().getColumns()) {
                     Quality quality = column.getQuality();
@@ -51,6 +52,7 @@ public class QualityAnalysis {
                 }
                 metadata.getLifecycle().qualityAnalyzed(true);
                 repository.add(metadata);
+                message.acknowledge();
             } else {
                 LOGGER.info("Unable to analyze quality of data set #" + dataSetId + ": seems to be removed.");
             }
