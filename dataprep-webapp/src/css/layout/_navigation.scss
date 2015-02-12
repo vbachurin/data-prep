@@ -6,7 +6,7 @@ header.navigation {
     .logo {
       float: left;
 
-      background: url('../../assets/images/talend_logo.png') no-repeat;
+      background: url('/assets/images/talend_logo.png') no-repeat;
       background-size: contain;
       width: 130px;
       height: $navigation-height - 10;
@@ -22,23 +22,23 @@ header.navigation {
       @include filter(drop-shadow(0px 1px 1px #1f2024));
 
       &.t-top-bar_folder {
-        background: url('../../assets/images/top_link_folder.png') no-repeat center;
+        background: url('/assets/images/top_link_folder.png') no-repeat center;
       }
 
       &.t-top-bar_marketplace {
-        background: url('../../assets/images/top_link_marketplace.png') no-repeat;
+        background: url('/assets/images/top_link_marketplace.png') no-repeat;
       }
 
       &.t-top-bar_share {
-        background: url('../../assets/images/top_link_share.png') no-repeat;
+        background: url('/assets/images/top_link_share.png') no-repeat;
       }
 
       &.t-top-bar_notification {
-        background: url('../../assets/images/top_link_notification.png') no-repeat;
+        background: url('/assets/images/top_link_notification.png') no-repeat;
       }
 
       &.t-top-bar_profile {
-        background: url('../../assets/images/top_link_profile.png') no-repeat;
+        background: url('/assets/images/top_link_profile.png') no-repeat;
         width: 52px;
       }
     }

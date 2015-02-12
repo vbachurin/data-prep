@@ -101,7 +101,7 @@ gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], functi
     .pipe($.uglify({preserveComments: $.uglifySaveLicense}))
     .pipe(jsFilter.restore())
     .pipe(cssFilter)
-    .pipe($.replace('../../assets','../assets'))
+//    .pipe($.replace('../../assets','../assets'))
     .pipe($.csso())
     .pipe(cssFilter.restore())
     .pipe(assets.restore())
@@ -119,13 +119,13 @@ gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], functi
 });
 
 gulp.task('images', function () {
-  return gulp.src('src/assets/images/**/*')
+  return gulp.src('src/**/*.png')
     .pipe($.imagemin({
       optimizationLevel: 3,
       progressive: true,
       interlaced: true
     }))
-    .pipe(gulp.dest('dist/assets/images/'));
+    .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('fonts', function () {
