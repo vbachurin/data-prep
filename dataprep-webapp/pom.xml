@@ -34,6 +34,7 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
+                        <phase>pre-clean</phase>
                         <configuration>
                             <nodeVersion>v0.10.30</nodeVersion>
                             <npmVersion>1.4.21</npmVersion>
@@ -44,7 +45,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>test-compile</phase>
+                        <phase>clean</phase>
                         <configuration>
                             <arguments>prune</arguments>
                         </configuration>
@@ -54,9 +55,9 @@
                         <goals>
                             <goal>bower</goal>
                         </goals>
-                        <phase>test-compile</phase>
+                        <phase>clean</phase>
                         <configuration>
-                            <arguments>prune</arguments>
+                            <arguments>prune --allow-root</arguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -64,6 +65,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
+                        <phase>initialize</phase>
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
@@ -73,8 +75,9 @@
                         <goals>
                             <goal>bower</goal>
                         </goals>
+                        <phase>initialize</phase>
                         <configuration>
-                            <arguments>install</arguments>
+                            <arguments>install --allow-root</arguments>
                         </configuration>
                     </execution>
                     <execution>
