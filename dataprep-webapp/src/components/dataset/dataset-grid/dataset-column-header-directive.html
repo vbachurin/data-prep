@@ -8,7 +8,7 @@
             <li role="presentation"><a role="menuitem" href="#">Hide Column {{ datasetHeaderCtrl.column.id | uppercase }}</a></li>
             <li class="divider"></li>
             <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>
-            <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>
+            <li role="presentation" ng-click="datasetHeaderCtrl.transform('uppercase')"><a role="menuitem" href="#">Uppercase</a></li>
         </ul>
     </div>
 </talend-dropdown>

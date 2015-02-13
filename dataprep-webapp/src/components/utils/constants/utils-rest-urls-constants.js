@@ -5,7 +5,8 @@
         .service('RestURLs', ['apiUrl', function(apiUrl) {
             return {
                 serverUrl:				apiUrl,
-                datasetUrl:             apiUrl + '/api/datasets'
+                datasetUrl:             apiUrl + '/api/datasets',
+                transformUrl:           apiUrl + '/api/transform'
             };
         }]);
 })();

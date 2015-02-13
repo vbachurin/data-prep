@@ -1,16 +1,19 @@
 (function() {
     'use strict';
 
-    function DatasetColumnHeader() {
+    function DatasetColumnHeader($rootScope, TransformationService) {
         return {
             restrict: 'E',
             templateUrl: 'components/dataset/dataset-grid/dataset-column-header-directive.html',
             scope:{
+                metadata: '=',
                 column : '='
             },
             bindToController: true,
             controllerAs: 'datasetHeaderCtrl',
             controller: function() {
+                var vm = this;
+
                 var MIN_PERCENT = 10;
 
                 this.column.total = this.column.quality.valid + this.column.quality.empty + this.column.quality.invalid;
@@ -26,6 +29,17 @@
 
                 this.column.quality.validPercent = 100 - this.column.quality.emptyPercent - this.column.quality.invalidPercent;
                 this.column.quality.validPercentWidth = 100 - this.column.quality.emptyPercentWidth - this.column.quality.invalidPercentWidth;
+
+                this.transform = function(action) {
+                    $rootScope.$emit('talend.loading.start');
+                    TransformationService.transform(vm.metadata.id, action, {column_name: vm.column.id})
+                        .then(function(response) {
+                            $rootScope.$emit('talend.dataset.transform', response);
+                        })
+                        .finally(function() {
+                            $rootScope.$emit('talend.loading.stop');
+                        });
+                };
             }
         };
     }
