@@ -41,11 +41,21 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>npm prune</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>clean</phase>
+                        <phase>initialize</phase>
                         <configuration>
                             <arguments>prune</arguments>
                         </configuration>
@@ -55,19 +65,9 @@
                         <goals>
                             <goal>bower</goal>
                         </goals>
-                        <phase>clean</phase>
-                        <configuration>
-                            <arguments>prune --allow-root</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
                         <phase>initialize</phase>
                         <configuration>
-                            <arguments>install</arguments>
+                            <arguments>prune --allow-root</arguments>
                         </configuration>
                     </execution>
                     <execution>
