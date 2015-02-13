@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.talend.dataprep</groupId>
 		<artifactId>dataprep-parent</artifactId>
-		<version>1.0.m0-SNAPSHOT</version>
+		<version>1.0.m1-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.talend.dataprep</groupId>
 	<artifactId>dataprep-schema-analysis</artifactId>
-	<version>1.0.m0-SNAPSHOT</version>
+	<version>1.0.m1-SNAPSHOT</version>
 	<name>dataprep-schema-analysis</name>
 
 	<build>
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>org.talend.dataprep</groupId>
 			<artifactId>dataprep-common</artifactId>
-			<version>1.0.m0-SNAPSHOT</version>
+			<version>1.0.m1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

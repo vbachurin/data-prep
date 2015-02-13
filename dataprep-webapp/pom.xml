@@ -4,7 +4,7 @@
 
     <groupId>org.talend.dataprep</groupId>
     <artifactId>dataprep-webapp</artifactId>
-    <version>1.0.m0-SNAPSHOT</version>
+    <version>1.0.m1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>dataprep-webapp</name>
