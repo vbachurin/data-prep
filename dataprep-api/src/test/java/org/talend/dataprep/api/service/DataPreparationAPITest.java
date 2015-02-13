@@ -63,7 +63,7 @@ public class DataPreparationAPITest extends TestCase {
     public void testCORSHeaders() throws Exception {
         when().post("/transform").then().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600").header("Access-Control-Allow-Headers", "x-requested-with");
+                .header("Access-Control-Max-Age", "3600").header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
     }
 
     @Test
