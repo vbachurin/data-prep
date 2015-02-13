@@ -34,7 +34,7 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
-                        <phase>pre-clean</phase>
+                        <phase>initialize</phase>
                         <configuration>
                             <nodeVersion>v0.10.30</nodeVersion>
                             <npmVersion>2.1.5</npmVersion>
@@ -108,16 +108,14 @@
                             <filesets>
                                 <fileset>
                                     <directory>node_modules</directory>
-                                    <includes>
-                                        <include>**/*</include>
-                                    </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
                                 <fileset>
                                     <directory>bower_components</directory>
-                                    <includes>
-                                        <include>**/*</include>
-                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                                <fileset>
+                                    <directory>node</directory>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
                             </filesets>
