@@ -12,8 +12,7 @@
 
 	<modules>
 		<module>dataprep-common</module>
-<!--		<module>dataprep-webapp</module>
--->
+		<module>dataprep-webapp</module>
 		<module>dataprep-schema-analysis</module>
 		<module>dataprep-backend</module>
 	</modules>
