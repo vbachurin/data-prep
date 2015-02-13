@@ -37,7 +37,7 @@
                         <phase>initialize</phase>
                         <configuration>
                             <nodeVersion>v0.10.30</nodeVersion>
-                            <npmVersion>2.1.5</npmVersion>
+                            <npmVersion>2.6.0</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
