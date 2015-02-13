@@ -6,7 +6,7 @@ var $ = require('gulp-load-plugins')();
 
 var wiredep = require('wiredep');
 
-function runTests(singleRun, done) {
+function runTests(singleRun, done, karmaConfPath) {
     var bowerDeps = wiredep({
         directory: 'bower_components',
         exclude: ['bootstrap-sass-official'],
@@ -22,7 +22,7 @@ function runTests(singleRun, done) {
 
     return gulp.src(testFiles)
         .pipe($.karma({
-            configFile: 'karma.conf.js',
+            configFile: karmaConfPath,
             action: (singleRun) ? 'run' : 'watch'
         }))
         .on('error', function (err) {
@@ -32,8 +32,12 @@ function runTests(singleRun, done) {
 }
 
 gulp.task('test', function (done) {
-    runTests(true /* singleRun */, done)
+    runTests(true /* singleRun */, done, 'karma.conf.js')
 });
 gulp.task('test:auto', function (done) {
-    runTests(false /* singleRun */, done)
+    runTests(false /* singleRun */, done, 'karma.conf.js')
+});
+
+gulp.task('test:ci', function (done) {
+    runTests(true /* singleRun */, done, 'karma.conf.ci.js')
 });

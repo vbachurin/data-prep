@@ -11,9 +11,9 @@ module.exports = function(config) {
             'karma-phantomjs-launcher',
             'karma-jasmine',
             'karma-coverage',
-            'karma-ng-html2js-preprocessor'
+            'karma-ng-html2js-preprocessor',
+            'karma-junit-reporter'//junit is used in jenkins tests but not launch is dev tests
         ],
-
         reporters: ['progress', 'coverage'],
         preprocessors: {
             // source files, that you wanna generate coverage for
@@ -25,6 +25,9 @@ module.exports = function(config) {
         ngHtml2JsPreprocessor: {
             stripPrefix: 'src/',
             moduleName: 'htmlTemplates'
+        },
+        junitReporter    : {
+            outputFile : 'target/surefire-reports/TEST-karma-results.xml'
         }
     });
 };
