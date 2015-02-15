@@ -19,6 +19,7 @@
 
 #### Services
 The following projects provides back-end services exposed as REST API.
+
 | _Project_                  | _Description_ |
 | [dataprep-api](dataprep-api)         | *Back-end API service for Data Preparation Web UI.* |
 | [dataprep-transformation](dataprep-transformation)         | *Back-end service for data set transformation.* |
@@ -26,6 +27,7 @@ The following projects provides back-end services exposed as REST API.
 
 #### Common and module management
 The following projects don't build any back-end artifacts but provide build utilities.
+
 | _Project_                  | _Description_ |
 |:-------------------------|-------------|
 | [dataprep-backend](dataprep-backend)          | *Common POM for all back-end modules (defines all libraries & versions, as well as common build behaviors)* |
@@ -34,6 +36,7 @@ The following projects don't build any back-end artifacts but provide build util
 
 #### Deployment and tests
 The following projects provide scripts to automate platform deployment as well as tests to ensure platform health.
+
 | _Project_                  | _Description_ |
 | [dataprep-platform](dataprep-platform)         | *Scripts for starting a back-end platform (based on Fig & Docker)* |
 | [dataprep-platform-tests](dataprep-platform-tests)         | *Stress tests and reporting for back-end (based on Gatling)* |
