@@ -1,4 +1,5 @@
-#![alt text](http://www.talend.com/sites/all/themes/talend_responsive/images/logo.png "Talend") Data Preparation Project 
+
+#![alt text](http://www.talend.com/sites/all/themes/talend_responsive/images/logo.png "Talend") Data Preparation Project  
 ## Build statuses
 | _Branches_                  | _Status_ |
 |:-------------------------|-------------|
@@ -21,9 +22,11 @@
 The following projects provides back-end services exposed as REST API.
 
 | _Project_                  | _Description_ |
+|:-------------------------|-------------|
 | [dataprep-api](dataprep-api)         | *Back-end API service for Data Preparation Web UI.* |
 | [dataprep-transformation](dataprep-transformation)         | *Back-end service for data set transformation.* |
 | [dataprep-dataset](dataprep-dataset)         | *Back-end service for data set operations (create, update, content index, get data set metadata...)* |
+
 
 #### Common and module management
 The following projects don't build any back-end artifacts but provide build utilities.
@@ -38,6 +41,7 @@ The following projects don't build any back-end artifacts but provide build util
 The following projects provide scripts to automate platform deployment as well as tests to ensure platform health.
 
 | _Project_                  | _Description_ |
+|:-------------------------|-------------|
 | [dataprep-platform](dataprep-platform)         | *Scripts for starting a back-end platform (based on Fig & Docker)* |
 | [dataprep-platform-tests](dataprep-platform-tests)         | *Stress tests and reporting for back-end (based on Gatling)* |
 
