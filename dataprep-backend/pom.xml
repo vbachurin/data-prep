@@ -18,6 +18,8 @@
         <spring.jms.version>4.1.3.RELEASE</spring.jms.version>
         <java.version>1.8</java.version>
         <junit.version>4.12</junit.version>
+        <project.inceptionYear>2015</project.inceptionYear>
+        <project.organization>Talend</project.organization>
     </properties>
     <repositories>
         <repository>
