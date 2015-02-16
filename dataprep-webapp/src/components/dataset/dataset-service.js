@@ -1,17 +1,58 @@
 (function() {
     'use strict';
 
-    function DatasetService($rootScope, $upload, $http, RestURLs) {
+    function DatasetService($rootScope, $upload, $http, $q, RestURLs) {
         var self = this;
-        
+        var datasets;
+
+        /**
+         * Get unique name by adding '(num)' at the end
+         * @param name - requested name
+         * @returns string - the resulting name
+         */
+        self.getUniqueName = function(name) {
+            var cleanedName = name.replace(/\([0-9]+\)$/, '').trim();
+            var result = cleanedName;
+
+            var index = 1;
+            while(self.getDatasetByName(result)) {
+                result = cleanedName + ' (' + index + ')';
+                index ++;
+            }
+
+            return result;
+        };
+
+        /**
+         * Check if an existing dataset already has the provided name
+         */
+        self.getDatasetByName = function(name) {
+            return _.find(datasets, function(dataset) {
+                return dataset.name === name;
+            });
+        };
+
+        /**
+         * Refresh datasets
+         */
+        self.refreshDatasets = function() {
+            return $http.get(RestURLs.datasetUrl)
+                .then(function(res) {
+                    datasets = res.data;
+                    return datasets;
+                });
+        };
+
         /**
          * Get the dataset list
          */
         self.getDatasets = function() {
-            return $http.get(RestURLs.datasetUrl)
-                .then(function(res) {
-                    return res.data;
-                });
+            if(datasets) {
+                return $q.when(datasets);
+            }
+            else {
+                return self.refreshDatasets();
+            }
         };
 
         /**
@@ -28,11 +69,11 @@
         /**
          * Create the dataset
          * @param dataset
-         * @returns $upload promise
+         * @returns $upload promiseCUSTOMERS_JSO_LIGHT (1)
          */
         self.createDataset = function(dataset) {
             return $upload.http({
-                url: RestURLs.datasetUrl + '?' + jQuery.param({name: dataset.name}),
+                url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(dataset.name),
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
             });
@@ -45,7 +86,7 @@
          */
         self.updateDataset = function(dataset) {
             return $upload.http({
-                url: RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({name: dataset.name}),
+                url: RestURLs.datasetUrl + '/' + dataset.id + '?name=' + encodeURIComponent(dataset.name),
                 method: 'PUT',
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
@@ -67,7 +108,7 @@
          */
         self.getDataFromId = function(datasetId, metadata) {
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?' + jQuery.param({metadata: metadata}))
+            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata)
                 .then(function(res) {
                     return res.data;
                 })

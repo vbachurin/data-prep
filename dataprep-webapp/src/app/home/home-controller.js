@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function HomeCtrl($window, $q, DatasetService) {
+    function HomeCtrl($rootScope, $window, DatasetService) {
         var vm = this;
 
         /**
@@ -11,70 +11,10 @@
         vm.uploadingDatasets = [];
 
         /**
-         * Dataset list
-         * @type {Array}
-         */
-        vm.datasets = [];
-
-        /**
-         * Last selected dataset metadata
-         * @type {dataset}
-         */
-        vm.lastSelectedMetadata = null;
-
-        /**
-         * Last selected records and columns
-         * @type {data}
-         */
-        vm.lastSelectedData = null;
-
-        /**
-         * Data modal state flag
-         * @type {boolean}
-         */
-        vm.showDataModal = false;
-        
-        /**
-         * Refresh dataset list
-         */
-        vm.refreshDatasets = function() {
-            DatasetService.getDatasets().then(function(data) {
-                vm.datasets = data;
-            });
-        };
-
-        /**
-         * Check if an existing dataset already has the provided name
-         */
-        var getDatasetByName = function(name) {
-            return _.find(vm.datasets, function(dataset) {
-                return dataset.name === name;
-            });
-        };
-
-        /**
          * Open the upload file input
          */
         vm.openDatasetFileSelection = function() {
             angular.element('#datasetFile').trigger('click');
-        };
-
-        /**
-         * Get unique name by adding '(num)' at the end
-         * @param name - requested name
-         * @returns string - the resulting name
-         */
-        var getUniqueName = function(name) {
-            var cleanedName = name.replace(/\([0-1]+\)$/, '').trim();
-            var result = cleanedName;
-
-            var index = 1;
-            while(getDatasetByName(result)) {
-                result = cleanedName + ' (' + index + ')';
-                index ++;
-            }
-
-            return result;
         };
 
         /**
@@ -92,7 +32,7 @@
                 })
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    vm.refreshDatasets();
+                    $rootScope.$emit('talend.datasets.refresh');
                     $window.alert('Dataset "' + dataset.name + '" updated');
                 })
                 .catch(function() {
@@ -114,7 +54,7 @@
                 })
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    vm.refreshDatasets();
+                    $rootScope.$emit('talend.datasets.refresh');
                     $window.alert('Dataset "' + dataset.name + '" created');
                 })
                 .catch(function() {
@@ -134,49 +74,15 @@
             name = $window.prompt('Enter the dataset name', name) || name;
 
             // if the name exists, ask for update or creation
-            var existingDataset = getDatasetByName(name);
+            var existingDataset = DatasetService.getDatasetByName(name);
             if(existingDataset && $window.confirm('Do you want to update existing "' + name + '" dataset ?')) {
                 updateDataset(file, existingDataset);
             }
             else {
-                name = existingDataset ? getUniqueName(name) : name;
+                name = existingDataset ? DatasetService.getUniqueName(name) : name;
                 createDataset(file, name);
             }
         };
-
-        /**
-         * Delete a dataset
-         * @param dataset - the dataset to delete
-         */
-        vm.deleteDataset = function(dataset) {
-            DatasetService.deleteDataset(dataset)
-                .then(function() {
-                    vm.refreshDatasets();
-                });
-        };
-
-        /**
-         * Get the dataset data and display data modal
-         * @param dataset
-         */
-        vm.openData = function(dataset) {
-            var getDataPromise;
-            if(vm.lastSelectedMetadata && dataset.id === vm.lastSelectedMetadata.id) {
-                getDataPromise = $q.when(true);
-            }
-            else {
-                getDataPromise = DatasetService.getDataFromId(dataset.id, false)
-                    .then(function(data) {
-                        vm.lastSelectedMetadata = dataset;
-                        vm.lastSelectedData = data;
-                    });
-            }
-            getDataPromise.then(function() {
-                vm.showDataModal = true;
-            });
-        };
-
-        vm.refreshDatasets();
     }
 
     angular.module('data-prep')

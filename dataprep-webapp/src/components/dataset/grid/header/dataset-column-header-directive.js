@@ -4,7 +4,7 @@
     function DatasetColumnHeader() {
         return {
             restrict: 'E',
-            templateUrl: 'components/dataset/dataset-grid/dataset-column-header-directive.html',
+            templateUrl: 'components/dataset/grid/header/dataset-column-header-directive.html',
             scope:{
                 metadata: '=',
                 column : '='

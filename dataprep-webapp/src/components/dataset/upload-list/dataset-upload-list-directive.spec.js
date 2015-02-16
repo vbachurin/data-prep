@@ -9,7 +9,7 @@ describe('Dataset upload list directive', function() {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function(directiveScope) {
-            var element = angular.element('<datasets-upload-list datasets="datasets"></datasets-upload-list>');
+            var element = angular.element('<dataset-upload-list datasets="datasets"></dataset-upload-list>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
             return element;
