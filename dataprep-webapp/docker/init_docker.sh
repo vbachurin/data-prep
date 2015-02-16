@@ -1,9 +1,10 @@
+#! /bin/bash
+
 ORIGINAL_HOST=10.42.10.99
 ORIGINAL_PORT=8081
 
 # this is the file to patch
 JS_FILE=`ls /var/www/scripts/app*`
-
 JS_FILE_BACKUP=$JS_FILE.orig
 
 # replace default api service host:port by those taken from api container
