@@ -62,4 +62,27 @@ describe('Dataset column header directive', function() {
         expect(element.find('.record-empty').css('width')).toBe('10%');
         expect(element.find('.record-nok').css('width')).toBe('12%');
     });
+
+    it('should display colum title, type and set quality bars width', function() {
+        //given
+        scope.column = {
+            'id': 'MostPopulousCity',
+            'quality': {
+                'empty': 5,
+                'invalid': 10,
+                'valid': 72
+            },
+            'type': 'string'
+        };
+
+        //when
+        var element = createElement(scope);
+
+        //then
+        expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
+        expect(element.find('.grid-header-type').text()).toBe('string');
+        expect(element.find('.record-ok').css('width')).toBe('78%');
+        expect(element.find('.record-empty').css('width')).toBe('10%');
+        expect(element.find('.record-nok').css('width')).toBe('12%');
+    });
 });

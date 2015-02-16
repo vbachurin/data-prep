@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function DatasetGrid($rootScope) {
+    function DatasetGrid() {
         return {
             restrict: 'E',
             templateUrl: 'components/dataset/dataset-grid/dataset-grid-directive.html',
@@ -11,13 +11,7 @@
             },
             bindToController: true,
             controllerAs: 'datagridCtrl',
-            controller: function() {
-                var vm = this;
-
-                $rootScope.$on('talend.dataset.transform', function(event, args) {
-                    vm.data.records = args.data.records;
-                });
-            }
+            controller: 'DatasetGridCtrl'
         };
     }
 

@@ -20,7 +20,16 @@
          */
         this.transform = function (datasetId, action, parameters) {
             var actionParam = adaptTransformAction(action, parameters);
-            return $http.post(RestURLs.transformUrl + '/' + datasetId + '/?actions=' + jQuery.param(actionParam));
+            var request = {
+                method: 'POST',
+                url: RestURLs.transformUrl + '/' + datasetId,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: actionParam
+            };
+
+            return $http(request);
         };
 
     }
