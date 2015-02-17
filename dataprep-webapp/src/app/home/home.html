@@ -12,12 +12,8 @@
         </div>
 
         <div class="flex-center">
-            <datasets-upload-list datasets="homeCtrl.uploadingDatasets"></datasets-upload-list>
-
-            <datasets-list
-                    datasets="homeCtrl.datasets"
-                    on-open="homeCtrl.openData(dataset)"
-                    on-delete="homeCtrl.deleteDataset(dataset)"></datasets-list>
+            <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
+            <dataset-list></dataset-list>
         </div>
 
         <div class="flex-menu side-menu inventory-data">
@@ -33,16 +29,5 @@
         </div>
     </div>
 
-    <talend-modal fullscreen="true"
-                  state="homeCtrl.showDataModal"
-                  close-button="true">
-        <div class="modal-header">
-
-        </div>
-
-        <div class="modal-body">
-            <dataset-grid metadata="homeCtrl.lastSelectedMetadata"
-                          data="homeCtrl.lastSelectedData"></dataset-grid>
-        </div>
-    </talend-modal>
+    <dataset-grid></dataset-grid>
 </div>

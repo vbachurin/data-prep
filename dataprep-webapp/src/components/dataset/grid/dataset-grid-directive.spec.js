@@ -1,29 +1,26 @@
 describe('Dataset grid directive', function() {
     'use strict';
-    var scope, createElement;
+    var scope, element;
 
     beforeEach(module('data-prep-dataset'));
     beforeEach(module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function(directiveScope) {
-            var element = angular.element('<dataset-grid metadata="metadata" data="data"></dataset-grid>');
-            $compile(element)(directiveScope);
-            directiveScope.$digest();
-            return element;
-        };
+        element = angular.element('<dataset-grid></dataset-grid>');
+        $compile(element)(scope);
+        scope.$digest();
     }));
 
-    it('should render dataset values', function() {
+    it('should render dataset values', inject(function(DatasetGridService) {
         //given
-        scope.metadata = {
+        var metadata = {
             'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
             'name': 'US States',
             'author': 'anonymousUser',
             'created': '02-03-2015 14:52'
         };
-        scope.data = {
+        var data = {
             'columns': [
                 {
                     'id': 'Postal',
@@ -79,7 +76,8 @@ describe('Dataset grid directive', function() {
         };
 
         //when
-        var element = createElement(scope);
+        DatasetGridService.setDataset(metadata, data);
+        scope.$digest();
 
         //then
         var firstRowCells = element.find('tbody').find('tr').eq(0).find('td');
@@ -96,6 +94,6 @@ describe('Dataset grid directive', function() {
         expect(secondRowCells.eq(1).text()).toBe('Alaska');
         expect(secondRowCells.eq(2).text()).toBe('Juneau');
         expect(secondRowCells.eq(3).text()).toBe('Anchorage');
-    });
+    }));
     
 });
