@@ -23,6 +23,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.Application;
+import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
@@ -152,5 +153,14 @@ public class DataPreparationAPITest extends TestCase {
         String contentAsString = IOUtils.toString(content);
         assertThat(contentAsString, sameJSONAsFile("testCreate_expected.json"));
     }
+
+    @Test
+    public void testDataSetCreateWithSpace() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "Test with spaces").asString();
+        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        assertEquals("Test with spaces", metadata.getName());
+    }
+
 
 }
