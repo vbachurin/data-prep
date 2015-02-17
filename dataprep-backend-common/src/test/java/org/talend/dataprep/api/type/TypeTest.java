@@ -3,6 +3,9 @@ package org.talend.dataprep.api.type;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -40,5 +43,28 @@ public class TypeTest {
     public void testName() {
         assertThat(Types.STRING.getName(), is("string"));
         assertThat(Types.STRING.getName(Locale.FRENCH), is("string"));
+    }
+
+    @Test
+    public void testGetByNameArguments() {
+        try {
+            Types.get(null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+        try {
+            Types.get("null");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+    }
+
+    @Test
+    public void testGetByName() throws Exception {
+        Type type = Types.get("string");
+        assertNotNull(type);
+        assertEquals("string", type.getName());
     }
 }

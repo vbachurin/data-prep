@@ -3,7 +3,7 @@ package org.talend.dataprep.dataset.objects;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.talend.dataprep.api.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
+import static org.talend.dataprep.api.DataSetMetadata.Builder.metadata;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +19,7 @@ public class DataSetBuilderTest {
     @Test
     public void testDataSetMetadataBuild() {
         String dataSetId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = id(dataSetId).row(column().name("firstname").type(Types.STRING),
+        DataSetMetadata dataSetMetadata = metadata().id(dataSetId).row(column().name("firstname").type(Types.STRING),
                 column().name("lastname").type(Types.STRING)).build();
         assertThat(dataSetMetadata.getId(), is(dataSetId));
         List<ColumnMetadata> columns = dataSetMetadata.getRow().getColumns();

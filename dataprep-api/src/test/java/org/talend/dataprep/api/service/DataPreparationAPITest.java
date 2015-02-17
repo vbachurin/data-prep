@@ -3,6 +3,7 @@ package org.talend.dataprep.api.service;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.junit.Assert.assertThat;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
@@ -45,18 +46,6 @@ public class DataPreparationAPITest extends TestCase {
 
     @Autowired
     private DataPreparationAPI apiService;
-
-    /**
-     * Utilities method to assert that an expected json contained in a file matches a result.
-     *
-     * @param fileNameExpected the name of the file that contains the expected json, must be in this package ressources
-     * @return a SameJSONAs to use like in assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
-     */
-    private static SameJSONAs<? super String> sameJSONAsFile(String fileNameExpected) throws Exception {
-        InputStream expected = DataPreparationAPITest.class.getResourceAsStream(fileNameExpected);
-        assertNotNull(expected);
-        return sameJSONAs(IOUtils.toString(expected)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
-    }
 
     @Before
     public void setUp() {
@@ -147,7 +136,8 @@ public class DataPreparationAPITest extends TestCase {
         InputStream content = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        assertThat(contentAsString, sameJSONAsFile("testCreate_expected.json"));
+        InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_expected.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test

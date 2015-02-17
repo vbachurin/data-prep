@@ -5,14 +5,13 @@ import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
+import static org.talend.dataprep.api.DataSetMetadata.Builder.metadata;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +31,6 @@ import org.talend.dataprep.api.DataSetLifecycle;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
-import uk.co.datumedge.hamcrest.json.SameJSONAs;
 
 import com.jayway.restassured.RestAssured;
 
@@ -71,18 +68,6 @@ public class DataSetServiceTests {
         }
     }
 
-    /**
-     * Utilities method to assert that an expected json contained in a file matches a result.
-     * 
-     * @param fileNameExpected the name of the file that contains the expected json, must be in this package ressources
-     * @return a SameJSONAs to use like in assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
-     */
-    private SameJSONAs<? super String> sameJSONAsFile(String fileNameExpected) throws Exception {
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream(fileNameExpected);
-        assertNotNull(expected);
-        return sameJSONAs(IOUtils.toString(expected)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
-    }
-
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -108,7 +93,7 @@ public class DataSetServiceTests {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(id(id1).name("name1").author("anonymous").created(new Date(0)).build());
+        dataSetMetadataRepository.add(metadata().id(id1).name("name1").author("anonymous").created(0).build());
 
         String expected = "[{\"id\":\""
                 + id1
@@ -121,7 +106,7 @@ public class DataSetServiceTests {
 
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(id(id2).name("name2").author("anonymous").created(new Date(0)).build());
+        dataSetMetadataRepository.add(metadata().id(id2).name("name2").author("anonymous").created(0).build());
         when().get("/datasets").then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItems(id1, id2));
@@ -140,7 +125,7 @@ public class DataSetServiceTests {
     @Test
     public void testGet() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = id(expectedId).build();
+        DataSetMetadata dataSetMetadata = metadata().id(expectedId).build();
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
         List<String> ids = from(when().get("/datasets").asString()).get("");
@@ -152,7 +137,7 @@ public class DataSetServiceTests {
     @Test
     public void testDelete() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(id(expectedId).build());
+        dataSetMetadataRepository.add(metadata().id(expectedId).build());
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int before = dataSetMetadataRepository.size();
@@ -178,7 +163,8 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        assertThat(contentAsString, sameJSONAsFile("test1.json"));
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
@@ -188,8 +174,8 @@ public class DataSetServiceTests {
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
-
-        assertThat(contentAsString, sameJSONAsFile("test1.json"));
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
@@ -203,7 +189,8 @@ public class DataSetServiceTests {
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
-        assertThat(contentAsString, sameJSONAsFile("test2.json"));
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test2.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
         // Update name
         String expectedName = "testOfADataSetName";
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
@@ -231,7 +218,8 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv.expected.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
@@ -253,7 +241,8 @@ public class DataSetServiceTests {
         content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         contentAsString = IOUtils.toString(content);
 
-        assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv.expected.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
 }

@@ -173,8 +173,6 @@
                             <group>Talend Data Preparation</group>
                             <packager>Talend</packager>
                             <needarch>noarch</needarch>
-                            <organization>Talend</organization>
-                            <copyright>Talend</copyright>
                             <license>(c) Talend</license>
 
                             <defaultFilemode>644</defaultFilemode>

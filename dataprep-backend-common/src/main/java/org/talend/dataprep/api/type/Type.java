@@ -71,4 +71,8 @@ public class Type {
     public String toString() {
         return name;
     }
+
+    public List<Type> getSubTypes() {
+        return subTypes;
+    }
 }

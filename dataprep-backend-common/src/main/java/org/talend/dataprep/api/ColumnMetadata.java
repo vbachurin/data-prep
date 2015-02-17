@@ -78,6 +78,12 @@ public class ColumnMetadata {
 
         private String name;
 
+        private int empty;
+
+        private int invalid;
+
+        private int valid;
+
         public static ColumnMetadata.Builder column() {
             return new Builder();
         }
@@ -98,8 +104,27 @@ public class ColumnMetadata {
             return this;
         }
 
+        public ColumnMetadata.Builder empty(int value) {
+            empty = value;
+            return this;
+        }
+
+        public ColumnMetadata.Builder invalid(int value) {
+            invalid = value;
+            return this;
+        }
+
+        public ColumnMetadata.Builder valid(int value) {
+            valid = value;
+            return this;
+        }
+
         public ColumnMetadata build() {
-            return new ColumnMetadata(name, type.getName());
+            ColumnMetadata columnMetadata = new ColumnMetadata(name, type.getName());
+            columnMetadata.getQuality().setEmpty(empty);
+            columnMetadata.getQuality().setInvalid(invalid);
+            columnMetadata.getQuality().setValid(valid);
+            return columnMetadata;
         }
     }
 }
