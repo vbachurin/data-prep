@@ -34,6 +34,7 @@
     "spyOn": false,
     "jQuery": false,
     "$": false,
-    "_": false
+    "_": false,
+    "document": false
   }
 }

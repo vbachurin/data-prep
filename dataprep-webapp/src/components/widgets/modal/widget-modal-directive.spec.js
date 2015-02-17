@@ -117,6 +117,7 @@ describe('Dropdown directive', function () {
 
         //when
         element.find('.modal-window').click();
+        $timeout.flush();
 
         //then
         expect($rootScope.$apply.calls.count()).toBe(2);
@@ -134,6 +135,7 @@ describe('Dropdown directive', function () {
 
         //when
         element.find('.modal-close').click();
+        $timeout.flush();
 
         //then
         expect($rootScope.$apply.calls.count()).toBe(2);
@@ -151,6 +153,7 @@ describe('Dropdown directive', function () {
 
         //when
         element.find('.modal-header-close').click();
+        $timeout.flush();
 
         //then
         expect($rootScope.$apply.calls.count()).toBe(2);
@@ -172,22 +175,67 @@ describe('Dropdown directive', function () {
         expect(scope.state).toBe(true);
     }));
 
-    it('should not call digest if angular is already on a digest cycle (safe digest)', inject(function ($rootScope, $timeout) {
+    it('should hide on esc keydown', inject(function ($rootScope, $timeout) {
         //given
-        scope.fullscreen = true;
+        scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = true;
-        
         var element = createElement(scope);
         $timeout.flush();
-        expect($rootScope.$apply.calls.count()).toBe(1);
-        
-        $rootScope.$$phase = 'digest';
+
+        var event = angular.element.Event('keydown');
+        event.keyCode = 27;
 
         //when
-        element.find('.modal-header-close').click();
+        element.find('.modal-inner').trigger(event);
+        $timeout.flush();
 
         //then
-        expect($rootScope.$apply.calls.count()).toBe(1);
+        expect(scope.state).toBe(false);
     }));
+
+    it('should not hide on not esc keydown', inject(function ($rootScope, $timeout) {
+        //given
+        scope.fullscreen = false;
+        scope.state = true;
+        scope.closeButton = true;
+        var element = createElement(scope);
+        $timeout.flush();
+
+        var event = angular.element.Event('keydown');
+        event.keyCode = 97;
+
+        //when
+        element.find('.modal-inner').trigger(event);
+        try{
+            $timeout.flush();
+        }
+        //then
+        catch(error) {
+            expect(scope.state).toBe(true);
+            return;
+        }
+
+        //otherwise
+        throw new Error('should have thrown error because no timeout is pending');
+    }));
+
+    it('should focus on "modal-inner" on module open', function () {
+        //given
+        scope.fullscreen = false;
+        scope.state = false;
+        scope.closeButton = false;
+        var element = createElement(scope);
+
+        var body = angular.element('body');
+        body.append(element);
+        expect(document.activeElement).not.toBe(element);
+
+        //when
+        scope.state = true;
+        scope.$digest();
+
+        //then
+        expect(document.activeElement.className).toBe('modal-inner');
+    });
 });

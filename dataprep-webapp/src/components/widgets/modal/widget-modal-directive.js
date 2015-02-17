@@ -38,7 +38,7 @@
      *
      * @returns directive
      */
-    function TalendModal($rootScope, $timeout) {
+    function TalendModal($timeout) {
         return {
             restrict: 'EA',
             transclude: true,
@@ -50,42 +50,46 @@
             },
             bindToController: true,
             controllerAs: 'talendModalCtrl',
-            controller: function ($scope) {
+            controller: function () {
                 var vm = this;
 
-                //hide modal
                 vm.hide = function () {
                     vm.state = false;
                 };
-
-                //enable/disable scoll on main body depending on modal display
-                $scope.$watch(function() {return vm.state;}, function(newValue) {
-                    if (newValue) {
-                        angular.element('body').addClass('modal-open');
-                    } else {
-                        angular.element('body').removeClass('modal-open');
-                    }
-                });
             },
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
-                    var safeDigest = function() {
-                        if(! $rootScope.$$phase) {
-                            $rootScope.$apply();
-                        }
+                    var hideModal = function() {
+                        $timeout(function() {
+                            ctrl.hide();
+                        });
                     };
 
                     $timeout(function() {
                         // Close action on all 'talend-modal-close' elements
-                        iElement.find('.talend-modal-close').on('click', function() {
-                            ctrl.hide();
-                            safeDigest();
-                        });
+                        iElement.find('.talend-modal-close').on('click', hideModal);
 
                         // stop propagation on click on inner modal to prevent modal close
                         iElement.find('.modal-inner').on('click', function (e) {
                             e.stopPropagation();
                         });
+
+                        iElement.find('.modal-inner').bind('keydown', function (e) {
+                            if(e.keyCode === 27) { //escape
+                                hideModal();
+                            }
+                        });
+                    });
+
+                    //enable/disable scroll on main body depending on modal display
+                    //popup focus on show
+                    scope.$watch(function() {return ctrl.state;}, function(newValue) {
+                        if (newValue) {
+                            angular.element('body').addClass('modal-open');
+                            iElement.find('.modal-inner').focus();
+                        } else {
+                            angular.element('body').removeClass('modal-open');
+                        }
                     });
                 }
             }
