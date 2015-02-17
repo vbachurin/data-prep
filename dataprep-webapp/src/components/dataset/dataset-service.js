@@ -1,58 +1,14 @@
 (function() {
     'use strict';
 
-    function DatasetService($rootScope, $upload, $http, $q, RestURLs) {
+    function DatasetService($rootScope, $upload, $http, RestURLs) {
         var self = this;
-        var datasets;
-
-        /**
-         * Get unique name by adding '(num)' at the end
-         * @param name - requested name
-         * @returns string - the resulting name
-         */
-        self.getUniqueName = function(name) {
-            var cleanedName = name.replace(/\([0-9]+\)$/, '').trim();
-            var result = cleanedName;
-
-            var index = 1;
-            while(self.getDatasetByName(result)) {
-                result = cleanedName + ' (' + index + ')';
-                index ++;
-            }
-
-            return result;
-        };
-
-        /**
-         * Check if an existing dataset already has the provided name
-         */
-        self.getDatasetByName = function(name) {
-            return _.find(datasets, function(dataset) {
-                return dataset.name === name;
-            });
-        };
-
-        /**
-         * Refresh datasets
-         */
-        self.refreshDatasets = function() {
-            return $http.get(RestURLs.datasetUrl)
-                .then(function(res) {
-                    datasets = res.data;
-                    return datasets;
-                });
-        };
 
         /**
          * Get the dataset list
          */
         self.getDatasets = function() {
-            if(datasets) {
-                return $q.when(datasets);
-            }
-            else {
-                return self.refreshDatasets();
-            }
+            return $http.get(RestURLs.datasetUrl);
         };
 
         /**

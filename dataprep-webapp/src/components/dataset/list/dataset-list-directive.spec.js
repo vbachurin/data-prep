@@ -20,7 +20,7 @@ describe('Dataset list directive', function() {
     beforeEach(module('data-prep-dataset'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $q, DatasetService) {
+    beforeEach(inject(function($rootScope, $compile, DatasetListService) {
         scope = $rootScope.$new();
         createElement = function() {
             var element = angular.element('<dataset-list></dataset-list>');
@@ -29,7 +29,7 @@ describe('Dataset list directive', function() {
             return element;
         };
 
-        spyOn(DatasetService, 'refreshDatasets').and.callFake(function() {return $q.when(datasets);});
+        spyOn(DatasetListService, 'refreshDatasets').and.callFake(function() {DatasetListService.datasets = datasets;});
     }));
 
     it('should render dataset list', function() {

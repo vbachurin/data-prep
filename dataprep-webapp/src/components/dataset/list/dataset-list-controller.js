@@ -1,15 +1,9 @@
 (function() {
     'use strict';
 
-    function DatasetListCtrl($rootScope, $q, DatasetService, DatasetGridService) {
+    function DatasetListCtrl($q, DatasetService, DatasetListService, DatasetGridService) {
         var vm = this;
-
-        /**
-         * Dataset list
-         * @type {Array}
-         */
-
-        vm.datasets = [];
+        vm.datasetListService = DatasetListService;
 
         /**
          * Last selected dataset metadata
@@ -22,23 +16,6 @@
          * @type {data}
          */
         vm.lastSelectedData = null;
-
-        /**
-         * Refresh dataset list on refresh event receive
-         */
-        $rootScope.$on('talend.datasets.refresh', function() {
-            vm.refreshDatasets();
-        });
-
-        /**
-         * Refresh dataset list
-         */
-        vm.refreshDatasets = function() {
-            DatasetService.refreshDatasets()
-                .then(function(data) {
-                    vm.datasets = data;
-                });
-        };
 
         /**
          * Get the dataset data and display data modal
@@ -69,12 +46,24 @@
         vm.delete = function(dataset) {
             DatasetService.deleteDataset(dataset)
                 .then(function() {
-                    vm.refreshDatasets();
+                    DatasetListService.refreshDatasets();
                 });
         };
 
-        vm.refreshDatasets();
+        DatasetListService.refreshDatasets();
     }
+
+    Object.defineProperty(DatasetListCtrl.prototype,
+        'datasets', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetListService.datasets;
+            },
+            set: function(value) {
+                this.datasetListService.datasets = value;
+            }
+        });
 
     angular.module('data-prep-dataset')
         .controller('DatasetListCtrl', DatasetListCtrl);

@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function HomeCtrl($rootScope, $window, DatasetService) {
+    function HomeCtrl($rootScope, $window, DatasetService, DatasetListService) {
         var vm = this;
 
         /**
@@ -32,7 +32,7 @@
                 })
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    $rootScope.$emit('talend.datasets.refresh');
+                    DatasetListService.refreshDatasets();
                     $window.alert('Dataset "' + dataset.name + '" updated');
                 })
                 .catch(function() {
@@ -54,7 +54,7 @@
                 })
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    $rootScope.$emit('talend.datasets.refresh');
+                    DatasetListService.refreshDatasets();
                     $window.alert('Dataset "' + dataset.name + '" created');
                 })
                 .catch(function() {
@@ -74,12 +74,12 @@
             name = $window.prompt('Enter the dataset name', name) || name;
 
             // if the name exists, ask for update or creation
-            var existingDataset = DatasetService.getDatasetByName(name);
+            var existingDataset = DatasetListService.getDatasetByName(name);
             if(existingDataset && $window.confirm('Do you want to update existing "' + name + '" dataset ?')) {
                 updateDataset(file, existingDataset);
             }
             else {
-                name = existingDataset ? DatasetService.getUniqueName(name) : name;
+                name = existingDataset ? DatasetListService.getUniqueName(name) : name;
                 createDataset(file, name);
             }
         };

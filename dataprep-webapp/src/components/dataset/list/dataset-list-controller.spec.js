@@ -68,7 +68,7 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep-dataset'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetService) {
+    beforeEach(inject(function ($rootScope, $controller, DatasetListService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -79,18 +79,18 @@ describe('Dataset list controller', function () {
             return ctrl;
         };
 
-        spyOn(DatasetService, 'refreshDatasets').and.callFake(function () {
-            return $q.when(datasetsValues.shift());
+        spyOn(DatasetListService, 'refreshDatasets').and.callFake(function () {
+            DatasetListService.datasets = datasetsValues.shift();
         });
     }));
 
-    it('should get dataset on creation', inject(function (DatasetService) {
+    it('should get dataset on creation', inject(function (DatasetListService) {
         //when
         var ctrl = createController();
         scope.$digest();
 
         //then
-        expect(DatasetService.refreshDatasets).toHaveBeenCalled();
+        expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
         expect(ctrl.datasets).toBe(datasets);
     }));
 
@@ -108,7 +108,7 @@ describe('Dataset list controller', function () {
             spyOn(DatasetGridService, 'show').and.callThrough();
         }));
 
-        it('should delete dataset and refresh dataset list', inject(function (DatasetService) {
+        it('should delete dataset and refresh dataset list', inject(function (DatasetService, DatasetListService) {
             //given
             var dataset = datasets[0];
 
@@ -118,21 +118,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
-            expect(DatasetService.refreshDatasets).toHaveBeenCalled();
-        }));
-
-        it('should refresh dataset list on "talend.datasets.refresh" event', inject(function ($rootScope, DatasetService) {
-            //given
-            expect(DatasetService.refreshDatasets.calls.count()).toBe(1);
-            expect(ctrl.datasets).toBe(datasets);
-
-            //when
-            $rootScope.$emit('talend.datasets.refresh');
-            scope.$digest();
-
-            //then
-            expect(DatasetService.refreshDatasets.calls.count()).toBe(2);
-            expect(ctrl.datasets).toBe(refreshedDatasets);
+            expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
         }));
 
         it('should get selected dataset data and open datagrid modal', inject(function ($rootScope, DatasetService, DatasetGridService) {
@@ -165,6 +151,28 @@ describe('Dataset list controller', function () {
             expect(DatasetService.getDataFromId).not.toHaveBeenCalled();
             expect(DatasetGridService.setDataset).toHaveBeenCalledWith(dataset, data);
             expect(DatasetGridService.show).toHaveBeenCalled();
+        }));
+
+        it('should bind datasets getter to DatasetListService.datasets', inject(function (DatasetListService) {
+            //given
+            expect(ctrl.datasets).toBe(datasets);
+
+            //when
+            DatasetListService.datasets = refreshedDatasets;
+
+            //then
+            expect(ctrl.datasets).toBe(refreshedDatasets);
+        }));
+
+        it('should bind datasets setter to DatasetListService.datasets', inject(function (DatasetListService) {
+            //given
+            expect(DatasetListService.datasets).toBe(datasets);
+
+            //when
+            ctrl.datasets = refreshedDatasets;
+
+            //then
+            expect(DatasetListService.datasets).toBe(refreshedDatasets);
         }));
     });
 });

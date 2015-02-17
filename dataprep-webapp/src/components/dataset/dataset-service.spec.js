@@ -9,39 +9,6 @@ describe('Dataset Service', function () {
         $httpBackend = $injector.get('$httpBackend');
     }));
 
-    describe('with initiated datasets', function() {
-        beforeEach(inject(function(RestURLs, DatasetService) {
-            var datasets = [{name: 'my dataset'}, {name: 'my second dataset'}, {name: 'my second dataset (1)'}, {name: 'my second dataset (2)'}];
-            $httpBackend
-                .expectGET(RestURLs.datasetUrl)
-                .respond(200, datasets);
-            DatasetService.refreshDatasets();
-            $httpBackend.flush();
-        }));
-
-        it('should get unique dataset name', inject(function (DatasetService) {
-            //given
-            var name = 'my dataset';
-
-            //when
-            var uniqueName = DatasetService.getUniqueName(name);
-
-            //then
-            expect(uniqueName).toBe('my dataset (1)');
-        }));
-
-        it('should get unique dataset name with a number in it', inject(function (DatasetService) {
-            //given
-            var name = 'my second dataset (2)';
-
-            //when
-            var uniqueName = DatasetService.getUniqueName(name);
-
-            //then
-            expect(uniqueName).toBe('my second dataset (3)');
-        }));
-    });
-
     it('should adapt infos to dataset object for upload', inject(function (DatasetService) {
         //given
         var file = {
@@ -74,35 +41,10 @@ describe('Dataset Service', function () {
             .respond(200, datasets);
 
         //when
-        DatasetService.getDatasets().then(function (data) {
-            result = data;
+        DatasetService.getDatasets().then(function (response) {
+            result = response.data;
         });
         $httpBackend.flush();
-        $rootScope.$digest();
-
-        //then
-        expect(result).toEqual(datasets);
-    }));
-
-    it('should not call dataset list rest service if datasets already init', inject(function ($rootScope, DatasetService, RestURLs) {
-        //given
-        var result = null;
-        var datasets = [
-            {name: 'Customers (50 lines)'},
-            {name: 'Us states'},
-            {name: 'Customers (1K lines)'}
-        ];
-        $httpBackend
-            .expectGET(RestURLs.datasetUrl)
-            .respond(200, datasets);
-        DatasetService.getDatasets();
-        $httpBackend.flush();
-        $rootScope.$digest();
-
-        //when
-        DatasetService.getDatasets().then(function(data) {
-            result = data;
-        });
         $rootScope.$digest();
 
         //then
@@ -126,7 +68,6 @@ describe('Dataset Service', function () {
         $rootScope.$digest();
 
         //then
-        //expect POST not to throw any exception
         expect(datasetId).toBe('e85afAa78556d5425bc2');
     }));
 
