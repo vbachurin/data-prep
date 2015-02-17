@@ -97,15 +97,15 @@ describe('Dataset list controller', function () {
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, DatasetService) {
+        beforeEach(inject(function ($rootScope, $q, DatasetService, DatasetGridService) {
             ctrl = createController();
             scope.$digest();
 
-            spyOn(DatasetService, 'deleteDataset').and.callFake(function () {
-                return $q.when(true);
-            });
+            spyOn(DatasetService, 'deleteDataset').and.returnValue($q.when(true));
             spyOn(DatasetService, 'getDataFromId').and.returnValue($q.when(data));
             spyOn($rootScope, '$emit').and.callThrough();
+            spyOn(DatasetGridService, 'setDataset').and.callThrough();
+            spyOn(DatasetGridService, 'show').and.callThrough();
         }));
 
         it('should delete dataset and refresh dataset list', inject(function (DatasetService) {
@@ -135,7 +135,7 @@ describe('Dataset list controller', function () {
             expect(ctrl.datasets).toBe(refreshedDatasets);
         }));
 
-        it('should get selected dataset data and open datagrid modal', inject(function ($rootScope, DatasetService) {
+        it('should get selected dataset data and open datagrid modal', inject(function ($rootScope, DatasetService, DatasetGridService) {
             //given
             var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
 
@@ -147,10 +147,11 @@ describe('Dataset list controller', function () {
             expect(DatasetService.getDataFromId).toHaveBeenCalledWith(dataset.id, false);
             expect(ctrl.lastSelectedMetadata).toBe(dataset);
             expect(ctrl.lastSelectedData).toBe(data);
-            expect($rootScope.$emit).toHaveBeenCalledWith('talend.dataset.open', {metadata: dataset, data: data});
+            expect(DatasetGridService.setDataset).toHaveBeenCalledWith(dataset, data);
+            expect(DatasetGridService.show).toHaveBeenCalled();
         }));
 
-        it('should open datagrid modal with existing data when dataset is the same as previous', inject(function ($rootScope, DatasetService) {
+        it('should open datagrid modal with existing data when dataset is the same as previous', inject(function ($rootScope, DatasetService, DatasetGridService) {
             //given
             var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
             ctrl.lastSelectedMetadata = dataset;
@@ -162,7 +163,8 @@ describe('Dataset list controller', function () {
 
             //then
             expect(DatasetService.getDataFromId).not.toHaveBeenCalled();
-            expect($rootScope.$emit).toHaveBeenCalledWith('talend.dataset.open', {metadata: dataset, data: data});
+            expect(DatasetGridService.setDataset).toHaveBeenCalledWith(dataset, data);
+            expect(DatasetGridService.show).toHaveBeenCalled();
         }));
     });
 });

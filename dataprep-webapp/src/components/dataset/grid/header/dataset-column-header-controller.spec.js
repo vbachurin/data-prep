@@ -25,7 +25,7 @@ describe('DatasetColumnHeader controller', function() {
 
     beforeEach(module('data-prep-dataset'));
 
-    beforeEach(inject(function($rootScope, $controller, $q, TransformationService) {
+    beforeEach(inject(function($rootScope, $controller, $q, TransformationService, DatasetGridService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -35,11 +35,14 @@ describe('DatasetColumnHeader controller', function() {
             return ctrl;
         };
 
-        spyOn(TransformationService, 'transform').and.callFake(function() {return $q.when(result);});
+        DatasetGridService.setDataset({}, {});
+
+        spyOn(TransformationService, 'transform').and.returnValue($q.when({data: result}));
         spyOn($rootScope, '$emit').and.callThrough();
+        spyOn(DatasetGridService, 'updateRecords').and.callThrough();
     }));
 
-    it('should call transform service with loading modal show/hide', inject(function($rootScope, TransformationService) {
+    it('should call transform service with loading modal show/hide', inject(function($rootScope, TransformationService, DatasetGridService) {
         //given
         var action = 'uppercase';
         var ctrl = createController();
@@ -54,7 +57,7 @@ describe('DatasetColumnHeader controller', function() {
 
         //then
         expect(TransformationService.transform).toHaveBeenCalledWith(metadata.id, action, {'column_name': column.id});
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.dataset.transform', result);
+        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
 });

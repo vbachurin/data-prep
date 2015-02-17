@@ -6,7 +6,7 @@
      * @param $rootScope
      * @param TransformationService
      */
-    function DatasetColumnHeaderCtrl($rootScope, TransformationService) {
+    function DatasetColumnHeaderCtrl($rootScope, TransformationService, DatasetGridService) {
         var vm = this;
 
         /**
@@ -40,7 +40,7 @@
             $rootScope.$emit('talend.loading.start');
             TransformationService.transform(vm.metadata.id, action, {'column_name': vm.column.id})
                 .then(function (response) {
-                    $rootScope.$emit('talend.dataset.transform', response);
+                    DatasetGridService.updateRecords(response.data.records);
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');

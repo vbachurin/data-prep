@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function DatasetListCtrl($rootScope, $q, DatasetService) {
+    function DatasetListCtrl($rootScope, $q, DatasetService, DatasetGridService) {
         var vm = this;
 
         /**
@@ -57,7 +57,8 @@
                     });
             }
             getDataPromise.then(function() {
-                $rootScope.$emit('talend.dataset.open', {metadata: vm.lastSelectedMetadata, data: vm.lastSelectedData});
+                DatasetGridService.setDataset(vm.lastSelectedMetadata, vm.lastSelectedData);
+                DatasetGridService.show();
             });
         };
 

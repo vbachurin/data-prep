@@ -2,9 +2,6 @@ describe('DatasetColumnHeader controller', function() {
     'use strict';
 
     var createController, scope;
-    var result = {'records':
-        [{'firstname':'Grover','avgAmount':'82.4','city':'BOSTON','birth':'01-09-1973','registration':'17-02-2008','id':'1','state':'AR','nbCommands':'41','lastname':'Quincy'},{'firstname':'Warren','avgAmount':'87.6','city':'NASHVILLE','birth':'11-02-1960','registration':'18-08-2007','id':'2','state':'WA','nbCommands':'17','lastname':'Johnson'}]
-    };
 
     beforeEach(module('data-prep-dataset'));
 
@@ -19,17 +16,79 @@ describe('DatasetColumnHeader controller', function() {
         };
     }));
 
-    it('should call transform service with loading modal show/hide', inject(function($rootScope) {
+    it('should bind showDataGrid getter with DatasetGridService', inject(function(DatasetGridService) {
         //given
         var ctrl = createController();
-        ctrl.data = {};
-        scope.$digest();
+        expect(ctrl.showDataGrid).toBe(false);
 
         //when
-        $rootScope.$emit('talend.dataset.transform', {data: result});
-        $rootScope.$apply();
+        DatasetGridService.show();
 
         //then
-        expect(ctrl.data.records).toBe(result.records);
+        expect(ctrl.showDataGrid).toBe(true);
+    }));
+
+    it('should bind showDataGrid setter with DatasetGridService', inject(function(DatasetGridService) {
+        //given
+        var ctrl = createController();
+        expect(DatasetGridService.visible).toBe(false);
+
+        //when
+        ctrl.showDataGrid = true;
+
+        //then
+        expect(DatasetGridService.visible).toBe(true);
+    }));
+
+    it('should bind metadata getter with DatasetGridService', inject(function(DatasetGridService) {
+        //given
+        var metadata = {name: 'my dataset'};
+        var ctrl = createController();
+        expect(ctrl.metadata).toBeFalsy();
+
+        //when
+        DatasetGridService.setDataset(metadata);
+
+        //then
+        expect(ctrl.metadata).toBe(metadata);
+    }));
+
+    it('should bind metadata setter with DatasetGridService', inject(function(DatasetGridService) {
+        //given
+        var metadata = {name: 'my dataset'};
+        var ctrl = createController();
+        expect(DatasetGridService.metadata).toBeFalsy();
+
+        //when
+        ctrl.metadata = metadata;
+
+        //then
+        expect(DatasetGridService.metadata).toBe(metadata);
+    }));
+
+    it('should bind data getter with DatasetGridService', inject(function(DatasetGridService) {
+        //given
+        var data = {records: [{col: 'value'}]};
+        var ctrl = createController();
+        expect(ctrl.data).toBeFalsy();
+
+        //when
+        DatasetGridService.setDataset(null, data);
+
+        //then
+        expect(ctrl.data).toBe(data);
+    }));
+
+    it('should bind data setter with DatasetGridService', inject(function(DatasetGridService) {
+        //given
+        var data = {records: [{col: 'value'}]};
+        var ctrl = createController();
+        expect(DatasetGridService.data).toBeFalsy();
+
+        //when
+        ctrl.data = data;
+
+        //then
+        expect(DatasetGridService.data).toBe(data);
     }));
 });

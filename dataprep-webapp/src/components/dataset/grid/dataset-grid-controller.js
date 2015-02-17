@@ -1,30 +1,46 @@
 (function () {
     'use strict';
 
-    function DatasetGridCtrl($rootScope) {
+    function DatasetGridCtrl(DatasetGridService) {
         var vm = this;
-        /**
-         * Show datagrid modal flag
-         * @type {boolean}
-         */
-        vm.showDataGrid = false;
-
-        /**
-         * Replace records on transform event
-         */
-        $rootScope.$on('talend.dataset.transform', function(event, args) {
-            vm.data.records = args.data.records;
-        });
-
-        /**
-         * Open dataset event : replace data and display modal
-         */
-        $rootScope.$on('talend.dataset.open', function(event, args) {
-            vm.metadata = args.metadata;
-            vm.data = args.data;
-            vm.showDataGrid = true;
-        });
+        vm.datasetGridService = DatasetGridService;
     }
+
+    Object.defineProperty(DatasetGridCtrl.prototype,
+        'showDataGrid', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetGridService.visible;
+            },
+            set: function(value) {
+                this.datasetGridService.visible = value;
+            }
+        });
+
+    Object.defineProperty(DatasetGridCtrl.prototype,
+        'metadata', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetGridService.metadata;
+            },
+            set: function(value) {
+                this.datasetGridService.metadata = value;
+            }
+        });
+
+    Object.defineProperty(DatasetGridCtrl.prototype,
+        'data', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetGridService.data;
+            },
+            set: function(value) {
+                this.datasetGridService.data = value;
+            }
+        });
 
     angular.module('data-prep-dataset')
         .controller('DatasetGridCtrl', DatasetGridCtrl);

@@ -12,7 +12,7 @@ describe('Dataset grid directive', function() {
         scope.$digest();
     }));
 
-    it('should render dataset values', inject(function($rootScope) {
+    it('should render dataset values', inject(function(DatasetGridService) {
         //given
         var metadata = {
             'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -76,8 +76,8 @@ describe('Dataset grid directive', function() {
         };
 
         //when
-        $rootScope.$emit('talend.dataset.open', {metadata: metadata, data: data});
-        $rootScope.$digest();
+        DatasetGridService.setDataset(metadata, data);
+        scope.$digest();
 
         //then
         var firstRowCells = element.find('tbody').find('tr').eq(0).find('td');
