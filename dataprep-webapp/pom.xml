@@ -81,7 +81,7 @@
                         <goals>
                             <goal>exec</goal>
                         </goals>
-                        <phase>test</phase>
+                        <phase>process-test-classes</phase>
 						   <configuration>
 							  <executable>docker</executable>
 							  <arguments>
