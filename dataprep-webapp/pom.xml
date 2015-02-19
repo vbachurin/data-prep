@@ -13,8 +13,8 @@
         <maven>3.1.0</maven>
     </prerequisites>
         <properties>
-            <docker.tools.image.name>talend/data-prep-webapp-tools:1.0</docker.tools.image.name>
             <docker.registry.name>talend-registry:5000</docker.registry.name>
+            <docker.tools.image.name>${docker.registry.name}/talend/data-prep-webapp-tools:1.0</docker.tools.image.name>
 <!--            <docker.registry.name>tal-qa158.talend.lan:5000</docker.registry.name>-->
         </properties>
     <build>
@@ -34,7 +34,7 @@
 							  <executable>docker</executable>
 							  <arguments>
 								<argument>pull</argument>
-								<argument>${docker.registry.name}/${docker.tools.image.name}</argument>
+								<argument>${docker.tools.image.name}</argument>
 							  </arguments>
 							</configuration>
                     </execution>
