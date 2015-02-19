@@ -1,18 +1,87 @@
 (function () {
     'use strict';
 
+    var menusMock = [
+        {
+            'name': 'uppercase',
+            'category': 'case'
+        },
+        {
+            'name': 'lowercase',
+            'category': 'case'
+        },
+        {
+            'name': 'withParam',
+            'category': 'case',
+            'parameters': [
+                {
+                    'name': 'param',
+                    'type': 'text',
+                    'default': '.'
+                }
+            ]
+        },
+        {
+            'name': 'split',
+            'category': 'split',
+            'choice': {
+                name: 'mode',
+                values: [
+                    {
+                        name: 'noparam'
+                    },
+                    {
+                        name: 'regex',
+                        'parameters': [
+                            {
+                                'name': 'regexp',
+                                'type': 'text',
+                                'default': '.'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'index',
+                        'parameters': [
+                            {
+                                'name': 'index',
+                                'type': 'number',
+                                'default': '5'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'twoParams',
+                        'parameters': [
+                            {
+                                'name': 'index',
+                                'type': 'number',
+                                'default': '5'
+                            },
+                            {
+                                'name': 'index2',
+                                'type': 'number',
+                                'default': '5'
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ];
+
     /**
      * DatasetColumnHeader directive controller
      * @param $rootScope
      * @param TransformationService
      */
-    function DatasetColumnHeaderCtrl($rootScope, TransformationService, DatasetGridService) {
+    function DatasetColumnHeaderCtrl($q, $timeout) {
         var vm = this;
 
         /**
          * Compute quality bars percentage
          */
-        vm.refreshQualityBar = function() {
+        vm.refreshQualityBar = function () {
             var MIN_PERCENT = 10;
             var column = vm.column;
 
@@ -32,19 +101,49 @@
         };
 
         /**
-         * Perform a transformation on column
-         * @param action - the
-         * action name
+         * Insert a divider between each group of menus
+         * @param menuGroups - the menus grouped by category
+         * @returns {Array}
          */
-        vm.transform = function (action) {
-            $rootScope.$emit('talend.loading.start');
-            TransformationService.transform(vm.metadata.id, action, {'column_name': vm.column.id})
-                .then(function (response) {
-                    DatasetGridService.updateRecords(response.data.records);
-                })
-                .finally(function () {
-                    $rootScope.$emit('talend.loading.stop');
-                });
+        var insertDividers = function(menuGroups) {
+            var divider = {isDivider : true};
+            var result = [];
+            _.forEach(menuGroups, function(group) {
+                if(result.length) {
+                    result.push(divider);
+                }
+
+                result.push(group);
+            });
+
+            return result;
+        };
+
+        /**
+         * Group all menus by category and insert dividers between each group
+         * @param menus - the menu list
+         * @returns {Array}
+         */
+        var groupMenus = function(menus) {
+            var groups = _.groupBy(menus, function(menuItem) { return menuItem.category; });
+            var groupsAndDividers = insertDividers(groups);
+
+            return _.flatten(groupsAndDividers);
+        };
+
+        /**
+         * Get transformations from rest call
+         */
+        vm.initTransformations = function () {
+            if (!vm.transformations && !vm.initTransformationsInProgress) {
+                vm.initTransformationsInProgress = true;
+
+                $timeout(function () {
+                    $q.when({data: menusMock}).then(function (response) {
+                        vm.transformations = groupMenus(response.data);
+                    });
+                }, 500);
+            }
         };
     }
 

@@ -86,6 +86,10 @@
                         iElement.find('.modal-inner').on('click', function (e) {
                             e.stopPropagation();
                         });
+
+                        // attach element to body directly to avoid parent styling
+                        iElement.detach();
+                        angular.element('body').append(iElement);
                     });
                 }
             }

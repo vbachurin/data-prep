@@ -190,4 +190,15 @@ describe('Dropdown directive', function () {
         //then
         expect($rootScope.$apply.calls.count()).toBe(1);
     }));
+
+    it('should attach popup to body', inject(function ($rootScope, $timeout) {
+        //given
+        createElement(scope);
+
+        //when
+        $timeout.flush();
+
+        //then
+        expect(angular.element('body').find('talend-modal').length).toBeTruthy();
+    }));
 });

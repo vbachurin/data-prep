@@ -1,0 +1,47 @@
+<li ng-click="menuCtrl.select()"
+    ng-class="::{divider: menuCtrl.item.isDivider}">
+
+    <span ng-if="::(!menuCtrl.item.isDivider)">
+        <a href="#">
+            {{menuCtrl.item.name}}
+        </a>
+
+        <!-- Params and choice modal -->
+        <talend-modal ng-if="::(menuCtrl.item.parameters || menuCtrl.item.choice)"
+                      fullscreen="false"
+                      state="menuCtrl.showModal"
+                      close-button="true">
+
+            <form ng-submit="menuCtrl.transformWithParam()" name="menuCtrl.paramForm">
+                <!-- Menu item param -->
+                <span ng-if="menuCtrl.item.parameters">
+                    <div ng-repeat="param in ::menuCtrl.item.parameters track by $index">
+                        {{::param.name}} : <input type="{{::param.type}}"
+                                                  placeholder="Default '{{::param.default}}'"
+                                                  ng-model="param.value"/>
+                    </div>
+                </span>
+
+                <!-- Choice -->
+                <div ng-if="::(menuCtrl.item.choice.values)">
+                    Option : <select
+                        ng-model="menuCtrl.item.choice.selectedValue"
+                        ng-options="option as option.name for option in ::menuCtrl.item.choice.values"
+                        required></select>
+                </div>
+
+                <!-- Choice params -->
+                <span ng-repeat="option in ::menuCtrl.item.choice.values track by $index"
+                      ng-if="option.parameters && menuCtrl.item.choice.selectedValue === option">
+                    <div ng-repeat="param in ::option.parameters track by $index">
+                        {{::param.name}} : <input type="{{::param.type}}"
+                                                  placeholder="Default '{{::param.default}}'"
+                                                  ng-model="param.value"/>
+                    </div>
+                </span>
+
+                <button ng-disabled="menuCtrl.paramForm.$invalid">Submit</button>
+            </form>
+        </talend-modal>
+    </span>
+</li>

@@ -60,7 +60,7 @@
                 }
             });
             //hide menu on menu item select
-            iElement.find('.dropdown-menu > li').click(hideMenu);
+            iElement.find('.dropdown-menu').click(hideMenu);
             //hide menu on body click
             angular.element('body').click(hideMenu);
         }
