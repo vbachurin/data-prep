@@ -14,7 +14,8 @@
     </prerequisites>
         <properties>
             <docker.tools.image.name>talend/data-prep-webapp-tools:1.0</docker.tools.image.name>
-            <docker.registry.name>tal-qa158.talend.lan:5000</docker.registry.name>
+            <docker.registry.name>talend-registry:5000</docker.registry.name>
+<!--            <docker.registry.name>tal-qa158.talend.lan:5000</docker.registry.name>-->
         </properties>
     <build>
         <plugins>
