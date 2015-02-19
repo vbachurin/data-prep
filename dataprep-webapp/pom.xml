@@ -5,90 +5,94 @@
     <groupId>org.talend.dataprep</groupId>
     <artifactId>dataprep-webapp</artifactId>
     <version>1.0.m1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
 
     <name>dataprep-webapp</name>
 
     <prerequisites>
         <maven>3.1.0</maven>
     </prerequisites>
-
+        <properties>
+            <docker.tools.image.name>talend/data-prep-webapp-tools:1.0</docker.tools.image.name>
+            <docker.registry.name>tal-qa158.talend.lan:5000</docker.registry.name>
+        </properties>
     <build>
         <plugins>
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-war-plugin</artifactId>-->
-            <!--<version>2.4</version>-->
-            <!--<configuration>-->
-            <!--<failOnMissingWebXml>false</failOnMissingWebXml>-->
-            <!--<warSourceDirectory>dev</warSourceDirectory>-->
-            <!--</configuration>-->
-            <!--</plugin>-->
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>0.0.20</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.3.2</version>
                 <executions>
                     <execution>
-                        <id>install node and npm</id>
+                        <id>docker pull ${docker.tools.image.name}</id>
                         <goals>
-                            <goal>install-node-and-npm</goal>
+                            <goal>exec</goal>
                         </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <nodeVersion>v0.10.30</nodeVersion>
-                            <npmVersion>2.6.0</npmVersion>
-                        </configuration>
+                        <phase>pre-clean</phase>
+						   <configuration>
+							  <executable>docker</executable>
+							  <arguments>
+								<argument>pull</argument>
+								<argument>${docker.registry.name}/${docker.tools.image.name}</argument>
+							  </arguments>
+							</configuration>
                     </execution>
                     <execution>
-                        <id>npm install</id>
+                        <id>npm prune and bower prune</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>exec</goal>
                         </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
+                        <phase>clean</phase>
+						   <configuration>
+							  <executable>docker</executable>
+							  <arguments>
+								<argument>run</argument>
+								<argument>-v</argument>
+								<argument>${basedir}:/dataprep-webapp</argument>
+								<argument>${docker.tools.image.name}</argument>
+								<argument>/bin/sh </argument>
+								<argument>-c</argument>
+								<argument>npm prune &amp;&amp; bower --allow-root --config.interactive=false prune</argument>
+							  </arguments>
+							</configuration>
                     </execution>
                     <execution>
-                        <id>npm prune</id>
+                        <id>npm install and bower install</id>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>exec</goal>
                         </goals>
                         <phase>initialize</phase>
-                        <configuration>
-                            <arguments>prune</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>bower prune</id>
-                        <goals>
-                            <goal>bower</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <arguments>prune --allow-root</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>bower install</id>
-                        <goals>
-                            <goal>bower</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <arguments>install --allow-root</arguments>
-                        </configuration>
+						   <configuration>
+							  <executable>docker</executable>
+							  <arguments>
+								<argument>run</argument>
+								<argument>-v</argument>
+								<argument>${basedir}:/dataprep-webapp</argument>
+								<argument>${docker.tools.image.name}</argument>
+								<argument>/bin/sh </argument>
+								<argument>-c</argument>
+								<argument>npm install &amp;&amp; bower --allow-root --config.interactive=false install</argument>
+							  </arguments>
+							</configuration>
                     </execution>
                     <execution>
                         <id>gulp test:ci</id>
                         <goals>
-                            <goal>gulp</goal>
+                            <goal>exec</goal>
                         </goals>
                         <phase>test</phase>
-                        <configuration>
-                            <arguments>test:ci</arguments>
-                        </configuration>
+						   <configuration>
+							  <executable>docker</executable>
+							  <arguments>
+								<argument>run</argument>
+								<argument>-v</argument>
+								<argument>${basedir}:/dataprep-webapp</argument>
+								<argument>${docker.tools.image.name}</argument>
+								<argument>/bin/sh </argument>
+								<argument>-c</argument>
+								<argument>gulp test:ci</argument>
+							  </arguments>
+							</configuration>
                     </execution>
                 </executions>
             </plugin>
