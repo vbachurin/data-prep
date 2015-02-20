@@ -3,9 +3,7 @@ package org.talend.dataprep.api.type;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -67,4 +65,12 @@ public class TypeTest {
         assertNotNull(type);
         assertEquals("string", type.getName());
     }
+
+    @Test
+    public void testIsAssignableFrom() throws Exception {
+        assertTrue(Types.NUMERIC.isAssignableFrom(Types.INTEGER));
+        assertTrue(Types.NUMERIC.isAssignableFrom(Types.DOUBLE));
+        assertFalse(Types.NUMERIC.isAssignableFrom(Types.STRING));
+    }
+
 }

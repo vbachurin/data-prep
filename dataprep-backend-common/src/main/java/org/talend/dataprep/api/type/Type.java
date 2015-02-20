@@ -72,7 +72,7 @@ public class Type {
         return name;
     }
 
-    public List<Type> getSubTypes() {
-        return subTypes;
+    public boolean isAssignableFrom(Type type) {
+        return list().contains(type);
     }
 }

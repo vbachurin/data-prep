@@ -55,7 +55,7 @@ class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
                     generator.writeStartObject();
                     {
                         // Column name
-                        generator.writeStringField("id", column.getName()); //$NON-NLS-1
+                        generator.writeStringField("id", column.getId()); //$NON-NLS-1
                         // Column quality
                         if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
                             generator.writeFieldName("quality"); //$NON-NLS-1
@@ -69,7 +69,7 @@ class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
                             generator.writeEndObject();
                         }
                         // Column type
-                        String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getTypeName() : "N/A"; //$NON-NLS-1
+                        String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getType() : "N/A"; //$NON-NLS-1
                         generator.writeStringField("type", typeName); //$NON-NLS-1
                     }
                     generator.writeEndObject();

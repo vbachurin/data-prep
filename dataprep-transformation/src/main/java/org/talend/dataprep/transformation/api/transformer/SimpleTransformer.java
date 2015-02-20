@@ -5,18 +5,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.talend.dataprep.api.DataSetRow;
-import org.talend.dataprep.transformation.api.action.Action;
 
 class SimpleTransformer implements Transformer {
 
-    private final Action action;
+    private final Consumer<DataSetRow> action;
 
-    SimpleTransformer(Action action) {
+    SimpleTransformer(Consumer<DataSetRow> action) {
         this.action = action;
     }
 
@@ -67,7 +67,7 @@ class SimpleTransformer implements Transformer {
                     values.put(currentFieldName, parser.getText()); // Value
                 } else if (nextToken == JsonToken.END_OBJECT) {
                     DataSetRow row = new DataSetRow(values); // End of row
-                    action.perform(row);
+                    action.accept(row);
                     row.writeTo(output);
                 }
                 nextToken = parser.nextToken();

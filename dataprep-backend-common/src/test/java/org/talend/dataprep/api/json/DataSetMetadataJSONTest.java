@@ -1,6 +1,5 @@
 package org.talend.dataprep.api.json;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetMetadata;
@@ -40,14 +39,14 @@ public class DataSetMetadataJSONTest {
         List<ColumnMetadata> columns = metadata.getRow().getColumns();
         assertEquals(6, columns.size());
         ColumnMetadata firstColumn = columns.get(0);
-        assertEquals("id", firstColumn.getName());
-        assertEquals("integer", firstColumn.getTypeName());
+        assertEquals("id", firstColumn.getId());
+        assertEquals("integer", firstColumn.getType());
         assertEquals(20, firstColumn.getQuality().getEmpty());
         assertEquals(26, firstColumn.getQuality().getInvalid());
         assertEquals(54, firstColumn.getQuality().getValid());
         ColumnMetadata lastColumn = columns.get(5);
-        assertEquals("alive", lastColumn.getName());
-        assertEquals("string", lastColumn.getTypeName());
+        assertEquals("alive", lastColumn.getId());
+        assertEquals("string", lastColumn.getType());
         assertEquals(8, lastColumn.getQuality().getEmpty());
         assertEquals(25, lastColumn.getQuality().getInvalid());
         assertEquals(67, lastColumn.getQuality().getValid());

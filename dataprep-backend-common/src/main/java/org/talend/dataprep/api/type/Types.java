@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.type;
 
+import java.util.List;
+
 public class Types {
 
     public static final Type ANY = new Type("any"); //$NON-NLS-1$
@@ -24,25 +26,12 @@ public class Types {
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null.");
         }
-        Type type = _get(ANY, name);
-        if (type == null) {
-            throw new IllegalArgumentException("Type '" + name + "' does not exist.");
-        }
-        return type;
-    }
-
-    // Internal method for recursion
-    private static Type _get(Type type, String name) {
-        if (name.equals(type.getName())) {
-            return type;
-        }
-        Type subTreeType = null;
-        for (Type subType : type.getSubTypes()) {
-            subTreeType = _get(subType, name);
-            if (subTreeType != null) {
-                break;
+        List<Type> types = ANY.list();
+        for (Type type : types) {
+            if (type.getName().equals(name)) {
+                return type;
             }
         }
-        return subTreeType;
+        throw new IllegalArgumentException("Type '" + name + "' does not exist.");
     }
 }

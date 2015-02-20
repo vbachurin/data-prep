@@ -2,23 +2,25 @@ package org.talend.dataprep.transformation.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Base64;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.api.ColumnMetadata;
+import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.type.Types;
 import org.talend.dataprep.metrics.VolumeMetered;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
+import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.*;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
@@ -27,7 +29,7 @@ public class TransformationService {
     private TransformerFactory factory = new SimpleTransformerFactory();
 
     @RequestMapping(value = "/transform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Transform input data", notes = "This service return the input data transformed using the supplied actions.")
+    @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
     @VolumeMetered
     public void transform(
             @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions,
@@ -38,6 +40,32 @@ public class TransformationService {
         } catch (IOException e) {
             throw new RuntimeException("Unable to process JSON input", e);
         }
+    }
+
+    @RequestMapping(value = "/suggest/column", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
+    @ApiResponses({ @ApiResponse(code = 500, message = "Internal error") })
+    public @ResponseBody List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column) {
+        if (column == null) {
+            return Collections.emptyList();
+        }
+        String typeName = column.getType();
+        Type type = Types.get(typeName);
+        if (Types.STRING.isAssignableFrom(type)) {
+            return Arrays.asList(UpperCase.INSTANCE, LowerCase.INSTANCE);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    @RequestMapping(value = "/suggest/dataset", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
+    @ApiResponses({ @ApiResponse(code = 500, message = "Internal error") })
+    public @ResponseBody List<ActionMetadata> suggest(@RequestBody(required = false) DataSetMetadata dataset) {
+        if (dataset == null) {
+            return Collections.emptyList();
+        }
+        return Collections.emptyList();
     }
 
 }

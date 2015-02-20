@@ -55,7 +55,7 @@ class CSVFormatGuess implements FormatGuess {
                         String columnValue = line[i];
                         try {
                             Integer.parseInt(columnValue);
-                            columnMetadata.get(i).setTypeName(Types.INTEGER.getName());
+                            columnMetadata.get(i).setType(Types.INTEGER.getName());
                         } catch (NumberFormatException e) {
                             // Not an number
                         }
@@ -84,7 +84,7 @@ class CSVFormatGuess implements FormatGuess {
                         generator.writeStartObject();
                         for (int i = 0; i < columns.size(); i++) {
                             ColumnMetadata columnMetadata = columns.get(i);
-                            generator.writeStringField(columnMetadata.getName(), line[i]);
+                            generator.writeStringField(columnMetadata.getId(), line[i]);
                         }
                         generator.writeEndObject();
                     }
