@@ -114,4 +114,11 @@ public class TransformationServiceTests {
         assertEquals("[]", response, false);
     }
 
+    @Test
+    public void dataSetSuggest() throws Exception {
+        String dataSetMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("metadata1.json"));
+        String response = given().contentType(ContentType.JSON).body(dataSetMetadata).when().post("/suggest/dataset").asString();
+        assertEquals("[]", response, false);
+    }
+
 }

@@ -6,10 +6,12 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.Types;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -61,11 +63,23 @@ public class TransformationService {
     @RequestMapping(value = "/suggest/dataset", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ApiResponses({ @ApiResponse(code = 500, message = "Internal error") })
-    public @ResponseBody List<ActionMetadata> suggest(@RequestBody(required = false) DataSetMetadata dataset) {
+    public @ResponseBody List<ActionMetadata> suggest(InputStream dataset) {
         if (dataset == null) {
             return Collections.emptyList();
         }
-        return Collections.emptyList();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(DataSetMetadataModule.DEFAULT);
+            DataSetMetadata dataSetMetadata = objectMapper.reader(DataSetMetadata.class).readValue(dataset);
+            // Temporary: no data set actions at this moment
+            if (dataSetMetadata != null) {
+                return Collections.emptyList();
+            } else {
+                return Collections.emptyList();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to compute actions for dataset.", e);
+        }
     }
 
 }
