@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.service.command;
 
 import java.io.InputStream;
+import java.net.URLEncoder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +39,7 @@ public class CreateDataSet extends HystrixCommand<String> {
 
     @Override
     protected String run() throws Exception {
-        HttpPost contentCreation = new HttpPost(contentServiceUrl + "/?name=" + name); //$NON-NLS-1$
+        HttpPost contentCreation = new HttpPost(contentServiceUrl + "/?name=" + URLEncoder.encode(name, "UTF-8")); //$NON-NLS-1$
         try {
             contentCreation.setEntity(new InputStreamEntity(dataSetContent));
             HttpResponse response = client.execute(contentCreation);

@@ -1,0 +1,57 @@
+data:
+    image: tal-qa158.talend.lan:5000/talend/dataprep-data:1.0.m0
+    volumes:
+        - /data/db
+        - /store
+mongodb:
+    image: dockerfile/mongodb
+    volumes_from:
+        - data
+    ports:
+        - "27017:27017"
+api:
+    image: talend/dataprep-api:1.0.m1-SNAPSHOT
+    expose:
+        - 8888
+    ports:
+        - "8888:8888"
+    links:
+        - transform
+        - dataset
+    environment:
+        TDP_API_SERVER_PORT: 8888
+        TDP_API_DATASET_SERVICE_URL: http://${DATASET_PORT_8080_TCP_ADDR}:${DATASET_PORT_8080_TCP_PORT}/datasets
+        TDP_API_TRANSFORMATION_SERVICE_URL: http://${TRANSFORM_PORT_8180_TCP_ADDR}:${TRANSFORM_1_PORT_8180_TCP_PORT}/transform
+transform:
+    image: talend/dataprep-transformation:1.0.m1-SNAPSHOT
+    volumes_from:
+        - data
+    expose:
+        - 8180
+    environment:
+        TDP_TRANSFORMATION_SERVER_PORT: 8180
+dataset:
+    image: talend/dataprep-dataset:1.0.m1-SNAPSHOT
+    volumes_from:
+        - data
+    expose:
+        - 8080
+    links:
+        - mongodb
+    environment:
+        TDP_DATASET_SERVER_PORT: 8080
+        TDP_DATASET_METADATA_STORE: mongodb
+        TDP_DATASET_CONTENT_STORE: local
+        TDP_DATASET_CONTENT_STORE_LOCAL_LOCATION: /store
+        TDP_DATASET_MONGODB_HOST: ${MONGODB_PORT_27017_TCP_ADDR}
+        TDP_DATASET_MONGODB_PORT: ${MONGODB_PORT_27017_TCP_PORT}
+web:
+    image: talend/dataprep-web:1.0.m1-SNAPSHOT
+    expose:
+        - 80
+    ports:
+        - "80:80"
+        - "443:443"
+    links:
+        - api
+

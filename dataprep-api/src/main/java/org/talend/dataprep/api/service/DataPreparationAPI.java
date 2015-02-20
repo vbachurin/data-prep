@@ -48,11 +48,12 @@ public class DataPreparationAPI {
         connectionManager.setDefaultMaxPerRoute(50);
     }
 
-    @RequestMapping(value = "/api/transform/{id}/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Transforms a data set given data set id. This operation retrieves data set content and pass it to the transformation service.", notes = "Returns the data set modified with the provided actions.")
+    @RequestMapping(value = "/api/transform/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Transforms a data set given data set id. This operation retrieves data set content and pass it to the transformation service.", notes = "Returns the data set modified with the provided actions in request body.")
     public void transform(
-            @RequestParam(value = "actions", defaultValue = "", required = false) @ApiParam(value = "Actions to perform on data set (as JSON format).") String actions,
-            @PathVariable(value = "id") @ApiParam(value = "Data set id.") String dataSetId, HttpServletResponse response) {
+            @PathVariable(value = "id") @ApiParam(value = "Data set id.") String dataSetId,
+            @ApiParam(value = "Actions to perform on data set (as JSON format).") InputStream body,
+            HttpServletResponse response) {
         if (dataSetId == null) {
             throw new IllegalArgumentException("Data set id cannot be null.");
         }
@@ -62,7 +63,7 @@ public class DataPreparationAPI {
         // Configure transformation flow
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
         HystrixCommand<InputStream> contentRetrieval = new DataSetGetCommand(client, contentServiceUrl, dataSetId, false, false);
-        HystrixCommand<InputStream> transformation = new TransformCommand(client, transformServiceUrl, contentRetrieval, actions);
+        HystrixCommand<InputStream> transformation = new TransformCommand(client, transformServiceUrl, contentRetrieval, body);
         // Perform transformation
         try {
             ServletOutputStream outputStream = response.getOutputStream();

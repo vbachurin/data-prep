@@ -36,7 +36,7 @@ public class ServiceCORSFilter implements Filter, ApplicationContextAware {
             response.setHeader("Access-Control-Allow-Origin", "*"); //$NON-NLS-1 //$NON-NLS-2$
                 response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT"); //$NON-NLS-1 //$NON-NLS-2$
                 response.setHeader("Access-Control-Max-Age", "3600"); //$NON-NLS-1 //$NON-NLS-2$
-                response.setHeader("Access-Control-Allow-Headers", "x-requested-with"); //$NON-NLS-1 //$NON-NLS-2$
+                response.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type"); //$NON-NLS-1 //$NON-NLS-2$
             });
         chain.doFilter(req, res);
     }

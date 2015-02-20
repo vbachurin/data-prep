@@ -11,7 +11,7 @@
             },
             bindToController: true,
             controllerAs: 'datagridCtrl',
-            controller: function() {}
+            controller: 'DatasetGridCtrl'
         };
     }
 

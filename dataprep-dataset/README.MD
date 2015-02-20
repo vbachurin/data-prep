@@ -92,6 +92,22 @@ CONTAINER ID        IMAGE                                     COMMAND           
 ```
 There are 3 instances of the same image accessible from http://localhost:49156, http://localhost:49157, http://localhost:49158.
 
+### Docker environment properties
+
+Docker image comes with the following environment properties:
+* TDP_DATASET_SERVER_PORT: port for the API service (used for server.port).
+* TDP_DATASET_METADATA_STORE: type of storage for metadata (mongodb, in-memory).
+* TDP_DATASET_CONTENT_STORE: type of storage for the data sets (hdfs, local).
+* TDP_DATASET_CONTENT_STORE_LOCAL_LOCATION: when TDP_DATASET_CONTENT_STORE = local, path to the local store directory.
+* TDP_DATASET_MONGODB_HOST: when using TDP_DATASET_METADATA_STORE = mongodb, host name (or IP address) of the MongoDB instance.
+* TDP_DATASET_MONGODB_PORT: when using TDP_DATASET_METADATA_STORE = mongodb, port of the MongoDB instance.
+Note: value supports environment property placeholders, this means a environment property such as:
+```
+TDP_API_DATASET_SERVICE_URL: http://${DATASET_PORT_8080_TCP_ADDR}:${DATASET_PORT_8080_TCP_PORT}/datasets
+```
+...uses values from environment properties DATASET_PORT_8080_TCP_ADDR and DATASET_PORT_8080_TCP_PORT. Unresolved properties are kept as is.
+
+
 ## Documentation
 REST service is self documented. Once started, go to http://localhost:8080 (modify 8080 if you choose a different port)
 and then expand 'datasets' category. You can explore and even test the REST interface from this web page.
