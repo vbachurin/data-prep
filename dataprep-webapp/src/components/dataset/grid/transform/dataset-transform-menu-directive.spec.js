@@ -50,12 +50,14 @@ describe('Transformation menu directive', function () {
             parameters: [
                 {
                     'name': 'param1',
-                    'type': 'text',
+                    'type': 'string',
+                    'inputType': 'text',
                     'default': '.'
                 },
                 {
                     'name': 'param2',
-                    'type': 'number',
+                    'type': 'integer',
+                    'inputType': 'number',
                     'default': '5'
                 }
             ]
@@ -129,12 +131,14 @@ describe('Transformation menu directive', function () {
                         parameters: [
                             {
                                 name: 'param1',
-                                type: 'text',
+                                type: 'string',
+                                'inputType': 'text',
                                 default: '.'
                             },
                             {
                                 name: 'param2',
-                                type: 'number',
+                                type: 'float',
+                                'inputType': 'number',
                                 default: '5'
                             }
                         ]

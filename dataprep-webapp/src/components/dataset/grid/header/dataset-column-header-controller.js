@@ -16,7 +16,7 @@
             'parameters': [
                 {
                     'name': 'param',
-                    'type': 'text',
+                    'type': 'string',
                     'default': '.'
                 }
             ]
@@ -35,7 +35,7 @@
                         'parameters': [
                             {
                                 'name': 'regexp',
-                                'type': 'text',
+                                'type': 'string',
                                 'default': '.'
                             }
                         ]
@@ -45,22 +45,27 @@
                         'parameters': [
                             {
                                 'name': 'index',
-                                'type': 'number',
+                                'type': 'integer',
                                 'default': '5'
                             }
                         ]
                     },
                     {
-                        name: 'twoParams',
+                        name: 'threeParams',
                         'parameters': [
                             {
                                 'name': 'index',
-                                'type': 'number',
+                                'type': 'numeric',
                                 'default': '5'
                             },
                             {
                                 'name': 'index2',
-                                'type': 'number',
+                                'type': 'float',
+                                'default': '5'
+                            },
+                            {
+                                'name': 'index3',
+                                'type': 'double',
                                 'default': '5'
                             }
                         ]
@@ -132,6 +137,47 @@
         };
 
         /**
+         * Insert adapted html input type in each parameter in the menu
+         * @param menu - the menu with parameters to adapt
+         */
+        var insertType = function(menu) {
+            if(menu.parameters) {
+                _.forEach(menu.parameters, function(param) {
+                    switch (param.type) {
+                        case 'numeric':
+                        case 'integer':
+                        case 'double':
+                        case 'float':
+                            param.inputType = 'number';
+                            break;
+                        default:
+                            param.inputType = 'text';
+                            break;
+                    }
+                });
+            }
+        };
+
+        /**
+         * Adapt each parameter type to HTML input type
+         * @param menus - the menus with parameters to adapt
+         * @returns {*}
+         */
+        var adaptInputTypes = function(menus) {
+            _.forEach(menus, function(menu) {
+                insertType(menu);
+
+                if(menu.choice) {
+                    _.forEach(menu.choice.values, function(choiceValue) {
+                        insertType(choiceValue);
+                    });
+                }
+            });
+
+            return menus;
+        };
+
+        /**
          * Get transformations from rest call
          */
         vm.initTransformations = function () {
@@ -140,7 +186,8 @@
 
                 $timeout(function () {
                     $q.when({data: menusMock}).then(function (response) {
-                        vm.transformations = groupMenus(response.data);
+                        var menus = adaptInputTypes(response.data);
+                        vm.transformations = groupMenus(menus);
                     });
                 }, 500);
             }

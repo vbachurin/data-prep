@@ -33,6 +33,23 @@ describe('DatasetColumnHeader controller', function () {
         expect(ctrl.transformations[4].name).toBe('split');
     }));
 
+    it('should adapt params types to input type', inject(function($timeout) {
+        //given
+        var ctrl = createController();
+
+        //when
+        ctrl.initTransformations();
+        $timeout.flush();
+
+        //then
+        expect(ctrl.transformations[2].parameters[0].inputType).toBe('text');
+        expect(ctrl.transformations[4].choice.values[1].parameters[0].inputType).toBe('text');
+        expect(ctrl.transformations[4].choice.values[2].parameters[0].inputType).toBe('number');
+        expect(ctrl.transformations[4].choice.values[3].parameters[0].inputType).toBe('number');
+        expect(ctrl.transformations[4].choice.values[3].parameters[1].inputType).toBe('number');
+        expect(ctrl.transformations[4].choice.values[3].parameters[2].inputType).toBe('number');
+    }));
+
     it('should not get transformations is transformations are already initiated', inject(function($timeout) {
         //given
         var ctrl = createController();

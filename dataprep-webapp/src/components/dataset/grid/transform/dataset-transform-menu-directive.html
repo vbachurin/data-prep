@@ -17,9 +17,10 @@
                 <table ng-if="menuCtrl.item.parameters" class="param">
                     <tr ng-repeat="param in ::menuCtrl.item.parameters track by $index">
                         <td class="param-name">{{::param.name}} :</td>
-                        <td class="param-input"><input type="{{::param.type}}"
+                        <td class="param-input"><input type="{{::param.inputType}}"
                                    placeholder="Default '{{::param.default}}'"
-                                   ng-model="param.value"/>
+                                   ng-model="param.value"
+                                   type-validation="{{::param.type}}"/>
                         </td>
                     </tr>
                 </table>
@@ -40,9 +41,10 @@
                            ng-if="option.parameters && menuCtrl.item.choice.selectedValue === option">
                         <tr ng-repeat="param in ::option.parameters track by $index">
                             <td class="param-name">{{::param.name}} :</td>
-                            <td class="param-input"><input type="{{::param.type}}"
+                            <td class="param-input"><input type="{{::param.inputType}}"
                                        placeholder="Default '{{::param.default}}'"
-                                       ng-model="param.value"/>
+                                       ng-model="param.value"
+                                       type-validation="{{::param.type}}"/>
                             </td>
                         </tr>
                     </tbody>
