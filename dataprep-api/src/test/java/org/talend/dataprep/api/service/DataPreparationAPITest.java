@@ -51,7 +51,7 @@ public class DataPreparationAPITest extends TestCase {
     public void setUp() {
         RestAssured.port = port;
         apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
-        apiService.setTransformationServiceURL("http://localhost:" + port + "/transform");
+        apiService.setTransformationServiceURL("http://localhost:" + port + "/");
     }
 
     @org.junit.After
@@ -142,11 +142,20 @@ public class DataPreparationAPITest extends TestCase {
 
     @Test
     public void testDataSetColumnActions() throws Exception {
-
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
+        InputStream content = when().get("/api/datasets/{id}/{column}/actions", dataSetId, "firstname").asInputStream();
+        String contentAsString = IOUtils.toString(content);
+        InputStream expected = DataPreparationAPITest.class.getResourceAsStream("suggest1.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void testDataSetActions() throws Exception {
-
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
+        InputStream content = when().get("/api/datasets/{id}/actions", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+        assertThat(contentAsString, sameJSONAs("[]"));
     }
 }

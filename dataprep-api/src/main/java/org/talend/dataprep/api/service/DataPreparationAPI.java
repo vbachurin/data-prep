@@ -183,9 +183,9 @@ public class DataPreparationAPI {
             HttpServletResponse response) {
         // Get dataset metadata
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadataCommand(client);
+        HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadataCommand(client, contentServiceUrl, dataSetId);
         // Asks transformation service for suggested actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = new TransformSuggestActionsCommand(retrieveMetadata, columnName, client);
+        HystrixCommand<InputStream> getSuggestedActions = new SuggestColumnActionsCommand(client, transformServiceUrl, retrieveMetadata, columnName);
         // Returns actions
         try {
             ServletOutputStream outputStream = response.getOutputStream();
@@ -204,9 +204,9 @@ public class DataPreparationAPI {
             HttpServletResponse response) {
         // Get dataset metadata
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadataCommand(client);
+        HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadataCommand(client, contentServiceUrl, dataSetId);
         // Asks transformation service for suggested actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = new TransformSuggestActionsCommand(retrieveMetadata, client);
+        HystrixCommand<InputStream> getSuggestedActions = new SuggestDataSetActionsCommand(client, transformServiceUrl, retrieveMetadata);
         // Returns actions
         try {
             ServletOutputStream outputStream = response.getOutputStream();

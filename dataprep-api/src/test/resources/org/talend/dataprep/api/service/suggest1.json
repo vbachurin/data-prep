@@ -1,0 +1,30 @@
+[
+  {
+    "category": "case",
+    "items": [],
+    "name": "uppercase",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "category": "case",
+    "items": [],
+    "name": "lowercase",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  }
+]
