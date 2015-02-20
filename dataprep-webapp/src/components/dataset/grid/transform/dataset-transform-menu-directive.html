@@ -3,7 +3,7 @@
 
     <span ng-if="::(!menuCtrl.item.isDivider)">
         <a href="#">
-            {{menuCtrl.item.name}}
+            {{::menuCtrl.item.name}}
         </a>
 
         <!-- Params and choice modal -->
@@ -14,31 +14,39 @@
 
             <form ng-submit="menuCtrl.transformWithParam()" name="menuCtrl.paramForm">
                 <!-- Menu item param -->
-                <span ng-if="menuCtrl.item.parameters">
-                    <div ng-repeat="param in ::menuCtrl.item.parameters track by $index">
-                        {{::param.name}} : <input type="{{::param.type}}"
-                                                  placeholder="Default '{{::param.default}}'"
-                                                  ng-model="param.value"/>
-                    </div>
-                </span>
+                <table ng-if="menuCtrl.item.parameters" class="param">
+                    <tr ng-repeat="param in ::menuCtrl.item.parameters track by $index">
+                        <td class="param-name">{{::param.name}} :</td>
+                        <td class="param-input"><input type="{{::param.type}}"
+                                   placeholder="Default '{{::param.default}}'"
+                                   ng-model="param.value"/>
+                        </td>
+                    </tr>
+                </table>
 
                 <!-- Choice -->
-                <div ng-if="::(menuCtrl.item.choice.values)">
-                    Option : <select
-                        ng-model="menuCtrl.item.choice.selectedValue"
-                        ng-options="option as option.name for option in ::menuCtrl.item.choice.values"
-                        required></select>
-                </div>
+                <table ng-if="::(menuCtrl.item.choice.values)" class="param-choice">
+                    <tr>
+                        <td class="param-choice-name">Option :</td>
+                        <td class="param-choice-select"><select
+                                ng-model="menuCtrl.item.choice.selectedValue"
+                                ng-options="option as option.name for option in ::menuCtrl.item.choice.values"
+                                required></select>
+                        </td>
+                    </tr>
 
-                <!-- Choice params -->
-                <span ng-repeat="option in ::menuCtrl.item.choice.values track by $index"
-                      ng-if="option.parameters && menuCtrl.item.choice.selectedValue === option">
-                    <div ng-repeat="param in ::option.parameters track by $index">
-                        {{::param.name}} : <input type="{{::param.type}}"
-                                                  placeholder="Default '{{::param.default}}'"
-                                                  ng-model="param.value"/>
-                    </div>
-                </span>
+                    <!-- Choice params -->
+                    <tbody ng-repeat="option in ::menuCtrl.item.choice.values track by $index"
+                           ng-if="option.parameters && menuCtrl.item.choice.selectedValue === option">
+                        <tr ng-repeat="param in ::option.parameters track by $index">
+                            <td class="param-name">{{::param.name}} :</td>
+                            <td class="param-input"><input type="{{::param.type}}"
+                                       placeholder="Default '{{::param.default}}'"
+                                       ng-model="param.value"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 <button ng-disabled="menuCtrl.paramForm.$invalid">Submit</button>
             </form>
