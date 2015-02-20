@@ -5,6 +5,7 @@ import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.DataSetMetadata.Builder.metadata;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -12,9 +13,11 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.sun.rowset.internal.Row;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +32,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetLifecycle;
 import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.RowMetadata;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.type.Types;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import com.jayway.restassured.RestAssured;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -82,14 +90,14 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testCORSHeaders() throws Exception {
+    public void CORSHeaders() throws Exception {
         when().get("/datasets").then().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
                 .header("Access-Control-Max-Age", "3600").header("Access-Control-Allow-Headers", "x-requested-with");
     }
 
     @Test
-    public void testList() throws Exception {
+    public void list() throws Exception {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
@@ -113,7 +121,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void create() throws Exception {
         int before = dataSetMetadataRepository.size();
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
@@ -123,7 +131,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(expectedId).build();
         dataSetMetadataRepository.add(dataSetMetadata);
@@ -135,7 +143,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void delete() throws Exception {
         String expectedId = UUID.randomUUID().toString();
         dataSetMetadataRepository.add(metadata().id(expectedId).build());
         List<String> ids = from(when().get("/datasets").asString()).get("");
@@ -147,7 +155,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testUpdate() throws Exception {
+    public void update() throws Exception {
         String dataSetId = "123456";
         when().put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
@@ -199,7 +207,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testNbLines() throws Exception {
+    public void nbLines() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
@@ -211,7 +219,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testNbLines2() throws Exception {
+    public void nbLines2() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
@@ -223,7 +231,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testNbLinesUpdate() throws Exception {
+    public void nbLinesUpdate() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
@@ -243,6 +251,31 @@ public class DataSetServiceTests {
 
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv.expected.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
+    }
+
+    @Test
+    public void getMetadata() throws Exception {
+        DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id("1234");
+        builder.row(ColumnMetadata.Builder.column().empty(0).invalid(0).valid(0).name("id").type(Types.STRING));
+        builder.created(0);
+        builder.name("name");
+        builder.author("author");
+        builder.footerSize(0);
+        builder.headerSize(1);
+        builder.qualityAnalyzed(true);
+        builder.schemaAnalyzed(true);
+        dataSetMetadataRepository.add(builder.build());
+        String contentAsString = when().get("/datasets/{id}/metadata", "1234").asString();
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("metadata1.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
+    }
+
+    @Test
+    public void getEmptyMetadata() throws Exception {
+        DataSetMetadata metadata = dataSetMetadataRepository.get("9876");
+        assertNull(metadata);
+        int statusCode = when().get("/datasets/{id}/metadata", "9876").statusCode();
+        assertThat(HttpServletResponse.SC_NO_CONTENT, is(statusCode));
     }
 
 }

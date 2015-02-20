@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,10 +28,6 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
-
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
 
 import static org.talend.dataprep.api.DataSetMetadata.Builder.metadata;
 
@@ -248,6 +245,33 @@ public class DataSetService {
         dataSetMetadataRepository.add(dataSetMetadata);
         // Content was changed, so queue events (schema analysis, content indexing for search...)
         queueEvents(dataSetId, jmsTemplate);
+    }
+
+    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
+    @ApiResponses({@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist.")})
+    @Timed
+    public void getMetadata(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
+            HttpServletResponse response) {
+        if (dataSetId == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        if (metadata == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
+            // Write general information about the dataset
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(DataSetMetadataModule.get(true, true, null));
+            mapper.writer().writeValue(generator, metadata);
+            generator.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected I/O exception during data set metadata output.", e);
+        }
     }
 
     @RequestMapping(value = "/datasets/{id}/versions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
