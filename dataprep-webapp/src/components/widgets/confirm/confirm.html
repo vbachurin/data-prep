@@ -1,0 +1,12 @@
+<talend-modal fullscreen="false"
+              close-button="true"
+              state="confirmCtrl.modalState">
+    {{text}}
+
+    <div class="modal-buttons">
+        <button class="talend-modal-close t-btn-secondary modal-cancel-button"
+                ng-click="confirmCtrl.cancel()">NO</button>
+        <button class="talend-modal-close t-btn-primary modal-valid-button"
+                ng-click="confirmCtrl.valid()">YES</button>
+    </div>
+</talend-modal>

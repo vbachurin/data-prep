@@ -149,6 +149,14 @@
         padding: 0 2em;
       }
     }
+
+    .modal-cancel-button {
+      float: left;
+    }
+
+    .modal-valid-button {
+      float: right;
+    }
   }
 
   .modal-state:checked + .modal-window {

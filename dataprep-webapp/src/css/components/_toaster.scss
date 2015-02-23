@@ -1,0 +1,49 @@
+$toastSuccess: #588d17;
+$toastSuccessLink: #00a6ce;
+$toastSuccessBackground: #d0e1a1;
+
+$toastContainerShadowColor: #333333;
+
+/* PLACEMENT */
+.toast-top-60-width {
+  top: 0;
+  width: 100%;
+}
+
+#toast-container {
+  > div {
+    opacity: 1 !important;
+    -moz-box-shadow: 0 0 12px $toastContainerShadowColor;
+    -webkit-box-shadow: 0 0 12px $toastContainerShadowColor;
+    box-shadow: 0 0 12px $toastContainerShadowColor;
+
+    &.toast-success {
+      color: $toastSuccess;
+
+      a {
+        color: $toastSuccessLink;
+      }
+    }
+  }
+
+  &.toast-top-60-width {
+    > div {
+      width: 60%;
+      margin: auto;
+    }
+  }
+}
+
+/* ANIMATIONS */
+:not(.no-enter)#toast-container > div.ng-enter {
+  animation: bounceInDown 1s;
+}
+
+:not(.no-leave)#toast-container > div.ng-leave {
+  animation: bounceOutUp 1s;
+}
+
+/* BACKGROUND COLORS */
+.toast-success {
+  background-color: $toastSuccessBackground;
+}

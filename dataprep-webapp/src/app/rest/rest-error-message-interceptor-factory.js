@@ -1,11 +1,11 @@
 (function() {
     'use strict';
 
-    function RestErrorMessageHandler($q, $window){
+    function RestErrorMessageHandler($q, toaster){
         return {
             responseError: function(rejection) {
                 if(rejection.status === 0) {
-                    $window.alert('Service unavailable');
+                    toaster.pop('error', 'Error', 'Service unavailable');
                 }
 
                 return $q.reject(rejection);

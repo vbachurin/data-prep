@@ -25,4 +25,20 @@
             </li>
         </ul>
     </div>
+
+    <talend-modal fullscreen="false"
+                  close-button="true"
+                  state="homeCtrl.datasetNameModal">
+        Enter the dataset name
+        <form name="homeCtrl.datasetNameForm">
+            <input type="text" ng-model="homeCtrl.datasetName" required/>
+
+            <div class="modal-buttons">
+                <button class="talend-modal-close t-btn-secondary modal-cancel-button">CANCEL</button>
+                <button class="talend-modal-close t-btn-primary modal-valid-button"
+                        ng-click="homeCtrl.uploadDatasetName()"
+                        ng-disabled="homeCtrl.datasetNameForm.$invalid">OK</button>
+            </div>
+        </form>
+    </talend-modal>
 </header>
