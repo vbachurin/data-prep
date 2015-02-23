@@ -1,5 +1,5 @@
 data:
-    image: tal-qa158.talend.lan:5000/talend/dataprep-data:1.0.m0
+    image: talend-registry:5000/talend/dataprep-data:1.0.m0
     volumes:
         - /data/db
         - /store
@@ -14,7 +14,7 @@ api:
     expose:
         - 8888
     ports:
-        - "8888:8888"
+        - "8081:8888"
     links:
         - transform
         - dataset
@@ -46,12 +46,13 @@ dataset:
         TDP_DATASET_MONGODB_HOST: ${MONGODB_PORT_27017_TCP_ADDR}
         TDP_DATASET_MONGODB_PORT: ${MONGODB_PORT_27017_TCP_PORT}
 web:
-    image: talend/dataprep-web:1.0.m1-SNAPSHOT
+    image: talend-registry:5000/talend/dataprep-web:1.0.m1-SNAPSHOT
     expose:
         - 80
     ports:
         - "80:80"
         - "443:443"
-    links:
-        - api
+    environment:
+        TDP_API_HOST: 10.42.10.99
+        TDP_API_PORT: 8081
 
