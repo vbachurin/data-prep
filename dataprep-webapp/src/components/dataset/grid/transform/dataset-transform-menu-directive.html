@@ -1,21 +1,21 @@
 <li ng-click="menuCtrl.select()"
-    ng-class="::{divider: menuCtrl.item.isDivider}">
+    ng-class="::{divider: menuCtrl.menu.isDivider}">
 
-    <span ng-if="::(!menuCtrl.item.isDivider)">
+    <span ng-if="::(!menuCtrl.menu.isDivider)">
         <a href="#">
-            {{::menuCtrl.item.name}}
+            {{::menuCtrl.menu.name}}
         </a>
 
         <!-- Params and choice modal -->
-        <talend-modal ng-if="::(menuCtrl.item.parameters || menuCtrl.item.choice)"
+        <talend-modal ng-if="::(menuCtrl.menu.parameters || menuCtrl.menu.items)"
                       fullscreen="false"
                       state="menuCtrl.showModal"
                       close-button="true">
 
             <form ng-submit="menuCtrl.transformWithParam()" name="menuCtrl.paramForm">
                 <!-- Menu item param -->
-                <table ng-if="menuCtrl.item.parameters" class="param">
-                    <tr ng-repeat="param in ::menuCtrl.item.parameters track by $index">
+                <table ng-if="menuCtrl.menu.parameters" class="param">
+                    <tr ng-repeat="param in ::menuCtrl.menu.parameters track by $index">
                         <td class="param-name">{{::param.name}} :</td>
                         <td class="param-input">
                             <input name="{{::(param.name + $index)}}"
@@ -33,19 +33,19 @@
                 </table>
 
                 <!-- Choice -->
-                <table ng-if="::(menuCtrl.item.choice.values)" class="param-choice">
+                <table ng-if="::(menuCtrl.menu.items.values)" class="param-choice">
                     <tr>
                         <td class="param-choice-name">Option :</td>
                         <td class="param-choice-select"><select
-                                ng-model="menuCtrl.item.choice.selectedValue"
-                                ng-options="option as option.name for option in ::menuCtrl.item.choice.values"
+                                ng-model="menuCtrl.menu.items.selectedValue"
+                                ng-options="option as option.name for option in ::menuCtrl.menu.items.values"
                                 required></select>
                         </td>
                     </tr>
 
                     <!-- Choice params -->
-                    <tbody ng-repeat="option in ::menuCtrl.item.choice.values track by $index"
-                           ng-if="option.parameters && menuCtrl.item.choice.selectedValue === option">
+                    <tbody ng-repeat="option in ::menuCtrl.menu.items.values track by $index"
+                           ng-if="option.parameters && menuCtrl.menu.items.selectedValue === option">
                         <tr ng-repeat="param in ::option.parameters track by $index">
                             <td class="param-name">{{::param.name}} :</td>
                             <td class="param-input">

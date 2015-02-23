@@ -8,7 +8,7 @@ describe('Transformation menu directive', function () {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function(directiveScope) {
-            var element = angular.element('<dataset-transform-menu column="column" metadata="metadata" item="item"></dataset-transform-menu>');
+            var element = angular.element('<dataset-transform-menu column="column" metadata="metadata" menu="menu"></dataset-transform-menu>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
             return element;
@@ -18,7 +18,7 @@ describe('Transformation menu directive', function () {
     it('should render divider', function() {
         //given
         var body = angular.element('body');
-        scope.item = {isDivider: true};
+        scope.menu = {isDivider: true};
 
         //when
         var element = createElement(scope);
@@ -32,7 +32,7 @@ describe('Transformation menu directive', function () {
     it('should render a simple action', function() {
         //given
         var body = angular.element('body');
-        scope.item = {name: 'uppercase'};
+        scope.menu = {name: 'uppercase'};
 
         //when
         var element = createElement(scope);
@@ -45,7 +45,7 @@ describe('Transformation menu directive', function () {
 
     it('should render an action with parameters', function() {
         //given
-        scope.item = {
+        scope.menu = {
             name: 'menu with param',
             parameters: [
                 {
@@ -82,9 +82,9 @@ describe('Transformation menu directive', function () {
 
     it('should render an action with simple choice', function() {
         //given
-        scope.item = {
+        scope.menu = {
             name: 'menu with param',
-            choice: {
+            items: {
                 name: 'my choice',
                 values: [
                     {
@@ -118,9 +118,9 @@ describe('Transformation menu directive', function () {
 
     it('should render an action with choice containing parameters', function() {
         //given
-        scope.item = {
+        scope.menu = {
             name: 'menu with param',
-            choice: {
+            items: {
                 name: 'my choice',
                 values: [
                     {
@@ -151,14 +151,14 @@ describe('Transformation menu directive', function () {
         var paramChoice = modal.find('.param-choice').eq(0);
 
         //when
-        scope.item.choice.selectedValue = scope.item.choice.values[0];
+        scope.menu.items.selectedValue = scope.menu.items.values[0];
         scope.$digest();
 
         //then
         expect(paramChoice.find('.param-name').length).toBe(0);
 
         //when
-        scope.item.choice.selectedValue = scope.item.choice.values[1];
+        scope.menu.items.selectedValue = scope.menu.items.values[1];
         scope.$digest();
 
         //then

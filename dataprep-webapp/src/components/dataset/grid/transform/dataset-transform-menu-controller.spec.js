@@ -71,7 +71,7 @@ describe('Dataset transform menu controller', function () {
     it('should do nothing on select if the menu is a divider', inject(function (TransformationService) {
         //given
         var ctrl = createController();
-        ctrl.item = {isDivider: true};
+        ctrl.menu = {isDivider: true};
 
         //when
         ctrl.select();
@@ -84,7 +84,7 @@ describe('Dataset transform menu controller', function () {
     it('should only open modal on select if item has parameters', inject(function (TransformationService) {
         //given
         var ctrl = createController();
-        ctrl.item = {parameters: [{name: 'param1', type: 'text', default: '.'}]};
+        ctrl.menu = {parameters: [{name: 'param1', type: 'text', default: '.'}]};
 
         //when
         ctrl.select();
@@ -97,7 +97,7 @@ describe('Dataset transform menu controller', function () {
     it('should only open modal on select if item has choice', inject(function (TransformationService) {
         //given
         var ctrl = createController();
-        ctrl.item = {choice: {name: 'choice', values: [{name: 'choice1'}, {name: 'choice2'}]}};
+        ctrl.menu = {items: {name: 'choice', values: [{name: 'choice1'}, {name: 'choice2'}]}};
 
         //when
         ctrl.select();
@@ -110,7 +110,7 @@ describe('Dataset transform menu controller', function () {
     it('should call transform on simple menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
         //given
         var ctrl = createController();
-        ctrl.item = {name: 'uppercase', category: 'case'};
+        ctrl.menu = {name: 'uppercase', category: 'case'};
 
         //when
         ctrl.select();
@@ -127,7 +127,7 @@ describe('Dataset transform menu controller', function () {
     it('should call transform on parameterized menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
         //given
         var ctrl = createController();
-        ctrl.item = {
+        ctrl.menu = {
             name: 'uppercase',
             category: 'case',
             parameters: [
@@ -154,10 +154,10 @@ describe('Dataset transform menu controller', function () {
     it('should call transform on simple choice param menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
         //given
         var ctrl = createController();
-        ctrl.item = {
+        ctrl.menu = {
             name: 'split',
             category: 'split',
-            choice: {
+            items: {
                 name: 'mode',
                 values: [
                     {name: 'regex'},
@@ -165,7 +165,7 @@ describe('Dataset transform menu controller', function () {
                 ]
             }
         };
-        ctrl.item.choice.selectedValue = ctrl.item.choice.values[1];
+        ctrl.menu.items.selectedValue = ctrl.menu.items.values[1];
 
         //when
         ctrl.transformWithParam();
@@ -185,10 +185,10 @@ describe('Dataset transform menu controller', function () {
     it('should call transform on parameterized choice menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
         //given
         var ctrl = createController();
-        ctrl.item = {
+        ctrl.menu = {
             name: 'split',
             category: 'split',
-            choice: {
+            items: {
                 name: 'mode',
                 values: [
                     {
@@ -202,7 +202,7 @@ describe('Dataset transform menu controller', function () {
                 ]
             }
         };
-        ctrl.item.choice.selectedValue = ctrl.item.choice.values[0];
+        ctrl.menu.items.selectedValue = ctrl.menu.items.values[0];
 
         //when
         ctrl.transformWithParam();
@@ -222,14 +222,14 @@ describe('Dataset transform menu controller', function () {
     it('should call transform with parameters and parameterized choice menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
         //given
         var ctrl = createController();
-        ctrl.item = {
+        ctrl.menu = {
             name: 'split',
             category: 'split',
             parameters: [
                 {name: 'param1', type: 'text', default: '', value: 'param1Value'},
                 {name: 'param2', type: 'int', default: '5', value: 4}
             ],
-            choice: {
+            items: {
                 name: 'mode',
                 values: [
                     {
@@ -243,7 +243,7 @@ describe('Dataset transform menu controller', function () {
                 ]
             }
         };
-        ctrl.item.choice.selectedValue = ctrl.item.choice.values[0];
+        ctrl.menu.items.selectedValue = ctrl.menu.items.values[0];
 
         //when
         ctrl.transformWithParam();

@@ -11,11 +11,11 @@
          * 3 - parameter or choice required : show modal
          */
         vm.select = function () {
-            if(vm.item.isDivider) {
+            if(vm.menu.isDivider) {
                 return;
             }
 
-            if (vm.item.parameters || vm.item.choice) {
+            if (vm.menu.parameters || vm.menu.items) {
                 vm.showModal = true;
             }
             else {
@@ -29,8 +29,8 @@
          */
         var getParams = function () {
             var params = {};
-            if (vm.item.parameters) {
-                _.forEach(vm.item.parameters, function (paramItem) {
+            if (vm.menu.parameters) {
+                _.forEach(vm.menu.parameters, function (paramItem) {
                     params[paramItem.name] = paramItem.value;
                 });
             }
@@ -44,9 +44,9 @@
          */
         var getChoiceParams = function () {
             var params = {};
-            if (vm.item.choice) {
-                var selectedChoice = vm.item.choice.selectedValue;
-                params[vm.item.choice.name] = selectedChoice.name;
+            if (vm.menu.items) {
+                var selectedChoice = vm.menu.items.selectedValue;
+                params[vm.menu.items.name] = selectedChoice.name;
 
                 if (selectedChoice.parameters) {
                     _.forEach(selectedChoice.parameters, function (choiceParamItem) {
@@ -81,7 +81,7 @@
             /*jshint camelcase: false */
             params.column_name = vm.column.id;
 
-            TransformationService.transform(vm.metadata.id, vm.item.name, params)
+            TransformationService.transform(vm.metadata.id, vm.menu.name, params)
                 .then(function (response) {
                     DatasetGridService.updateRecords(response.data.records);
                 })

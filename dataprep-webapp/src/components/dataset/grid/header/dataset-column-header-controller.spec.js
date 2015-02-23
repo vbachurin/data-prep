@@ -43,11 +43,11 @@ describe('DatasetColumnHeader controller', function () {
 
         //then
         expect(ctrl.transformations[2].parameters[0].inputType).toBe('text');
-        expect(ctrl.transformations[4].choice.values[1].parameters[0].inputType).toBe('text');
-        expect(ctrl.transformations[4].choice.values[2].parameters[0].inputType).toBe('number');
-        expect(ctrl.transformations[4].choice.values[3].parameters[0].inputType).toBe('number');
-        expect(ctrl.transformations[4].choice.values[3].parameters[1].inputType).toBe('number');
-        expect(ctrl.transformations[4].choice.values[3].parameters[2].inputType).toBe('number');
+        expect(ctrl.transformations[4].items.values[1].parameters[0].inputType).toBe('text');
+        expect(ctrl.transformations[4].items.values[2].parameters[0].inputType).toBe('number');
+        expect(ctrl.transformations[4].items.values[3].parameters[0].inputType).toBe('number');
+        expect(ctrl.transformations[4].items.values[3].parameters[1].inputType).toBe('number');
+        expect(ctrl.transformations[4].items.values[3].parameters[2].inputType).toBe('number');
     }));
 
     it('should not get transformations is transformations are already initiated', inject(function($timeout) {

@@ -24,7 +24,7 @@
         {
             'name': 'split',
             'category': 'split',
-            'choice': {
+            'items': {
                 name: 'mode',
                 values: [
                     {
@@ -167,8 +167,8 @@
             _.forEach(menus, function(menu) {
                 insertType(menu);
 
-                if(menu.choice) {
-                    _.forEach(menu.choice.values, function(choiceValue) {
+                if(menu.items) {
+                    _.forEach(menu.items.values, function(choiceValue) {
                         insertType(choiceValue);
                     });
                 }
