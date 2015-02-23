@@ -176,18 +176,10 @@ public class DataSetService {
         }
 
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
-            ServletOutputStream outputStream = response.getOutputStream();
             // Write general information about the dataset
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata)));
             mapper.writer().writeValue(generator, dataSetMetadata);
-            generator.flush(); // <- Important! Flush before dumping records!
-            // Records
-            outputStream.write(",\"records\":".getBytes());
-            // Put here content as provided by data set store
-            try (InputStream content = contentStore.get(dataSetMetadata)) {
-                IOUtils.copy(content, outputStream);
-            }
             generator.flush();
         } catch (IOException e) {
             throw new RuntimeException("Unexpected I/O exception during message output.", e);
