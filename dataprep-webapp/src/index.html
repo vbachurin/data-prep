@@ -75,30 +75,34 @@
 
     <!-- build:js({.tmp,src}) scripts/app.js -->
     <!-- inject:js -->
+    <script src="components/dataset/dataset-module.js"></script>
+    <script src="components/dataset/grid/transform/dataset-transform-menu-directive.js"></script>
+    <script src="components/dataset/grid/transform/dataset-transform-menu-controller.js"></script>
+    <script src="components/dataset/grid/header/dataset-column-header-directive.js"></script>
+    <script src="components/dataset/grid/header/dataset-column-header-controller.js"></script>
     <script src="components/widgets/widget-module.js"></script>
     <script src="components/widgets/navbar/widget-navbar-directive.js"></script>
     <script src="components/widgets/modal/widget-modal-directive.js"></script>
     <script src="components/widgets/loading/widget-loading-directive.js"></script>
     <script src="components/widgets/dropdown/widget-dropdown-directive.js"></script>
     <script src="components/utils/utils-module.js"></script>
+    <script src="components/utils/validation/type-validation-directive.js"></script>
     <script src="components/utils/filters/confirm-click-directive.js"></script>
     <script src="components/utils/constants/utils-rest-urls-constants.js"></script>
     <script src="components/utils/constants/utils-constants.js"></script>
-    <script src="components/dataset/dataset-module.js"></script>
-    <script src="components/dataset/dataset-upload-list/dataset-upload-list-directive.js"></script>
-    <script src="components/dataset/dataset-list/dataset-list-directive.js"></script>
-    <script src="components/dataset/dataset-grid/table-decoration.js"></script>
-    <script src="components/dataset/dataset-grid/dataset-grid-directive.js"></script>
-    <script src="components/dataset/dataset-grid/dataset-grid-controller.js"></script>
-    <script src="components/dataset/dataset-grid/dataset-column-header-directive.js"></script>
-    <script src="components/dataset/dataset-grid/dataset-column-header-controller.js"></script>
+    <script src="components/dataset/upload-list/dataset-upload-list-directive.js"></script>
+    <script src="components/dataset/list/dataset-list-service.js"></script>
+    <script src="components/dataset/list/dataset-list-directive.js"></script>
+    <script src="components/dataset/list/dataset-list-controller.js"></script>
+    <script src="components/dataset/grid/dataset-grid-service.js"></script>
+    <script src="components/dataset/grid/dataset-grid-directive.js"></script>
+    <script src="components/dataset/grid/dataset-grid-controller.js"></script>
     <script src="components/transformation/transformation-module.js"></script>
     <script src="components/transformation/transformation-service.js"></script>
     <script src="components/dataset/dataset-service.js"></script>
     <script src="app.js"></script>
     <script src="app/rest/rest-error-message-interceptor-factory.js"></script>
     <script src="app/home/home-controller.js"></script>
-    <script src="app/dataset/dataset-controller.js"></script>
     <!-- endinject -->
 
     <!-- inject:partials -->

@@ -1,9 +1,9 @@
 (function() {
     'use strict';
 
-    function DatasetsUploadList() {
+    function DatasetUploadList() {
         return {
-            templateUrl: 'components/dataset/dataset-upload-list/dataset-upload-list-directive.html',
+            templateUrl: 'components/dataset/upload-list/dataset-upload-list-directive.html',
             restrict: 'E',
             scope: {
                 datasets: '='
@@ -15,5 +15,5 @@
     }
 
     angular.module('data-prep-dataset')
-        .directive('datasetsUploadList', DatasetsUploadList);
+        .directive('datasetUploadList', DatasetUploadList);
 })();

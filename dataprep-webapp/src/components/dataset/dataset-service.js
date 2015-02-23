@@ -3,15 +3,12 @@
 
     function DatasetService($rootScope, $upload, $http, RestURLs) {
         var self = this;
-        
+
         /**
          * Get the dataset list
          */
         self.getDatasets = function() {
-            return $http.get(RestURLs.datasetUrl)
-                .then(function(res) {
-                    return res.data;
-                });
+            return $http.get(RestURLs.datasetUrl);
         };
 
         /**
@@ -28,11 +25,11 @@
         /**
          * Create the dataset
          * @param dataset
-         * @returns $upload promise
+         * @returns $upload promiseCUSTOMERS_JSO_LIGHT (1)
          */
         self.createDataset = function(dataset) {
             return $upload.http({
-                url: RestURLs.datasetUrl + '?' + jQuery.param({name: dataset.name}),
+                url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(dataset.name),
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
             });
@@ -45,7 +42,7 @@
          */
         self.updateDataset = function(dataset) {
             return $upload.http({
-                url: RestURLs.datasetUrl + '/' + dataset.id + '?' + jQuery.param({name: dataset.name}),
+                url: RestURLs.datasetUrl + '/' + dataset.id + '?name=' + encodeURIComponent(dataset.name),
                 method: 'PUT',
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
@@ -67,7 +64,7 @@
          */
         self.getDataFromId = function(datasetId, metadata) {
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?' + jQuery.param({metadata: metadata}))
+            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata)
                 .then(function(res) {
                     return res.data;
                 })

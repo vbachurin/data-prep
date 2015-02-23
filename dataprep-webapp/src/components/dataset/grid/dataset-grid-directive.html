@@ -1,0 +1,26 @@
+<talend-modal fullscreen="true"
+              state="datagridCtrl.showDataGrid"
+              close-button="true">
+    <div class="modal-header">
+        <ul>
+            <li>File: {{ datagridCtrl.metadata.name }} | {{ datagridCtrl.metadata.records }} lines</li>
+        </ul>
+    </div>
+
+    <div class="modal-body">
+        <table class="datagrid">
+            <thead>
+            <tr>
+                <th ng-repeat="column in datagridCtrl.data.columns">
+                    <dataset-column-header column="column" metadata="datagridCtrl.metadata"></dataset-column-header>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="record in datagridCtrl.data.records track by $index">
+                <td ng-repeat="column in datagridCtrl.data.columns track by $index">{{ record[column.id] }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</talend-modal>

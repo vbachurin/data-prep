@@ -4,11 +4,7 @@
     function DatasetGrid() {
         return {
             restrict: 'E',
-            templateUrl: 'components/dataset/dataset-grid/dataset-grid-directive.html',
-            scope: {
-                metadata: '=',
-                data: '='
-            },
+            templateUrl: 'components/dataset/grid/dataset-grid-directive.html',
             bindToController: true,
             controllerAs: 'datagridCtrl',
             controller: 'DatasetGridCtrl'

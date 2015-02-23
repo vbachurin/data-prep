@@ -18,6 +18,10 @@ describe('Dropdown directive', function () {
         
         spyOn($rootScope, '$apply').and.callThrough();
     }));
+    afterEach(function() {
+        scope.$destroy();
+        scope.$digest();
+    });
 
     it('should add "normal" close button in DOM', function () {
         //given
@@ -189,5 +193,29 @@ describe('Dropdown directive', function () {
 
         //then
         expect($rootScope.$apply.calls.count()).toBe(1);
+    }));
+
+    it('should attach popup to body', inject(function ($rootScope, $timeout) {
+        //given
+        createElement(scope);
+
+        //when
+        $timeout.flush();
+
+        //then
+        expect(angular.element('body').find('talend-modal').length).toBe(1);
+    }));
+
+    it('should remove element on scope destroy', inject(function ($rootScope, $timeout) {
+        //given
+        createElement(scope);
+        $timeout.flush();
+
+        //when
+        scope.$destroy();
+        scope.$digest();
+
+        //then
+        expect(angular.element('body').find('talend-modal').length).toBe(0);
     }));
 });
