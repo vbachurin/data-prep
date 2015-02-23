@@ -9,7 +9,8 @@
 
             'talend.widget', //components widget built on bourbon (modal, dropdown, ...)
 
-            'ui.router'
+            'ui.router', //most advanced router
+            'toaster' //toaster popup
         ])
 
         .config(['$httpProvider', '$compileProvider', 'disableDebug', function ($httpProvider, $compileProvider, disableDebug) {
