@@ -1,86 +1,11 @@
 (function () {
     'use strict';
 
-    var menusMock = [
-        {
-            'name': 'uppercase',
-            'category': 'case'
-        },
-        {
-            'name': 'lowercase',
-            'category': 'case'
-        },
-        {
-            'name': 'withParam',
-            'category': 'case',
-            'parameters': [
-                {
-                    'name': 'param',
-                    'type': 'string',
-                    'default': '.'
-                }
-            ]
-        },
-        {
-            'name': 'split',
-            'category': 'split',
-            'items': {
-                name: 'mode',
-                values: [
-                    {
-                        name: 'noparam'
-                    },
-                    {
-                        name: 'regex',
-                        'parameters': [
-                            {
-                                'name': 'regexp',
-                                'type': 'string',
-                                'default': '.'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'index',
-                        'parameters': [
-                            {
-                                'name': 'index',
-                                'type': 'integer',
-                                'default': '5'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'threeParams',
-                        'parameters': [
-                            {
-                                'name': 'index',
-                                'type': 'numeric',
-                                'default': '5'
-                            },
-                            {
-                                'name': 'index2',
-                                'type': 'float',
-                                'default': '5'
-                            },
-                            {
-                                'name': 'index3',
-                                'type': 'double',
-                                'default': '5'
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    ];
-
     /**
      * DatasetColumnHeader directive controller
-     * @param $rootScope
      * @param TransformationService
      */
-    function DatasetColumnHeaderCtrl($q, $timeout) {
+    function DatasetColumnHeaderCtrl(TransformationService) {
         var vm = this;
 
         /**
@@ -167,14 +92,31 @@
             _.forEach(menus, function(menu) {
                 insertType(menu);
 
-                if(menu.items) {
-                    _.forEach(menu.items.values, function(choiceValue) {
+                _.forEach(menu.items, function(item) {
+                    _.forEach(item.values, function(choiceValue) {
                         insertType(choiceValue);
                     });
-                }
+                });
             });
 
             return menus;
+        };
+
+        /**
+         * Remove 'column_name' parameters (automatically sent and not asked to user), and clean empty arrays
+         * @param menus - the menus to clean
+         */
+        var cleanParamsAndItems = function(menus) {
+            return _.forEach(menus, function(menu) {
+                //params
+                var filteredParameters = _.filter(menu.parameters, function(param) {
+                    return param.name !== 'column_name';
+                });
+                menu.parameters = filteredParameters.length ? filteredParameters : null;
+
+                //items
+                menu.items = menu.items.length ? menu.items : null;
+            });
         };
 
         /**
@@ -184,12 +126,15 @@
             if (!vm.transformations && !vm.initTransformationsInProgress) {
                 vm.initTransformationsInProgress = true;
 
-                $timeout(function () {
-                    $q.when({data: menusMock}).then(function (response) {
-                        var menus = adaptInputTypes(response.data);
+                TransformationService.getTransformations(vm.metadata.id, vm.column.id)
+                    .then(function(response) {
+                        var menus = cleanParamsAndItems(response.data);
+                        menus = adaptInputTypes(menus);
                         vm.transformations = groupMenus(menus);
+                    })
+                    .finally(function() {
+                        vm.initTransformationsInProgress = false;
                     });
-                }, 500);
             }
         };
     }

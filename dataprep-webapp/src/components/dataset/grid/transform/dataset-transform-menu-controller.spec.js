@@ -157,15 +157,15 @@ describe('Dataset transform menu controller', function () {
         ctrl.menu = {
             name: 'split',
             category: 'split',
-            items: {
+            items: [{
                 name: 'mode',
                 values: [
                     {name: 'regex'},
                     {name: 'index'}
                 ]
-            }
+            }]
         };
-        ctrl.menu.items.selectedValue = ctrl.menu.items.values[1];
+        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[1];
 
         //when
         ctrl.transformWithParam();
@@ -188,7 +188,7 @@ describe('Dataset transform menu controller', function () {
         ctrl.menu = {
             name: 'split',
             category: 'split',
-            items: {
+            items: [{
                 name: 'mode',
                 values: [
                     {
@@ -200,9 +200,9 @@ describe('Dataset transform menu controller', function () {
                     },
                     {name: 'index'}
                 ]
-            }
+            }]
         };
-        ctrl.menu.items.selectedValue = ctrl.menu.items.values[0];
+        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[0];
 
         //when
         ctrl.transformWithParam();
@@ -229,7 +229,7 @@ describe('Dataset transform menu controller', function () {
                 {name: 'param1', type: 'text', default: '', value: 'param1Value'},
                 {name: 'param2', type: 'int', default: '5', value: 4}
             ],
-            items: {
+            items: [{
                 name: 'mode',
                 values: [
                     {
@@ -241,9 +241,9 @@ describe('Dataset transform menu controller', function () {
                     },
                     {name: 'index'}
                 ]
-            }
+            }]
         };
-        ctrl.menu.items.selectedValue = ctrl.menu.items.values[0];
+        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[0];
 
         //when
         ctrl.transformWithParam();

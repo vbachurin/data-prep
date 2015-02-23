@@ -11,6 +11,12 @@
             };
         };
 
+        this.getTransformations = function(datasetId, column) {
+            var cleanDatasetId = encodeURIComponent(datasetId);
+            var cleanColumn = encodeURIComponent(column);
+            return $http.get(RestURLs.datasetUrl + '/' + cleanDatasetId + '/' + cleanColumn + '/actions');
+        };
+
         /**
          * Call a transformation action on a dataset
          * @param datasetId - the dataset id

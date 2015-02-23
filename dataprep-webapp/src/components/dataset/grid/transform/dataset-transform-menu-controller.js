@@ -44,16 +44,16 @@
          */
         var getChoiceParams = function () {
             var params = {};
-            if (vm.menu.items) {
-                var selectedChoice = vm.menu.items.selectedValue;
-                params[vm.menu.items.name] = selectedChoice.name;
+            _.forEach(vm.menu.items, function(item) {
+                var selectedChoice = item.selectedValue;
+                params[item.name] = selectedChoice.name;
 
                 if (selectedChoice.parameters) {
                     _.forEach(selectedChoice.parameters, function (choiceParamItem) {
                         params[choiceParamItem.name] = choiceParamItem.value;
                     });
                 }
-            }
+            });
 
             return params;
         };

@@ -84,7 +84,7 @@ describe('Transformation menu directive', function () {
         //given
         scope.menu = {
             name: 'menu with param',
-            items: {
+            items: [{
                 name: 'my choice',
                 values: [
                     {
@@ -94,7 +94,7 @@ describe('Transformation menu directive', function () {
                         name: 'noParamChoice2'
                     }
                 ]
-            }
+            }]
         };
 
         //when
@@ -108,7 +108,7 @@ describe('Transformation menu directive', function () {
         var modal = element.find('talend-modal').eq(0);
         var paramChoice = modal.find('.param-choice').eq(0);
         expect(paramChoice.find('.param-choice-name').length).toBe(1);
-        expect(paramChoice.find('.param-choice-name').eq(0).text().trim()).toBe('Option :');
+        expect(paramChoice.find('.param-choice-name').eq(0).text().trim()).toBe('my choice :');
         expect(paramChoice.find('.param-choice-select').length).toBe(1);
         expect(paramChoice.find('.param-choice-select').eq(0).find('select').length).toBe(1);
         expect(paramChoice.find('.param-choice-select').eq(0).find('option').length).toBe(3);
@@ -120,7 +120,7 @@ describe('Transformation menu directive', function () {
         //given
         scope.menu = {
             name: 'menu with param',
-            items: {
+            items: [{
                 name: 'my choice',
                 values: [
                     {
@@ -144,21 +144,21 @@ describe('Transformation menu directive', function () {
                         ]
                     }
                 ]
-            }
+            }]
         };
         var element = createElement(scope);
         var modal = element.find('talend-modal').eq(0);
         var paramChoice = modal.find('.param-choice').eq(0);
 
         //when
-        scope.menu.items.selectedValue = scope.menu.items.values[0];
+        scope.menu.items[0].selectedValue = scope.menu.items[0].values[0];
         scope.$digest();
 
         //then
         expect(paramChoice.find('.param-name').length).toBe(0);
 
         //when
-        scope.menu.items.selectedValue = scope.menu.items.values[1];
+        scope.menu.items[0].selectedValue = scope.menu.items[0].values[1];
         scope.$digest();
 
         //then

@@ -2,29 +2,125 @@ describe('DatasetColumnHeader controller', function () {
     'use strict';
 
     var createController, scope;
+    var metadata = {
+        id: 'ef4509c8c083df4'
+    };
+    var column = {
+        id: '8c083df4ef4509c'
+    };
 
     beforeEach(module('data-prep-dataset'));
 
-    beforeEach(inject(function ($rootScope, $controller) {
+    beforeEach(inject(function ($rootScope, $controller, $q, TransformationService) {
+        var menusMock = [
+            {
+                'name': 'uppercase',
+                'category': 'case',
+                items: [],
+                parameters: [
+                    {name: 'column_name', type: 'string'}
+                ]
+            },
+            {
+                'name': 'lowercase',
+                'category': 'case',
+                items: [],
+                parameters: [
+                    {name: 'column_name', type: 'string'}
+                ]
+            },
+            {
+                'name': 'withParam',
+                'category': 'case',
+                items: [],
+                'parameters': [
+                    {
+                        'name': 'param',
+                        'type': 'string',
+                        'default': '.'
+                    }
+                ]
+            },
+            {
+                'name': 'split',
+                'category': 'split',
+                parameters: [
+                    {name: 'column_name', type: 'string'}
+                ],
+                'items': [{
+                    name: 'mode',
+                    values: [
+                        {
+                            name: 'noparam'
+                        },
+                        {
+                            name: 'regex',
+                            'parameters': [
+                                {
+                                    'name': 'regexp',
+                                    'type': 'string',
+                                    'default': '.'
+                                }
+                            ]
+                        },
+                        {
+                            name: 'index',
+                            'parameters': [
+                                {
+                                    'name': 'index',
+                                    'type': 'integer',
+                                    'default': '5'
+                                }
+                            ]
+                        },
+                        {
+                            name: 'threeParams',
+                            'parameters': [
+                                {
+                                    'name': 'index',
+                                    'type': 'numeric',
+                                    'default': '5'
+                                },
+                                {
+                                    'name': 'index2',
+                                    'type': 'float',
+                                    'default': '5'
+                                },
+                                {
+                                    'name': 'index3',
+                                    'type': 'double',
+                                    'default': '5'
+                                }
+                            ]
+                        }
+                    ]
+                }]
+            }
+        ];
         scope = $rootScope.$new();
 
         createController = function () {
             var ctrl = $controller('DatasetColumnHeaderCtrl', {
                 $scope: scope
             });
+            ctrl.metadata = metadata;
+            ctrl.column = column;
             return ctrl;
         };
+
+        spyOn(TransformationService, 'getTransformations').and.returnValue($q.when({data: menusMock}));
     }));
 
-    it('should init grouped and divided transformation menu', inject(function($timeout) {
+    it('should init grouped and divided transformation menu', inject(function($rootScope, TransformationService) {
         //given
         var ctrl = createController();
 
         //when
         ctrl.initTransformations();
-        $timeout.flush();
+        $rootScope.$digest();
 
         //then
+        expect(TransformationService.getTransformations).toHaveBeenCalledWith(metadata.id, column.id);
         expect(ctrl.transformations.length).toBe(5);
         expect(ctrl.transformations[0].name).toBe('uppercase');
         expect(ctrl.transformations[1].name).toBe('lowercase');
@@ -33,39 +129,34 @@ describe('DatasetColumnHeader controller', function () {
         expect(ctrl.transformations[4].name).toBe('split');
     }));
 
-    it('should adapt params types to input type', inject(function($timeout) {
+    it('should adapt params types to input type', inject(function($rootScope) {
         //given
         var ctrl = createController();
 
         //when
         ctrl.initTransformations();
-        $timeout.flush();
+        $rootScope.$digest();
 
         //then
         expect(ctrl.transformations[2].parameters[0].inputType).toBe('text');
-        expect(ctrl.transformations[4].items.values[1].parameters[0].inputType).toBe('text');
-        expect(ctrl.transformations[4].items.values[2].parameters[0].inputType).toBe('number');
-        expect(ctrl.transformations[4].items.values[3].parameters[0].inputType).toBe('number');
-        expect(ctrl.transformations[4].items.values[3].parameters[1].inputType).toBe('number');
-        expect(ctrl.transformations[4].items.values[3].parameters[2].inputType).toBe('number');
+        expect(ctrl.transformations[4].items[0].values[1].parameters[0].inputType).toBe('text');
+        expect(ctrl.transformations[4].items[0].values[2].parameters[0].inputType).toBe('number');
+        expect(ctrl.transformations[4].items[0].values[3].parameters[0].inputType).toBe('number');
+        expect(ctrl.transformations[4].items[0].values[3].parameters[1].inputType).toBe('number');
+        expect(ctrl.transformations[4].items[0].values[3].parameters[2].inputType).toBe('number');
     }));
 
-    it('should not get transformations is transformations are already initiated', inject(function($timeout) {
+    it('should not get transformations is transformations are already initiated', inject(function($rootScope, TransformationService) {
         //given
         var ctrl = createController();
         ctrl.initTransformations();
-        $timeout.flush();
+        $rootScope.$digest();
 
         //when
         ctrl.initTransformations();
-        try{
-            $timeout.flush();
-        }
-        catch(e) {
-            return;
-        }
+        $rootScope.$digest();
 
         //then
-        throw new Error('Timeout flush should have thrown error because there is nothing to flush');
+        expect(TransformationService.getTransformations.calls.count()).toBe(1);
     }));
 });
