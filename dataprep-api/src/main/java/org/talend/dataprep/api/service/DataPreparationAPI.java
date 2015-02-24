@@ -59,6 +59,7 @@ public class DataPreparationAPI {
             LOG.debug("Transforming dataset id #" + dataSetId + " (pool: " + connectionManager.getTotalStats() + ")...");
         }
         // Configure transformation flow
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
         HystrixCommand<InputStream> contentRetrieval = new DataSetGetCommand(client, contentServiceUrl, dataSetId, false, false);
         HystrixCommand<InputStream> transformation = new TransformCommand(client, transformServiceUrl, contentRetrieval, body);
@@ -120,6 +121,7 @@ public class DataPreparationAPI {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #" + id + " (pool: " + connectionManager.getTotalStats() + ")...");
         }
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
         DataSetGetCommand retrievalCommand = new DataSetGetCommand(client, contentServiceUrl, id, metadata, columns);
         try {
@@ -140,6 +142,7 @@ public class DataPreparationAPI {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: " + connectionManager.getTotalStats() + ")...");
         }
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
         DataSetListCommand listCommand = new DataSetListCommand(client, contentServiceUrl);
         try {

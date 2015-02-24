@@ -140,23 +140,3 @@ run
 WARNING : this is not working right now.
 run
 `gulp build`
-
-### Build a war
-in _checkouts/data-prep/dataprep-webapp_ call maven build
-
-`mvn clean package`
-
-### Deploy
-#### One shot
-1. Copy _target/dataprep-webapp-1.0.m0-SNAPSHOT.war_ in _tomcat_path/webapps as dataprep-webapp.war_
-2. Restart Tomcat (or reload only this application)
-
-### Perennial (linux)
-Create a symbolic link in _tomcat/webapps_ to _target/dataprep-webapp-1.0.m0-SNAPSHOT.war_
-
-`cd tomcat/webapps`
-
-`ln -s checkouts/data-prep/dataprep-webapp/target/dataprep-webapp-1.0.m0-SNAPSHOT.war dataprep-webapp.war`
-
-### Access
-Open in your favorite browser [http://localhost:8080/dataprep-webapp](http://localhost:8080/dataprep-webapp)
