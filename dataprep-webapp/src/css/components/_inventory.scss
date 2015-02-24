@@ -30,6 +30,9 @@ $border-color: #CECECE;
     font-weight: 700;
     font-size: 1.1em;
     text-transform: uppercase;
+
+    height: 34px;
+    overflow: hidden;
   }
 
   .inventory-description {
@@ -38,6 +41,9 @@ $border-color: #CECECE;
     font-weight: 300;
     font-size: 0.9em;
     color: $secondary-text;
+
+    height: 28px;
+    overflow: hidden;
   }
 
   .inventory-actions {
@@ -45,17 +51,40 @@ $border-color: #CECECE;
     width:1px;
     border-bottom: 1px solid $border-color;
 
-    table {
-      border: none;
-      table-layout: auto;
-      margin: 0;
-      width: auto;
+    .inventory-actions-wrapper {
+      position:relative;
+      height:61px;
 
-      td {
-        padding: 10px;
-        text-align: center;
-        width: 50px;
-        border-bottom: none;
+      table {
+        border: none;
+        table-layout: auto;
+        margin: 0;
+        width: auto;
+
+        position: absolute;
+        top:0;
+        right:0;
+        height: 61px;
+
+        td {
+          padding: 10px;
+          text-align: center;
+          width: 50px;
+          border-bottom: none;
+        }
+      }
+    }
+  }
+
+  .inventory-entry {
+    height: 62px;
+    &:hover {
+      .t-btn-transparent {
+        opacity: 1;
+      }
+
+      .t-right-divider{
+        border-right: 1px solid white;
       }
     }
   }
@@ -68,7 +97,7 @@ $border-color: #CECECE;
   height: 42px;
   width: 40px;
   border: 5px solid transparent;
-
+  opacity: 0;
   outline: none;
 
   &:active, 
@@ -79,10 +108,6 @@ $border-color: #CECECE;
   &:hover {
     background-color: $action-hover-background;
   }
-}
-
-.t-right-divider{
-  border-right: 1px solid white;
 }
 
 .t-btn-shaker{
