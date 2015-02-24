@@ -207,8 +207,7 @@
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
-                                        <argument>npm prune &amp;&amp; bower --allow-root --config.interactive=false
-                                            prune
+                                        <argument>npm prune &amp;&amp; bower --allow-root --config.interactive=false prune
                                         </argument>
                                     </arguments>
                                 </configuration>
@@ -228,8 +227,7 @@
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
-                                        <argument>npm install &amp;&amp; bower --allow-root --config.interactive=false
-                                            install
+                                        <argument>npm install &amp;&amp; bower --allow-root --config.interactive=false install
                                         </argument>
                                     </arguments>
                                 </configuration>
