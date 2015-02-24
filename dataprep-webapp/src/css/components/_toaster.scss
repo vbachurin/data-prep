@@ -1,7 +1,4 @@
-$toastSuccess: #588d17;
-$toastSuccessLink: #00a6ce;
-$toastSuccessBackground: #d0e1a1;
-
+$toastLink: #00a6ce;
 $toastContainerShadowColor: #333333;
 
 /* PLACEMENT */
@@ -12,17 +9,31 @@ $toastContainerShadowColor: #333333;
 
 #toast-container {
   > div {
-    opacity: 1 !important;
+    opacity: 0.9;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 90);
+    filter: alpha(opacity = 90);
+
     -moz-box-shadow: 0 0 12px $toastContainerShadowColor;
     -webkit-box-shadow: 0 0 12px $toastContainerShadowColor;
     box-shadow: 0 0 12px $toastContainerShadowColor;
 
-    &.toast-success {
-      color: $toastSuccess;
+    a {
+      color: $toastLink;
+    }
 
-      a {
-        color: $toastSuccessLink;
-      }
+    &.toast-success {
+      background-color: tint($color-ok, 30%);
+      color: shade($color-ok, 60%);
+    }
+
+    &.toast-error {
+      background-color: tint($color-error, 30%);
+      color: shade($color-error, 60%);
+    }
+
+    &.toast-warning {
+      background-color: tint($color-warning, 30%);
+      color: shade($color-warning, 60%);
     }
   }
 
@@ -36,14 +47,11 @@ $toastContainerShadowColor: #333333;
 
 /* ANIMATIONS */
 :not(.no-enter)#toast-container > div.ng-enter {
+  opacity: 0.9;
   animation: bounceInDown 1s;
 }
 
 :not(.no-leave)#toast-container > div.ng-leave {
+  opacity: 1;
   animation: bounceOutUp 1s;
-}
-
-/* BACKGROUND COLORS */
-.toast-success {
-  background-color: $toastSuccessBackground;
 }

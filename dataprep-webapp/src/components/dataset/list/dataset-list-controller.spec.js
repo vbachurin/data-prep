@@ -97,7 +97,7 @@ describe('Dataset list controller', function () {
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, DatasetService, DatasetGridService) {
+        beforeEach(inject(function ($rootScope, $q, toaster, DatasetService, DatasetGridService) {
             ctrl = createController();
             scope.$digest();
 
@@ -106,19 +106,39 @@ describe('Dataset list controller', function () {
             spyOn($rootScope, '$emit').and.callThrough();
             spyOn(DatasetGridService, 'setDataset').and.callThrough();
             spyOn(DatasetGridService, 'show').and.callThrough();
+            spyOn(toaster, 'pop').and.callThrough();
         }));
 
-        it('should delete dataset and refresh dataset list', inject(function (DatasetService, DatasetListService) {
+        it('should delete dataset, show toast and refresh dataset list', inject(function ($q, toaster, DatasetService, DatasetListService, TalendConfirmService) {
             //given
             var dataset = datasets[0];
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
 
             //when
             ctrl.delete(dataset);
             scope.$digest();
 
             //then
+            expect(TalendConfirmService.confirm).toHaveBeenCalledWith('You are going to permanently delete the dataset "Customers (50 lines)".', 'This operation cannot be undone. Are you sure ?');
             expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
+            expect(toaster.pop).toHaveBeenCalledWith('success', 'Remove dataset', 'The dataset "Customers (50 lines)" has been removed.');
             expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
+        }));
+
+        it('should reset selected infos when the dataset is deleted', inject(function ($q, toaster, DatasetService, DatasetListService, TalendConfirmService) {
+            //given
+            var dataset = datasets[0];
+            ctrl.lastSelectedMetadata = dataset;
+            ctrl.lastSelectedData = {};
+            spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
+
+            //when
+            ctrl.delete(dataset);
+            scope.$digest();
+
+            //then
+            expect(ctrl.lastSelectedMetadata).toBeFalsy();
+            expect(ctrl.lastSelectedData).toBeFalsy();
         }));
 
         it('should get selected dataset data and open datagrid modal', inject(function ($rootScope, DatasetService, DatasetGridService) {

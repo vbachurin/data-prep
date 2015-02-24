@@ -11,13 +11,6 @@
         vm.uploadingDatasets = [];
 
         /**
-         * Upload dataset : Step 0 - Open the upload file input
-         */
-        vm.openDatasetFileSelection = function() {
-            angular.element('#datasetFile').trigger('click');
-        };
-
-        /**
          * Upload dataset : Step 1 - file selected
          */
         vm.uploadDatasetFile = function() {
@@ -62,7 +55,6 @@
         vm.createDatasetFromExistingName = function() {
             var file = vm.datasetFile[0];
             var name = vm.datasetName;
-
             name = DatasetListService.getUniqueName(name);
             createDataset(file, name);
         };

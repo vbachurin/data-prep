@@ -5,6 +5,7 @@
         'talend.widget',
         'data-prep-transformation',
         'data-prep-utils',
-        'angularFileUpload' //file upload with progress support
+        'angularFileUpload', //file upload with progress support
+        'toaster' //toast notifications
     ]);
 })();

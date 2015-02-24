@@ -1,7 +1,8 @@
 <talend-modal fullscreen="false"
               close-button="true"
               state="confirmCtrl.modalState">
-    {{text}}
+
+    <p ng-repeat="text in texts track by $index">{{text}}</p>
 
     <div class="modal-buttons">
         <button class="talend-modal-close t-btn-secondary modal-cancel-button"

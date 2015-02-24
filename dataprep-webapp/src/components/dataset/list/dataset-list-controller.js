@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function DatasetListCtrl($q, DatasetService, DatasetListService, DatasetGridService) {
+    function DatasetListCtrl($q, toaster, DatasetService, DatasetListService, DatasetGridService, TalendConfirmService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
 
@@ -44,10 +44,20 @@
          * @param dataset - the dataset to delete
          */
         vm.delete = function(dataset) {
-            DatasetService.deleteDataset(dataset)
-                .then(function() {
-                    DatasetListService.refreshDatasets();
-                });
+            var explainationsText = 'You are going to permanently delete the dataset "' + dataset.name + '".';
+            var confirmText = 'This operation cannot be undone. Are you sure ?';
+            TalendConfirmService.confirm(explainationsText, confirmText).then(function() {
+                DatasetService.deleteDataset(dataset)
+                    .then(function() {
+                        if(dataset === vm.lastSelectedMetadata) {
+                            vm.lastSelectedMetadata = null;
+                            vm.lastSelectedData = null;
+                        }
+
+                        toaster.pop('success', 'Remove dataset', 'The dataset "' + dataset.name + '" has been removed.');
+                        DatasetListService.refreshDatasets();
+                    });
+            });
         };
 
         DatasetListService.refreshDatasets();
