@@ -1,6 +1,13 @@
 FROM dockerfile/nodejs-bower-gulp
+
+
 #update the apt-get packages
 RUN apt-get update
+
+#fix locales to be UTF-8
+RUN apt-get -y install locales
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
 
 #install ruby
 RUN apt-get -y install ruby1.9.1
@@ -18,5 +25,6 @@ RUN gem install sass
 RUN apt-get -y install libfontconfig
 
 WORKDIR /dataprep-webapp
+
 
 CMD ["bash"]
