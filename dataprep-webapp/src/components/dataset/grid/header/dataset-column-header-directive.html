@@ -6,6 +6,7 @@
         </div>
         <ul class="dropdown-menu grid-header-menu">
             <li ng-if="!datasetHeaderCtrl.transformations">Loading...</li>
+            <li ng-if="datasetHeaderCtrl.transformations && !datasetHeaderCtrl.transformations.length">No transformation available</li>
 
             <dataset-transform-menu
                     ng-repeat="item in datasetHeaderCtrl.transformations track by $index"
