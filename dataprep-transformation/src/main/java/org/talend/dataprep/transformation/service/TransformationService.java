@@ -14,6 +14,8 @@ import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.api.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.Types;
+import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.transformation.exception.Messages;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
@@ -40,7 +42,7 @@ public class TransformationService {
             Transformer transformer = factory.get(new String(Base64.getDecoder().decode(actions)));
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
-            throw new RuntimeException("Unable to process JSON input", e);
+            throw Exceptions.User(Messages.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -78,7 +80,7 @@ public class TransformationService {
                 return Collections.emptyList();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to compute actions for dataset.", e);
+            throw Exceptions.User(Messages.UNABLE_TO_COMPUTE_DATASET_ACTIONS, e);
         }
     }
 

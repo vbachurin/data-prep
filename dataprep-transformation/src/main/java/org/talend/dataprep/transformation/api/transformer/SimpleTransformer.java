@@ -11,6 +11,8 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.transformation.exception.Messages;
 
 class SimpleTransformer implements Transformer {
 
@@ -75,7 +77,7 @@ class SimpleTransformer implements Transformer {
             output.write("]}".getBytes()); //$NON-NLS-1$
             output.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unable to process input stream.", e);
+            throw Exceptions.User(Messages.UNABLE_TO_PARSE_JSON, e);
         }
     }
 }
