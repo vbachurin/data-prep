@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "1234",
+    "name": "name",
+    "author": "author",
+    "records": 0,
+    "nbLinesHeader": 0,
+    "nbLinesFooter": 0,
+    "created": "01-01-1970 01:00"
+  },
+  "columns": [
+    {
+      "id": "column1",
+      "quality": {
+        "empty": 0,
+        "invalid": 10,
+        "valid": 50
+      },
+      "type": "string"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.service;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.servlet.ServletOutputStream;
@@ -14,6 +15,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.api.service.command.*;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -123,7 +125,7 @@ public class DataPreparationAPI {
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        DataSetGetCommand retrievalCommand = new DataSetGetCommand(client, contentServiceUrl, id, metadata, columns);
+        HystrixCommand<InputStream> retrievalCommand = new DataSetGetCommand(client, contentServiceUrl, id, metadata, columns);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
@@ -144,7 +146,7 @@ public class DataPreparationAPI {
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        DataSetListCommand listCommand = new DataSetListCommand(client, contentServiceUrl);
+        HystrixCommand<InputStream> listCommand = new DataSetListCommand(client, contentServiceUrl);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(listCommand.execute(), outputStream);
@@ -165,7 +167,7 @@ public class DataPreparationAPI {
             LOG.debug("Delete dataset #" + dataSetId + " (pool: " + connectionManager.getTotalStats() + ")...");
         }
         HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        DataSetDeleteCommand deleteCommand = new DataSetDeleteCommand(client, contentServiceUrl, dataSetId);
+        HystrixCommand<Void> deleteCommand = new DataSetDeleteCommand(client, contentServiceUrl, dataSetId);
         try {
             deleteCommand.execute();
             if (LOG.isDebugEnabled()) {
@@ -173,6 +175,49 @@ public class DataPreparationAPI {
             }
         } catch (Exception e) {
             throw new RuntimeException("Unable to list datasets.", e);
+        }
+    }
+
+    @RequestMapping(value = "/api/datasets/{id}/{column}/actions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get suggested actions for a data set columns.", notes = "Returns the suggested actions for the given column in the dataset in decreasing order of likeness.")
+    @Timed
+    public void suggestColumnActions(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Data set id to get suggestions from.") String dataSetId,
+            @PathVariable(value = "column") @ApiParam(name = "column", value = "Column name in the dataset. If column doesn't exist, operation returns no content.") String columnName,
+            HttpServletResponse response) {
+        // Get dataset metadata
+        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadataCommand(client, contentServiceUrl, dataSetId);
+        // Asks transformation service for suggested actions for column type and domain
+        HystrixCommand<InputStream> getSuggestedActions = new SuggestColumnActionsCommand(client, transformServiceUrl, retrieveMetadata, columnName);
+        // Returns actions
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to retrieve actions for column '" + columnName + "' in dataset #" + dataSetId + ".", e);
+        }
+    }
+
+    @RequestMapping(value = "/api/datasets/{id}/actions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get suggested actions for a whole data set.", notes = "Returns the suggested actions for the given dataset in decreasing order of likeness.")
+    @Timed
+    public void suggestDatasetActions(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Data set id to get suggestions from.") String dataSetId,
+            HttpServletResponse response) {
+        // Get dataset metadata
+        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadataCommand(client, contentServiceUrl, dataSetId);
+        // Asks transformation service for suggested actions for column type and domain
+        HystrixCommand<InputStream> getSuggestedActions = new SuggestDataSetActionsCommand(client, transformServiceUrl, retrieveMetadata);
+        // Returns actions
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to retrieve actions for dataset #" + dataSetId + ".", e);
         }
     }
 

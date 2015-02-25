@@ -1,63 +1,162 @@
-describe('DatasetColumnHeader controller', function() {
+describe('DatasetColumnHeader controller', function () {
     'use strict';
 
     var createController, scope;
-    var result = {'records':
-        [{'firstname':'Grover','avgAmount':'82.4','city':'BOSTON','birth':'01-09-1973','registration':'17-02-2008','id':'1','state':'AR','nbCommands':'41','lastname':'Quincy'},{'firstname':'Warren','avgAmount':'87.6','city':'NASHVILLE','birth':'11-02-1960','registration':'18-08-2007','id':'2','state':'WA','nbCommands':'17','lastname':'Johnson'}]
-    };
     var metadata = {
-        'id':'44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
-        'name':'customers_jso_light',
-        'author':'anonymousUser',
-        'records':15,
-        'nbLinesHeader':1,
-        'nbLinesFooter':0,
-        'created':'02-16-2015 08:52'};
+        id: 'ef4509c8c083df4'
+    };
     var column = {
-        'id': 'MostPopulousCity',
-        'quality': {
-            'empty': 5,
-            'invalid': 10,
-            'valid': 72
-        },
-        'type': 'string'
+        id: '8c083df4ef4509c'
     };
 
     beforeEach(module('data-prep-dataset'));
 
-    beforeEach(inject(function($rootScope, $controller, $q, TransformationService, DatasetGridService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, TransformationService) {
+        var menusMock = [
+            {
+                'name': 'uppercase',
+                'category': 'case',
+                items: [],
+                parameters: [
+                    {name: 'column_name', type: 'string'}
+                ]
+            },
+            {
+                'name': 'lowercase',
+                'category': 'case',
+                items: [],
+                parameters: [
+                    {name: 'column_name', type: 'string'}
+                ]
+            },
+            {
+                'name': 'withParam',
+                'category': 'case',
+                items: [],
+                'parameters': [
+                    {
+                        'name': 'param',
+                        'type': 'string',
+                        'default': '.'
+                    }
+                ]
+            },
+            {
+                'name': 'split',
+                'category': 'split',
+                parameters: [
+                    {name: 'column_name', type: 'string'}
+                ],
+                'items': [{
+                    name: 'mode',
+                    values: [
+                        {
+                            name: 'noparam'
+                        },
+                        {
+                            name: 'regex',
+                            'parameters': [
+                                {
+                                    'name': 'regexp',
+                                    'type': 'string',
+                                    'default': '.'
+                                }
+                            ]
+                        },
+                        {
+                            name: 'index',
+                            'parameters': [
+                                {
+                                    'name': 'index',
+                                    'type': 'integer',
+                                    'default': '5'
+                                }
+                            ]
+                        },
+                        {
+                            name: 'threeParams',
+                            'parameters': [
+                                {
+                                    'name': 'index',
+                                    'type': 'numeric',
+                                    'default': '5'
+                                },
+                                {
+                                    'name': 'index2',
+                                    'type': 'float',
+                                    'default': '5'
+                                },
+                                {
+                                    'name': 'index3',
+                                    'type': 'double',
+                                    'default': '5'
+                                }
+                            ]
+                        }
+                    ]
+                }]
+            }
+        ];
         scope = $rootScope.$new();
 
-        createController = function() {
-            var ctrl =  $controller('DatasetColumnHeaderCtrl', {
+        createController = function () {
+            var ctrl = $controller('DatasetColumnHeaderCtrl', {
                 $scope: scope
             });
+            ctrl.metadata = metadata;
+            ctrl.column = column;
             return ctrl;
         };
 
-        DatasetGridService.setDataset({}, {});
-
-        spyOn(TransformationService, 'transform').and.returnValue($q.when({data: result}));
-        spyOn($rootScope, '$emit').and.callThrough();
-        spyOn(DatasetGridService, 'updateRecords').and.callThrough();
+        spyOn(TransformationService, 'getTransformations').and.returnValue($q.when({data: menusMock}));
     }));
 
-    it('should call transform service with loading modal show/hide', inject(function($rootScope, TransformationService, DatasetGridService) {
+    it('should init grouped and divided transformation menu', inject(function($rootScope, TransformationService) {
         //given
-        var action = 'uppercase';
         var ctrl = createController();
-        ctrl.metadata = metadata;
-        ctrl.column = column;
-        scope.$digest();
 
         //when
-        ctrl.transform(action);
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
-        $rootScope.$apply();
+        ctrl.initTransformations();
+        $rootScope.$digest();
 
         //then
-        expect(TransformationService.transform).toHaveBeenCalledWith(metadata.id, action, {'column_name': column.id});
-        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        expect(TransformationService.getTransformations).toHaveBeenCalledWith(metadata.id, column.id);
+        expect(ctrl.transformations.length).toBe(5);
+        expect(ctrl.transformations[0].name).toBe('uppercase');
+        expect(ctrl.transformations[1].name).toBe('lowercase');
+        expect(ctrl.transformations[2].name).toBe('withParam');
+        expect(ctrl.transformations[3].isDivider).toBe(true);
+        expect(ctrl.transformations[4].name).toBe('split');
+    }));
+
+    it('should adapt params types to input type', inject(function($rootScope) {
+        //given
+        var ctrl = createController();
+
+        //when
+        ctrl.initTransformations();
+        $rootScope.$digest();
+
+        //then
+        expect(ctrl.transformations[2].parameters[0].inputType).toBe('text');
+        expect(ctrl.transformations[4].items[0].values[1].parameters[0].inputType).toBe('text');
+        expect(ctrl.transformations[4].items[0].values[2].parameters[0].inputType).toBe('number');
+        expect(ctrl.transformations[4].items[0].values[3].parameters[0].inputType).toBe('number');
+        expect(ctrl.transformations[4].items[0].values[3].parameters[1].inputType).toBe('number');
+        expect(ctrl.transformations[4].items[0].values[3].parameters[2].inputType).toBe('number');
+    }));
+
+    it('should not get transformations is transformations are already initiated', inject(function($rootScope, TransformationService) {
+        //given
+        var ctrl = createController();
+        ctrl.initTransformations();
+        $rootScope.$digest();
+
+        //when
+        ctrl.initTransformations();
+        $rootScope.$digest();
+
+        //then
+        expect(TransformationService.getTransformations.calls.count()).toBe(1);
     }));
 });

@@ -18,6 +18,10 @@ describe('Dropdown directive', function () {
         
         spyOn($rootScope, '$apply').and.callThrough();
     }));
+    afterEach(function() {
+        scope.$destroy();
+        scope.$digest();
+    });
 
     it('should add "normal" close button in DOM', function () {
         //given
@@ -170,11 +174,45 @@ describe('Dropdown directive', function () {
 
         //when
         element.find('.modal-inner').click();
+        try {
+            $timeout.flush();
+        }
+        catch (error) {
+            $rootScope.$apply();
 
-        //then
-        expect(scope.state).toBe(true);
+            //then
+            expect(scope.state).toBe(true);
+            return;
+        }
+        throw new Error('Should have thrown error on timeout flush because hide should not be called on click in modal-inner div');
+
+
     }));
 
+    it('should attach popup to body', inject(function ($rootScope, $timeout) {
+        //given
+        createElement(scope);
+
+        //when
+        $timeout.flush();
+
+        //then
+        expect(angular.element('body').find('talend-modal').length).toBe(1);
+    }));
+
+    it('should remove element on scope destroy', inject(function ($rootScope, $timeout) {
+        //given
+        createElement(scope);
+        $timeout.flush();
+
+        //when
+        scope.$destroy();
+        scope.$digest();
+
+        //then
+        expect(angular.element('body').find('talend-modal').length).toBe(0);
+    }));
+    
     it('should hide on esc keydown', inject(function ($rootScope, $timeout) {
         //given
         scope.fullscreen = false;
@@ -210,7 +248,7 @@ describe('Dropdown directive', function () {
         try{
             $timeout.flush();
         }
-        //then
+            //then
         catch(error) {
             expect(scope.state).toBe(true);
             return;
@@ -237,5 +275,8 @@ describe('Dropdown directive', function () {
 
         //then
         expect(document.activeElement.className).toBe('modal-inner');
+
+        //finally
+        element.remove();
     });
 });

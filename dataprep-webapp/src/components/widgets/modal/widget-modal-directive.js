@@ -79,6 +79,15 @@
                                 hideModal();
                             }
                         });
+
+                        // attach element to body directly to avoid parent styling
+                        iElement.detach();
+                        angular.element('body').append(iElement);
+
+                        // detach element on destroy
+                        scope.$on('$destroy', function() {
+                            iElement.remove();
+                        });
                     });
 
                     //enable/disable scroll on main body depending on modal display

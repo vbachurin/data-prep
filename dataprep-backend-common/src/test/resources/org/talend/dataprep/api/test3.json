@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "id": "410d2196-8f90-478f-a817-7e8b6694ac91",
+    "name": "test",
+    "author": "anonymousUser",
+    "records": 2,
+    "nbLinesHeader": 1,
+    "nbLinesFooter": 0
+  },
+  "columns": [
+    {
+      "id": "id",
+      "quality": {
+        "empty": 20,
+        "invalid": 26,
+        "valid": 54
+      },
+      "type": "integer"
+    },
+    {
+      "id": "firstname",
+      "quality": {
+        "empty": 12,
+        "invalid": 26,
+        "valid": 62
+      },
+      "type": "string"
+    },
+    {
+      "id": "lastname",
+      "quality": {
+        "empty": 23,
+        "invalid": 27,
+        "valid": 50
+      },
+      "type": "string"
+    },
+    {
+      "id": "age",
+      "quality": {
+        "empty": 15,
+        "invalid": 25,
+        "valid": 60
+      },
+      "type": "integer"
+    },
+    {
+      "id": "date-of-birth",
+      "quality": {
+        "empty": 16,
+        "invalid": 26,
+        "valid": 58
+      },
+      "type": "string"
+    },
+    {
+      "id": "alive",
+      "quality": {
+        "empty": 8,
+        "invalid": 25,
+        "valid": 67
+      },
+      "type": "string"
+    }
+  ]
+}

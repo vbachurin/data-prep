@@ -71,4 +71,8 @@ public class Type {
     public String toString() {
         return name;
     }
+
+    public boolean isAssignableFrom(Type type) {
+        return list().contains(type);
+    }
 }
