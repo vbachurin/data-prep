@@ -15,7 +15,6 @@ class Scenario2 extends Simulation {
     .acceptHeader("application/json,application/xml;q=0.9,*/*;q=0.8") // Here are the common headers
     .doNotTrackHeader("1")
 
-  val transformationUrl: String = "api/transform/${dataset}/?actions={\"actions\": [{\"action\": \"uppercase\",\"parameters\": {\"column_name\": \"lastname\"}}]}"
   val scn = scenario("Create / Read / Transform Upper Case")
     .during(1 minute) {
     group("actions") {
@@ -25,7 +24,7 @@ class Scenario2 extends Simulation {
         exec(http("read_2").get("api/datasets/${dataset}").check(status.saveAs("dataset_get_status")))
           .pause(500 millis)
         }
-        .exec(http("transform").post(transformationUrl))
+        .exec(http("transform").post("api/transform/${dataset}").header("content-type", "application/json").body(StringBody("{\"actions\": [{\"action\": \"uppercase\",\"parameters\": {\"column_name\": \"lastname\"}}]}")))
         .pause(500 millis)
     }
   }
