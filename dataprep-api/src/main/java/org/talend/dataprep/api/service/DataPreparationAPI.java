@@ -2,6 +2,7 @@ package org.talend.dataprep.api.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -60,15 +61,17 @@ public class DataPreparationAPI {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Transforming dataset id #" + dataSetId + " (pool: " + connectionManager.getTotalStats() + ")...");
         }
-        // Configure transformation flow
-        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        HystrixCommand<InputStream> contentRetrieval = new DataSetGetCommand(client, contentServiceUrl, dataSetId, false, false);
-        HystrixCommand<InputStream> transformation = new TransformCommand(client, transformServiceUrl, contentRetrieval, body);
-        // Perform transformation
         try {
+            // Configure transformation flow
+            String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
+            response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+            HystrixCommand<InputStream> contentRetrieval = new DataSetGetCommand(client, contentServiceUrl, dataSetId, false, false);
+            HystrixCommand<InputStream> transformation = new TransformCommand(client, transformServiceUrl, contentRetrieval, encodedActions);
+            HystrixCommand<InputStream> update = new DataSetUpdateCommand(client, contentServiceUrl, dataSetId, transformation, encodedActions);
+            // Perform transformation
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(transformation.execute(), outputStream);
+            IOUtils.copyLarge(update.execute(), outputStream);
             outputStream.flush();
         } catch (Exception e) {
             throw new RuntimeException("Unable to transform data set #" + dataSetId + ".", e);

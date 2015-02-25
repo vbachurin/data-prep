@@ -225,16 +225,15 @@ public class DataSetService {
     @VolumeMetered
     public void updateContent(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
+            @RequestParam(value = "actions", required = true) @ApiParam(name = "actions", value = "Actions that lead to the content update (Base64 encoded)") String actions,
             @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
-        DataSetMetadata.Builder builder = metadata().id(dataSetId);
-        if (name != null) {
-            builder = builder.name(name);
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        if (dataSetMetadata == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
         }
-        DataSetMetadata dataSetMetadata = builder.build();
         // Save data set content
-        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
-        dataSetMetadataRepository.add(dataSetMetadata);
+        contentStore.store(dataSetMetadata, dataSetContent, actions);
         // Content was changed, so queue events (schema analysis, content indexing for search...)
         queueEvents(dataSetId, jmsTemplate);
     }
@@ -269,20 +268,16 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}/versions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get data set versions", notes = "Get a list of data set versions.")
     @Timed
-    public void listDataSetVersions(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId,
-            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
-            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
-        DataSetMetadata.Builder builder = metadata().id(dataSetId);
-        if (name != null) {
-            builder = builder.name(name);
-        }
-        DataSetMetadata dataSetMetadata = builder.build();
-        // Save data set content
-        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
-        dataSetMetadataRepository.add(dataSetMetadata);
-        // Content was changed, so queue events (schema analysis, content indexing for search...)
-        queueEvents(dataSetId, jmsTemplate);
+    public String[] listDataSetVersions(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId) {
+        return new String[0];
     }
+
+    @RequestMapping(value = "/datasets/{id}/versions/{version}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get data set versions", notes = "Get a list of data set versions.")
+    @Timed
+    public String[] getVersionDetails(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId) {
+        return new String[0];
+    }
+
 
 }

@@ -9,14 +9,15 @@ public interface DataSetContentStore {
     /**
      * Stores (persists) a data set content to a storage. The data set content must be a data set JSON format.
      *
-     * @param dataSetMetadata The data set metadata attached to the {@link org.talend.dataprep.api.DataSetMetadata data
+     * @param dataSetMetadata The data set metadata attached to the {@link DataSetMetadata data
      * set}.
      * @param dataSetJsonContent Content of the data set (as JSON format, cannot use raw format as in
-     * {@link #storeAsRaw(org.talend.dataprep.api.DataSetMetadata, java.io.InputStream)}.
+     * {@link #storeAsRaw(DataSetMetadata, InputStream)}.
+     * @param actions The actions that created this new version of the dataset content. It cannot be <code>null</code>.
      * @see #get(org.talend.dataprep.api.DataSetMetadata)
      * @see #delete(org.talend.dataprep.api.DataSetMetadata)
      */
-    void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent);
+    void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent, String actions);
 
     /**
      * Stores (persists) a data set raw content to a storage. The only expectation is for

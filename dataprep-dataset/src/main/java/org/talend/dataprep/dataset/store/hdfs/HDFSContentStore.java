@@ -39,7 +39,7 @@ public class HDFSContentStore implements DataSetContentStore {
     }
 
     @Override
-    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent) {
+    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent, String actions) {
 
     }
 
