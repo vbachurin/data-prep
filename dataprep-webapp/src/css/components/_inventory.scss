@@ -16,6 +16,10 @@ $border-color: #CECECE;
 
   tbody:hover {
     background-color: $hover-color;
+
+    .inventory-actions-table {
+      background-color: $hover-color;
+    }
   }
 
   .inventory-icon {
@@ -91,7 +95,7 @@ $border-color: #CECECE;
 }
 
 .t-btn-transparent{
-  background-color: transparent;
+  background-color: $hover-color;
   background-repeat: no-repeat;
   background-size: contain;
   height: 42px;
