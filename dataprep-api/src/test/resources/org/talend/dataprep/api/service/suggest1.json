@@ -26,5 +26,24 @@
         "default": ""
       }
     ]
+  },
+  {
+    "category": "repair",
+    "items": [],
+    "name": "fillemptywithdefault",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "default_value",
+        "type": "string",
+        "default": ""
+      }
+    ]
   }
 ]
