@@ -26,5 +26,19 @@
         "default": ""
       }
     ]
+  },
+  {
+    "category": "tagada",
+    "items": [],
+    "name": "fillemptywithdefault",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
   }
 ]

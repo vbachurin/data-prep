@@ -7,6 +7,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.ColumnMetadata;
@@ -18,6 +19,7 @@ import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.transformation.exception.Messages;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
 import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
@@ -56,7 +58,7 @@ public class TransformationService {
         String typeName = column.getType();
         Type type = Types.get(typeName);
         if (Types.STRING.isAssignableFrom(type)) {
-            return Arrays.asList(UpperCase.INSTANCE, LowerCase.INSTANCE);
+            return Arrays.asList(UpperCase.INSTANCE, LowerCase.INSTANCE, FillWithDefaultIfEmpty.INSTANCE);
         } else {
             return Collections.emptyList();
         }

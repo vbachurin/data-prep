@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "action": "fillemptywithdefault",
+      "parameters": {
+        "column_name": "city"
+      }
+    }
+  ]
+}
