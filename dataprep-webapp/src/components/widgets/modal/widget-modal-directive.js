@@ -2,6 +2,41 @@
     'use strict';
 
     /**
+     * Array of all modal inner element that is visible
+     * @type {Array}
+     */
+    var shownModalsInnerElements = [];
+
+    /**
+     * Add an element to the list of visible modals
+     * @param innerElement
+     */
+    var registerShownElement = function(innerElement) {
+        shownModalsInnerElements.push(innerElement);
+    };
+
+    /**
+     * Remove an element from list of visible modals
+     * @param innerElement
+     */
+    var deregisterShownElement = function(innerElement) {
+        var index = shownModalsInnerElements.indexOf(innerElement);
+        if(index > -1) {
+            shownModalsInnerElements = shownModalsInnerElements.slice(0, index);
+        }
+    };
+
+    /**
+     * Return last visible modal (the one the most in front on the screen)
+     * @returns {*}
+     */
+    var getLastRegisteredInnerElement = function() {
+        if(shownModalsInnerElements.length) {
+            return shownModalsInnerElements[shownModalsInnerElements.length - 1];
+        }
+    };
+
+    /**
      * Modal window with 2 modes : normal (default) | fullscreen
      *
      * <talend-modal fullscreen="false"
@@ -59,22 +94,47 @@
             },
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
+                    var body = angular.element('body');
+
+                    /**
+                     * Hide modal action
+                     */
                     var hideModal = function() {
                         $timeout(function() {
                             ctrl.hide();
                         });
                     };
 
+                    /**
+                     * Deregister modal from list of shown modal and focus on the last shown modal
+                     */
+                    var deregisterAndFocusOnLastModal = function(innerElement) {
+                        deregisterShownElement(innerElement);
+                        var mostAdvancedModal = getLastRegisteredInnerElement();
+                        if(mostAdvancedModal) {
+                            mostAdvancedModal.focus();
+                        }
+                        else {
+                            body.removeClass('modal-open');
+                        }
+                    };
+
+                    /**
+                     * Initialisation
+                     */
                     $timeout(function() {
+                        var innerElement = iElement.find('.modal-inner');
+
                         // Close action on all 'talend-modal-close' elements
                         iElement.find('.talend-modal-close').on('click', hideModal);
 
                         // stop propagation on click on inner modal to prevent modal close
-                        iElement.find('.modal-inner').on('click', function (e) {
+                        innerElement.on('click', function (e) {
                             e.stopPropagation();
                         });
 
-                        iElement.find('.modal-inner').bind('keydown', function (e) {
+                        // hide modal on escape keydown
+                        innerElement.bind('keydown', function (e) {
                             if(e.keyCode === 27) { //escape
                                 hideModal();
                             }
@@ -82,29 +142,32 @@
 
                         // attach element to body directly to avoid parent styling
                         iElement.detach();
-                        angular.element('body').append(iElement);
+                        body.append(iElement);
 
                         // detach element on destroy
                         scope.$on('$destroy', function() {
+                            deregisterAndFocusOnLastModal(innerElement);
                             iElement.remove();
                         });
-                    });
 
-                    //enable/disable scroll on main body depending on modal display
-                    //popup focus on show
-                    scope.$watch(function() {return ctrl.state;}, function(newValue) {
-                        if (newValue) {
-                            angular.element('body').addClass('modal-open');
-                            iElement.find('.modal-inner').focus();
+                        //enable/disable scroll on main body depending on modal display
+                        //popup focus on show
+                        scope.$watch(function() {return ctrl.state;}, function(newValue) {
+                            if (newValue) {
+                                //register modal in shown modal list and focus on inner element
+                                body.addClass('modal-open');
+                                registerShownElement(innerElement);
+                                innerElement.focus();
 
-                            //focus on first input (ignore first because it's the state checkbox)
-                            var inputs = iElement.find('input');
-                            if(inputs.length > 1) {
-                                inputs.eq(1).focus();
+                                //focus on first input (ignore first because it's the state checkbox)
+                                var inputs = iElement.find('input');
+                                if(inputs.length > 1) {
+                                    inputs.eq(1).focus();
+                                }
+                            } else {
+                                deregisterAndFocusOnLastModal(innerElement);
                             }
-                        } else {
-                            angular.element('body').removeClass('modal-open');
-                        }
+                        });
                     });
                 }
             }
