@@ -4,7 +4,14 @@ describe('Confirm widget service', function() {
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
 
-    it('should create scope and confirm element', inject(function(TalendConfirmService) {
+    afterEach(inject(function($timeout, TalendConfirmService) {
+        if(TalendConfirmService.element) {
+            TalendConfirmService.resolve();
+            $timeout.flush();
+        }
+    }));
+
+    it('should create scope and confirm element', inject(function($rootScope, TalendConfirmService) {
         //given
         var text1 = 'text 1';
         var text2 = 'text 2';
@@ -15,6 +22,7 @@ describe('Confirm widget service', function() {
 
         //when
         TalendConfirmService.confirm(text1, text2);
+        $rootScope.$digest();
 
         //then
         expect(TalendConfirmService.modalScope).toBeTruthy();
@@ -28,23 +36,27 @@ describe('Confirm widget service', function() {
     describe('with existing confirm', function() {
         var promise, element, scope;
 
-        beforeEach(inject(function(TalendConfirmService) {
+        beforeEach(inject(function($rootScope, TalendConfirmService) {
             promise = TalendConfirmService.confirm();
+            $rootScope.$digest();
+
             scope = TalendConfirmService.modalScope;
             element = TalendConfirmService.element;
 
             spyOn(element, 'remove').and.callThrough();
         }));
 
-        it('should throw error on confirm create but another confirm modal is already created', inject(function(TalendConfirmService) {
+        it('should throw error on confirm create but another confirm modal is already created', inject(function($timeout, TalendConfirmService) {
             //when
             try {
                 TalendConfirmService.confirm();
             }
 
-                //then
+            //then
             catch(error) {
                 expect(error.message).toBe('A confirm popup is already created');
+                TalendConfirmService.resolve();
+                $timeout.flush();
                 return;
             }
             throw Error('should have thrown error on second confirm() call');
