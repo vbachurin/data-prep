@@ -13,11 +13,13 @@ import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public class FillWithDefaultIfEmpty implements ActionMetadata {
 
-    public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
+    public static final String         COLUMN_NAME_PARAMETER   = "column_name";               //$NON-NLS-1$
 
-    public static final String         FILL_EMPTY_ACTION_NAME = "fillemptywithdefault";      //$NON-NLS-1$
+    public static final String         DEFAULT_VALUE_PARAMETER = "default_value";             //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE = new FillWithDefaultIfEmpty();
+    public static final String         FILL_EMPTY_ACTION_NAME  = "fillemptywithdefault";      //$NON-NLS-1$
+
+    public static final ActionMetadata INSTANCE                = new FillWithDefaultIfEmpty();
 
     private FillWithDefaultIfEmpty() {
     }
@@ -49,7 +51,8 @@ public class FillWithDefaultIfEmpty implements ActionMetadata {
 
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY) };
+        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY),
+                new Parameter(DEFAULT_VALUE_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY) };
     }
 
     @Override
@@ -61,6 +64,9 @@ public class FillWithDefaultIfEmpty implements ActionMetadata {
             case COLUMN_NAME_PARAMETER:
                 parsedParameters.put(COLUMN_NAME_PARAMETER, currentParameter.getValue().getTextValue());
                 break;
+            case DEFAULT_VALUE_PARAMETER:
+                parsedParameters.put(DEFAULT_VALUE_PARAMETER, currentParameter.getValue().getTextValue());
+                break;
             default:
                 ActionParser.LOGGER
                         .warn("Parameter '" + currentParameter.getKey() + "' is not recognized for " + this.getClass());
@@ -70,7 +76,7 @@ public class FillWithDefaultIfEmpty implements ActionMetadata {
             String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER);
             String value = row.get(columnName);
             if (value == null || value.trim().length() == 0) {
-                row.set(columnName, "tagada");
+                row.set(columnName, parsedParameters.get(DEFAULT_VALUE_PARAMETER));
             }
         };
     }

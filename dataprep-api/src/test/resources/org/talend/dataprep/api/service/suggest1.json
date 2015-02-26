@@ -38,6 +38,11 @@
         "name": "column_name",
         "type": "string",
         "default": ""
+      },
+      {
+        "name": "default_value",
+        "type": "string",
+        "default": ""
       }
     ]
   }
