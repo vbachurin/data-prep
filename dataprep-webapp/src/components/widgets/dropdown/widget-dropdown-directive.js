@@ -1,11 +1,11 @@
 (function () {
-  'use strict';
+    'use strict';
 
     /**
      * Dropdown directive
-     * 
+     *
      * Example :
-     * <talend-dropdown>
+     * <talend-dropdown close-on-select="false">
      * <div class="dropdown-container grid-header">
      *      <div class="dropdown-action">
      *          <div class="grid-header-title dropdown-button">{{ column.id }}</div>
@@ -19,7 +19,8 @@
      *      </ul>
      * </div>
      * </talend-dropdown>
-     * 
+     *
+     * Attribute close-on-select : default true. If set to false, dropdown will not close on item click
      * Class 'dropdown-action' : action zone that trigger menu toggle
      * Class 'dropdown-button' : add a caret at the end off element
      * Class 'dropdown-menu' : menu
@@ -28,46 +29,56 @@
      *
      * @returns directive
      */
-  function TalendDropdown() {
-    return {
-      restrict: 'EA',
-      transclude: true,
-      templateUrl: 'components/widgets/dropdown/dropdown.html',
-      link: {
-        post: function(scope, iElement) {
-            var menu = iElement.find('.dropdown-menu');
-            
-            var hideAllDropDowns = function() {
-                angular.element('.dropdown-menu').removeClass('show-menu');
-            };
-            
-            var hideMenu = function(){
-                menu.removeClass('show-menu');
-            };
+    function TalendDropdown() {
+        return {
+            restrict: 'EA',
+            transclude: true,
+            templateUrl: 'components/widgets/dropdown/dropdown.html',
+            scope: {
+                closeOnSelect: '='
+            },
+            link: {
+                post: function (scope, iElement) {
+                    var menu = iElement.find('.dropdown-menu');
 
-            // Show or hide menu on action zone click
-            iElement.find('.dropdown-action').on('click', function(event) {
-                event.stopPropagation();
-                
-                var hasClass = menu.hasClass('show-menu');
-                hideAllDropDowns();
+                    var hideAllDropDowns = function () {
+                        angular.element('.dropdown-menu').removeClass('show-menu');
+                    };
 
-                if(hasClass) {
-                    menu.removeClass('show-menu');   
+                    var hideMenu = function () {
+                        menu.removeClass('show-menu');
+                    };
+
+                    // Show or hide menu on action zone click
+                    iElement.find('.dropdown-action').on('click', function (event) {
+                        event.stopPropagation();
+
+                        var hasClass = menu.hasClass('show-menu');
+                        hideAllDropDowns();
+
+                        if (hasClass) {
+                            menu.removeClass('show-menu');
+                        }
+                        else {
+                            menu.addClass('show-menu');
+                        }
+                    });
+
+                    //hide menu on menu item select if 'closeOnSelect' is not false
+                    iElement.find('.dropdown-menu').click(function (event) {
+                        event.stopPropagation();
+                        if (scope.closeOnSelect !== false) {
+                            hideMenu();
+                        }
+                    });
+
+                    //hide menu on body click
+                    angular.element('body').click(hideMenu);
                 }
-                else {
-                    menu.addClass('show-menu');
-                }
-            });
-            //hide menu on menu item select
-            iElement.find('.dropdown-menu').click(hideMenu);
-            //hide menu on body click
-            angular.element('body').click(hideMenu);
-        }
-      }
-    };
-  }
+            }
+        };
+    }
 
-  angular.module('talend.widget')
-    .directive('talendDropdown', TalendDropdown);
+    angular.module('talend.widget')
+        .directive('talendDropdown', TalendDropdown);
 })();
