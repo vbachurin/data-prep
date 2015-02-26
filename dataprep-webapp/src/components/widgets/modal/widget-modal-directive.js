@@ -96,6 +96,12 @@
                         if (newValue) {
                             angular.element('body').addClass('modal-open');
                             iElement.find('.modal-inner').focus();
+
+                            //focus on first input (ignore first because it's the state checkbox)
+                            var inputs = iElement.find('input');
+                            if(inputs.length > 1) {
+                                inputs.eq(1).focus();
+                            }
                         } else {
                             angular.element('body').removeClass('modal-open');
                         }

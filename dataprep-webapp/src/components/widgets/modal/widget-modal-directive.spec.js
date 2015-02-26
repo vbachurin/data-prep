@@ -1,27 +1,39 @@
 describe('Dropdown directive', function () {
     'use strict';
-    
-    var scope, createElement;
+
+    var scope, createElement, createFormElement;
 
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
 
+    afterEach(function () {
+        scope.$destroy();
+        scope.$digest();
+    });
+
     beforeEach(inject(function ($rootScope, $compile) {
         scope = $rootScope.$new();
 
-        createElement = function(directiveScope) {
+        createElement = function (directiveScope) {
             var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton"></talend-modal>';
             var element = $compile(html)(directiveScope);
             directiveScope.$digest();
             return element;
         };
-        
+
+        createFormElement = function (directiveScope) {
+            var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton">' +
+                '   <input type="text" id="firstInput" />' +
+                '   <input type="text" id="secondInput" />' +
+                '</talend-modal>';
+            var element = $compile(html)(directiveScope);
+            directiveScope.$digest();
+            return element;
+        };
+
         spyOn($rootScope, '$apply').and.callThrough();
     }));
-    afterEach(function() {
-        scope.$destroy();
-        scope.$digest();
-    });
+
 
     it('should add "normal" close button in DOM', function () {
         //given
@@ -78,12 +90,12 @@ describe('Dropdown directive', function () {
     it('should add "modal-open" class to body when modal open state is true', function () {
         //given
         var body = angular.element('body');
-        
+
         scope.fullscreen = false;
         scope.state = false;
         scope.closeButton = false;
         createElement(scope);
-        
+
         //when
         scope.state = true;
         scope.$digest();
@@ -96,7 +108,7 @@ describe('Dropdown directive', function () {
         //given
         var body = angular.element('body');
         body.addClass('modal-open');
-        
+
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = false;
@@ -163,7 +175,7 @@ describe('Dropdown directive', function () {
         expect($rootScope.$apply.calls.count()).toBe(2);
         expect(scope.state).toBe(false);
     }));
-    
+
     it('should not hide modal on "modal-inner" div click', inject(function ($rootScope, $timeout) {
         //given
         scope.fullscreen = false;
@@ -212,7 +224,7 @@ describe('Dropdown directive', function () {
         //then
         expect(angular.element('body').find('talend-modal').length).toBe(0);
     }));
-    
+
     it('should hide on esc keydown', inject(function ($rootScope, $timeout) {
         //given
         scope.fullscreen = false;
@@ -245,11 +257,11 @@ describe('Dropdown directive', function () {
 
         //when
         element.find('.modal-inner').trigger(event);
-        try{
+        try {
             $timeout.flush();
         }
             //then
-        catch(error) {
+        catch (error) {
             expect(scope.state).toBe(true);
             return;
         }
@@ -275,6 +287,28 @@ describe('Dropdown directive', function () {
 
         //then
         expect(document.activeElement.className).toBe('modal-inner');
+
+        //finally
+        element.remove();
+    });
+
+    it('should focus on first input on show', function () {
+        //given
+        scope.fullscreen = false;
+        scope.state = false;
+        scope.closeButton = false;
+        var element = createFormElement(scope);
+
+        var body = angular.element('body');
+        body.append(element);
+        expect(document.activeElement).not.toBe(element);
+
+        //when
+        scope.state = true;
+        scope.$digest();
+
+        //then
+        expect(document.activeElement.id).toBe('firstInput');
 
         //finally
         element.remove();
