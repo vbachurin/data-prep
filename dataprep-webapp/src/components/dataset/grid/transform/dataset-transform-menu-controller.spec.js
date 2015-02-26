@@ -81,7 +81,7 @@ describe('Dataset transform menu controller', function () {
         expect(TransformationService.transform).not.toHaveBeenCalled();
     }));
 
-    it('should only open modal on select if item has parameters', inject(function (TransformationService) {
+    it('should open modal on select if item has parameters', inject(function (TransformationService) {
         //given
         var ctrl = createController();
         ctrl.menu = {parameters: [{name: 'param1', type: 'text', default: '.'}]};
@@ -94,10 +94,10 @@ describe('Dataset transform menu controller', function () {
         expect(TransformationService.transform).not.toHaveBeenCalled();
     }));
 
-    it('should only open modal on select if item has choice', inject(function (TransformationService) {
+    it('should open modal on select if item has choice', inject(function (TransformationService) {
         //given
         var ctrl = createController();
-        ctrl.menu = {items: {name: 'choice', values: [{name: 'choice1'}, {name: 'choice2'}]}};
+        ctrl.menu = {items: [{name: 'choice', values: [{name: 'choice1'}, {name: 'choice2'}]}]};
 
         //when
         ctrl.select();
@@ -106,6 +106,90 @@ describe('Dataset transform menu controller', function () {
         expect(ctrl.showModal).toBeTruthy();
         expect(TransformationService.transform).not.toHaveBeenCalled();
     }));
+
+    it('should fill text param value on select', function () {
+        //given
+        var ctrl = createController();
+        ctrl.menu = {parameters: [{name: 'param1', type: 'text', default: '.'}]};
+
+        //when
+        ctrl.select();
+
+        //then
+        expect(ctrl.menu.parameters[0].value).toBe('.');
+    });
+
+    it('should set numeric default value', function () {
+        //given
+        var ctrl = createController();
+        ctrl.menu = {parameters: [{name: 'param1', type: 'numeric', default: '5'}]};
+
+        //when
+        ctrl.select();
+
+        //then
+        expect(ctrl.menu.parameters[0].value).toBe(5);
+    });
+
+    it('should set integer default value', function () {
+        //given
+        var ctrl = createController();
+        ctrl.menu = {parameters: [{name: 'param1', type: 'integer', default: '5'}]};
+
+        //when
+        ctrl.select();
+
+        //then
+        expect(ctrl.menu.parameters[0].value).toBe(5);
+    });
+
+    it('should set double default value', function () {
+        //given
+        var ctrl = createController();
+        ctrl.menu = {parameters: [{name: 'param1', type: 'double', default: '5.1'}]};
+
+        //when
+        ctrl.select();
+
+        //then
+        expect(ctrl.menu.parameters[0].value).toBe(5.1);
+    });
+
+    it('should set float default value', function () {
+        //given
+        var ctrl = createController();
+        ctrl.menu = {parameters: [{name: 'param1', type: 'float', default: '5.1'}]};
+
+        //when
+        ctrl.select();
+
+        //then
+        expect(ctrl.menu.parameters[0].value).toBe(5.1);
+    });
+
+    it('should set 0 value if default value is not numeric with numeric type', function () {
+        //given
+        var ctrl = createController();
+        ctrl.menu = {parameters: [{name: 'param1', type: 'numeric', default: 'a'}]};
+
+        //when
+        ctrl.select();
+
+        //then
+        expect(ctrl.menu.parameters[0].value).toBe(0);
+    });
+
+    it('should not set default value if no default value is provided', function () {
+        //given
+        var ctrl = createController();
+        ctrl.menu = {parameters: [{name: 'param1', type: 'text', default: null}]};
+
+        //when
+        ctrl.select();
+
+        //then
+        expect(ctrl.menu.parameters[0].value).toBeUndefined();
+    });
 
     it('should call transform on simple menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
         //given

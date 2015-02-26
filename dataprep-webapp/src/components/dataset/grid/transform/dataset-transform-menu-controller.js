@@ -5,17 +5,60 @@
         var vm = this;
 
         /**
+         * Adapt param default value to the requested type
+         * @param param - the targeted param
+         * @returns {*} - the adapted value
+         */
+        var adaptParamDefaultValue = function (param) {
+            switch (param.type) {
+                case 'numeric':
+                case 'integer':
+                case 'double':
+                case 'float':
+                    return parseFloat(param.default) || 0;
+                default :
+                    return param.default;
+            }
+        };
+
+        /**
+         * Init params values to default
+         * @param params
+         */
+        var initParamItemValues = function (params) {
+            _.forEach(params, function (param) {
+                if (param.default) {
+                    param.value = adaptParamDefaultValue(param);
+                }
+            });
+        };
+
+        /**
+         * Init all param values to default for menu params and choice item params
+         */
+        var initParamsValues = function () {
+            initParamItemValues(vm.menu.parameters);
+
+            _.forEach(vm.menu.items, function (choice) {
+                _.forEach(choice.values, function (choiceItem) {
+                    initParamItemValues(choiceItem.parameters);
+                });
+            });
+        };
+
+        /**
          * Menu selected. 3 choices :
          * 1 - divider : no action
          * 2 - no parameter and no choice is required : transformation call
          * 3 - parameter or choice required : show modal
          */
         vm.select = function () {
-            if(vm.menu.isDivider) {
+            if (vm.menu.isDivider) {
                 return;
             }
 
             if (vm.menu.parameters || vm.menu.items) {
+                initParamsValues();
                 vm.showModal = true;
             }
             else {
@@ -44,7 +87,7 @@
          */
         var getChoiceParams = function () {
             var params = {};
-            _.forEach(vm.menu.items, function(item) {
+            _.forEach(vm.menu.items, function (item) {
                 var selectedChoice = item.selectedValue;
                 params[item.name] = selectedChoice.name;
 
