@@ -6,8 +6,8 @@ import org.talend.dataprep.api.type.Type;
 /**
  * Represents information about a column in a data set. It includes:
  * <ul>
- * <li>Name ({@link #getName()})</li>
- * <li>Type ({@link #getTypeName()})</li>
+ * <li>Name ({@link #getId()})</li>
+ * <li>Type ({@link #getType()})</li>
  * </ul>
  * 
  * @see ColumnMetadata.Builder
@@ -33,7 +33,7 @@ public class ColumnMetadata {
     /**
      * @return The column name. It never returns <code>null</code> or empty string.
      */
-    public String getName() {
+    public String getId() {
         return name;
     }
 
@@ -41,11 +41,11 @@ public class ColumnMetadata {
      * @return The column's type. It never returns <code>null</code>.
      * @see org.talend.dataprep.api.type.Type
      */
-    public String getTypeName() {
+    public String getType() {
         return typeName;
     }
 
-    public void setTypeName(String typeName) {
+    public void setType(String typeName) {
         this.typeName = typeName;
     }
 
@@ -78,6 +78,12 @@ public class ColumnMetadata {
 
         private String name;
 
+        private int empty;
+
+        private int invalid;
+
+        private int valid;
+
         public static ColumnMetadata.Builder column() {
             return new Builder();
         }
@@ -98,8 +104,27 @@ public class ColumnMetadata {
             return this;
         }
 
+        public ColumnMetadata.Builder empty(int value) {
+            empty = value;
+            return this;
+        }
+
+        public ColumnMetadata.Builder invalid(int value) {
+            invalid = value;
+            return this;
+        }
+
+        public ColumnMetadata.Builder valid(int value) {
+            valid = value;
+            return this;
+        }
+
         public ColumnMetadata build() {
-            return new ColumnMetadata(name, type.getName());
+            ColumnMetadata columnMetadata = new ColumnMetadata(name, type.getName());
+            columnMetadata.getQuality().setEmpty(empty);
+            columnMetadata.getQuality().setInvalid(invalid);
+            columnMetadata.getQuality().setValid(valid);
+            return columnMetadata;
         }
     }
 }

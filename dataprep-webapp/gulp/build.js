@@ -62,7 +62,9 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
 		  '!src/lib/**/*.*'
 		])
 //		.pipe($.debug({title: 'files to be injected:'}))
-		.pipe($.angularFilesort()), {
+        .pipe($.naturalSort())//This fixes a angularFileSort issue : https://github.com/klei/gulp-angular-filesort/issues/17
+		.pipe($.angularFilesort())
+          , {
 		  ignorePath: 'src',
 		  addRootSlash: false
 		}))

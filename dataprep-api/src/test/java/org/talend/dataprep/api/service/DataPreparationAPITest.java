@@ -3,11 +3,10 @@ package org.talend.dataprep.api.service;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.junit.Assert.assertThat;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
-
-import javax.ws.rs.core.MediaType;
 
 import junit.framework.TestCase;
 
@@ -27,10 +26,8 @@ import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import uk.co.datumedge.hamcrest.json.SameJSONAs;
-
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.response.Header;
+import com.jayway.restassured.http.ContentType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -54,7 +51,7 @@ public class DataPreparationAPITest extends TestCase {
     public void setUp() {
         RestAssured.port = port;
         apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
-        apiService.setTransformationServiceURL("http://localhost:" + port + "/transform");
+        apiService.setTransformationServiceURL("http://localhost:" + port + "/");
     }
 
     @org.junit.After
@@ -84,9 +81,9 @@ public class DataPreparationAPITest extends TestCase {
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
         assertNotNull(dataSetId);
-        String transformed = given().header(new Header("Content-Type", MediaType.APPLICATION_JSON)).when()
-                .post("/api/transform/" + dataSetId).asString();
-        assertThat(transformed, sameJSONAsFile("test1_expected.json"));
+        String expectedContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1_expected.json"));
+        String transformed = given().contentType(ContentType.JSON).body("").when().post("/api/transform/" + dataSetId).asString();
+        assertEquals(expectedContent, transformed);
     }
 
     @Test
@@ -96,9 +93,10 @@ public class DataPreparationAPITest extends TestCase {
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
         assertNotNull(dataSetId);
         assertFalse(dataSetId.equals(StringUtils.EMPTY));
-        String transformed = given().header(new Header("Content-Type", MediaType.APPLICATION_JSON)).body(actions).when()
-                .post("/api/transform/" + dataSetId).asString();
-        assertThat(transformed, sameJSONAsFile("test2_expected.json"));
+        InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
+        String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
+                .asString();
+        assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 
     @Test
@@ -107,9 +105,10 @@ public class DataPreparationAPITest extends TestCase {
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test3.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
         assertNotNull(dataSetId);
-        String transformed = given().header(new Header("Content-Type", MediaType.APPLICATION_JSON)).body(actions).when()
-                .post("/api/transform/" + dataSetId).asString();
-        assertThat(transformed, sameJSONAsFile("test3_expected.json"));
+        InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test3_expected.json");
+        String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
+                .asString();
+        assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 
     @Test
@@ -133,25 +132,15 @@ public class DataPreparationAPITest extends TestCase {
         assertEquals("[]", list);
     }
 
-    /**
-     * Utilities method to assert that an expected json contained in a file matches a result.
-     * 
-     * @param fileNameExpected the name of the file that contains the expected json, must be in this package ressources
-     * @return a SameJSONAs to use like in assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
-     */
-    private SameJSONAs<? super String> sameJSONAsFile(String fileNameExpected) throws Exception {
-        InputStream expected = DataPreparationAPITest.class.getResourceAsStream(fileNameExpected);
-        assertNotNull(expected);
-        return sameJSONAs(IOUtils.toString(expected)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
-    }
-
     @Test
     public void testDataSetCreate() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "tagada").asString();
         InputStream content = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
-        assertThat(contentAsString, sameJSONAsFile("testCreate_expected.json"));
+
+        InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_expected.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
@@ -162,5 +151,22 @@ public class DataPreparationAPITest extends TestCase {
         assertEquals("Test with spaces", metadata.getName());
     }
 
+    @Test
+    public void testDataSetColumnActions() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
+        InputStream content = when().get("/api/datasets/{id}/{column}/actions", dataSetId, "firstname").asInputStream();
+        String contentAsString = IOUtils.toString(content);
+        InputStream expected = DataPreparationAPITest.class.getResourceAsStream("suggest1.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
+    }
 
+    @Test
+    public void testDataSetActions() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
+        InputStream content = when().get("/api/datasets/{id}/actions", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+        assertThat(contentAsString, sameJSONAs("[]"));
+    }
 }

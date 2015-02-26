@@ -23,7 +23,7 @@ class Scenario1 extends Simulation {
         exec(http("read_2").get("api/datasets/${dataset}").check(status.saveAs("dataset_get_status")))
           .pause(500 millis)
         }
-        .exec(http("transform").post("api/transform/${dataset}/"))
+        .exec(http("transform").post("api/transform/${dataset}").header("content-type", "application/json").body(StringBody("{}")))
         .pause(500 millis)
     }
   }

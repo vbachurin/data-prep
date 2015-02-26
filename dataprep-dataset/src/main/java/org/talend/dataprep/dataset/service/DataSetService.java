@@ -1,38 +1,35 @@
 package org.talend.dataprep.dataset.service;
 
-import static org.talend.dataprep.api.DataSetMetadata.Builder.id;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.jms.Message;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.api.Quality;
+import org.talend.dataprep.api.json.DataSetMetadataModule;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import static org.talend.dataprep.api.DataSetMetadata.Builder.metadata;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -119,7 +116,7 @@ public class DataSetService {
     public void list(HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         Iterable<DataSetMetadata> dataSets = dataSetMetadataRepository.list();
-        try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
+        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             generator.writeStartArray();
             for (DataSetMetadata dataSetMetadata : dataSets) {
                 generator.writeStartObject();
@@ -144,7 +141,7 @@ public class DataSetService {
             @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE); //$NON-NLS-1$
         final String id = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = id(id).name(name).author(getUserName()).created(new Date(System.currentTimeMillis()))
+        DataSetMetadata dataSetMetadata = metadata().id(id).name(name).author(getUserName()).created(System.currentTimeMillis())
                 .build();
         // Save data set content
         contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
@@ -178,57 +175,11 @@ public class DataSetService {
             return;
         }
 
-        try (JsonGenerator generator = factory.createJsonGenerator(response.getOutputStream())) {
-            generator.writeStartObject();
-            {
-                // Write general information about the dataset
-                if (metadata) {
-                    generator.writeFieldName("metadata"); //$NON-NLS-1
-                    generator.writeStartObject();
-                    {
-                        writeDataSetInformation(generator, dataSetMetadata);
-                    }
-                    generator.writeEndObject();
-                }
-                // Write columns
-                if (columns) {
-                    generator.writeFieldName("columns"); //$NON-NLS-1
-                    generator.writeStartArray();
-                    for (ColumnMetadata column : dataSetMetadata.getRow().getColumns()) {
-                        generator.writeStartObject();
-                        {
-                            // Column name
-                            generator.writeStringField("id", column.getName()); //$NON-NLS-1
-                            // Column quality
-                            if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
-                                generator.writeFieldName("quality"); //$NON-NLS-1
-                                Quality quality = column.getQuality();
-                                generator.writeStartObject();
-                                {
-                                    generator.writeNumberField("empty", quality.getEmpty()); //$NON-NLS-1
-                                    generator.writeNumberField("invalid", quality.getInvalid()); //$NON-NLS-1
-                                    generator.writeNumberField("valid", quality.getValid()); //$NON-NLS-1
-                                }
-                                generator.writeEndObject();
-                            }
-                            // Column type
-                            String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getTypeName() : "N/A"; //$NON-NLS-1
-                            generator.writeStringField("type", typeName); //$NON-NLS-1
-                        }
-                        generator.writeEndObject();
-                    }
-                    generator.writeEndArray();
-                }
-                // Records
-                generator.writeFieldName("records");
-                generator.flush(); // <- Important! Flush before dumping records!
-                response.getOutputStream().write(':');
-                // Put here content as provided by data set store
-                try (InputStream content = contentStore.get(dataSetMetadata)) {
-                    IOUtils.copy(content, response.getOutputStream());
-                }
-            }
-            generator.writeEndObject();
+        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
+            // Write general information about the dataset
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata)));
+            mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
             throw new RuntimeException("Unexpected I/O exception during message output.", e);
@@ -256,7 +207,7 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
             @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
-        DataSetMetadata.Builder builder = id(dataSetId);
+        DataSetMetadata.Builder builder = metadata().id(dataSetId);
         if (name != null) {
             builder = builder.name(name);
         }
@@ -276,7 +227,7 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
             @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
-        DataSetMetadata.Builder builder = id(dataSetId);
+        DataSetMetadata.Builder builder = metadata().id(dataSetId);
         if (name != null) {
             builder = builder.name(name);
         }
@@ -288,6 +239,33 @@ public class DataSetService {
         queueEvents(dataSetId, jmsTemplate);
     }
 
+    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
+    @ApiResponses({@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist.")})
+    @Timed
+    public void getMetadata(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
+            HttpServletResponse response) {
+        if (dataSetId == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        if (metadata == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
+            // Write general information about the dataset
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(DataSetMetadataModule.get(true, true, null));
+            mapper.writer().writeValue(generator, metadata);
+            generator.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected I/O exception during data set metadata output.", e);
+        }
+    }
+
     @RequestMapping(value = "/datasets/{id}/versions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get data set versions", notes = "Get a list of data set versions.")
     @Timed
@@ -295,7 +273,7 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId,
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
             @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
-        DataSetMetadata.Builder builder = id(dataSetId);
+        DataSetMetadata.Builder builder = metadata().id(dataSetId);
         if (name != null) {
             builder = builder.name(name);
         }

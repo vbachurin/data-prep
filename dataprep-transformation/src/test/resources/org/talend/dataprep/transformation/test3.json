@@ -1,0 +1,36 @@
+{
+  "records":[
+    {
+      "avgAmount":"668.61",
+      "birth":"02-07-1964",
+      "city":"Santa Fe",
+      "firstname":"Benjamin",
+      "id":"1",
+      "lastname":"Quincy",
+      "nbCommands":"72",
+      "registration":"30-11-2007",
+      "state":"NC"
+    },
+    {
+      "avgAmount":"200.56",
+      "birth":"01-02-1986",
+      "firstname":"Calvin",
+      "id":"2",
+      "lastname":"Jefferson",
+      "nbCommands":"13",
+      "registration":"25-08-2008",
+      "state":"TN"
+    },
+    {
+      "avgAmount":"645.39",
+      "birth":"05-05-1982",
+      "city":" ",
+      "firstname":"Ulysses",
+      "id":"3",
+      "lastname":"Johnson",
+      "nbCommands":"68",
+      "registration":"26-07-2008",
+      "state":"AL"
+    }
+  ]
+}
