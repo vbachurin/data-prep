@@ -11,7 +11,7 @@ describe('Confirm widget service', function() {
         }
     }));
 
-    it('should create scope and confirm element', inject(function($rootScope, TalendConfirmService) {
+    it('should create scope and confirm element with options', inject(function($rootScope, TalendConfirmService) {
         //given
         var text1 = 'text 1';
         var text2 = 'text 2';
@@ -21,12 +21,36 @@ describe('Confirm widget service', function() {
         expect(body.has('talend-confirm').length).toBe(0);
 
         //when
-        TalendConfirmService.confirm(text1, text2);
+        TalendConfirmService.confirm({disableEnter: true}, text1, text2);
         $rootScope.$digest();
 
         //then
         expect(TalendConfirmService.modalScope).toBeTruthy();
         expect(TalendConfirmService.modalScope.texts).toEqual([text1, text2]);
+        expect(TalendConfirmService.modalScope.disableEnter).toBe(true);
+        expect(TalendConfirmService.element).toBeTruthy();
+        expect(TalendConfirmService.element.scope()).toBe(TalendConfirmService.modalScope);
+
+        expect(body.has('talend-confirm').length).toBe(1);
+    }));
+
+    it('should create scope and confirm element without options', inject(function($rootScope, TalendConfirmService) {
+        //given
+        var text1 = 'text 1';
+        var text2 = 'text 2';
+        var body = angular.element('body');
+        expect(TalendConfirmService.modalScope).toBeFalsy();
+        expect(TalendConfirmService.element).toBeFalsy();
+        expect(body.has('talend-confirm').length).toBe(0);
+
+        //when
+        TalendConfirmService.confirm(null, text1, text2);
+        $rootScope.$digest();
+
+        //then
+        expect(TalendConfirmService.modalScope).toBeTruthy();
+        expect(TalendConfirmService.modalScope.texts).toEqual([text1, text2]);
+        expect(TalendConfirmService.modalScope.disableEnter).toBeFalsy();
         expect(TalendConfirmService.element).toBeTruthy();
         expect(TalendConfirmService.element.scope()).toBe(TalendConfirmService.modalScope);
 

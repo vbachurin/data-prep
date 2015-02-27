@@ -29,7 +29,7 @@
             else {
                 getDataPromise = DatasetService.getDataFromId(dataset.id, false)
                     .then(function(data) {
-                        vm.lastSelectedMetadata = dataset;
+                        vm.lastSelectedMetadata                                                             = dataset;
                         vm.lastSelectedData = data;
                     });
             }
@@ -46,7 +46,7 @@
         vm.delete = function(dataset) {
             var explainationsText = 'You are going to permanently delete the dataset "' + dataset.name + '".';
             var confirmText = 'This operation cannot be undone. Are you sure ?';
-            TalendConfirmService.confirm(explainationsText, confirmText).then(function() {
+            TalendConfirmService.confirm({disableEnter: true}, explainationsText, confirmText).then(function() {
                 DatasetService.deleteDataset(dataset)
                     .then(function() {
                         if(dataset === vm.lastSelectedMetadata) {

@@ -1,7 +1,7 @@
 describe('Dropdown directive', function () {
     'use strict';
 
-    var scope, createElement, createFormElement, createNestedElement;
+    var scope, createElement, createFormElement, createNestedElement, createButtonElement;
 
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
@@ -37,6 +37,19 @@ describe('Dropdown directive', function () {
             var html = '<talend-modal id="outerModal" fullscreen="fullscreen" state="state" close-button="closeButton">' +
                 '   <talend-modal id="innerModal" fullscreen="innerfullscreen" state="innerState" close-button="innerCloseButton"></talend-modal>' +
                 '</talend-modal>';
+            var element = $compile(html)(directiveScope);
+            directiveScope.$digest();
+            $timeout.flush();
+            return element;
+        };
+
+        createButtonElement = function (directiveScope) {
+            var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton" disable-enter="disableEnter">' +
+                '   <button class="modal-primary-button" ng-click="click()"/>' +
+                '</talend-modal>';
+            directiveScope.click = function() {
+                directiveScope.primaryButtonClicked = true;
+            };
             var element = $compile(html)(directiveScope);
             directiveScope.$digest();
             $timeout.flush();
@@ -229,7 +242,7 @@ describe('Dropdown directive', function () {
         expect(angular.element('body').find('talend-modal').length).toBe(0);
     });
 
-    it('should hide on esc keydown', inject(function ($rootScope, $timeout) {
+    it('should hide on ESC keydown', inject(function ($rootScope, $timeout) {
         //given
         scope.fullscreen = false;
         scope.state = true;
@@ -247,7 +260,7 @@ describe('Dropdown directive', function () {
         expect(scope.state).toBe(false);
     }));
 
-    it('should not hide on not esc keydown', inject(function ($rootScope, $timeout) {
+    it('should not hide on not ESC keydown', inject(function ($rootScope, $timeout) {
         //given
         scope.fullscreen = false;
         scope.state = true;
@@ -270,6 +283,45 @@ describe('Dropdown directive', function () {
 
         //otherwise
         throw new Error('should have thrown error because no timeout is pending');
+    }));
+
+    it('should hit primary button on ENTER keydown', inject(function () {
+        //given
+        scope.fullscreen = false;
+        scope.state = true;
+        scope.closeButton = true;
+        var element = createButtonElement(scope);
+
+        expect(scope.primaryButtonClicked).toBeFalsy();
+        var event = angular.element.Event('keydown');
+        event.keyCode = 13;
+
+        //when
+        element.find('.modal-inner').trigger(event);
+        scope.$digest();
+
+        //then
+        expect(scope.primaryButtonClicked).toBe(true);
+    }));
+
+    it('should not hit primary button on ENTER keydown when disable-enter attribute is true', inject(function () {
+        //given
+        scope.fullscreen = false;
+        scope.state = true;
+        scope.closeButton = true;
+        scope.disableEnter = true;
+        var element = createButtonElement(scope);
+
+        expect(scope.primaryButtonClicked).toBeFalsy();
+        var event = angular.element.Event('keydown');
+        event.keyCode = 13;
+
+        //when
+        element.find('.modal-inner').trigger(event);
+        scope.$digest();
+
+        //then
+        expect(scope.primaryButtonClicked).toBeFalsy();
     }));
 
     it('should focus on "modal-inner" on module open', function () {

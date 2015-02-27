@@ -34,7 +34,7 @@
             // if the name exists, ask for update or creation
             vm.existingDatasetFromName = DatasetListService.getDatasetByName(name);
             if(vm.existingDatasetFromName) {
-                TalendConfirmService.confirm('Do you want to update existing "' + vm.datasetName + '" dataset ?')
+                TalendConfirmService.confirm(null, 'Do you want to update existing "' + vm.datasetName + '" dataset ?')
                     .then(function() {
                         vm.updateExistingDataset();
                     }, function(cause) {

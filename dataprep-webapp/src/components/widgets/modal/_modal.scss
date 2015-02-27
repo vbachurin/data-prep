@@ -139,6 +139,19 @@
       }
     }
 
+    .modal-buttons {
+      padding-top: 10px;
+      border-top: 1px solid $light-gray;
+
+      .modal-secondary-button {
+        float: left;
+      }
+
+      .modal-primary-button {
+        float: right;
+      }
+    }
+
     a.cta {
       color: white;
       display: inline-block;
@@ -150,17 +163,6 @@
       }
     }
 
-    .modal-buttons {
-      padding-top: 20px;
-
-      .modal-cancel-button {
-        float: left;
-      }
-
-      .modal-valid-button {
-        float: right;
-      }
-    }
   }
 
   .modal-state:checked + .modal-window {

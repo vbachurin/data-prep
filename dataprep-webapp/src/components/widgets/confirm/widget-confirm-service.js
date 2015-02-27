@@ -9,12 +9,15 @@
          * Create confirm modal isolated scope
          * @param text - the text to display
          */
-        var createScope = function(texts) {
+        var createScope = function(options, texts) {
             if(self.modalScope) {
                 throw new Error('A confirm popup is already created');
             }
             self.modalScope = $rootScope.$new(true);
             self.modalScope.texts = texts;
+            if(options) {
+                self.modalScope.disableEnter = options.disableEnter;
+            }
         };
 
         /**
@@ -29,7 +32,7 @@
          * Create the confirm modal element and attach it to the body
          */
         var createElement = function() {
-            self.element = angular.element('<talend-confirm></talend-confirm>');
+            self.element = angular.element('<talend-confirm disable-enter="disableEnter" texts="texts"></talend-confirm>');
             $compile(self.element)(self.modalScope);
             body.append(self.element);
         };
@@ -72,12 +75,16 @@
 
         /**
          * Create the confirm modal element and return a promise that will be resolve on button click or modal dismiss
-         * @param text - the text to display
+         * Example : TalendConfirmService.confirm({disableEnter: true}, 'First text', 'Second text')
+         *
+         * @param options - {disableEnter: boolean}
+         * @param texts... - the texts to display
          * @returns Promise
          */
         this.confirm = function() {
-            var texts = Array.prototype.slice.call(arguments);
-            createScope(texts);
+            var options = arguments[0];
+            var texts = Array.prototype.slice.call(arguments, 1);
+            createScope(options, texts);
             createElement();
 
             return $q(function(resolve, reject) {

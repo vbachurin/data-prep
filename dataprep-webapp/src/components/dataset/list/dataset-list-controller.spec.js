@@ -119,7 +119,7 @@ describe('Dataset list controller', function () {
             scope.$digest();
 
             //then
-            expect(TalendConfirmService.confirm).toHaveBeenCalledWith('You are going to permanently delete the dataset "Customers (50 lines)".', 'This operation cannot be undone. Are you sure ?');
+            expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, 'You are going to permanently delete the dataset "Customers (50 lines)".', 'This operation cannot be undone. Are you sure ?');
             expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
             expect(toaster.pop).toHaveBeenCalledWith('success', 'Remove dataset', 'The dataset "Customers (50 lines)" has been removed.');
             expect(DatasetListService.refreshDatasets).toHaveBeenCalled();

@@ -138,7 +138,7 @@ describe('Home controller', function() {
 
                 //then
                 expect(DatasetListService.getDatasetByName).toHaveBeenCalledWith(ctrl.datasetName);
-                expect(TalendConfirmService.confirm).toHaveBeenCalledWith('Do you want to update existing "my cool dataset" dataset ?');
+                expect(TalendConfirmService.confirm).toHaveBeenCalledWith(null, 'Do you want to update existing "my cool dataset" dataset ?');
                 expect(DatasetService.createDataset).not.toHaveBeenCalled();
                 expect(DatasetService.updateDataset).not.toHaveBeenCalled();
             }));

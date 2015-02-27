@@ -81,7 +81,8 @@
             scope: {
                 state: '=',
                 closeButton: '=',
-                fullscreen: '='
+                fullscreen: '=',
+                disableEnter: '='
             },
             bindToController: true,
             controllerAs: 'talendModalCtrl',
@@ -124,6 +125,7 @@
                      */
                     $timeout(function() {
                         var innerElement = iElement.find('.modal-inner');
+                        var primaryButton = iElement.find('.modal-primary-button');
 
                         // Close action on all 'talend-modal-close' elements
                         iElement.find('.talend-modal-close').on('click', hideModal);
@@ -133,10 +135,17 @@
                             e.stopPropagation();
                         });
 
-                        // hide modal on escape keydown
+                        // keydown event binding
                         innerElement.bind('keydown', function (e) {
-                            if(e.keyCode === 27) { //escape
+
+                            // hide modal on 'ESC' keydown
+                            if(e.keyCode === 27) {
                                 hideModal();
+                            }
+
+                            // click on primary button on 'ENTER' keydown
+                            else if(e.keyCode === 13 && ! ctrl.disableEnter && primaryButton.length) {
+                                primaryButton.eq(0).click();
                             }
                         });
 

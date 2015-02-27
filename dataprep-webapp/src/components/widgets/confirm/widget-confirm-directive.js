@@ -5,6 +5,11 @@
         return {
             restrict: 'E',
             templateUrl: 'components/widgets/confirm/confirm.html',
+            scope: {
+                disableEnter: '=',
+                texts: '='
+            },
+            bindToController: true,
             controller: 'TalendConfirmCtrl',
             controllerAs: 'confirmCtrl'
         };

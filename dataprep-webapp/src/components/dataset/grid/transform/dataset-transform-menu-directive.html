@@ -14,7 +14,7 @@
 
             <form ng-submit="menuCtrl.transformWithParam()" name="menuCtrl.paramForm">
                 <!-- Menu item param -->
-                <table ng-if="menuCtrl.menu.parameters" class="param">
+                <table ng-if="menuCtrl.menu.parameters" class="no-border param">
                     <tr ng-repeat="param in ::menuCtrl.menu.parameters track by $index">
                         <td class="param-name">{{::param.name}} :</td>
                         <td class="param-input">
@@ -32,7 +32,7 @@
                 </table>
 
                 <!-- Choice -->
-                <table ng-if="::(menuCtrl.menu.items)" class="param-choice">
+                <table ng-if="::(menuCtrl.menu.items)" class="no-border param-choice">
                     <tbody ng-repeat="item in ::menuCtrl.menu.items track by $index">
                         <tr>
                             <td class="param-choice-name">{{item.name}} :</td>
@@ -89,9 +89,14 @@
                     <tbody ng-repeat-end></tbody>
                     <tbody ng-repeat-end></tbody>
                 </table>
-
-                <button ng-disabled="menuCtrl.paramForm.$invalid">Submit</button>
             </form>
+
+            <div class="modal-buttons">
+                <button ng-disabled="menuCtrl.paramForm.$invalid"
+                        class="modal-primary-button t-btn-primary"
+                        ng-click="menuCtrl.transformWithParam()">Submit</button>
+            </div>
+
         </talend-modal>
     </span>
 </li>
