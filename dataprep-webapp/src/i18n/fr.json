@@ -25,6 +25,9 @@
   "uppercase" : "Mettre en Majuscule",
   "lowercase" : "Mettre en Minuscule",
 
+  "_comment" : "Datagrid",
+  "FILE_DETAILS" : "Fichier: {{name}} ({{records}} lignes)",
+
   "_comment" : "Buttons",
   "IMPORT_FILE": "Importer",
 

@@ -10,6 +10,7 @@ describe('Rest message interceptor factory', function () {
 
     beforeEach(inject(function ($injector, toaster) {
         $httpBackend = $injector.get('$httpBackend');
+        $httpBackend.when('GET', 'i18n/en.json').respond({});
 
         spyOn(toaster, 'pop').and.callThrough();
     }));

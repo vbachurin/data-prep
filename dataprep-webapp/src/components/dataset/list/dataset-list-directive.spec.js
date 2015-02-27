@@ -19,6 +19,12 @@ describe('Dataset list directive', function() {
 
     beforeEach(module('data-prep-dataset'));
     beforeEach(module('htmlTemplates'));
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en', {
+            'INVENTORY_DETAILS': 'owned by {{author}}, created on {{created}}, contains {{records}} lines'
+        });
+        $translateProvider.preferredLanguage('en');
+    }));
 
     beforeEach(inject(function($rootScope, $compile, DatasetListService) {
         scope = $rootScope.$new();

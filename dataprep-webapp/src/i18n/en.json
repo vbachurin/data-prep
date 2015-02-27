@@ -25,6 +25,9 @@
   "uppercase" : "To Uppercase",
   "lowercase" : "To lowercase",
 
+  "_comment" : "Datagrid",
+  "FILE_DETAILS" : "File: {{name}} ({{records}} lines)",
+
   "_comment" : "Buttons",
   "IMPORT_FILE": "Import new file",
 
