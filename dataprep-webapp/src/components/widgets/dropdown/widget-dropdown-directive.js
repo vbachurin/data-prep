@@ -30,7 +30,7 @@
      *
      * @returns directive
      */
-    function TalendDropdown() {
+    function TalendDropdown($window) {
         return {
             restrict: 'EA',
             transclude: true,
@@ -53,6 +53,12 @@
 
                     var showMenu = function() {
                         menu.addClass('show-menu');
+                        if(! menu.hasClass('right')) {
+                            var position = menu[0].getBoundingClientRect();
+                            if(position.right > $window.innerWidth) {
+                                menu.addClass('right');
+                            }
+                        }
                         scope.onOpen();
                     };
 
