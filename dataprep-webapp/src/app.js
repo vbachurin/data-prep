@@ -9,10 +9,12 @@
 
             'talend.widget', //components widget built on bourbon (modal, dropdown, ...)
 
-            'ui.router', //most advanced router
-            'toaster' //toaster popup
+            'ui.router', //more advanced router
+            'toaster', //toaster popup
+            'pascalprecht.translate' //internationalization
         ])
 
+        //Performance config
         .config(['$httpProvider', '$compileProvider', 'disableDebug', function ($httpProvider, $compileProvider, disableDebug) {
             $httpProvider.useApplyAsync(true);
 
@@ -21,6 +23,17 @@
             }
         }])
 
+        //Translate config
+        .config(['$translateProvider', function ($translateProvider) {
+            $translateProvider.useStaticFilesLoader({
+                prefix: 'i18n/',
+                suffix: '.json'
+            });
+
+            $translateProvider.preferredLanguage('en');
+        }])
+
+        //Router config
         .config(function ($stateProvider, $urlRouterProvider) {
             $stateProvider
                 .state('nav', {
@@ -35,5 +48,11 @@
                 });
 
             $urlRouterProvider.otherwise('/home');
+        })
+
+        //Language from browser
+        .run(function ($window, $translate) {
+            var language = ($window.navigator.language === 'fr') ? 'fr' : 'en';
+            $translate.use(language);
         });
 })();

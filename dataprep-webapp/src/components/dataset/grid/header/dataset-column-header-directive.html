@@ -1,12 +1,12 @@
-<talend-dropdown on-open="datasetHeaderCtrl.initTransformations()">
+<talend-dropdown>
     <div class="dropdown-container grid-header">
         <div class="dropdown-action" id="header-dropdown-action">
             <div class="grid-header-title dropdown-button">{{ datasetHeaderCtrl.column.id }}</div>
             <div class="grid-header-type">{{ datasetHeaderCtrl.column.type }}</div>
         </div>
         <ul class="dropdown-menu grid-header-menu">
-            <li ng-if="datasetHeaderCtrl.initTransformationsInProgress">Loading...</li>
-            <li ng-if="datasetHeaderCtrl.transformations && !datasetHeaderCtrl.transformations.length">No transformation available</li>
+            <li ng-if="datasetHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
+            <li ng-if="datasetHeaderCtrl.transformations && !datasetHeaderCtrl.transformations.length">{{ ::'NO_TRANSFORMATION' | translate }}</li>
 
             <dataset-transform-menu
                     ng-repeat="item in datasetHeaderCtrl.transformations track by $index"

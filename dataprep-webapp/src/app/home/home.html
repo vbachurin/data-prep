@@ -4,10 +4,10 @@
     <div class="wide-container flex">
         <div class="flex-menu side-menu">
             <ul>
-                <li><a href="javascript:void(0)" class="selected">All Folders</a></li>
-                <li><a href="javascript:void(0)">Most Recent Files</a></li>
-                <li><a href="javascript:void(0)">All Shaked Files</a></li>
-                <li><a href="javascript:void(0)">Favorites</a></li>
+                <li><a href="javascript:void(0)" class="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
+                <li><a href="javascript:void(0)">{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
+                <li><a href="javascript:void(0)">{{ ::'ALL_SHAKED_FILES' | translate }}</a></li>
+                <li><a href="javascript:void(0)">{{ ::'FAVORITE_FILES' | translate }}</a></li>
             </ul>
         </div>
 
@@ -18,13 +18,13 @@
 
         <div class="flex-menu side-menu inventory-data">
             <p class="title">
-                Data Inventory
+                {{ ::'INVENTORY_DATA' | translate }}
             </p>
             <hr/>
             <p class="empty">
                 <img src="/assets/images/top_link_folder.png"/>
                 <br/>
-                Select a dataset or a folder to access its details
+                {{ ::'SELECT_DATASET_DESCRIPTION' | translate }}
             </p>
         </div>
     </div>
