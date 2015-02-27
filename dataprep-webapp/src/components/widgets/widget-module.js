@@ -1,4 +1,4 @@
 (function() {
   'use strict';
-  angular.module('talend.widget', []);
+  angular.module('talend.widget', ['pascalprecht.translate']);
 })();

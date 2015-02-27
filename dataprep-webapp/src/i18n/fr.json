@@ -32,5 +32,6 @@
   "IMPORT_FILE": "Importer",
 
   "_comment" : "Common",
-  "LOADING" : "Chargement"
+  "LOADING" : "Chargement",
+  "PROCESSING" : "Chargement"
 }

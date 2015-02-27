@@ -32,5 +32,6 @@
   "IMPORT_FILE": "Import new file",
 
   "_comment" : "Common",
-  "LOADING" : "Loading"
+  "LOADING" : "Loading",
+  "PROCESSING" : "Processing"
 }
