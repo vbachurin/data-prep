@@ -41,12 +41,14 @@
      *
      * <talend-modal fullscreen="false"
      *              state="homeCtrl.dataModalSmall"
+     *              disable-enter="true"
      *              close-button="true">
      *      Modal content
      * </talend-modal>
      *
      * <talend-modal fullscreen="true"
      *              state="homeCtrl.dataModal"
+     *              disable-enter="false"
      *              close-button="true">
      *      <div class="modal-header">
      *          <ul>
@@ -61,10 +63,11 @@
      * </talend-modal>
      *
      * All mode :
-     * Element 'talend-modal' > Class 'fullscreen' : false (default)
-     * Element 'talend-modal' > Class 'state' : variable binding that represents the state (true = opened, false = closed)
-     * Element 'talend-modal' > Class 'close-button' : close button on top right
-     * Element 'talend-modal' > Class 'talend-modal-close' : close action on click
+     * Element 'talend-modal' > attr 'fullscreen' : false (default)
+     * Element 'talend-modal' > attr 'state' : variable binding that represents the state (true = opened, false = closed)
+     * Element 'talend-modal' > attr 'close-button' : close button on top right
+     * Element 'talend-modal' > attr 'talend-modal-close' : close action on click
+     * Element 'talend-modal' > attr 'disable-enter' : prevent primary button click on ENTER key press. Default false (action is active)
      *
      * Fullscreen mode :
      * Element 'modal-header' : header content
