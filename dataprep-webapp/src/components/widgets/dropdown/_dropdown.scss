@@ -34,6 +34,7 @@
 
   .dropdown-container {
     position: relative;
+    height: 100%;
   }
 
   .dropdown-action {
@@ -58,7 +59,7 @@
     display: none;
     overflow: visible;
     position: absolute;
-    right: 0;
+    left: 0;
     top: 50px;
     z-index: 99999;
     text-transform: none;
@@ -93,6 +94,10 @@
         border-bottom-right-radius: $base-border-radius;
       }
     }
+  }
+
+  .dropdown-menu-small-top {
+    top: 25px;
   }
 
   .show-menu {

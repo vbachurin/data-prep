@@ -23,12 +23,14 @@
          style="width: {{ datasetHeaderCtrl.column.quality.validPercentWidth }}%;"
          title="{{ datasetHeaderCtrl.column.quality.valid }} valid records ({{ datasetHeaderCtrl.column.quality.validPercent }}%)">
 
-        <div class="dropdown-action"></div>
-        <ul class="dropdown-menu quality-bar-menu" role="menu">
-            <li role="presentation">
-                <a role="menuitem" href="#">Select Valid Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a>
-            </li>
-        </ul>
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
+                <li role="presentation">
+                    <a role="menuitem" href="#">Select Valid Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <div talend-dropdown
@@ -36,25 +38,29 @@
          style="width: {{ datasetHeaderCtrl.column.quality.emptyPercentWidth }}%;"
          title="{{ datasetHeaderCtrl.column.quality.empty }} empty records ({{ datasetHeaderCtrl.column.quality.emptyPercent }}%)">
 
-        <div class="dropdown-action"></div>
-        <ul class="dropdown-menu quality-bar-menu" role="menu" >
-            <li role="presentation"><a role="menuitem" href="#">Select Empty Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a></li>
-            <li class="divider"></li>
-            <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Top adjacent value</a></li>
-            <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Bottom adjacent value</a></li>
-        </ul>
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
+                <li role="presentation"><a role="menuitem" href="#">Select Empty Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a></li>
+                <li class="divider"></li>
+                <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Top adjacent value</a></li>
+                <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Bottom adjacent value</a></li>
+            </ul>
+        </div>
     </div>
 
     <div class="record-nok" talend-dropdown
          style="width: {{ datasetHeaderCtrl.column.quality.invalidPercentWidth }}%;"
          title="{{ datasetHeaderCtrl.column.quality.invalid }} invalid records ({{ datasetHeaderCtrl.column.quality.invalidPercent }}%)">
 
-        <div class="dropdown-action"></div>
-        <ul class="dropdown-menu quality-bar-menu" role="menu" >
-            <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a></li>
-            <li class="divider"></li>
-            <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Top adjacent value</a></li>
-            <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Bottom adjacent value</a></li>
-        </ul>
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
+                <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{ datasetHeaderCtrl.column.id | uppercase }}</a></li>
+                <li class="divider"></li>
+                <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Top adjacent value</a></li>
+                <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Bottom adjacent value</a></li>
+            </ul>
+        </div>
     </div>
 </div>
