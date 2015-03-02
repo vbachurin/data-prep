@@ -4,13 +4,18 @@ describe('Rest message interceptor factory', function () {
     var $httpBackend;
     var httpProvider;
 
+    var translations = {
+        SERVICE_UNAVAILABLE : 'SERVICE_UNAVAILABLE_VALUE'
+    };
+
     beforeEach(module('data-prep', function ($httpProvider) {
         httpProvider = $httpProvider;
     }));
 
     beforeEach(inject(function ($injector, toaster) {
         $httpBackend = $injector.get('$httpBackend');
-        $httpBackend.when('GET', 'i18n/en.json').respond({});
+        $httpBackend.when('GET', 'i18n/en.json').respond(translations);
+        $httpBackend.when('GET', 'i18n/fr.json').respond(translations);
 
         spyOn(toaster, 'pop').and.callThrough();
     }));

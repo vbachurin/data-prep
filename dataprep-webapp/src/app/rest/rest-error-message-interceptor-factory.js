@@ -1,6 +1,6 @@
 (function() {
     'use strict';
-
+    
     function RestErrorMessageHandler($q, toaster){
         return {
             responseError: function(rejection) {
