@@ -1,11 +1,13 @@
-<talend-dropdown>
+<talend-dropdown on-open="datasetHeaderCtrl.initTransformations()">
     <div class="dropdown-container grid-header">
-        <div class="dropdown-action" ng-click="datasetHeaderCtrl.initTransformations()">
+        <div class="dropdown-action">
             <div class="grid-header-title dropdown-button">{{ datasetHeaderCtrl.column.id }}</div>
             <div class="grid-header-type">{{ datasetHeaderCtrl.column.type }}</div>
         </div>
         <ul class="dropdown-menu grid-header-menu">
-            <li ng-if="!datasetHeaderCtrl.transformations">Loading...</li>
+            <li ng-if="datasetHeaderCtrl.initTransformationsInProgress">Loading...</li>
+            <li ng-if="!datasetHeaderCtrl.initTransformationsInProgress && datasetHeaderCtrl.transformationsRetrieveError"
+                class="error">Error while getting transformations</li>
             <li ng-if="datasetHeaderCtrl.transformations && !datasetHeaderCtrl.transformations.length">No transformation available</li>
 
             <dataset-transform-menu

@@ -124,6 +124,7 @@
          */
         vm.initTransformations = function () {
             if (!vm.transformations && !vm.initTransformationsInProgress) {
+                vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
 
                 TransformationService.getTransformations(vm.metadata.id, vm.column.id)
@@ -131,6 +132,9 @@
                         var menus = cleanParamsAndItems(response.data);
                         menus = adaptInputTypes(menus);
                         vm.transformations = groupMenus(menus);
+                    })
+                    .catch(function() {
+                        vm.transformationsRetrieveError = true;
                     })
                     .finally(function() {
                         vm.initTransformationsInProgress = false;
