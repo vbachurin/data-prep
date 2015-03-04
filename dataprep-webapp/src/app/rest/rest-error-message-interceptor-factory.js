@@ -8,6 +8,10 @@
                     toaster.pop('error', 'Error', 'Service unavailable');
                 }
 
+                else if(rejection.status === 500) {
+                    toaster.pop('error', 'Error', 'An error occurred');
+                }
+
                 return $q.reject(rejection);
             }
         };

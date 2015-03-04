@@ -18,7 +18,7 @@ describe('Rest message interceptor factory', function () {
         expect(httpProvider.interceptors).toContain('RestErrorMessageHandler');
     });
 
-    it('should not show alert when status code is not mapped', inject(function ($http, toaster) {
+    it('should not show toast when status code is not mapped', inject(function ($http, toaster) {
         //given
         $httpBackend.expectGET('testService').respond(300);
 
@@ -31,7 +31,7 @@ describe('Rest message interceptor factory', function () {
     }));
 
 
-    it('should show alert when service is unavailable', inject(function ($http, toaster) {
+    it('should show toast when service is unavailable', inject(function ($http, toaster) {
         //given
         $httpBackend.expectGET('testService').respond(0);
 
@@ -41,5 +41,17 @@ describe('Rest message interceptor factory', function () {
 
         //then
         expect(toaster.pop).toHaveBeenCalledWith('error', 'Error', 'Service unavailable');
+    }));
+
+    it('should show toast on status 500', inject(function ($http, toaster) {
+        //given
+        $httpBackend.expectGET('testService').respond(500);
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+
+        //then
+        expect(toaster.pop).toHaveBeenCalledWith('error', 'Error', 'An error occurred');
     }));
 });
