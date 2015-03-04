@@ -35,6 +35,23 @@
   "LOADING"     : "Loading",
   "PROCESSING"  : "Processing",
 
+  "_comment" : "Confirm",
+  "DELETE_PERMANENTLY"      : "You are going to permanently delete the dataset \"{{dataset}}\".",
+  "NO_UNDONE_CONFIRM"       : "This operation cannot be undone. Are you sure ?",
+  "UPDATE_EXISTING_DATASET" : "Do you want to update existing \"{{dataset}}\" dataset ?",
+
+  "_comment" : "Success",
+  "DATASET_CREATE_SUCCESS_TITLE"  : "New dataset",
+  "DATASET_CREATE_SUCCESS"        : "The dataset \"{{dataset}}\" has been created",
+  "DATASET_REMOVE_SUCCESS_TITLE"  : "Dataset removed",
+  "DATASET_REMOVE_SUCCESS"        : "The dataset \"{{dataset}}\" has been removed.",
+  "DATASET_UPDATE_SUCCESS_TITLE"  : "Update dataset",
+  "DATASET_UPDATE_SUCCESS"        : "The dataset \"{{dataset}}\" has been updated",
+
   "_comment" : "Errors",
-  "SERVICE_UNAVAILABLE" : "Service unavailable"
+  "GENERIC_ERROR"       : "An error occurred",
+  "SERVER_ERROR_TITLE"  : "Server error",
+  "SERVICE_UNAVAILABLE" : "Service unavailable",
+  "UPLOAD_ERROR_TITLE"  : "Upload error",
+  "UPLOAD_ERROR"        : "An error occurred during file upload"
 }

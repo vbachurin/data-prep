@@ -1,7 +1,8 @@
 (function() {
     'use strict';
 
-    function DatasetListCtrl($q, toaster, DatasetService, DatasetListService, DatasetGridService, TalendConfirmService) {
+    function DatasetListCtrl($q, $filter, toaster, DatasetService, DatasetListService, DatasetGridService, TalendConfirmService) {
+        var translate = $filter('translate');
         var vm = this;
         vm.datasetListService = DatasetListService;
 
@@ -29,7 +30,7 @@
             else {
                 getDataPromise = DatasetService.getDataFromId(dataset.id, false)
                     .then(function(data) {
-                        vm.lastSelectedMetadata                                                             = dataset;
+                        vm.lastSelectedMetadata = dataset;
                         vm.lastSelectedData = data;
                     });
             }
@@ -44,20 +45,23 @@
          * @param dataset - the dataset to delete
          */
         vm.delete = function(dataset) {
-            var explainationsText = 'You are going to permanently delete the dataset "' + dataset.name + '".';
-            var confirmText = 'This operation cannot be undone. Are you sure ?';
-            TalendConfirmService.confirm({disableEnter: true}, explainationsText, confirmText).then(function() {
-                DatasetService.deleteDataset(dataset)
-                    .then(function() {
-                        if(dataset === vm.lastSelectedMetadata) {
-                            vm.lastSelectedMetadata = null;
-                            vm.lastSelectedData = null;
-                        }
+            var explainationsText = translate('DELETE_PERMANENTLY', {dataset: dataset.name}),
+                confirmText = translate('NO_UNDONE_CONFIRM');
+            TalendConfirmService.confirm({disableEnter: true}, explainationsText, confirmText)
+                .then(function() {
+                    return DatasetService.deleteDataset(dataset);
+                })
+                .then(function() {
+                    var successToastTitle = translate('DATASET_REMOVE_SUCCESS_TITLE');
+                    var successToastMessage = translate('DATASET_REMOVE_SUCCESS', {dataset: dataset.name});
+                    toaster.pop('success', successToastTitle, successToastMessage);
 
-                        toaster.pop('success', 'Remove dataset', 'The dataset "' + dataset.name + '" has been removed.');
-                        DatasetListService.refreshDatasets();
-                    });
-            });
+                    if(dataset === vm.lastSelectedMetadata) {
+                        vm.lastSelectedMetadata = null;
+                        vm.lastSelectedData = null;
+                    }
+                    DatasetListService.refreshDatasets();
+                });
         };
 
         DatasetListService.refreshDatasets();

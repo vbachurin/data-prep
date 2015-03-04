@@ -54,5 +54,6 @@
         .run(function ($window, $translate) {
             var language = ($window.navigator.language === 'fr') ? 'fr' : 'en';
             $translate.use(language);
+            $translate.use('fr');
         });
 })();

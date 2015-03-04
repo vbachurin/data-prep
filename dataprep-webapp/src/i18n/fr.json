@@ -35,6 +35,23 @@
   "LOADING"     : "Chargement",
   "PROCESSING"  : "Chargement",
 
+  "_comment" : "Confirm",
+  "DELETE_PERMANENTLY"      : "Vous allez supprimer le dataset \"{{dataset}}\" de façon permanente.",
+  "NO_UNDONE_CONFIRM"       : "Cette opération ne peut être annulée. Êtes-vous sûr ?",
+  "UPDATE_EXISTING_DATASET" : "Voulez-vous mettre à jour la dataset \"{{dataset}}\" existante ?",
+
+  "_comment" : "Success",
+  "DATASET_CREATE_SUCCESS_TITLE"  : "Nouveau dataset",
+  "DATASET_CREATE_SUCCESS"        : "Le dataset \"{{dataset}}\" a été créé",
+  "DATASET_REMOVE_SUCCESS_TITLE"  : "Dataset supprimé",
+  "DATASET_REMOVE_SUCCESS"        : "Le dataset \"{{dataset}}\" a été supprimé.",
+  "DATASET_UPDATE_SUCCESS_TITLE"  : "Dataset mis à jour",
+  "DATASET_UPDATE_SUCCESS"        : "Le dataset \"{{dataset}}\" a été mis à jour",
+
   "_comment" : "Errors",
-  "SERVICE_UNAVAILABLE" : "Service non disponible"
+  "GENERIC_ERROR"       : "Une erreur est survenue",
+  "SERVER_ERROR_TITLE"  : "Erreur serveur",
+  "SERVICE_UNAVAILABLE" : "Service non disponible",
+  "UPLOAD_ERROR_TITLE"  : "Erreur d'envoi",
+  "UPLOAD_ERROR"        : "Une erreur est survenue lors de l'envoi du fichier"
 }

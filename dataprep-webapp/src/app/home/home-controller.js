@@ -1,7 +1,8 @@
 (function() {
     'use strict';
 
-    function HomeCtrl(toaster, DatasetService, DatasetListService, TalendConfirmService) {
+    function HomeCtrl($filter, toaster, DatasetService, DatasetListService, TalendConfirmService) {
+        var translate = $filter('translate');
         var vm = this;
 
         /**
@@ -34,7 +35,7 @@
             // if the name exists, ask for update or creation
             vm.existingDatasetFromName = DatasetListService.getDatasetByName(name);
             if(vm.existingDatasetFromName) {
-                TalendConfirmService.confirm(null, 'Do you want to update existing "' + vm.datasetName + '" dataset ?')
+                TalendConfirmService.confirm(null, translate('UPDATE_EXISTING_DATASET', {dataset: vm.datasetName}))
                     .then(function() {
                         vm.updateExistingDataset();
                     }, function(cause) {
@@ -83,11 +84,11 @@
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetListService.refreshDatasets();
-                    toaster.pop('success', 'New dataset', 'The dataset "' + dataset.name + '" has been created');
+                    toaster.pop('success', translate('DATASET_CREATE_SUCCESS_TITLE'), translate('DATASET_CREATE_SUCCESS', {dataset: dataset.name}));
                 })
                 .catch(function() {
                     dataset.error = true;
-                    toaster.pop('error', 'Upload error', 'An error occurred during file upload');
+                    toaster.pop('error', translate('UPLOAD_ERROR_TITLE'), translate('UPLOAD_ERROR'));
                 });
         };
 
@@ -107,11 +108,11 @@
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetListService.refreshDatasets();
-                    toaster.pop('success', 'Dataset update', 'The dataset "' + dataset.name + '" has been updated');
+                    toaster.pop('success', translate('DATASET_UPDATE_SUCCESS_TITLE'), translate('DATASET_UPDATE_SUCCESS', {dataset: dataset.name}));
                 })
                 .catch(function() {
                     dataset.error = true;
-                    toaster.pop('error', 'Upload error', 'An error occurred during file upload');
+                    toaster.pop('error', translate('UPLOAD_ERROR_TITLE'), translate('UPLOAD_ERROR'));
                 });
         };
     }
