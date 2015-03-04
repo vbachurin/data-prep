@@ -5,12 +5,13 @@ describe('Dataset column header directive', function() {
     beforeEach(module('data-prep-dataset'));
     beforeEach(module('htmlTemplates'));
     
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();
         createElement = function(directiveScope) {
             var element = angular.element('<dataset-column-header column="column"></dataset-column-header>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
+            $timeout.flush();
             return element;
         };
     }));
@@ -84,5 +85,29 @@ describe('Dataset column header directive', function() {
         expect(element.find('.record-ok').css('width')).toBe('78%');
         expect(element.find('.record-empty').css('width')).toBe('10%');
         expect(element.find('.record-nok').css('width')).toBe('12%');
+    });
+
+    it('should close dropdown on get transform list error', function() {
+        //given
+        scope.column = {
+            'id': 'MostPopulousCity',
+            'quality': {
+                'empty': 5,
+                'invalid': 10,
+                'valid': 72
+            },
+            'type': 'string'
+        };
+
+        var element = createElement(scope);
+        var menu = element.find('.grid-header-menu').eq(0);
+        menu.addClass('show-menu');
+
+        //when
+        element.controller('datasetColumnHeader').transformationsRetrieveError = true;
+        scope.$apply();
+
+        //then
+        expect(menu.hasClass('show-menu')).toBe(false);
     });
 });

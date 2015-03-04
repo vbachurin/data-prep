@@ -5,7 +5,7 @@
      * Dropdown directive
      *
      * Example :
-     * <talend-dropdown close-on-select="false">
+     * <talend-dropdown close-on-select="false" on-open="onOpen()">
      * <div class="dropdown-container grid-header">
      *      <div class="dropdown-action">
      *          <div class="grid-header-title dropdown-button">{{ column.id }}</div>
@@ -20,7 +20,8 @@
      * </div>
      * </talend-dropdown>
      *
-     * Attribute close-on-select : default true. If set to false, dropdown will not close on item click
+     * Attribute close-on-select : default true. If set to false, dropdown will not close on inner item click
+     * Attribute on-open : function to execute on dropdown open
      * Class 'dropdown-action' : action zone that trigger menu toggle
      * Class 'dropdown-button' : add a caret at the end off element
      * Class 'dropdown-menu' : menu
@@ -35,7 +36,8 @@
             transclude: true,
             templateUrl: 'components/widgets/dropdown/dropdown.html',
             scope: {
-                closeOnSelect: '='
+                closeOnSelect: '=',
+                onOpen: '&'
             },
             link: {
                 post: function (scope, iElement) {
@@ -49,6 +51,11 @@
                         menu.removeClass('show-menu');
                     };
 
+                    var showMenu = function() {
+                        menu.addClass('show-menu');
+                        scope.onOpen();
+                    };
+
                     // Show or hide menu on action zone click
                     iElement.find('.dropdown-action').on('click', function (event) {
                         event.stopPropagation();
@@ -57,10 +64,10 @@
                         hideAllDropDowns();
 
                         if (hasClass) {
-                            menu.removeClass('show-menu');
+                            hideMenu();
                         }
                         else {
-                            menu.addClass('show-menu');
+                            showMenu();
                         }
                     });
 

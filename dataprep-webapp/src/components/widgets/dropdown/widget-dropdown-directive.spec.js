@@ -126,4 +126,40 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(true);
         });
     });
+
+    describe('with onOpen action', function() {
+        beforeEach(inject(function ($rootScope, $compile) {
+            scope = $rootScope.$new();
+            scope.onOpen = function() {};
+            spyOn(scope, 'onOpen').and.returnValue(true);
+
+            html = '<talend-dropdown id="dropdown1" on-open="onOpen()">' +
+            '    <div class="dropdown-container grid-header">' +
+            '        <div class="dropdown-action">' +
+            '            <div class="grid-header-title dropdown-button">{{ column.id }}</div>' +
+            '            <div class="grid-header-type">{{ column.type }}</div>' +
+            '        </div>' +
+            '        <ul class="dropdown-menu grid-header-menu" style="display:none;">' +
+            '            <li role="presentation"><a role="menuitem" href="#">Hide Column</a></li>' +
+            '            <li class="divider"></li>' +
+            '            <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>' +
+            '            <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>' +
+            '        </ul>' +
+            '    </div>' +
+            '</talend-dropdown>';
+            element = $compile(html)(scope);
+            scope.$digest();
+        }));
+
+        it('should call action on open click', function () {
+            //given
+            expect(scope.onOpen).not.toHaveBeenCalled();
+
+            //when
+            clickDropdownToggle();
+
+            //then
+            expect(scope.onOpen).toHaveBeenCalled();
+        });
+    });
 });
