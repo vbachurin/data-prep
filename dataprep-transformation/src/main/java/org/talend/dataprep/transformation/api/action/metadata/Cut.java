@@ -11,27 +11,29 @@ import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.api.type.Types;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 
-public class LowerCase implements ActionMetadata {
+public class Cut implements ActionMetadata {
 
-    public static final String         COLUMN_NAME_PARAMETER  = "column_name";                                                 //$NON-NLS-1$
+    public static final String         COLUMN_NAME_PARAMETER = "column_name";                                    //$NON-NLS-1$
 
-    public static final String         LOWER_CASE_ACTION_NAME = "lowercase";                                                   //$NON-NLS-1$
+    public static final String         PATTERN_PARAMETER     = "pattern";                                        //$NON-NLS-1$
 
-    public static final String         LOWER_CASE_ACTION_DESC = "converts all of the cell values in this column to lower case"; //$NON-NLS-1$
+    public static final String         CUT_ACTION_NAME       = "cut";                                            //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE               = new LowerCase();
+    public static final String         CUT_ACTION_DESC       = "remove specified text from cells in this column"; //$NON-NLS-1$
 
-    private LowerCase() {
+    public static final ActionMetadata INSTANCE              = new Cut();
+
+    private Cut() {
     }
 
     @Override
     public String getName() {
-        return LOWER_CASE_ACTION_NAME;
+        return CUT_ACTION_NAME;
     }
 
     @Override
     public String getDescription() {
-        return LOWER_CASE_ACTION_DESC;
+        return CUT_ACTION_DESC;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class LowerCase implements ActionMetadata {
 
     @Override
     public String getCategory() {
-        return "case";
+        return "repair";
     }
 
     @Override
@@ -56,7 +58,8 @@ public class LowerCase implements ActionMetadata {
 
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY) };
+        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY),
+                new Parameter(PATTERN_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY) };
     }
 
     @Override
@@ -68,6 +71,9 @@ public class LowerCase implements ActionMetadata {
             case COLUMN_NAME_PARAMETER:
                 parsedParameters.put(COLUMN_NAME_PARAMETER, currentParameter.getValue().getTextValue());
                 break;
+            case PATTERN_PARAMETER:
+                parsedParameters.put(PATTERN_PARAMETER, currentParameter.getValue().getTextValue());
+                break;
             default:
                 ActionParser.LOGGER
                         .warn("Parameter '" + currentParameter.getKey() + "' is not recognized for " + this.getClass());
@@ -77,7 +83,7 @@ public class LowerCase implements ActionMetadata {
             String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER);
             String value = row.get(columnName);
             if (value != null) {
-                row.set(columnName, value.toLowerCase());
+                row.set(columnName, value.replace(parsedParameters.get(PATTERN_PARAMETER), ""));
             }
         };
     }

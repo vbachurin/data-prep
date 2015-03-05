@@ -114,6 +114,16 @@ public class TransformationServiceTests {
     }
 
     @Test
+    public void cutAction() throws Exception {
+        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("cutAction.json"));
+        String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test4.json"));
+        String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test4_cutAction.json"));
+        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+                .post("/transform?actions=" + encode(actions)).asString();
+        assertEquals(expectedContent, transformedContent, false);
+    }
+
+    @Test
     public void emptyColumnSuggest() throws Exception {
         String response = given().contentType(ContentType.JSON).body("").when().post("/suggest/column").asString();
         assertEquals("[]", response, false);
