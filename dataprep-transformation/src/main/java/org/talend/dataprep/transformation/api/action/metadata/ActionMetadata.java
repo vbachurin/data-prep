@@ -11,6 +11,8 @@ public interface ActionMetadata {
 
     String getName();
 
+    String getDescription();
+
     Type getType();
 
     String getCategory();
