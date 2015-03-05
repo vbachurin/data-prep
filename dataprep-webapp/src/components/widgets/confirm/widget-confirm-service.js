@@ -99,7 +99,7 @@
          * Example : TalendConfirmService.confirm({disableEnter: true}, 'First text', 'Second text')
          *
          * @param options - {disableEnter: boolean}
-         * @param texts - Array containing the texts ids to display
+         * @param textIds - Array containing the texts ids to display
          * @param textArgs - Text translation args
          * @returns Promise
          */
