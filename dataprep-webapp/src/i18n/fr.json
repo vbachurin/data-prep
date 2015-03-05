@@ -37,6 +37,7 @@
 
   "_comment" : "Confirm",
   "DELETE_PERMANENTLY"      : "Vous allez supprimer le dataset \"{{dataset}}\" de façon permanente.",
+  "ENTER_DATASET_NAME"      : "Entrer le nom du dataset",
   "NO_UNDONE_CONFIRM"       : "Cette opération ne peut être annulée. Êtes-vous sûr ?",
   "UPDATE_EXISTING_DATASET" : "Voulez-vous mettre à jour la dataset \"{{dataset}}\" existante ?",
 

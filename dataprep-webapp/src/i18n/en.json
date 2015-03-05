@@ -37,6 +37,7 @@
 
   "_comment" : "Confirm",
   "DELETE_PERMANENTLY"      : "You are going to permanently delete the dataset \"{{dataset}}\".",
+  "ENTER_DATASET_NAME"      : "Enter the dataset name",
   "NO_UNDONE_CONFIRM"       : "This operation cannot be undone. Are you sure ?",
   "UPDATE_EXISTING_DATASET" : "Do you want to update existing \"{{dataset}}\" dataset ?",
 
