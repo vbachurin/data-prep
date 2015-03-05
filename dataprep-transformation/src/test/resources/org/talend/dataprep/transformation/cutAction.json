@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "cut",
+      "parameters": {
+        "column_name": "name",
+        "pattern": "The "
+      }
+    }
+  ]
+}
