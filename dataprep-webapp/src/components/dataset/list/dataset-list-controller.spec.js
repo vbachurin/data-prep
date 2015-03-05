@@ -97,7 +97,7 @@ describe('Dataset list controller', function () {
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, toaster, DatasetService, DatasetGridService) {
+        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService, DatasetGridService) {
             ctrl = createController();
             scope.$digest();
 
@@ -106,10 +106,10 @@ describe('Dataset list controller', function () {
             spyOn($rootScope, '$emit').and.callThrough();
             spyOn(DatasetGridService, 'setDataset').and.callThrough();
             spyOn(DatasetGridService, 'show').and.callThrough();
-            spyOn(toaster, 'pop').and.callThrough();
+            spyOn(MessageService, 'success').and.callThrough();
         }));
 
-        it('should delete dataset, show toast and refresh dataset list', inject(function ($q, toaster, DatasetService, DatasetListService, TalendConfirmService) {
+        it('should delete dataset, show toast and refresh dataset list', inject(function ($q, MessageService, DatasetService, DatasetListService, TalendConfirmService) {
             //given
             var dataset = datasets[0];
             spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
@@ -119,13 +119,13 @@ describe('Dataset list controller', function () {
             scope.$digest();
 
             //then
-            expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, 'You are going to permanently delete the dataset "Customers (50 lines)".', 'This operation cannot be undone. Are you sure ?');
+            expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, [ 'DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM' ], { dataset: 'Customers (50 lines)' });
             expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
-            expect(toaster.pop).toHaveBeenCalledWith('success', 'Remove dataset', 'The dataset "Customers (50 lines)" has been removed.');
+            expect(MessageService.success).toHaveBeenCalledWith('DATASET_REMOVE_SUCCESS_TITLE', 'DATASET_REMOVE_SUCCESS', {dataset: 'Customers (50 lines)'});
             expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
         }));
 
-        it('should reset selected infos when the dataset is deleted', inject(function ($q, toaster, DatasetService, DatasetListService, TalendConfirmService) {
+        it('should reset selected infos when the dataset is deleted', inject(function ($q, DatasetService, DatasetListService, TalendConfirmService) {
             //given
             var dataset = datasets[0];
             ctrl.lastSelectedMetadata = dataset;

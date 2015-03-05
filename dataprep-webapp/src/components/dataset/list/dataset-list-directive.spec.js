@@ -44,10 +44,8 @@ describe('Dataset list directive', function() {
 
         //then
         expect(element.find('td.inventory-title').eq(0).text()).toBe('US States');
-        expect(element.find('.inventory-description').eq(0).text().indexOf('anonymousUser') > -1).toBe(true);
-        expect(element.find('.inventory-description').eq(0).text().indexOf('02-03-2015 14:52') > -1).toBe(true);
+        expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created on 02-03-2015 14:52, contains  lines');
         expect(element.find('td.inventory-title').eq(1).text()).toBe('Customers');
-        expect(element.find('.inventory-description').eq(1).text().indexOf('anonymousUser') > -1).toBe(true);
-        expect(element.find('.inventory-description').eq(1).text().indexOf('02-03-2015 14:53') > -1).toBe(true);
+        expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created on 02-03-2015 14:53, contains  lines');
     });
 });

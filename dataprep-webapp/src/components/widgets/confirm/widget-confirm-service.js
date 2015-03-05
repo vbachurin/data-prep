@@ -1,20 +1,41 @@
 (function() {
     'use strict';
 
-    function TalendConfirmService($rootScope, $compile, $document, $q, $timeout) {
+    function TalendConfirmService($rootScope, $compile, $document, $q, $timeout, $translate) {
         var body = $document.find('body').eq(0);
         var self = this;
 
         /**
-         * Create confirm modal isolated scope
-         * @param text - the text to display
+         * Translate the texts to display
+         * @param textIds - text ids for translation
+         * @param textArgs - text translation args
+         * @returns Promise
          */
-        var createScope = function(options, texts) {
+        var translateTexts = function(textIds, textArgs) {
+            return $translate(textIds, textArgs)
+                .then(function(translations) {
+                    return _.map(textIds, function(id) {
+                        return translations[id];
+                    });
+                });
+        };
+
+        /**
+         * Create confirm modal isolated scope
+         * @param options - modal options
+         * @param textIds - text ids for translation
+         * @param textArgs - text translation args
+         */
+        var createScope = function(options, textIds, textArgs) {
             if(self.modalScope) {
                 throw new Error('A confirm popup is already created');
             }
             self.modalScope = $rootScope.$new(true);
-            self.modalScope.texts = texts;
+            translateTexts(textIds, textArgs)
+                .then(function(translatedTexts) {
+                    self.modalScope.texts = translatedTexts;
+                });
+
             if(options) {
                 self.modalScope.disableEnter = options.disableEnter;
             }
@@ -78,13 +99,12 @@
          * Example : TalendConfirmService.confirm({disableEnter: true}, 'First text', 'Second text')
          *
          * @param options - {disableEnter: boolean}
-         * @param texts... - the texts to display
+         * @param texts - Array containing the texts ids to display
+         * @param textArgs - Text translation args
          * @returns Promise
          */
-        this.confirm = function() {
-            var options = arguments[0];
-            var texts = Array.prototype.slice.call(arguments, 1);
-            createScope(options, texts);
+        this.confirm = function(options, textIds, textArgs) {
+            createScope(options, textIds, textArgs);
             createElement();
 
             return $q(function(resolve, reject) {

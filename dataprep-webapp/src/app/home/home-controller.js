@@ -1,8 +1,7 @@
 (function() {
     'use strict';
 
-    function HomeCtrl($filter, toaster, DatasetService, DatasetListService, TalendConfirmService) {
-        var translate = $filter('translate');
+    function HomeCtrl(MessageService, DatasetService, DatasetListService, TalendConfirmService) {
         var vm = this;
 
         /**
@@ -35,14 +34,17 @@
             // if the name exists, ask for update or creation
             vm.existingDatasetFromName = DatasetListService.getDatasetByName(name);
             if(vm.existingDatasetFromName) {
-                TalendConfirmService.confirm(null, translate('UPDATE_EXISTING_DATASET', {dataset: vm.datasetName}))
-                    .then(function() {
-                        vm.updateExistingDataset();
-                    }, function(cause) {
-                        if(cause !== 'dismiss') {
-                            vm.createDatasetFromExistingName();
+                TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], {dataset: vm.datasetName})
+                    .then(
+                        function() {
+                            vm.updateExistingDataset();
+                        },
+                        function(cause) {
+                            if(cause !== 'dismiss') {
+                                vm.createDatasetFromExistingName();
+                            }
                         }
-                    });
+                    );
             }
             // create with requested name
             else {
@@ -84,11 +86,11 @@
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetListService.refreshDatasets();
-                    toaster.pop('success', translate('DATASET_CREATE_SUCCESS_TITLE'), translate('DATASET_CREATE_SUCCESS', {dataset: dataset.name}));
+                    MessageService.success('DATASET_CREATE_SUCCESS_TITLE', 'DATASET_CREATE_SUCCESS', {dataset: dataset.name});
                 })
                 .catch(function() {
                     dataset.error = true;
-                    toaster.pop('error', translate('UPLOAD_ERROR_TITLE'), translate('UPLOAD_ERROR'));
+                    MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 });
         };
 
@@ -108,11 +110,11 @@
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
                     DatasetListService.refreshDatasets();
-                    toaster.pop('success', translate('DATASET_UPDATE_SUCCESS_TITLE'), translate('DATASET_UPDATE_SUCCESS', {dataset: dataset.name}));
+                    MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset: dataset.name});
                 })
                 .catch(function() {
                     dataset.error = true;
-                    toaster.pop('error', translate('UPLOAD_ERROR_TITLE'), translate('UPLOAD_ERROR'));
+                    MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 });
         };
     }

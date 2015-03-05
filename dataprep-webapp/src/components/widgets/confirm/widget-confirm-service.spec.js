@@ -4,6 +4,16 @@ describe('Confirm widget service', function() {
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
 
+    beforeEach(module('pascalprecht.translate', function ($translateProvider) {
+        $translateProvider.translations('en_US', {
+            'TEXT_1': 'TEXT_1_VALUE',
+            'TEXT_2': 'TEXT_2_VALUE',
+            'TEXT_3': 'TEXT_3_VALUE : {{argValue}}'
+        });
+        $translateProvider.preferredLanguage('en_US');
+    }));
+
+
     afterEach(inject(function($timeout, TalendConfirmService) {
         if(TalendConfirmService.element) {
             TalendConfirmService.resolve();
@@ -13,20 +23,20 @@ describe('Confirm widget service', function() {
 
     it('should create scope and confirm element with options', inject(function($rootScope, TalendConfirmService) {
         //given
-        var text1 = 'text 1';
-        var text2 = 'text 2';
+        var text1 = 'TEXT_1';
+        var text2 = 'TEXT_2';
         var body = angular.element('body');
         expect(TalendConfirmService.modalScope).toBeFalsy();
         expect(TalendConfirmService.element).toBeFalsy();
         expect(body.has('talend-confirm').length).toBe(0);
 
         //when
-        TalendConfirmService.confirm({disableEnter: true}, text1, text2);
+        TalendConfirmService.confirm({disableEnter: true}, [text1, text2]);
         $rootScope.$digest();
 
         //then
         expect(TalendConfirmService.modalScope).toBeTruthy();
-        expect(TalendConfirmService.modalScope.texts).toEqual([text1, text2]);
+        expect(TalendConfirmService.modalScope.texts).toEqual(['TEXT_1_VALUE', 'TEXT_2_VALUE']);
         expect(TalendConfirmService.modalScope.disableEnter).toBe(true);
         expect(TalendConfirmService.element).toBeTruthy();
         expect(TalendConfirmService.element.scope()).toBe(TalendConfirmService.modalScope);
@@ -36,21 +46,43 @@ describe('Confirm widget service', function() {
 
     it('should create scope and confirm element without options', inject(function($rootScope, TalendConfirmService) {
         //given
-        var text1 = 'text 1';
-        var text2 = 'text 2';
+        var text1 = 'TEXT_1';
+        var text2 = 'TEXT_2';
         var body = angular.element('body');
         expect(TalendConfirmService.modalScope).toBeFalsy();
         expect(TalendConfirmService.element).toBeFalsy();
         expect(body.has('talend-confirm').length).toBe(0);
 
         //when
-        TalendConfirmService.confirm(null, text1, text2);
+        TalendConfirmService.confirm(null, [text1, text2]);
         $rootScope.$digest();
 
         //then
         expect(TalendConfirmService.modalScope).toBeTruthy();
-        expect(TalendConfirmService.modalScope.texts).toEqual([text1, text2]);
+        expect(TalendConfirmService.modalScope.texts).toEqual(['TEXT_1_VALUE', 'TEXT_2_VALUE']);
         expect(TalendConfirmService.modalScope.disableEnter).toBeFalsy();
+        expect(TalendConfirmService.element).toBeTruthy();
+        expect(TalendConfirmService.element.scope()).toBe(TalendConfirmService.modalScope);
+
+        expect(body.has('talend-confirm').length).toBe(1);
+    }));
+
+    it('should create scope and confirm element with translate arguments', inject(function($rootScope, TalendConfirmService) {
+        //given
+        var text1 = 'TEXT_1';
+        var text3 = 'TEXT_3';
+        var body = angular.element('body');
+        expect(TalendConfirmService.modalScope).toBeFalsy();
+        expect(TalendConfirmService.element).toBeFalsy();
+        expect(body.has('talend-confirm').length).toBe(0);
+
+        //when
+        TalendConfirmService.confirm(null, [text1, text3], {argValue: 'my value'});
+        $rootScope.$digest();
+
+        //then
+        expect(TalendConfirmService.modalScope).toBeTruthy();
+        expect(TalendConfirmService.modalScope.texts).toEqual(['TEXT_1_VALUE', 'TEXT_3_VALUE : my value']);
         expect(TalendConfirmService.element).toBeTruthy();
         expect(TalendConfirmService.element.scope()).toBe(TalendConfirmService.modalScope);
 

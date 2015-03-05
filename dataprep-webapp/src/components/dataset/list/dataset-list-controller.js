@@ -1,8 +1,7 @@
 (function() {
     'use strict';
 
-    function DatasetListCtrl($q, $filter, toaster, DatasetService, DatasetListService, DatasetGridService, TalendConfirmService) {
-        var translate = $filter('translate');
+    function DatasetListCtrl($q, DatasetService, DatasetListService, DatasetGridService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
 
@@ -45,16 +44,12 @@
          * @param dataset - the dataset to delete
          */
         vm.delete = function(dataset) {
-            var explainationsText = translate('DELETE_PERMANENTLY', {dataset: dataset.name}),
-                confirmText = translate('NO_UNDONE_CONFIRM');
-            TalendConfirmService.confirm({disableEnter: true}, explainationsText, confirmText)
+            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {dataset: dataset.name})
                 .then(function() {
                     return DatasetService.deleteDataset(dataset);
                 })
                 .then(function() {
-                    var successToastTitle = translate('DATASET_REMOVE_SUCCESS_TITLE');
-                    var successToastMessage = translate('DATASET_REMOVE_SUCCESS', {dataset: dataset.name});
-                    toaster.pop('success', successToastTitle, successToastMessage);
+                    MessageService.success('DATASET_REMOVE_SUCCESS_TITLE', 'DATASET_REMOVE_SUCCESS', {dataset: dataset.name});
 
                     if(dataset === vm.lastSelectedMetadata) {
                         vm.lastSelectedMetadata = null;

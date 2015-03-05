@@ -1,9 +1,18 @@
 describe('Home controller', function() {
     'use strict';
 
-    var ctrl, createController, scope;
+    var ctrl, createController, scope, $httpBackend;
 
     beforeEach(module('data-prep'));
+
+    beforeEach(inject(function ($injector, MessageService) {
+        $httpBackend = $injector.get('$httpBackend');
+        $httpBackend.when('GET', 'i18n/en.json').respond({});
+        $httpBackend.when('GET', 'i18n/fr.json').respond({});
+
+        spyOn(MessageService, 'success').and.callThrough();
+        spyOn(MessageService, 'error').and.callThrough();
+    }));
 
     beforeEach(inject(function($rootScope, $controller) {
         scope = $rootScope.$new();
@@ -13,7 +22,6 @@ describe('Home controller', function() {
                 $scope: scope
             });
         };
-
     }));
 
     it('should init upload list to empty array', function() {
@@ -27,7 +35,7 @@ describe('Home controller', function() {
     describe('with created controller', function() {
         var uploadDefer;
 
-        beforeEach(inject(function($q, toaster, DatasetService, DatasetListService) {
+        beforeEach(inject(function($q, DatasetService, DatasetListService) {
             ctrl = createController();
             ctrl.datasetFile = [{name: 'my dataset.csv'}];
             ctrl.datasetName = 'my cool dataset';
@@ -42,7 +50,6 @@ describe('Home controller', function() {
             spyOn(DatasetService, 'createDataset').and.returnValue(uploadDefer.promise);
             spyOn(DatasetService, 'updateDataset').and.returnValue(uploadDefer.promise);
             spyOn(DatasetListService, 'refreshDatasets').and.returnValue(null);
-            spyOn(toaster, 'pop').and.callThrough();
         }));
 
         it('should remove file extension for name init and display name modal on step 1', function() {
@@ -62,7 +69,7 @@ describe('Home controller', function() {
                 spyOn(DatasetListService, 'getDatasetByName').and.returnValue(null);
             }));
 
-            it('should create dataset if name is unique', inject(function(toaster, DatasetService, DatasetListService) {
+            it('should create dataset if name is unique', inject(function(MessageService, DatasetService, DatasetListService) {
                 //given
                 expect(ctrl.uploadingDatasets.length).toBe(0);
                 ctrl.uploadDatasetName();
@@ -76,7 +83,7 @@ describe('Home controller', function() {
                 expect(DatasetService.createDataset).toHaveBeenCalled();
                 expect(ctrl.uploadingDatasets.length).toBe(0);
                 expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-                expect(toaster.pop).toHaveBeenCalledWith('success', 'New dataset', 'The dataset "my cool dataset" has been created');
+                expect(MessageService.success).toHaveBeenCalledWith('DATASET_CREATE_SUCCESS_TITLE', 'DATASET_CREATE_SUCCESS', {dataset: 'my cool dataset'});
             }));
 
             it('should update progress on create', inject(function(DatasetService) {
@@ -98,7 +105,7 @@ describe('Home controller', function() {
                 expect(ctrl.uploadingDatasets[0].progress).toBe(70);
             }));
 
-            it('should set error flag and show error toast', inject(function(toaster, DatasetService) {
+            it('should set error flag and show error toast', inject(function(DatasetService, MessageService) {
                 //given
                 ctrl.uploadDatasetName();
                 expect(ctrl.uploadingDatasets[0].error).toBeFalsy();
@@ -110,7 +117,7 @@ describe('Home controller', function() {
                 //then
                 expect(DatasetService.createDataset).toHaveBeenCalled();
                 expect(ctrl.uploadingDatasets[0].error).toBeTruthy();
-                expect(toaster.pop).toHaveBeenCalledWith('error', 'Upload error', 'An error occurred during file upload');
+                expect(MessageService.error).toHaveBeenCalledWith('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
             }));
         });
 
@@ -138,12 +145,12 @@ describe('Home controller', function() {
 
                 //then
                 expect(DatasetListService.getDatasetByName).toHaveBeenCalledWith(ctrl.datasetName);
-                expect(TalendConfirmService.confirm).toHaveBeenCalledWith(null, 'Do you want to update existing "my cool dataset" dataset ?');
+                expect(TalendConfirmService.confirm).toHaveBeenCalledWith(null, [ 'UPDATE_EXISTING_DATASET' ], { dataset: 'my cool dataset' });
                 expect(DatasetService.createDataset).not.toHaveBeenCalled();
                 expect(DatasetService.updateDataset).not.toHaveBeenCalled();
             }));
 
-            it('should create dataset with modified name', inject(function (toaster, TalendConfirmService, DatasetService, DatasetListService) {
+            it('should create dataset with modified name', inject(function (MessageService, TalendConfirmService, DatasetService, DatasetListService) {
                 //given
                 ctrl.uploadDatasetName();
 
@@ -156,10 +163,10 @@ describe('Home controller', function() {
                 //then
                 expect(DatasetService.fileToDataset).toHaveBeenCalledWith(ctrl.datasetFile[0], 'my cool dataset (1)');
                 expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-                expect(toaster.pop).toHaveBeenCalledWith('success', 'New dataset', 'The dataset "my cool dataset (1)" has been created');
+                expect(MessageService.success).toHaveBeenCalledWith('DATASET_CREATE_SUCCESS_TITLE', 'DATASET_CREATE_SUCCESS', {dataset : 'my cool dataset (1)'});
             }));
 
-            it('should update existing dataset', inject(function (toaster, TalendConfirmService, DatasetService, DatasetListService) {
+            it('should update existing dataset', inject(function (MessageService, TalendConfirmService, DatasetService, DatasetListService) {
                 //given
                 ctrl.uploadDatasetName();
 
@@ -174,10 +181,10 @@ describe('Home controller', function() {
                 expect(DatasetService.updateDataset).toHaveBeenCalled();
                 expect(ctrl.uploadingDatasets.length).toBe(0);
                 expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-                expect(toaster.pop).toHaveBeenCalledWith('success', 'Dataset update', 'The dataset "my cool dataset" has been updated');
+                expect(MessageService.success).toHaveBeenCalledWith('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset : 'my cool dataset'});
             }));
 
-            it('should set error flag and show error toast on update error', inject(function (toaster, TalendConfirmService, DatasetService) {
+            it('should set error flag and show error toast on update error', inject(function (MessageService, TalendConfirmService, DatasetService) {
                 //given
                 ctrl.uploadDatasetName();
 
@@ -191,10 +198,10 @@ describe('Home controller', function() {
                 //then
                 expect(DatasetService.updateDataset).toHaveBeenCalled();
                 expect(ctrl.uploadingDatasets[0].error).toBeTruthy();
-                expect(toaster.pop).toHaveBeenCalledWith('error', 'Upload error', 'An error occurred during file upload');
+                expect(MessageService.error).toHaveBeenCalledWith('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
             }));
 
-            it('should update progress on update', inject(function (toaster, TalendConfirmService, DatasetService) {
+            it('should update progress on update', inject(function (TalendConfirmService, DatasetService) {
                 //given
                 ctrl.uploadDatasetName();
                 confirmDefer.resolve();

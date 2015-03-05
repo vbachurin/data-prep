@@ -1,20 +1,16 @@
 (function() {
     'use strict';
 
-    function RestErrorMessageHandler($q, $translate, toaster){
+    function RestErrorMessageHandler($q, MessageService){
+
         return {
             responseError: function(rejection) {
                 if(rejection.status === 0) {
-                    $translate('SERVICE_UNAVAILABLE').then(function(value) {
-                        toaster.pop('error', 'Error', value);
-                    });
-                    
+                    MessageService.error('SERVER_ERROR_TITLE', 'SERVICE_UNAVAILABLE');
                 }
 
                 else if(rejection.status === 500) {
-                    $translate('GENERIC_ERROR').then(function(value) {
-                        toaster.pop('error', 'Error', value);
-                    });
+                    MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
                 }
 
                 return $q.reject(rejection);
