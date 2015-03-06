@@ -404,4 +404,26 @@ describe('Dropdown directive', function () {
         //finally
         element.remove();
     });
+
+    it('should simulate click on body on inner element click', function () {
+        //given
+        scope.fullscreen = false;
+        scope.state = false;
+        scope.closeButton = false;
+        var element = createFormElement(scope);
+
+        var bodyClicked = false;
+        angular.element('body').click(function() {
+            bodyClicked = true;
+        });
+
+        //when
+        element.find('.modal-inner').click();
+
+        //then
+        expect(bodyClicked).toBe(true);
+
+        //finally
+        element.remove();
+    });
 });

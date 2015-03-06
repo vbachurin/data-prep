@@ -6,7 +6,7 @@ describe('Dataset column header directive', function() {
     beforeEach(module('htmlTemplates'));
     
     beforeEach(inject(function($rootScope, $compile, $timeout) {
-        scope = $rootScope.$new();
+        scope = $rootScope.$new(true);
         createElement = function(directiveScope) {
             var element = angular.element('<dataset-column-header column="column"></dataset-column-header>');
             $compile(element)(directiveScope);

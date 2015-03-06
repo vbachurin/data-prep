@@ -39,8 +39,15 @@
                 closeOnSelect: '=',
                 onOpen: '&'
             },
+            bindToController: true,
+            controller: function() {},
+            controllerAs: 'ctrl',
             link: {
-                post: function (scope, iElement) {
+                post: function (scope, iElement, iAttrs, ctrl) {
+                    var body = angular.element('body');
+                    var windowElement = angular.element($window);
+                    var container = iElement.find('.dropdown-container');
+                    var action = iElement.find('.dropdown-action');
                     var menu = iElement.find('.dropdown-menu');
 
                     var hideAllDropDowns = function () {
@@ -49,17 +56,28 @@
 
                     var hideMenu = function () {
                         menu.removeClass('show-menu');
+                        windowElement.off('scroll', positionMenu);
                     };
 
                     var showMenu = function() {
                         menu.addClass('show-menu');
-                        if(! menu.hasClass('right')) {
-                            var position = menu[0].getBoundingClientRect();
-                            if(position.right > $window.innerWidth) {
-                                menu.addClass('right');
-                            }
+                        positionMenu();
+                        ctrl.onOpen();
+                        windowElement.on('scroll', positionMenu);
+                    };
+
+                    var positionMenu = function() {
+                        var position = container.length ? container[0].getBoundingClientRect() : action[0].getBoundingClientRect();
+                        menu.css('top', position.bottom + 5);
+                        menu.css('left', position.left);
+                        menu.css('right', 'auto');
+                        menu.removeClass('right');
+                        var menuPosition = menu[0].getBoundingClientRect();
+                        if(menuPosition.right > $window.innerWidth) {
+                            menu.css('left', 'auto');
+                            menu.css('right', $window.innerWidth - position.right);
+                            menu.addClass('right');
                         }
-                        scope.onOpen();
                     };
 
                     // Show or hide menu on action zone click
@@ -80,13 +98,22 @@
                     //hide menu on menu item select if 'closeOnSelect' is not false
                     iElement.find('.dropdown-menu').click(function (event) {
                         event.stopPropagation();
-                        if (scope.closeOnSelect !== false) {
+                        if (ctrl.closeOnSelect !== false) {
                             hideMenu();
                         }
                     });
 
                     //hide menu on body click
-                    angular.element('body').click(hideMenu);
+                    body.click(hideMenu);
+
+                    //on element destroy, we destroy the scope which unregister body click and window scroll handlers
+                    iElement.on('$destroy', function () {
+                        scope.$destroy();
+                    });
+                    scope.$on('$destroy', function() {
+                        body.off('click', hideMenu);
+                        windowElement.off('scroll', positionMenu);
+                    });
                 }
             }
         };

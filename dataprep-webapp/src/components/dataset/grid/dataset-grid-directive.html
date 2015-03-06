@@ -8,19 +8,9 @@
     </div>
 
     <div class="modal-body">
-        <table class="datagrid">
-            <thead>
-            <tr>
-                <th ng-repeat="column in datagridCtrl.data.columns">
-                    <dataset-column-header column="column" metadata="datagridCtrl.metadata"></dataset-column-header>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="record in datagridCtrl.data.records track by $index">
-                <td ng-repeat="column in datagridCtrl.data.columns track by $index">{{ record[column.id] }}</td>
-            </tr>
-            </tbody>
-        </table>
+        <div id="datagrid" class="datagrid">
+
+        </div>
+
     </div>
 </talend-modal>

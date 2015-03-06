@@ -16,6 +16,12 @@ describe('Dropdown directive', function () {
         elm.find('a[role="menuitem"]').eq(0).click();
     };
 
+    afterEach(function() {
+        if(element) {
+            element.remove();
+        }
+    });
+
     describe('closeable dropdown', function() {
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
@@ -76,6 +82,30 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(false);
         });
 
+        it('should register window scroll handler on open', inject(function ($window) {
+            //given
+            expect($._data( angular.element($window)[0], 'events' )).not.toBeDefined();
+
+            //when
+            clickDropdownToggle();
+
+            //then
+            expect($._data( angular.element($window)[0], 'events' )).toBeDefined();
+            expect($._data( angular.element($window)[0], 'events').scroll.length).toBe(1);
+        }));
+
+        it('should unregister window scroll on close', inject(function ($window) {
+            //given
+            clickDropdownToggle();
+            expect($._data( angular.element($window)[0], 'events').scroll.length).toBe(1);
+
+            //when
+            clickDropdownToggle();
+
+            //then
+            expect($._data( angular.element($window)[0], 'events' )).not.toBeDefined();
+        }));
+
         it('should hide dropdown-menu on body click', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
@@ -88,6 +118,17 @@ describe('Dropdown directive', function () {
 
             //then
             expect(menu.hasClass('show-menu')).toBe(false);
+        });
+
+        it('should unregister body click on element remove', function () {
+            //given
+            expect($._data( angular.element('body')[0], 'events').click.length).toBe(1);
+
+            //when
+            element.remove();
+
+            //then
+            expect($._data( angular.element('body')[0], 'events' )).not.toBeDefined();
         });
     });
 

@@ -10,7 +10,7 @@
 
   line-height: $base-line-height;
   height: 100%;
-  
+
   ul {
     padding: 0;
     margin: 0;
@@ -49,7 +49,6 @@
   }
 
   .dropdown-menu {
-    @include transition (all 0.2s ease-in-out);
     background: $dropdown-background;
     border-radius: $base-border-radius;
     border: $dropdown-border;
@@ -58,9 +57,7 @@
     cursor: pointer;
     display: none;
     overflow: visible;
-    position: absolute;
-    left: 0;
-    top: 50px;
+    position: fixed;
     z-index: 99999;
 
     &:before {

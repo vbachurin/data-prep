@@ -10,7 +10,13 @@ describe('Dataset grid directive', function() {
         element = angular.element('<dataset-grid></dataset-grid>');
         $compile(element)(scope);
         scope.$digest();
+
+        angular.element('body').append(element);
     }));
+
+    afterEach(function() {
+        element.remove();
+    });
 
     it('should render dataset values', inject(function(DatasetGridService) {
         //given
@@ -61,12 +67,14 @@ describe('Dataset grid directive', function() {
             ],
             'records': [
                 {
+                    'id': '1',
                     'Postal': 'AL',
                     'State': 'Alabama',
                     'Capital': 'Montgomery',
                     'MostPopulousCity': 'Birmingham city'
                 },
                 {
+                    'id': '2',
                     'Postal': 'AK',
                     'State': 'Alaska',
                     'Capital': 'Juneau',
@@ -80,8 +88,8 @@ describe('Dataset grid directive', function() {
         scope.$digest();
 
         //then
-        var firstRowCells = element.find('tbody').find('tr').eq(0).find('td');
-        var secondRowCells = element.find('tbody').find('tr').eq(1).find('td');
+        var firstRowCells = element.find('.slick-row').eq(0).find('.slick-cell');
+        var secondRowCells = element.find('.slick-row').eq(1).find('.slick-cell');
         
         expect(firstRowCells.length).toBe(4);
         expect(firstRowCells.eq(0).text()).toBe('AL');
