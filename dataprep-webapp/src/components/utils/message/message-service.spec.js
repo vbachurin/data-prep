@@ -26,7 +26,7 @@ describe('Message service', function() {
         $rootScope.$digest();
 
         //then
-        expect(toaster.pop).toHaveBeenCalledWith('error', 'TITLE_VALUE', 'CONTENT_WITHOUT_ARG_VALUE');
+        expect(toaster.pop).toHaveBeenCalledWith('error', 'TITLE_VALUE', 'CONTENT_WITHOUT_ARG_VALUE', 0);
     }));
 
     it('should show toast on error with translate arg', inject(function($rootScope, MessageService, toaster) {
@@ -40,7 +40,7 @@ describe('Message service', function() {
         $rootScope.$digest();
 
         //then
-        expect(toaster.pop).toHaveBeenCalledWith('error', 'TITLE_VALUE', 'CONTENT_WITH_ARG_VALUE : my value');
+        expect(toaster.pop).toHaveBeenCalledWith('error', 'TITLE_VALUE', 'CONTENT_WITH_ARG_VALUE : my value', 0);
     }));
 
     it('should show toast on warning without translate arg', inject(function($rootScope, MessageService, toaster) {
@@ -53,7 +53,7 @@ describe('Message service', function() {
         $rootScope.$digest();
 
         //then
-        expect(toaster.pop).toHaveBeenCalledWith('warning', 'TITLE_VALUE', 'CONTENT_WITHOUT_ARG_VALUE');
+        expect(toaster.pop).toHaveBeenCalledWith('warning', 'TITLE_VALUE', 'CONTENT_WITHOUT_ARG_VALUE', 0);
     }));
 
     it('should show toast on warning with translate arg', inject(function($rootScope, MessageService, toaster) {
@@ -67,7 +67,7 @@ describe('Message service', function() {
         $rootScope.$digest();
 
         //then
-        expect(toaster.pop).toHaveBeenCalledWith('warning', 'TITLE_VALUE', 'CONTENT_WITH_ARG_VALUE : my value');
+        expect(toaster.pop).toHaveBeenCalledWith('warning', 'TITLE_VALUE', 'CONTENT_WITH_ARG_VALUE : my value', 0);
     }));
 
     it('should show toast on success without translate arg', inject(function($rootScope, MessageService, toaster) {
@@ -80,7 +80,7 @@ describe('Message service', function() {
         $rootScope.$digest();
 
         //then
-        expect(toaster.pop).toHaveBeenCalledWith('success', 'TITLE_VALUE', 'CONTENT_WITHOUT_ARG_VALUE');
+        expect(toaster.pop).toHaveBeenCalledWith('success', 'TITLE_VALUE', 'CONTENT_WITHOUT_ARG_VALUE', 5000);
     }));
 
     it('should show toast on success with translate arg', inject(function($rootScope, MessageService, toaster) {
@@ -94,6 +94,6 @@ describe('Message service', function() {
         $rootScope.$digest();
 
         //then
-        expect(toaster.pop).toHaveBeenCalledWith('success', 'TITLE_VALUE', 'CONTENT_WITH_ARG_VALUE : my value');
+        expect(toaster.pop).toHaveBeenCalledWith('success', 'TITLE_VALUE', 'CONTENT_WITH_ARG_VALUE : my value', 5000);
     }));
 });
