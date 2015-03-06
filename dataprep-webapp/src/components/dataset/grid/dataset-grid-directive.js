@@ -81,6 +81,44 @@
                         clearHeaders();
                         insertDatasetHeaders();
                     });
+                    grid.onClick.subscribe(function () {
+                        console.log(getClickedWord());
+                    });
+                };
+
+                /**
+                 * Return the work the user clicked on
+                 * @returns {string}
+                 */
+                var getClickedWord = function() {
+                    var setRangeStart = function(range, node) {
+                        var tmpResult = range.toString();
+                        while (range.startOffset > 0 && !/\s/.test(tmpResult)) {
+                            range.setStart(node, range.startOffset - 1);
+                            tmpResult = range.toString();
+                        }
+                        if(range.toString().indexOf(' ') === 0) {
+                            range.setStart(node, range.startOffset + 1);
+                        }
+                    };
+
+                    var setRangeEnd = function(range, node) {
+                        var tmpResult = range.toString();
+
+                        while (range.endOffset < node.length && (!/\s/.test(tmpResult) || tmpResult.trim() === '')) {
+                            range.setEnd(node, range.endOffset + 1);
+                            tmpResult = range.toString()
+                        }
+                    };
+
+                    var selection = window.getSelection();
+                    var range = selection.getRangeAt(0);
+                    var node = selection.anchorNode;
+
+                    setRangeStart(range, node);
+                    setRangeEnd(range, node);
+
+                    return range.toString().trim();
                 };
 
                 /**
