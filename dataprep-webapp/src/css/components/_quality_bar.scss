@@ -4,7 +4,24 @@
   $nok-color: rgb(247, 168, 0);
 
   height: 14px;
-  
+  font-size: 0.8em;
+
+  &.border {
+    border: 1px solid white;
+  }
+
+  &.big {
+    height: 25px;
+
+    .sub-bar{
+      line-height: 23px;
+    }
+  }
+
+  &.center {
+    text-align: center;
+  }
+
   .sub-bar {
     border: 1px solid transparent;
     height: 100%;

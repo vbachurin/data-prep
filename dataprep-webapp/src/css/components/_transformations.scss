@@ -1,0 +1,39 @@
+.transformations {
+  $color: white;
+  $background: $dark-gray;
+
+  background: $background;
+  color: $color;
+  font-size: 0.85em;
+
+  li {
+    &.title {
+      padding: 5px 5px 5px 10px;
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    padding: 5px 5px 5px 20px;
+  }
+
+  a {
+    text-decoration: none;
+    color: $color;
+  }
+
+  input {
+    color: #000000;
+  }
+
+  .action {
+    background: shade($background, 10%);
+
+    &:hover {
+      background: tint($background, 10%);
+    }
+  }
+
+  .submenu {
+    background: tint($background, 30%);
+  }
+}

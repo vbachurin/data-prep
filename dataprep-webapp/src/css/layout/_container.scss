@@ -7,20 +7,23 @@
 }
 
 .flex {
-  width: 100%;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: flex-start;
+  @include display(flex);
+  @include flex-flow(row wrap);
+  @include justify-content(space-between)
+}
+
+.flex-side {
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+  @include flex(0 300px);
 }
 
 .flex-menu {
-  box-shadow: 0 2px 8px rgba(0,0,0,.5);
-  height: 85vh;
-  flex: 0 0 240px;
+  @extend .flex-side;
+  @include flex(0 240px);
+  @include calc(height, "100vh - 160px");
 }
 
 .flex-center {
-  width: 100%;
-  padding: 0;
+  @include flex(3 0);
+  overflow: auto;
 }

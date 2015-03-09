@@ -230,7 +230,6 @@
 
         @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
         border-bottom: 1px solid darken($navigation-border, 10);
-        margin-bottom: $body-margin;
 
         color: $navigation-color;
 
@@ -243,16 +242,27 @@
         }
       }
 
+      .modal-subheader {
+        @extend .modal-header;
+
+        background : $dark-blue;
+        margin-bottom: $body-margin;
+      }
+
       .modal-body {
         @include calc(height, "100% - #{$navigation-height} - #{$body-margin}");
-        @include calc(width, "100% - 2 * #{$body-margin}");
+        width: 100%;
 
-        overflow-y:auto;
+        overflow:hidden;
 
         background: white;
         margin-left: auto;
         margin-right: auto;
         position: relative;
+
+        &.with-subheader {
+          @include calc(height, "100% - 2 * #{$navigation-height} - #{$body-margin}");
+        }
       }
     }
   }
