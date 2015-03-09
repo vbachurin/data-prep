@@ -19,6 +19,7 @@ import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.transformation.exception.Messages;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.Cut;
 import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
 import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
@@ -58,7 +59,7 @@ public class TransformationService {
         String typeName = column.getType();
         Type type = Types.get(typeName);
         if (Types.STRING.isAssignableFrom(type)) {
-            return Arrays.asList(UpperCase.INSTANCE, LowerCase.INSTANCE, FillWithDefaultIfEmpty.INSTANCE);
+            return Arrays.asList(UpperCase.INSTANCE, LowerCase.INSTANCE, FillWithDefaultIfEmpty.INSTANCE, Cut.INSTANCE);
         } else {
             return Collections.emptyList();
         }

@@ -1,0 +1,22 @@
+{
+  "records":[
+    {
+      "members":"1",
+      "name":"Bruce Springsteen",
+      "pseudo":"The boss"
+    },
+    {
+      "members":"4",
+      "name":"The Beatles",
+      "pseudo":"Fab four"
+    },
+    {
+      "members":"5",
+      "name":"Pearl Jam"
+    },
+    {
+      "members":"2",
+      "name":"The Do"
+    }
+  ]
+}
