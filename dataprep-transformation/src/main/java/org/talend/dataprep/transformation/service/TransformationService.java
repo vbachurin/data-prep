@@ -22,6 +22,7 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.Cut;
 import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
+import org.talend.dataprep.transformation.api.action.metadata.Negate;
 import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -60,6 +61,8 @@ public class TransformationService {
         Type type = Types.get(typeName);
         if (Types.STRING.isAssignableFrom(type)) {
             return Arrays.asList(UpperCase.INSTANCE, LowerCase.INSTANCE, FillWithDefaultIfEmpty.INSTANCE, Cut.INSTANCE);
+        } else if (Types.BOOLEAN.isAssignableFrom(type)) {
+            return Arrays.asList(Negate.INSTANCE);
         } else {
             return Collections.emptyList();
         }

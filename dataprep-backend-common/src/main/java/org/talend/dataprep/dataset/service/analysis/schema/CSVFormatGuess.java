@@ -6,6 +6,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +37,8 @@ class CSVFormatGuess implements FormatGuess {
         return 1;
     }
 
+
+
     @Override
     public SchemaParser getSchemaParser() {
         return content -> {
@@ -58,6 +63,10 @@ class CSVFormatGuess implements FormatGuess {
                             columnMetadata.get(i).setType(Types.INTEGER.getName());
                         } catch (NumberFormatException e) {
                             // Not an number
+                        }
+
+                        if (columnValue.trim().equalsIgnoreCase("true") || columnValue.trim().equalsIgnoreCase("false")) {
+                            columnMetadata.get(i).setType(Types.BOOLEAN.getName());
                         }
                     }
                 }

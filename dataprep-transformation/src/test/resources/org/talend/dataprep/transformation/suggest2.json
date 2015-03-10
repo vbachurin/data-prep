@@ -1,0 +1,16 @@
+[
+  {
+    "category": "boolean",
+    "items": [],
+    "name": "negate",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  }
+]

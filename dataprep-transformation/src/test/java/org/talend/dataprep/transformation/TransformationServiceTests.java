@@ -146,6 +146,15 @@ public class TransformationServiceTests {
     }
 
     @Test
+    public void booleanColumnSuggest() throws Exception {
+        String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column3.json"));
+        String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("suggest2.json"));
+        Response post = given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column");
+        String response = post.asString();
+        assertEquals(expectedSuggestions, response, false);
+    }
+
+    @Test
     public void dataSetSuggest() throws Exception {
         String dataSetMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("metadata1.json"));
         String response = given().contentType(ContentType.JSON).body(dataSetMetadata).when().post("/suggest/dataset").asString();
