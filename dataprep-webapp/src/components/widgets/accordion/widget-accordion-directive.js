@@ -12,10 +12,9 @@
 
                 iElement.find('.talend-accordion-trigger').bind('click', function(e){
                     var subMenu = angular.element(this).parent().find('.submenu');
-                    var isOpened = subMenu.is(':visible');
+                    var isOpened = subMenu.is(':visible') || subMenu.css('display') === 'block';
 
                     closeAllAccordions();
-
                     if(! isOpened) {
                         subMenu.slideToggle('fast');
                     }
