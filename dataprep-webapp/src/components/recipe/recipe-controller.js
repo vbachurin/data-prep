@@ -2,7 +2,6 @@
     'use strict';
 
     function RecipeCtrl() {
-        var vm = this;
     }
 
     angular.module('data-prep-recipe')

@@ -1,7 +1,6 @@
 // Components scss only contains Buttons, Carousel, Cover, Dropdown, ...
 
 @import "datagrid";
-@import "badge";
 @import "button";
 @import "menu";
 @import "inventory";
@@ -11,6 +10,7 @@
 @import "transformations";
 @import "toaster";
 @import "../../components/widgets/accordion/accordion";
+@import "../../components/widgets/badge/badge";
 @import "../../components/widgets/dropdown/dropdown";
 @import "../../components/widgets/loading/loading";
 @import "../../components/widgets/modal/modal";

@@ -5,9 +5,6 @@
         [
             'data-prep-utils', //utils components: constants, filters, ...
             'data-prep-dataset', //dataset getter, manipulation, etc
-            'data-prep-transformation', //transformation actions and list management
-            'data-prep-recipe', //recipe actions and list management
-            'data-prep-filter', //filter actions and list management
 
             'talend.widget', //components widget built on bourbon (modal, dropdown, ...)
 

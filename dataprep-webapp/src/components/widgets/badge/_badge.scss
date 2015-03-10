@@ -6,7 +6,7 @@ $success-color: #e6efc2 !default;
 
 @mixin badge($color: $medium-gray) {
   background-color: $color;
-  border-radius: $badge-font-size * 5;
+  border-radius: $badge-font-size;
   color: darken($color, 60%);
   display: inline-block;
   font-size: $badge-font-size;
@@ -19,25 +19,17 @@ $success-color: #e6efc2 !default;
   @include badge;
 }
 
-.badge-alert {
-  @include badge($alert-color);
-}
-
-.badge-error {
-  @include badge($error-color);
-}
-
 .badge-notice {
   @include badge(tint($blue, 60%));
 }
 
-.badge-success {
-  @include badge($success-color);
-}
-
 .badge-close {
-  font-size: 2em;
+  cursor: pointer;
+  font-size: 1.5em;
   background: transparent;
-  margin: 0;
-  padding: 0;
+  margin-left: 8px;
+
+  &:active {
+    background: transparent;
+  }
 }

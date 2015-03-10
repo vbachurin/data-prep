@@ -11,7 +11,7 @@
             bindToController: true,
             controllerAs: 'recipeCtrl',
             controller: 'RecipeCtrl'
-        }
+        };
     }
 
     angular.module('data-prep-recipe')

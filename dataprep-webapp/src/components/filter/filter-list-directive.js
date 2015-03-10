@@ -11,7 +11,7 @@
             bindToController: true,
             controllerAs: 'filterCtrl',
             controller: 'FilterCtrl'
-        }
+        };
     }
 
     angular.module('data-prep-filter')

@@ -6,7 +6,7 @@
             restrict: 'E',
             transclude: true,
             replace: true,
-            templateUrl: '/components/widgets/slidable/slidable.html',
+            templateUrl: 'components/widgets/slidable/slidable.html',
             scope: {
                 side: '@',
                 visible: '='
