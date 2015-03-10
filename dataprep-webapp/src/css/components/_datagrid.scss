@@ -92,5 +92,14 @@
       background-color: $datagrid-cell-bkg-active;
       cursor: cell;
     }
+
+    &.selected {
+      background-color: #DFE8F6;
+    }
+
+    &.highlight {
+      background-color: $green;
+      color: #ffffff;
+    }
   }
 }

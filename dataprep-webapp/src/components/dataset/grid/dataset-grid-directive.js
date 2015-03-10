@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function DatasetGrid($compile) {
+    function DatasetGrid($compile, $window) {
         return {
             restrict: 'E',
             templateUrl: 'components/dataset/grid/dataset-grid-directive.html',
@@ -10,6 +10,66 @@
             controller: 'DatasetGridCtrl',
             link: function (scope, iElement, iAttrs, ctrl) {
                 var options, dataView, grid, colHeaderElements = [];
+
+                //------------------------------------------------------------------------------------------------------
+                //--------------------------------------------------UTILES----------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+
+                /**
+                 * Return the work the user clicked on
+                 * @returns {string}
+                 */
+                var getClickedWord = function() {
+                    var setRangeStart = function(range, node) {
+                        var tmpResult = range.toString();
+                        while (range.startOffset > 0 && !/\s/.test(tmpResult)) {
+                            range.setStart(node, range.startOffset - 1);
+                            tmpResult = range.toString();
+                        }
+                        if(range.toString().indexOf(' ') === 0) {
+                            range.setStart(node, range.startOffset + 1);
+                        }
+                    };
+
+                    var setRangeEnd = function(range, node) {
+                        var tmpResult = range.toString();
+
+                        while (range.endOffset < node.length && (!/\s/.test(tmpResult) || tmpResult.trim() === '')) {
+                            range.setEnd(node, range.endOffset + 1);
+                            tmpResult = range.toString();
+                        }
+                    };
+                    var selection = $window.getSelection();
+                    var range = selection.getRangeAt(0);
+                    var node = selection.anchorNode;
+
+                    setRangeStart(range, node);
+                    setRangeEnd(range, node);
+
+                    return range.toString().trim();
+                };
+
+                //------------------------------------------------------------------------------------------------------
+                //------------------------------------------------COL UTILES--------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+
+                /**
+                 * Reset columns class
+                 */
+                var resetColumnsClass = function() {
+                    _.forEach(grid.getColumns(), function(column) {
+                        column.cssClass = null;
+                    });
+                };
+
+                /**
+                 * Reset columns formatter
+                 */
+                var resetColumnsFormatter = function() {
+                    _.forEach(grid.getColumns(), function(column) {
+                        column.formatter = null;
+                    });
+                };
 
                 /**
                  * Adapt backend column to slick column. The name with div id depending on index is important. It is used to insert column header dropdown and quality bar
@@ -54,11 +114,77 @@
                     colHeaderElements = [];
                 };
 
+                //------------------------------------------------------------------------------------------------------
+                //-------------------------------------------------LISTENERS--------------------------------------------
+                //------------------------------------------------------------------------------------------------------
+                /**
+                 * Attach listeners for big table row management
+                 */
+                var attachLongTableListeners = function() {
+                    dataView.onRowCountChanged.subscribe(function () {
+                        grid.updateRowCount();
+                        grid.render();
+                    });
+                    dataView.onRowsChanged.subscribe(function (e, args) {
+                        grid.invalidateRows(args.rows);
+                        grid.render();
+                    });
+                };
+
+                /**
+                 * Attach listeners for custom directives management in headers
+                 */
+                var attachColumnHeaderListeners = function() {
+                    //destroy old elements and insert compiled column header directives
+                    grid.onColumnsReordered.subscribe(function () {
+                        clearHeaders();
+                        insertDatasetHeaders();
+                    });
+
+                    //close header dropdowns
+                    grid.onScroll.subscribe(function() {
+                        angular.element('body').click();
+                    });
+                };
+
+                var attachCellListeners = function() {
+                    //get clicked word and highlight cells in clicked column containing the word
+                    grid.onClick.subscribe(function (e,args) {
+                        resetColumnsFormatter();
+
+                        var word = getClickedWord();
+
+                        var config = {};
+                        var column = grid.getColumns()[args.cell];
+                        column.formatter = function(row, cell, value) {
+                            if((word === '' && value === '') || (word !== '' && value.indexOf(word) > -1)) {
+                                config[row] = {};
+                                config[row][column.id] = 'highlight';
+                            }
+                            return value;
+                        };
+                        grid.setCellCssStyles('highlight', config);
+                        grid.invalidateAllRows();
+                        grid.render();
+                    });
+
+                    //change selected cell column background
+                    grid.onActiveCellChanged.subscribe(function(e,args) {
+                        resetColumnsClass();
+                        grid.getColumns()[args.cell].cssClass = 'selected';
+                        grid.invalidateAllRows();
+                        grid.render();
+                    });
+                };
+
+                //------------------------------------------------------------------------------------------------------
+                //---------------------------------------------------INIT-----------------------------------------------
+                //------------------------------------------------------------------------------------------------------
                 /**
                  * Init Slick grid and attach listeners on dataview and grid
                  */
                 var initGrid = function () {
-                    // options, dataview and grid init
+                    //options, dataview and grid
                     options = {
                         editable: false,
                         enableAddRow: false,
@@ -68,59 +194,15 @@
                     dataView = new Slick.Data.DataView({inlineFilters: true});
                     grid = new Slick.Grid('#datagrid', dataView, [], options);
 
-                    // listeners
-                    dataView.onRowCountChanged.subscribe(function () {
-                        grid.updateRowCount();
-                        grid.render();
-                    });
-                    dataView.onRowsChanged.subscribe(function (e, args) {
-                        grid.invalidateRows(args.rows);
-                        grid.render();
-                    });
-                    grid.onColumnsReordered.subscribe(function () {
-                        clearHeaders();
-                        insertDatasetHeaders();
-                    });
-                    grid.onClick.subscribe(function () {
-                        console.log(getClickedWord());
-                    });
+                    //listeners
+                    attachLongTableListeners();
+                    attachColumnHeaderListeners();
+                    attachCellListeners();
                 };
 
-                /**
-                 * Return the work the user clicked on
-                 * @returns {string}
-                 */
-                var getClickedWord = function() {
-                    var setRangeStart = function(range, node) {
-                        var tmpResult = range.toString();
-                        while (range.startOffset > 0 && !/\s/.test(tmpResult)) {
-                            range.setStart(node, range.startOffset - 1);
-                            tmpResult = range.toString();
-                        }
-                        if(range.toString().indexOf(' ') === 0) {
-                            range.setStart(node, range.startOffset + 1);
-                        }
-                    };
-
-                    var setRangeEnd = function(range, node) {
-                        var tmpResult = range.toString();
-
-                        while (range.endOffset < node.length && (!/\s/.test(tmpResult) || tmpResult.trim() === '')) {
-                            range.setEnd(node, range.endOffset + 1);
-                            tmpResult = range.toString()
-                        }
-                    };
-
-                    var selection = window.getSelection();
-                    var range = selection.getRangeAt(0);
-                    var node = selection.anchorNode;
-
-                    setRangeStart(range, node);
-                    setRangeEnd(range, node);
-
-                    return range.toString().trim();
-                };
-
+                //------------------------------------------------------------------------------------------------------
+                //--------------------------------------------------UPDATE----------------------------------------------
+                //------------------------------------------------------------------------------------------------------
                 /**
                  * Clear and update columns
                  * @param dataCols
@@ -149,6 +231,9 @@
                     grid.render();
                 };
 
+                //------------------------------------------------------------------------------------------------------
+                //-------------------------------------------------WATCHERS---------------------------------------------
+                //------------------------------------------------------------------------------------------------------
                 /**
                  * Update grid columns on backend column change
                  */
@@ -180,7 +265,6 @@
                         }
                     }
                 );
-
 
                 /**
                  * Destroy scope on element destroy
