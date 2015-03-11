@@ -127,6 +127,24 @@
       text-transform: capitalize;
     }
 
+    .modal-title {
+      padding: 5px 5px 0;
+      border: none;
+      font-weight: 700;
+      font-size: 1.1em;
+      text-transform: uppercase;
+
+      height: 34px;
+      overflow: hidden;
+    }
+
+    .modal-subtitle {
+      color: $dark-gray;
+      margin-bottom: 0.6em;
+      padding: 5px 10px 0;
+      font-style: italic;
+    }
+
     .modal-intro {
       font-weight: 800;
     }

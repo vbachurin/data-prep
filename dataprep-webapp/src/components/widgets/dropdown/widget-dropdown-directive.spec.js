@@ -16,6 +16,11 @@ describe('Dropdown directive', function () {
         elm.find('a[role="menuitem"]').eq(0).click();
     };
 
+    afterEach(function() {
+        scope.$destroy();
+        element.remove();
+    });
+
     describe('closeable dropdown', function() {
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
@@ -76,7 +81,31 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(false);
         });
 
-        it('should hide dropdown-menu on body click', function () {
+        it('should register window scroll handler on open', inject(function ($window) {
+            //given
+            expect($._data( angular.element($window)[0], 'events' )).not.toBeDefined();
+
+            //when
+            clickDropdownToggle();
+
+            //then
+            expect($._data( angular.element($window)[0], 'events' )).toBeDefined();
+            expect($._data( angular.element($window)[0], 'events').scroll.length).toBe(1);
+        }));
+
+        it('should unregister window scroll on close', inject(function ($window) {
+            //given
+            clickDropdownToggle();
+            expect($._data( angular.element($window)[0], 'events').scroll.length).toBe(1);
+
+            //when
+            clickDropdownToggle();
+
+            //then
+            expect($._data( angular.element($window)[0], 'events' )).not.toBeDefined();
+        }));
+
+        it('should hide dropdown-menu on body mousedown', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
 
@@ -84,10 +113,36 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(true);
 
             //when
-            angular.element('body').click();
+            angular.element('body').mousedown();
 
             //then
             expect(menu.hasClass('show-menu')).toBe(false);
+        });
+
+        it('should unregister body mousedown on element remove', function () {
+            //given
+            expect($._data( angular.element('body')[0], 'events').mousedown.length).toBe(1);
+
+            //when
+            element.remove();
+
+            //then
+            expect($._data( angular.element('body')[0], 'events' )).not.toBeDefined();
+        });
+
+        it('should stop mousedown propagation on dropdown-menu mousedown', function () {
+            //given
+            var bodyMouseDown = false;
+            angular.element('body').mousedown(function() {
+                bodyMouseDown = true;
+            });
+
+            //when
+            element.find('.dropdown-action').mousedown();
+            element.find('.dropdown-menu').mousedown();
+
+            //then
+            expect(bodyMouseDown).toBe(false);
         });
     });
 

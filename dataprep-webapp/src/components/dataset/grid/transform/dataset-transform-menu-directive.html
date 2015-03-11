@@ -12,6 +12,9 @@
                       state="menuCtrl.showModal"
                       close-button="true">
 
+            <div class="modal-title">{{::menuCtrl.menu.name | translate }}</div>
+            <div class="modal-subtitle">{{::menuCtrl.menu.description | translate }}</div>
+
             <form ng-submit="menuCtrl.transformWithParam()" name="menuCtrl.paramForm">
                 <!-- Menu item param -->
                 <table ng-if="menuCtrl.menu.parameters" class="no-border param">
