@@ -38,13 +38,25 @@ public class Item {
 
         String name;
 
+        boolean isDefault = false;
+
         public Value(String name) {
             super();
             this.name = name;
         }
 
+        public Value(String name, boolean isDefault) {
+            super();
+            this.name = name;
+            this.isDefault = isDefault;
+        }
+
         public String getName() {
             return this.name;
+        }
+
+        public boolean isDefault() {
+            return this.isDefault;
         }
 
     }

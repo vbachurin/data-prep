@@ -17,7 +17,7 @@ public class FillWithDefaultIfEmptyBoolean extends FillWithDefaultIfEmpty {
 
     @Override
     public Item[] getItems() {
-        Value[] values = new Value[] { new Value("True"), new Value("False") };
+        Value[] values = new Value[] { new Value("True", true), new Value("False") };
         return new Item[] { new Item(DEFAULT_VALUE_PARAMETER, Type.LIST, "categ", values) };
     }
 

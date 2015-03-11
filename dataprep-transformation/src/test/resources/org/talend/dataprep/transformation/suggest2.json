@@ -24,7 +24,8 @@
             "category":"categ",
             "values":[
                {
-                  "name":"True"
+                  "name":"True",
+                  "default":true
                },
                {
                   "name":"False"
