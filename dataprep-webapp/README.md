@@ -48,32 +48,31 @@ The file structure is inspired by yeoman project called generator-gulp-angular :
 
 
 ### Sources file structure
+The source file structure is based on the [Best Practice Recommendations for Angular App Structure](https://docs.google.com/document/d/1XXMvReO8-Awi1EZXAXS4PzDzdNvV6pGcuaF4Q9821Es/pub), except for css files that have their own structure
 
 <pre>
+├── app                                         - app source folder
+│   ├── home                                    - home page sources
+│       ├── home.html                           - home page
+│       ├── home-controller.js                  - home page controller
+│       ├── home-controller-spec.js             - home page controller unit tests
+│       ├── home-subheader.html                 - home page subheader included in home.html
+│   ├── ...                                     - other page folder
 │
 ├── assets                                      - assets source folder
 │   ├── fonts                                   - fonts folder
 │   └── images                                  - images folder
 │
 ├── components                                  - reusable components folder
-│   ├── datagrid                                - datagrid module folder
-│       ├── _datagrid.scss                      - datagrid style sheet
-        ├── datagrid.html                       - datagrid template
-        ├── datagrid-controller.js              - datagrid controller
-        ├── datagrid-controller.spec.js         - datagrid controller unit tests
-        ├── datagrid-directive.js               - datagrid directive
-        ├── datagrid-directive.spec.js          - datagrid directive unit tests
-        └── datagrid-module.js                  - datagrid module
-│
-│   ├── widgets                                 - independant widget
-│   ├── ...                                     - other component folder
-│
-├── services                                    - services folder
 │   ├── dataset                                 - dataset module folder
-│       ├── dataset-grid-service.js             - dataset grid service
-│       ├── dataset-grid-service.spec.js        - dataset grid service unit tests
+│       ├── dataset-grid                        - dataset module folder
+│           ├── ...
+│           ├── dataset-grid-directive.html     - data grid directive template
+│           ├── dataset-grid-directive.js       - data grid directive
+│           └── dataset-grid-directive.spec.js  - data grid directive unit tests
+│       ├── ...
 │       ├── dataset-module.js                   - dataset angular module
-│       ├── dataset-service.js                  - dataset service
+│       ├── dataset-service.js                  - dataset angular service registered in dataset module
 │       └── dataset-service.spec.js             - dataset service unit tests
 │
 │   ├── utils                                   - filters, constants, ...
@@ -132,12 +131,23 @@ To run it continuously with source watch, type the command
 During each test run, Karma will generate coverage files, using [karma-coverage plugin](https://github.com/karma-runner/karma-coverage).
 Open the index.html in the coverage folder to display coverage details for each js file.
 
-### Build a standalone dev distrib
-
-run
-`gulp build:dev`
 
 ### Build a standalone prod distrib
-WARNING : this is not working right now.
 run
 `gulp build`
+
+##Maven profiles
+The build and test can be executed using maven as well here are the different maven profile avaialble.
+
+###-P dev (default)
+The default maven profile called *dev* that launches all the necessary gulp tasks for building and testing the app with the usuall maven phases : *test* *package*.
+This profile assumes that all the tooling is installed on the current machine.
+
+###-P ci
+The profile name *ci* is used for continuus integration build on our jenkins server. This build is using a docker image installed with all the required tooling because it was to much of a pain to install the tooling directly on the jenkins server. This allows for installing on other servers easilly too.
+The docker image is build from the Dockerfile : [docker/Dockerfile-for-dev-tools](docker/Dockerfile-for-dev-tools)
+
+###-P docker
+The docker profile adds the build of a docker image to the packaging maven phase.
+This image is launching the nginx web server with the webapp on the port 80. It is build using the Docker file [docker/Dockerfile](docker/Dockerfile).
+You may launch the docker image manually once it is built using this command : `docker run -d -p 80:80 -e TDP_API_HOST="host_for_api_service" -e TDP_API_PORT="port_for_api_service" talend/dataprep-webapp:<pom_version>`
