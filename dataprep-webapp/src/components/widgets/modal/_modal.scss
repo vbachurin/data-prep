@@ -271,8 +271,6 @@
         @include calc(height, "100% - #{$navigation-height} - #{$body-margin}");
         width: 100%;
 
-        overflow:hidden;
-
         background: white;
         margin-left: auto;
         margin-right: auto;

@@ -19,7 +19,7 @@
                 vm.toggle = function() {
                     vm.visible = ! vm.visible;
                 };
-            }
+            },
         };
     }
 

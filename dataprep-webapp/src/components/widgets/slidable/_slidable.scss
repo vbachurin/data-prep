@@ -1,39 +1,20 @@
 .slidable {
   $width: 280px;
 
-  transition: 0.5s ease all;
+  transition: 0.5s ease flex;
 
   &.slide-hide {
-    margin-left: -$width;
+    @include flex(0 20px);
   }
 
   &.slide-hide-add,
   &.slide-hide-remove.slide-hide-remove-active{
-    margin-left: 0;
+    @include flex(0 300px);
   }
 
   &.slide-hide-add.slide-hide-add-active,
   &.slide-hide-remove {
-    margin-left: -$width;
-  }
-
-  &.slide-right {
-    &.slide-hide {
-      margin-left: auto;
-      margin-right: -$width;
-    }
-
-    &.slide-hide-add,
-    &.slide-hide-remove.slide-hide-remove-active{
-      margin-left: auto;
-      margin-right: 0;
-    }
-
-    &.slide-hide-add.slide-hide-add-active,
-    &.slide-hide-remove {
-      margin-left: auto;
-      margin-right: -$width;
-    }
+    @include flex(0 20px);
   }
 
   @include display(flex);

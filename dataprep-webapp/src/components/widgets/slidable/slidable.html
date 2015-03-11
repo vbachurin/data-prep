@@ -1,5 +1,7 @@
 <div class="slidable" ng-class="{'slide-right': slidableCtrl.side === 'right', 'slide-hide': !slidableCtrl.visible}">
-    <ng-transclude class="content"></ng-transclude>
+    <div class="content">
+        <ng-transclude class="fixed-content"></ng-transclude>
+    </div>
 
     <div class="action" ng-class="::{right: (slidableCtrl.side === 'right')}" ng-click="slidableCtrl.toggle()">
         <span ng-if="::(slidableCtrl.side !== 'right')">
