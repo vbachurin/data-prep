@@ -74,8 +74,9 @@
                         menu.removeClass('right');
                         var menuPosition = menu[0].getBoundingClientRect();
                         if(menuPosition.right > $window.innerWidth) {
+                            var right = $window.innerWidth - position.right;
                             menu.css('left', 'auto');
-                            menu.css('right', $window.innerWidth - position.right);
+                            menu.css('right', right > 0 ? right : 0);
                             menu.addClass('right');
                         }
                     };
@@ -102,16 +103,19 @@
                             hideMenu();
                         }
                     });
+                    iElement.find('.dropdown-menu').mousedown(function(event) {
+                        event.stopPropagation();
+                    });
 
-                    //hide menu on body click
-                    body.click(hideMenu);
+                    //hide menu on body mousedown
+                    body.mousedown(hideMenu);
 
-                    //on element destroy, we destroy the scope which unregister body click and window scroll handlers
+                    //on element destroy, we destroy the scope which unregister body mousedown and window scroll handlers
                     iElement.on('$destroy', function () {
                         scope.$destroy();
                     });
                     scope.$on('$destroy', function() {
-                        body.off('click', hideMenu);
+                        body.off('mousedown', hideMenu);
                         windowElement.off('scroll', positionMenu);
                     });
                 }

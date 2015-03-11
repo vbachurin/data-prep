@@ -34,7 +34,7 @@
                     var setRangeEnd = function(range, node) {
                         var tmpResult = range.toString();
 
-                        while (range.endOffset < node.length && (!/\s/.test(tmpResult) || tmpResult.trim() === '')) {
+                        while (range.endOffset < node.length && (!/\s/.test(tmpResult))) {
                             range.setEnd(node, range.endOffset + 1);
                             tmpResult = range.toString();
                         }
@@ -139,11 +139,6 @@
                     grid.onColumnsReordered.subscribe(function () {
                         clearHeaders();
                         insertDatasetHeaders();
-                    });
-
-                    //close header dropdowns
-                    grid.onScroll.subscribe(function() {
-                        angular.element('body').click();
                     });
                 };
 

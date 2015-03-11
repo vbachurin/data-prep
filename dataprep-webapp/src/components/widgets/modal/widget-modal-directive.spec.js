@@ -1,59 +1,55 @@
 describe('Dropdown directive', function () {
     'use strict';
 
-    var scope, createElement, createFormElement, createNestedElement, createButtonElement;
+    var scope, element, createElement, createFormElement, createNestedElement, createButtonElement;
 
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
 
     afterEach(function () {
         scope.$destroy();
-        scope.$digest();
+        element.remove();
     });
 
     beforeEach(inject(function ($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();
 
-        createElement = function (directiveScope) {
+        createElement = function () {
             var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton"></talend-modal>';
-            var element = $compile(html)(directiveScope);
-            directiveScope.$digest();
+            element = $compile(html)(scope);
+            scope.$digest();
             $timeout.flush();
-            return element;
         };
 
-        createFormElement = function (directiveScope) {
+        createFormElement = function () {
             var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton">' +
                 '   <input type="text" id="firstInput" />' +
                 '   <input type="text" id="secondInput" />' +
                 '</talend-modal>';
-            var element = $compile(html)(directiveScope);
-            directiveScope.$digest();
+            element = $compile(html)(scope);
+            scope.$digest();
             $timeout.flush();
-            return element;
         };
 
-        createNestedElement = function (directiveScope) {
+        createNestedElement = function () {
             var html = '<talend-modal id="outerModal" fullscreen="fullscreen" state="state" close-button="closeButton">' +
                 '   <talend-modal id="innerModal" fullscreen="innerfullscreen" state="innerState" close-button="innerCloseButton"></talend-modal>' +
                 '</talend-modal>';
-            var element = $compile(html)(directiveScope);
-            directiveScope.$digest();
+            element = $compile(html)(scope);
+            scope.$digest();
             $timeout.flush();
-            return element;
         };
 
-        createButtonElement = function (directiveScope) {
+        createButtonElement = function () {
             var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton" disable-enter="disableEnter">' +
                 '   <button class="modal-primary-button" ng-click="click()"/>' +
                 '</talend-modal>';
-            directiveScope.click = function() {
-                directiveScope.primaryButtonClicked = true;
+            scope.click = function() {
+                scope.primaryButtonClicked = true;
             };
-            var element = $compile(html)(directiveScope);
-            directiveScope.$digest();
+            element = $compile(html)(scope);
+            scope.$digest();
             $timeout.flush();
-            return element;
         };
 
         spyOn($rootScope, '$apply').and.callThrough();
@@ -67,7 +63,7 @@ describe('Dropdown directive', function () {
         scope.closeButton = true;
 
         //when
-        var element = createElement(scope);
+        createElement();
 
         //then
         expect(element.find('.modal-close').length).toBe(1);
@@ -80,7 +76,7 @@ describe('Dropdown directive', function () {
         scope.closeButton = false;
 
         //when
-        var element = createElement(scope);
+        createElement();
 
         //then
         expect(element.find('.modal-close').length).toBe(0);
@@ -93,7 +89,7 @@ describe('Dropdown directive', function () {
         scope.closeButton = true;
 
         //when
-        var element = createElement(scope);
+        createElement();
 
         //then
         expect(element.find('.modal-header-close').length).toBe(1);
@@ -106,7 +102,7 @@ describe('Dropdown directive', function () {
         scope.closeButton = false;
 
         //when
-        var element = createElement(scope);
+        createElement();
 
         //then
         expect(element.find('.modal-header-close').length).toBe(0);
@@ -119,7 +115,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = false;
         scope.closeButton = false;
-        createElement(scope);
+        createElement();
 
         //when
         scope.state = true;
@@ -137,7 +133,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = false;
-        createElement(scope);
+        createElement();
 
         //when
         scope.state = false;
@@ -152,7 +148,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = false;
-        var element = createElement(scope);
+        createElement();
         expect($rootScope.$apply.calls.count()).toBe(1);
 
         //when
@@ -169,7 +165,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = true;
-        var element = createElement(scope);
+        createElement();
         expect($rootScope.$apply.calls.count()).toBe(1);
 
         //when
@@ -186,7 +182,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = true;
         scope.state = true;
         scope.closeButton = true;
-        var element = createElement(scope);
+        createElement();
         expect($rootScope.$apply.calls.count()).toBe(1);
 
         //when
@@ -203,7 +199,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = true;
-        var element = createElement(scope);
+        createElement();
 
         //when
         element.find('.modal-inner').click();
@@ -224,7 +220,7 @@ describe('Dropdown directive', function () {
 
     it('should attach popup to body', function () {
         //when
-        createElement(scope);
+        createElement();
 
         //then
         expect(angular.element('body').find('talend-modal').length).toBe(1);
@@ -232,7 +228,7 @@ describe('Dropdown directive', function () {
 
     it('should remove element on scope destroy', function () {
         //given
-        createElement(scope);
+        createElement();
 
         //when
         scope.$destroy();
@@ -247,7 +243,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = true;
-        var element = createElement(scope);
+        createElement();
 
         var event = angular.element.Event('keydown');
         event.keyCode = 27;
@@ -265,7 +261,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = true;
-        var element = createElement(scope);
+        createElement();
 
         var event = angular.element.Event('keydown');
         event.keyCode = 97;
@@ -290,7 +286,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = true;
-        var element = createButtonElement(scope);
+        createButtonElement();
 
         expect(scope.primaryButtonClicked).toBeFalsy();
         var event = angular.element.Event('keydown');
@@ -310,7 +306,7 @@ describe('Dropdown directive', function () {
         scope.state = true;
         scope.closeButton = true;
         scope.disableEnter = true;
-        var element = createButtonElement(scope);
+        createButtonElement();
 
         expect(scope.primaryButtonClicked).toBeFalsy();
         var event = angular.element.Event('keydown');
@@ -329,7 +325,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = false;
         scope.closeButton = false;
-        var element = createElement(scope);
+        createElement();
 
         var body = angular.element('body');
         body.append(element);
@@ -341,9 +337,6 @@ describe('Dropdown directive', function () {
 
         //then
         expect(document.activeElement.className).toBe('modal-inner');
-
-        //finally
-        element.remove();
     });
 
     it('should focus on first input on show', function () {
@@ -351,7 +344,7 @@ describe('Dropdown directive', function () {
         scope.fullscreen = false;
         scope.state = false;
         scope.closeButton = false;
-        var element = createFormElement(scope);
+        createFormElement();
 
         var body = angular.element('body');
         body.append(element);
@@ -363,9 +356,6 @@ describe('Dropdown directive', function () {
 
         //then
         expect(document.activeElement.id).toBe('firstInput');
-
-        //finally
-        element.remove();
     });
 
     it('should focus on next last shown modal on focused modal close', function () {
@@ -376,7 +366,7 @@ describe('Dropdown directive', function () {
         scope.innerFullscreen = false;
         scope.innerState = false;
         scope.innerCloseButton = false;
-        var element = createNestedElement(scope);
+        createNestedElement();
 
         var body = angular.element('body');
         body.append(element);
@@ -400,30 +390,5 @@ describe('Dropdown directive', function () {
 
         //then
         expect(document.activeElement).toBe(outerModal);
-
-        //finally
-        element.remove();
-    });
-
-    it('should simulate click on body on inner element click', function () {
-        //given
-        scope.fullscreen = false;
-        scope.state = false;
-        scope.closeButton = false;
-        var element = createFormElement(scope);
-
-        var bodyClicked = false;
-        angular.element('body').click(function() {
-            bodyClicked = true;
-        });
-
-        //when
-        element.find('.modal-inner').click();
-
-        //then
-        expect(bodyClicked).toBe(true);
-
-        //finally
-        element.remove();
     });
 });

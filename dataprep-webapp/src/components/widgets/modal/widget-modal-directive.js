@@ -134,10 +134,8 @@
                         iElement.find('.talend-modal-close').on('click', hideModal);
 
                         // stop propagation on click on inner modal to prevent modal close
-                        // click on body for dropdown close
                         innerElement.on('click', function (e) {
                             e.stopPropagation();
-                            body.click();
                         });
 
                         // keydown event binding

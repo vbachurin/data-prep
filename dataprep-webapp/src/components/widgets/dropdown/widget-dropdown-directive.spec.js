@@ -17,9 +17,8 @@ describe('Dropdown directive', function () {
     };
 
     afterEach(function() {
-        if(element) {
-            element.remove();
-        }
+        scope.$destroy();
+        element.remove();
     });
 
     describe('closeable dropdown', function() {
@@ -106,7 +105,7 @@ describe('Dropdown directive', function () {
             expect($._data( angular.element($window)[0], 'events' )).not.toBeDefined();
         }));
 
-        it('should hide dropdown-menu on body click', function () {
+        it('should hide dropdown-menu on body mousedown', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
 
@@ -114,21 +113,35 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(true);
 
             //when
-            angular.element('body').click();
+            angular.element('body').mousedown();
 
             //then
             expect(menu.hasClass('show-menu')).toBe(false);
         });
 
-        it('should unregister body click on element remove', function () {
+        it('should unregister body mousedown on element remove', function () {
             //given
-            expect($._data( angular.element('body')[0], 'events').click.length).toBe(1);
+            expect($._data( angular.element('body')[0], 'events').mousedown.length).toBe(1);
 
             //when
             element.remove();
 
             //then
             expect($._data( angular.element('body')[0], 'events' )).not.toBeDefined();
+        });
+
+        it('should stop mousedown propagation on dropdown-menu mousedown', function () {
+            //given
+            var bodyMouseDown = false;
+            angular.element('body').mousedown(function() {
+                bodyMouseDown = true;
+            });
+
+            //when
+            element.find('.dropdown-menu').mousedown();
+
+            //then
+            expect(bodyMouseDown).toBe(false);
         });
     });
 
