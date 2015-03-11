@@ -115,12 +115,22 @@ public class TransformationServiceTests {
 
     @Test
     public void fillEmptyWithDefaultActionBoolean() throws Exception {
-        String actions = IOUtils
-.toString(TransformationServiceTests.class
+        String actions = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("fillEmptyWithDefaultBooleanAction.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_fillEmptyWithDefaultBooleanAction.json"));
+        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+                .post("/transform?actions=" + encode(actions)).asString();
+        assertEquals(expectedContent, transformedContent, false);
+    }
+
+    @Test
+    public void negateActionBoolean() throws Exception {
+        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("negateAction.json"));
+        String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
+        String expectedContent = IOUtils
+                .toString(TransformationServiceTests.class.getResourceAsStream("test3_negateAction.json"));
         String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);

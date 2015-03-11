@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -79,8 +80,40 @@ public class Negate implements ActionMetadata {
 
             if (value != null && (value.trim().equalsIgnoreCase("true") || value.trim().equalsIgnoreCase("false"))) {
                 Boolean boolValue = new Boolean(value);
-                row.set(columnName, "" + !boolValue);
+                row.set(columnName, toProperCase("" + !boolValue));
             }
         };
     }
+
+    // TODO move this
+    protected static String toProperCase(String from) {
+        java.io.StringReader in = new java.io.StringReader(from.toLowerCase());
+        boolean precededBySpace = true;
+        StringBuffer properCase = new StringBuffer();
+        while (true) {
+            try {
+                int i = in.read();
+                if (i == -1)
+                    break;
+                char c = (char) i;
+                if (c == ' ' || c == '"' || c == '(' || c == '.' || c == '/' || c == '\\' || c == ',') {
+                    properCase.append(c);
+                    precededBySpace = true;
+                } else {
+                    if (precededBySpace) {
+                        properCase.append(Character.toUpperCase(c));
+                    } else {
+                        properCase.append(c);
+                    }
+                    precededBySpace = false;
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        return properCase.toString();
+    }
+
 }
