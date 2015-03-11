@@ -288,14 +288,18 @@
                         <version>0.1.1</version>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>nginx</baseImage>
-                            <cmd>["nginx", "-g", "daemon off;"]</cmd>
-                            <resources>
-                                <resource>
-                                    <targetPath>/usr/share/nginx/html</targetPath>
-                                    <directory>${basedir}/dist</directory>
-                                </resource>
-                            </resources>
+							<dockerDirectory>docker</dockerDirectory>
+							<resources>
+								<resource>
+									<targetPath>/dist</targetPath>
+									<directory>${basedir}/dist</directory>
+								</resource>
+								<resource>
+									<targetPath>/docker</targetPath>
+									<directory>${basedir}/docker</directory>
+									<include>init_docker.sh</include>
+								</resource>
+							</resources>
                         </configuration>
                         <executions>
                             <execution>
