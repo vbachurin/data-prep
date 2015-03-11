@@ -13,11 +13,11 @@ import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public class FillWithDefaultIfEmpty implements ActionMetadata {
 
-    public static final String         COLUMN_NAME_PARAMETER   = "column_name";               //$NON-NLS-1$
+    public static final String         COLUMN_NAME_PARAMETER   = "column_name";                                     //$NON-NLS-1$
 
-    public static final String         DEFAULT_VALUE_PARAMETER = "default_value";             //$NON-NLS-1$
+    public static final String         DEFAULT_VALUE_PARAMETER = "default_value";                                   //$NON-NLS-1$
 
-    public static final String         FILL_EMPTY_ACTION_NAME  = "fillemptywithdefault";      //$NON-NLS-1$
+    public static final String         FILL_EMPTY_ACTION_NAME  = "fillemptywithdefault";                            //$NON-NLS-1$
 
     public static final String         FILL_EMPTY_ACTION_DESC  = "fill empty cells of this column with given value"; //$NON-NLS-1$
 
@@ -72,7 +72,7 @@ public class FillWithDefaultIfEmpty implements ActionMetadata {
                 parsedParameters.put(COLUMN_NAME_PARAMETER, currentParameter.getValue().getTextValue());
                 break;
             case DEFAULT_VALUE_PARAMETER:
-                parsedParameters.put(DEFAULT_VALUE_PARAMETER, currentParameter.getValue().getTextValue());
+                parsedParameters.put(DEFAULT_VALUE_PARAMETER, currentParameter.getValue().asText());
                 break;
             default:
                 ActionParser.LOGGER
