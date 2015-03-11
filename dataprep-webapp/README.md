@@ -144,7 +144,7 @@ The default maven profile called *dev* that launches all the necessary gulp task
 This profile assumes that all the tooling is installed on the current machine.
 
 ###-P ci
-The profile name *ci* is used for continuus integration build on our jenkins server. This build is using a docker image installed with all the required tooling because it was to much of a pain to install the tooling directly on the jenkins server. This allows for installing on other servers easilly too.
+The profile name *ci* is used for continuus integration build on our jenkins server. This build is using a docker image installed with all the required tooling because it was too much of a pain to install the tooling directly on the jenkins server. This allows for installing on other servers easilly too.
 The docker image is build from the Dockerfile : [docker/Dockerfile-for-dev-tools](docker/Dockerfile-for-dev-tools)
 
 ###-P docker
