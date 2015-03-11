@@ -8,7 +8,15 @@ public class Item {
 
     String category;
 
-    String value;
+    Value[] values;
+
+    public Item(String name, Type type, String category, Value[] values) {
+        super();
+        this.name = name;
+        this.type = type;
+        this.category = category;
+        this.values = values;
+    }
 
     public String getName() {
         return name;
@@ -22,7 +30,34 @@ public class Item {
         return category;
     }
 
-    public String getValue() {
-        return value;
+    public Value[] getValues() {
+        return values;
+    }
+
+    public static class Value {
+
+        String name;
+
+        boolean isDefault = false;
+
+        public Value(String name) {
+            super();
+            this.name = name;
+        }
+
+        public Value(String name, boolean isDefault) {
+            super();
+            this.name = name;
+            this.isDefault = isDefault;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public boolean isDefault() {
+            return this.isDefault;
+        }
+
     }
 }

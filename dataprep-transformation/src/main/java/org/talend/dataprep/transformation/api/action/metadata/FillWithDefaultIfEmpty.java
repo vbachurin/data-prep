@@ -23,7 +23,7 @@ public class FillWithDefaultIfEmpty implements ActionMetadata {
 
     public static final ActionMetadata INSTANCE                = new FillWithDefaultIfEmpty();
 
-    private FillWithDefaultIfEmpty() {
+    protected FillWithDefaultIfEmpty() {
     }
 
     @Override

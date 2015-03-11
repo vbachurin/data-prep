@@ -33,7 +33,7 @@
       "nbCommands":"68",
       "registration":"26-07-2008",
       "state":"AL",
-      "tagada":""
+      "tagada":"True"
     },
     {
       "avgAmount":"45.39",
@@ -44,7 +44,8 @@
       "lastname":"Mitchell",
       "nbCommands":"68",
       "registration":"26-07-2008",
-      "state":"AZ"
+      "state":"AZ",
+      "tagada":"True"
     },
     {
       "avgAmount":"45.39",

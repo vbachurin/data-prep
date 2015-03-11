@@ -59,6 +59,10 @@ class CSVFormatGuess implements FormatGuess {
                         } catch (NumberFormatException e) {
                             // Not an number
                         }
+
+                        if (columnValue.trim().equalsIgnoreCase("true") || columnValue.trim().equalsIgnoreCase("false")) {
+                            columnMetadata.get(i).setType(Types.BOOLEAN.getName());
+                        }
                     }
                 }
             } catch (IOException e) {

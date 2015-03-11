@@ -16,7 +16,7 @@ public class TypeTest {
     @Test
     public void testList() {
         List<Type> anyList = Types.ANY.list();
-        assertThat(anyList, hasItems(Types.ANY, Types.DOUBLE, Types.FLOAT, Types.INTEGER, Types.NUMERIC, Types.STRING));
+        assertThat(anyList, hasItems(Types.ANY, Types.DOUBLE, Types.FLOAT, Types.INTEGER, Types.NUMERIC, Types.STRING, Types.BOOLEAN));
         List<Type> numericList = Types.NUMERIC.list();
         assertThat(numericList, hasItems(Types.DOUBLE, Types.FLOAT, Types.INTEGER, Types.NUMERIC));
     }
