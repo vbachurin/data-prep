@@ -14,6 +14,6 @@
         };
     }
 
-    angular.module('data-prep-recipe')
+    angular.module('data-prep.recipe')
         .directive('recipe', Recipe);
 })();

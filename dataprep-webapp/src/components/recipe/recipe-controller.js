@@ -4,6 +4,6 @@
     function RecipeCtrl() {
     }
 
-    angular.module('data-prep-recipe')
+    angular.module('data-prep.recipe')
         .controller('RecipeCtrl', RecipeCtrl);
 })();

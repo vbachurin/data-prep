@@ -1,0 +1,32 @@
+<div>
+    <div ng-include="'components/home/home-subheader.html'"></div>
+    
+    <div class="wide-container flex">
+
+        <div class="flex-menu side-menu">
+            <ul>
+                <li><a href="javascript:void(0)" class="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
+                <li><a href="javascript:void(0)">{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
+                <li><a href="javascript:void(0)">{{ ::'ALL_SHAKED_FILES' | translate }}</a></li>
+                <li><a href="javascript:void(0)">{{ ::'FAVORITE_FILES' | translate }}</a></li>
+            </ul>
+        </div>
+
+        <div class="flex-center">
+            <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
+            <dataset-list></dataset-list>
+        </div>
+
+        <div class="flex-menu side-menu inventory-data">
+            <p class="title">{{ ::'INVENTORY_DATA' | translate }}</p>
+            <hr/>
+            <p class="empty">
+                <img src="/assets/images/top_link_folder.png"/>
+                <br/>
+                {{ ::'SELECT_DATASET_DESCRIPTION' | translate }}
+            </p>
+        </div>
+    </div>
+
+    <datagrid></datagrid>
+</div>

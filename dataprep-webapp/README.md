@@ -48,31 +48,32 @@ The file structure is inspired by yeoman project called generator-gulp-angular :
 
 
 ### Sources file structure
-The source file structure is based on the [Best Practice Recommendations for Angular App Structure](https://docs.google.com/document/d/1XXMvReO8-Awi1EZXAXS4PzDzdNvV6pGcuaF4Q9821Es/pub), except for css files that have their own structure
 
 <pre>
-├── app                                         - app source folder
-│   ├── home                                    - home page sources
-│       ├── home.html                           - home page
-│       ├── home-controller.js                  - home page controller
-│       ├── home-controller-spec.js             - home page controller unit tests
-│       ├── home-subheader.html                 - home page subheader included in home.html
-│   ├── ...                                     - other page folder
 │
 ├── assets                                      - assets source folder
 │   ├── fonts                                   - fonts folder
 │   └── images                                  - images folder
 │
 ├── components                                  - reusable components folder
+│   ├── datagrid                                - datagrid module folder
+│       ├── _datagrid.scss                      - datagrid style sheet
+        ├── datagrid.html                       - datagrid template
+        ├── datagrid-controller.js              - datagrid controller
+        ├── datagrid-controller.spec.js         - datagrid controller unit tests
+        ├── datagrid-directive.js               - datagrid directive
+        ├── datagrid-directive.spec.js          - datagrid directive unit tests
+        └── datagrid-module.js                  - datagrid module
+│
+│   ├── widgets                                 - independant widget
+│   ├── ...                                     - other component folder
+│
+├── services                                    - services folder
 │   ├── dataset                                 - dataset module folder
-│       ├── dataset-grid                        - dataset module folder
-│           ├── ...
-│           ├── dataset-grid-directive.html     - data grid directive template
-│           ├── dataset-grid-directive.js       - data grid directive
-│           └── dataset-grid-directive.spec.js  - data grid directive unit tests
-│       ├── ...
+│       ├── dataset-grid-service.js             - dataset grid service
+│       ├── dataset-grid-service.spec.js        - dataset grid service unit tests
 │       ├── dataset-module.js                   - dataset angular module
-│       ├── dataset-service.js                  - dataset angular service registered in dataset module
+│       ├── dataset-service.js                  - dataset service
 │       └── dataset-service.spec.js             - dataset service unit tests
 │
 │   ├── utils                                   - filters, constants, ...

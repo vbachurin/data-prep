@@ -3,14 +3,9 @@
 
     angular.module('data-prep',
         [
-            'data-prep-utils', //utils components: constants, filters, ...
-            'data-prep-dataset', //dataset getter, manipulation, etc
-
-            'talend.widget', //components widget built on bourbon (modal, dropdown, ...)
-
             'ui.router', //more advanced router
-            'toaster', //toaster popup
-            'pascalprecht.translate' //internationalization
+            'data-prep.components',
+            'data-prep.services.rest' //rest interceptors
         ])
 
         //Performance config
@@ -37,11 +32,11 @@
             $stateProvider
                 .state('nav', {
                     abstract: true,
-                    templateUrl: 'app/navbar/navbar.html'
+                    templateUrl: 'components/navbar/navbar.html'
                 })
                 .state('nav.home', {
                     url: '/home',
-                    templateUrl: 'app/home/home.html',
+                    templateUrl: 'components/home/home.html',
                     controller: 'HomeCtrl',
                     controllerAs: 'homeCtrl'
                 });

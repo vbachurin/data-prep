@@ -1,0 +1,73 @@
+.datagrid {
+  $datagrid-line-odd: #f9f9f9;
+  $datagrid-line-border: #ddd;
+
+  $datagrid-cell: #6c6c6c;
+  $datagrid-cell-bkg-active: #e1e1e1;
+
+  width: 100%;
+  height: 100%;
+
+  .slick-header-columns {
+    border-bottom: 1px solid silver;
+    box-sizing: content-box;
+    min-height: 64px;
+
+    .slick-header-column.ui-state-default {
+      line-height: inherit;
+      height: auto;
+      padding: 0;
+    }
+  }
+
+  .slick-row {
+    position: absolute;
+    background: white;
+    border: 0;
+    line-height: 20px;
+
+    &.ui-widget-content,
+    &.slick-row.ui-state-active {
+      position: absolute;
+      border: 0;
+      width: 100%;
+    }
+
+    &:nth-of-type(odd) {
+      background-color: $datagrid-line-odd;
+    }
+
+    &.active {
+      background-color: #DFE8F6;
+    }
+  }
+
+  .slick-cell {
+    box-sizing: content-box;
+    border-color: $datagrid-line-border;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: $datagrid-cell;
+    font-size: .80em;
+    font-family: $monospace;
+
+    &.active {
+      border-color: gray;
+      border-style: solid;
+    }
+
+    &:hover {
+      background-color: $datagrid-cell-bkg-active;
+      cursor: cell;
+    }
+
+    &.selected {
+      background-color: #DFE8F6;
+    }
+
+    &.highlight {
+      background-color: $green;
+      color: #ffffff;
+    }
+  }
+}

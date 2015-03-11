@@ -16,9 +16,9 @@ function runTests(singleRun, done, karmaConfPath) {
 
     var testFiles = bowerDeps.js.concat([
         'src/*.js',
-        'src/{app,components}/**/*-module.js',
-        'src/{app,components}/**/*.js',
-        'src/{app,components}/**/*.html'
+        'src/{services,components}/**/*-module.js',
+        'src/{services,components}/**/*.js',
+        'src/components/**/*.html'
     ]);
 
     return gulp.src(testFiles)

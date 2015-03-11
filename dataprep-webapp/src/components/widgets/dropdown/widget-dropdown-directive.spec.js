@@ -22,6 +22,7 @@ describe('Dropdown directive', function () {
     });
 
     describe('closeable dropdown', function() {
+
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
 
