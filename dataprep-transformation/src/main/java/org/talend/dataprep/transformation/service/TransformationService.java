@@ -21,6 +21,7 @@ import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.Cut;
 import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
+import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyBoolean;
 import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
 import org.talend.dataprep.transformation.api.action.metadata.Negate;
 import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
@@ -62,7 +63,7 @@ public class TransformationService {
         if (Types.STRING.isAssignableFrom(type)) {
             return Arrays.asList(UpperCase.INSTANCE, LowerCase.INSTANCE, FillWithDefaultIfEmpty.INSTANCE, Cut.INSTANCE);
         } else if (Types.BOOLEAN.isAssignableFrom(type)) {
-            return Arrays.asList(Negate.INSTANCE);
+            return Arrays.asList(Negate.INSTANCE, FillWithDefaultIfEmptyBoolean.INSTANCE);
         } else {
             return Collections.emptyList();
         }

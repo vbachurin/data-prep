@@ -8,7 +8,15 @@ public class Item {
 
     String category;
 
-    String value;
+    Value[] values;
+
+    public Item(String name, Type type, String category, Value[] values) {
+        super();
+        this.name = name;
+        this.type = type;
+        this.category = category;
+        this.values = values;
+    }
 
     public String getName() {
         return name;
@@ -22,7 +30,22 @@ public class Item {
         return category;
     }
 
-    public String getValue() {
-        return value;
+    public Value[] getValues() {
+        return values;
+    }
+
+    public static class Value {
+
+        String name;
+
+        public Value(String name) {
+            super();
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
     }
 }

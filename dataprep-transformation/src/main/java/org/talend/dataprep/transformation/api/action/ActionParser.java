@@ -16,6 +16,7 @@ import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.Cut;
 import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
+import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyBoolean;
 import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
 import org.talend.dataprep.transformation.api.action.metadata.Negate;
 import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
@@ -63,6 +64,9 @@ public class ActionParser {
                         break;
                     case Negate.NEGATE_ACTION_NAME:
                         currentAction = Negate.INSTANCE;
+                        break;
+                    case FillWithDefaultIfEmptyBoolean.FILL_EMPTY_ACTION_NAME:
+                        currentAction = FillWithDefaultIfEmptyBoolean.INSTANCE;
                         break;
                     default:
                         throw new NotImplementedException("No support for action '" + actionType + "'.");
