@@ -6,9 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,8 +33,6 @@ class CSVFormatGuess implements FormatGuess {
     public float getConfidence() {
         return 1;
     }
-
-
 
     @Override
     public SchemaParser getSchemaParser() {
