@@ -35,6 +35,7 @@
     "jQuery": false,
     "$": false,
     "_": false,
-    "document": false
+    "document": false,
+    "Slick": false
   }
 }

@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function DatasetColumnHeader($timeout) {
+    function DatasetColumnHeader() {
         return {
             restrict: 'E',
             templateUrl: 'components/dataset/grid/header/dataset-column-header-directive.html',
@@ -16,17 +16,19 @@
                 post: function (scope, iElement, iAttrs, ctrl) {
                     ctrl.refreshQualityBar();
 
-                    $timeout(function() {
-                        var headerDropdownAction = iElement.find('#header-dropdown-action').eq(0);
-                        scope.$watch(
-                            function () {
-                                return ctrl.transformationsRetrieveError;
-                            },
-                            function (newValue) {
-                                if (newValue) {
-                                    headerDropdownAction.click();
-                                }
-                            });
+                    scope.$watch(
+                        function () {
+                            return ctrl.transformationsRetrieveError;
+                        },
+                        function (newValue) {
+                            if (newValue) {
+                                var headerDropdownAction = iElement.find('.dropdown-action').eq(0);
+                                headerDropdownAction.click();
+                            }
+                        });
+
+                    iElement.on('$destroy', function() {
+                        scope.$destroy();
                     });
                 }
             }
