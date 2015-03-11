@@ -126,6 +126,18 @@ public class TransformationServiceTests {
     }
 
     @Test
+    public void fillEmptyWithDefaultActionInteger() throws Exception {
+        String actions = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("fillEmptyWithDefaultIntegerAction.json"));
+        String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
+        String expectedContent = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("test3_fillEmptyWithDefaultIntegerAction.json"));
+        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+                .post("/transform?actions=" + encode(actions)).asString();
+        assertEquals(expectedContent, transformedContent, false);
+    }
+
+    @Test
     public void negateActionBoolean() throws Exception {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("negateAction.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
@@ -164,14 +176,18 @@ public class TransformationServiceTests {
     @Test
     public void numericColumnSuggest() throws Exception {
         String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column2.json"));
-        String response = given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column").asString();
-        assertEquals("[]", response, false);
+        String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("suggest_numeric.json"));
+        Response post = given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column");
+        String response = post.asString();
+        assertEquals(expectedSuggestions, response, false);
     }
 
     @Test
     public void booleanColumnSuggest() throws Exception {
         String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column3.json"));
-        String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("suggest2.json"));
+        String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("suggest_boolean.json"));
         Response post = given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column");
         String response = post.asString();
         assertEquals(expectedSuggestions, response, false);

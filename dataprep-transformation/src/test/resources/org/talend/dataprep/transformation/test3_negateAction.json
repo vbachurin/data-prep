@@ -18,7 +18,7 @@
       "firstname":"Calvin",
       "id":"2",
       "lastname":"Jefferson",
-      "nbCommands":"13",
+      "nbCommands":"",
       "registration":"25-08-2008",
       "state":"TN",
       "tagada":"True"
@@ -30,7 +30,6 @@
       "firstname":"Ulysses",
       "id":"3",
       "lastname":"Johnson",
-      "nbCommands":"68",
       "registration":"26-07-2008",
       "state":"AL",
       "tagada":""
@@ -42,7 +41,7 @@
       "firstname":"John",
       "id":"3",
       "lastname":"Mitchell",
-      "nbCommands":"68",
+      "nbCommands":"test",
       "registration":"26-07-2008",
       "state":"AZ"
     },
@@ -53,7 +52,7 @@
       "firstname":"Mitch",
       "id":"33",
       "lastname":"Mitchell",
-      "nbCommands":"8",
+      "nbCommands":"-8",
       "registration":"26-07-2018",
       "state":"AZ",
       "tagada":"something"

@@ -9,7 +9,8 @@
       "lastname":"Quincy",
       "nbCommands":"72",
       "registration":"30-11-2007",
-      "state":"NC"
+      "state":"NC",
+      "tagada":"true"
     },
     {
       "avgAmount":"200.56",
@@ -17,25 +18,27 @@
       "firstname":"Calvin",
       "id":"2",
       "lastname":"Jefferson",
-      "nbCommands":"",
+      "nbCommands":"5",
       "registration":"25-08-2008",
       "state":"TN",
-      "city": "Minas Tirith"
+      "tagada":"false"
     },
     {
       "avgAmount":"645.39",
       "birth":"05-05-1982",
-      "city":"Minas Tirith",
+      "city":" ",
       "firstname":"Ulysses",
       "id":"3",
       "lastname":"Johnson",
+      "nbCommands":"5",
       "registration":"26-07-2008",
-      "state":"AL"
+      "state":"AL",
+      "tagada":""
     },
     {
       "avgAmount":"45.39",
       "birth":"05-05-1972",
-      "city":"Minas Tirith",
+      "city":" ",
       "firstname":"John",
       "id":"3",
       "lastname":"Mitchell",
