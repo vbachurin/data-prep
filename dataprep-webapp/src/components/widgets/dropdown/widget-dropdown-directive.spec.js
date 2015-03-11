@@ -138,7 +138,6 @@ describe('Dropdown directive', function () {
             });
 
             //when
-            element.find('.dropdown-action').mousedown();
             element.find('.dropdown-menu').mousedown();
 
             //then
