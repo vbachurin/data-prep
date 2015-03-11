@@ -103,7 +103,9 @@
                             hideMenu();
                         }
                     });
-                    iElement.find('.dropdown-menu').mousedown(function(event) {
+
+                    //stop propagation on element mousedown not to hide dropdown
+                    iElement.mousedown(function(event) {
                         event.stopPropagation();
                     });
 
