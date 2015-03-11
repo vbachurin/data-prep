@@ -288,7 +288,7 @@
                         <version>0.1.1</version>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-							<dockerDirectory>docker</dockerDirectory>
+							<dockerDirectory>${basedir}/docker</dockerDirectory>
 							<resources>
 								<resource>
 									<targetPath>/dist</targetPath>
