@@ -21,7 +21,9 @@
         <profile>
             <id>dev</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!use.docker.tool</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -150,7 +152,10 @@
         <profile>
             <id>ci</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>use.docker.tool</name>
+                    <value>true</value>
+                </property>
             </activation>
             <build>
                 <plugins>
