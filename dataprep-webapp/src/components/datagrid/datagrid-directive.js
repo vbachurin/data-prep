@@ -72,6 +72,13 @@
                 };
 
                 /**
+                 * Reset the cells css
+                 */
+                var resetCellStyles = function() {
+                    grid.setCellCssStyles('highlight', {});
+                };
+
+                /**
                  * Adapt backend column to slick column. The name with div id depending on index is important. It is used to insert column header dropdown and quality bar
                  * @param col - the backend column to adapt
                  * @param index - column index
@@ -165,10 +172,11 @@
 
                     //change selected cell column background
                     grid.onActiveCellChanged.subscribe(function(e,args) {
-                        resetColumnsClass();
-                        grid.getColumns()[args.cell].cssClass = 'selected';
-                        grid.invalidateAllRows();
-                        grid.render();
+                        if(args.cell) {
+                            resetColumnsClass();
+                            grid.getColumns()[args.cell].cssClass = 'selected';
+                            grid.invalidate();
+                        }
                     });
                 };
 
@@ -218,12 +226,17 @@
                  * @param data
                  */
                 var updateData = function (data) {
+                    _.forEach(data, function(item, index) {
+                        item.tdpId = index;
+                    });
+
                     dataView.beginUpdate();
-                    dataView.setItems(data);
+                    dataView.setItems(data, 'tdpId');
                     dataView.endUpdate();
 
-                    grid.invalidateAllRows();
-                    grid.render();
+                    resetCellStyles();
+                    grid.resetActiveCell();
+                    grid.invalidate();
                 };
 
                 //------------------------------------------------------------------------------------------------------
