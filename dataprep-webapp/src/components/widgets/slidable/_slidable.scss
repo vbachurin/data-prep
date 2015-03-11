@@ -26,6 +26,10 @@
     @include flex(1 0);
 
     overflow: auto;
+
+    .content-container {
+      width: $width;
+    }
   }
 
   .action {
