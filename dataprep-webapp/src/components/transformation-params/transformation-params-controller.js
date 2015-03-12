@@ -37,9 +37,9 @@
          * Init all param values to default for menu params and choice item params
          */
         var initParamsValues = function () {
-            initParamItemValues(vm.menu.parameters);
+            initParamItemValues(vm.transformation.parameters);
 
-            _.forEach(vm.menu.items, function (choice) {
+            _.forEach(vm.transformation.items, function (choice) {
                 _.forEach(choice.values, function (choiceItem) {
                     initParamItemValues(choiceItem.parameters);
                 });
@@ -52,8 +52,8 @@
          */
         var getParams = function () {
             var params = {};
-            if (vm.menu.parameters) {
-                _.forEach(vm.menu.parameters, function (paramItem) {
+            if (vm.transformation.parameters) {
+                _.forEach(vm.transformation.parameters, function (paramItem) {
                     params[paramItem.name] = paramItem.value;
                 });
             }
@@ -67,7 +67,7 @@
          */
         var getChoiceParams = function () {
             var params = {};
-            _.forEach(vm.menu.items, function (item) {
+            _.forEach(vm.transformation.items, function (item) {
                 var selectedChoice = item.selectedValue;
                 params[item.name] = selectedChoice.name;
 

@@ -11,11 +11,11 @@ describe('Transform params controller', function () {
         extractedParams = null;
         scope = $rootScope.$new();
 
-        createController = function (menu) {
+        createController = function (transformation) {
             var ctrlFn = $controller('TransformParamsCtrl', {
                 $scope: scope
             }, true);
-            ctrlFn.instance.menu = menu;
+            ctrlFn.instance.transformation = transformation;
             ctrlFn.instance.onSubmit = function(args) {
                 extractedParams = args.params;
             };
@@ -25,79 +25,79 @@ describe('Transform params controller', function () {
 
     it('should set numeric default value', function () {
         //given
-        var menu = {parameters: [{name: 'param1', type: 'numeric', default: '5'}]};
-        var ctrl = createController(menu);
+        var transformation = {parameters: [{name: 'param1', type: 'numeric', default: '5'}]};
+        var ctrl = createController(transformation);
 
         //when
         ctrl.transformWithParam();
 
         //then
-        expect(ctrl.menu.parameters[0].value).toBe(5);
+        expect(ctrl.transformation.parameters[0].value).toBe(5);
     });
 
     it('should set integer default value', function () {
         //given
-        var menu = {parameters: [{name: 'param1', type: 'integer', default: '5'}]};
-        var ctrl = createController(menu);
+        var transformation = {parameters: [{name: 'param1', type: 'integer', default: '5'}]};
+        var ctrl = createController(transformation);
 
         //when
         ctrl.transformWithParam();
 
         //then
-        expect(ctrl.menu.parameters[0].value).toBe(5);
+        expect(ctrl.transformation.parameters[0].value).toBe(5);
     });
 
     it('should set double default value', function () {
         //given
-        var menu = {parameters: [{name: 'param1', type: 'double', default: '5.1'}]};
-        var ctrl = createController(menu);
+        var transformation = {parameters: [{name: 'param1', type: 'double', default: '5.1'}]};
+        var ctrl = createController(transformation);
 
         //when
         ctrl.transformWithParam();
 
         //then
-        expect(ctrl.menu.parameters[0].value).toBe(5.1);
+        expect(ctrl.transformation.parameters[0].value).toBe(5.1);
     });
 
     it('should set float default value', function () {
         //given
-        var menu = {parameters: [{name: 'param1', type: 'float', default: '5.1'}]};
-        var ctrl = createController(menu);
+        var transformation = {parameters: [{name: 'param1', type: 'float', default: '5.1'}]};
+        var ctrl = createController(transformation);
 
         //when
         ctrl.transformWithParam();
 
         //then
-        expect(ctrl.menu.parameters[0].value).toBe(5.1);
+        expect(ctrl.transformation.parameters[0].value).toBe(5.1);
     });
 
     it('should set 0 value if default value is not numeric with numeric type', function () {
         //given
-        var menu = {parameters: [{name: 'param1', type: 'numeric', default: 'a'}]};
-        var ctrl = createController(menu);
+        var transformation = {parameters: [{name: 'param1', type: 'numeric', default: 'a'}]};
+        var ctrl = createController(transformation);
 
         //when
         ctrl.transformWithParam();
 
         //then
-        expect(ctrl.menu.parameters[0].value).toBe(0);
+        expect(ctrl.transformation.parameters[0].value).toBe(0);
     });
 
     it('should not set default value if no default value is provided', function () {
         //given
-        var menu = {parameters: [{name: 'param1', type: 'text', default: null}]};
-        var ctrl = createController(menu);
+        var transformation = {parameters: [{name: 'param1', type: 'text', default: null}]};
+        var ctrl = createController(transformation);
 
         //when
         ctrl.transformWithParam();
 
         //then
-        expect(ctrl.menu.parameters[0].value).toBeUndefined();
+        expect(ctrl.transformation.parameters[0].value).toBeUndefined();
     });
 
     it('should init params default values', function() {
         //given
-        var menu = {
+        var transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
@@ -105,7 +105,7 @@ describe('Transform params controller', function () {
                 {name: 'param2', type: 'integer', default: '5'}
             ]
         };
-        var ctrl = createController(menu);
+        var ctrl = createController(transformation);
 
         //when
         ctrl.transformWithParam();
@@ -116,7 +116,7 @@ describe('Transform params controller', function () {
 
     it('should extract param', function() {
         //given
-        var menu = {
+        var transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
@@ -124,9 +124,9 @@ describe('Transform params controller', function () {
                 {name: 'param2', type: 'integer', default: '5'}
             ]
         };
-        var ctrl = createController(menu);
-        ctrl.menu.parameters[0].value = 'param1Value';
-        ctrl.menu.parameters[1].value = 4;
+        var ctrl = createController(transformation);
+        ctrl.transformation.parameters[0].value = 'param1Value';
+        ctrl.transformation.parameters[1].value = 4;
 
         //when
         ctrl.transformWithParam();
@@ -137,7 +137,7 @@ describe('Transform params controller', function () {
 
     /*it('should init choice default value', function() {
         //given
-        var menu = {
+        var transformation = {
             name: 'split',
             category: 'split',
             items: [{
@@ -148,7 +148,7 @@ describe('Transform params controller', function () {
                 ]
             }]
         };
-        var ctrl = createController(menu);
+        var ctrl = createController(transformation);
 
         //when
         ctrl.transformWithParam();
@@ -159,7 +159,7 @@ describe('Transform params controller', function () {
 
     it('should extract simple choice param', function() {
         //given
-        var menu = {
+        var transformation = {
             name: 'split',
             category: 'split',
             items: [{
@@ -170,8 +170,8 @@ describe('Transform params controller', function () {
                 ]
             }]
         };
-        var ctrl = createController(menu);
-        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[1];
+        var ctrl = createController(transformation);
+        ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[1];
 
         //when
         ctrl.transformWithParam();
@@ -182,7 +182,7 @@ describe('Transform params controller', function () {
 
     it('should extract parameterized choice params', function() {
         //given
-        var menu = {
+        var transformation = {
             name: 'split',
             category: 'split',
             items: [{
@@ -199,8 +199,8 @@ describe('Transform params controller', function () {
                 ]
             }]
         };
-        var ctrl = createController(menu);
-        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[0];
+        var ctrl = createController(transformation);
+        ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[0];
 
         //when
         ctrl.transformWithParam();
@@ -209,9 +209,9 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment'});
     });
 
-    it('should extract parameters and parameterized choice menu select', function() {
+    it('should extract parameters and parameterized choice transformation select', function() {
         //given
-        var menu = {
+        var transformation = {
             name: 'split',
             category: 'split',
             parameters: [
@@ -232,10 +232,10 @@ describe('Transform params controller', function () {
                 ]
             }]
         };
-        var ctrl = createController(menu);
-        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[0];
-        ctrl.menu.parameters[0].value = 'param1Value';
-        ctrl.menu.parameters[1].value = 4;
+        var ctrl = createController(transformation);
+        ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[0];
+        ctrl.transformation.parameters[0].value = 'param1Value';
+        ctrl.transformation.parameters[1].value = 4;
 
         //when
         ctrl.transformWithParam();

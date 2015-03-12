@@ -15,7 +15,7 @@
             <div class="modal-title">{{::menuCtrl.menu.name | translate }}</div>
             <div class="modal-subtitle">{{::menuCtrl.menu.description | translate }}</div>
 
-            <transform-params menu="menuCtrl.menu"
+            <transform-params transformation="menuCtrl.menu"
                               on-submit="menuCtrl.transform(params)"></transform-params>
 
         </talend-modal>

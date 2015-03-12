@@ -1,8 +1,8 @@
 <div class="transformation-params">
     <form ng-submit="paramsCtrl.transformWithParam()" name="paramsCtrl.paramForm">
         <!-- Menu item param -->
-        <table ng-if="paramsCtrl.menu.parameters" class="no-border param">
-            <tr ng-repeat="param in ::paramsCtrl.menu.parameters track by $index">
+        <table ng-if="paramsCtrl.transformation.parameters" class="no-border param">
+            <tr ng-repeat="param in ::paramsCtrl.transformation.parameters track by $index">
                 <td class="param-name">{{::param.name}} :</td>
                 <td class="param-input">
                     <input name="{{::(param.name + $index)}}"
@@ -19,8 +19,8 @@
         </table>
 
         <!-- Choice -->
-        <table ng-if="::(paramsCtrl.menu.items)" class="no-border param-choice">
-            <tbody ng-repeat="item in ::paramsCtrl.menu.items track by $index">
+        <table ng-if="::(paramsCtrl.transformation.items)" class="no-border param-choice">
+            <tbody ng-repeat="item in ::paramsCtrl.transformation.items track by $index">
             <tr>
                 <td class="param-choice-name">{{item.name}} :</td>
                 <td class="param-choice-select"><select

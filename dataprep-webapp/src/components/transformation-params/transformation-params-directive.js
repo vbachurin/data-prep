@@ -7,7 +7,7 @@
             templateUrl: 'components/transformation-params/transformation-params.html',
             replace: true,
             scope: {
-                menu: '=',
+                transformation: '=',
                 onSubmit: '&'
             },
             bindToController: true,

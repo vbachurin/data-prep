@@ -13,7 +13,7 @@ describe('Transformation menu directive', function () {
         };
 
         createElement = function() {
-            var element = angular.element('<transform-params menu="menu" on-submit="onSubmit"></transform-params>');
+            var element = angular.element('<transform-params transformation="transformation" on-submit="onSubmit"></transform-params>');
             $compile(element)(scope);
             scope.$digest();
             return element;
@@ -22,7 +22,7 @@ describe('Transformation menu directive', function () {
 
     it('should render an action with parameters', function() {
         //given
-        scope.menu = {
+        scope.transformation = {
             name: 'menu with param',
             parameters: [
                 {
@@ -54,7 +54,7 @@ describe('Transformation menu directive', function () {
 
     it('should render an action with simple choice', function() {
         //given
-        scope.menu = {
+        scope.transformation = {
             name: 'menu with param',
             items: [{
                 name: 'my choice',
@@ -85,7 +85,7 @@ describe('Transformation menu directive', function () {
 
     it('should render an action with choice containing parameters', function() {
         //given
-        scope.menu = {
+        scope.transformation = {
             name: 'menu with param',
             items: [{
                 name: 'my choice',
@@ -117,14 +117,14 @@ describe('Transformation menu directive', function () {
         var paramChoice = element.find('.param-choice').eq(0);
 
         //when
-        scope.menu.items[0].selectedValue = scope.menu.items[0].values[0];
+        scope.transformation.items[0].selectedValue = scope.transformation.items[0].values[0];
         scope.$digest();
 
         //then
         expect(paramChoice.find('.param-name').length).toBe(0);
 
         //when
-        scope.menu.items[0].selectedValue = scope.menu.items[0].values[1];
+        scope.transformation.items[0].selectedValue = scope.transformation.items[0].values[1];
         scope.$digest();
 
         //then
