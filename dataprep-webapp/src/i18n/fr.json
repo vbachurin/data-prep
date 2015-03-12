@@ -21,6 +21,7 @@
   "UPLOAD_ERROR"        : "Erreur d'envoi",
 
   "_comment" : "Datagrid transformations",
+  "RECIPE_ITEM_ON_COL"  : "sur",
   "NO_TRANSFORMATION"   : "Aucune transformation disponible",
   "uppercase"           : "Mettre en Majuscule",
   "lowercase"           : "Mettre en Minuscule",

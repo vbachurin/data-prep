@@ -21,6 +21,7 @@
   "UPLOAD_ERROR"        : "Upload error",
 
   "_comment" : "Datagrid transformations",
+  "RECIPE_ITEM_ON_COL"  : "on column",
   "NO_TRANSFORMATION"   : "No transformation available",
   "uppercase"           : "To Uppercase",
   "lowercase"           : "To lowercase",
