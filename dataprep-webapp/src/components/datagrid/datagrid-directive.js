@@ -154,10 +154,10 @@
                     grid.onClick.subscribe(function (e,args) {
                         resetColumnsFormatter();
 
-                        var word = getClickedWord();
-
                         var config = {};
                         var column = grid.getColumns()[args.cell];
+                        var word = dataView.getItem(args.row)[column.id];
+
                         column.formatter = function(row, cell, value) {
                             if((word === '' && value === '') || (word !== '' && value.indexOf(word) > -1)) {
                                 config[row] = {};
@@ -166,8 +166,7 @@
                             return value;
                         };
                         grid.setCellCssStyles('highlight', config);
-                        grid.invalidateAllRows();
-                        grid.render();
+                        grid.invalidate();
                     });
 
                     //change selected cell column background
