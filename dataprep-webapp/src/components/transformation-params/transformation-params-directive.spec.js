@@ -12,10 +12,10 @@ describe('Transformation menu directive', function () {
             extractedParams = args.params;
         };
 
-        createElement = function(directiveScope) {
+        createElement = function() {
             var element = angular.element('<transform-params menu="menu" on-submit="onSubmit"></transform-params>');
-            $compile(element)(directiveScope);
-            directiveScope.$digest();
+            $compile(element)(scope);
+            scope.$digest();
             return element;
         };
     }));
@@ -41,7 +41,7 @@ describe('Transformation menu directive', function () {
         };
 
         //when
-        var element = createElement(scope);
+        var element = createElement();
 
         //then
         expect(element.find('.param-name').length).toBe(2);
@@ -70,7 +70,7 @@ describe('Transformation menu directive', function () {
         };
 
         //when
-        var element = createElement(scope);
+        var element = createElement();
 
         //then
         var paramChoice = element.find('.param-choice').eq(0);
@@ -113,7 +113,7 @@ describe('Transformation menu directive', function () {
                 ]
             }]
         };
-        var element = createElement(scope);
+        var element = createElement();
         var paramChoice = element.find('.param-choice').eq(0);
 
         //when
