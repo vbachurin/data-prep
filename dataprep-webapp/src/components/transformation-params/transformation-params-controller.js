@@ -28,7 +28,8 @@
         var initParamItemValues = function (params) {
             _.forEach(params, function (param) {
                 if (param.default) {
-                    param.value = adaptParamDefaultValue(param);
+                    param.default = adaptParamDefaultValue(param);
+                    param.value = param.default;
                 }
             });
         };

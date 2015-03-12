@@ -1,24 +1,15 @@
 <ul class="talend-accordion">
     <li ng-repeat="step in recipeCtrl.recipe track by $index">
-        {{$index + 1}}.
-        <span class="recipe-description">{{step.transformation.name | translate}}</span>
-        {{'RECIPE_ITEM_ON_COL' | translate}}
-        <span class="recipe-description">{{step.column}}</span>
+        <a class="talend-accordion-trigger" on-open="recipeCtrl.resetParams(step)">
+            {{$index + 1}}.
+            <span class="recipe-description">{{step.transformation.name | translate}}</span>
+            {{'RECIPE_ITEM_ON_COL' | translate}}
+            <span class="recipe-description">{{step.column.id}}</span>
+        </a>
+        <ul class="submenu" ng-if="::(step.transformation.parameters || step.transformation.items)">
+            <li>
+                <transform-params transformation="step.transformation"></transform-params>
+            </li>
+        </ul>
     </li>
-
-    <!--<li>-->
-        <!--1. Uppercase on column LASTNAME-->
-    <!--</li>-->
-    <!--<li>-->
-        <!--<a class="talend-accordion-trigger">2. Replace empty in column STATE</a>-->
-        <!--<ul class="submenu">-->
-            <!--<li>-->
-                <!--Value : <input type="text" value="--" />-->
-                <!--<button class="t-btn-primary">Ok</button>-->
-            <!--</li>-->
-        <!--</ul>-->
-    <!--</li>-->
-    <!--<li>-->
-        <!--3. Lowercase on column Firstname-->
-    <!--</li>-->
 </ul>
