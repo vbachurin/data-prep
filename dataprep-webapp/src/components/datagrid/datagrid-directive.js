@@ -172,7 +172,7 @@
 
                     //change selected cell column background
                     grid.onActiveCellChanged.subscribe(function(e,args) {
-                        if(args.cell) {
+                        if(angular.isDefined(args.cell)) {
                             resetColumnsClass();
                             grid.getColumns()[args.cell].cssClass = 'selected';
                             grid.invalidate();
