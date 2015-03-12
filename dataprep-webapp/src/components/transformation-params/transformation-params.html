@@ -1,0 +1,86 @@
+<div class="transformation-params">
+    <form ng-submit="paramsCtrl.transformWithParam()" name="paramsCtrl.paramForm">
+        <!-- Menu item param -->
+        <table ng-if="paramsCtrl.menu.parameters" class="no-border param">
+            <tr ng-repeat="param in ::paramsCtrl.menu.parameters track by $index">
+                <td class="param-name">{{::param.name}} :</td>
+                <td class="param-input">
+                    <input name="{{::(param.name + $index)}}"
+                           type="{{::param.inputType}}"
+                           ng-model="param.value"
+                           type-validation="{{::param.type}}"/>
+
+                            <span class="error" ng-if="paramsCtrl.paramForm[param.name + $index].$error.typeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
+                                This must be a {{::param.type}}
+                            </span>
+                </td>
+
+            </tr>
+        </table>
+
+        <!-- Choice -->
+        <table ng-if="::(paramsCtrl.menu.items)" class="no-border param-choice">
+            <tbody ng-repeat="item in ::paramsCtrl.menu.items track by $index">
+            <tr>
+                <td class="param-choice-name">{{item.name}} :</td>
+                <td class="param-choice-select"><select
+                        ng-model="item.selectedValue"
+                        ng-options="option as option.name for option in ::item.values"
+                        required></select>
+                </td>
+            </tr>
+
+            <!-- invisible tr for nested ng-repeat-start purpose -->
+            <tr ng-repeat-start="option in ::item.values track by $index" ng-if="::false"></tr>
+
+            <tr ng-repeat="param in ::option.parameters track by $index"
+                ng-if="item.selectedValue === option">
+                <td class="param-name">{{::param.name}} :</td>
+                <td class="param-input">
+                    <input name="{{::(param.name + $index)}}"
+                           type="{{::param.inputType}}"
+                           ng-model="param.value"
+                           type-validation="{{::param.type}}"/>
+
+                                <span class="error" ng-if="paramsCtrl.paramForm[param.name + $index].$error.typeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
+                                    This must be a value of type : {{::param.type}}
+                                </span>
+                </td>
+            </tr>
+
+            <!-- invisible tr for nested ng-repeat-end purpose -->
+            <tr ng-repeat-end ng-if="::false"></tr>
+            </tbody>
+
+            <!-- Choice params -->
+            <tbody
+                    ng-repeat-start="option in ::item.values track by $index"
+                    ng-if="option.parameters && item.selectedValue === option">
+            <tr ng-repeat="param in ::option.parameters track by $index">
+                <td class="param-name">{{::param.name}} :</td>
+                <td class="param-input">
+                    <input name="{{::(param.name + $index)}}"
+                           type="{{::param.inputType}}"
+                           placeholder="Default '{{::param.default}}'"
+                           ng-model="param.value"
+                           type-validation="{{::param.type}}"/>
+
+                                <span class="error" ng-if="paramsCtrl.paramForm[param.name + $index].$error.typeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
+                                    This must be a value of type : {{::param.type}}
+                                </span>
+                </td>
+            </tr>
+            </tbody>
+
+            <tbody ng-repeat-end></tbody>
+            <tbody ng-repeat-end></tbody>
+            <tbody ng-repeat-end></tbody>
+        </table>
+    </form>
+
+    <div class="param-buttons">
+        <button ng-disabled="paramsCtrl.paramForm.$invalid"
+                class="param-primary-button t-btn-primary"
+                ng-click="paramsCtrl.transformWithParam()">Submit</button>
+    </div>
+</div>

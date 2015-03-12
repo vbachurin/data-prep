@@ -12,6 +12,7 @@
         'data-prep.recipe',
         'data-prep.transformation-list',
         'data-prep.transformation-menu',
+        'data-prep.transformation-params',
         'data-prep.type-validation'
     ]);
 })();
