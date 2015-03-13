@@ -173,20 +173,6 @@ describe('Dataset grid directive', function() {
         };
     }
 
-    function RangeMock(index, text) {
-        this.startOffset = index;
-        this.setStart = function(node, newValue) {
-            this.startOffset = newValue;
-        };
-        this.endOffset = index;
-            this.setEnd = function(node, newValue) {
-            this.endOffset = newValue;
-        };
-        this.toString = function() {
-            return text.substring(this.startOffset, this.endOffset);
-        };
-    }
-
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
 
@@ -212,40 +198,23 @@ describe('Dataset grid directive', function() {
         var grid = new GridGetter(element);
         var firstRow = grid.row(0);
         var secondRow = grid.row(1);
-        var thirdRow = grid.row(2);
 
         expect(firstRow.nbCell()).toBe(5);
         expect(firstRow.cell(0).text()).toBe('1');
         expect(firstRow.cell(1).text()).toBe('AL');
         expect(firstRow.cell(2).text()).toBe('My Alabama');
         expect(firstRow.cell(3).text()).toBe('Montgomery');
-        expect(firstRow.cell(4).text()).toBe('Birmingham city');
-        
+
         expect(secondRow.nbCell()).toBe(5);
         expect(secondRow.cell(0).text()).toBe('2');
         expect(secondRow.cell(1).text()).toBe('AK');
         expect(secondRow.cell(2).text()).toBe('Alaska');
         expect(secondRow.cell(3).text()).toBe('Juneau');
-        expect(secondRow.cell(4).text()).toBe('Anchorage');
-
-        expect(thirdRow.nbCell()).toBe(5);
-        expect(thirdRow.cell(0).text()).toBe('3');
-        expect(thirdRow.cell(1).text()).toBe('AL');
-        expect(thirdRow.cell(2).text()).toBe('My Alabama 2');
-        expect(thirdRow.cell(3).text()).toBe('Montgomery');
-        expect(thirdRow.cell(4).text()).toBe('Birmingham city');
     }));
-
 
     it('should highlight cells containing clicked value', inject(function($window, DatasetGridService) {
         //given
-        var innerText = 'My Alabama';
         var colIndex = 2;
-
-        spyOn($window, 'getSelection').and.returnValue({
-            getRangeAt: function(){return new RangeMock(5, innerText);},
-            anchorNode: 'Alabama'
-        });
 
         DatasetGridService.setDataset(metadata, data);
         scope.$digest();
@@ -265,11 +234,6 @@ describe('Dataset grid directive', function() {
         //given
         var colIndex = 2;
 
-        spyOn($window, 'getSelection').and.returnValue({
-            getRangeAt: function(){return new RangeMock(0, '');},
-            anchorNode: ''
-        });
-
         DatasetGridService.setDataset(metadata, dataWithEmptyCell);
         scope.$digest();
 
@@ -283,4 +247,5 @@ describe('Dataset grid directive', function() {
         expect(grid.row(1).cell(colIndex).element().hasClass('highlight')).toBe(true);
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
     }));
+
 });

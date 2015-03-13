@@ -9,7 +9,7 @@
             controllerAs: 'datagridCtrl',
             controller: 'DatagridCtrl',
             link: function (scope, iElement, iAttrs, ctrl) {
-                var options, dataView, grid, colHeaderElements = [];
+                var options, grid, colHeaderElements = [];
 
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------------COL UTILES--------------------------------------------
@@ -90,11 +90,11 @@
                  * Attach listeners for big table row management
                  */
                 var attachLongTableListeners = function() {
-                    dataView.onRowCountChanged.subscribe(function () {
+                    ctrl.dataView.onRowCountChanged.subscribe(function () {
                         grid.updateRowCount();
                         grid.render();
                     });
-                    dataView.onRowsChanged.subscribe(function (e, args) {
+                    ctrl.dataView.onRowsChanged.subscribe(function (e, args) {
                         grid.invalidateRows(args.rows);
                         grid.render();
                     });
@@ -111,6 +111,9 @@
                     });
                 };
 
+                /**
+                 * Attach cell action listeners (click, active change, ...)
+                 */
                 var attachCellListeners = function() {
                     //get clicked word and highlight cells in clicked column containing the word
                     grid.onClick.subscribe(function (e,args) {
@@ -118,10 +121,10 @@
 
                         var config = {};
                         var column = grid.getColumns()[args.cell];
-                        var word = dataView.getItem(args.row)[column.id];
+                        var word = ctrl.dataView.getItem(args.row)[column.id];
 
                         column.formatter = function(row, cell, value) {
-                            if((word === '' && value === '') || (word !== '' && value.indexOf(word) > -1)) {
+                            if((word === '' && value === '') || (value && word !== '' && value.indexOf(word) > -1)) {
                                 config[row] = {};
                                 config[row][column.id] = 'highlight';
                             }
@@ -147,16 +150,18 @@
                 /**
                  * Init Slick grid and attach listeners on dataview and grid
                  */
-                var initGrid = function () {
-                    //options, dataview and grid
+                var initGridIfNeeded = function () {
+                    if(grid) {
+                        return;
+                    }
+
                     options = {
                         editable: false,
                         enableAddRow: false,
                         enableCellNavigation: true,
                         enableTextSelectionOnCells: true
                     };
-                    dataView = new Slick.Data.DataView({inlineFilters: true});
-                    grid = new Slick.Grid('#datagrid', dataView, [], options);
+                    grid = new Slick.Grid('#datagrid', ctrl.dataView, [], options);
 
                     //listeners
                     attachLongTableListeners();
@@ -183,18 +188,9 @@
                 };
 
                 /**
-                 * Update dataView items and render grid
-                 * @param data
+                 * Render grid on dataView update
                  */
-                var updateData = function (data) {
-                    _.forEach(data, function(item, index) {
-                        item.tdpId = index;
-                    });
-
-                    dataView.beginUpdate();
-                    dataView.setItems(data, 'tdpId');
-                    dataView.endUpdate();
-
+                var updateData = function () {
                     resetCellStyles();
                     grid.resetActiveCell();
                     grid.invalidate();
@@ -210,12 +206,10 @@
                     function () {
                         return ctrl.data ? ctrl.data.columns : null;
                     },
-                    function (newValue) {
-                        if (newValue) {
-                            if (!grid) {
-                                initGrid();
-                            }
-                            updateColumns(newValue);
+                    function (cols) {
+                        if (cols) {
+                            initGridIfNeeded();
+                            updateColumns(cols);
                             grid.autosizeColumns();
                         }
                     }
@@ -228,9 +222,25 @@
                     function () {
                         return ctrl.data ? ctrl.data.records : null;
                     },
-                    function (newValue) {
-                        if (newValue) {
-                            updateData(newValue);
+                    function (records) {
+                        if(records) {
+                            initGridIfNeeded();
+                            updateData();
+                        }
+                    }
+                );
+
+                /**
+                 * When filter change, displayed values change, so we reset active cell and cell styles
+                 */
+                scope.$watch(
+                    function () {
+                        return ctrl.filters.length;
+                    },
+                    function () {
+                        if(grid) {
+                            resetCellStyles();
+                            grid.resetActiveCell();
                         }
                     }
                 );

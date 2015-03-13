@@ -61,11 +61,11 @@ describe('Transform menu controller', function () {
             return ctrl;
         };
 
-        DatasetGridService.setDataset({}, {});
+        //DatasetGridService.setDataset({}, {});
 
         spyOn(TransformationService, 'transform').and.returnValue($q.when({data: result}));
         spyOn($rootScope, '$emit').and.callThrough();
-        spyOn(DatasetGridService, 'updateRecords').and.callThrough();
+        spyOn(DatasetGridService, 'updateRecords').and.callFake(function() {});
     }));
 
     it('should do nothing on select if the menu is a divider', inject(function (TransformationService) {

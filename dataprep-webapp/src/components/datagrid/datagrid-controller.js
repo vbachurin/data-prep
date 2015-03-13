@@ -24,9 +24,6 @@
             configurable: false,
             get: function () {
                 return this.datasetGridService.metadata;
-            },
-            set: function(value) {
-                this.datasetGridService.metadata = value;
             }
         });
 
@@ -36,9 +33,33 @@
             configurable: false,
             get: function () {
                 return this.datasetGridService.data;
-            },
-            set: function(value) {
-                this.datasetGridService.data = value;
+            }
+        });
+
+    Object.defineProperty(DatagridCtrl.prototype,
+        'dataView', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetGridService.dataView;
+            }
+        });
+
+    Object.defineProperty(DatagridCtrl.prototype,
+        'columns', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetGridService.columns;
+            }
+        });
+
+    Object.defineProperty(DatagridCtrl.prototype,
+        'filters', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetGridService.filters;
             }
         });
 

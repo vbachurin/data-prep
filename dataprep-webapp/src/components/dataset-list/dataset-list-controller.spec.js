@@ -104,7 +104,7 @@ describe('Dataset list controller', function () {
             spyOn(DatasetService, 'deleteDataset').and.returnValue($q.when(true));
             spyOn(DatasetService, 'getDataFromId').and.returnValue($q.when(data));
             spyOn($rootScope, '$emit').and.callThrough();
-            spyOn(DatasetGridService, 'setDataset').and.callThrough();
+            spyOn(DatasetGridService, 'setDataset').and.callFake(function() {});
             spyOn(DatasetGridService, 'show').and.callThrough();
             spyOn(MessageService, 'success').and.callThrough();
         }));
