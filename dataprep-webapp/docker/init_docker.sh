@@ -1,6 +1,6 @@
 #! /bin/bash
 
-LOCATION='/var/www'
+LOCATION='/usr/share/nginx/html'
 
 # improve following to support ipv6
 IP_ADDRESS_REGEX='[0-9\.]*'
@@ -21,5 +21,5 @@ cp $JS_FILE $JS_FILE_BACKUP
 sed 's|"apiUrl","http://'$IP_ADDRESS_REGEX':'$PORT_REGEX'"|"apiUrl","http://'$TDP_API_HOST':'$TDP_API_PORT'"|g' $JS_FILE_BACKUP > $JS_FILE
 
 # launch apache service (foreground to prevent command to finish, and container to stop)
-/usr/sbin/apache2ctl -DFOREGROUND
+nginx -g "daemon off;"
 

@@ -3,15 +3,12 @@
 
     angular.module('data-prep',
         [
-            'data-prep-utils', //utils components: constants, filters, ...
-            'data-prep-dataset', //dataset getter, manipulation, etc
-            'data-prep-transformation', //transformation on dataset
-
-            'talend.widget', //components widget built on bourbon (modal, dropdown, ...)
-
-            'ui.router'
+            'ui.router', //more advanced router
+            'data-prep.components',
+            'data-prep.services.rest' //rest interceptors
         ])
 
+        //Performance config
         .config(['$httpProvider', '$compileProvider', 'disableDebug', function ($httpProvider, $compileProvider, disableDebug) {
             $httpProvider.useApplyAsync(true);
 
@@ -20,19 +17,36 @@
             }
         }])
 
+        //Translate config
+        .config(['$translateProvider', function ($translateProvider) {
+            $translateProvider.useStaticFilesLoader({
+                prefix: 'i18n/',
+                suffix: '.json'
+            });
+
+            $translateProvider.preferredLanguage('en');
+        }])
+
+        //Router config
         .config(function ($stateProvider, $urlRouterProvider) {
             $stateProvider
                 .state('nav', {
                     abstract: true,
-                    templateUrl: 'app/navbar/navbar.html'
+                    templateUrl: 'components/navbar/navbar.html'
                 })
                 .state('nav.home', {
                     url: '/home',
-                    templateUrl: 'app/home/home.html',
+                    templateUrl: 'components/home/home.html',
                     controller: 'HomeCtrl',
                     controllerAs: 'homeCtrl'
                 });
 
             $urlRouterProvider.otherwise('/home');
+        })
+
+        //Language from browser
+        .run(function ($window, $translate) {
+            var language = ($window.navigator.language === 'fr') ? 'fr' : 'en';
+            $translate.use(language);
         });
 })();

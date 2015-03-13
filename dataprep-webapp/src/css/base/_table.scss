@@ -1,0 +1,15 @@
+table.no-border {
+  border:none;
+
+  tbody {
+    border: none;
+
+    tr {
+      border: none;
+
+      td {
+        border: none;
+      }
+    }
+  }
+}

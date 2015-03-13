@@ -1,0 +1,46 @@
+<header class="subheader">
+    <div class="subheader-wrapper">
+        <ul class="">
+            <li class="primary">
+                    <button type="button"
+                            class="t-btn t-btn-import-new-file"
+                            id="button1"
+                            onclick="document.getElementById('datasetFile').click()">
+                        {{ ::'IMPORT_FILE' | translate }}
+                    </button>
+                    <input type="file"
+                           id="datasetFile"
+                           name="datasetFile"
+                           class="ng-hide"
+                           ng-file-select
+                           accept="*.csv"
+                           ng-model="homeCtrl.datasetFile"
+                           ng-file-change="homeCtrl.uploadDatasetFile()"/>
+            </li>
+
+            
+            <!-- 	        FOR DEMO PURPOSE ONLY -->
+            <li>
+                <img src="/assets/images/images/breadcrumb.png"
+                     alt="this is a fake breadcrumb for demo purpose" height="42"
+                     width="565">
+            </li>
+        </ul>
+    </div>
+
+    <talend-modal fullscreen="false"
+                  close-button="true"
+                  state="homeCtrl.datasetNameModal">
+        {{ ::'ENTER_DATASET_NAME' | translate }}
+        <form name="homeCtrl.datasetNameForm">
+            <input type="text" ng-model="homeCtrl.datasetName" required/>
+
+            <div class="modal-buttons">
+                <button class="talend-modal-close t-btn-secondary modal-secondary-button">CANCEL</button>
+                <button class="talend-modal-close t-btn-primary modal-primary-button"
+                        ng-click="homeCtrl.uploadDatasetName()"
+                        ng-disabled="homeCtrl.datasetNameForm.$invalid">OK</button>
+            </div>
+        </form>
+    </talend-modal>
+</header>

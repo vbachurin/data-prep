@@ -1,0 +1,21 @@
+[
+  {
+    "category": "repair",
+    "items": [],
+    "name": "fillemptywithdefaultinteger",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "default_value",
+        "type": "integer",
+        "default": "0"
+      }
+    ]
+  }
+]

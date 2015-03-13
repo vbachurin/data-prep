@@ -1,0 +1,58 @@
+{
+  "_comment" : "Navbar",
+  "EDIT_PROFIL" : "Editer le profil",
+  "SEARCH"      : "Rechercher",
+  "LOGOUT"      : "Déconnexion",
+
+  "_comment" : "Left side menu",
+  "ALL_FOLDERS"       : "Tous les fichiers",
+  "ALL_SHAKED_FILES"  : "Fichiers transformés",
+  "FAVORITE_FILES"    : "Favoris",
+  "MOST_RECENT_FILES" : "Fichiers récents",
+
+  "_comment" : "Right side menu",
+  "INVENTORY_DATA"              : "Informations",
+  "SELECT_DATASET_DESCRIPTION"  : "Selectionner un dataset ou un dossier pour afficher les détails",
+
+  "_comment" : "Inventory",
+  "INVENTORY_DETAILS"   : "auteur {{author}}, créé le {{created}}, contient {{records}} lignes",
+  "NAME_SORT"           : "Nom",
+  "SORTED_BY"           : "Trié par",
+  "UPLOAD_ERROR"        : "Erreur d'envoi",
+
+  "_comment" : "Datagrid transformations",
+  "NO_TRANSFORMATION"   : "Aucune transformation disponible",
+  "uppercase"           : "Mettre en Majuscule",
+  "lowercase"           : "Mettre en Minuscule",
+
+  "_comment" : "Datagrid",
+  "FILE_DETAILS"  : "Fichier: {{name}} ({{records}} lignes)",
+
+  "_comment" : "Buttons",
+  "IMPORT_FILE" : "Importer",
+
+  "_comment" : "Common",
+  "LOADING"     : "Chargement",
+  "PROCESSING"  : "Chargement",
+
+  "_comment" : "Confirm",
+  "DELETE_PERMANENTLY"      : "Vous allez supprimer le dataset \"{{dataset}}\" de façon permanente.",
+  "ENTER_DATASET_NAME"      : "Entrer le nom du dataset",
+  "NO_UNDONE_CONFIRM"       : "Cette opération ne peut être annulée. Êtes-vous sûr ?",
+  "UPDATE_EXISTING_DATASET" : "Voulez-vous mettre à jour la dataset \"{{dataset}}\" existante ?",
+
+  "_comment" : "Success",
+  "DATASET_CREATE_SUCCESS_TITLE"  : "Nouveau dataset",
+  "DATASET_CREATE_SUCCESS"        : "Le dataset \"{{dataset}}\" a été créé",
+  "DATASET_REMOVE_SUCCESS_TITLE"  : "Dataset supprimé",
+  "DATASET_REMOVE_SUCCESS"        : "Le dataset \"{{dataset}}\" a été supprimé.",
+  "DATASET_UPDATE_SUCCESS_TITLE"  : "Dataset mis à jour",
+  "DATASET_UPDATE_SUCCESS"        : "Le dataset \"{{dataset}}\" a été mis à jour",
+
+  "_comment" : "Errors",
+  "GENERIC_ERROR"       : "Une erreur est survenue",
+  "SERVER_ERROR_TITLE"  : "Erreur serveur",
+  "SERVICE_UNAVAILABLE" : "Service non disponible",
+  "UPLOAD_ERROR_TITLE"  : "Erreur d'envoi",
+  "UPLOAD_ERROR"        : "Une erreur est survenue lors de l'envoi du fichier"
+}

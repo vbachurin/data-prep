@@ -14,7 +14,12 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.Cut;
+import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
+import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyBoolean;
+import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyInteger;
 import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
+import org.talend.dataprep.transformation.api.action.metadata.Negate;
 import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
 
 public class ActionParser {
@@ -51,6 +56,21 @@ public class ActionParser {
                         break;
                     case LowerCase.LOWER_CASE_ACTION_NAME:
                         currentAction = LowerCase.INSTANCE;
+                        break;
+                    case FillWithDefaultIfEmpty.FILL_EMPTY_ACTION_NAME:
+                        currentAction = FillWithDefaultIfEmpty.INSTANCE;
+                        break;
+                    case Cut.CUT_ACTION_NAME:
+                        currentAction = Cut.INSTANCE;
+                        break;
+                    case Negate.NEGATE_ACTION_NAME:
+                        currentAction = Negate.INSTANCE;
+                        break;
+                    case FillWithDefaultIfEmptyBoolean.FILL_EMPTY_ACTION_NAME:
+                        currentAction = FillWithDefaultIfEmptyBoolean.INSTANCE;
+                        break;
+                    case FillWithDefaultIfEmptyInteger.FILL_EMPTY_ACTION_NAME:
+                        currentAction = FillWithDefaultIfEmptyInteger.INSTANCE;
                         break;
                     default:
                         throw new NotImplementedException("No support for action '" + actionType + "'.");

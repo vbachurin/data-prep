@@ -1,0 +1,33 @@
+.recipe {
+  $color: white;
+  $background: $dark-gray;
+
+  background: $background;
+  color: $color;
+  font-size: 0.85em;
+
+  li {
+    padding: 5px 5px 5px 10px;
+  }
+
+  a {
+    text-decoration: none;
+    color: $color;
+  }
+
+  input {
+    color: #000000;
+  }
+
+  .action {
+    background: shade($background, 10%);
+
+    &:hover {
+      background: tint($background, 10%);
+    }
+  }
+
+  .submenu {
+    background: tint($background, 30%);
+  }
+}

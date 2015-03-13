@@ -1,0 +1,18 @@
+<table class="inventory">
+    <tbody >
+    <tr data-ng-repeat-start="dataset in uploadListCtrl.datasets track by $index">
+        <td rowspan="2" class="inventory-icon">
+            <img src="/assets/images/csv_file.png"/>
+        </td>
+        <td class="inventory-title">{{dataset.name}}</td>
+    </tr>
+    <tr data-ng-repeat-end data-ng-switch="dataset.error">
+        <td data-ng-switch-when="false" class="inventory-description">
+            {{ dataset.progress }} %
+        </td>
+        <td data-ng-switch-when="true" class="inventory-description error">
+            {{ ::'UPLOAD_ERROR' | translate }}
+        </td>
+    </tr>
+    </tbody>
+</table>

@@ -1,0 +1,60 @@
+{
+  "_comment" : "Navbar",
+  "EDIT_PROFIL" : "Edit profil",
+  "SEARCH"      : "Search anything here",
+  "LOGOUT"      : "Logout",
+
+  "_comment" : "Left side menu",
+  "ALL_FOLDERS"       : "All Folders",
+  "ALL_SHAKED_FILES"  : "All shaked files",
+  "FAVORITE_FILES"    : "Favorites",
+  "MOST_RECENT_FILES" : "Most revent files",
+
+  "_comment" : "Right side menu",
+  "INVENTORY_DATA"              : "Data Inventory",
+  "SELECT_DATASET_DESCRIPTION"  : "Select a dataset or a folder to access its details",
+
+  "_comment" : "Inventory",
+  "INVENTORY_DETAILS"   : "owned by {{author}}, created on {{created}}, contains {{records}} lines",
+  "NAME_SORT"           : "Name",
+  "SORTED_BY"           : "Sorted by",
+  "UPLOAD_ERROR"        : "Upload error",
+
+  "_comment" : "Datagrid transformations",
+  "NO_TRANSFORMATION"   : "No transformation available",
+  "uppercase"           : "To Uppercase",
+  "lowercase"           : "To lowercase",
+  "fillemptywithdefault": "Fill empty with value",
+  "cut"                 : "Cut",
+
+  "_comment" : "Datagrid",
+  "FILE_DETAILS"  : "File: {{name}} ({{records}} lines)",
+
+  "_comment" : "Buttons",
+  "IMPORT_FILE" : "Import new file",
+
+  "_comment" : "Common",
+  "LOADING"     : "Loading",
+  "PROCESSING"  : "Processing",
+
+  "_comment" : "Confirm",
+  "DELETE_PERMANENTLY"      : "You are going to permanently delete the dataset \"{{dataset}}\".",
+  "ENTER_DATASET_NAME"      : "Enter the dataset name",
+  "NO_UNDONE_CONFIRM"       : "This operation cannot be undone. Are you sure ?",
+  "UPDATE_EXISTING_DATASET" : "Do you want to update existing \"{{dataset}}\" dataset ?",
+
+  "_comment" : "Success",
+  "DATASET_CREATE_SUCCESS_TITLE"  : "New dataset",
+  "DATASET_CREATE_SUCCESS"        : "The dataset \"{{dataset}}\" has been created",
+  "DATASET_REMOVE_SUCCESS_TITLE"  : "Dataset removed",
+  "DATASET_REMOVE_SUCCESS"        : "The dataset \"{{dataset}}\" has been removed.",
+  "DATASET_UPDATE_SUCCESS_TITLE"  : "Update dataset",
+  "DATASET_UPDATE_SUCCESS"        : "The dataset \"{{dataset}}\" has been updated",
+
+  "_comment" : "Errors",
+  "GENERIC_ERROR"       : "An error occurred",
+  "SERVER_ERROR_TITLE"  : "Server error",
+  "SERVICE_UNAVAILABLE" : "Service unavailable",
+  "UPLOAD_ERROR_TITLE"  : "Upload error",
+  "UPLOAD_ERROR"        : "An error occurred during file upload"
+}

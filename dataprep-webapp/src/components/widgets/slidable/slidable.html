@@ -1,0 +1,20 @@
+<div class="slidable" ng-class="{'slide-right': slidableCtrl.side === 'right', 'slide-hide': !slidableCtrl.visible}">
+    <div class="content">
+        <div class="content-container">
+            <ng-transclude class="fixed-content"></ng-transclude>
+        </div>
+
+    </div>
+
+    <div class="action" ng-class="::{right: (slidableCtrl.side === 'right')}" ng-click="slidableCtrl.toggle()">
+        <span ng-if="::(slidableCtrl.side !== 'right')">
+            <span ng-show="slidableCtrl.visible">&#60;</span>
+            <span ng-show="!slidableCtrl.visible">&#62;</span>
+        </span>
+        <span ng-if="::(slidableCtrl.side === 'right')">
+            <span ng-show="slidableCtrl.visible">&#62;</span>
+            <span ng-show="!slidableCtrl.visible">&#60;</span>
+        </span>
+    </div>
+
+</div>

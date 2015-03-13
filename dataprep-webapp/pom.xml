@@ -4,7 +4,7 @@
 
     <groupId>org.talend.dataprep</groupId>
     <artifactId>dataprep-webapp</artifactId>
-    <version>1.0.m1-SNAPSHOT</version>
+    <version>1.0.m2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>dataprep-webapp</name>
@@ -19,7 +19,7 @@
     </properties>
     <profiles>
         <profile>
-            <id>build-for-dev</id>
+            <id>dev</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -288,19 +288,22 @@
                         <version>0.1.1</version>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>dockerfile/java:oracle-java8</baseImage>
-                            <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
-                            <resources>
-                                <resource>
-                                    <targetPath>/</targetPath>
-                                    <directory>${project.build.directory}</directory>
-                                    <include>${project.build.finalName}.jar</include>
-                                </resource>
-                            </resources>
+							<dockerDirectory>docker</dockerDirectory>
+							<resources>
+								<resource>
+									<targetPath>/dist</targetPath>
+									<directory>${basedir}/dist</directory>
+								</resource>
+								<resource>
+									<targetPath>/docker</targetPath>
+									<directory>${basedir}/docker</directory>
+									<include>init_docker.sh</include>
+								</resource>
+							</resources>
                         </configuration>
                         <executions>
                             <execution>
-                                <phase>install</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>

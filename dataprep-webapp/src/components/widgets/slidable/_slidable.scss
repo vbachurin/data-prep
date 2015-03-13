@@ -1,0 +1,49 @@
+.slidable {
+  $width: 280px;
+
+  transition: 0.5s ease flex;
+
+  &.slide-hide {
+    @include flex(0 20px);
+  }
+
+  &.slide-hide-add,
+  &.slide-hide-remove.slide-hide-remove-active{
+    @include flex(0 300px);
+  }
+
+  &.slide-hide-add.slide-hide-add-active,
+  &.slide-hide-remove {
+    @include flex(0 20px);
+  }
+
+  @include display(flex);
+  @include flex-flow(row wrap);
+  @include justify-content(space-between);
+
+  .content {
+    order: 2;
+    @include flex(1 0);
+
+    overflow: auto;
+
+    .content-container {
+      width: $width;
+    }
+  }
+
+  .action {
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @include flex(0 20px);
+    order: 3;
+
+    &.right {
+      order: 1;
+    }
+  }
+}

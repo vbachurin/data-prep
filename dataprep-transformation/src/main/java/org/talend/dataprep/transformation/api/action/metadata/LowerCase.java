@@ -13,11 +13,13 @@ import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public class LowerCase implements ActionMetadata {
 
-    public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
+    public static final String         COLUMN_NAME_PARAMETER  = "column_name";                                                 //$NON-NLS-1$
 
-    public static final String LOWER_CASE_ACTION_NAME = "lowercase"; //$NON-NLS-1$
+    public static final String         LOWER_CASE_ACTION_NAME = "lowercase";                                                   //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE = new LowerCase();
+    public static final String         LOWER_CASE_ACTION_DESC = "converts all of the cell values in this column to lower case"; //$NON-NLS-1$
+
+    public static final ActionMetadata INSTANCE               = new LowerCase();
 
     private LowerCase() {
     }
@@ -25,6 +27,11 @@ public class LowerCase implements ActionMetadata {
     @Override
     public String getName() {
         return LOWER_CASE_ACTION_NAME;
+    }
+
+    @Override
+    public String getDescription() {
+        return LOWER_CASE_ACTION_DESC;
     }
 
     @Override

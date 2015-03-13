@@ -9,10 +9,31 @@
   height: 36px;
 }
 
-.t-btn-import-new-file{
-  background: $button-important url('/assets/images/import_new_file.png') no-repeat 10px 5px !important;
-  padding: 0px 10px 0px 45px;
-
-  font-weight: 100;
+.t-btn-common {
+  font-weight: 200;
   font-size: 0.9em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+
+  &:focus {
+    box-shadow: 0px 3px 10px $dark-gray;
+  }
+}
+
+.t-btn-primary {
+  @extend .t-btn-common;
+  background: $button-primary !important;
+  color: $button-primary-text !important;
+}
+
+.t-btn-secondary {
+  @extend .t-btn-common;
+  background: $button-secondary !important;
+  color: $button-secondary-text !important;
+}
+
+.t-btn-import-new-file {
+  @extend .t-btn-primary;
+  background: $button-primary url('/assets/images/import_new_file.png') no-repeat 10px 5px !important;
+  padding: 0px 10px 0px 45px;
 }
