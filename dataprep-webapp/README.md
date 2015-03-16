@@ -143,8 +143,8 @@ The build and test can be executed using maven as well here are the different ma
 The default maven profile called *dev* that launches all the necessary gulp tasks for building and testing the app with the usuall maven phases : *test* *package*.
 This profile assumes that all the tooling is installed on the current machine.
 
-###-P ci
-The profile name *ci* is used for continuus integration build on our jenkins server. This build is using a docker image installed with all the required tooling because it was too much of a pain to install the tooling directly on the jenkins server. This allows for installing on other servers easilly too.
+###-Duse.docker.tool=true
+The profile name *ci* is triggered using this property. It is used for continuus integration build on our jenkins server. This build is using a docker image installed with all the required tooling because it was too much of a pain to install the tooling directly on the jenkins server. This allows for installing on other servers easilly too.
 The docker image is build from the Dockerfile : [docker/Dockerfile-for-dev-tools](docker/Dockerfile-for-dev-tools)
 
 ###-P docker
