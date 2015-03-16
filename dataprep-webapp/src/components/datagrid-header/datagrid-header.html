@@ -8,11 +8,11 @@
             <li ng-if="datagridHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
             <li ng-if="datagridHeaderCtrl.transformations && !datagridHeaderCtrl.transformations.length">{{ ::'NO_TRANSFORMATION' | translate }}</li>
 
-            <dataset-transform-menu
+            <transform-menu
                     ng-repeat="item in datagridHeaderCtrl.transformations track by $index"
                     metadata="datagridHeaderCtrl.metadata"
                     column="datagridHeaderCtrl.column"
-                    menu="item"></dataset-transform-menu>
+                    menu="item"></transform-menu>
         </ul>
     </div>
 </talend-dropdown>

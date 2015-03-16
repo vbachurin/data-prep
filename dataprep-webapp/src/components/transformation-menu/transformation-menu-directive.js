@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function DatasetTransformMenu() {
+    function TransformMenu() {
         return {
             restrict: 'E',
             templateUrl: 'components/transformation-menu/transformation-menu.html',
@@ -13,10 +13,10 @@
             },
             bindToController: true,
             controllerAs: 'menuCtrl',
-            controller: 'DatasetTransformMenuCtrl'
+            controller: 'TransformMenuCtrl'
         };
     }
 
     angular.module('data-prep.transformation-menu')
-        .directive('datasetTransformMenu', DatasetTransformMenu);
+        .directive('transformMenu', TransformMenu);
 })();

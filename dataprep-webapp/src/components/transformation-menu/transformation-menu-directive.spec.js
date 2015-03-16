@@ -7,10 +7,10 @@ describe('Transformation menu directive', function () {
 
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function(directiveScope) {
-            var element = angular.element('<dataset-transform-menu column="column" metadata="metadata" menu="menu"></dataset-transform-menu>');
-            $compile(element)(directiveScope);
-            directiveScope.$digest();
+        createElement = function() {
+            var element = angular.element('<transform-menu column="column" metadata="metadata" menu="menu"></transform-menu>');
+            $compile(element)(scope);
+            scope.$digest();
             return element;
         };
     }));
@@ -21,7 +21,7 @@ describe('Transformation menu directive', function () {
         scope.menu = {isDivider: true};
 
         //when
-        var element = createElement(scope);
+        var element = createElement();
 
         //then
         expect(element.hasClass('divider')).toBe(true);
@@ -35,7 +35,7 @@ describe('Transformation menu directive', function () {
         scope.menu = {name: 'uppercase'};
 
         //when
-        var element = createElement(scope);
+        var element = createElement();
 
         //then
         expect(element.hasClass('divider')).toBe(false);
@@ -64,20 +64,12 @@ describe('Transformation menu directive', function () {
         };
 
         //when
-        var element = createElement(scope);
+        var element = createElement();
 
         //then
         expect(element.hasClass('divider')).toBe(false);
         expect(element.find('a').text().trim()).toBe('menu with param');
         expect(element.find('talend-modal').length).toBe(1);
-
-        var modal = element.find('talend-modal').eq(0);
-        expect(modal.find('.param-name').length).toBe(2);
-        expect(modal.find('.param-name').eq(0).text().trim()).toBe('param1 :');
-        expect(modal.find('.param-name').eq(1).text().trim()).toBe('param2 :');
-        expect(modal.find('.param-input').length).toBe(2);
-        expect(modal.find('.param-input').eq(0).find('input[type="text"]').length).toBe(1);
-        expect(modal.find('.param-input').eq(1).find('input[type="number"]').length).toBe(1);
     });
 
     it('should render an action with simple choice', function() {
@@ -98,76 +90,11 @@ describe('Transformation menu directive', function () {
         };
 
         //when
-        var element = createElement(scope);
+        var element = createElement();
 
         //then
         expect(element.hasClass('divider')).toBe(false);
         expect(element.find('a').text().trim()).toBe('menu with param');
         expect(element.find('talend-modal').length).toBe(1);
-
-        var modal = element.find('talend-modal').eq(0);
-        var paramChoice = modal.find('.param-choice').eq(0);
-        expect(paramChoice.find('.param-choice-name').length).toBe(1);
-        expect(paramChoice.find('.param-choice-name').eq(0).text().trim()).toBe('my choice :');
-        expect(paramChoice.find('.param-choice-select').length).toBe(1);
-        expect(paramChoice.find('.param-choice-select').eq(0).find('select').length).toBe(1);
-        expect(paramChoice.find('.param-choice-select').eq(0).find('option').length).toBe(3);
-        expect(paramChoice.find('.param-choice-select').eq(0).find('option').eq(1).text()).toBe('noParamChoice1');
-        expect(paramChoice.find('.param-choice-select').eq(0).find('option').eq(2).text()).toBe('noParamChoice2');
-    });
-
-    it('should render an action with choice containing parameters', function() {
-        //given
-        scope.menu = {
-            name: 'menu with param',
-            items: [{
-                name: 'my choice',
-                values: [
-                    {
-                        name: 'noParamChoice'
-                    },
-                    {
-                        name: 'twoParams',
-                        parameters: [
-                            {
-                                name: 'param1',
-                                type: 'string',
-                                'inputType': 'text',
-                                default: '.'
-                            },
-                            {
-                                name: 'param2',
-                                type: 'float',
-                                'inputType': 'number',
-                                default: '5'
-                            }
-                        ]
-                    }
-                ]
-            }]
-        };
-        var element = createElement(scope);
-        var modal = element.find('talend-modal').eq(0);
-        var paramChoice = modal.find('.param-choice').eq(0);
-
-        //when
-        scope.menu.items[0].selectedValue = scope.menu.items[0].values[0];
-        scope.$digest();
-
-        //then
-        expect(paramChoice.find('.param-name').length).toBe(0);
-
-        //when
-        scope.menu.items[0].selectedValue = scope.menu.items[0].values[1];
-        scope.$digest();
-
-        //then
-        expect(paramChoice.find('.param-name').length).toBe(2);
-        expect(paramChoice.find('.param-name').eq(0).text().trim()).toBe('param1 :');
-        expect(paramChoice.find('.param-name').eq(1).text().trim()).toBe('param2 :');
-
-        expect(paramChoice.find('.param-input').length).toBe(2);
-        expect(paramChoice.find('.param-input').eq(0).find('input[type="text"]').length).toBe(1);
-        expect(paramChoice.find('.param-input').eq(1).find('input[type="number"]').length).toBe(1);
     });
 });

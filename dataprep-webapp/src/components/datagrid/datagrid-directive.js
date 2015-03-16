@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function Datagrid($compile, $window) {
+    function Datagrid($compile) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -10,44 +10,6 @@
             controller: 'DatagridCtrl',
             link: function (scope, iElement, iAttrs, ctrl) {
                 var options, dataView, grid, colHeaderElements = [];
-
-                //------------------------------------------------------------------------------------------------------
-                //--------------------------------------------------UTILES----------------------------------------------
-                //------------------------------------------------------------------------------------------------------
-
-                /**
-                 * Return the work the user clicked on
-                 * @returns {string}
-                 */
-                var getClickedWord = function() {
-                    var setRangeStart = function(range, node) {
-                        var tmpResult = range.toString();
-                        while (range.startOffset > 0 && !/\s/.test(tmpResult)) {
-                            range.setStart(node, range.startOffset - 1);
-                            tmpResult = range.toString();
-                        }
-                        if(range.toString().indexOf(' ') === 0) {
-                            range.setStart(node, range.startOffset + 1);
-                        }
-                    };
-
-                    var setRangeEnd = function(range, node) {
-                        var tmpResult = range.toString();
-
-                        while (range.endOffset < node.length && (!/\s/.test(tmpResult))) {
-                            range.setEnd(node, range.endOffset + 1);
-                            tmpResult = range.toString();
-                        }
-                    };
-                    var selection = $window.getSelection();
-                    var range = selection.getRangeAt(0);
-                    var node = selection.anchorNode;
-
-                    setRangeStart(range, node);
-                    setRangeEnd(range, node);
-
-                    return range.toString().trim();
-                };
 
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------------COL UTILES--------------------------------------------
@@ -154,10 +116,10 @@
                     grid.onClick.subscribe(function (e,args) {
                         resetColumnsFormatter();
 
-                        var word = getClickedWord();
-
                         var config = {};
                         var column = grid.getColumns()[args.cell];
+                        var word = dataView.getItem(args.row)[column.id];
+
                         column.formatter = function(row, cell, value) {
                             if((word === '' && value === '') || (word !== '' && value.indexOf(word) > -1)) {
                                 config[row] = {};
@@ -166,13 +128,12 @@
                             return value;
                         };
                         grid.setCellCssStyles('highlight', config);
-                        grid.invalidateAllRows();
-                        grid.render();
+                        grid.invalidate();
                     });
 
                     //change selected cell column background
                     grid.onActiveCellChanged.subscribe(function(e,args) {
-                        if(args.cell) {
+                        if(angular.isDefined(args.cell)) {
                             resetColumnsClass();
                             grid.getColumns()[args.cell].cssClass = 'selected';
                             grid.invalidate();
