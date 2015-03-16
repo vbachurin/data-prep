@@ -138,7 +138,7 @@ gulp.task('fonts', function () {
 });
 
 gulp.task('misc', function () {
-  return gulp.src('src/**/*.ico')
+  return gulp.src(['src/**/*.ico','src/**/*.json'])
     .pipe(gulp.dest('dist/'));
 });
 
