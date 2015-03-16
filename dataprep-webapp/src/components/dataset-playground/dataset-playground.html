@@ -1,0 +1,29 @@
+<talend-modal fullscreen="true"
+              state="datasetCtrl.showDataGrid"
+              close-button="true">
+    <div class="modal-header">
+        <ul>
+            <li translate="FILE_DETAILS" translate-value-name="{{datasetCtrl.metadata.name}}" translate-value-records="{{datasetCtrl.metadata.records}}"></li>
+            <li>
+                <filter-search></filter-search>
+            </li>
+        </ul>
+    </div>
+    <div class="modal-subheader">
+        <filter-list metadata="datasetCtrl.metadata"></filter-list>
+    </div>
+
+    <div class="modal-body with-subheader flex">
+        <talend-slidable visible="false" class="flex-side recipe">
+            <recipe metadata="datasetCtrl.metadata"></recipe>
+        </talend-slidable>
+
+        <div class="flex-center">
+            <datagrid></datagrid>
+        </div>
+
+        <talend-slidable visible="true" side="right" class="flex-side transformations">
+            <transformation-list metadata="datasetCtrl.metadata"></transformation-list>
+        </talend-slidable>
+    </div>
+</talend-modal>

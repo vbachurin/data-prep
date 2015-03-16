@@ -99,8 +99,14 @@
         };
 
         //------------------------------------------------------------------------------------------------------
-        //-------------------------------------------------FILTERS---------------------------------------------
+        //-------------------------------------------------FILTERS----------------------------------------------
         //------------------------------------------------------------------------------------------------------
+        /**
+         * Filter function. It iterates over all filters and return if the provided item fit the predicates
+         * @param item - the item to test
+         * @param args - object containing the filters predicates
+         * @returns {boolean} - tru if the item pass all filters
+         */
         function filterFn(item, args) {
             for (var i = 0; i < args.filters.length; i++) {
                 var filter = args.filters[i];
@@ -111,9 +117,14 @@
             return true;
         }
 
-        self.addContainFilter = function(colName, phrase) {
+        /**
+         * Add a "contains" filter in dataview
+         * @param colId - the column id
+         * @param phrase - the phrase that the column is supposed to contain
+         */
+        self.addContainFilter = function(colId, phrase) {
             self.filters.push(function(item) {
-                return item[colName].indexOf(phrase) > -1;
+                return item[colId].indexOf(phrase) > -1;
             });
 
             self.dataView.beginUpdate();
@@ -124,6 +135,9 @@
             self.dataView.endUpdate();
         };
 
+        /**
+         * Remove all filters from dataview
+         */
         var resetFilter = function() {
             self.filters = [];
             self.dataView.setFilterArgs({

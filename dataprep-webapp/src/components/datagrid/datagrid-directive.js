@@ -4,7 +4,7 @@
     function Datagrid($compile) {
         return {
             restrict: 'E',
-            templateUrl: 'components/datagrid/datagrid.html',
+            template: '<div id="datagrid" class="datagrid"></div>',
             bindToController: true,
             controllerAs: 'datagridCtrl',
             controller: 'DatagridCtrl',
@@ -235,7 +235,7 @@
                  */
                 scope.$watch(
                     function () {
-                        return ctrl.filters.length;
+                        return ctrl.filters ? ctrl.filters.length : 0;
                     },
                     function () {
                         if(grid) {

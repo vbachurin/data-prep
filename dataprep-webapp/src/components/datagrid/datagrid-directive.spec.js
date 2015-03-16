@@ -1,4 +1,4 @@
-describe('Dataset grid directive', function() {
+describe('Datagrid directive', function() {
     'use strict';
     var scope, element;
     var metadata = {
@@ -161,9 +161,6 @@ describe('Dataset grid directive', function() {
         this.text = function() {
             return element.text();
         };
-        this.nbRow = function() {
-            return element.find('.slick-row').length;
-        };
         this.nbCell = function() {
             return element.find('.slick-cell').length;
         };
@@ -212,7 +209,7 @@ describe('Dataset grid directive', function() {
         expect(secondRow.cell(3).text()).toBe('Juneau');
     }));
 
-    it('should highlight cells containing clicked value', inject(function($window, DatasetGridService) {
+    it('should highlight cells containing clicked value', inject(function(DatasetGridService) {
         //given
         var colIndex = 2;
 
@@ -230,7 +227,7 @@ describe('Dataset grid directive', function() {
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
     }));
 
-    it('should highlight empty cells only', inject(function($window, DatasetGridService) {
+    it('should highlight empty cells only', inject(function(DatasetGridService) {
         //given
         var colIndex = 2;
 

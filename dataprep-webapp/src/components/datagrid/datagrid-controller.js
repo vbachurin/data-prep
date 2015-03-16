@@ -7,18 +7,6 @@
     }
 
     Object.defineProperty(DatagridCtrl.prototype,
-        'showDataGrid', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.datasetGridService.visible;
-            },
-            set: function(value) {
-                this.datasetGridService.visible = value;
-            }
-        });
-
-    Object.defineProperty(DatagridCtrl.prototype,
         'metadata', {
             enumerable: true,
             configurable: false,
@@ -46,15 +34,6 @@
         });
 
     Object.defineProperty(DatagridCtrl.prototype,
-        'columns', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.datasetGridService.columns;
-            }
-        });
-
-    Object.defineProperty(DatagridCtrl.prototype,
         'filters', {
             enumerable: true,
             configurable: false,
@@ -62,7 +41,6 @@
                 return this.datasetGridService.filters;
             }
         });
-
     angular.module('data-prep.datagrid')
         .controller('DatagridCtrl', DatagridCtrl);
 })();

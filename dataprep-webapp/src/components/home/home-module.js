@@ -5,7 +5,7 @@
         'talend.widget',
         'data-prep.dataset-upload-list',
         'data-prep.dataset-list',
-        'data-prep.datagrid',
+        'data-prep.dataset-playground',
         'data-prep.services.dataset',
         'data-prep.services.utils'
     ]);

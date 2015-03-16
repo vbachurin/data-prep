@@ -1,4 +1,4 @@
-describe('DatasetColumnHeader controller', function() {
+describe('Datagrid controller', function() {
     'use strict';
 
     var createController, scope;
@@ -14,30 +14,6 @@ describe('DatasetColumnHeader controller', function() {
             });
             return ctrl;
         };
-    }));
-
-    it('should bind showDataGrid getter with DatasetGridService', inject(function(DatasetGridService) {
-        //given
-        var ctrl = createController();
-        expect(ctrl.showDataGrid).toBe(false);
-
-        //when
-        DatasetGridService.show();
-
-        //then
-        expect(ctrl.showDataGrid).toBe(true);
-    }));
-
-    it('should bind showDataGrid setter with DatasetGridService', inject(function(DatasetGridService) {
-        //given
-        var ctrl = createController();
-        expect(DatasetGridService.visible).toBe(false);
-
-        //when
-        ctrl.showDataGrid = true;
-
-        //then
-        expect(DatasetGridService.visible).toBe(true);
     }));
 
     it('should bind metadata getter with DatasetGridService', inject(function(DatasetGridService) {
@@ -66,4 +42,26 @@ describe('DatasetColumnHeader controller', function() {
         expect(ctrl.data).toBe(data);
     }));
 
+    it('should bind dataView getter with DatasetGridService', inject(function(DatasetGridService) {
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.dataView).toBe(DatasetGridService.dataView);
+    }));
+
+    it('should bind dataView filters with DatasetGridService', inject(function(DatasetGridService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.filters.length).toBe(0);
+
+        //when
+        DatasetGridService.addContainFilter('colId', 'searchValue');
+
+        //then
+        expect(ctrl.filters.length).toBe(1);
+        var predicate = ctrl.filters[0];
+        expect(predicate({colId: 'aze searchValue aze'})).toBe(true);
+        expect(predicate({colId: 'aze aze'})).toBe(false);
+    }));
 });
