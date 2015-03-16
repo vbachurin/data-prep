@@ -24,6 +24,10 @@
 
     .recipe-description {
       text-transform: capitalize;
+
+      &.recipe-column-name {
+        font-weight: bold;
+      }
     }
   }
 
