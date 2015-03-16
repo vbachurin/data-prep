@@ -3,6 +3,7 @@
 
     angular.module('data-prep',
         [
+            'ngSanitize',
             'ui.router', //more advanced router
             'data-prep.components',
             'data-prep.services.rest' //rest interceptors

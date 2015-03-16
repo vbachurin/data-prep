@@ -4,6 +4,7 @@
     angular.module('data-prep.datagrid', [
         'talend.widget',
         'data-prep.datagrid-header',
+        'data-prep.filter-search',
         'data-prep.filter-list',
         'data-prep.recipe',
         'data-prep.transformation-list',

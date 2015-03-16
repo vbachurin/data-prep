@@ -4,13 +4,14 @@
     function FilterList() {
         return {
             restrict: 'E',
+            replace: true,
             templateUrl: 'components/filter-list/filter-list.html',
             scope: {
                 metadata: '='
             },
             bindToController: true,
             controllerAs: 'filterCtrl',
-            controller: 'FilterCtrl'
+            controller: 'FilterListCtrl'
         };
     }
 

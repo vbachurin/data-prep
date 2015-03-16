@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function FilterCtrl() {
+    function FilterListCtrl() {
         var vm = this;
 
         vm.close = function(text) {
@@ -10,5 +10,5 @@
     }
 
     angular.module('data-prep.filter-list')
-        .controller('FilterCtrl', FilterCtrl);
+        .controller('FilterListCtrl', FilterListCtrl);
 })();

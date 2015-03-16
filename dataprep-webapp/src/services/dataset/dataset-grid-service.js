@@ -76,6 +76,28 @@
             self.data.records = records;
         };
 
+        /**
+         * Return the column ids
+         * @param excludeNumeric - if true, the numeric columns won't be returned
+         * @returns {*}
+         */
+        self.getColumns = function(excludeNumeric) {
+            var numericTypes = ['numeric', 'integer', 'float', 'double'];
+            var cols;
+            if(!excludeNumeric) {
+                cols = self.data.columns;
+            }
+            else {
+                cols = _.filter(self.data.columns, function(col) {
+                    return numericTypes.indexOf(col.type) === -1;
+                });
+            }
+
+            return _.map(cols, function (col) {
+                return col.id;
+            });
+        };
+
         //------------------------------------------------------------------------------------------------------
         //-------------------------------------------------FILTERS---------------------------------------------
         //------------------------------------------------------------------------------------------------------

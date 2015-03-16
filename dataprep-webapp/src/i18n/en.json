@@ -26,6 +26,7 @@
 
   "_comment" : "Datagrid",
   "FILE_DETAILS"  : "File: {{name}} ({{records}} lines)",
+  "FILTER"        : "Filter",
 
   "_comment" : "Buttons",
   "IMPORT_FILE" : "Import new file",

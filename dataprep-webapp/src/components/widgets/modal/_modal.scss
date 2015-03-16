@@ -251,11 +251,24 @@
 
         color: $navigation-color;
 
-        ul {
-          li {
+        >ul {
+          >li {
             display: table-cell;
             line-height: $navigation-height - $navigation-border-height;
             padding-left: $navigation-item-space;
+            vertical-align: middle;
+
+            input[type=search] {
+              @include box-sizing(border-box);
+              border-radius: $base-border-radius;
+              border: $dark-gray;
+              color: $black;
+              font-size: 0.9em;
+              font-style: italic;
+              margin: 0;
+              padding: 0.5em 0.8em;
+              width: 100%;
+            }
           }
         }
       }
