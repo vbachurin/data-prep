@@ -3,7 +3,7 @@
         <a class="talend-accordion-trigger" on-open="recipeCtrl.resetParams(step)">
             {{$index + 1}}.
             <span class="recipe-description">{{step.transformation.name | translate}}</span>
-            {{'RECIPE_ITEM_ON_COL' | translate}}
+            {{::'RECIPE_ITEM_ON_COL' | translate}}
             <span class="recipe-description recipe-column-name">{{step.column.id}}</span>
         </a>
         <ul class="submenu" ng-if="::(step.transformation.parameters || step.transformation.items)">

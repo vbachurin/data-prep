@@ -235,7 +235,7 @@
                  */
                 scope.$watch(
                     function () {
-                        return ctrl.filters ? ctrl.filters.length : 0;
+                        return ctrl.filters.length;
                     },
                     function () {
                         if(grid) {
