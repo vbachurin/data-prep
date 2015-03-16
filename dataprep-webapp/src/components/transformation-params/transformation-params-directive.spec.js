@@ -78,9 +78,9 @@ describe('Transformation menu directive', function () {
         expect(paramChoice.find('.param-choice-name').eq(0).text().trim()).toBe('my choice :');
         expect(paramChoice.find('.param-choice-select').length).toBe(1);
         expect(paramChoice.find('.param-choice-select').eq(0).find('select').length).toBe(1);
-        expect(paramChoice.find('.param-choice-select').eq(0).find('option').length).toBe(3);
-        expect(paramChoice.find('.param-choice-select').eq(0).find('option').eq(1).text()).toBe('noParamChoice1');
-        expect(paramChoice.find('.param-choice-select').eq(0).find('option').eq(2).text()).toBe('noParamChoice2');
+        expect(paramChoice.find('.param-choice-select').eq(0).find('option').length).toBe(2);
+        expect(paramChoice.find('.param-choice-select').eq(0).find('option').eq(0).text()).toBe('noParamChoice1');
+        expect(paramChoice.find('.param-choice-select').eq(0).find('option').eq(1).text()).toBe('noParamChoice2');
     });
 
     it('should render an action with choice containing parameters', function() {

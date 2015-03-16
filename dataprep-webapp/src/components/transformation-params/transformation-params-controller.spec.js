@@ -135,7 +135,7 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ param1: 'param1Value', param2: 4 });
     });
 
-    /*it('should init choice default value', function() {
+    it('should init choice default value', function() {
         //given
         var transformation = {
             name: 'split',
@@ -155,7 +155,7 @@ describe('Transform params controller', function () {
 
         //then
         expect(extractedParams).toEqual({ mode: 'index'});
-    });*/
+    });
 
     it('should extract simple choice param', function() {
         //given

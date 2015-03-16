@@ -35,12 +35,25 @@
         };
 
         /**
+         * Init select item selected value to default value. If no default defined, select the first element
+         * @param choice - the select item
+         */
+        var initChoiceItemDefaultValue = function (choice) {
+            var defaultValue = _.find(choice.values, function (value) {
+                return value.default;
+            });
+
+            choice.selectedValue = defaultValue || choice.values[0];
+        };
+
+        /**
          * Init all param values to default for menu params and choice item params
          */
         var initParamsValues = function () {
             initParamItemValues(vm.transformation.parameters);
 
             _.forEach(vm.transformation.items, function (choice) {
+                initChoiceItemDefaultValue(choice);
                 _.forEach(choice.values, function (choiceItem) {
                     initParamItemValues(choiceItem.parameters);
                 });
