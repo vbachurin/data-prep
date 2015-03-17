@@ -2,6 +2,9 @@ package org.talend.dataprep.preparation;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Preparation {
 
     private String id;
@@ -11,6 +14,8 @@ public class Preparation {
     private String author;
 
     private long creationDate;
+
+    private List<String> actions = new LinkedList<>();
 
     public Preparation() {
     }
@@ -51,5 +56,13 @@ public class Preparation {
 
     public long getCreationDate() {
         return creationDate;
+    }
+
+    public List<String> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<String> actions) {
+        this.actions = actions;
     }
 }
