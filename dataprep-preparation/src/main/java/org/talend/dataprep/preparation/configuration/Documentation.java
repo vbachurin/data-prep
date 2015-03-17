@@ -10,7 +10,7 @@ import com.mangofactory.swagger.models.dto.ApiInfo;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 
-@Configuration("org.talend.dataprep.dataset.configuration")
+@Configuration("org.talend.dataprep.preparation.configuration")
 @EnableSwagger
 public class Documentation {
 
@@ -23,9 +23,9 @@ public class Documentation {
 
     @Bean
     public SwaggerSpringMvcPlugin customImplementation() {
-        ApiInfo apiInfo = new ApiInfo("Talend Data Preparation - Data Set Service (DSS)",
-                "This service exposes operations on data sets (creation, remove...).", StringUtils.EMPTY, StringUtils.EMPTY,
+        ApiInfo apiInfo = new ApiInfo("Talend Data Preparation - Preparation Service (PS)",
+                "This service exposes operations on preparations (creation, remove...).", StringUtils.EMPTY, StringUtils.EMPTY,
                 StringUtils.EMPTY, StringUtils.EMPTY);
-        return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(".*datasets.*"); //$NON-NLS-1
+        return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(".*preparations.*"); //$NON-NLS-1
     }
 }
