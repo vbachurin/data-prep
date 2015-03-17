@@ -32,6 +32,7 @@
         <module>../dataprep-transformation</module>
         <module>../dataprep-dataset</module>
         <module>../dataprep-metrics</module>
+        <module>../dataprep-preparation</module>
         <module>../dataprep-api</module>
         <module>../dataprep-platform</module>
         <module>../dataprep-platform-tests</module>
