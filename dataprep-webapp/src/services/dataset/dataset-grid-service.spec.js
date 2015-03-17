@@ -86,18 +86,78 @@ describe('Dataset grid service', function() {
         ], records: []};
 
         //when
-        var allCols = DatasetGridService.getColumns(false);
+        var allCols = DatasetGridService.getColumns(false, false);
 
         //then
         expect(allCols).toEqual(['col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7']);
     }));
 
-    it('should add string contains filter', inject(function(DatasetGridService) {
+    it('should return non numeric col ids', inject(function(DatasetGridService) {
         //given
-        expect(DatasetGridService.filters.length).toBe(0);
+        DatasetGridService.data = {columns: [
+            {id: 'col1', type: 'string'},
+            {id: 'col2', type: 'numeric'},
+            {id: 'col3', type: 'integer'},
+            {id: 'col4', type: 'float'},
+            {id: 'col5', type: 'double'},
+            {id: 'col6', type: 'boolean'},
+            {id: 'col7', type: 'string'}
+        ], records: []};
 
         //when
-        DatasetGridService.addContainFilter('col1', 'toto');
+        var allCols = DatasetGridService.getColumns(true, false);
+
+        //then
+        expect(allCols).toEqual(['col1', 'col6', 'col7']);
+    }));
+
+    it('should return non boolean col ids', inject(function(DatasetGridService) {
+        //given
+        DatasetGridService.data = {columns: [
+            {id: 'col1', type: 'string'},
+            {id: 'col2', type: 'numeric'},
+            {id: 'col3', type: 'integer'},
+            {id: 'col4', type: 'float'},
+            {id: 'col5', type: 'double'},
+            {id: 'col6', type: 'boolean'},
+            {id: 'col7', type: 'string'}
+        ], records: []};
+
+        //when
+        var allCols = DatasetGridService.getColumns(false, true);
+
+        //then
+        expect(allCols).toEqual(['col1', 'col2', 'col3', 'col4', 'col5', 'col7']);
+    }));
+
+    it('should return non boolean and non numeric col ids', inject(function(DatasetGridService) {
+        //given
+        DatasetGridService.data = {columns: [
+            {id: 'col1', type: 'string'},
+            {id: 'col2', type: 'numeric'},
+            {id: 'col3', type: 'integer'},
+            {id: 'col4', type: 'float'},
+            {id: 'col5', type: 'double'},
+            {id: 'col6', type: 'boolean'},
+            {id: 'col7', type: 'string'}
+        ], records: []};
+
+        //when
+        var allCols = DatasetGridService.getColumns(true, true);
+
+        //then
+        expect(allCols).toEqual(['col1', 'col7']);
+    }));
+
+    it('should add filter', inject(function(DatasetGridService) {
+        //given
+        expect(DatasetGridService.filters.length).toBe(0);
+        var filterFn = function(item) {
+            return item.col1.indexOf('toto') > -1;
+        };
+
+        //when
+        DatasetGridService.addFilter(filterFn);
 
         //then
         expect(DatasetGridService.filters.length).toBe(1);
@@ -110,10 +170,16 @@ describe('Dataset grid service', function() {
         //given
         var dataViewMock = new DataViewMock();
         DatasetGridService.dataView = dataViewMock;
+        var filterFnCol1 = function(item) {
+            return item.col1.indexOf('toto') > -1;
+        };
+        var filterFnCol2 = function(item) {
+            return item.col2.indexOf('toto') > -1;
+        };
 
         //when
-        DatasetGridService.addContainFilter('col1', 'toto');
-        DatasetGridService.addContainFilter('col2', 'toto');
+        DatasetGridService.addFilter(filterFnCol1);
+        DatasetGridService.addFilter(filterFnCol2);
 
         //then
         expect(dataViewMock.filter({
@@ -125,5 +191,16 @@ describe('Dataset grid service', function() {
         expect(dataViewMock.filter({
             col1: 'mon toto', col2: 'tutu tata titi'
         })).toBe(false);
+    }));
+
+    it('should reset filters', inject(function(DatasetGridService) {
+        //given
+        DatasetGridService.filters = [{}, {}];
+
+        //when
+        DatasetGridService.resetFilters();
+
+        //then
+        expect(DatasetGridService.filters.length).toBe(0);
     }));
 });

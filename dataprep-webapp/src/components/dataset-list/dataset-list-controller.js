@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function DatasetListCtrl($q, DatasetService, DatasetListService, DatasetGridService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($q, DatasetService, DatasetListService, DatasetGridService, FilterService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
 
@@ -31,6 +31,8 @@
                     .then(function(data) {
                         vm.lastSelectedMetadata = dataset;
                         vm.lastSelectedData = data;
+
+                        FilterService.removeAllFilters();
                     });
             }
             getDataPromise.then(function() {

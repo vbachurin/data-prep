@@ -1,14 +1,14 @@
 (function () {
     'use strict';
 
-    function Datagrid($compile) {
+    function Datagrid($compile, DatasetGridService, FilterService) {
         return {
             restrict: 'E',
             template: '<div id="datagrid" class="datagrid"></div>',
             bindToController: true,
             controllerAs: 'datagridCtrl',
-            controller: 'DatagridCtrl',
-            link: function (scope, iElement, iAttrs, ctrl) {
+            controller: function() {},
+            link: function (scope, iElement) {
                 var options, grid, colHeaderElements = [];
 
                 //------------------------------------------------------------------------------------------------------
@@ -61,10 +61,10 @@
                  * Insert the dataset headers (dropdown actions and quality bars)
                  */
                 var insertDatasetHeaders = function () {
-                    _.forEach(ctrl.data.columns, function (col, index) {
+                    _.forEach(DatasetGridService.data.columns, function (col, index) {
                         var headerScope = scope.$new(true);
                         headerScope.columns = col;
-                        headerScope.metadata = ctrl.metadata;
+                        headerScope.metadata = DatasetGridService.metadata;
                         var headerElement = angular.element('<datagrid-header column="columns" metadata="metadata"></datagrid-header>');
                         $compile(headerElement)(headerScope);
 
@@ -90,11 +90,11 @@
                  * Attach listeners for big table row management
                  */
                 var attachLongTableListeners = function() {
-                    ctrl.dataView.onRowCountChanged.subscribe(function () {
+                    DatasetGridService.dataView.onRowCountChanged.subscribe(function () {
                         grid.updateRowCount();
                         grid.render();
                     });
-                    ctrl.dataView.onRowsChanged.subscribe(function (e, args) {
+                    DatasetGridService.dataView.onRowsChanged.subscribe(function (e, args) {
                         grid.invalidateRows(args.rows);
                         grid.render();
                     });
@@ -121,7 +121,7 @@
 
                         var config = {};
                         var column = grid.getColumns()[args.cell];
-                        var word = ctrl.dataView.getItem(args.row)[column.id];
+                        var word = DatasetGridService.dataView.getItem(args.row)[column.id];
 
                         column.formatter = function(row, cell, value) {
                             if((word === '' && value === '') || (value && word !== '' && value.indexOf(word) > -1)) {
@@ -161,7 +161,7 @@
                         enableCellNavigation: true,
                         enableTextSelectionOnCells: true
                     };
-                    grid = new Slick.Grid('#datagrid', ctrl.dataView, [], options);
+                    grid = new Slick.Grid('#datagrid', DatasetGridService.dataView, [], options);
 
                     //listeners
                     attachLongTableListeners();
@@ -204,7 +204,7 @@
                  */
                 scope.$watch(
                     function () {
-                        return ctrl.data ? ctrl.data.columns : null;
+                        return DatasetGridService.data ? DatasetGridService.data.columns : null;
                     },
                     function (cols) {
                         if (cols) {
@@ -220,7 +220,7 @@
                  */
                 scope.$watch(
                     function () {
-                        return ctrl.data ? ctrl.data.records : null;
+                        return DatasetGridService.data ? DatasetGridService.data.records : null;
                     },
                     function (records) {
                         if(records) {
@@ -235,7 +235,7 @@
                  */
                 scope.$watch(
                     function () {
-                        return ctrl.filters.length;
+                        return FilterService.filters.length;
                     },
                     function () {
                         if(grid) {

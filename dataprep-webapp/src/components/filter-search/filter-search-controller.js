@@ -5,41 +5,6 @@
         var vm = this;
 
         /**
-         * Return the column id list that contains requested term
-         * @param term - the searched terme
-         * @returns {Array}
-         */
-        var getColumnsContaining = function(term) {
-            if (!term) {
-                return [];
-            }
-
-            var results = [];
-            var isNumeric = !isNaN(term);
-            var data = DatasetGridService.data.records;
-            var potentialColumns = DatasetGridService.getColumns(!isNumeric);
-
-            //we loop over the datas while there is data and potential columns that can contains the searched term
-            //if a col value for a row contains the term, we add it to result
-            var dataIndex = 0;
-            while (dataIndex < data.length && potentialColumns.length) {
-                var record = data[dataIndex];
-                for (var colIndex in potentialColumns) {
-                    var colId = potentialColumns[colIndex];
-                    if (record[colId].toLowerCase().indexOf(term) > -1) {
-                        potentialColumns.splice(colIndex, 1);
-                        results.push(colId);
-                    }
-                }
-
-                potentialColumns = _.difference(potentialColumns, results);
-                dataIndex++;
-            }
-
-            return results;
-        };
-
-        /**
          * Return a closure function that create a suggestion item from column id
          * @param term
          * @returns {Function}
@@ -60,8 +25,7 @@
          * @returns {*}
          */
         var filterSuggestion = function (term) {
-            var lowerTerm = term.toLowerCase().trim();
-            var colContainingTerm = getColumnsContaining(lowerTerm);
+            var colContainingTerm = DatasetGridService.getColumnsContaining(term);
 
             return _.chain(colContainingTerm)
                 .sortBy(function(colId) {

@@ -60,7 +60,6 @@
          * @param data - the new data
          */
         self.setDataset = function (metadata, data) {
-            resetFilter();
             updateDataviewRecords(data.records);
 
             self.metadata = metadata;
@@ -76,26 +75,70 @@
             self.data.records = records;
         };
 
+        //------------------------------------------------------------------------------------------------------
+        //------------------------------------------------DATA UTILS--------------------------------------------
+        //------------------------------------------------------------------------------------------------------
         /**
          * Return the column ids
          * @param excludeNumeric - if true, the numeric columns won't be returned
+         * @param excludeBoolean - if true, the boolean columns won't be returned
          * @returns {*}
          */
-        self.getColumns = function(excludeNumeric) {
+        self.getColumns = function(excludeNumeric, excludeBoolean) {
             var numericTypes = ['numeric', 'integer', 'float', 'double'];
-            var cols;
-            if(!excludeNumeric) {
-                cols = self.data.columns;
-            }
-            else {
-                cols = _.filter(self.data.columns, function(col) {
+            var cols = self.data.columns;
+
+            if(excludeNumeric) {
+                cols = _.filter(cols, function (col) {
                     return numericTypes.indexOf(col.type) === -1;
+                });
+            }
+            if(excludeBoolean) {
+                cols = _.filter(cols, function(col) {
+                    return col.type !== 'boolean';
                 });
             }
 
             return _.map(cols, function (col) {
                 return col.id;
             });
+        };
+
+        /**
+         * Return the column id list that contains requested term
+         * @param term - the searched term
+         * @returns {Array}
+         */
+        self.getColumnsContaining = function(term) {
+            if (!term) {
+                return [];
+            }
+
+            term = term.toLowerCase().trim();
+            var results = [];
+            var isNumeric = !isNaN(term);
+            var canBeBoolean = 'true'.indexOf(term) > -1 || 'false'.indexOf(term) > -1;
+            var data = self.data.records;
+            var potentialColumns = self.getColumns(!isNumeric, !canBeBoolean);
+
+            //we loop over the datas while there is data and potential columns that can contains the searched term
+            //if a col value for a row contains the term, we add it to result
+            var dataIndex = 0;
+            while (dataIndex < data.length && potentialColumns.length) {
+                var record = data[dataIndex];
+                for (var colIndex in potentialColumns) {
+                    var colId = potentialColumns[colIndex];
+                    if (record[colId].toLowerCase().indexOf(term) > -1) {
+                        potentialColumns.splice(colIndex, 1);
+                        results.push(colId);
+                    }
+                }
+
+                potentialColumns = _.difference(potentialColumns, results);
+                dataIndex++;
+            }
+
+            return results;
         };
 
         //------------------------------------------------------------------------------------------------------
@@ -118,14 +161,11 @@
         }
 
         /**
-         * Add a "contains" filter in dataview
-         * @param colId - the column id
-         * @param phrase - the phrase that the column is supposed to contain
+         * Add a filter in dataview
+         * @param filter - the filter function to add
          */
-        self.addContainFilter = function(colId, phrase) {
-            self.filters.push(function(item) {
-                return item[colId].indexOf(phrase) > -1;
-            });
+        self.addFilter = function(filter) {
+            self.filters.push(filter);
 
             self.dataView.beginUpdate();
             self.dataView.setFilterArgs({
@@ -138,7 +178,7 @@
         /**
          * Remove all filters from dataview
          */
-        var resetFilter = function() {
+        self.resetFilters = function() {
             self.filters = [];
             self.dataView.setFilterArgs({
                 filters: self.filters
