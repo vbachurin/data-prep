@@ -4,11 +4,14 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.metrics.Timed;
+import org.talend.dataprep.preparation.Preparation;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -19,6 +22,9 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
 public class PreparationService {
 
+    @Autowired
+    private PreparationRepository repository;
+
     private final JsonFactory factory = new JsonFactory();
 
     @RequestMapping(value = "/preparations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -28,6 +34,9 @@ public class PreparationService {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             generator.writeStartArray();
+            for (Preparation preparation : repository.list()) {
+                generator.writeString(preparation.getId());
+            }
             generator.writeEndArray();
             generator.flush();
         } catch (IOException e) {
