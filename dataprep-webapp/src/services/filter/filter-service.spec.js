@@ -40,7 +40,7 @@ describe('Filter service', function() {
         expect(DatasetGridService.addFilter).toHaveBeenCalledWith(filterInfos.filterFn);
     }));
 
-    it('should add "contains" filter with wildcard', inject(function(FilterService, DatasetGridService) {
+    it('should add "contains" filter with wildcard', inject(function(FilterService) {
         //given
         expect(FilterService.filters.length).toBe(0);
 
