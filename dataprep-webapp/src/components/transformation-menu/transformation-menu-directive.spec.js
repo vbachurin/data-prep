@@ -32,7 +32,7 @@ describe('Transformation menu directive', function () {
     it('should render a simple action', function() {
         //given
         var body = angular.element('body');
-        scope.menu = {name: 'uppercase'};
+        scope.menu = {label: 'uppercase'};
 
         //when
         var element = createElement();
@@ -46,7 +46,8 @@ describe('Transformation menu directive', function () {
     it('should render an action with parameters', function() {
         //given
         scope.menu = {
-            name: 'menu with param',
+            name: 'menuWithParam',
+            label: 'menu with param',
             parameters: [
                 {
                     'name': 'param1',
@@ -75,7 +76,8 @@ describe('Transformation menu directive', function () {
     it('should render an action with simple choice', function() {
         //given
         scope.menu = {
-            name: 'menu with param',
+            name: 'menuWithParam',
+            label: 'menu with param',
             items: [{
                 name: 'my choice',
                 values: [

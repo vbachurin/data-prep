@@ -17,8 +17,6 @@ public class UpperCase implements ActionMetadata {
 
     public static final String         UPPER_CASE_ACTION_NAME = "uppercase";                                                   //$NON-NLS-1$
 
-    public static final String         UPPER_CASE_ACTION_DESC = "converts all of the cell values in this column to upper case"; //$NON-NLS-1$
-
     public static final ActionMetadata INSTANCE               = new UpperCase();
 
     private UpperCase() {
@@ -27,11 +25,6 @@ public class UpperCase implements ActionMetadata {
     @Override
     public String getName() {
         return UPPER_CASE_ACTION_NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return UPPER_CASE_ACTION_DESC;
     }
 
     @Override

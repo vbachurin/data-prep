@@ -50,7 +50,8 @@
     "category": "repair",
     "items": [],
     "name": "cut",
-    "description":"remove specified text from cells in this column",
+    "label":"Cut",
+    "description":"Remove specified text from cells in this column",
     "value": "",
     "type": "OPERATION",
     "parameters": [

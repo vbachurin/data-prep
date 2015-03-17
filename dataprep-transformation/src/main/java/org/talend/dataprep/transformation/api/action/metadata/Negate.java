@@ -18,8 +18,6 @@ public class Negate implements ActionMetadata {
 
     public static final String         NEGATE_ACTION_NAME    = "negate";                                           //$NON-NLS-1$
 
-    public static final String         NEGATE_ACTION_DESC    = "reverse the boolean value of cells in this column"; //$NON-NLS-1$
-
     public static final ActionMetadata INSTANCE              = new Negate();
 
     private Negate() {
@@ -28,11 +26,6 @@ public class Negate implements ActionMetadata {
     @Override
     public String getName() {
         return NEGATE_ACTION_NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return NEGATE_ACTION_DESC;
     }
 
     @Override
