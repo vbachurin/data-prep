@@ -52,12 +52,25 @@ public class PreparationTest {
     }
 
     @Test
+    public void listAll() throws Exception {
+        when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
+        Preparation preparation = new Preparation("1234");
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+        when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[{\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0}]"));
+        Preparation preparation1 = new Preparation("5678");
+        preparation1.setCreationDate(0);
+        repository.add(preparation1);
+        when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[{\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0}, {\"id\":\"2abd55e001c524cb2cf6300a89ca6366848a77d5\",\"dataSetId\":\"5678\",\"author\":null,\"creationDate\":0}]"));
+    }
+
+    @Test
     public void list() throws Exception {
-        when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
+        when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
         repository.add(new Preparation("1234"));
-        when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(equalTo("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\"]"));
+        when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\"]"));
         repository.add(new Preparation("5678"));
-        when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(equalTo("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"2abd55e001c524cb2cf6300a89ca6366848a77d5\"]"));
+        when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"2abd55e001c524cb2cf6300a89ca6366848a77d5\"]"));
     }
 
     @Test

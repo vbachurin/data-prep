@@ -2,6 +2,7 @@ package org.talend.dataprep.preparation.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,7 +48,7 @@ public class PreparationService {
     }
 
     @RequestMapping(value = "/preparations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone.")
+    @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
     public void list(HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
@@ -61,6 +62,13 @@ public class PreparationService {
         } catch (IOException e) {
             throw new RuntimeException("Unexpected I/O exception during message output.", e);
         }
+    }
+
+    @RequestMapping(value = "/preparations/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
+    @Timed
+    public Iterable<Preparation> listAll(HttpServletResponse response) {
+        return repository.list();
     }
 
     @RequestMapping(value = "/preparations", method = RequestMethod.PUT, produces = MediaType.TEXT_PLAIN_VALUE)
