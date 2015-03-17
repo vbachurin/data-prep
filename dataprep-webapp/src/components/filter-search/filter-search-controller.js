@@ -1,7 +1,7 @@
 (function() {
     'use strict';
     
-    function FilterSearchCtrl(DatasetGridService) {
+    function FilterSearchCtrl(DatasetGridService, FilterService) {
         var vm = this;
 
         /**
@@ -25,13 +25,14 @@
          * @returns {*}
          */
         var filterSuggestion = function (term) {
-            var colContainingTerm = DatasetGridService.getColumnsContaining(term);
+            var cleanTerm = term.toLowerCase().trim();
+            var colContainingTerm = DatasetGridService.getColumnsContaining(cleanTerm);
 
             return _.chain(colContainingTerm)
                 .sortBy(function(colId) {
                     return colId.toLowerCase();
                 })
-                .map(createSuggestionItem(term))
+                .map(createSuggestionItem(cleanTerm))
                 .value();
         };
 
@@ -40,8 +41,7 @@
          * @param item - the selected suggestion
          */
         var suggestionSelect = function(item) {
-            console.log('create filter from item');
-            console.log(item);
+            FilterService.addFilter('contains', item.columnId, {phrase: item.value});
             vm.filterSearch = '';
         };
 

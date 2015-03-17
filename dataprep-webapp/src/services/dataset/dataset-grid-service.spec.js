@@ -203,4 +203,44 @@ describe('Dataset grid service', function() {
         //then
         expect(DatasetGridService.filters.length).toBe(0);
     }));
+
+    it('should remove filter', inject(function(DatasetGridService) {
+        //given
+        var filterFnCol1 = function(item) {
+            return item.col1.indexOf('toto') > -1;
+        };
+        var filterFnCol2 = function(item) {
+            return item.col2.indexOf('toto') > -1;
+        };
+        DatasetGridService.addFilter(filterFnCol1);
+        DatasetGridService.addFilter(filterFnCol2);
+        expect(DatasetGridService.filters.length).toBe(2);
+
+        //when
+        DatasetGridService.removeFilter(filterFnCol1);
+
+        //then
+        expect(DatasetGridService.filters.length).toBe(1);
+        expect(DatasetGridService.filters[0]).toBe(filterFnCol2);
+    }));
+
+    it('should do nothing on remove if filter is unknown', inject(function(DatasetGridService) {
+        //given
+        var filterFnCol1 = function(item) {
+            return item.col1.indexOf('toto') > -1;
+        };
+        var filterFnCol2 = function(item) {
+            return item.col2.indexOf('toto') > -1;
+        };
+        DatasetGridService.addFilter(filterFnCol1);
+
+        expect(DatasetGridService.filters.length).toBe(1);
+
+        //when
+        DatasetGridService.removeFilter(filterFnCol2);
+
+        //then
+        expect(DatasetGridService.filters.length).toBe(1);
+        expect(DatasetGridService.filters[0]).toBe(filterFnCol1);
+    }));
 });

@@ -1,6 +1,6 @@
 <ul>
     <li>Filters : </li>
-    <li>
-        <talend-badge text="STATE: KS" on-close="filterCtrl.close('KS')"></talend-badge>
+    <li ng-repeat="filter in filterCtrl.filters track by $index">
+        <talend-badge text="{{filter.toString()}}" on-close="filterCtrl.delete(filter)"></talend-badge>
     </li>
 </ul>

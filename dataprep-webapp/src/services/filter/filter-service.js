@@ -10,10 +10,22 @@
      * @constructor
      */
     function Filter(type, colId, args, filterFn) {
-        this.type = type;
-        this.colId = colId;
-        this.args = args;
-        this.filterFn = filterFn;
+        var self = this;
+
+        self.type = type;
+        self.colId = colId;
+        self.args = args;
+        self.filterFn = filterFn;
+        self.toString = function() {
+            var result = self.colId.toUpperCase() + ': ';
+            switch(type) {
+                case 'contains':
+                    result += args.phrase;
+                    break;
+            }
+
+            return result;
+        };
     }
 
     function FilterService(DatasetGridService) {
@@ -35,8 +47,9 @@
          * @returns {Function}
          */
         var createContainFilter = function(colId, phrase) {
+            var lowerCasePhrase = phrase.toLowerCase();
             return function(item) {
-                return item[colId].indexOf(phrase) > -1;
+                return item[colId].toLowerCase().indexOf(lowerCasePhrase) > -1;
             };
         };
 
@@ -54,10 +67,20 @@
                     break;
             }
 
-            if(filterFn) {
-                var filterInfos = new Filter(type, colId, args, filterFn);
-                DatasetGridService.addFilter(filterFn);
-                self.filters.push(filterInfos);
+            var filterInfos = new Filter(type, colId, args, filterFn);
+            DatasetGridService.addFilter(filterFn);
+            self.filters.push(filterInfos);
+        };
+
+        /**
+         * Remove a filter and update datagrid filters
+         * @param filter
+         */
+        self.removeFilter = function(filter) {
+            var filterIndex = self.filters.indexOf(filter);
+            if(filterIndex > -1) {
+                DatasetGridService.removeFilter(filter.filterFn);
+                self.filters.splice(filterIndex, 1);
             }
         };
     }

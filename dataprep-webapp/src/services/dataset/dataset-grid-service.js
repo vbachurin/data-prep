@@ -114,7 +114,6 @@
                 return [];
             }
 
-            term = term.toLowerCase().trim();
             var results = [];
             var isNumeric = !isNaN(term);
             var canBeBoolean = 'true'.indexOf(term) > -1 || 'false'.indexOf(term) > -1;
@@ -148,7 +147,7 @@
          * Filter function. It iterates over all filters and return if the provided item fit the predicates
          * @param item - the item to test
          * @param args - object containing the filters predicates
-         * @returns {boolean} - tru if the item pass all filters
+         * @returns {boolean} - true if the item pass all filters
          */
         function filterFn(item, args) {
             for (var i = 0; i < args.filters.length; i++) {
@@ -161,12 +160,9 @@
         }
 
         /**
-         * Add a filter in dataview
-         * @param filter - the filter function to add
+         * Update filters in dataview
          */
-        self.addFilter = function(filter) {
-            self.filters.push(filter);
-
+        var updateDataViewFilters = function() {
             self.dataView.beginUpdate();
             self.dataView.setFilterArgs({
                 filters: self.filters
@@ -176,13 +172,32 @@
         };
 
         /**
+         * Add a filter in dataview
+         * @param filter - the filter function to add
+         */
+        self.addFilter = function(filter) {
+            self.filters.push(filter);
+            updateDataViewFilters();
+        };
+
+        /**
+         * Remove a filter in dataview
+         * @param filter - the filter function to remove
+         */
+        self.removeFilter = function(filter) {
+            var filterIndex = self.filters.indexOf(filter);
+            if(filterIndex > -1) {
+                self.filters.splice(filterIndex, 1);
+                updateDataViewFilters();
+            }
+        };
+
+        /**
          * Remove all filters from dataview
          */
         self.resetFilters = function() {
             self.filters = [];
-            self.dataView.setFilterArgs({
-                filters: self.filters
-            });
+            updateDataViewFilters();
         };
     }
 
