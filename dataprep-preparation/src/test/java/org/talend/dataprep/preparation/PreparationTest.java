@@ -5,8 +5,8 @@ import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,5 +67,14 @@ public class PreparationTest {
         assertThat(preparationId, is("7110eda4d09e062aa5e4a390b0a572ac0d2c0220"));
         assertThat(repository.size(), is(1));
         assertThat(repository.list().iterator().next().getId(), is("7110eda4d09e062aa5e4a390b0a572ac0d2c0220"));
+    }
+
+    @Test
+    public void get() throws Exception {
+        Preparation preparation = new Preparation("1234");
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+        String preparationDetails = when().get("/preparations/7110eda4d09e062aa5e4a390b0a572ac0d2c0220").asString();
+        assertThat(preparationDetails, sameJSONAs("{\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0}"));
     }
 }

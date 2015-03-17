@@ -5,10 +5,11 @@ import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
@@ -29,6 +31,20 @@ public class PreparationService {
     private PreparationRepository repository;
 
     private final JsonFactory factory = new JsonFactory();
+
+    /**
+     * @return Get user name from Spring Security context, return "anonymous" if no user is currently logged in.
+     */
+    private static String getUserName() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String author;
+        if (principal != null) {
+            author = principal.toString();
+        } else {
+            author = "anonymous"; //$NON-NLS-1
+        }
+        return author;
+    }
 
     @RequestMapping(value = "/preparations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone.")
@@ -54,11 +70,19 @@ public class PreparationService {
         try {
             String dataSetId = IOUtils.toString(preparationContent);
             Preparation preparation = new Preparation(dataSetId);
+            preparation.setAuthor(getUserName());
             repository.add(preparation);
             return preparation.getId();
         } catch (IOException e) {
             throw new RuntimeException("Unable to create preparation.", e);
         }
+    }
+
+    @RequestMapping(value = "/preparations/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
+    @Timed
+    public Preparation get(@PathVariable(value = "id") String id) {
+        return repository.get(id);
     }
 
 }
