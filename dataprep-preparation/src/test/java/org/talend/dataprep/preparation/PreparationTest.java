@@ -1,8 +1,12 @@
 package org.talend.dataprep.preparation;
 
+import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +58,14 @@ public class PreparationTest {
         when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(equalTo("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\"]"));
         repository.add(new Preparation("5678"));
         when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(equalTo("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"2abd55e001c524cb2cf6300a89ca6366848a77d5\"]"));
+    }
 
+    @Test
+    public void create() throws Exception {
+        assertThat(repository.size(), is(0));
+        String preparationId = given().body("1234").when().put("/preparations").asString();
+        assertThat(preparationId, is("7110eda4d09e062aa5e4a390b0a572ac0d2c0220"));
+        assertThat(repository.size(), is(1));
+        assertThat(repository.list().iterator().next().getId(), is("7110eda4d09e062aa5e4a390b0a572ac0d2c0220"));
     }
 }

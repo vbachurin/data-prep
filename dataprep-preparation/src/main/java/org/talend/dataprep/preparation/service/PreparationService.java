@@ -1,9 +1,12 @@
 package org.talend.dataprep.preparation.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.wordnik.swagger.annotations.ApiParam;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +44,20 @@ public class PreparationService {
             generator.flush();
         } catch (IOException e) {
             throw new RuntimeException("Unexpected I/O exception during message output.", e);
+        }
+    }
+
+    @RequestMapping(value = "/preparations", method = RequestMethod.PUT, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
+    @Timed
+    public String create(@ApiParam(value = "content") InputStream preparationContent) {
+        try {
+            String dataSetId = IOUtils.toString(preparationContent);
+            Preparation preparation = new Preparation(dataSetId);
+            repository.add(preparation);
+            return preparation.getId();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create preparation.", e);
         }
     }
 
