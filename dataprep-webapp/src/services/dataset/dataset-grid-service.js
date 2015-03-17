@@ -140,6 +140,23 @@
             return results;
         };
 
+        /**
+         * Return all the rows index where data[rowId][colId] contains the searched term
+         * @param colId - the column id
+         * @param term - the term the cell must contain
+         * @returns {*}
+         */
+        self.getRowsContaining = function(colId, term) {
+            return _.chain(self.data.records)
+                .filter(function(item) {
+                    return (term === '' && item[colId] === '') || (term !== '' && item[colId].indexOf(term) > -1);
+                })
+                .map(function(item, index) {
+                    return index;
+                })
+                .value();
+        };
+
         //------------------------------------------------------------------------------------------------------
         //-------------------------------------------------FILTERS----------------------------------------------
         //------------------------------------------------------------------------------------------------------

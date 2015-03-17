@@ -243,4 +243,22 @@ describe('Dataset grid service', function() {
         expect(DatasetGridService.filters.length).toBe(1);
         expect(DatasetGridService.filters[0]).toBe(filterFnCol1);
     }));
+
+    it('should return the rows containing searched value', inject(function(DatasetGridService) {
+        //given
+        DatasetGridService.data = {columns: [], records: [
+            {text: 'mon toto est ici'},
+            {text: 'ma tata est la'},
+            {text: 'la tata est ici'},
+            {text: 'mon toto est la'},
+            {text: 'mi titi est ici'},
+            {text: 'mi titi est la'}
+        ]};
+
+        //when
+        var rowsId = DatasetGridService.getRowsContaining('text', 'la');
+
+        //then
+        expect(rowsId).toEqual([1, 2, 3, 5]);
+    }));
 });

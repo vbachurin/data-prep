@@ -25,15 +25,6 @@
                 };
 
                 /**
-                 * Reset columns formatter
-                 */
-                var resetColumnsFormatter = function() {
-                    _.forEach(grid.getColumns(), function(column) {
-                        column.formatter = null;
-                    });
-                };
-
-                /**
                  * Reset the cells css
                  */
                 var resetCellStyles = function() {
@@ -115,21 +106,18 @@
                  * Attach cell action listeners (click, active change, ...)
                  */
                 var attachCellListeners = function() {
-                    //get clicked word and highlight cells in clicked column containing the word
+                    //get clicked content and highlight cells in clicked column containing the content
                     grid.onClick.subscribe(function (e,args) {
-                        resetColumnsFormatter();
-
                         var config = {};
                         var column = grid.getColumns()[args.cell];
-                        var word = DatasetGridService.dataView.getItem(args.row)[column.id];
+                        var content = DatasetGridService.dataView.getItem(args.row)[column.id];
 
-                        column.formatter = function(row, cell, value) {
-                            if((word === '' && value === '') || (value && word !== '' && value.indexOf(word) > -1)) {
-                                config[row] = {};
-                                config[row][column.id] = 'highlight';
-                            }
-                            return value;
-                        };
+                        var rowsContainingWord = DatasetGridService.getRowsContaining(column.id, content);
+                        _.forEach(rowsContainingWord, function(rowId) {
+                            config[rowId] = {};
+                            config[rowId][column.id] = 'highlight';
+                        });
+
                         grid.setCellCssStyles('highlight', config);
                         grid.invalidate();
                     });
