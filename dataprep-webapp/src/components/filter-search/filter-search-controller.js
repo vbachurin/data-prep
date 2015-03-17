@@ -1,7 +1,7 @@
 (function() {
     'use strict';
     
-    function FilterSearchCtrl(DatasetGridService, FilterService) {
+    function FilterSearchCtrl(FilterService) {
         var vm = this;
 
         /**
@@ -26,7 +26,7 @@
          */
         var filterSuggestion = function (term) {
             var cleanTerm = term.toLowerCase().trim();
-            var colContainingTerm = DatasetGridService.getColumnsContaining(cleanTerm);
+            var colContainingTerm = FilterService.getColumnsContaining(cleanTerm);
 
             return _.chain(colContainingTerm)
                 .sortBy(function(colId) {

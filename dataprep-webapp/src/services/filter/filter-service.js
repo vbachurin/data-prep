@@ -2,6 +2,15 @@
     'use strict';
 
     /**
+     * Escape all regexp characters except * wildcard, and adapt * wildcard to regexp (* --> .*)
+     * @param str
+     * @returns {*}
+     */
+    function escapeRegExpExceptStar(str) {
+        return str.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&").replace(/\*/g, '.*');
+    }
+
+    /**
      * Filter infos object
      * @param type - the filter type
      * @param colId - the column id
@@ -33,6 +42,23 @@
         self.filters = [];
 
         /**
+         * Return the column with a cell that can match the phrase
+         * @param phrase - to match
+         * @returns {Array}
+         */
+        self.getColumnsContaining = function(phrase) {
+            if (!phrase) {
+                return [];
+            }
+
+            var regexp = new RegExp(escapeRegExpExceptStar(phrase));
+            var canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
+            var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
+
+            return DatasetGridService.getColumnsContaining(regexp, canBeNumeric, canBeBoolean);
+        };
+
+        /**
          * Remove all the filters and update datagrid filters
          */
         self.removeAllFilters = function() {
@@ -48,8 +74,9 @@
          */
         var createContainFilter = function(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
+            var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
             return function(item) {
-                return item[colId].toLowerCase().indexOf(lowerCasePhrase) > -1;
+                return item[colId].toLowerCase().match(regexp);
             };
         };
 

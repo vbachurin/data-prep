@@ -25,7 +25,7 @@ describe('Filter service', function() {
         expect(FilterService.filters.length).toBe(0);
 
         //when
-        FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col1', {phrase: 'toto'});
 
         //then
         expect(FilterService.filters.length).toBe(1);
@@ -33,11 +33,26 @@ describe('Filter service', function() {
         var filterInfos = FilterService.filters[0];
         expect(filterInfos.type).toBe('contains');
         expect(filterInfos.colId).toBe('col1');
-        expect(filterInfos.args).toEqual({phrase: 'Toto'});
-        expect(filterInfos.filterFn({col1: ' toto est ici'})).toBe(true);
-        expect(filterInfos.filterFn({col1: ' tata est ici'})).toBe(false);
+        expect(filterInfos.args).toEqual({phrase: 'toto'});
+        expect(filterInfos.filterFn({col1: ' toto est ici'})).toBeTruthy();
+        expect(filterInfos.filterFn({col1: ' tata est ici'})).toBeFalsy();
 
         expect(DatasetGridService.addFilter).toHaveBeenCalledWith(filterInfos.filterFn);
+    }));
+
+    it('should add "contains" filter with wildcard', inject(function(FilterService, DatasetGridService) {
+        //given
+        expect(FilterService.filters.length).toBe(0);
+
+        //when
+        FilterService.addFilter('contains', 'col1', {phrase: 'to*ici'});
+
+        //then
+        expect(FilterService.filters.length).toBe(1);
+
+        var filterInfos = FilterService.filters[0];
+        expect(filterInfos.filterFn({col1: ' toto est ici'})).toBeTruthy();
+        expect(filterInfos.filterFn({col1: ' tata est ici'})).toBeFalsy();
     }));
 
     it('should remove filter and remove datagrid filter', inject(function(FilterService, DatasetGridService) {

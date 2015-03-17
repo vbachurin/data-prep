@@ -102,7 +102,7 @@ describe('filter search controller', function() {
         };
     }));
 
-    it('should create sorted suggestions based on typed word and current data from service', inject(function(DatasetGridService) {
+    it('should create sorted suggestions based on case insensitive typed word and current data from service', inject(function(DatasetGridService) {
         //given
         DatasetGridService.setDataset(metadata, data);
         var ctrl = createController();
@@ -120,6 +120,28 @@ describe('filter search controller', function() {
         expect(suggestions[1]).toEqual({
             label: 'ala in <b>State</b>',
             value: 'ala',
+            columnId: 'State'
+        });
+    }));
+
+    it('should create sorted suggestions based on typed word with wildcard', inject(function(DatasetGridService) {
+        //given
+        DatasetGridService.setDataset(metadata, data);
+        var ctrl = createController();
+
+        //when
+        var suggestions = ctrl.filterSuggestOptions.suggest('ala*ma');
+
+        //then
+        expect(suggestions.length).toBe(2);
+        expect(suggestions[0]).toEqual({
+            label: 'ala*ma in <b>MostPopulousCity</b>',
+            value: 'ala*ma',
+            columnId: 'MostPopulousCity'
+        });
+        expect(suggestions[1]).toEqual({
+            label: 'ala*ma in <b>State</b>',
+            value: 'ala*ma',
             columnId: 'State'
         });
     }));

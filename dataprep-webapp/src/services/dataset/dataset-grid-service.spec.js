@@ -246,14 +246,14 @@ describe('Dataset grid service', function() {
 
     it('should return the rows containing searched value', inject(function(DatasetGridService) {
         //given
-        DatasetGridService.data = {columns: [], records: [
+        DatasetGridService.setDataset({}, {columns: [], records: [
             {text: 'mon toto est ici'},
             {text: 'ma tata est la'},
             {text: 'la tata est ici'},
             {text: 'mon toto est la'},
             {text: 'mi titi est ici'},
             {text: 'mi titi est la'}
-        ]};
+        ]});
 
         //when
         var rowsId = DatasetGridService.getRowsContaining('text', 'la');

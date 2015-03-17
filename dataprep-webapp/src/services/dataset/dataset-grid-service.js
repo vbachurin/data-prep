@@ -105,20 +105,15 @@
         };
 
         /**
-         * Return the column id list that contains requested term
-         * @param term - the searched term
+         * Return the column id list that match regexp
+         * @param regexp - the regexp that the content must match
          * @returns {Array}
          */
-        self.getColumnsContaining = function(term) {
-            if (!term) {
-                return [];
-            }
-
+        self.getColumnsContaining = function(regexp, canBeNumeric, canBeBoolean) {
             var results = [];
-            var isNumeric = !isNaN(term);
-            var canBeBoolean = 'true'.indexOf(term) > -1 || 'false'.indexOf(term) > -1;
+
             var data = self.data.records;
-            var potentialColumns = self.getColumns(!isNumeric, !canBeBoolean);
+            var potentialColumns = self.getColumns(!canBeNumeric, !canBeBoolean);
 
             //we loop over the datas while there is data and potential columns that can contains the searched term
             //if a col value for a row contains the term, we add it to result
@@ -127,7 +122,7 @@
                 var record = data[dataIndex];
                 for (var colIndex in potentialColumns) {
                     var colId = potentialColumns[colIndex];
-                    if (record[colId].toLowerCase().indexOf(term) > -1) {
+                    if (record[colId].toLowerCase().match(regexp)) {
                         potentialColumns.splice(colIndex, 1);
                         results.push(colId);
                     }
@@ -141,20 +136,21 @@
         };
 
         /**
-         * Return all the rows index where data[rowId][colId] contains the searched term
+         * Return displayed rows index where data[rowId][colId] contains the searched term
          * @param colId - the column id
          * @param term - the term the cell must contain
          * @returns {*}
          */
         self.getRowsContaining = function(colId, term) {
-            return _.chain(self.data.records)
-                .filter(function(item) {
-                    return (term === '' && item[colId] === '') || (term !== '' && item[colId].indexOf(term) > -1);
-                })
-                .map(function(item, index) {
-                    return index;
-                })
-                .value();
+            var result = [];
+            for(var i = 0; i < self.dataView.getLength(); ++i) {
+                var item = self.dataView.getItem(i);
+                if((term === '' && item[colId] === '') || (term !== '' && item[colId].indexOf(term) > -1)) {
+                    result.push(i);
+                }
+            }
+
+            return result;
         };
 
         //------------------------------------------------------------------------------------------------------
