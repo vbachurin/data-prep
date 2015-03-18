@@ -1,15 +1,19 @@
 package org.talend.dataprep.api.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.netflix.hystrix.HystrixCommand;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.api.service.command.PreparationAddActionCommand;
 import org.talend.dataprep.api.service.command.PreparationGetCommand;
+import org.talend.dataprep.api.service.command.PreparationGetContentCommand;
 import org.talend.dataprep.api.service.command.PreparationListCommand;
 import org.talend.dataprep.metrics.Timed;
 
@@ -29,7 +33,7 @@ public class PreparationAPI extends APIService {
             HttpServletResponse response) {
         PreparationListCommand.Format listFormat = PreparationListCommand.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
-        PreparationListCommand command = new PreparationListCommand(client, preparationServiceURL, listFormat);
+        HystrixCommand<InputStream> command = new PreparationListCommand(client, preparationServiceURL, listFormat);
         try {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -46,7 +50,7 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        PreparationGetCommand command = new PreparationGetCommand(client, preparationServiceURL, preparationId);
+        HystrixCommand<InputStream> command = new PreparationGetCommand(client, preparationServiceURL, preparationId);
         try {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -63,5 +67,26 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
             HttpServletResponse response) {
+        HttpClient client = getClient();
+        HystrixCommand<InputStream> command = new PreparationGetContentCommand(client, preparationServiceURL, contentServiceUrl, transformServiceUrl, preparationId, version);
+        try {
+            OutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(command.execute(), outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to copy preparations to output.", e);
+        }
+    }
+
+    @RequestMapping(value = "/api/preparations/{id}/actions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get preparation content by id and at a given version.", notes = "Returns the dataset modified by this preparation.")
+    @Timed
+    public void addTransformationAction(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
+            @ApiParam("Action to add at end of the preparation.") InputStream body,
+            HttpServletResponse response) {
+        HttpClient client = getClient();
+        HystrixCommand<Void> command = new PreparationAddActionCommand(client, preparationServiceURL, preparationId, body);
+        command.execute();
     }
 }

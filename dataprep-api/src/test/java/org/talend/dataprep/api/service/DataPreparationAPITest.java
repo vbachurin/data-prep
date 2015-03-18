@@ -2,6 +2,7 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
@@ -9,9 +10,11 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 import java.io.InputStream;
 import java.util.List;
 
+import com.sun.corba.se.spi.ior.IORTemplate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,6 +203,29 @@ public class DataPreparationAPITest {
         preparation.setCreationDate(0);
         preparationRepository.add(preparation);
         assertThat(when().get("/api/preparations/{id}/details", "7110eda4d09e062aa5e4a390b0a572ac0d2c0220").asString(), sameJSONAs("{\"dataSetId\":\"1234\",\"author\":null,\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"creationDate\":0,\"actions\":[]}"));
+    }
+
+    @Test
+    public void testPreparationAppendAction() throws Exception {
+        Preparation preparation = new Preparation("1234");
+        preparation.setCreationDate(0);
+        preparationRepository.add(preparation);
+        String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
+        given().body(actionContent).when().post("/api/preparations/{id}/actions", "7110eda4d09e062aa5e4a390b0a572ac0d2c0220").then().statusCode(is(200));
+        assertThat(preparation.getActions().get(0), is(actionContent));
+    }
+
+    @Ignore
+    @Test
+    public void testPreparationContentGet() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "tagada").asString();
+        Preparation preparation = new Preparation(dataSetId);
+        preparation.setCreationDate(0);
+        String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
+        preparation.getActions().add(actionContent);
+        preparationRepository.add(preparation);
+        assertThat(when().get("/api/preparations/{id}/content", "7110eda4d09e062aa5e4a390b0a572ac0d2c0220").asString(), sameJSONAs("{}"));
     }
 
 }
