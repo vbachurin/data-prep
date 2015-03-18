@@ -13,7 +13,7 @@ public class PreparationStore {
     private static final Log LOGGER = LogFactory.getLog(PreparationStore.class);
 
     @Bean
-    public PreparationRepository getStore() {
+    public PreparationRepository getPreparationRepository() {
         LOGGER.info("Using in-memory preparation store.");
         return new InMemoryPreparationRepository();
     }

@@ -36,7 +36,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating dataset (pool: " + connectionManager.getTotalStats() + ")...");
         }
-        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HttpClient client = getClient();
         HystrixCommand<String> creation = new CreateDataSet(client, contentServiceUrl, name, dataSetContent);
         String result = creation.execute();
         if (LOG.isDebugEnabled()) {
@@ -54,7 +54,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating or updating dataset #" + id + " (pool: " + connectionManager.getTotalStats() + ")...");
         }
-        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HttpClient client = getClient();
         HystrixCommand<String> creation = new CreateOrUpdateDataSet(client, contentServiceUrl, id, name, dataSetContent);
         String result = creation.execute();
         if (LOG.isDebugEnabled()) {
@@ -74,7 +74,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Requesting dataset #" + id + " (pool: " + connectionManager.getTotalStats() + ")...");
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HttpClient client = getClient();
         HystrixCommand<InputStream> retrievalCommand = new DataSetGetCommand(client, contentServiceUrl, id, metadata, columns);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
@@ -95,7 +95,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Listing datasets (pool: " + connectionManager.getTotalStats() + ")...");
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HttpClient client = getClient();
         HystrixCommand<InputStream> listCommand = new DataSetListCommand(client, contentServiceUrl);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
@@ -116,7 +116,7 @@ public class DataSetAPI extends APIService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Delete dataset #" + dataSetId + " (pool: " + connectionManager.getTotalStats() + ")...");
         }
-        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HttpClient client = getClient();
         HystrixCommand<Void> deleteCommand = new DataSetDeleteCommand(client, contentServiceUrl, dataSetId);
         try {
             deleteCommand.execute();
@@ -136,7 +136,7 @@ public class DataSetAPI extends APIService {
             @PathVariable(value = "column") @ApiParam(name = "column", value = "Column name in the dataset. If column doesn't exist, operation returns no content.") String columnName,
             HttpServletResponse response) {
         // Get dataset metadata
-        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HttpClient client = getClient();
         HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadataCommand(client, contentServiceUrl, dataSetId);
         // Asks transformation service for suggested actions for column type and domain
         HystrixCommand<InputStream> getSuggestedActions = new SuggestColumnActionsCommand(client, transformServiceUrl, retrieveMetadata, columnName);
@@ -157,7 +157,7 @@ public class DataSetAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Data set id to get suggestions from.") String dataSetId,
             HttpServletResponse response) {
         // Get dataset metadata
-        HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HttpClient client = getClient();
         HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadataCommand(client, contentServiceUrl, dataSetId);
         // Asks transformation service for suggested actions for column type and domain
         HystrixCommand<InputStream> getSuggestedActions = new SuggestDataSetActionsCommand(client, transformServiceUrl, retrieveMetadata);

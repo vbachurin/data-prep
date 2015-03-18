@@ -2,14 +2,12 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +24,8 @@ import org.talend.dataprep.api.Application;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.preparation.Preparation;
+import org.talend.dataprep.preparation.store.PreparationRepository;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
@@ -34,7 +34,7 @@ import com.jayway.restassured.http.ContentType;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 @IntegrationTest
-public class DataPreparationAPITest extends TestCase {
+public class DataPreparationAPITest {
 
     @Value("${local.server.port}")
     public int port;
@@ -46,6 +46,9 @@ public class DataPreparationAPITest extends TestCase {
     DataSetContentStore contentStore;
 
     @Autowired
+    PreparationRepository preparationRepository;
+
+    @Autowired
     private List<APIService> apiServices;
 
     @Before
@@ -54,6 +57,7 @@ public class DataPreparationAPITest extends TestCase {
         for (APIService apiService : apiServices) {
             apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
             apiService.setTransformationServiceURL("http://localhost:" + port + "/");
+            apiService.setPreparationServiceURL("http://localhost:" + port + "/");
         }
     }
 
@@ -171,5 +175,21 @@ public class DataPreparationAPITest extends TestCase {
         InputStream content = when().get("/api/datasets/{id}/actions", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
         assertThat(contentAsString, sameJSONAs("[]"));
+    }
+
+    @Test
+    public void testEmptyPreparationList() throws Exception {
+        assertThat(when().get("/api/preparations").asString(), sameJSONAs("[]"));
+        assertThat(when().get("/api/preparations/?format=short").asString(), sameJSONAs("[]"));
+        assertThat(when().get("/api/preparations/?format=long").asString(), sameJSONAs("[]"));
+    }
+
+    @Test
+    public void testPreparationsList() throws Exception {
+        Preparation preparation = new Preparation("1234");
+        preparation.setCreationDate(0);
+        preparationRepository.add(preparation);
+        assertThat(when().get("/api/preparations/?format=short").asString(), sameJSONAs("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\"]"));
+        assertThat(when().get("/api/preparations/?format=long").asString(), sameJSONAs("[{\"dataSetId\":\"1234\",\"author\":null,\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"creationDate\":0,\"actions\":[]}]"));
     }
 }

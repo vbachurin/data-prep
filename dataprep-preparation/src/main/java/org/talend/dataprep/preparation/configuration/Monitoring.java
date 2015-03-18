@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.metrics.configuration.EnableMonitoring;
 
-@Configuration
+@Configuration(value = "org.talend.dataprep.preparation.configuration.Monitoring")
 @EnableMonitoring
 public class Monitoring {
 
