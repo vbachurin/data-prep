@@ -1,14 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import org.codehaus.jackson.JsonNode;
-import org.talend.dataprep.api.DataSetRow;
-
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.function.Consumer;
+
+import org.codehaus.jackson.JsonNode;
+import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.transformation.i18n.MessagesBundle;
 
 public interface ActionMetadata {
 
@@ -23,21 +22,11 @@ public interface ActionMetadata {
     }
 
     default String getLabel(Locale locale) {
-        String i18nKey = "action." + getName() + ".label";
-        return getTranslatedLabel(locale, i18nKey);
+        return MessagesBundle.getString(locale, "action." + getName() + ".label");
     }
 
     default String getDescription(Locale locale) {
-        String i18nKey = "action." + getName() + ".desc";
-        return getTranslatedLabel(locale, i18nKey);
-    }
-
-    default String getTranslatedLabel(Locale locale, String i18nKey) {
-        try {
-        return ResourceBundle.getBundle("Messages", locale).getString(i18nKey);
-        } catch (MissingResourceException e) {
-            return i18nKey;
-        }
+        return MessagesBundle.getString(locale, "action." + getName() + ".desc");
     }
 
     Type getType();
