@@ -7,19 +7,15 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.talend.dataprep.api.service.command.DataSetGetCommand;
-import org.talend.dataprep.api.service.command.DataSetUpdateCommand;
-import org.talend.dataprep.api.service.command.TransformCommand;
+import org.talend.dataprep.api.service.command.DataSetGet;
+import org.talend.dataprep.api.service.command.DataSetUpdate;
+import org.talend.dataprep.api.service.command.Transform;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
@@ -45,11 +41,10 @@ public class TransformAPI extends APIService {
             String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
-            HystrixCommand<InputStream> contentRetrieval = new DataSetGetCommand(client, contentServiceUrl, dataSetId, false,
-                    false);
-            HystrixCommand<InputStream> transformation = new TransformCommand(client, transformServiceUrl, contentRetrieval,
+            HystrixCommand<InputStream> contentRetrieval = new DataSetGet(client, contentServiceUrl, dataSetId, false, false);
+            HystrixCommand<InputStream> transformation = new Transform(client, transformServiceUrl, contentRetrieval,
                     encodedActions);
-            HystrixCommand<InputStream> update = new DataSetUpdateCommand(client, contentServiceUrl, dataSetId, transformation,
+            HystrixCommand<InputStream> update = new DataSetUpdate(client, contentServiceUrl, dataSetId, transformation,
                     encodedActions);
             // Perform transformation
             ServletOutputStream outputStream = response.getOutputStream();

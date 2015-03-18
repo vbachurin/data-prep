@@ -7,23 +7,29 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
-public class PreparationGetCommand extends HystrixCommand<InputStream> {
+public class DataSetGet extends HystrixCommand<InputStream> {
+
+    private final String contentServiceUrl;
 
     private final HttpClient client;
 
-    private final String preparationServiceUrl;
+    private final boolean metadata;
 
-    private final String id;
+    private final String dataSetId;
 
-    public PreparationGetCommand(HttpClient client, String preparationServiceUrl, String id) {
-        super(APIService.PREPARATION_GROUP);
+    private final boolean columns;
+
+    public DataSetGet(HttpClient client, String contentServiceUrl, String dataSetId, boolean metadata, boolean columns) {
+        super(PreparationAPI.TRANSFORM_GROUP);
+        this.contentServiceUrl = contentServiceUrl;
         this.client = client;
-        this.preparationServiceUrl = preparationServiceUrl;
-        this.id = id;
+        this.metadata = metadata;
+        this.dataSetId = dataSetId;
+        this.columns = columns;
     }
 
     @Override
@@ -33,7 +39,8 @@ public class PreparationGetCommand extends HystrixCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id);
+        HttpGet contentRetrieval = new HttpGet(contentServiceUrl + "/" + dataSetId + "/content/?metadata=" + metadata
+                + "&columns=" + columns);
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
@@ -45,6 +52,6 @@ public class PreparationGetCommand extends HystrixCommand<InputStream> {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
-        throw new RuntimeException("Unable to retrieve preparation list.");
+        throw new RuntimeException("Unable to retrieve content.");
     }
 }

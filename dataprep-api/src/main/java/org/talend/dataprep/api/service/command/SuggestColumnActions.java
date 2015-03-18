@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -17,9 +16,10 @@ import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.api.service.PreparationAPI;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
-public class SuggestColumnActionsCommand extends ChainedCommand<InputStream, DataSetMetadata> {
+public class SuggestColumnActions extends ChainedCommand<InputStream, DataSetMetadata> {
 
     private final String transformServiceUrl;
 
@@ -27,8 +27,8 @@ public class SuggestColumnActionsCommand extends ChainedCommand<InputStream, Dat
 
     private final HttpClient client;
 
-    public SuggestColumnActionsCommand(HttpClient client, String transformServiceUrl,
-                                       HystrixCommand<DataSetMetadata> retrieveMetadata, String columnName) {
+    public SuggestColumnActions(HttpClient client, String transformServiceUrl, HystrixCommand<DataSetMetadata> retrieveMetadata,
+            String columnName) {
         super(PreparationAPI.TRANSFORM_GROUP, retrieveMetadata);
         this.transformServiceUrl = transformServiceUrl;
         this.column = columnName;

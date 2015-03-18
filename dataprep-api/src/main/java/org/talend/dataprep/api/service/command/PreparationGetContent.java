@@ -14,7 +14,7 @@ import org.talend.dataprep.preparation.Preparation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
-public class PreparationGetContentCommand extends HystrixCommand<InputStream> {
+public class PreparationGetContent extends HystrixCommand<InputStream> {
 
     private final HttpClient client;
 
@@ -28,7 +28,7 @@ public class PreparationGetContentCommand extends HystrixCommand<InputStream> {
 
     private final String transformServiceUrl;
 
-    public PreparationGetContentCommand(HttpClient client, String preparationServiceUrl, String contentServiceUrl,
+    public PreparationGetContent(HttpClient client, String preparationServiceUrl, String contentServiceUrl,
             String transformServiceUrl, String id, String version) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
@@ -58,11 +58,10 @@ public class PreparationGetContentCommand extends HystrixCommand<InputStream> {
                 InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
                 Preparation preparation = mapper.reader(Preparation.class).readValue(content);
                 // Get the data set
-                DataSetGetCommand retrieveDataSet = new DataSetGetCommand(client, contentServiceUrl, preparation.getDataSetId(),
-                        false, false);
+                DataSetGet retrieveDataSet = new DataSetGet(client, contentServiceUrl, preparation.getDataSetId(), false, false);
                 // ... transform it ...
                 String actions = preparation.getActions().toString(); // TODO
-                TransformCommand transformCommand = new TransformCommand(client, transformServiceUrl, retrieveDataSet, actions);
+                Transform transformCommand = new Transform(client, transformServiceUrl, retrieveDataSet, actions);
                 // ... and send it back to user (but saves it back in preparation service).
                 return new CloneInputStream(transformCommand.execute(), Collections.emptyList()); // TODO
             } else if (statusCode == HttpStatus.SC_NO_CONTENT) {

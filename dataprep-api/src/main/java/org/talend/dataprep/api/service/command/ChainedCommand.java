@@ -12,7 +12,6 @@ public abstract class ChainedCommand<O, I> extends HystrixCommand<O> {
         this.input = input;
     }
 
-
     public ChainedCommand(HystrixCommand<I> input) {
         this(input.getCommandGroup(), input);
     }

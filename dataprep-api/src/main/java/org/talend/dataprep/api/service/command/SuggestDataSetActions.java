@@ -17,14 +17,13 @@ import org.talend.dataprep.api.service.PreparationAPI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
-public class SuggestDataSetActionsCommand extends ChainedCommand<InputStream, DataSetMetadata> {
+public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMetadata> {
 
     private final String transformServiceUrl;
 
     private final HttpClient client;
 
-    public SuggestDataSetActionsCommand(HttpClient client, String transformServiceUrl,
-            HystrixCommand<DataSetMetadata> retrieveMetadata) {
+    public SuggestDataSetActions(HttpClient client, String transformServiceUrl, HystrixCommand<DataSetMetadata> retrieveMetadata) {
         super(PreparationAPI.TRANSFORM_GROUP, retrieveMetadata);
         this.transformServiceUrl = transformServiceUrl;
         this.client = client;

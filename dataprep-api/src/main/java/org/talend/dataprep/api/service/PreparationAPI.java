@@ -6,17 +6,17 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.netflix.hystrix.HystrixCommand;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.service.command.PreparationAddActionCommand;
-import org.talend.dataprep.api.service.command.PreparationGetCommand;
-import org.talend.dataprep.api.service.command.PreparationGetContentCommand;
-import org.talend.dataprep.api.service.command.PreparationListCommand;
+import org.talend.dataprep.api.service.command.PreparationAddAction;
+import org.talend.dataprep.api.service.command.PreparationGet;
+import org.talend.dataprep.api.service.command.PreparationGetContent;
+import org.talend.dataprep.api.service.command.PreparationList;
 import org.talend.dataprep.metrics.Timed;
 
+import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -31,9 +31,9 @@ public class PreparationAPI extends APIService {
     public void listTransformations(
             @RequestParam(value = "format", defaultValue = "long") @ApiParam(name = "format", value = "Format of the returned document (can be 'long' or 'short'). Defaults to 'long'.") String format,
             HttpServletResponse response) {
-        PreparationListCommand.Format listFormat = PreparationListCommand.Format.valueOf(format.toUpperCase());
+        PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationListCommand(client, preparationServiceURL, listFormat);
+        HystrixCommand<InputStream> command = new PreparationList(client, preparationServiceURL, listFormat);
         try {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -50,7 +50,7 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationGetCommand(client, preparationServiceURL, preparationId);
+        HystrixCommand<InputStream> command = new PreparationGet(client, preparationServiceURL, preparationId);
         try {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -68,7 +68,8 @@ public class PreparationAPI extends APIService {
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationGetContentCommand(client, preparationServiceURL, contentServiceUrl, transformServiceUrl, preparationId, version);
+        HystrixCommand<InputStream> command = new PreparationGetContent(client, preparationServiceURL, contentServiceUrl,
+                transformServiceUrl, preparationId, version);
         try {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -83,10 +84,9 @@ public class PreparationAPI extends APIService {
     @Timed
     public void addTransformationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
-            @ApiParam("Action to add at end of the preparation.") InputStream body,
-            HttpServletResponse response) {
+            @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<Void> command = new PreparationAddActionCommand(client, preparationServiceURL, preparationId, body);
+        HystrixCommand<Void> command = new PreparationAddAction(client, preparationServiceURL, preparationId, body);
         command.execute();
     }
 }

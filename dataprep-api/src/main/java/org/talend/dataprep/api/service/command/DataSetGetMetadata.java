@@ -11,7 +11,7 @@ import org.talend.dataprep.api.service.PreparationAPI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
-public class DataSetGetMetadataCommand extends HystrixCommand<DataSetMetadata> {
+public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
 
     private final HttpClient client;
 
@@ -19,7 +19,7 @@ public class DataSetGetMetadataCommand extends HystrixCommand<DataSetMetadata> {
 
     private final String contentServiceUrl;
 
-    public DataSetGetMetadataCommand(HttpClient client, String contentServiceUrl, String dataSetId) {
+    public DataSetGetMetadata(HttpClient client, String contentServiceUrl, String dataSetId) {
         super(PreparationAPI.DATASET_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.client = client;

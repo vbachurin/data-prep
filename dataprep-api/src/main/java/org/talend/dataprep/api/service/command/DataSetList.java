@@ -11,25 +11,16 @@ import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
-public class DataSetGetCommand extends HystrixCommand<InputStream> {
+public class DataSetList extends HystrixCommand<InputStream> {
 
     private final String contentServiceUrl;
 
     private final HttpClient client;
 
-    private final boolean metadata;
-
-    private final String dataSetId;
-
-    private final boolean columns;
-
-    public DataSetGetCommand(HttpClient client, String contentServiceUrl, String dataSetId, boolean metadata, boolean columns) {
+    public DataSetList(HttpClient client, String contentServiceUrl) {
         super(PreparationAPI.TRANSFORM_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.client = client;
-        this.metadata = metadata;
-        this.dataSetId = dataSetId;
-        this.columns = columns;
     }
 
     @Override
@@ -39,19 +30,16 @@ public class DataSetGetCommand extends HystrixCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval = new HttpGet(contentServiceUrl + "/" + dataSetId + "/content/?metadata=" + metadata
-                + "&columns=" + columns);
+        HttpGet contentRetrieval = new HttpGet(contentServiceUrl);
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
             if (statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_ACCEPTED) {
-                // Immediately release connection
-                contentRetrieval.releaseConnection();
                 return new ByteArrayInputStream(new byte[0]);
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
-        throw new RuntimeException("Unable to retrieve content.");
+        throw new RuntimeException("Unable to list datasets.");
     }
 }

@@ -9,7 +9,7 @@ import org.apache.http.entity.InputStreamEntity;
 
 import com.netflix.hystrix.HystrixCommand;
 
-public class TransformCommand extends ChainedCommand<InputStream, InputStream> {
+public class Transform extends ChainedCommand<InputStream, InputStream> {
 
     private final String transformServiceUrl;
 
@@ -17,7 +17,7 @@ public class TransformCommand extends ChainedCommand<InputStream, InputStream> {
 
     private final HttpClient client;
 
-    public TransformCommand(HttpClient client, String transformServiceUrl, HystrixCommand<InputStream> content, String actions) {
+    public Transform(HttpClient client, String transformServiceUrl, HystrixCommand<InputStream> content, String actions) {
         super(content);
         this.transformServiceUrl = transformServiceUrl;
         this.actions = actions;

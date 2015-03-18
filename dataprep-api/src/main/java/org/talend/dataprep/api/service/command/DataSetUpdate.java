@@ -16,7 +16,7 @@ import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
-public class DataSetUpdateCommand extends ChainedCommand<InputStream, InputStream> {
+public class DataSetUpdate extends ChainedCommand<InputStream, InputStream> {
 
     private final String contentServiceUrl;
 
@@ -26,7 +26,7 @@ public class DataSetUpdateCommand extends ChainedCommand<InputStream, InputStrea
 
     private final String actions;
 
-    public DataSetUpdateCommand(HttpClient client, String contentServiceUrl, String dataSetId,
+    public DataSetUpdate(HttpClient client, String contentServiceUrl, String dataSetId,
             HystrixCommand<InputStream> transformedContent, String actions) {
         super(PreparationAPI.DATASET_GROUP, transformedContent);
         this.contentServiceUrl = contentServiceUrl;

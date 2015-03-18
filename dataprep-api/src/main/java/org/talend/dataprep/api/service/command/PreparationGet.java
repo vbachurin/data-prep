@@ -11,24 +11,19 @@ import org.talend.dataprep.api.service.APIService;
 
 import com.netflix.hystrix.HystrixCommand;
 
-public class PreparationListCommand extends HystrixCommand<InputStream> {
+public class PreparationGet extends HystrixCommand<InputStream> {
 
     private final HttpClient client;
 
     private final String preparationServiceUrl;
 
-    private final Format format;
+    private final String id;
 
-    public enum Format {
-        SHORT,
-        LONG
-    }
-
-    public PreparationListCommand(HttpClient client, String preparationServiceUrl, Format format) {
+    public PreparationGet(HttpClient client, String preparationServiceUrl, String id) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
         this.preparationServiceUrl = preparationServiceUrl;
-        this.format = format;
+        this.id = id;
     }
 
     @Override
@@ -38,17 +33,7 @@ public class PreparationListCommand extends HystrixCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval;
-        switch (format) {
-            case SHORT:
-                contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations"); //$NON-NLS-1$
-                break;
-            case LONG:
-                contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/all"); //$NON-NLS-1$
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported format: " + format);
-        }
+        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id);
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
