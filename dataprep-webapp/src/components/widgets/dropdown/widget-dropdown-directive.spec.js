@@ -16,12 +16,12 @@ describe('Dropdown directive', function () {
         elm.find('a[role="menuitem"]').eq(0).click();
     };
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    describe('closeable dropdown', function() {
+    describe('closeable dropdown', function () {
 
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
@@ -56,6 +56,23 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(true);
         });
 
+        it('should focus on dropdown menu when it is shown', function () {
+            //given
+            jasmine.clock().install();
+            var menu = element.find('.dropdown-menu').eq(0)[0];
+            var body = angular.element('body');
+            body.append(element);
+            expect(document.activeElement).not.toBe(menu);
+
+            //when
+            clickDropdownToggle();
+            jasmine.clock().tick(100);
+
+            //then
+            expect(document.activeElement).not.toBe(element.find('.dropdown-menu').eq(0)[0]);
+            jasmine.clock().uninstall();
+        });
+
         it('should show dropdown-menu on dropdown-action click when menu is visible', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
@@ -84,26 +101,26 @@ describe('Dropdown directive', function () {
 
         it('should register window scroll handler on open', inject(function ($window) {
             //given
-            expect($._data( angular.element($window)[0], 'events' )).not.toBeDefined();
+            expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
 
             //when
             clickDropdownToggle();
 
             //then
-            expect($._data( angular.element($window)[0], 'events' )).toBeDefined();
-            expect($._data( angular.element($window)[0], 'events').scroll.length).toBe(1);
+            expect($._data(angular.element($window)[0], 'events')).toBeDefined();
+            expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
         }));
 
         it('should unregister window scroll on close', inject(function ($window) {
             //given
             clickDropdownToggle();
-            expect($._data( angular.element($window)[0], 'events').scroll.length).toBe(1);
+            expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
 
             //when
             clickDropdownToggle();
 
             //then
-            expect($._data( angular.element($window)[0], 'events' )).not.toBeDefined();
+            expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
         }));
 
         it('should hide dropdown-menu on body mousedown', function () {
@@ -122,19 +139,19 @@ describe('Dropdown directive', function () {
 
         it('should unregister body mousedown on element remove', function () {
             //given
-            expect($._data( angular.element('body')[0], 'events').mousedown.length).toBe(1);
+            expect($._data(angular.element('body')[0], 'events').mousedown.length).toBe(1);
 
             //when
             element.remove();
 
             //then
-            expect($._data( angular.element('body')[0], 'events' )).not.toBeDefined();
+            expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
         });
 
         it('should stop mousedown propagation on dropdown-menu mousedown', function () {
             //given
             var bodyMouseDown = false;
-            angular.element('body').mousedown(function() {
+            angular.element('body').mousedown(function () {
                 bodyMouseDown = true;
             });
 
@@ -144,9 +161,50 @@ describe('Dropdown directive', function () {
             //then
             expect(bodyMouseDown).toBe(false);
         });
+
+        it('should hide dropdown menu on ESC', function () {
+            //given
+            var menu = element.find('.dropdown-menu').eq(0);
+            clickDropdownToggle();
+            expect(menu.hasClass('show-menu')).toBe(true);
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 27;
+
+            //when
+            menu.trigger(event);
+
+            //then
+            expect(menu.hasClass('show-menu')).toBe(false);
+        });
+
+        it('should focus on dropdown action when menu is hidden by ESC', function () {
+            //given
+            jasmine.clock().install();
+
+            var action = element.find('.dropdown-action').eq(0);
+            var menu = element.find('.dropdown-menu').eq(0);
+            angular.element('body').append(element);
+            expect(document.activeElement).not.toBe(menu[0]);
+
+            clickDropdownToggle();
+            jasmine.clock().tick(100);
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 27;
+
+            //when
+            menu.trigger(event);
+            jasmine.clock().tick(100);
+
+            //then
+            expect(document.activeElement).toBe(action[0]);
+            jasmine.clock().uninstall();
+        });
+
     });
 
-    describe('not closeable on click dropdown', function() {
+    describe('not closeable on click dropdown', function () {
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
 
@@ -182,10 +240,11 @@ describe('Dropdown directive', function () {
         });
     });
 
-    describe('with onOpen action', function() {
+    describe('with onOpen action', function () {
         beforeEach(inject(function ($rootScope, $compile) {
             scope = $rootScope.$new();
-            scope.onOpen = function() {};
+            scope.onOpen = function () {
+            };
             spyOn(scope, 'onOpen').and.returnValue(true);
 
             html = '<talend-dropdown id="dropdown1" on-open="onOpen()">' +

@@ -24,6 +24,7 @@
     // Angular Mocks
     "inject": false,
     // JASMINE
+    "jasmine": false,
     "describe": false,
     "it": false,
     "before": false,
