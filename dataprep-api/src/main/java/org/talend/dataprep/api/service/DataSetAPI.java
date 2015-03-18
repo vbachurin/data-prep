@@ -7,79 +7,26 @@ import java.util.Base64;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import com.wordnik.swagger.annotations.Api;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.api.service.command.*;
+import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import org.talend.dataprep.metrics.Timed;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
-public class DataPreparationAPI {
-
-    public static final HystrixCommandGroupKey TRANSFORM_GROUP = HystrixCommandGroupKey.Factory.asKey("transform"); //$NON-NLS-1$
-
-    public static final HystrixCommandGroupKey DATASET_GROUP = HystrixCommandGroupKey.Factory.asKey("dataset"); //$NON-NLS-1$
-
-    private static final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-
-    private static final Log LOG = LogFactory.getLog(DataPreparationAPI.class);
-
-    @Value("${transformation.service.url}")
-    private String transformServiceUrl;
-
-    @Value("${dataset.service.url}")
-    private String contentServiceUrl;
-
-    public DataPreparationAPI() {
-        connectionManager.setMaxTotal(50);
-        connectionManager.setDefaultMaxPerRoute(50);
-    }
-
-    @RequestMapping(value = "/api/transform/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Transforms a data set given data set id. This operation retrieves data set content and pass it to the transformation service.", notes = "Returns the data set modified with the provided actions in request body.")
-    public void transform(
-            @PathVariable(value = "id") @ApiParam(value = "Data set id.") String dataSetId,
-            @ApiParam(value = "Actions to perform on data set (as JSON format).") InputStream body,
-            HttpServletResponse response) {
-        if (dataSetId == null) {
-            throw new IllegalArgumentException("Data set id cannot be null.");
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Transforming dataset id #" + dataSetId + " (pool: " + connectionManager.getTotalStats() + ")...");
-        }
-        try {
-            // Configure transformation flow
-            String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
-            response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-            HttpClient client = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-            HystrixCommand<InputStream> contentRetrieval = new DataSetGetCommand(client, contentServiceUrl, dataSetId, false, false);
-            HystrixCommand<InputStream> transformation = new TransformCommand(client, transformServiceUrl, contentRetrieval, encodedActions);
-            HystrixCommand<InputStream> update = new DataSetUpdateCommand(client, contentServiceUrl, dataSetId, transformation, encodedActions);
-            // Perform transformation
-            ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(update.execute(), outputStream);
-            outputStream.flush();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to transform data set #" + dataSetId + ".", e);
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Transformation of dataset id #" + dataSetId + " done.");
-        }
-    }
+public class DataSetAPI extends APIService {
 
     @RequestMapping(value = "/api/datasets", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
@@ -222,14 +169,6 @@ public class DataPreparationAPI {
         } catch (IOException e) {
             throw new RuntimeException("Unable to retrieve actions for dataset #" + dataSetId + ".", e);
         }
-    }
-
-    void setDataSetServiceURL(String dataSetServiceURL) {
-        this.contentServiceUrl = dataSetServiceURL;
-    }
-
-    void setTransformationServiceURL(String transformationServiceURL) {
-        this.transformServiceUrl = transformationServiceURL;
     }
 
 }

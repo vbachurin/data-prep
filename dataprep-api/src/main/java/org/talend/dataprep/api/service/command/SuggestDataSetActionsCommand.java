@@ -12,7 +12,7 @@ import org.apache.http.message.BasicHeader;
 import org.springframework.http.MediaType;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.api.json.DataSetMetadataModule;
-import org.talend.dataprep.api.service.DataPreparationAPI;
+import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -25,7 +25,7 @@ public class SuggestDataSetActionsCommand extends ChainedCommand<InputStream, Da
 
     public SuggestDataSetActionsCommand(HttpClient client, String transformServiceUrl,
             HystrixCommand<DataSetMetadata> retrieveMetadata) {
-        super(DataPreparationAPI.TRANSFORM_GROUP, retrieveMetadata);
+        super(PreparationAPI.TRANSFORM_GROUP, retrieveMetadata);
         this.transformServiceUrl = transformServiceUrl;
         this.client = client;
     }

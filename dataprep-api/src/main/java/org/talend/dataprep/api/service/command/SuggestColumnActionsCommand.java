@@ -10,13 +10,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.http.MediaType;
 import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.api.service.DataPreparationAPI;
+import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -30,7 +29,7 @@ public class SuggestColumnActionsCommand extends ChainedCommand<InputStream, Dat
 
     public SuggestColumnActionsCommand(HttpClient client, String transformServiceUrl,
                                        HystrixCommand<DataSetMetadata> retrieveMetadata, String columnName) {
-        super(DataPreparationAPI.TRANSFORM_GROUP, retrieveMetadata);
+        super(PreparationAPI.TRANSFORM_GROUP, retrieveMetadata);
         this.transformServiceUrl = transformServiceUrl;
         this.column = columnName;
         this.client = client;

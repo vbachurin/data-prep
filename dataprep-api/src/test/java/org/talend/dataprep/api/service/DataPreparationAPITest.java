@@ -7,6 +7,7 @@ import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -45,13 +46,15 @@ public class DataPreparationAPITest extends TestCase {
     DataSetContentStore contentStore;
 
     @Autowired
-    private DataPreparationAPI apiService;
+    private List<APIService> apiServices;
 
     @Before
     public void setUp() {
         RestAssured.port = port;
-        apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
-        apiService.setTransformationServiceURL("http://localhost:" + port + "/");
+        for (APIService apiService : apiServices) {
+            apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
+            apiService.setTransformationServiceURL("http://localhost:" + port + "/");
+        }
     }
 
     @org.junit.After

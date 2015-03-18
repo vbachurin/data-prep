@@ -12,7 +12,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.http.MediaType;
-import org.talend.dataprep.api.service.DataPreparationAPI;
+import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -28,7 +28,7 @@ public class DataSetUpdateCommand extends ChainedCommand<InputStream, InputStrea
 
     public DataSetUpdateCommand(HttpClient client, String contentServiceUrl, String dataSetId,
             HystrixCommand<InputStream> transformedContent, String actions) {
-        super(DataPreparationAPI.DATASET_GROUP, transformedContent);
+        super(PreparationAPI.DATASET_GROUP, transformedContent);
         this.contentServiceUrl = contentServiceUrl;
         this.client = client;
         this.dataSetId = dataSetId;
