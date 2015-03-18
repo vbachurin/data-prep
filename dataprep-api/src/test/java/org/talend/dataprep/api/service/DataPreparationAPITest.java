@@ -65,6 +65,7 @@ public class DataPreparationAPITest {
     public void tearDown() {
         dataSetMetadataRepository.clear();
         contentStore.clear();
+        preparationRepository.clear();
     }
 
     @Test
