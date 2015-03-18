@@ -72,15 +72,19 @@ public class Item {
 
         boolean isDefault = false;
 
-        public Value(String name) {
+        Parameter[] parameters;
+
+        public Value(String name, Parameter... parameters) {
             super();
             this.name = name;
+            this.parameters = parameters;
         }
 
-        public Value(String name, boolean isDefault) {
+        public Value(String name, boolean isDefault, Parameter... parameters) {
             super();
             this.name = name;
             this.isDefault = isDefault;
+            this.parameters = parameters;
         }
 
         public String getName() {
@@ -89,6 +93,10 @@ public class Item {
 
         public boolean isDefault() {
             return this.isDefault;
+        }
+
+        public Parameter[] getParameters() {
+            return parameters;
         }
 
     }

@@ -36,7 +36,7 @@
 
             <tr ng-repeat="param in ::option.parameters track by $index"
                 ng-if="item.selectedValue === option">
-                <td class="param-name">{{::param.name}} :</td>
+                <td class="param-name">{{::param.label}} :</td>
                 <td class="param-input">
                     <input name="{{::(param.name + $index)}}"
                            type="{{::param.inputType}}"
@@ -47,6 +47,7 @@
                                     This must be a value of type : {{::param.type}}
                                 </span>
                 </td>
+                <td class="param-desc"><img src="assets/images/information.png" title="{{::param.description}}"/></td>
             </tr>
 
             <!-- invisible tr for nested ng-repeat-end purpose -->

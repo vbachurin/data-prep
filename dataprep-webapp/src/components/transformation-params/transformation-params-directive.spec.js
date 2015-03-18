@@ -103,12 +103,14 @@ describe('Transformation menu directive', function () {
                         parameters: [
                             {
                                 name: 'param1',
+                                label: 'Param 1',
                                 type: 'string',
                                 'inputType': 'text',
                                 default: '.'
                             },
                             {
                                 name: 'param2',
+                                label: 'Param 2',
                                 type: 'float',
                                 'inputType': 'number',
                                 default: '5'
@@ -134,8 +136,8 @@ describe('Transformation menu directive', function () {
 
         //then
         expect(paramChoice.find('.param-name').length).toBe(2);
-        expect(paramChoice.find('.param-name').eq(0).text().trim()).toBe('param1 :');
-        expect(paramChoice.find('.param-name').eq(1).text().trim()).toBe('param2 :');
+        expect(paramChoice.find('.param-name').eq(0).text().trim()).toBe('Param 1 :');
+        expect(paramChoice.find('.param-name').eq(1).text().trim()).toBe('Param 2 :');
 
         expect(paramChoice.find('.param-input').length).toBe(2);
         expect(paramChoice.find('.param-input').eq(0).find('input[type="text"]').length).toBe(1);
