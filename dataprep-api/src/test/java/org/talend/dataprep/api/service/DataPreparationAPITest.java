@@ -192,4 +192,13 @@ public class DataPreparationAPITest {
         assertThat(when().get("/api/preparations/?format=short").asString(), sameJSONAs("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\"]"));
         assertThat(when().get("/api/preparations/?format=long").asString(), sameJSONAs("[{\"dataSetId\":\"1234\",\"author\":null,\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"creationDate\":0,\"actions\":[]}]"));
     }
+
+    @Test
+    public void testPreparationGet() throws Exception {
+        Preparation preparation = new Preparation("1234");
+        preparation.setCreationDate(0);
+        preparationRepository.add(preparation);
+        assertThat(when().get("/api/preparations/{id}/details", "7110eda4d09e062aa5e4a390b0a572ac0d2c0220").asString(), sameJSONAs("{\"dataSetId\":\"1234\",\"author\":null,\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"creationDate\":0,\"actions\":[]}"));
+    }
+
 }
