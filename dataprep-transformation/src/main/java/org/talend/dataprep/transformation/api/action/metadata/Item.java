@@ -26,23 +26,29 @@ public class Item {
         return name;
     }
 
+    /**
+     * Temp method, cleaner solution should use Spring mappoiing with following method.
+     */
     public String getLabel() {
         return getLabel(Locale.ENGLISH);
     }
 
-    public String getDescription() {
-        return getDescription(Locale.ENGLISH);
-    }
-
     /**
-     * the label of the parameter, translated in the user locale
+     * the label of the parameter, translated in the user locale.
      */
     public String getLabel(Locale locale) {
         return MessagesBundle.getString(locale, "parameter." + getName() + ".label");
     }
 
     /**
-     * the description of the parameter, translated in the user locale
+     * Temp method, cleaner solution should use Spring mappoiing with following method.
+     */
+    public String getDescription() {
+        return getDescription(Locale.ENGLISH);
+    }
+
+    /**
+     * the description of the parameter, translated in the user locale.
      */
     public String getDescription(Locale locale) {
         return MessagesBundle.getString(locale, "parameter." + getName() + ".desc");
