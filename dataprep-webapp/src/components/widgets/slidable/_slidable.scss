@@ -1,7 +1,6 @@
-.slidable {
-  $width: 280px;
-
-  transition: 0.5s ease flex;
+@mixin slidable-size($size) {
+  $width: $size - 20px;
+  @include flex(0 $size);
 
   &.slide-hide {
     @include flex(0 20px);
@@ -13,13 +12,28 @@
 
   &.slide-hide-add,
   &.slide-hide-remove.slide-hide-remove-active{
-    @include flex(0 300px);
+    @include flex(0 $size);
+    .content {
+      overflow: hidden;
+    }
   }
 
   &.slide-hide-add.slide-hide-add-active,
   &.slide-hide-remove {
     @include flex(0 20px);
   }
+
+  .content {
+    .content-container {
+      width: $width;
+    }
+  }
+}
+
+.slidable {
+  @include slidable-size(300px);
+
+  transition: 0.5s ease flex;
 
   @include display(flex);
   @include flex-flow(row wrap);
@@ -29,13 +43,7 @@
     transition: 0.5s ease width;
     @include flex(1 0);
     order: 2;
-
     overflow: auto;
-    width: $width;
-
-    .content-container {
-      width: $width;
-    }
   }
 
   .action {
