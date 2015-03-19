@@ -1,6 +1,8 @@
-<ul>
-    <li>Filters : </li>
-    <li ng-repeat="filter in filterCtrl.filters track by $index">
-        <talend-badge text="{{filter.toString()}}" on-close="filterCtrl.delete(filter)"></talend-badge>
-    </li>
-</ul>
+<div class="filter-list">
+    <ul>
+        <li>Filters : </li>
+        <li ng-repeat="filter in filterCtrl.filters track by $index">
+            <talend-badge text="{{filter.toString()}}" on-close="filterCtrl.delete(filter)"></talend-badge>
+        </li>
+    </ul>
+</div>

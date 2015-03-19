@@ -244,6 +244,7 @@
         display: table;
         height: $navigation-height;
         min-height: $navigation-height;
+        margin-bottom: $body-margin;
         width: 100%;
 
         @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
@@ -273,13 +274,6 @@
         }
       }
 
-      .modal-subheader {
-        @extend .modal-header;
-
-        background : $dark-blue;
-        margin-bottom: $body-margin;
-      }
-
       .modal-body {
         @include calc(height, "100% - #{$navigation-height} - #{$body-margin}");
         width: 100%;
@@ -288,10 +282,6 @@
         margin-left: auto;
         margin-right: auto;
         position: relative;
-
-        &.with-subheader {
-          @include calc(height, "100% - 2 * #{$navigation-height} - #{$body-margin}");
-        }
       }
     }
   }

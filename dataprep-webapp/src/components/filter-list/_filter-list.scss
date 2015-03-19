@@ -1,0 +1,15 @@
+.filter-list {
+  width: 100%;
+  display: table;
+  background-color: $dark-blue;
+  color: $white;
+  overflow-x: auto;
+
+  >ul {
+    > li {
+      float: left;
+      line-height: 50px;
+      padding-left: 15px;
+    }
+  }
+}

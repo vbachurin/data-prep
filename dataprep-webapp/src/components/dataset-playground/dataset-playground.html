@@ -1,4 +1,5 @@
-<talend-modal fullscreen="true"
+<talend-modal class="dataset-playground"
+              fullscreen="true"
               state="datasetCtrl.showDataGrid"
               close-button="true">
     <div class="modal-header">
@@ -9,17 +10,18 @@
             </li>
         </ul>
     </div>
-    <div class="modal-subheader">
-        <filter-list></filter-list>
-    </div>
 
-    <div class="modal-body with-subheader flex">
+    <div class="modal-body flex">
         <talend-slidable visible="false" class="flex-side recipe">
             <recipe metadata="datasetCtrl.metadata"></recipe>
         </talend-slidable>
 
         <div class="flex-center">
-            <datagrid></datagrid>
+            <filter-list></filter-list>
+
+            <div class="datagrid-container">
+                <datagrid></datagrid>
+            </div>
         </div>
 
         <talend-slidable visible="true" side="right" class="flex-side transformations">

@@ -122,9 +122,6 @@ describe('Dataset playground directive', function() {
         expect(element.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
         expect(element.find('.modal-header').eq(0).find('li').eq(1).find('.filter-search').length).toBe(1);
 
-        //check subheader is present
-        expect(element.find('.modal-subheader').length).toBe(1);
-
         //check body is present
         expect(element.find('.modal-body').length).toBe(1);
 
@@ -138,7 +135,8 @@ describe('Dataset playground directive', function() {
         expect(element.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('slide-hide')).toBe(false);
         expect(element.find('.modal-body').eq(0).find('.slidable').eq(1).find('.action').eq(0).hasClass('right')).toBe(true);
 
-        //check datagrid is present
+        //check datagrid and filters are present
+        expect(element.find('.modal-body').eq(0).find('.filter-list').length).toBe(1);
         expect(element.find('.modal-body').eq(0).find('datagrid').length).toBe(1);
     }));
 });
