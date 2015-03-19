@@ -1,5 +1,5 @@
 data:
-    image: talend-registry:5000/talend/dataprep-data:1.0.m0
+    image: talend-registry:5000/talend/dataprep-data:1.0.m1
     volumes:
         - /data/db
         - /store
@@ -46,7 +46,7 @@ dataset:
         TDP_DATASET_MONGODB_HOST: ${MONGODB_PORT_27017_TCP_ADDR}
         TDP_DATASET_MONGODB_PORT: ${MONGODB_PORT_27017_TCP_PORT}
 web:
-    image: talend-registry:5000/talend/dataprep-web:1.0.m2-SNAPSHOT
+    image: talend-registry:5000/talend/dataprep-webapp:1.0.m2-SNAPSHOT
     expose:
         - 80
     ports:
