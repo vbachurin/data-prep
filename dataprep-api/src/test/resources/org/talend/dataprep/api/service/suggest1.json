@@ -47,6 +47,35 @@
     ]
   },
   {
+    "name": "delete_empty",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "name": "delete_on_value",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
     "category": "repair",
     "items": [],
     "name": "cut",

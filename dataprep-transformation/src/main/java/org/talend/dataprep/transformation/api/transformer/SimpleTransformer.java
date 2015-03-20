@@ -70,7 +70,11 @@ class SimpleTransformer implements Transformer {
                 } else if (nextToken == JsonToken.END_OBJECT) {
                     DataSetRow row = new DataSetRow(values); // End of row
                     action.accept(row);
-                    row.writeTo(output);
+                    if (row.isDeleted()) {
+                        firstRow = true;
+                    } else {
+                        row.writeTo(output);
+                    }
                 }
                 nextToken = parser.nextToken();
             }
