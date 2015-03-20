@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import java.util.Map;
+
 public class DeleteEmpty extends AbstractDelete {
 
     public static final String         DELETE_EMPTY_ACTION_NAME = "delete_empty";                         //$NON-NLS-1$
@@ -22,7 +24,7 @@ public class DeleteEmpty extends AbstractDelete {
     }
 
     @Override
-    public boolean toDelete(String value) {
+    public boolean toDelete(Map<String, String> parsedParameters, String value) {
         return (value == null || value.trim().length() == 0);
     }
 

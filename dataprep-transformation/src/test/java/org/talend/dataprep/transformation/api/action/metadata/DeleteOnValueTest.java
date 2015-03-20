@@ -32,25 +32,26 @@ import org.talend.dataprep.transformation.TransformationServiceTests;
 /**
  * Test class for DeleteEmpty action. Creates one consumer, and test it.
  */
-public class DeleteEmptyTest {
+public class DeleteOnValueTest {
 
     private static Consumer<DataSetRow> consumer;
 
     @BeforeClass
     public static void setUpClass() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("deleteEmptyAction.json"));
+        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("deleteOnValueAction.json"));
         
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
         
-        consumer = DeleteEmpty.INSTANCE.create(node.get("actions").get(0).get("parameters").getFields());
+        consumer = DeleteOnValue.INSTANCE.create(node.get("actions").get(0).get("parameters").getFields());
     }
 
     @Test
     public void testDelete1() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
+        values.put("city", "Berlin");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
@@ -58,46 +59,56 @@ public class DeleteEmptyTest {
         
         // Assert that action did not change the row values
         assertEquals("David Bowie", dsr.get("name"));
+        assertEquals("Berlin", dsr.get("city"));
     }
 
     @Test
     public void testDelete2() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", null);
+        values.put("city", " Berlin");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
         assertTrue(dsr.isDeleted());
+
+        // Assert that action did not change the row values
+        assertEquals("David Bowie", dsr.get("name"));
+        assertEquals(" Berlin", dsr.get("city"));
     }
 
     @Test
     public void testDelete3() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", "");
+        values.put("city", "Berlin ");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
         assertTrue(dsr.isDeleted());
+
+        // Assert that action did not change the row values
+        assertEquals("David Bowie", dsr.get("name"));
     }
 
     @Test
     public void testDelete4() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", " ");
+        values.put("city", " Berlin ");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
         assertTrue(dsr.isDeleted());
+
+        // Assert that action did not change the row values
+        assertEquals("David Bowie", dsr.get("name"));
     }
 
     @Test
     public void testNotDelete1() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", "-");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
@@ -105,61 +116,47 @@ public class DeleteEmptyTest {
 
         // Assert that action did not change the row values
         assertEquals("David Bowie", dsr.get("name"));
-        assertEquals("-", dsr.get("city"));
     }
 
     @Test
     public void testNotDelete2() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", " a value ");
+        values.put("city", "berlin");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
         assertFalse(dsr.isDeleted());
+
+        // Assert that action did not change the row values
+        assertEquals("David Bowie", dsr.get("name"));
     }
 
     @Test
     public void testNotDelete3() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", "true");
+        values.put("city", "üBerlin");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
         assertFalse(dsr.isDeleted());
+
+        // Assert that action did not change the row values
+        assertEquals("David Bowie", dsr.get("name"));
     }
 
     @Test
     public void testNotDelete4() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        values.put("city", "45");
+        values.put("city", "London");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
         assertFalse(dsr.isDeleted());
-    }
 
-    @Test
-    public void testNotDelete5() {
-        Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "-12");
-        DataSetRow dsr = new DataSetRow(values);
-
-        consumer.accept(dsr);
-        assertFalse(dsr.isDeleted());
-    }
-
-    @Test
-    public void testNotDelete6() {
-        Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "0.001");
-        DataSetRow dsr = new DataSetRow(values);
-
-        consumer.accept(dsr);
-        assertFalse(dsr.isDeleted());
+        // Assert that action did not change the row values
+        assertEquals("David Bowie", dsr.get("name"));
     }
 }

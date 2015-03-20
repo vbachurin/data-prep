@@ -1,7 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -39,28 +41,37 @@ public abstract class AbstractDelete implements ActionMetadata {
         return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY) };
     }
 
-    public abstract boolean toDelete(String value);
+    public abstract boolean toDelete(Map<String, String> parsedParameters, String value);
 
     @Override
     public Consumer<DataSetRow> create(Iterator<Map.Entry<String, JsonNode>> parameters) {
+        Map<String, String> parsedParameters = parseParameters(parameters);
+        return row -> {
+            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER);
+            String value = row.get(columnName);
+            if (toDelete(parsedParameters, value)) {
+                row.setDeleted(true);
+            }
+        };
+    }
+
+    private Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters) {
+        List<String> paramIds = new ArrayList<>();
+        for (Parameter current : getParameters()) {
+            paramIds.add(current.getName());
+        }
+
         Map<String, String> parsedParameters = new HashMap<>();
         while (parameters.hasNext()) {
             Map.Entry<String, JsonNode> currentParameter = parameters.next();
-            switch (currentParameter.getKey()) {
-            case COLUMN_NAME_PARAMETER:
-                parsedParameters.put(COLUMN_NAME_PARAMETER, currentParameter.getValue().getTextValue());
-                break;
-            default:
+
+            if (paramIds.contains(currentParameter.getKey())) {
+                parsedParameters.put(currentParameter.getKey(), currentParameter.getValue().getTextValue());
+            } else {
                 ActionParser.LOGGER
                         .warn("Parameter '" + currentParameter.getKey() + "' is not recognized for " + this.getClass());
             }
         }
-        return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER);
-            String value = row.get(columnName);
-            if (toDelete(value)) {
-                row.setDeleted(true);
-            }
-        };
+        return parsedParameters;
     }
 }
