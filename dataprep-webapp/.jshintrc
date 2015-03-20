@@ -20,6 +20,7 @@
   "white": true,
   "validthis": true,
   "globals": {
+    "document": false,
     "angular": false,
     // Angular Mocks
     "inject": false,
@@ -33,10 +34,14 @@
     "afterEach": false,
     "expect": false,
     "spyOn": false,
+    // JQuery
     "jQuery": false,
     "$": false,
+    // Lodash
     "_": false,
-    "document": false,
-    "Slick": false
+    // SlickGrid
+    "Slick": false,
+    //Export
+    "Blob": false
   }
 }

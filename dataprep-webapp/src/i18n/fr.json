@@ -30,7 +30,11 @@
   "NEW_FILTER"    : "Nouveau filtre...",
 
   "_comment" : "Buttons",
+  "CANCEL"      : "Annuler",
+  "EXPORT"      : "Exporter",
+  "EXPORT_CSV"  : "Exporter en CSV",
   "IMPORT_FILE" : "Importer",
+  "OK"          : "Ok",
 
   "_comment" : "Common",
   "LOADING"     : "Chargement",
@@ -41,6 +45,12 @@
   "ENTER_DATASET_NAME"      : "Entrer le nom du dataset",
   "NO_UNDONE_CONFIRM"       : "Cette opération ne peut être annulée. Êtes-vous sûr ?",
   "UPDATE_EXISTING_DATASET" : "Voulez-vous mettre à jour la dataset \"{{dataset}}\" existante ?",
+
+  "_comment" : "Instructions",
+  "CHOOSE_SEPARATOR"  : "Quel caractère utiliser comme séparateur ?",
+  "SEPARATOR_SEMI_COLON"  : "Point virgule",
+  "SEPARATOR_TAB"         : "Tabulation",
+  "SEPARATOR_COMMA"       : "Virgule",
 
   "_comment" : "Success",
   "DATASET_CREATE_SUCCESS_TITLE"  : "Nouveau dataset",

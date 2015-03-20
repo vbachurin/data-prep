@@ -1,0 +1,25 @@
+<button type="button"
+        class="t-btn t-btn-primary"
+        ng-click="exportCtrl.showExport = true">
+    {{ ::'EXPORT_CSV' | translate }}
+</button>
+
+<a class="export_link" target="_blank"></a>
+
+<talend-modal fullscreen="false"
+              state="exportCtrl.showExport"
+              close-button="true">
+    {{ ::'CHOOSE_SEPARATOR' | translate }}
+
+    <select ng-model="exportCtrl.separator">
+        <option value=";">{{ :: 'SEPARATOR_SEMI_COLON' | translate }} (;)</option>
+        <option value="	">{{ :: 'SEPARATOR_TAB' | translate }} (&emsp;)</option>
+        <option value=",">{{ :: 'SEPARATOR_COMMA' | translate }} (,)</option>
+    </select>
+
+    <div class="modal-buttons">
+        <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
+        <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.export()">{{ ::'EXPORT' | translate }}</button>
+    </div>
+
+</talend-modal>
