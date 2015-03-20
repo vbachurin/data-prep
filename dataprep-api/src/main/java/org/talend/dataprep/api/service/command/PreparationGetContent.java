@@ -2,8 +2,11 @@ package org.talend.dataprep.api.service.command;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.Collections;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -46,22 +49,24 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/content?" + version);
+        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "preparations/" + id + "/content/" + version);
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
             if (statusCode == HttpStatus.SC_ACCEPTED) {
                 // Preparation has the version... but no longer any content associated with it, rebuilds it
                 // First get the preparation at version
-                HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/" + version); //$NON-NLS-1$
+                HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
                 ObjectMapper mapper = new ObjectMapper();
                 InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
-                Preparation preparation = mapper.reader(Preparation.class).readValue(content);
+                JsonNode tree = mapper.reader().readTree(content);
                 // Get the data set
-                DataSetGet retrieveDataSet = new DataSetGet(client, contentServiceUrl, preparation.getDataSetId(), false, false);
+                String dataSetId = tree.get("dataSetId").textValue();
+                DataSetGet retrieveDataSet = new DataSetGet(client, contentServiceUrl, dataSetId, false, true);
                 // ... transform it ...
-                String actions = preparation.getStep().id(); // TODO
-                Transform transformCommand = new Transform(client, transformServiceUrl, retrieveDataSet, actions);
+                HttpGet actionsRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/actions/" + version); //$NON-NLS-1$
+                String actions = IOUtils.toString(client.execute(actionsRetrieval).getEntity().getContent());
+                Transform transformCommand = new Transform(client, transformServiceUrl, retrieveDataSet, Base64.getEncoder().encodeToString(actions.getBytes()));
                 // ... and send it back to user (but saves it back in preparation service).
                 return new CloneInputStream(transformCommand.execute(), Collections.emptyList()); // TODO
             } else if (statusCode == HttpStatus.SC_NO_CONTENT) {

@@ -1,5 +1,6 @@
 package org.talend.dataprep.preparation.store;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,5 +38,15 @@ public class InMemoryPreparationRepository implements PreparationRepository {
     @Override
     public void remove(String id) {
         store.remove(id);
+    }
+
+    @Override
+    public InputStream getCache(String preparation, String step) {
+        return null;
+    }
+
+    @Override
+    public boolean hasCache(String preparation, String step) {
+        return false;
     }
 }

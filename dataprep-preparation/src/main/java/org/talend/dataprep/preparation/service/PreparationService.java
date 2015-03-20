@@ -1,9 +1,11 @@
 package org.talend.dataprep.preparation.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Object;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -25,6 +27,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import sun.nio.ch.IOUtil;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
@@ -101,6 +104,28 @@ public class PreparationService {
         return repository.get(id);
     }
 
+    // GET http://localhost:36863/preparations/d4654658d9d16f67ade6968e1c344635d73b131b/content/head HTTP/1.1
+    @RequestMapping(value = "/preparations/{id}/content/{version}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
+    @Timed
+    public void get(@ApiParam(value = "id") @PathVariable(value = "id") String id,
+            @ApiParam(value = "version") @PathVariable(value = "version") String version, HttpServletResponse response) {
+        Preparation preparation = repository.get(id);
+        Step step = versionRepository.get(getStepId(version, preparation), Step.class);
+        try {
+            if (repository.hasCache(id, step.id())) {
+                ServletOutputStream stream = response.getOutputStream();
+                response.setStatus(HttpServletResponse.SC_OK);
+                IOUtils.copyLarge(repository.getCache(id, step.id()), stream);
+                stream.flush();
+            } else {
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to serve content at version #" + version + " for preparation #" + id, e);
+        }
+    }
+
     @RequestMapping(value = "/preparations/{id}/actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
@@ -119,5 +144,30 @@ public class PreparationService {
         } else {
             throw new RuntimeException("Preparation id #" + id + " does not exist.");
         }
+    }
+
+    @RequestMapping(value = "/preparations/{id}/actions/{version}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Get the latest action on ", notes = "Append an action at end of the preparation with given id.")
+    @Timed
+    public String getVersionedAction(@ApiParam(value = "id") @PathVariable(value = "id") String id,
+            @ApiParam(value = "version") @PathVariable(value = "version") String version) {
+        Preparation preparation = repository.get(id);
+        if (preparation != null) {
+            String stepId = getStepId(version, preparation);
+            Step step = versionRepository.get(stepId, Step.class);
+            return versionRepository.get(step.getContent(), JSONBlob.class).getContent();
+        } else {
+            throw new RuntimeException("Preparation id #" + id + " does not exist.");
+        }
+    }
+
+    private static String getStepId(@ApiParam(value = "version") @PathVariable(value = "version") String version, Preparation preparation) {
+        String stepId;
+        if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
+            stepId = preparation.getStep().id();
+        } else {
+            stepId = version;
+        }
+        return stepId;
     }
 }

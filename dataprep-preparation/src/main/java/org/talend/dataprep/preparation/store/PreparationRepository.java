@@ -3,6 +3,8 @@ package org.talend.dataprep.preparation.store;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.preparation.Preparation;
 
+import java.io.InputStream;
+
 public interface PreparationRepository {
 
     /**
@@ -56,4 +58,8 @@ public interface PreparationRepository {
      * @see DataSetMetadata#getId()
      */
     void remove(String id);
+
+    InputStream getCache(String preparation, String step);
+
+    boolean hasCache(String preparation, String step);
 }

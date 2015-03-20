@@ -219,13 +219,12 @@ public class DataPreparationAPITest {
     @Test
     public void testPreparationContentGet() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
-                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "tagada").asString();
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "testPreparationContentGet").asString();
         Preparation preparation = new Preparation(dataSetId, RootStep.INSTANCE);
         preparation.setCreationDate(0);
-        String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-        // preparation.getActions().add(actionContent);
         preparationRepository.add(preparation);
-        assertThat(when().get("/api/preparations/{id}/content", "7110eda4d09e062aa5e4a390b0a572ac0d2c0220").asString(), sameJSONAs("{}"));
+        InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_expected.json");
+        assertThat(when().get("/api/preparations/{id}/content", preparation.id()).asString(), sameJSONAsFile(expected));
     }
 
 }
