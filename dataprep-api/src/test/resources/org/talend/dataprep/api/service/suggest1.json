@@ -46,6 +46,18 @@
       }
     ]
   },
+    {
+    "name": "delete_empty",
+    "value": "",
+    "type": "OPERATION",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
   {
     "category": "repair",
     "items": [],
