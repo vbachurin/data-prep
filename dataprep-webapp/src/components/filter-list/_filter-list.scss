@@ -1,6 +1,5 @@
 .filter-list {
   width: 100%;
-  display: table;
   background-color: $dark-blue;
   color: $white;
   overflow-x: auto;
@@ -10,6 +9,19 @@
       float: left;
       line-height: 50px;
       padding-left: 15px;
+
+      input[type="search"] {
+        background-color: transparent;
+        color: $white;
+        
+        position: relative;
+        margin: 7px 0 0;
+        width: 150px;
+        border: none;
+      }
+      .ac-container {
+        color: $dark-gray;
+      }
     }
   }
 }
