@@ -15,6 +15,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.Cut;
+import org.talend.dataprep.transformation.api.action.metadata.DeleteEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
 import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyBoolean;
 import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyInteger;
@@ -71,6 +72,9 @@ public class ActionParser {
                         break;
                     case FillWithDefaultIfEmptyInteger.FILL_EMPTY_ACTION_NAME:
                         currentAction = FillWithDefaultIfEmptyInteger.INSTANCE;
+                        break;
+                    case DeleteEmpty.DELETE_EMPTY_ACTION_NAME:
+                        currentAction = DeleteEmpty.INSTANCE;
                         break;
                     default:
                         throw new NotImplementedException("No support for action '" + actionType + "'.");

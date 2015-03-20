@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class DataSetRow {
 
+    private boolean                   deleted = false;
+
     private final Map<String, String> values;
 
     public DataSetRow(Map<String, String> values) {
@@ -22,7 +24,18 @@ public class DataSetRow {
         return values.get(name);
     }
 
+    public boolean isDeleted() {
+        return this.deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public void writeTo(OutputStream stream) {
+        if (isDeleted()) {
+            return;
+        }
         StringBuilder builder = new StringBuilder();
         Iterator<Map.Entry<String, String>> iterator = values.entrySet().iterator();
         builder.append('{');
