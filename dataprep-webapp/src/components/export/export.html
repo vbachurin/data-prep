@@ -9,13 +9,11 @@
 <talend-modal fullscreen="false"
               state="exportCtrl.showExport"
               close-button="true">
-    {{ ::'CHOOSE_SEPARATOR' | translate }}
+    <p>{{ ::'CHOOSE_SEPARATOR' | translate }}</p>
 
-    <select ng-model="exportCtrl.separator">
-        <option value=";">{{ :: 'SEPARATOR_SEMI_COLON' | translate }} (;)</option>
-        <option value="	">{{ :: 'SEPARATOR_TAB' | translate }} (&emsp;)</option>
-        <option value=",">{{ :: 'SEPARATOR_COMMA' | translate }} (,)</option>
-    </select>
+    <input type="radio" ng-model="exportCtrl.separator" ng-value="';'" />{{ :: 'SEPARATOR_SEMI_COLON' | translate }} (;)&emsp;
+    <input type="radio" ng-model="exportCtrl.separator" ng-value="'\t'" />{{ :: 'SEPARATOR_TAB' | translate }} (&emsp;)&emsp;
+    <input type="radio" ng-model="exportCtrl.separator" ng-value="','" />{{ :: 'SEPARATOR_COMMA' | translate }} (,)&emsp;
 
     <div class="modal-buttons">
         <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
