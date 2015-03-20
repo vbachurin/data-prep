@@ -1,5 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import java.util.Locale;
+
+import org.talend.dataprep.transformation.i18n.MessagesBundle;
+
 public class Item {
 
     String name;
@@ -22,6 +26,34 @@ public class Item {
         return name;
     }
 
+    /**
+     * Temp method, cleaner solution should use Spring mappoiing with following method.
+     */
+    public String getLabel() {
+        return getLabel(Locale.ENGLISH);
+    }
+
+    /**
+     * the label of the parameter, translated in the user locale.
+     */
+    public String getLabel(Locale locale) {
+        return MessagesBundle.getString(locale, "parameter." + getName() + ".label");
+    }
+
+    /**
+     * Temp method, cleaner solution should use Spring mappoiing with following method.
+     */
+    public String getDescription() {
+        return getDescription(Locale.ENGLISH);
+    }
+
+    /**
+     * the description of the parameter, translated in the user locale.
+     */
+    public String getDescription(Locale locale) {
+        return MessagesBundle.getString(locale, "parameter." + getName() + ".desc");
+    }
+
     public Type getType() {
         return type;
     }
@@ -40,15 +72,19 @@ public class Item {
 
         boolean isDefault = false;
 
-        public Value(String name) {
+        Parameter[] parameters;
+
+        public Value(String name, Parameter... parameters) {
             super();
             this.name = name;
+            this.parameters = parameters;
         }
 
-        public Value(String name, boolean isDefault) {
+        public Value(String name, boolean isDefault, Parameter... parameters) {
             super();
             this.name = name;
             this.isDefault = isDefault;
+            this.parameters = parameters;
         }
 
         public String getName() {
@@ -57,6 +93,10 @@ public class Item {
 
         public boolean isDefault() {
             return this.isDefault;
+        }
+
+        public Parameter[] getParameters() {
+            return parameters;
         }
 
     }

@@ -19,8 +19,6 @@ public class Cut implements ActionMetadata {
 
     public static final String         CUT_ACTION_NAME       = "cut";                                            //$NON-NLS-1$
 
-    public static final String         CUT_ACTION_DESC       = "remove specified text from cells in this column"; //$NON-NLS-1$
-
     public static final ActionMetadata INSTANCE              = new Cut();
 
     private Cut() {
@@ -29,11 +27,6 @@ public class Cut implements ActionMetadata {
     @Override
     public String getName() {
         return CUT_ACTION_NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return CUT_ACTION_DESC;
     }
 
     @Override

@@ -19,8 +19,6 @@ public class FillWithDefaultIfEmpty implements ActionMetadata {
 
     public static final String         FILL_EMPTY_ACTION_NAME  = "fillemptywithdefault";                            //$NON-NLS-1$
 
-    public static final String         FILL_EMPTY_ACTION_DESC  = "fill empty cells of this column with given value"; //$NON-NLS-1$
-
     public static final ActionMetadata INSTANCE                = new FillWithDefaultIfEmpty();
 
     protected FillWithDefaultIfEmpty() {
@@ -29,11 +27,6 @@ public class FillWithDefaultIfEmpty implements ActionMetadata {
     @Override
     public String getName() {
         return FILL_EMPTY_ACTION_NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return FILL_EMPTY_ACTION_DESC;
     }
 
     @Override
