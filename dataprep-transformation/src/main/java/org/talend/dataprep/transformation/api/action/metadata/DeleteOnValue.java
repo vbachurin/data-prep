@@ -9,8 +9,6 @@ public class DeleteOnValue extends AbstractDelete {
 
     public static final String         DELETE_ON_VALUE_ACTION_NAME = "delete_on_value";                                              //$NON-NLS-1$
 
-    public static final String         DELETE_ON_VALUE_ACTION_DESC = "Delete rows that have a specific value in cell in this column"; //$NON-NLS-1$
-
     public static final String         VALUE_PARAMETER             = "value";                                                        //$NON-NLS-1$
 
     public static final ActionMetadata INSTANCE                    = new DeleteOnValue();
@@ -21,11 +19,6 @@ public class DeleteOnValue extends AbstractDelete {
     @Override
     public String getName() {
         return DELETE_ON_VALUE_ACTION_NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return DELETE_ON_VALUE_ACTION_DESC;
     }
 
     @Override

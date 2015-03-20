@@ -6,8 +6,6 @@ public class DeleteEmpty extends AbstractDelete {
 
     public static final String         DELETE_EMPTY_ACTION_NAME = "delete_empty";                         //$NON-NLS-1$
 
-    public static final String         DELETE_EMPTY_ACTION_DESC = "Delete rows that have this cell empty"; //$NON-NLS-1$
-
     public static final ActionMetadata INSTANCE                 = new DeleteEmpty();
 
     private DeleteEmpty() {
@@ -16,11 +14,6 @@ public class DeleteEmpty extends AbstractDelete {
     @Override
     public String getName() {
         return DELETE_EMPTY_ACTION_NAME;
-    }
-
-    @Override
-    public String getDescription() {
-        return DELETE_EMPTY_ACTION_DESC;
     }
 
     @Override
