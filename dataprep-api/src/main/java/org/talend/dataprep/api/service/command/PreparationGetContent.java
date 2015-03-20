@@ -60,7 +60,7 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
                 // Get the data set
                 DataSetGet retrieveDataSet = new DataSetGet(client, contentServiceUrl, preparation.getDataSetId(), false, false);
                 // ... transform it ...
-                String actions = preparation.getActions().toString(); // TODO
+                String actions = preparation.getStep().id(); // TODO
                 Transform transformCommand = new Transform(client, transformServiceUrl, retrieveDataSet, actions);
                 // ... and send it back to user (but saves it back in preparation service).
                 return new CloneInputStream(transformCommand.execute(), Collections.emptyList()); // TODO

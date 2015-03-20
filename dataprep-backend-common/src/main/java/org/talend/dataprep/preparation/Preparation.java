@@ -1,13 +1,9 @@
 package org.talend.dataprep.preparation;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.data.annotation.Id;
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class Preparation {
-
-    private String id;
+public class Preparation implements Object {
 
     private String dataSetId;
 
@@ -15,23 +11,19 @@ public class Preparation {
 
     private long creationDate;
 
-    private List<String> actions = new LinkedList<>();
+    private Step step;
 
     public Preparation() {
     }
 
-    public Preparation(String dataSetId) {
+    public Preparation(String dataSetId, Step step) {
         this.dataSetId = dataSetId;
-        id = DigestUtils.sha1Hex(dataSetId);
-        creationDate = System.currentTimeMillis();
+        this.creationDate = System.currentTimeMillis();
+        this.step = step;
     }
 
     public String getDataSetId() {
         return dataSetId;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public void setAuthor(String author) {
@@ -40,10 +32,6 @@ public class Preparation {
 
     public String getAuthor() {
         return author;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setDataSetId(String dataSetId) {
@@ -58,11 +46,23 @@ public class Preparation {
         return creationDate;
     }
 
-    public List<String> getActions() {
-        return actions;
+    public Step getStep() {
+        return step;
     }
 
-    public void setActions(List<String> actions) {
-        this.actions = actions;
+    public void setStep(Step step) {
+        this.step = step;
+    }
+
+    @Id
+    @Override
+    public String id() {
+        return DigestUtils.sha1Hex(dataSetId + author);
+    }
+
+    @Override
+    public String toString() {
+        return "Preparation {" + "id='" + id() + '\'' + ", dataSetId='" + dataSetId + '\'' + ", author='" + author + '\''
+                + ", creationDate=" + creationDate + ", step=" + step + '}';
     }
 }

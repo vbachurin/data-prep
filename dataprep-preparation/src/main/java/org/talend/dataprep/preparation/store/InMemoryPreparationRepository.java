@@ -15,8 +15,8 @@ public class InMemoryPreparationRepository implements PreparationRepository {
     }
 
     @Override
-    public synchronized void add(Preparation dataSetMetadata) {
-        store.put(dataSetMetadata.getId(), dataSetMetadata);
+    public synchronized void add(Preparation preparation) {
+        store.put(preparation.id(), preparation);
     }
 
     @Override

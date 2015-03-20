@@ -2,7 +2,7 @@ package org.talend.dataprep.preparation.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.lang.Object;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.metrics.Timed;
-import org.talend.dataprep.preparation.Preparation;
+import org.talend.dataprep.preparation.*;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -34,6 +34,9 @@ public class PreparationService {
 
     @Autowired
     private PreparationRepository repository;
+
+    @Autowired
+    private Repository versionRepository = null;
 
     private final JsonFactory factory = new JsonFactory();
 
@@ -59,7 +62,7 @@ public class PreparationService {
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             generator.writeStartArray();
             for (Preparation preparation : repository.list()) {
-                generator.writeString(preparation.getId());
+                generator.writeString(preparation.id());
             }
             generator.writeEndArray();
             generator.flush();
@@ -81,10 +84,11 @@ public class PreparationService {
     public String create(@ApiParam(value = "content") InputStream preparationContent) {
         try {
             String dataSetId = IOUtils.toString(preparationContent);
-            Preparation preparation = new Preparation(dataSetId);
+            Preparation preparation = new Preparation(dataSetId, RootStep.INSTANCE);
             preparation.setAuthor(getUserName());
             repository.add(preparation);
-            return preparation.getId();
+            versionRepository.add(preparation);
+            return preparation.id();
         } catch (IOException e) {
             throw new RuntimeException("Unable to create preparation.", e);
         }
@@ -103,15 +107,14 @@ public class PreparationService {
     public void append(@ApiParam(value = "id") @PathVariable(value = "id") String id, @ApiParam(value = "action") InputStream body) {
         Preparation preparation = repository.get(id);
         if (preparation != null) {
-            try {
-                List<String> actions = preparation.getActions();
-                String actionsAsString = IOUtils.toString(body);
-                actions.add(actionsAsString);
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Added actions to preparation #" + id + ": " + actionsAsString);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to add actions to preparation #" + id, e);
+            Step head = preparation.getStep();
+            // Add a new step
+            JSONBlob newContent = ObjectUtils.append(versionRepository.get(head.getContent(), JSONBlob.class), body);
+            Step newStep = new Step();
+            newStep.setContent(newContent.id());
+            preparation.setStep(newStep);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Added head to preparation #" + id + ": head is now " + newStep.id());
             }
         } else {
             throw new RuntimeException("Preparation id #" + id + " does not exist.");

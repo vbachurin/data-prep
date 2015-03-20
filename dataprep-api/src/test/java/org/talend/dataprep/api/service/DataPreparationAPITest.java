@@ -10,7 +10,6 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 import java.io.InputStream;
 import java.util.List;
 
-import com.sun.corba.se.spi.ior.IORTemplate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
@@ -28,6 +27,7 @@ import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.preparation.Preparation;
+import org.talend.dataprep.preparation.RootStep;
 import org.talend.dataprep.preparation.store.PreparationRepository;
 
 import com.jayway.restassured.RestAssured;
@@ -190,29 +190,29 @@ public class DataPreparationAPITest {
 
     @Test
     public void testPreparationsList() throws Exception {
-        Preparation preparation = new Preparation("1234");
+        Preparation preparation = new Preparation("1234", RootStep.INSTANCE);
         preparation.setCreationDate(0);
         preparationRepository.add(preparation);
-        assertThat(when().get("/api/preparations/?format=short").asString(), sameJSONAs("[\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\"]"));
-        assertThat(when().get("/api/preparations/?format=long").asString(), sameJSONAs("[{\"dataSetId\":\"1234\",\"author\":null,\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"creationDate\":0,\"actions\":[]}]"));
+        assertThat(when().get("/api/preparations/?format=short").asString(), sameJSONAs("[\"ae242b07084aa7b8341867a8be1707f4d52501d1\"]"));
+        assertThat(when().get("/api/preparations/?format=long").asString(), sameJSONAs("[{\"dataSetId\":\"1234\",\"author\":null,\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"creationDate\":0,\"actions\":[]}]"));
     }
 
     @Test
     public void testPreparationGet() throws Exception {
-        Preparation preparation = new Preparation("1234");
+        Preparation preparation = new Preparation("1234", RootStep.INSTANCE);
         preparation.setCreationDate(0);
         preparationRepository.add(preparation);
-        assertThat(when().get("/api/preparations/{id}/details", "7110eda4d09e062aa5e4a390b0a572ac0d2c0220").asString(), sameJSONAs("{\"dataSetId\":\"1234\",\"author\":null,\"id\":\"7110eda4d09e062aa5e4a390b0a572ac0d2c0220\",\"creationDate\":0,\"actions\":[]}"));
+        assertThat(when().get("/api/preparations/{id}/details", "ae242b07084aa7b8341867a8be1707f4d52501d1").asString(), sameJSONAs("{\"dataSetId\":\"1234\",\"author\":null,\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"creationDate\":0,\"actions\":[]}"));
     }
 
     @Test
     public void testPreparationAppendAction() throws Exception {
-        Preparation preparation = new Preparation("1234");
+        Preparation preparation = new Preparation("1234", RootStep.INSTANCE);
         preparation.setCreationDate(0);
         preparationRepository.add(preparation);
         String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-        given().body(actionContent).when().post("/api/preparations/{id}/actions", "7110eda4d09e062aa5e4a390b0a572ac0d2c0220").then().statusCode(is(200));
-        assertThat(preparation.getActions().get(0), is(actionContent));
+        given().body(actionContent).when().post("/api/preparations/{id}/actions", "ae242b07084aa7b8341867a8be1707f4d52501d1").then().statusCode(is(200));
+        assertThat(preparation.getStep().id(), is("f4657f14b316033df3d2466116c9ccf682a149ba"));
     }
 
     @Ignore
@@ -220,10 +220,10 @@ public class DataPreparationAPITest {
     public void testPreparationContentGet() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "tagada").asString();
-        Preparation preparation = new Preparation(dataSetId);
+        Preparation preparation = new Preparation(dataSetId, RootStep.INSTANCE);
         preparation.setCreationDate(0);
         String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-        preparation.getActions().add(actionContent);
+        // preparation.getActions().add(actionContent);
         preparationRepository.add(preparation);
         assertThat(when().get("/api/preparations/{id}/content", "7110eda4d09e062aa5e4a390b0a572ac0d2c0220").asString(), sameJSONAs("{}"));
     }
