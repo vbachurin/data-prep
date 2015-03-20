@@ -13,13 +13,13 @@ import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public class DeleteEmpty implements ActionMetadata {
 
-    public static final String         COLUMN_NAME_PARAMETER  = "column_name";                                                 //$NON-NLS-1$
+    public static final String         COLUMN_NAME_PARAMETER    = "column_name";                          //$NON-NLS-1$
 
-    public static final String         DELETE_EMPTY_ACTION_NAME = "delete_empty";                                                //$NON-NLS-1$
+    public static final String         DELETE_EMPTY_ACTION_NAME = "delete_empty";                         //$NON-NLS-1$
 
-    public static final String         LOWER_CASE_ACTION_DESC = "converts all of the cell values in this column to lower case"; //$NON-NLS-1$
+    public static final String         DELETE_EMPTY_ACTION_DESC = "Delete rows that have this cell empty"; //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE               = new DeleteEmpty();
+    public static final ActionMetadata INSTANCE                 = new DeleteEmpty();
 
     private DeleteEmpty() {
     }
@@ -31,7 +31,7 @@ public class DeleteEmpty implements ActionMetadata {
 
     @Override
     public String getDescription() {
-        return LOWER_CASE_ACTION_DESC;
+        return DELETE_EMPTY_ACTION_DESC;
     }
 
     @Override
