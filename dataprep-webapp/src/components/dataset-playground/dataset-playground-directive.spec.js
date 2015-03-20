@@ -1,6 +1,6 @@
 describe('Dataset playground directive', function() {
     'use strict';
-    
+
     var scope, createElement, element;
 
     var metadata = {
@@ -105,6 +105,7 @@ describe('Dataset playground directive', function() {
     }));
 
     afterEach(function() {
+        scope.$destroy();
         element.remove();
     });
 
@@ -116,27 +117,28 @@ describe('Dataset playground directive', function() {
         createElement();
 
         //then
+        var playground = angular.element('body').find('.dataset-playground').eq(0);
 
         //check header is present and contains description and search filter
-        expect(element.find('.modal-header').length).toBe(1);
-        expect(element.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
+        expect(playground.find('.modal-header').length).toBe(1);
+        expect(playground.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
 
         //check body is present
-        expect(element.find('.modal-body').length).toBe(1);
+        expect(playground.find('.modal-body').length).toBe(1);
 
         //check left slidable is hidden recipe with left slide action
-        expect(element.find('.modal-body').eq(0).find('.slidable').eq(0).hasClass('recipe')).toBe(true);
-        expect(element.find('.modal-body').eq(0).find('.slidable').eq(0).hasClass('slide-hide')).toBe(true);
-        expect(element.find('.modal-body').eq(0).find('.slidable').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
+        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(0).hasClass('recipe')).toBe(true);
+        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(0).hasClass('slide-hide')).toBe(true);
+        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
 
         //check right slidable is displayed transformations with right slide action
-        expect(element.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('transformations')).toBe(true);
-        expect(element.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('slide-hide')).toBe(false);
-        expect(element.find('.modal-body').eq(0).find('.slidable').eq(1).find('.action').eq(0).hasClass('right')).toBe(true);
+        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('transformations')).toBe(true);
+        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('slide-hide')).toBe(false);
+        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).find('.action').eq(0).hasClass('right')).toBe(true);
 
         //check datagrid and filters are present
-        expect(element.find('.modal-body').eq(0).find('.filter-list').length).toBe(1);
-        expect(element.find('.modal-body').eq(0).find('.filter-list').find('.filter-search').length).toBe(1);
-        expect(element.find('.modal-body').eq(0).find('datagrid').length).toBe(1);
+        expect(playground.find('.modal-body').eq(0).find('.filter-list').length).toBe(1);
+        expect(playground.find('.modal-body').eq(0).find('.filter-list').find('.filter-search').length).toBe(1);
+        expect(playground.find('.modal-body').eq(0).find('datagrid').length).toBe(1);
     }));
 });

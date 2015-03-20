@@ -1,6 +1,6 @@
 describe('Transformation menu directive', function () {
     'use strict';
-    var scope, createElement;
+    var scope, createElement, element;
 
     beforeEach(module('data-prep.transformation-menu'));
     beforeEach(module('htmlTemplates'));
@@ -8,12 +8,17 @@ describe('Transformation menu directive', function () {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function() {
-            var element = angular.element('<transform-menu column="column" metadata="metadata" menu="menu"></transform-menu>');
+            element = angular.element('<transform-menu column="column" metadata="metadata" menu="menu"></transform-menu>');
             $compile(element)(scope);
             scope.$digest();
             return element;
         };
     }));
+
+    afterEach(function() {
+        scope.$destroy();
+        element.remove();
+    });
 
     it('should render divider', function() {
         //given
@@ -70,7 +75,7 @@ describe('Transformation menu directive', function () {
         //then
         expect(element.hasClass('divider')).toBe(false);
         expect(element.find('a').text().trim()).toBe('menu with param');
-        expect(element.find('talend-modal').length).toBe(1);
+        expect(angular.element('body').find('.transformation-params').length).toBe(1);
     });
 
     it('should render an action with simple choice', function() {
@@ -97,6 +102,6 @@ describe('Transformation menu directive', function () {
         //then
         expect(element.hasClass('divider')).toBe(false);
         expect(element.find('a').text().trim()).toBe('menu with param');
-        expect(element.find('talend-modal').length).toBe(1);
+        expect(angular.element('body').find('.transformation-params').length).toBe(1);
     });
 });

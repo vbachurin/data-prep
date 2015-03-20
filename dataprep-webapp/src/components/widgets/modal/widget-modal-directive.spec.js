@@ -56,7 +56,7 @@ describe('Dropdown directive', function () {
     }));
 
 
-    it('should add "normal" close button in DOM', function () {
+    it('should show "normal" close button', function () {
         //given
         scope.fullscreen = false;
         scope.state = false;
@@ -67,9 +67,10 @@ describe('Dropdown directive', function () {
 
         //then
         expect(element.find('.modal-close').length).toBe(1);
+        expect(element.find('.modal-close').hasClass('ng-hide')).toBe(false);
     });
 
-    it('should not add "normal" close button in DOM', function () {
+    it('should not show "normal" close button', function () {
         //given
         scope.fullscreen = false;
         scope.state = false;
@@ -79,10 +80,11 @@ describe('Dropdown directive', function () {
         createElement();
 
         //then
-        expect(element.find('.modal-close').length).toBe(0);
+        expect(element.find('.modal-close').length).toBe(1);
+        expect(element.find('.modal-close').hasClass('ng-hide')).toBe(true);
     });
 
-    it('should add "fullscreen" close button in DOM', function () {
+    it('should show "fullscreen" close button', function () {
         //given
         scope.fullscreen = true;
         scope.state = false;
@@ -93,9 +95,10 @@ describe('Dropdown directive', function () {
 
         //then
         expect(element.find('.modal-header-close').length).toBe(1);
+        expect(element.find('.modal-close').hasClass('ng-hide')).toBe(false);
     });
 
-    it('should not add "fullscreen" close button in DOM', function () {
+    it('should not show "fullscreen" close button', function () {
         //given
         scope.fullscreen = true;
         scope.state = false;
@@ -105,7 +108,8 @@ describe('Dropdown directive', function () {
         createElement();
 
         //then
-        expect(element.find('.modal-header-close').length).toBe(0);
+        expect(element.find('.modal-header-close').length).toBe(1);
+        expect(element.find('.modal-header-close').hasClass('ng-hide')).toBe(true);
     });
 
     it('should add "modal-open" class to body when modal open state is true', function () {
@@ -119,7 +123,7 @@ describe('Dropdown directive', function () {
 
         //when
         scope.state = true;
-        scope.$digest();
+        scope.$apply();
 
         //then
         expect(body.hasClass('modal-open')).toBe(true);
@@ -143,54 +147,48 @@ describe('Dropdown directive', function () {
         expect(body.hasClass('modal-open')).toBe(false);
     });
 
-    it('should hide modal on "modal-window" div click', inject(function ($rootScope, $timeout) {
+    it('should hide modal on "modal-window" div click', inject(function ($timeout) {
         //given
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = false;
         createElement();
-        expect($rootScope.$apply.calls.count()).toBe(1);
 
         //when
         element.find('.modal-window').click();
         $timeout.flush();
 
         //then
-        expect($rootScope.$apply.calls.count()).toBe(2);
         expect(scope.state).toBe(false);
     }));
 
-    it('should hide modal on "modal-close" button click', inject(function ($rootScope, $timeout) {
+    it('should hide modal on "modal-close" button click', inject(function ($timeout) {
         //given
         scope.fullscreen = false;
         scope.state = true;
         scope.closeButton = true;
         createElement();
-        expect($rootScope.$apply.calls.count()).toBe(1);
 
         //when
         element.find('.modal-close').click();
         $timeout.flush();
 
         //then
-        expect($rootScope.$apply.calls.count()).toBe(2);
         expect(scope.state).toBe(false);
     }));
 
-    it('should hide modal on "modal-header-close" button click', inject(function ($rootScope, $timeout) {
+    it('should hide modal on "modal-header-close" button click', inject(function ($timeout) {
         //given
         scope.fullscreen = true;
         scope.state = true;
         scope.closeButton = true;
         createElement();
-        expect($rootScope.$apply.calls.count()).toBe(1);
 
         //when
         element.find('.modal-header-close').click();
         $timeout.flush();
 
         //then
-        expect($rootScope.$apply.calls.count()).toBe(2);
         expect(scope.state).toBe(false);
     }));
 
@@ -214,8 +212,6 @@ describe('Dropdown directive', function () {
             return;
         }
         throw new Error('Should have thrown error on timeout flush because hide should not be called on click in modal-inner div');
-
-
     }));
 
     it('should attach popup to body', function () {

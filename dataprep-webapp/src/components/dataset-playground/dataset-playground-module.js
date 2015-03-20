@@ -6,6 +6,7 @@
         'talend.widget',
         'data-prep.datagrid',
         'data-prep.datagrid-header',
+        'data-prep.export',
         'data-prep.filter-search',
         'data-prep.filter-list',
         'data-prep.recipe',

@@ -127,60 +127,58 @@
                     /**
                      * Initialisation
                      */
-                    $timeout(function() {
-                        var innerElement = iElement.find('.modal-inner');
-                        var primaryButton = iElement.find('.modal-primary-button');
+                    var innerElement = iElement.find('.modal-inner').eq(0);
+                    var primaryButton = iElement.find('.modal-primary-button').eq(0);
 
-                        // Close action on all 'talend-modal-close' elements
-                        iElement.find('.talend-modal-close').on('click', hideModal);
+                    // Close action on all 'talend-modal-close' elements
+                    iElement.find('.talend-modal-close').on('click', hideModal);
 
-                        // stop propagation on click on inner modal to prevent modal close
-                        innerElement.on('click', function (e) {
-                            e.stopPropagation();
-                        });
+                    // stop propagation on click on inner modal to prevent modal close
+                    innerElement.on('click', function (e) {
+                        e.stopPropagation();
+                    });
 
-                        // keydown event binding
-                        innerElement.bind('keydown', function (e) {
+                    // keydown event binding
+                    innerElement.bind('keydown', function (e) {
 
-                            // hide modal on 'ESC' keydown
-                            if(e.keyCode === 27) {
-                                hideModal();
+                        // hide modal on 'ESC' keydown
+                        if(e.keyCode === 27) {
+                            hideModal();
+                        }
+
+                        // click on primary button on 'ENTER' keydown
+                        else if(e.keyCode === 13 && ! ctrl.disableEnter && primaryButton.length) {
+                            primaryButton.click();
+                        }
+                    });
+
+                    // attach element to body directly to avoid parent styling
+                    iElement.detach();
+                    body.append(iElement);
+
+                    // remove element on destroy
+                    scope.$on('$destroy', function() {
+                        deregisterAndFocusOnLastModal(innerElement);
+                        iElement.remove();
+                    });
+
+                    //enable/disable scroll on main body depending on modal display
+                    //popup focus on show
+                    scope.$watch(function() {return ctrl.state;}, function(newValue) {
+                        if (newValue) {
+                            //register modal in shown modal list and focus on inner element
+                            body.addClass('modal-open');
+                            registerShownElement(innerElement);
+                            innerElement.focus();
+
+                            //focus on first input (ignore first because it's the state checkbox)
+                            var inputs = iElement.find('input:not(".no-focus")');
+                            if(inputs.length > 1) {
+                                inputs.eq(1).focus();
                             }
-
-                            // click on primary button on 'ENTER' keydown
-                            else if(e.keyCode === 13 && ! ctrl.disableEnter && primaryButton.length) {
-                                primaryButton.eq(0).click();
-                            }
-                        });
-
-                        // attach element to body directly to avoid parent styling
-                        iElement.detach();
-                        body.append(iElement);
-
-                        // detach element on destroy
-                        scope.$on('$destroy', function() {
+                        } else {
                             deregisterAndFocusOnLastModal(innerElement);
-                            iElement.remove();
-                        });
-
-                        //enable/disable scroll on main body depending on modal display
-                        //popup focus on show
-                        scope.$watch(function() {return ctrl.state;}, function(newValue) {
-                            if (newValue) {
-                                //register modal in shown modal list and focus on inner element
-                                body.addClass('modal-open');
-                                registerShownElement(innerElement);
-                                innerElement.focus();
-
-                                //focus on first input (ignore first because it's the state checkbox)
-                                var inputs = iElement.find('input:not(".no-focus")').not('');
-                                if(inputs.length > 1) {
-                                    inputs.eq(1).focus();
-                                }
-                            } else {
-                                deregisterAndFocusOnLastModal(innerElement);
-                            }
-                        });
+                        }
                     });
                 }
             }
