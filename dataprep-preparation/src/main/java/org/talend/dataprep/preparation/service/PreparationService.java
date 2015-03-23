@@ -1,6 +1,5 @@
 package org.talend.dataprep.preparation.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Object;
@@ -27,7 +26,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import sun.nio.ch.IOUtil;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
@@ -104,7 +102,6 @@ public class PreparationService {
         return repository.get(id);
     }
 
-    // GET http://localhost:36863/preparations/d4654658d9d16f67ade6968e1c344635d73b131b/content/head HTTP/1.1
     @RequestMapping(value = "/preparations/{id}/content/{version}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
@@ -135,9 +132,13 @@ public class PreparationService {
             Step head = preparation.getStep();
             // Add a new step
             JSONBlob newContent = ObjectUtils.append(versionRepository.get(head.getContent(), JSONBlob.class), body);
+            versionRepository.add(newContent);
             Step newStep = new Step();
             newStep.setContent(newContent.id());
+            newStep.setParent(head.id());
+            versionRepository.add(newStep);
             preparation.setStep(newStep);
+            repository.add(preparation);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Added head to preparation #" + id + ": head is now " + newStep.id());
             }
@@ -161,7 +162,8 @@ public class PreparationService {
         }
     }
 
-    private static String getStepId(@ApiParam(value = "version") @PathVariable(value = "version") String version, Preparation preparation) {
+    private static String getStepId(@ApiParam(value = "version") @PathVariable(value = "version") String version,
+            Preparation preparation) {
         String stepId;
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
             stepId = preparation.getStep().id();

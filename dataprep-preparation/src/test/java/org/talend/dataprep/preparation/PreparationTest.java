@@ -216,6 +216,6 @@ public class PreparationTest {
         given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case.json"))).contentType(ContentType.JSON).when()
                 .post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id());
-        assertThat(preparation.getStep().id(), is("f4657f14b316033df3d2466116c9ccf682a149ba"));
+        assertThat(preparation.getStep().id(), is("4b80d91048c69239a05dd45c4fdcfe132b779c7f"));
     }
 }
