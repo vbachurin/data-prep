@@ -32,7 +32,7 @@ public class PreparationAPI extends APIService {
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = new PreparationList(client, preparationServiceURL, listFormat);
         try {
-            response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+            response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
@@ -64,6 +64,7 @@ public class PreparationAPI extends APIService {
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = new PreparationGet(client, preparationServiceURL, preparationId);
         try {
+            response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
