@@ -5,3 +5,5 @@ target/
 *.iml
 *.iws
 
+
+dataprep-webapp/src/assets/fonts/font_dl_from_google.sh
