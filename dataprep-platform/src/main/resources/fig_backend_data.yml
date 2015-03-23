@@ -1,5 +1,5 @@
 data:
-    image: tal-qa158.talend.lan:5000/talend/dataprep-data:1.0.m0
+    image: talend-registry:5000/talend/dataprep-data:1.0.m1
     volumes:
         - /data/db
         - /store
