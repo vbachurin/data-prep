@@ -25,13 +25,7 @@
         self.colId = colId;
         self.args = args;
         self.filterFn = filterFn;
-        /*self.value = function() {
-            switch(type) {
-                case 'contains':
-                    return self.args.phrase;
-            }
-        };*/
-        self.__defineGetter__("value", function(){
+        self.__defineGetter__('value', function(){
             switch(self.type) {
                 case 'contains':
                     return self.args.phrase;
