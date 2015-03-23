@@ -167,6 +167,8 @@ public class PreparationService {
         String stepId;
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
             stepId = preparation.getStep().id();
+        } else if ("origin".equalsIgnoreCase(version)) {
+            stepId = RootStep.INSTANCE.id();
         } else {
             stepId = version;
         }
