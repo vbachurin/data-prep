@@ -85,10 +85,16 @@ public class PreparationService {
     public String create(@ApiParam(value = "content") InputStream preparationContent) {
         try {
             String dataSetId = IOUtils.toString(preparationContent);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Create new preparation for data set " + dataSetId);
+            }
             Preparation preparation = new Preparation(dataSetId, RootStep.INSTANCE);
             preparation.setAuthor(getUserName());
             repository.add(preparation);
             versionRepository.add(preparation);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Created new preparation: " + preparation);
+            }
             return preparation.id();
         } catch (IOException e) {
             throw new RuntimeException("Unable to create preparation.", e);
@@ -108,14 +114,26 @@ public class PreparationService {
     public void get(@ApiParam(value = "id") @PathVariable(value = "id") String id,
             @ApiParam(value = "version") @PathVariable(value = "version") String version, HttpServletResponse response) {
         Preparation preparation = repository.get(id);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Get content of preparation #" + id + " at version '" + version + "'.");
+        }
         Step step = versionRepository.get(getStepId(version, preparation), Step.class);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Get content of preparation #" + id + " at step: " + step);
+        }
         try {
             if (repository.hasCache(id, step.id())) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Cache exists for preparation #" + id + " at step " + step);
+                }
                 ServletOutputStream stream = response.getOutputStream();
                 response.setStatus(HttpServletResponse.SC_OK);
                 IOUtils.copyLarge(repository.getCache(id, step.id()), stream);
                 stream.flush();
             } else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Cache does NOT exist for preparation #" + id + " at step " + step);
+                }
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
             }
         } catch (IOException e) {
@@ -128,8 +146,14 @@ public class PreparationService {
     @Timed
     public void append(@ApiParam(value = "id") @PathVariable(value = "id") String id, @ApiParam(value = "action") InputStream body) {
         Preparation preparation = repository.get(id);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Adding actions to preparation #" + id);
+        }
         if (preparation != null) {
             Step head = preparation.getStep();
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Current head for preparation #" + id + ": " + head);
+            }
             // Add a new step
             JSONBlob newContent = ObjectUtils.append(versionRepository.get(head.getContent(), JSONBlob.class), body);
             versionRepository.add(newContent);
@@ -143,12 +167,13 @@ public class PreparationService {
                 LOGGER.debug("Added head to preparation #" + id + ": head is now " + newStep.id());
             }
         } else {
+            LOGGER.error("Preparation #" + id + " does not exist");
             throw new RuntimeException("Preparation id #" + id + " does not exist.");
         }
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Get the latest action on ", notes = "Append an action at end of the preparation with given id.")
+    @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
     public String getVersionedAction(@ApiParam(value = "id") @PathVariable(value = "id") String id,
             @ApiParam(value = "version") @PathVariable(value = "version") String version) {
