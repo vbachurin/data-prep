@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 class CloneInputStream extends InputStream {
 
-    public static final Log LOG = LogFactory.getLog(CloneInputStream.class);
+    private static final Log LOG = LogFactory.getLog(CloneInputStream.class);
 
     private final InputStream inputStream;
 

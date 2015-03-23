@@ -5,7 +5,7 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 
 public abstract class ChainedCommand<O, I> extends HystrixCommand<O> {
 
-    private HystrixCommand<I> input;
+    private final HystrixCommand<I> input;
 
     public ChainedCommand(HystrixCommandGroupKey group, HystrixCommand<I> input) {
         super(group);
