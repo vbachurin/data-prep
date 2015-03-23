@@ -215,16 +215,34 @@ public class DataPreparationAPITest {
         assertThat(preparation.getStep().id(), is("f4657f14b316033df3d2466116c9ccf682a149ba"));
     }
 
-    @Ignore
     @Test
-    public void testPreparationContentGet() throws Exception {
+    public void testPreparationInitialContent() throws Exception {
+        // Create a data set
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "testPreparationContentGet").asString();
+        // Create a preparation based on this dataset
         Preparation preparation = new Preparation(dataSetId, RootStep.INSTANCE);
         preparation.setCreationDate(0);
         preparationRepository.add(preparation);
-        InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_expected.json");
-        assertThat(when().get("/api/preparations/{id}/content", preparation.id()).asString(), sameJSONAsFile(expected));
+        // Request preparation content (content untouched since no action was done).
+        assertThat(when().get("/api/preparations/{id}/content", preparation.id()).asString(), sameJSONAs("{\"records\":[{\"firstname\":\"Lennon\",\"alive\":\"false\",\"date-of-birth\":\"10/09/1940\",\"id\":\"1\",\"age\":\"40\",\"lastname\":\"John\"},{\"firstname\":\"Bowie\",\"alive\":\"true\",\"date-of-birth\":\"01/08/1947\",\"id\":\"2\",\"age\":\"67\",\"lastname\":\"David\"}]}"));
+    }
+
+    @Ignore
+    @Test
+    public void testPreparationContentWithActions() throws Exception {
+        // Create a data set
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "testPreparationContentGet").asString();
+        // Create a preparation based on this dataset
+        Preparation preparation = new Preparation(dataSetId, RootStep.INSTANCE);
+        preparation.setCreationDate(0);
+        preparationRepository.add(preparation);
+        // Add action to preparation
+        String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
+        given().body(actionContent).when().post("/api/preparations/{id}/actions", preparation.id()).then().statusCode(is(200));
+        // Request preparation content (content untouched since no action was done).
+        assertThat(when().get("/api/preparations/{id}/content", preparation.id()).asString(), sameJSONAs("{\"records\":[{\"firstname\":\"Lennon\",\"alive\":\"false\",\"date-of-birth\":\"10/09/1940\",\"id\":\"1\",\"age\":\"40\",\"lastname\":\"John\"},{\"firstname\":\"Bowie\",\"alive\":\"true\",\"date-of-birth\":\"01/08/1947\",\"id\":\"2\",\"age\":\"67\",\"lastname\":\"David\"}]}"));
     }
 
 }
