@@ -13,11 +13,9 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.sun.rowset.internal.Row;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +30,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetLifecycle;
 import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.api.RowMetadata;
-import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.Types;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;

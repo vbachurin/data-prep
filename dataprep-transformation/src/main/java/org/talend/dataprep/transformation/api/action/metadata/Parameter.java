@@ -6,11 +6,11 @@ import org.talend.dataprep.transformation.i18n.MessagesBundle;
 
 public class Parameter {
 
-    String name;
+    private final String name;
 
-    String type;
+    private final String type;
 
-    String defaultValue;
+    private final String defaultValue;
 
     public Parameter(String name, String type, String defaultValue) {
         this.name = name;

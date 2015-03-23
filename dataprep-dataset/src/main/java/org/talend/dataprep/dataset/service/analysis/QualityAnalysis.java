@@ -1,7 +1,6 @@
 package org.talend.dataprep.dataset.service.analysis;
 
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -21,7 +20,7 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 @Component
 public class QualityAnalysis {
 
-    public static final Log LOGGER = LogFactory.getLog(QualityAnalysis.class);
+    private static final Log LOGGER = LogFactory.getLog(QualityAnalysis.class);
 
     @Autowired
     DataSetMetadataRepository repository;

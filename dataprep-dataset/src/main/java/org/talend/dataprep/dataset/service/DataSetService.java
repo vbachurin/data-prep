@@ -7,14 +7,12 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.jms.Message;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -219,26 +217,6 @@ public class DataSetService {
         queueEvents(dataSetId, jmsTemplate);
     }
 
-    @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
-    @Timed
-    @VolumeMetered
-    public void updateContent(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
-            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
-        DataSetMetadata.Builder builder = metadata().id(dataSetId);
-        if (name != null) {
-            builder = builder.name(name);
-        }
-        DataSetMetadata dataSetMetadata = builder.build();
-        // Save data set content
-        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
-        dataSetMetadataRepository.add(dataSetMetadata);
-        // Content was changed, so queue events (schema analysis, content indexing for search...)
-        queueEvents(dataSetId, jmsTemplate);
-    }
-
     @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
     @ApiResponses({@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist.")})
@@ -269,20 +247,16 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}/versions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get data set versions", notes = "Get a list of data set versions.")
     @Timed
-    public void listDataSetVersions(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId,
-            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
-            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
-        DataSetMetadata.Builder builder = metadata().id(dataSetId);
-        if (name != null) {
-            builder = builder.name(name);
-        }
-        DataSetMetadata dataSetMetadata = builder.build();
-        // Save data set content
-        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
-        dataSetMetadataRepository.add(dataSetMetadata);
-        // Content was changed, so queue events (schema analysis, content indexing for search...)
-        queueEvents(dataSetId, jmsTemplate);
+    public String[] listDataSetVersions(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId) {
+        return new String[0];
     }
+
+    @RequestMapping(value = "/datasets/{id}/versions/{version}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get data set versions", notes = "Get a list of data set versions.")
+    @Timed
+    public String[] getVersionDetails(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId) {
+        return new String[0];
+    }
+
 
 }

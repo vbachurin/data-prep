@@ -9,7 +9,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
-import org.talend.dataprep.api.service.DataPreparationAPI;
+import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -26,7 +26,7 @@ public class CreateOrUpdateDataSet extends HystrixCommand<String> {
     private final HttpClient client;
 
     public CreateOrUpdateDataSet(HttpClient client, String contentServiceUrl, String id, String name, InputStream dataSetContent) {
-        super(DataPreparationAPI.DATASET_GROUP);
+        super(PreparationAPI.DATASET_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.id = id;
         this.name = name;

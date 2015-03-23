@@ -6,13 +6,13 @@ import org.talend.dataprep.transformation.i18n.MessagesBundle;
 
 public class Item {
 
-    String name;
+    private final String name;
 
-    Type type;
+    private final Type type;
 
-    String category;
+    private final String category;
 
-    Value[] values;
+    private final Value[] values;
 
     public Item(String name, Type type, String category, Value[] values) {
         super();
@@ -68,11 +68,11 @@ public class Item {
 
     public static class Value {
 
-        String name;
+        final String name;
 
         boolean isDefault = false;
 
-        Parameter[] parameters;
+        final Parameter[] parameters;
 
         public Value(String name, Parameter... parameters) {
             super();

@@ -7,18 +7,18 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.talend.dataprep.api.service.DataPreparationAPI;
+import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
-public class DataSetListCommand extends HystrixCommand<InputStream> {
+public class DataSetList extends HystrixCommand<InputStream> {
 
     private final String contentServiceUrl;
 
     private final HttpClient client;
 
-    public DataSetListCommand(HttpClient client, String contentServiceUrl) {
-        super(DataPreparationAPI.TRANSFORM_GROUP);
+    public DataSetList(HttpClient client, String contentServiceUrl) {
+        super(PreparationAPI.TRANSFORM_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.client = client;
     }

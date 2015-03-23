@@ -56,7 +56,7 @@ public class Negate implements ActionMetadata {
             String value = row.get(columnName);
 
             if (value != null && (value.trim().equalsIgnoreCase("true") || value.trim().equalsIgnoreCase("false"))) {
-                Boolean boolValue = new Boolean(value);
+                Boolean boolValue = Boolean.valueOf(value);
                 row.set(columnName, toProperCase("" + !boolValue));
             }
         };
@@ -66,7 +66,7 @@ public class Negate implements ActionMetadata {
     protected static String toProperCase(String from) {
         java.io.StringReader in = new java.io.StringReader(from.toLowerCase());
         boolean precededBySpace = true;
-        StringBuffer properCase = new StringBuffer();
+        StringBuilder properCase = new StringBuilder();
         while (true) {
             try {
                 int i = in.read();
