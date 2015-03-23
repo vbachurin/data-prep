@@ -20,7 +20,7 @@ dataset:
 ```
 2. building the image will COPY this folder to the image.
 
-Then use the 'data' image in fig files instead of the volumnes.
+Then use the 'data' image in fig files instead of the volumes.
 like:
 ```
 data:
