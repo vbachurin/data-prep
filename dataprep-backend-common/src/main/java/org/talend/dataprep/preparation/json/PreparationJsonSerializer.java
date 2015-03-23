@@ -1,30 +1,21 @@
 package org.talend.dataprep.preparation.json;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.ColumnMetadata;
-import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.api.Quality;
+import org.talend.dataprep.preparation.*;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.talend.dataprep.preparation.Blob;
-import org.talend.dataprep.preparation.Preparation;
-import org.talend.dataprep.preparation.Repository;
-import org.talend.dataprep.preparation.Step;
 
 @Component
 class PreparationJsonSerializer extends JsonSerializer<Preparation> implements ApplicationContextAware {
@@ -33,16 +24,23 @@ class PreparationJsonSerializer extends JsonSerializer<Preparation> implements A
 
     @Override
     public void serialize(Preparation preparation, JsonGenerator generator, SerializerProvider serializerProvider) throws IOException {
-        // "[{\"id\":\"913ba86b06e65d9c78fcd398b4c15a28d591abfd\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"actions\":[]}]"
         generator.writeStartObject();
         {
-            generator.writeStringField("id", preparation.id());
-            generator.writeStringField("dataSetId", preparation.getDataSetId());
-            generator.writeStringField("author", preparation.getAuthor());
-            generator.writeNumberField("creationDate", preparation.getCreationDate());
-            // Actions
+            generator.writeStringField("id", preparation.id()); //$NON-NLS-1$
+            generator.writeStringField("dataSetId", preparation.getDataSetId()); //$NON-NLS-1$
+            generator.writeStringField("author", preparation.getAuthor()); //$NON-NLS-1$
+            generator.writeNumberField("creationDate", preparation.getCreationDate()); //$NON-NLS-1$
             Repository versionRepository = getRepository();
             if (versionRepository != null) {
+                // Steps
+                generator.writeFieldName("steps"); //$NON-NLS-1$
+                generator.writeStartArray();
+                List<String> steps = ObjectUtils.listSteps(preparation.getStep(), versionRepository);
+                for (String step : steps) {
+                    generator.writeString(step);
+                }
+                generator.writeEndArray();
+                // Actions
                 Step step = versionRepository.get(preparation.getStep().id(), Step.class);
                 Blob blob = versionRepository.get(step.getContent(), Blob.class);
                 String content = blob.getContent();
@@ -55,7 +53,7 @@ class PreparationJsonSerializer extends JsonSerializer<Preparation> implements A
                     generator.writeFieldName(next.getKey());
                     generator.writeRawValue(next.getValue().toString());
                     if (fields.hasNext()) {
-                        generator.writeRaw(",");
+                        generator.writeRaw(","); //$NON-NLS-1$
                     }
                 }
             }

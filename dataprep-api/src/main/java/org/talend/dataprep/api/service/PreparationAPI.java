@@ -4,16 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.service.command.PreparationAddAction;
-import org.talend.dataprep.api.service.command.PreparationGet;
-import org.talend.dataprep.api.service.command.PreparationGetContent;
-import org.talend.dataprep.api.service.command.PreparationList;
+import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -38,6 +36,20 @@ public class PreparationAPI extends APIService {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to copy preparations to output.", e);
+        }
+    }
+
+    @RequestMapping(value = "/api/preparations", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Create a new preparation for data set with id in body.", notes = "Returns the dataset modified by this preparation.")
+    @Timed
+    public String createTransformation(@ApiParam(name = "body", value = "Id of the data set.") HttpServletRequest request,
+            HttpServletResponse response) {
+        HttpClient client = getClient();
+        try {
+            HystrixCommand<String> command = new PreparationCreate(client, preparationServiceURL, IOUtils.toString(request.getInputStream()));
+            return command.execute();
         } catch (IOException e) {
             throw new RuntimeException("Unable to copy preparations to output.", e);
         }

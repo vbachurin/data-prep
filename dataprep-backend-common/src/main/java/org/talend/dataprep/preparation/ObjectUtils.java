@@ -5,10 +5,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.*;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class ObjectUtils {
+
+    private ObjectUtils() {
+    }
+
+    /**
+     * Returns a list of all steps available from <code>step</code> parameter.
+     * @param step A {@link Step step}.
+     * @param repository A {@link Repository version} repository.
+     * @return A list of {@link Step step} id. Empty list if <code>step</code> parameter is <code>null</code>.
+     * @see Step#id()
+     * @see Step#getParent()
+     */
+    public static List<String> listSteps(Step step, Repository repository) {
+        if (repository == null) {
+            throw new IllegalArgumentException("Repository cannot be null.");
+        }
+        if (step == null) {
+            return Collections.emptyList();
+        }
+        List<String> versions = new LinkedList<>();
+        __listSteps(versions, step, repository);
+        return versions;
+    }
+
+    // Internal method for recursion
+    private static void __listSteps(List<String> versions, Step step, Repository repository) {
+        if (step == null) {
+            return;
+        }
+        versions.add(step.id());
+        __listSteps(versions, repository.get(step.getParent(), Step.class), repository);
+    }
 
     /**
      * Append content of <code>blob2</code> to <code>blob</code> and returns a new blob containing the merge of the
@@ -30,7 +61,8 @@ public class ObjectUtils {
         }
     }
 
-    public static void __append(JsonNode node1, JsonNode node2) {
+    // Internal method for recursion
+    private static void __append(JsonNode node1, JsonNode node2) {
         Iterator<Map.Entry<String, JsonNode>> fields = node2.fields();
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> next = fields.next();
