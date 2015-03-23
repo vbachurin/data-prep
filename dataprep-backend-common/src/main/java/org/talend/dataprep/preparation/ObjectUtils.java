@@ -1,11 +1,11 @@
 package org.talend.dataprep.preparation;
 
+import java.io.*;
+import java.util.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import java.io.*;
-import java.util.*;
 
 public class ObjectUtils {
 
@@ -15,12 +15,12 @@ public class ObjectUtils {
     /**
      * Returns a list of all steps available from <code>step</code> parameter.
      * @param step A {@link Step step}.
-     * @param repository A {@link Repository version} repository.
+     * @param repository A {@link PreparationRepository version} repository.
      * @return A list of {@link Step step} id. Empty list if <code>step</code> parameter is <code>null</code>.
      * @see Step#id()
      * @see Step#getParent()
      */
-    public static List<String> listSteps(Step step, Repository repository) {
+    public static List<String> listSteps(Step step, PreparationRepository repository) {
         if (repository == null) {
             throw new IllegalArgumentException("Repository cannot be null.");
         }
@@ -33,7 +33,7 @@ public class ObjectUtils {
     }
 
     // Internal method for recursion
-    private static void __listSteps(List<String> versions, Step step, Repository repository) {
+    private static void __listSteps(List<String> versions, Step step, PreparationRepository repository) {
         if (step == null) {
             return;
         }
@@ -77,7 +77,7 @@ public class ObjectUtils {
         }
     }
 
-    private static void prettyPrint(Repository repository, Step step, OutputStream out) {
+    private static void prettyPrint(PreparationRepository repository, Step step, OutputStream out) {
         if (step == null) {
             return;
         }
@@ -109,7 +109,7 @@ public class ObjectUtils {
         }
     }
 
-    public static void prettyPrint(Repository repository, Preparation preparation, OutputStream out) {
+    public static void prettyPrint(PreparationRepository repository, Preparation preparation, OutputStream out) {
         try {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
             writer.append("Preparation (").append(preparation.id()).append(")\n");

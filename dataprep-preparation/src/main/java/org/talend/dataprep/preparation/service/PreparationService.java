@@ -3,6 +3,7 @@ package org.talend.dataprep.preparation.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Object;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.*;
-import org.talend.dataprep.preparation.store.PreparationRepository;
+import org.talend.dataprep.preparation.store.ContentCache;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -34,10 +35,10 @@ public class PreparationService {
     private static final Log LOGGER = LogFactory.getLog(PreparationService.class);
 
     @Autowired
-    private PreparationRepository repository;
+    private ContentCache cache;
 
     @Autowired
-    private Repository versionRepository = null;
+    private PreparationRepository versionRepository = null;
 
     private final JsonFactory factory = new JsonFactory();
 
@@ -62,7 +63,7 @@ public class PreparationService {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             generator.writeStartArray();
-            for (Preparation preparation : repository.list()) {
+            for (Preparation preparation : versionRepository.listAll(Preparation.class)) {
                 generator.writeString(preparation.id());
             }
             generator.writeEndArray();
@@ -75,8 +76,9 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
-    public Iterable<Preparation> listAll(HttpServletResponse response) {
-        return repository.list();
+    public Preparation[] listAll(HttpServletResponse response) {
+        Set<Preparation> preparations = versionRepository.listAll(Preparation.class);
+        return preparations.toArray(new Preparation[preparations.size()]);
     }
 
     @RequestMapping(value = "/preparations", method = RequestMethod.PUT, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -90,7 +92,6 @@ public class PreparationService {
             }
             Preparation preparation = new Preparation(dataSetId, RootStep.INSTANCE);
             preparation.setAuthor(getUserName());
-            repository.add(preparation);
             versionRepository.add(preparation);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Created new preparation: " + preparation);
@@ -105,7 +106,7 @@ public class PreparationService {
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
     public Preparation get(@ApiParam(value = "id") @PathVariable(value = "id") String id) {
-        return repository.get(id);
+        return versionRepository.get(id, Preparation.class);
     }
 
     @RequestMapping(value = "/preparations/{id}/content/{version}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -113,7 +114,7 @@ public class PreparationService {
     @Timed
     public void get(@ApiParam(value = "id") @PathVariable(value = "id") String id,
             @ApiParam(value = "version") @PathVariable(value = "version") String version, HttpServletResponse response) {
-        Preparation preparation = repository.get(id);
+        Preparation preparation = versionRepository.get(id, Preparation.class);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Get content of preparation #" + id + " at version '" + version + "'.");
         }
@@ -122,13 +123,13 @@ public class PreparationService {
             LOGGER.debug("Get content of preparation #" + id + " at step: " + step);
         }
         try {
-            if (repository.hasCache(id, step.id())) {
+            if (cache.has(id, step.id())) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Cache exists for preparation #" + id + " at step " + step);
                 }
                 ServletOutputStream stream = response.getOutputStream();
                 response.setStatus(HttpServletResponse.SC_OK);
-                IOUtils.copyLarge(repository.getCache(id, step.id()), stream);
+                IOUtils.copyLarge(cache.get(id, step.id()), stream);
                 stream.flush();
             } else {
                 if (LOGGER.isDebugEnabled()) {
@@ -145,7 +146,7 @@ public class PreparationService {
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
     public void append(@ApiParam(value = "id") @PathVariable(value = "id") String id, @ApiParam(value = "action") InputStream body) {
-        Preparation preparation = repository.get(id);
+        Preparation preparation = versionRepository.get(id, Preparation.class);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Adding actions to preparation #" + id);
         }
@@ -162,7 +163,7 @@ public class PreparationService {
             newStep.setParent(head.id());
             versionRepository.add(newStep);
             preparation.setStep(newStep);
-            repository.add(preparation);
+            versionRepository.add(preparation);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Added head to preparation #" + id + ": head is now " + newStep.id());
             }
@@ -177,7 +178,7 @@ public class PreparationService {
     @Timed
     public String getVersionedAction(@ApiParam(value = "id") @PathVariable(value = "id") String id,
             @ApiParam(value = "version") @PathVariable(value = "version") String version) {
-        Preparation preparation = repository.get(id);
+        Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation != null) {
             String stepId = getStepId(version, preparation);
             Step step = versionRepository.get(stepId, Step.class);

@@ -1,52 +1,55 @@
 package org.talend.dataprep.preparation.store;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.talend.dataprep.preparation.Preparation;
+import org.talend.dataprep.preparation.Object;
+import org.talend.dataprep.preparation.PreparationRepository;
+import org.talend.dataprep.preparation.RootBlob;
+import org.talend.dataprep.preparation.RootStep;
 
 public class InMemoryPreparationRepository implements PreparationRepository {
 
-    private final Map<String, Preparation> store = new HashMap<>();
+    private final Map<String, Object> store = new HashMap<>();
 
-    @Override
-    public Iterable<Preparation> list() {
-        return store.values();
+    public InMemoryPreparationRepository() {
+        add(RootBlob.INSTANCE);
+        add(RootStep.INSTANCE);
+    }
+
+    public void add(Object object) {
+        store.put(object.id(), object);
+    }
+
+    public <T extends Object> T get(String id, Class<T> clazz) {
+        if (id == null) {
+            return null;
+        }
+        Object value = store.get(id);
+        if (value == null) {
+            return null;
+        }
+        if (clazz == null) {
+            return (T) value;
+        } else if (clazz.isAssignableFrom(value.getClass())) {
+            return clazz.cast(value);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public synchronized void add(Preparation preparation) {
-        store.put(preparation.id(), preparation);
+    public <T extends Object> Set<T> listAll(Class<T> clazz) {
+        return store.entrySet().stream().filter(entry -> clazz.isAssignableFrom(entry.getValue().getClass()))
+                .map(entry -> (T) entry.getValue()).collect(Collectors.toSet());
     }
 
     @Override
     public void clear() {
         store.clear();
-    }
-
-    @Override
-    public int size() {
-        return store.size();
-    }
-
-    @Override
-    public Preparation get(String id) {
-        return store.get(id);
-    }
-
-    @Override
-    public void remove(String id) {
-        store.remove(id);
-    }
-
-    @Override
-    public InputStream getCache(String preparation, String step) {
-        return null;
-    }
-
-    @Override
-    public boolean hasCache(String preparation, String step) {
-        return false;
+        add(RootBlob.INSTANCE);
+        add(RootStep.INSTANCE);
     }
 }

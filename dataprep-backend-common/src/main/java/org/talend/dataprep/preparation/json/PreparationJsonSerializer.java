@@ -30,7 +30,7 @@ class PreparationJsonSerializer extends JsonSerializer<Preparation> implements A
             generator.writeStringField("dataSetId", preparation.getDataSetId()); //$NON-NLS-1$
             generator.writeStringField("author", preparation.getAuthor()); //$NON-NLS-1$
             generator.writeNumberField("creationDate", preparation.getCreationDate()); //$NON-NLS-1$
-            Repository versionRepository = getRepository();
+            PreparationRepository versionRepository = getRepository();
             if (versionRepository != null) {
                 // Steps
                 generator.writeFieldName("steps"); //$NON-NLS-1$
@@ -62,9 +62,9 @@ class PreparationJsonSerializer extends JsonSerializer<Preparation> implements A
         generator.flush();
     }
 
-    private Repository getRepository() {
-        if (applicationContext.getBeanNamesForType(Repository.class).length > 0) {
-            return applicationContext.getBean(Repository.class);
+    private PreparationRepository getRepository() {
+        if (applicationContext.getBeanNamesForType(PreparationRepository.class).length > 0) {
+            return applicationContext.getBean(PreparationRepository.class);
         } else {
             return null;
         }
