@@ -3,11 +3,11 @@ package org.talend.dataprep.api.service.command;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
-import org.talend.dataprep.api.service.DataPreparationAPI;
+import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
-public class DataSetDeleteCommand extends HystrixCommand<Void> {
+public class DataSetDelete extends HystrixCommand<Void> {
 
     private final String contentServiceUrl;
 
@@ -15,8 +15,8 @@ public class DataSetDeleteCommand extends HystrixCommand<Void> {
 
     private final String dataSetId;
 
-    public DataSetDeleteCommand(HttpClient client, String contentServiceUrl, String dataSetId) {
-        super(DataPreparationAPI.TRANSFORM_GROUP);
+    public DataSetDelete(HttpClient client, String contentServiceUrl, String dataSetId) {
+        super(PreparationAPI.TRANSFORM_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.client = client;
         this.dataSetId = dataSetId;

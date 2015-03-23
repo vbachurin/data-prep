@@ -38,7 +38,7 @@ import com.wordnik.swagger.annotations.*;
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
 
-    private TransformerFactory factory = new SimpleTransformerFactory();
+    private final TransformerFactory factory = new SimpleTransformerFactory();
 
     @RequestMapping(value = "/transform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
@@ -69,7 +69,7 @@ public class TransformationService {
         } else if (Types.BOOLEAN.isAssignableFrom(type)) {
             return Arrays.asList(Negate.INSTANCE, FillWithDefaultIfEmptyBoolean.INSTANCE);
         } else if (Types.INTEGER.isAssignableFrom(type)) {
-            return Arrays.asList(FillWithDefaultIfEmptyInteger.INSTANCE);
+            return Collections.singletonList(FillWithDefaultIfEmptyInteger.INSTANCE);
         } else {
             return Collections.emptyList();
         }

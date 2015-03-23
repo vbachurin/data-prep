@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 public class DataSetMetadataModule extends SimpleModule {
 
-    public static Module DEFAULT = new DataSetMetadataModule();
+    public static final Module DEFAULT = new DataSetMetadataModule();
 
     public static SimpleModule get(boolean metadata, boolean columns, InputStream records) {
         return new DataSetMetadataModule(metadata, columns, records);

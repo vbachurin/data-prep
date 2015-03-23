@@ -1,6 +1,7 @@
 package org.talend.dataprep.dataset.store.local;
 
 import java.io.*;
+import java.util.Base64;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -33,15 +34,20 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     }
 
     @Override
-    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent) {
-
+    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent, String actions) {
+        try {
+            LOGGER.info("Actions: " + new String(Base64.getDecoder().decode(actions)));
+            LOGGER.info("Content: " + IOUtils.toString(dataSetJsonContent));
+        } catch (IOException e) {
+            LOGGER.error("Unable to dump content & actions.", e);
+        }
     }
 
     @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try {
             File dataSetFile = getFile(dataSetMetadata);
-            org.apache.commons.io.FileUtils.touch(dataSetFile);
+            FileUtils.touch(dataSetFile);
             FileOutputStream fos = new FileOutputStream(dataSetFile);
             IOUtils.copy(dataSetContent, fos);
             if (LOGGER.isDebugEnabled()) {

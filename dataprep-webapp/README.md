@@ -3,18 +3,14 @@
 ### Prerequisites
 1. sass : to install saas you need to install 
   * ruby : https://www.ruby-lang.org/fr/downloads/
-     on linux : `sudo apt-get install ruby1.9.1`
+     on linux : `sudo apt-get install ruby1.9.1` (Ubuntu) `sudo yum install ruby` (Fedora)
      on mac : `brew install ruby`
-  * gem : with ruby you can install gem, dowload the zip, unzip it, go into the root dir and use the command : `ruby setup.rb`
+  * gem : with ruby you can install gem, download the zip, unzip it, go into the root dir and use the command : `ruby setup.rb`. On Fedora installing ruby installs gem too.
   * install sass using gem : `gem install sass`
 2. nodejs : http://nodejs.org/
 3. npm : it should be install with the above node
 4. install development tools using these commands :
-
-
-
 `npm install -g bower gulp`
-
 (You may have to use sudo before the command)
 
 5. git clone git@github.com:Talend/data-prep.git in _checkouts_ (adapt others commands if clone in another folder)
@@ -22,7 +18,7 @@
 
 `npm install`
 
-This will install all the dev package for dataprep as well as third party librairies required by this application.
+This will install all the dev package for dataprep as well as third party libraries required by this application.
 
 ### root file structure
 The file structure is inspired by yeoman project called generator-gulp-angular : https://github.com/Swiip/generator-gulp-angular

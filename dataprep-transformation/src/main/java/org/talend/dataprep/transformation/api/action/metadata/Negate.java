@@ -1,16 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.api.type.Types;
-import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public class Negate implements ActionMetadata {
 
@@ -54,25 +50,13 @@ public class Negate implements ActionMetadata {
     }
 
     @Override
-    public Consumer<DataSetRow> create(Iterator<Map.Entry<String, JsonNode>> parameters) {
-        Map<String, String> parsedParameters = new HashMap<>();
-        while (parameters.hasNext()) {
-            Map.Entry<String, JsonNode> currentParameter = parameters.next();
-            switch (currentParameter.getKey()) {
-            case COLUMN_NAME_PARAMETER:
-                parsedParameters.put(COLUMN_NAME_PARAMETER, currentParameter.getValue().getTextValue());
-                break;
-            default:
-                ActionParser.LOGGER
-                        .warn("Parameter '" + currentParameter.getKey() + "' is not recognized for " + this.getClass());
-            }
-        }
+    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         return row -> {
             String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER);
             String value = row.get(columnName);
 
             if (value != null && (value.trim().equalsIgnoreCase("true") || value.trim().equalsIgnoreCase("false"))) {
-                Boolean boolValue = new Boolean(value);
+                Boolean boolValue = Boolean.valueOf(value);
                 row.set(columnName, toProperCase("" + !boolValue));
             }
         };
@@ -82,7 +66,7 @@ public class Negate implements ActionMetadata {
     protected static String toProperCase(String from) {
         java.io.StringReader in = new java.io.StringReader(from.toLowerCase());
         boolean precededBySpace = true;
-        StringBuffer properCase = new StringBuffer();
+        StringBuilder properCase = new StringBuilder();
         while (true) {
             try {
                 int i = in.read();

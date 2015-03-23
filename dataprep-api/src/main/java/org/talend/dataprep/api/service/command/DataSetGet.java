@@ -7,11 +7,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.talend.dataprep.api.service.DataPreparationAPI;
+import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
 
-public class DataSetGetCommand extends HystrixCommand<InputStream> {
+public class DataSetGet extends HystrixCommand<InputStream> {
 
     private final String contentServiceUrl;
 
@@ -23,8 +23,8 @@ public class DataSetGetCommand extends HystrixCommand<InputStream> {
 
     private final boolean columns;
 
-    public DataSetGetCommand(HttpClient client, String contentServiceUrl, String dataSetId, boolean metadata, boolean columns) {
-        super(DataPreparationAPI.TRANSFORM_GROUP);
+    public DataSetGet(HttpClient client, String contentServiceUrl, String dataSetId, boolean metadata, boolean columns) {
+        super(PreparationAPI.TRANSFORM_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.client = client;
         this.metadata = metadata;

@@ -31,11 +31,11 @@ public class DataSetMetadata {
 
     private final DataSetContent content = new DataSetContent();
 
-    private String name;
+    private final String name;
 
-    private String author;
+    private final String author;
 
-    private long creationDate;
+    private final long creationDate;
 
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;

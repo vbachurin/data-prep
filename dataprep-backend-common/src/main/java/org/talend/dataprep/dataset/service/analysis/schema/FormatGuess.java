@@ -4,8 +4,6 @@ import java.beans.Transient;
 
 /**
  * Represents a "guess" for a data set content format (e.g. CSV, Excel...).
- * 
- * @see org.talend.dataprep.dataset.service.analysis.SchemaAnalysis
  */
 public interface FormatGuess {
 
@@ -29,7 +27,6 @@ public interface FormatGuess {
     /**
      * @return A {@link org.talend.dataprep.dataset.service.analysis.schema.Serializer serializer} able to transform the
      * underlying data set content into JSON stream.
-     * @see org.talend.dataprep.dataset.store.DataSetContentStore#get(org.talend.dataprep.api.DataSetMetadata)
      */
     @Transient
     Serializer getSerializer();
