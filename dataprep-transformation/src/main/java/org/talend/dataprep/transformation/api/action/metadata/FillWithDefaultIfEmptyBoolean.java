@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Types;
 import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 
-public class FillWithDefaultIfEmptyBoolean extends FillWithDefaultIfEmpty {
+public class FillWithDefaultIfEmptyBoolean extends AbstractDefaultIfEmpty {
 
     public static final String         FILL_EMPTY_ACTION_NAME = "fillemptywithdefaultboolean";      //$NON-NLS-1$
 
@@ -23,4 +23,5 @@ public class FillWithDefaultIfEmptyBoolean extends FillWithDefaultIfEmpty {
         Value[] values = new Value[] { new Value("True", true), new Value("False") };
         return new Item[] { new Item(DEFAULT_VALUE_PARAMETER, Type.LIST, "categ", values) };
     }
+
 }

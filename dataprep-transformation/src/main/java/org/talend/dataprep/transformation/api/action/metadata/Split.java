@@ -1,15 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.api.type.Types;
-import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 
 /**
@@ -68,26 +64,7 @@ public class Split implements ActionMetadata {
     }
 
     @Override
-    public Consumer<DataSetRow> create(Iterator<Map.Entry<String, JsonNode>> parameters) {
-        Map<String, String> parsedParameters = new HashMap<>();
-        while (parameters.hasNext()) {
-            Map.Entry<String, JsonNode> currentParameter = parameters.next();
-            switch (currentParameter.getKey()) {
-            case COLUMN_NAME_PARAMETER:
-                parsedParameters.put(COLUMN_NAME_PARAMETER, currentParameter.getValue().getTextValue());
-                break;
-            case SEPARATOR_PARAMETER:
-                parsedParameters.put(SEPARATOR_PARAMETER, currentParameter.getValue().getTextValue());
-                break;
-            case MANUAL_SEPARATOR_PARAMETER:
-                parsedParameters.put(MANUAL_SEPARATOR_PARAMETER, currentParameter.getValue().getTextValue());
-                break;
-            default:
-                ActionParser.LOGGER
-                        .warn("Parameter '" + currentParameter.getKey() + "' is not recognized for " + this.getClass());
-            }
-        }
-
+    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         String realSeparator = (parsedParameters.get(SEPARATOR_PARAMETER).equals("other") ? parsedParameters
                 .get(MANUAL_SEPARATOR_PARAMETER) : parsedParameters.get(SEPARATOR_PARAMETER));
 
