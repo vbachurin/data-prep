@@ -73,7 +73,7 @@ describe('Dataset grid directive', function() {
             {
                 'id': '3',
                 'Postal': 'AL',
-                'State': 'Alabama 2',
+                'State': 'My Alabama 2',
                 'Capital': 'Montgomery',
                 'MostPopulousCity': 'Birmingham city'
             }
@@ -231,13 +231,13 @@ describe('Dataset grid directive', function() {
         expect(thirdRow.nbCell()).toBe(5);
         expect(thirdRow.cell(0).text()).toBe('3');
         expect(thirdRow.cell(1).text()).toBe('AL');
-        expect(thirdRow.cell(2).text()).toBe('Alabama 2');
+        expect(thirdRow.cell(2).text()).toBe('My Alabama 2');
         expect(thirdRow.cell(3).text()).toBe('Montgomery');
         expect(thirdRow.cell(4).text()).toBe('Birmingham city');
     }));
 
 
-    it('should render dataset values', inject(function($window, DatasetGridService) {
+    it('should highlight cells containing clicked value', inject(function($window, DatasetGridService) {
         //given
         var innerText = 'My Alabama';
         var colIndex = 2;
@@ -261,7 +261,7 @@ describe('Dataset grid directive', function() {
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
     }));
 
-    it('should render dataset values', inject(function($window, DatasetGridService) {
+    it('should highlight empty cells only', inject(function($window, DatasetGridService) {
         //given
         var colIndex = 2;
 
@@ -275,7 +275,7 @@ describe('Dataset grid directive', function() {
 
         //when
         var grid = new GridGetter(element);
-        grid.row(0).cell(colIndex).element().click();
+        grid.row(1).cell(colIndex).element().click();
         scope.$digest();
 
         //then

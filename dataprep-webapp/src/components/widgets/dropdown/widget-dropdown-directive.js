@@ -50,22 +50,46 @@
                     var action = iElement.find('.dropdown-action');
                     var menu = iElement.find('.dropdown-menu');
 
+                    /**
+                     * Set the focus on a specific element
+                     * @param element - the element to focus
+                     */
+                    var setFocusOn = function(element) {
+                        setTimeout(function() {
+                            element.focus();
+                        }, 100);
+                    };
+
+                    /**
+                     * Hide every dropdown in the page
+                     */
                     var hideAllDropDowns = function () {
                         angular.element('.dropdown-menu').removeClass('show-menu');
                     };
 
+                    /**
+                     * Hide current dropdown menu
+                     */
                     var hideMenu = function () {
                         menu.removeClass('show-menu');
                         windowElement.off('scroll', positionMenu);
                     };
 
+                    /**
+                     * Show current dropdown menu and set focus on it
+                     */
                     var showMenu = function() {
                         menu.addClass('show-menu');
                         positionMenu();
                         ctrl.onOpen();
                         windowElement.on('scroll', positionMenu);
+
+                        setFocusOn(menu);
                     };
 
+                    /**
+                     * Move the menu to the right place, depending on the window width and the dropdown position
+                     */
                     var positionMenu = function() {
                         var position = container.length ? container[0].getBoundingClientRect() : action[0].getBoundingClientRect();
                         menu.css('top', position.bottom + 5);
@@ -81,14 +105,13 @@
                         }
                     };
 
-                    // Show or hide menu on action zone click
-                    iElement.find('.dropdown-action').on('click', function (event) {
+                    //Click : Show/focus or hide menu on action zone click
+                    action.click(function (event) {
                         event.stopPropagation();
-
-                        var hasClass = menu.hasClass('show-menu');
+                        var isVisible = menu.hasClass('show-menu');
                         hideAllDropDowns();
 
-                        if (hasClass) {
+                        if (isVisible) {
                             hideMenu();
                         }
                         else {
@@ -96,18 +119,31 @@
                         }
                     });
 
-                    //hide menu on menu item select if 'closeOnSelect' is not false
-                    iElement.find('.dropdown-menu').click(function (event) {
+                    //Click : hide menu on item select if 'closeOnSelect' is not false
+                    menu.click(function (event) {
                         event.stopPropagation();
                         if (ctrl.closeOnSelect !== false) {
                             hideMenu();
                         }
                     });
 
-                    //stop propagation on element mousedown not to hide dropdown
-                    iElement.find('.dropdown-menu').mousedown(function(event) {
+                    //Mousedown : stop propagation not to hide dropdown
+                    menu.mousedown(function(event) {
                         event.stopPropagation();
                     });
+
+                    //ESC keydown : hide menu, set focus on dropdown action and stop propagation
+                    menu.keydown(function(event) {
+                        if(event.keyCode === 27) {
+                            hideMenu();
+                            event.stopPropagation();
+                            setFocusOn(action);
+                        }
+                    });
+
+                    //make action and menu focusable
+                    action.attr('tabindex', '1');
+                    menu.attr('tabindex', '2');
 
                     //hide menu on body mousedown
                     body.mousedown(hideMenu);

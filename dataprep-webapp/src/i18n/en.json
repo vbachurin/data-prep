@@ -21,11 +21,8 @@
   "UPLOAD_ERROR"        : "Upload error",
 
   "_comment" : "Datagrid transformations",
+  "RECIPE_ITEM_ON_COL"  : "on column",
   "NO_TRANSFORMATION"   : "No transformation available",
-  "uppercase"           : "To Uppercase",
-  "lowercase"           : "To lowercase",
-  "fillemptywithdefault": "Fill empty with value",
-  "cut"                 : "Cut",
 
   "_comment" : "Datagrid",
   "FILE_DETAILS"  : "File: {{name}} ({{records}} lines)",

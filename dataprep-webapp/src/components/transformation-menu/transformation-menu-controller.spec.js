@@ -1,6 +1,6 @@
 /*jshint camelcase: false */
 
-describe('Dataset transform menu controller', function () {
+describe('Transform menu controller', function () {
     'use strict';
 
     var createController, scope;
@@ -53,7 +53,7 @@ describe('Dataset transform menu controller', function () {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('DatasetTransformMenuCtrl', {
+            var ctrl = $controller('TransformMenuCtrl', {
                 $scope: scope
             });
             ctrl.metadata = metadata;
@@ -107,90 +107,6 @@ describe('Dataset transform menu controller', function () {
         expect(TransformationService.transform).not.toHaveBeenCalled();
     }));
 
-    it('should fill text param value on select', function () {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {parameters: [{name: 'param1', type: 'text', default: '.'}]};
-
-        //when
-        ctrl.select();
-
-        //then
-        expect(ctrl.menu.parameters[0].value).toBe('.');
-    });
-
-    it('should set numeric default value', function () {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {parameters: [{name: 'param1', type: 'numeric', default: '5'}]};
-
-        //when
-        ctrl.select();
-
-        //then
-        expect(ctrl.menu.parameters[0].value).toBe(5);
-    });
-
-    it('should set integer default value', function () {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {parameters: [{name: 'param1', type: 'integer', default: '5'}]};
-
-        //when
-        ctrl.select();
-
-        //then
-        expect(ctrl.menu.parameters[0].value).toBe(5);
-    });
-
-    it('should set double default value', function () {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {parameters: [{name: 'param1', type: 'double', default: '5.1'}]};
-
-        //when
-        ctrl.select();
-
-        //then
-        expect(ctrl.menu.parameters[0].value).toBe(5.1);
-    });
-
-    it('should set float default value', function () {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {parameters: [{name: 'param1', type: 'float', default: '5.1'}]};
-
-        //when
-        ctrl.select();
-
-        //then
-        expect(ctrl.menu.parameters[0].value).toBe(5.1);
-    });
-
-    it('should set 0 value if default value is not numeric with numeric type', function () {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {parameters: [{name: 'param1', type: 'numeric', default: 'a'}]};
-
-        //when
-        ctrl.select();
-
-        //then
-        expect(ctrl.menu.parameters[0].value).toBe(0);
-    });
-
-    it('should not set default value if no default value is provided', function () {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {parameters: [{name: 'param1', type: 'text', default: null}]};
-
-        //when
-        ctrl.select();
-
-        //then
-        expect(ctrl.menu.parameters[0].value).toBeUndefined();
-    });
-
     it('should call transform on simple menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
         //given
         var ctrl = createController();
@@ -221,7 +137,7 @@ describe('Dataset transform menu controller', function () {
         };
 
         //when
-        ctrl.transformWithParam();
+        ctrl.transform({param1: 'param1Value', param2: 4 });
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
         $rootScope.$digest();
 
@@ -231,115 +147,6 @@ describe('Dataset transform menu controller', function () {
             '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
             'uppercase',
             { column_name: 'MostPopulousCity', param1: 'param1Value', param2: 4 });
-        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
-    }));
-
-    it('should call transform on simple choice param menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {
-            name: 'split',
-            category: 'split',
-            items: [{
-                name: 'mode',
-                values: [
-                    {name: 'regex'},
-                    {name: 'index'}
-                ]
-            }]
-        };
-        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[1];
-
-        //when
-        ctrl.transformWithParam();
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
-        $rootScope.$digest();
-
-        //then
-        expect(ctrl.showModal).toBeFalsy();
-        expect(TransformationService.transform).toHaveBeenCalledWith(
-            '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
-            'split',
-            { column_name: 'MostPopulousCity', mode: 'index'});
-        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
-    }));
-
-    it('should call transform on parameterized choice menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {
-            name: 'split',
-            category: 'split',
-            items: [{
-                name: 'mode',
-                values: [
-                    {
-                        name: 'regex',
-                        parameters : [
-                            {name: 'regex', type: 'text', default: '', value: 'param1Value'},
-                            {name: 'comment', type: 'text', default: '', value: 'my comment'}
-                        ]
-                    },
-                    {name: 'index'}
-                ]
-            }]
-        };
-        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[0];
-
-        //when
-        ctrl.transformWithParam();
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
-        $rootScope.$digest();
-
-        //then
-        expect(ctrl.showModal).toBeFalsy();
-        expect(TransformationService.transform).toHaveBeenCalledWith(
-            '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
-            'split',
-            { column_name: 'MostPopulousCity', mode: 'regex', regex: 'param1Value', comment: 'my comment'});
-        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
-    }));
-
-    it('should call transform with parameters and parameterized choice menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {
-            name: 'split',
-            category: 'split',
-            parameters: [
-                {name: 'param1', type: 'text', default: '', value: 'param1Value'},
-                {name: 'param2', type: 'int', default: '5', value: 4}
-            ],
-            items: [{
-                name: 'mode',
-                values: [
-                    {
-                        name: 'regex',
-                        parameters : [
-                            {name: 'regex', type: 'text', default: '', value: 'param1Value'},
-                            {name: 'comment', type: 'text', default: '', value: 'my comment'}
-                        ]
-                    },
-                    {name: 'index'}
-                ]
-            }]
-        };
-        ctrl.menu.items[0].selectedValue = ctrl.menu.items[0].values[0];
-
-        //when
-        ctrl.transformWithParam();
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
-        $rootScope.$digest();
-
-        //then
-        expect(ctrl.showModal).toBeFalsy();
-        expect(TransformationService.transform).toHaveBeenCalledWith(
-            '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
-            'split',
-            { column_name: 'MostPopulousCity', mode: 'regex', regex: 'param1Value', comment: 'my comment', param1: 'param1Value', param2: 4});
         expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));

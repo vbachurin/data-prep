@@ -8,15 +8,27 @@
 
   li {
     padding: 5px 5px 5px 10px;
-  }
 
-  a {
-    text-decoration: none;
-    color: $color;
-  }
+    a {
+      text-decoration: none;
+      color: $color;
+    }
 
-  input {
-    color: #000000;
+    input {
+      color: #000000;
+    }
+
+    .submenu {
+      background: tint($background, 30%);
+    }
+
+    .recipe-description {
+      text-transform: capitalize;
+
+      &.recipe-column-name {
+        font-weight: bold;
+      }
+    }
   }
 
   .action {
@@ -25,9 +37,5 @@
     &:hover {
       background: tint($background, 10%);
     }
-  }
-
-  .submenu {
-    background: tint($background, 30%);
   }
 }

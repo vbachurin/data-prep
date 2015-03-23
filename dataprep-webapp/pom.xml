@@ -21,7 +21,9 @@
         <profile>
             <id>dev</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>!use.docker.tool</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -150,7 +152,10 @@
         <profile>
             <id>ci</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>use.docker.tool</name>
+                    <value>true</value>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -174,7 +179,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>npm prune and bower prune</id>
+                                <id>(docker) npm prune and bower prune</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -194,7 +199,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>npm install and bower install</id>
+                                <id>(docker) npm install and bower install</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -215,7 +220,7 @@
                             </execution>
                             <!-- generate the dist application (it is not used for the tests) but during the docker packaging it is and it a good test to know the build passes. -->
                             <execution>
-                                <id>gulp build</id>
+                                <id>(docker) gulp build</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -236,7 +241,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>gulp test:ci</id>
+                                <id>(docker) gulp test:ci</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -288,7 +293,7 @@
                         <version>0.1.1</version>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-							<dockerDirectory>docker</dockerDirectory>
+							<dockerDirectory>${basedir}/docker</dockerDirectory>
 							<resources>
 								<resource>
 									<targetPath>/dist</targetPath>

@@ -38,7 +38,14 @@
                     url: '/home',
                     templateUrl: 'components/home/home.html',
                     controller: 'HomeCtrl',
-                    controllerAs: 'homeCtrl'
+                    controllerAs: 'homeCtrl',
+                    resolve: {
+                        //waiting for translation resource to be load
+                        //once the $translate promise is resolve, the router will perform the asked routing
+                        translateLoaded : function($translate) {
+                            return $translate('ALL_FOLDERS');
+                        }
+                    }
                 });
 
             $urlRouterProvider.otherwise('/home');

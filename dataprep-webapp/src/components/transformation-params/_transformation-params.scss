@@ -1,0 +1,20 @@
+.transformation-params {
+  width: 100%;
+
+  select {
+    margin: 0;
+    color: black;
+  }
+
+  .param-buttons {
+    padding-top: 5px;
+    border-top: 1px solid $light-gray;
+
+    text-align: right;
+  }
+
+  .param-desc {
+    padding-left: 5px;
+    width: 20px;
+  }
+}

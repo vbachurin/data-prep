@@ -1,7 +1,7 @@
-FROM nginx:latest
+FROM eboraas/apache:latest
 
 # copy source of web-app to web server 
-COPY dist /usr/share/nginx/html
+COPY dist /var/www/
 
 # copy the scrit that will init host:port of api rest service
 COPY docker/init_docker.sh /init_docker.sh

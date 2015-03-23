@@ -28,4 +28,9 @@
   .grid-header-menu {
     @include menu-list;
   }
+
+  .dropdown-menu,
+  .dropdown-action {
+    outline: none;
+  }
 }

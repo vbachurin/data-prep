@@ -5,6 +5,10 @@
 
   &.slide-hide {
     @include flex(0 20px);
+
+    .content {
+      width: 0;
+    }
   }
 
   &.slide-hide-add,
@@ -22,10 +26,12 @@
   @include justify-content(space-between);
 
   .content {
-    order: 2;
+    transition: 0.5s ease width;
     @include flex(1 0);
+    order: 2;
 
     overflow: auto;
+    width: $width;
 
     .content-container {
       width: $width;

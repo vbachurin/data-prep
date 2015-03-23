@@ -4,7 +4,6 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.core.Is.is;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -19,12 +18,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.jayway.restassured.RestAssured;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -153,6 +150,17 @@ public class TransformationServiceTests {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("cutAction.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test4.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test4_cutAction.json"));
+        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+                .post("/transform?actions=" + encode(actions)).asString();
+        assertEquals(expectedContent, transformedContent, false);
+    }
+
+    @Test
+    public void deleteEmptyActionString() throws Exception {
+        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("deleteEmptyAction.json"));
+        String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
+        String expectedContent = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("test3_deleteEmptyAction.json"));
         String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);

@@ -6,6 +6,11 @@ module.exports = function(config){
 
     // Override base config
     config.set({
-        reporters: ['progress', 'coverage', 'junit']
+        reporters: ['progress', 'coverage', 'junit'],
+        coverageReporter : {
+ 			type : 'cobertura',
+			dir : 'coverage/',
+  			file : 'coverage.xml'
+		}
     });
 };
