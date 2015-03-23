@@ -2,7 +2,8 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Locale;
 
-import org.talend.dataprep.transformation.i18n.MessagesBundle;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.talend.dataprep.i18n.MessagesBundle;
 
 public class Parameter {
 
@@ -26,31 +27,19 @@ public class Parameter {
     }
 
     /**
-     * Temp method, cleaner solution should use Spring mappoiing with following method.
-     */
-    public String getLabel() {
-        return getLabel(Locale.ENGLISH);
-    }
-
-    /**
      * the label of the parameter, translated in the user locale.
      */
-    public String getLabel(Locale locale) {
-        return MessagesBundle.getString(locale, "parameter." + getName() + ".label");
-    }
-
-    /**
-     * Temp method, cleaner solution should use Spring mappoiing with following method.
-     */
-    public String getDescription() {
-        return getDescription(Locale.ENGLISH);
+    public String getLabel() {
+        Locale locale = LocaleContextHolder.getLocale();
+        return MessagesBundle.getString("parameter." + getName() + ".label", locale);
     }
 
     /**
      * the description of the parameter, translated in the user locale.
      */
-    public String getDescription(Locale locale) {
-        return MessagesBundle.getString(locale, "parameter." + getName() + ".desc");
+    public String getDescription() {
+        Locale locale = LocaleContextHolder.getLocale();
+        return MessagesBundle.getString("parameter." + getName() + ".desc", locale);
     }
 
     public String getType() {
