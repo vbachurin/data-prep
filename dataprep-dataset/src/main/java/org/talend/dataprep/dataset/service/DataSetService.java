@@ -7,14 +7,12 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.jms.Message;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -215,25 +213,6 @@ public class DataSetService {
         // Save data set content
         contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
         dataSetMetadataRepository.add(dataSetMetadata);
-        // Content was changed, so queue events (schema analysis, content indexing for search...)
-        queueEvents(dataSetId, jmsTemplate);
-    }
-
-    @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
-    @Timed
-    @VolumeMetered
-    public void updateContent(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @RequestParam(value = "actions", required = true) @ApiParam(name = "actions", value = "Actions that lead to the content update (Base64 encoded)") String actions,
-            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
-        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        if (dataSetMetadata == null) {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return;
-        }
-        // Save data set content
-        contentStore.store(dataSetMetadata, dataSetContent, actions);
         // Content was changed, so queue events (schema analysis, content indexing for search...)
         queueEvents(dataSetId, jmsTemplate);
     }
