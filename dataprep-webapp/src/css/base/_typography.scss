@@ -1,9 +1,10 @@
 //override bourbon variable
 $base-font-family: $sourcesanspro;
+$heading-font-family: $base-font-family;
 
-html {
+body {
   background-color: white;
-  font-family: $sourcesanspro;
+  font-family: $base-font-family;
   font-weight: normal;
 }
 
@@ -14,6 +15,10 @@ h1, h5 {
 
 h5 {
   color: $secondary-title;
+}
+
+button {
+  font-family: $base-font-family;
 }
 
 .error {
