@@ -1,4 +1,6 @@
 // Base scss only contains Reset, typography, ...
 // Do not import a file before 'normalize'
+
+@import "sourcesanspro";
 @import "typography";
 @import "table";
