@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.service.command.DataSetGet;
-import org.talend.dataprep.api.service.command.DataSetUpdate;
 import org.talend.dataprep.api.service.command.Transform;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -44,11 +43,9 @@ public class TransformAPI extends APIService {
             HystrixCommand<InputStream> contentRetrieval = new DataSetGet(client, contentServiceUrl, dataSetId, false, false);
             HystrixCommand<InputStream> transformation = new Transform(client, transformServiceUrl, contentRetrieval,
                     encodedActions);
-            HystrixCommand<InputStream> update = new DataSetUpdate(client, contentServiceUrl, dataSetId, transformation,
-                    encodedActions);
             // Perform transformation
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(update.execute(), outputStream);
+            IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
         } catch (Exception e) {
             throw new RuntimeException("Unable to transform data set #" + dataSetId + ".", e);
