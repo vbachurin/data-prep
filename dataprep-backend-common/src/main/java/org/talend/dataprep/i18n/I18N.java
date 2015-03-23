@@ -11,7 +11,7 @@ public class I18N {
     public ResourceBundleMessageSource getResourceBundle() {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
         source.setBasename("messages"); //$NON-NLS-1$
-        source.setUseCodeAsDefaultMessage(false);
+        source.setUseCodeAsDefaultMessage(true);
         return source;
     }
 }
