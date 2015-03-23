@@ -1,8 +1,18 @@
+
+// Application width (data-prep grid is full-screen)
+$max-width: 1140px !important;
+
+// Background overlay
+$color-overlay-background: #0b1f30;
+$opacity-overlay-background: 0.9;
+
 // Secondary colors
 $secondary-title: #AEAEAE;
-$secondary-text: #999999;
+$secondary-text: #99999A;
 
 // button colors
+$button-important: #b6be00;
+$button-toggle: transparent;
 $button-primary: #b6be00;
 $button-primary-text: white;
 $button-secondary: #e2e2e2;
@@ -17,6 +27,12 @@ $color-ok:#8abc00 ;
 $color-warning: #ffcd00 ;
 $color-error: #ce6564 ;
 
+//drop shadows
+$icon-drop-shadow: 0px 1px 1px rgba(0, 0, 0, 1);
+$box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.5);
+$box-shadow-to-right: 5px 3px 10px rgba(212, 212, 212, .6);
+$box-shadow-to-left: -5px 0px 8px rgba(0, 0, 0, 0.1);
+
 // colors
 $white: #FFFFFF ;
 $blue: #4fc1de ;
@@ -24,5 +40,6 @@ $dark-blue: #266092 ;
 $green: #c1d906 ;
 $dark-gray: #555964 ;
 $medium-gray: #99999a ;
+$shadow-gray: #d4d4d4 ;
 $light-gray: #e3e3e3 ;
 $black: #000000 ;

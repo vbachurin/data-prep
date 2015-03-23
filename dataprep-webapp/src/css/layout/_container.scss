@@ -17,10 +17,18 @@
   @include flex(0 300px);
 }
 
-.flex-menu {
+.flex-menu-left, .flex-menu-right {
   @extend .flex-side;
-  @include flex(0 240px);
+  @include flex(0 200px);
   @include calc(height, "100vh - 160px");
+}
+
+.flex-menu-left{
+  box-shadow: $box-shadow-to-right;
+}
+
+.flex-menu-right{
+  box-shadow: $box-shadow-to-left;
 }
 
 .flex-center {
