@@ -2,7 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Types;
-import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 
 public class FillWithDefaultIfEmptyInteger extends FillWithDefaultIfEmpty {
 

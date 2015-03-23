@@ -6,11 +6,11 @@ import org.talend.dataprep.transformation.i18n.MessagesBundle;
 
 public class Parameter {
 
-    String name;
+    private final String name;
 
-    String type;
+    private final String type;
 
-    String defaultValue;
+    private final String defaultValue;
 
     public Parameter(String name, String type, String defaultValue) {
         this.name = name;
@@ -35,7 +35,7 @@ public class Parameter {
     /**
      * the label of the parameter, translated in the user locale.
      */
-    public String getLabel(Locale locale) {
+    private String getLabel(Locale locale) {
         return MessagesBundle.getString(locale, "parameter." + getName() + ".label");
     }
 
@@ -49,7 +49,7 @@ public class Parameter {
     /**
      * the description of the parameter, translated in the user locale.
      */
-    public String getDescription(Locale locale) {
+    private String getDescription(Locale locale) {
         return MessagesBundle.getString(locale, "parameter." + getName() + ".desc");
     }
 

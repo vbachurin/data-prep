@@ -15,21 +15,21 @@ import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 /**
  * Split a cell value on a separator.
  * 
- * THIS ACTION IS NOT MAPPED YET IN ActionParser NAND SUGGESTED. It was designed to test conditionnal parameters in ui.
+ * THIS ACTION IS NOT MAPPED YET IN ActionParser AND SUGGESTED. It was designed to test conditional parameters in ui.
  * Remove this comments when action is registered.
  */
 public class Split implements ActionMetadata {
 
-    public static final String         COLUMN_NAME_PARAMETER      = "column_name";     //$NON-NLS-1$
+    private static final String         COLUMN_NAME_PARAMETER      = "column_name";     //$NON-NLS-1$
 
     // The separator shown to the user as a list. An item in this list is the value 'other', which allow the user to
     // manually enter its separator.
-    public static final String         SEPARATOR_PARAMETER        = "separator";       //$NON-NLS-1$
+    private static final String         SEPARATOR_PARAMETER        = "separator";       //$NON-NLS-1$
 
     // The separator manually specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'
-    public static final String         MANUAL_SEPARATOR_PARAMETER = "manual_separator"; //$NON-NLS-1$
+    private static final String         MANUAL_SEPARATOR_PARAMETER = "manual_separator"; //$NON-NLS-1$
 
-    public static final String         SPLIT_ACTION_NAME          = "split";           //$NON-NLS-1$
+    private static final String         SPLIT_ACTION_NAME          = "split";           //$NON-NLS-1$
 
     public static final ActionMetadata INSTANCE                   = new Split();
 
