@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class PreparationMetadataModule extends SimpleModule {
 
-    public static Module DEFAULT = new PreparationMetadataModule();
+    public static final Module DEFAULT = new PreparationMetadataModule();
 
     private PreparationMetadataModule() {
         super(DataSetMetadata.class.getName(), new Version(1, 0, 0, null, null, null));

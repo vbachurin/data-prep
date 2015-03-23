@@ -77,7 +77,7 @@ public class ObjectUtils {
         }
     }
 
-    public static void prettyPrint(Repository repository, Step step, OutputStream out) {
+    private static void prettyPrint(Repository repository, Step step, OutputStream out) {
         if (step == null) {
             return;
         }
@@ -93,7 +93,7 @@ public class ObjectUtils {
         }
     }
 
-    public static void prettyPrint(Blob blob, OutputStream out) {
+    private static void prettyPrint(Blob blob, OutputStream out) {
         if (blob == null) {
             return;
         }

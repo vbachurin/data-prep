@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Repository {
 
-    private Map<String, Object> store = new HashMap<>();
+    private final Map<String, Object> store = new HashMap<>();
 
     public Repository() {
         add(RootBlob.INSTANCE);
