@@ -35,7 +35,7 @@ public class Parameter {
     /**
      * the label of the parameter, translated in the user locale.
      */
-    private String getLabel(Locale locale) {
+    public String getLabel(Locale locale) {
         return MessagesBundle.getString(locale, "parameter." + getName() + ".label");
     }
 
@@ -49,7 +49,7 @@ public class Parameter {
     /**
      * the description of the parameter, translated in the user locale.
      */
-    private String getDescription(Locale locale) {
+    public String getDescription(Locale locale) {
         return MessagesBundle.getString(locale, "parameter." + getName() + ".desc");
     }
 
