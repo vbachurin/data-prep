@@ -5,9 +5,18 @@
         var vm = this;
         vm.filterService = FilterService;
 
-        vm.delete = function(filter) {
-            FilterService.removeFilter(filter);
-        };
+        /**
+         * Delete a filter
+         * @param filter
+         */
+        vm.delete = FilterService.removeFilter;
+
+        /**
+         * Update a filter
+         * @param filter
+         * @param newValue
+         */
+        vm.update = FilterService.updateFilter;
     }
 
     Object.defineProperty(FilterListCtrl.prototype,

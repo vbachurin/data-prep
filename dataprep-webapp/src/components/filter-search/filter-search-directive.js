@@ -9,7 +9,14 @@
             scope: {},
             bindToController: true,
             controllerAs: 'filterCtrl',
-            controller: 'FilterSearchCtrl'
+            controller: 'FilterSearchCtrl',
+            link: function(scope, iElement) {
+                iElement.bind('keydown', function (e) {
+                    if(e.keyCode === 27) {
+                        e.stopPropagation();
+                    }
+                });
+            }
         };
     }
 

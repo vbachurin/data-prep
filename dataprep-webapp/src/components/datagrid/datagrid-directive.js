@@ -221,9 +221,9 @@
                 /**
                  * When filter change, displayed values change, so we reset active cell and cell styles
                  */
-                scope.$watch(
+                scope.$watchCollection(
                     function () {
-                        return FilterService.filters.length;
+                        return FilterService.filters;
                     },
                     function () {
                         if(grid) {

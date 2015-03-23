@@ -25,16 +25,18 @@
         self.colId = colId;
         self.args = args;
         self.filterFn = filterFn;
-        self.toString = function() {
-            var result = self.colId.toUpperCase() + ': ';
+        /*self.value = function() {
             switch(type) {
                 case 'contains':
-                    result += args.phrase;
-                    break;
+                    return self.args.phrase;
             }
-
-            return result;
-        };
+        };*/
+        self.__defineGetter__("value", function(){
+            switch(self.type) {
+                case 'contains':
+                    return self.args.phrase;
+            }
+        });
     }
 
     function FilterService(DatasetGridService) {
@@ -109,6 +111,29 @@
                 DatasetGridService.removeFilter(filter.filterFn);
                 self.filters.splice(filterIndex, 1);
             }
+        };
+
+        /**
+         * Update existing filter and update datagrid filters
+         * @param oldFilter - the old filter to update
+         * @param newValue - the new filter value
+         */
+        self.updateFilter = function(oldFilter, newValue) {
+            var index = self.filters.indexOf(oldFilter);
+            var oldFn = oldFilter.filterFn;
+
+            var newArgs;
+            var newFilterFn;
+            switch(oldFilter.type) {
+                case 'contains':
+                    newArgs = { phrase: newValue};
+                    newFilterFn = createContainFilter(oldFilter.colId, newValue);
+                    break;
+            }
+            var newFilter = new Filter(oldFilter.type, oldFilter.colId, newArgs, newFilterFn);
+
+            DatasetGridService.updateFilter(oldFn, newFilter.filterFn);
+            self.filters.splice(index, 1, newFilter);
         };
     }
 

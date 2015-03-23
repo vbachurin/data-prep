@@ -1,20 +1,25 @@
 describe('Filter search directive', function() {
     'use strict';
     
-    var scope, createElement;
+    var scope, createElement, element;
 
     beforeEach(module('data-prep.filter-list'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function($rootScope, $compile, $timeout) {
         scope = $rootScope.$new();
         createElement = function() {
-            var element = angular.element('<filter-list></filter-list>');
+            element = angular.element('<filter-list></filter-list>');
             $compile(element)(scope);
+            $timeout.flush();
             scope.$digest();
-            return element;
         };
     }));
+    
+    afterEach(function() {
+        scope.$destroy();
+        element.remove();
+    });
 
     it('should render filter list badges', inject(function(FilterService) {
         //given
@@ -23,13 +28,16 @@ describe('Filter search directive', function() {
         FilterService.addFilter('contains', 'col3', {phrase: 'titi'});
 
         //when
-        var element = createElement();
+        createElement();
 
         //then
         expect(element.find('.badge-notice').length).toBe(3);
-        expect(element.find('.badge-notice').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('COL1: toto x');
-        expect(element.find('.badge-notice').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('COL2: tata x');
-        expect(element.find('.badge-notice').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('COL3: titi x');
+        expect(element.find('.badge-notice').eq(0).find('.text').text().trim()).toBe('col1');
+        expect(element.find('.badge-notice').eq(0).find('.editable-input').val()).toBe('toto');
+        expect(element.find('.badge-notice').eq(1).find('.text').text().trim()).toBe('col2');
+        expect(element.find('.badge-notice').eq(1).find('.editable-input').val()).toBe('tata');
+        expect(element.find('.badge-notice').eq(2).find('.text').text().trim()).toBe('col3');
+        expect(element.find('.badge-notice').eq(2).find('.editable-input').val()).toBe('titi');
     }));
 
     it('should remove badge on close click', inject(function(FilterService) {
@@ -38,7 +46,7 @@ describe('Filter search directive', function() {
         FilterService.addFilter('contains', 'col2', {phrase: 'tata'});
         FilterService.addFilter('contains', 'col3', {phrase: 'titi'});
 
-        var element = createElement();
+        createElement();
 
         //when
         element.find('.badge-notice').eq(0).find('.badge-close').click();
@@ -46,7 +54,9 @@ describe('Filter search directive', function() {
 
         //then
         expect(element.find('.badge-notice').length).toBe(2);
-        expect(element.find('.badge-notice').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('COL2: tata x');
-        expect(element.find('.badge-notice').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('COL3: titi x');
+        expect(element.find('.badge-notice').eq(0).find('.badge-item').eq(0).text().trim()).toBe('col2');
+        expect(element.find('.badge-notice').eq(1).find('.badge-item').eq(0).text().trim()).toBe('col3');
+        expect(element.find('.badge-notice').eq(0).find('.editable-input').eq(0).val().trim()).toBe('tata');
+        expect(element.find('.badge-notice').eq(1).find('.editable-input').eq(0).val().trim()).toBe('titi');
     }));
 });

@@ -23,7 +23,7 @@ describe('Dropdown directive', function () {
 
         createFormElement = function () {
             var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton">' +
-                '   <input type="text" id="firstInput" />' +
+                '   <input type="text" id="firstInput" class="no-focus"/>' +
                 '   <input type="text" id="secondInput" />' +
                 '</talend-modal>';
             element = $compile(html)(scope);
@@ -339,7 +339,7 @@ describe('Dropdown directive', function () {
         expect(document.activeElement.className).toBe('modal-inner');
     });
 
-    it('should focus on first input on show', function () {
+    it('should focus on second input on show coz first has "no-focus" class', function () {
         //given
         scope.fullscreen = false;
         scope.state = false;
@@ -355,7 +355,7 @@ describe('Dropdown directive', function () {
         scope.$digest();
 
         //then
-        expect(document.activeElement.id).toBe('firstInput');
+        expect(document.activeElement.id).toBe('secondInput');
     });
 
     it('should focus on next last shown modal on focused modal close', function () {

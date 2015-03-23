@@ -27,9 +27,24 @@ $success-color: #e6efc2 !default;
   cursor: pointer;
   font-size: 1.5em;
   background: transparent;
-  margin-left: 8px;
 
   &:active {
     background: transparent;
+  }
+}
+
+.badge-item {
+  display: inline-block;
+  vertical-align: middle;
+
+  &.text {
+    text-transform: uppercase;
+  }
+
+  input[type="text"] {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
   }
 }

@@ -261,4 +261,28 @@ describe('Dataset grid service', function() {
         //then
         expect(rowsId).toEqual([1, 2, 3, 5]);
     }));
+
+    it('should update filter', inject(function(DatasetGridService) {
+        //given
+        var filterFnCol1 = function(item) {
+            return item.col1.indexOf('toto') > -1;
+        };
+        var filterFnCol2 = function(item) {
+            return item.col2.indexOf('toto') > -1;
+        };
+        var newFilterFnCol2 = function(item) {
+            return item.col2.indexOf('tata') > -1;
+        };
+        DatasetGridService.addFilter(filterFnCol1);
+        DatasetGridService.addFilter(filterFnCol2);
+        expect(DatasetGridService.filters.length).toBe(2);
+
+        //when
+        DatasetGridService.updateFilter(filterFnCol2, newFilterFnCol2);
+
+        //then
+        expect(DatasetGridService.filters.length).toBe(2);
+        expect(DatasetGridService.filters[0]).toBe(filterFnCol1);
+        expect(DatasetGridService.filters[1]).toBe(newFilterFnCol2);
+    }));
 });

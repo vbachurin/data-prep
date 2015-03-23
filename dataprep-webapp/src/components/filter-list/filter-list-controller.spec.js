@@ -33,7 +33,7 @@ describe('filter search controller', function() {
         expect(filter.type).toBe('contains');
         expect(filter.colId).toBe('col');
         expect(filter.args).toEqual({phrase: 'toto'});
-        expect(filter.toString()).toBe('COL: toto');
+        expect(filter.value).toBe('toto');
     }));
 
     it('should call filter service remove filter function', inject(function(FilterService) {

@@ -2,7 +2,10 @@
     <ul>
         <li>{{::'FILTER' | translate}} : </li>
         <li ng-repeat="filter in filterCtrl.filters track by $index">
-            <talend-badge text="{{filter.toString()}}" on-close="filterCtrl.delete(filter)"></talend-badge>
+            <talend-badge text="{{filter.colId}}"
+                          obj="filter"
+                          on-change="filterCtrl.update(obj, newValue)"
+                          on-close="filterCtrl.delete(obj)"></talend-badge>
         </li>
         <li>
             <filter-search></filter-search>

@@ -68,6 +68,7 @@
      * Element 'talend-modal' > attr 'close-button' : close button on top right
      * Element 'talend-modal' > attr 'talend-modal-close' : close action on click
      * Element 'talend-modal' > attr 'disable-enter' : prevent primary button click on ENTER key press. Default false (action is active)
+     * Element 'talend-modal' class 'no-focus' : prevent input with this class to be focused on modal show
      *
      * Fullscreen mode :
      * Element 'modal-header' : header content
@@ -172,7 +173,7 @@
                                 innerElement.focus();
 
                                 //focus on first input (ignore first because it's the state checkbox)
-                                var inputs = iElement.find('input');
+                                var inputs = iElement.find('input:not(".no-focus")').not('');
                                 if(inputs.length > 1) {
                                     inputs.eq(1).focus();
                                 }

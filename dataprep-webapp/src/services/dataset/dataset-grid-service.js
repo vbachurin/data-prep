@@ -194,6 +194,17 @@
         };
 
         /**
+         * Update a filter in dataview
+         * @param oldFilter - the filter function to replace
+         * @param newFilter - the new filter function
+         */
+        self.updateFilter = function(oldFilter, newFilter) {
+            var index = self.filters.indexOf(oldFilter);
+            self.filters.splice(index, 1, newFilter);
+            updateDataViewFilters();
+        };
+
+        /**
          * Remove a filter in dataview
          * @param filter - the filter function to remove
          */

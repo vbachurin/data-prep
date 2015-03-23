@@ -6,6 +6,7 @@ describe('Filter service', function() {
         spyOn(DatasetGridService, 'resetFilters').and.callFake(function() {});
         spyOn(DatasetGridService, 'addFilter').and.callFake(function() {});
         spyOn(DatasetGridService, 'removeFilter').and.callFake(function() {});
+        spyOn(DatasetGridService, 'updateFilter').and.callFake(function() {});
     }));
 
     it('should remove all filter and remove all datagrid filters', inject(function(FilterService, DatasetGridService) {
@@ -89,15 +90,37 @@ describe('Filter service', function() {
         expect(DatasetGridService.removeFilter.calls.count()).toBe(1);
     }));
 
-    it('should create filter info description string', inject(function(FilterService) {
+    it('should return filter value info for "contains" filter', inject(function(FilterService) {
         //given
         FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
         var filter1 = FilterService.filters[0];
 
         //when
-        var description = filter1.toString();
+        var value = filter1.value;
 
         //then
-        expect(description).toBe('COL1: Toto');
+        expect(value).toBe('Toto');
+    }));
+
+    it('should update filter and update datagrid filter', inject(function(FilterService, DatasetGridService) {
+        //given
+        FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col2', {phrase: 'Toto'});
+        var filter1 = FilterService.filters[0];
+        var filter2 = FilterService.filters[1];
+
+        //when
+        FilterService.updateFilter(filter2, 'Tata');
+
+        //then
+        var newFilter2 = FilterService.filters[1];
+        expect(FilterService.filters.length).toBe(2);
+        expect(FilterService.filters[0]).toBe(filter1);
+        expect(newFilter2).not.toBe(filter2);
+        expect(newFilter2.type).toBe('contains');
+        expect(newFilter2.colId).toBe('col2');
+        expect(newFilter2.args.phrase).toBe('Tata');
+        expect(newFilter2.value).toBe('Tata');
+        expect(DatasetGridService.updateFilter).toHaveBeenCalledWith(filter2.filterFn, newFilter2.filterFn);
     }));
 });
