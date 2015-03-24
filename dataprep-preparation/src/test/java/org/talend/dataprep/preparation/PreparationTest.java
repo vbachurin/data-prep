@@ -163,7 +163,7 @@ public class PreparationTest {
         when().get("/preparations/all")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"599725f0e1331d5f8aae24f22cd1ec768b10348d\"],\"actions\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"creationDate\":0,\"steps\":[\"599725f0e1331d5f8aae24f22cd1ec768b10348d\"],\"actions\":[]}]"));
+                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"599725f0e1331d5f8aae24f22cd1ec768b10348d\"],\"actions\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"creationDate\":0,\"steps\":[\"599725f0e1331d5f8aae24f22cd1ec768b10348d\"],\"actions\":[]}]").allowingAnyArrayOrdering());
     }
 
     @Test
