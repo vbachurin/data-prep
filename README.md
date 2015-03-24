@@ -1,20 +1,20 @@
 
 #![alt text](http://www.talend.com/sites/all/themes/talend_responsive/images/logo.png "Talend") Data Preparation Project  
-## Build statuses
-| _Branches_                  | _Status_ |
-|:-------------------------|-------------|
-| master                  | [![Build Status](https://magnum.travis-ci.com/Talend/data-prep.svg?token=pZH8ZcJXLuMxijJexq7J&branch=master)](https://magnum.travis-ci.com/Talend/data-prep) |
 
 ## Folders description
-| _Project_                  | _Description_ |
-|:-------------------------|-------------|
-| [dataprep-common](dataprep-common)          | *everything (utilities) common to all projects but not related to dataprep business* |
-| [dataprep-schema-analysis](dataprep-schema-analysis) | *stuff used to analyse (format, separator, schema, to-json) input data* |
-| [dataprep-webapp](dataprep-webapp)          | *web app client and dev server (real server will in another project)* |
-| [json_evaluation](json_evaluation)          | *evaluation of different json lib performance (jackson is identified as the faster). To remove?* |
-| [recipe_processor](recipe_processor)         | *currently different tests of the Spark engine + other technos tests (SparkSql)* |
-| [sample_builder](sample_builder)           | *Talend job builder (based on jobscript) [file/stream] -> [sampling/json file]* |
-
+| _Project_                                          | _Description_                                                        |
+|:---------------------------------------------------|----------------------------------------------------------------------|
+| [dataprep-api](dataprep-api)                       | *rest service on top of transformation & dataset, used by webapp*    |
+| [dataprep-backend-common](dataprep-backend-common) | *set of common objects shared by multiple services*                  |
+| [dataprep-backend](dataprep-backend)               | *parent project for all backend projects*                            |
+| [dataprep-dataset](dataprep-dataset)               | *rest service to manage datasets (import, export, sample, stats)*    |
+| [dataprep-metrics](dataprep-metrics)               | *library to monitor rest services*                                   |
+| [dataprep-platform-tests](dataprep-platform_tests) | *Gatling config for stress testing on rest services*                 |
+| [dataprep-platform](dataprep-platform)             | *fig files*                                                          |
+| [dataprep-preparation](dataprep-preparation)       | *rest service to manage preparations (create, list steps, get data)* |
+| [dataprep-transformation](dataprep-transformation) | *rest service to apply transformations (actions are here)*           |
+| [dataprep-webapp](dataprep-webapp)                 | *web app (AngularJS)*                                                |
+| [tooling](tooling)                                 | *IDE specific config files + some other stuff*                       |
 
 ### Back-end
 
