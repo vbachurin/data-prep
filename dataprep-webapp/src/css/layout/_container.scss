@@ -29,6 +29,7 @@
 
 .flex-menu-right{
   box-shadow: $box-shadow-to-left;
+  @include transition-duration(0.3s)
 }
 
 .flex-center {

@@ -1,9 +1,13 @@
+// Sub Header
 $subheader-height: 51px;
 $subheader-background: #EEEEEF;
 
 .subheader {
   background-color: $subheader-background;
-  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+
+  border-bottom: 1px solid $light-gray;
+
+  box-shadow: $box-shadow;
   
   .subheader-wrapper {
     @include outer-container;
@@ -13,7 +17,7 @@ $subheader-background: #EEEEEF;
       
       li {
         float: left;
-        
+
         &.primary {
           padding-right: 30px;
         }
@@ -21,5 +25,48 @@ $subheader-background: #EEEEEF;
       
     }
   }
-  
+
+  .subheader-right {
+
+    button {
+      padding-top: 2px;
+      float: right;
+
+      //reset os styles
+      border: 1px solid transparent;
+      outline:none;
+
+      &.btnToggleON {
+        border: 1px solid $medium-gray;
+        background-color: adjust-color($light-gray, $lightness: -10%, $alpha: -0.0)!important;
+      }
+
+      &:hover {
+        background-color: $light-gray!important;
+      }
+    }
+  }
+}
+
+.t-btn-import-new-file{
+  background: $button-important url('/assets/images/import_new_file.png') no-repeat 10px 5px !important;
+  padding: 0px 10px 0px 45px!important;
+  color: $white;
+}
+
+.t-btn-expand-collapse-RHP{
+  background: $button-toggle url('/assets/images/collapse_right_panel.png') no-repeat 10px 5px !important;
+  padding: 0px 5px 0px 40px!important;
+}
+
+.t-btn-view-mode{
+  background: $button-toggle url('/assets/images/view_mode.png') no-repeat 10px 7px !important;
+  padding: 0px 5px 0px 40px!important;
+}
+
+.t-rhs-to-width-0px {
+  width: 0px !important;
+  padding: 0px !important;
+  flex: 0 0 0px !important;
+  border-left: 0px solid transparent !important;
 }

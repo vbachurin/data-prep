@@ -24,7 +24,16 @@
             vm.datasetNameModal = true;
         };
 
-        /**
+        vm.hideLandingPage = function () {
+          $('#landingPage').toggleClass('hidden');
+          $('#inventoryList').toggleClass('hidden');
+        }
+
+        vm.showHideRightPanel = function(){
+          $('.flex-menu-right').toggleClass('t-rhs-to-width-0px');
+        };
+
+      /**
          * Upload dataset : Step 2 - name entered
          */
         vm.uploadDatasetName = function() {
@@ -117,8 +126,9 @@
                     MessageService.error('UPLOAD_ERROR_TITLE', 'UPLOAD_ERROR');
                 });
         };
+
     }
 
-    angular.module('data-prep.home')
+    angular.module('data-prep')
         .controller('HomeCtrl', HomeCtrl);
 })();
