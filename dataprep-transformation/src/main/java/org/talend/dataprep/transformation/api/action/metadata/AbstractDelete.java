@@ -11,10 +11,6 @@ public abstract class AbstractDelete implements ActionMetadata {
 
     public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
 
-    public Type getType() {
-        return Type.OPERATION;
-    }
-
     @Override
     public String getCategory() {
         return "case";
@@ -23,11 +19,6 @@ public abstract class AbstractDelete implements ActionMetadata {
     @Override
     public Item[] getItems() {
         return new Item[0];
-    }
-
-    @Override
-    public String getValue() {
-        return StringUtils.EMPTY;
     }
 
     @Override

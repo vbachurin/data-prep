@@ -3,8 +3,6 @@
     "category": "case",
     "items": [],
     "name": "uppercase",
-    "value": "",
-    "type": "OPERATION",
     "parameters": [
       {
         "name": "column_name",
@@ -17,8 +15,6 @@
     "category": "case",
     "items": [],
     "name": "lowercase",
-    "value": "",
-    "type": "OPERATION",
     "parameters": [
       {
         "name": "column_name",
@@ -31,8 +27,6 @@
     "category": "repair",
     "items": [],
     "name": "fillemptywithdefault",
-    "value": "",
-    "type": "OPERATION",
     "parameters": [
       {
         "name": "column_name",
@@ -48,8 +42,6 @@
   },
   {
     "name": "delete_empty",
-    "value": "",
-    "type": "OPERATION",
     "parameters": [
       {
         "name": "column_name",
@@ -60,8 +52,6 @@
   },
   {
     "name": "delete_on_value",
-    "value": "",
-    "type": "OPERATION",
     "parameters": [
       {
         "name": "column_name",
@@ -81,8 +71,6 @@
     "name": "cut",
     "label":"Cut",
     "description":"Remove specified text from cells in this column",
-    "value": "",
-    "type": "OPERATION",
     "parameters": [
       {
         "name": "column_name",

@@ -16,18 +16,18 @@ import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
  */
 public class Split implements ActionMetadata {
 
-    private static final String         COLUMN_NAME_PARAMETER      = "column_name";     //$NON-NLS-1$
+    private static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
 
     // The separator shown to the user as a list. An item in this list is the value 'other', which allow the user to
     // manually enter its separator.
-    private static final String         SEPARATOR_PARAMETER        = "separator";       //$NON-NLS-1$
+    private static final String SEPARATOR_PARAMETER = "separator"; //$NON-NLS-1$
 
     // The separator manually specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'
-    private static final String         MANUAL_SEPARATOR_PARAMETER = "manual_separator"; //$NON-NLS-1$
+    private static final String MANUAL_SEPARATOR_PARAMETER = "manual_separator"; //$NON-NLS-1$
 
-    private static final String         SPLIT_ACTION_NAME          = "split";           //$NON-NLS-1$
+    private static final String SPLIT_ACTION_NAME = "split"; //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE                   = new Split();
+    public static final ActionMetadata INSTANCE = new Split();
 
     private Split() {
     }
@@ -38,18 +38,8 @@ public class Split implements ActionMetadata {
     }
 
     @Override
-    public Type getType() {
-        return Type.OPERATION;
-    }
-
-    @Override
     public String getCategory() {
         return "repair";
-    }
-
-    @Override
-    public String getValue() {
-        return StringUtils.EMPTY;
     }
 
     @Override
@@ -57,10 +47,11 @@ public class Split implements ActionMetadata {
         return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY) };
     }
 
+    @Override
     public Item[] getItems() {
         Value[] values = new Value[] { new Value(":", true), new Value("@"),
                 new Value("other", new Parameter(MANUAL_SEPARATOR_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY)) };
-        return new Item[] { new Item(SEPARATOR_PARAMETER, Type.LIST, "categ", values) };
+        return new Item[] { new Item(SEPARATOR_PARAMETER, "categ", values) };
     }
 
     @Override

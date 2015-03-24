@@ -35,7 +35,7 @@ public class FillWithDefaultIfEmptyBoolean extends AbstractDefaultIfEmpty {
     @Override
     public Item[] getItems() {
         Value[] values = new Value[] { new Value("True", true), new Value("False") }; //$NON-NLS-1$//$NON-NLS-2$
-        return new Item[] { new Item(DEFAULT_VALUE_PARAMETER, Type.LIST, "categ", values) }; //$NON-NLS-1$
+        return new Item[] { new Item(DEFAULT_VALUE_PARAMETER, "categ", values) }; //$NON-NLS-1$
     }
 
 }

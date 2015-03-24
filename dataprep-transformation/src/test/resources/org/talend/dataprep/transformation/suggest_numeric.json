@@ -3,8 +3,6 @@
     "category": "repair",
     "items": [],
     "name": "fillemptywithdefaultinteger",
-    "value": "",
-    "type": "OPERATION",
     "parameters": [
       {
         "name": "column_name",

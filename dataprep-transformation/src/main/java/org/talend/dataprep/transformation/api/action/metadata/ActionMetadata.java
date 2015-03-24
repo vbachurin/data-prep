@@ -32,8 +32,6 @@ public interface ActionMetadata {
         return MessagesBundle.getString("action." + getName() + ".desc");
     }
 
-    Type getType();
-
     String getCategory();
 
     /**
@@ -41,8 +39,6 @@ public interface ActionMetadata {
      * the front end.
      **/
     Item[] getItems();
-
-    String getValue();
 
     /**
      * return the list of input parameters required for this Action to be executed. represent as text input field on the

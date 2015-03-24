@@ -33,11 +33,6 @@ public class UpperCase implements ActionMetadata {
     }
 
     @Override
-    public Type getType() {
-        return Type.OPERATION;
-    }
-
-    @Override
     public String getCategory() {
         return "case"; //$NON-NLS-1$
     }
@@ -45,11 +40,6 @@ public class UpperCase implements ActionMetadata {
     @Override
     public Item[] getItems() {
         return new Item[0];
-    }
-
-    @Override
-    public String getValue() {
-        return StringUtils.EMPTY;
     }
 
     @Override

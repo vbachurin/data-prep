@@ -9,16 +9,13 @@ public class Item {
 
     private final String name;
 
-    private final Type type;
-
     private final String category;
 
     private final Value[] values;
 
-    public Item(String name, Type type, String category, Value[] values) {
+    public Item(String name, String category, Value[] values) {
         super();
         this.name = name;
-        this.type = type;
         this.category = category;
         this.values = values;
     }
@@ -41,10 +38,6 @@ public class Item {
     public String getDescription() {
         Locale locale = LocaleContextHolder.getLocale();
         return MessagesBundle.getString("parameter." + getName() + ".desc", locale);
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public String getCategory() {
