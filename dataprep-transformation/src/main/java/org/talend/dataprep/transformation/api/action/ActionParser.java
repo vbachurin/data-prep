@@ -12,12 +12,8 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.DataSetRow;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.metadata.*;
 
 @Component
 public class ActionParser implements BeanFactoryAware {

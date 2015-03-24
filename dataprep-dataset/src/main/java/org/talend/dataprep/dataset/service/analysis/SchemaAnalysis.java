@@ -2,11 +2,7 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -17,14 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.DataSetContent;
-import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetContent;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.service.Destinations;
-import org.talend.dataprep.dataset.service.analysis.schema.FormatGuess;
-import org.talend.dataprep.dataset.service.analysis.schema.FormatGuesser;
-import org.talend.dataprep.dataset.service.analysis.schema.SchemaParser;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.FormatGuesser;
+import org.talend.dataprep.schema.SchemaParser;
 
 @Component
 public class SchemaAnalysis {

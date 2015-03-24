@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.transformation.exception.Messages;
 

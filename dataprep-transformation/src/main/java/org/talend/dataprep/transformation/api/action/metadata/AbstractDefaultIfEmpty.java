@@ -3,7 +3,7 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.api.dataset.DataSetRow;
 
 public abstract class AbstractDefaultIfEmpty implements ActionMetadata {
 

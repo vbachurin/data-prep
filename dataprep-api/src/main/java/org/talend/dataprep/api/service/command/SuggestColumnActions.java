@@ -12,8 +12,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.http.MediaType;
-import org.talend.dataprep.api.ColumnMetadata;
-import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -22,11 +22,11 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.Application;
-import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.preparation.PreparationRepository;
+import org.talend.dataprep.api.preparation.RootStep;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-import org.talend.dataprep.preparation.PreparationRepository;
-import org.talend.dataprep.preparation.RootStep;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
