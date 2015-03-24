@@ -17,7 +17,7 @@
   @include flex(0 300px);
 }
 
-.flex-menu-left, .flex-menu-right {
+.flex-menu-left {
   @extend .flex-side;
   @include flex(0 200px);
   @include calc(height, "100vh - 160px");
@@ -25,11 +25,6 @@
 
 .flex-menu-left{
   box-shadow: $box-shadow-to-right;
-}
-
-.flex-menu-right{
-  box-shadow: $box-shadow-to-left;
-  @include transition-duration(0.3s)
 }
 
 .flex-center {

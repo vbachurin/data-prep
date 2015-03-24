@@ -52,6 +52,23 @@ describe('Home controller', function() {
             spyOn(DatasetListService, 'refreshDatasets').and.returnValue(null);
         }));
 
+        it('should toggle right panel flag', function() {
+            //given
+            expect(ctrl.showRightPanel).toBe(true);
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(ctrl.showRightPanel).toBe(false);
+
+            //when
+            ctrl.toggleRightPanel();
+
+            //then
+            expect(ctrl.showRightPanel).toBe(true);
+        });
+
         it('should remove file extension for name init and display name modal on step 1', function() {
             //given
             expect(ctrl.datasetNameModal).toBeFalsy();

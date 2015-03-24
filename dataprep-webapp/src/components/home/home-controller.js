@@ -3,12 +3,20 @@
 
     function HomeCtrl(MessageService, DatasetService, DatasetListService, TalendConfirmService) {
         var vm = this;
+        vm.showRightPanel = true;
 
         /**
          * Array of all uploading datasets
          * @type {Array}
          */
         vm.uploadingDatasets = [];
+
+        /**
+         * Show/Hide right panel containing inventory data
+         */
+        vm.toggleRightPanel = function() {
+            vm.showRightPanel = !vm.showRightPanel;
+        };
 
         /**
          * Upload dataset : Step 1 - file selected
@@ -24,16 +32,7 @@
             vm.datasetNameModal = true;
         };
 
-        vm.hideLandingPage = function () {
-          $('#landingPage').toggleClass('hidden');
-          $('#inventoryList').toggleClass('hidden');
-        }
-
-        vm.showHideRightPanel = function(){
-          $('.flex-menu-right').toggleClass('t-rhs-to-width-0px');
-        };
-
-      /**
+        /**
          * Upload dataset : Step 2 - name entered
          */
         vm.uploadDatasetName = function() {
@@ -129,6 +128,6 @@
 
     }
 
-    angular.module('data-prep')
+    angular.module('data-prep.home')
         .controller('HomeCtrl', HomeCtrl);
 })();

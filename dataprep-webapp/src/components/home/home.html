@@ -17,7 +17,7 @@
             <dataset-list></dataset-list>
         </div>
 
-        <div class="flex-menu-right side-menu inventory-data">
+        <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-side inventory-data">
             <p class="title">{{ ::'INVENTORY_DATA' | translate }}</p>
             <hr/>
             <p class="empty">
@@ -25,7 +25,7 @@
                 <br/>
                 {{ ::'SELECT_DATASET_DESCRIPTION' | translate }}
             </p>
-        </div>
+        </talend-slidable>
     </div>
 
     <dataset-playground></dataset-playground>

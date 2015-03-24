@@ -1,9 +1,9 @@
-@mixin slidable-size($size) {
+@mixin slidable-size($size, $actionSize) {
   $width: $size - 20px;
   @include flex(0 $size);
 
   &.slide-hide {
-    @include flex(0 20px);
+    @include flex(0 $actionSize);
 
     .content {
       width: 0;
@@ -20,7 +20,7 @@
 
   &.slide-hide-add.slide-hide-add-active,
   &.slide-hide-remove {
-    @include flex(0 20px);
+    @include flex(0 $actionSize);
   }
 
   .content {
@@ -28,10 +28,14 @@
       width: $width;
     }
   }
+
+  .action {
+    @include flex(0 20px);
+  }
 }
 
 .slidable {
-  @include slidable-size(300px);
+  @include slidable-size(300px, 20px);
 
   transition: 0.5s ease flex;
 
@@ -53,7 +57,6 @@
     justify-content: center;
     align-items: center;
 
-    @include flex(0 20px);
     order: 3;
 
     &.right {

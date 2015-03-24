@@ -1,11 +1,25 @@
 .inventory-data {
-  padding: 20px;
-  
-  .title {
-    font-size: 1.5em;
+  $width: 240px;
+
+  @include slidable-size($width, 0px);
+  box-shadow: $box-shadow-to-left;
+
+  .content {
+    .content-container {
+      width: $width;
+      padding: 20px;
+
+      .title {
+        font-size: 1.5em;
+      }
+
+      .empty {
+        text-align: center;
+      }
+    }
   }
-  
-  .empty {
-    text-align: center;
+
+  .action {
+    display: none;
   }
 }
