@@ -61,7 +61,6 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
 		  '!src/**/*.mock.js',
 		  '!src/lib/**/*.*'
 		])
-//		.pipe($.debug({title: 'files to be injected:'}))
         .pipe($.naturalSort())//This fixes a angularFileSort issue : https://github.com/klei/gulp-angular-filesort/issues/17
 		.pipe($.angularFilesort())
           , {
@@ -103,7 +102,6 @@ gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], functi
     .pipe($.uglify({preserveComments: $.uglifySaveLicense}))
     .pipe(jsFilter.restore())
     .pipe(cssFilter)
-//    .pipe($.replace('../../assets','../assets'))
     .pipe($.csso())
     .pipe(cssFilter.restore())
     .pipe(assets.restore())
@@ -130,6 +128,11 @@ gulp.task('images', function () {
     .pipe(gulp.dest('dist/'));
 });
 
+gulp.task('customFonts', function () {
+    return gulp.src('src/**/*.{eot,svg,ttf,woff}')
+        .pipe(gulp.dest('dist/'));
+});
+
 gulp.task('fonts', function () {
   return gulp.src($.mainBowerFiles())
     .pipe($.filter('**/*.{eot,svg,ttf,woff}'))
@@ -147,7 +150,7 @@ gulp.task('clean', function (done) {
 });
 
 gulp.task('build', ['clean'], function (){
-  gulp.start(['html', 'images', 'fonts', 'misc']);
+  gulp.start(['html', 'images', 'fonts', 'customFonts', 'misc']);
 });
 
 gulp.task('build:dev', ['clean'], function(){
