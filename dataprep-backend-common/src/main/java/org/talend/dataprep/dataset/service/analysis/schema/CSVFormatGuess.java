@@ -1,6 +1,6 @@
 package org.talend.dataprep.dataset.service.analysis.schema;
 
-import static org.talend.dataprep.api.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.api.ColumnMetadata.Builder.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.List;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.talend.dataprep.api.ColumnMetadata;
-import org.talend.dataprep.api.type.Types;
+import org.talend.dataprep.api.type.Type;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -46,7 +46,7 @@ class CSVFormatGuess implements FormatGuess {
                     return columnMetadata;
                 }
                 for (String column : columns) {
-                    columnMetadata.add(column().name(column).type(Types.STRING).build());
+                    columnMetadata.add(column().name(column).type(Type.STRING).build());
                 }
                 // Best guess (and naive) on data types
                 String[] line;
@@ -55,13 +55,13 @@ class CSVFormatGuess implements FormatGuess {
                         String columnValue = line[i];
                         try {
                             Integer.parseInt(columnValue);
-                            columnMetadata.get(i).setType(Types.INTEGER.getName());
+                            columnMetadata.get(i).setType(Type.INTEGER.getName());
                         } catch (NumberFormatException e) {
                             // Not an number
                         }
 
                         if (columnValue.trim().equalsIgnoreCase("true") || columnValue.trim().equalsIgnoreCase("false")) {
-                            columnMetadata.get(i).setType(Types.BOOLEAN.getName());
+                            columnMetadata.get(i).setType(Type.BOOLEAN.getName());
                         }
                     }
                 }

@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,13 +32,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetLifecycle;
 import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.api.type.Types;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import com.jayway.restassured.RestAssured;
-
-import javax.servlet.http.HttpServletResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -89,7 +89,8 @@ public class DataSetServiceTests {
     public void CORSHeaders() throws Exception {
         when().get("/datasets").then().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600").header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+                .header("Access-Control-Max-Age", "3600")
+                .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
     }
 
     @Test
@@ -252,7 +253,7 @@ public class DataSetServiceTests {
     @Test
     public void getMetadata() throws Exception {
         DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id("1234");
-        builder.row(ColumnMetadata.Builder.column().empty(0).invalid(0).valid(0).name("id").type(Types.STRING));
+        builder.row(ColumnMetadata.Builder.column().empty(0).invalid(0).valid(0).name("id").type(Type.STRING));
         builder.created(0);
         builder.name("name");
         builder.author("author");

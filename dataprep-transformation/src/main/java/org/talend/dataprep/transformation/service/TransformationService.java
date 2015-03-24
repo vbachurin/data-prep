@@ -2,13 +2,15 @@ package org.talend.dataprep.transformation.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,19 +22,9 @@ import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.api.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.api.type.Types;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.Cut;
-import org.talend.dataprep.transformation.api.action.metadata.DeleteEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.DeleteOnValue;
-import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyBoolean;
-import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyInteger;
-import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
-import org.talend.dataprep.transformation.api.action.metadata.Negate;
-import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
@@ -48,6 +40,9 @@ import com.wordnik.swagger.annotations.ApiResponses;
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
+
+    @Autowired
+    private ActionMetadata[] allActions;
 
     private final TransformerFactory factory = new SimpleTransformerFactory();
 
@@ -73,17 +68,17 @@ public class TransformationService {
             return Collections.emptyList();
         }
         String typeName = column.getType();
-        Type type = Types.get(typeName);
-        if (Types.STRING.isAssignableFrom(type)) {
-            return Arrays.asList(UpperCase.INSTANCE, LowerCase.INSTANCE, FillWithDefaultIfEmpty.INSTANCE, Cut.INSTANCE,
-                    DeleteEmpty.INSTANCE, DeleteOnValue.INSTANCE);
-        } else if (Types.BOOLEAN.isAssignableFrom(type)) {
-            return Arrays.asList(Negate.INSTANCE, FillWithDefaultIfEmptyBoolean.INSTANCE);
-        } else if (Types.INTEGER.isAssignableFrom(type)) {
-            return Collections.singletonList(FillWithDefaultIfEmptyInteger.INSTANCE);
-        } else {
-            return Collections.emptyList();
+        Type type = Type.get(typeName);
+        ArrayList<ActionMetadata> suggestedActions = new ArrayList<>();
+        for (ActionMetadata am : allActions) {
+            Set<Type> compatibleColumnTypes = am.getCompatibleColumnTypes();
+            for (Type columnType : compatibleColumnTypes) {
+                if (columnType.isAssignableFrom(type)) {
+                    suggestedActions.add(am);
+                }
+            }
         }
+        return suggestedActions;
     }
 
     @RequestMapping(value = "/suggest/dataset", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

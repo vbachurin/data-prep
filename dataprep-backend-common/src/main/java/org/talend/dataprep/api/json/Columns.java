@@ -1,10 +1,11 @@
 package org.talend.dataprep.api.json;
 
 import com.fasterxml.jackson.core.JsonToken;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.api.type.Types;
+import org.talend.dataprep.api.type.Type;
 
 import java.util.*;
 
@@ -58,7 +59,7 @@ class Columns implements State {
                 String type = (String) values.get("type");
                 if (type != null && !"N/A".equals(type)) {
                     context.getBuilder().schemaAnalyzed(true);
-                    columnBuilder.type(Types.get(type));
+                    columnBuilder.type(Type.get(type));
                     columns.add(columnBuilder);
                 }
             }

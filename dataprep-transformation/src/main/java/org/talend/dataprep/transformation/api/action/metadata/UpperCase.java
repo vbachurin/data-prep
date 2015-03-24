@@ -1,15 +1,16 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.DataSetRow;
-import org.talend.dataprep.api.type.Types;
+import org.talend.dataprep.api.type.Type;
 
-@Configuration
+@Component(UpperCase.ACTION_BEAN_PREFIX + UpperCase.UPPER_CASE_ACTION_NAME)
 public class UpperCase implements ActionMetadata {
 
     public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
@@ -17,11 +18,6 @@ public class UpperCase implements ActionMetadata {
     public static final String UPPER_CASE_ACTION_NAME = "uppercase"; //$NON-NLS-1$
 
     public static final ActionMetadata INSTANCE = new UpperCase();
-
-    @Bean(name = ACTION_BEAN_PREFIX + UPPER_CASE_ACTION_NAME)
-    public ActionMetadata createInstance() {
-        return new UpperCase();
-    }
 
     // Please do not instanciate this class, it is spring Bean automatically instanciated.
     public UpperCase() {
@@ -44,7 +40,7 @@ public class UpperCase implements ActionMetadata {
 
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY) };
+        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };
     }
 
     @Override
@@ -56,5 +52,15 @@ public class UpperCase implements ActionMetadata {
                 row.set(columnName, value.toUpperCase());
             }
         };
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
+     */
+    @Override
+    public Set<Type> getCompatibleColumnTypes() {
+        return Collections.singleton(Type.STRING);
     }
 }

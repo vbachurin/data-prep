@@ -15,15 +15,15 @@ public class TypeTest {
 
     @Test
     public void testList() {
-        List<Type> anyList = Types.ANY.list();
-        assertThat(anyList, hasItems(Types.ANY, Types.DOUBLE, Types.FLOAT, Types.INTEGER, Types.NUMERIC, Types.STRING, Types.BOOLEAN));
-        List<Type> numericList = Types.NUMERIC.list();
-        assertThat(numericList, hasItems(Types.DOUBLE, Types.FLOAT, Types.INTEGER, Types.NUMERIC));
+        List<Type> anyList = Type.ANY.list();
+        assertThat(anyList, hasItems(Type.ANY, Type.DOUBLE, Type.FLOAT, Type.INTEGER, Type.NUMERIC, Type.STRING, Type.BOOLEAN));
+        List<Type> numericList = Type.NUMERIC.list();
+        assertThat(numericList, hasItems(Type.DOUBLE, Type.FLOAT, Type.INTEGER, Type.NUMERIC));
     }
 
     @Test
     public void testTypeInheritance() throws Exception {
-        Field[] fields = Types.class.getFields();
+        Field[] fields = Type.class.getFields();
         for (Field field : fields) {
             Type type = (Type) field.get(null);
             // Assert the top level type is ANY for all types in Types class.
@@ -33,26 +33,26 @@ public class TypeTest {
                 lastType = topSuperType;
                 topSuperType = topSuperType.getSuperType();
             }
-            assertThat(lastType, is(Types.ANY));
+            assertThat(lastType, is(Type.ANY));
         }
     }
 
     @Test
     public void testName() {
-        assertThat(Types.STRING.getName(), is("string"));
-        assertThat(Types.STRING.getName(Locale.FRENCH), is("string"));
+        assertThat(Type.STRING.getName(), is("string"));
+        assertThat(Type.STRING.getName(Locale.FRENCH), is("string"));
     }
 
     @Test
     public void testGetByNameArguments() {
         try {
-            Types.get(null);
+            Type.get(null);
             fail();
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            Types.get("null");
+            Type.get("null");
             fail();
         } catch (IllegalArgumentException e) {
             // Expected
@@ -61,16 +61,16 @@ public class TypeTest {
 
     @Test
     public void testGetByName() throws Exception {
-        Type type = Types.get("string");
+        Type type = Type.get("string");
         assertNotNull(type);
         assertEquals("string", type.getName());
     }
 
     @Test
     public void testIsAssignableFrom() throws Exception {
-        assertTrue(Types.NUMERIC.isAssignableFrom(Types.INTEGER));
-        assertTrue(Types.NUMERIC.isAssignableFrom(Types.DOUBLE));
-        assertFalse(Types.NUMERIC.isAssignableFrom(Types.STRING));
+        assertTrue(Type.NUMERIC.isAssignableFrom(Type.INTEGER));
+        assertTrue(Type.NUMERIC.isAssignableFrom(Type.DOUBLE));
+        assertFalse(Type.NUMERIC.isAssignableFrom(Type.STRING));
     }
 
 }

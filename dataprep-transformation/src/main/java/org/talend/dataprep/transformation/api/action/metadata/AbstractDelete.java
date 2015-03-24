@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.DataSetRow;
-import org.talend.dataprep.api.type.Types;
+import org.talend.dataprep.api.type.Type;
 
 public abstract class AbstractDelete implements ActionMetadata {
 
@@ -23,7 +23,7 @@ public abstract class AbstractDelete implements ActionMetadata {
 
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Types.STRING.getName(), StringUtils.EMPTY) };
+        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };
     }
 
     public abstract boolean toDelete(Map<String, String> parsedParameters, String value);
