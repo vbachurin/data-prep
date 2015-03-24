@@ -1,0 +1,94 @@
+.suggestions {
+  $color: $black;
+  $background: $white;
+
+  $border-color: $light-gray;
+
+  $title-color: $black;
+  $title-background: $white;
+
+  $menu-color: tint($black, 20%);
+  $menu-background: $light-gray;
+
+  $submenu-color: tint($black, 20%);
+  $submenu-background: shade($menu-background, 5%);
+
+  background: $background;
+  color: $color;
+
+  .action {
+    background: shade($background, 10%);
+
+    &:hover {
+      background: shade($background, 5%);
+    }
+  }
+
+  .suggestions-part {
+    .title {
+      color: $title-color;
+      background: $title-background;
+
+      padding: 5px 10px 5px 15px;
+      text-transform: uppercase;
+      font-size: 1.1em;
+
+      border-bottom: 1px solid $border-color;
+    }
+
+    .menu {
+      color: $menu-color;
+      border-bottom: 1px solid $border-color;
+
+      >li {
+        @include background(tint($menu-background, 40%));
+        border-bottom: 1px solid shade($border-color, 10%);
+
+        font-size: 0.9em;
+        font-weight: 300;
+        padding: 2px 2px 2px 0px;
+
+        >a {
+          display: block;
+          width:100%;
+        }
+
+        .talend-accordion-trigger {
+          &::before {
+            content: "\25b8";
+            margin-right: 5px;
+          }
+        }
+
+        &.open {
+          .talend-accordion-trigger::before {
+            content: "\25BE";
+          }
+        }
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+        padding-left: 30px;
+        cursor: pointer;
+      }
+
+      .submenu {
+        color: $submenu-color;
+        background: $submenu-background;
+
+        li {
+          border: none;
+          padding: 10px;
+        }
+      }
+    }
+
+    .submenu {
+      li {
+        text-align: right;
+      }
+    }
+  }
+}

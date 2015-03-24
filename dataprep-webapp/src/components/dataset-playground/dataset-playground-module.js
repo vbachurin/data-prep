@@ -10,7 +10,7 @@
         'data-prep.filter-search',
         'data-prep.filter-list',
         'data-prep.recipe',
-        'data-prep.transformation-list',
+        'data-prep.suggestions',
         'data-prep.services.dataset'
     ]);
 })();

@@ -5,7 +5,7 @@
         [
             'ngSanitize',
             'ui.router', //more advanced router
-            'data-prep.components',
+            'data-prep.home',
             'data-prep.services.rest' //rest interceptors
         ])
 

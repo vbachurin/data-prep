@@ -33,18 +33,21 @@
                  */
                 var closeAllAccordions = function() {
                     iElement.closest('.talend-accordion').find('.submenu').slideUp('fast');
+                    iElement.closest('.talend-accordion').find('.open').removeClass('open');
                 };
 
                 /**
                  * Bind click event : hide all submenus and show/hide current submenu
                  */
                 iElement.bind('click', function(e){
+                    var parent = angular.element(this).parent();
                     var subMenu = angular.element(this).parent().find('.submenu');
                     var isOpened = subMenu.is(':visible') || subMenu.css('display') === 'block';
 
                     closeAllAccordions();
                     if(! isOpened) {
                         $timeout(ctrl.onOpen);
+                        parent.addClass('open');
                         subMenu.slideToggle('fast');
                     }
 
