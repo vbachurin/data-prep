@@ -12,21 +12,19 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.Cut;
-import org.talend.dataprep.transformation.api.action.metadata.DeleteEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.DeleteOnValue;
-import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmpty;
-import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyBoolean;
-import org.talend.dataprep.transformation.api.action.metadata.FillWithDefaultIfEmptyInteger;
-import org.talend.dataprep.transformation.api.action.metadata.LowerCase;
-import org.talend.dataprep.transformation.api.action.metadata.Negate;
-import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
 
-public class ActionParser {
+@Component
+public class ActionParser implements BeanFactoryAware {
 
     public static final Log LOGGER = LogFactory.getLog(ActionParser.class);
+
+    private static BeanFactory beanFactory;
 
     public Consumer<DataSetRow> parse(String actions) {
         if (actions == null) {
@@ -37,7 +35,8 @@ public class ActionParser {
             ObjectMapper mapper = new ObjectMapper(new JsonFactory());
             String content = actions.trim();
             if (content.isEmpty()) {
-                return row -> {}; // No op action
+                return row -> {
+                }; // No op action
             }
             JsonNode node = mapper.readTree(content);
             Iterator<JsonNode> elements = node.getElements();
@@ -52,37 +51,11 @@ public class ActionParser {
                     JsonNode actionNode = actionNodes.next();
                     String actionType = actionNode.get("action").getTextValue().toLowerCase(); //$NON-NLS-1$
                     ActionMetadata currentAction;
-                    switch (actionType) {
-                    case UpperCase.UPPER_CASE_ACTION_NAME:
-                        currentAction = UpperCase.INSTANCE;
-                        break;
-                    case LowerCase.LOWER_CASE_ACTION_NAME:
-                        currentAction = LowerCase.INSTANCE;
-                        break;
-                    case FillWithDefaultIfEmpty.FILL_EMPTY_ACTION_NAME:
-                        currentAction = FillWithDefaultIfEmpty.INSTANCE;
-                        break;
-                    case Cut.CUT_ACTION_NAME:
-                        currentAction = Cut.INSTANCE;
-                        break;
-                    case Negate.NEGATE_ACTION_NAME:
-                        currentAction = Negate.INSTANCE;
-                        break;
-                    case FillWithDefaultIfEmptyBoolean.FILL_EMPTY_ACTION_NAME:
-                        currentAction = FillWithDefaultIfEmptyBoolean.INSTANCE;
-                        break;
-                    case FillWithDefaultIfEmptyInteger.FILL_EMPTY_ACTION_NAME:
-                        currentAction = FillWithDefaultIfEmptyInteger.INSTANCE;
-                        break;
-                    case DeleteEmpty.DELETE_EMPTY_ACTION_NAME:
-                        currentAction = DeleteEmpty.INSTANCE;
-                        break;
-                    case DeleteOnValue.DELETE_ON_VALUE_ACTION_NAME:
-                        currentAction = DeleteOnValue.INSTANCE;
-                        break;
-                    default:
-                        throw new NotImplementedException("No support for action '" + actionType + "'.");
-                    }
+                    // look for the appropriate action in the spring bean registry according to its type name
+                    currentAction = beanFactory.getBean(ActionMetadata.ACTION_BEAN_PREFIX + actionType, ActionMetadata.class);
+                    if (currentAction == null) {
+                        throw new NotImplementedException("No support for action '" + actionType + "'."); //$NON-NLS-2$
+                    }// else we got the action so keep going.
                     Iterator<Map.Entry<String, JsonNode>> parameters = actionNode.get("parameters").getFields(); //$NON-NLS-1$
                     parsedActions.add(currentAction.create(parameters));
                 }
@@ -92,10 +65,22 @@ public class ActionParser {
                     }
                 };
             } else {
-                return row -> {}; // Should not happen, but no action means no op.
+                return row -> {
+                }; // Should not happen, but no action means no op.
             }
         } catch (Exception e) {
             throw new RuntimeException("Unable to parse actions in '" + actions + "'.", e);
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.beans.factory.BeanFactoryAware#setBeanFactory(org.springframework.beans.factory.BeanFactory)
+     */
+    @Override
+    public void setBeanFactory(BeanFactory arg0) throws BeansException {
+        this.beanFactory = arg0;
     }
 }

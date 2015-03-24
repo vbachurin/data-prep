@@ -1,6 +1,10 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.codehaus.jackson.JsonNode;
@@ -9,6 +13,8 @@ import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public interface ActionMetadata {
+
+    public static final String ACTION_BEAN_PREFIX = "action."; //$NON-NLS-1$
 
     String getName();
 
@@ -30,10 +36,18 @@ public interface ActionMetadata {
 
     String getCategory();
 
+    /**
+     * return the list of multiple valued parameters required for this Action to be executed. represented as list box on
+     * the front end.
+     **/
     Item[] getItems();
 
     String getValue();
 
+    /**
+     * return the list of input parameters required for this Action to be executed. represent as text input field on the
+     * front end.
+     **/
     Parameter[] getParameters();
 
     Consumer<DataSetRow> create(Map<String, String> parsedParameters);

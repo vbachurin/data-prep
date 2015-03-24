@@ -2,21 +2,26 @@ package org.talend.dataprep.transformation.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.DataSetMetadata;
 import org.talend.dataprep.api.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.type.Types;
 import org.talend.dataprep.exception.Exceptions;
-import org.talend.dataprep.transformation.exception.Messages;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.Cut;
@@ -31,8 +36,14 @@ import org.talend.dataprep.transformation.api.action.metadata.UpperCase;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
+import org.talend.dataprep.transformation.exception.Messages;
 
-import com.wordnik.swagger.annotations.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")

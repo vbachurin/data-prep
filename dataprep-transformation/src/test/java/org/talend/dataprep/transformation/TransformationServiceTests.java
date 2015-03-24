@@ -1,15 +1,12 @@
 package org.talend.dataprep.transformation;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.core.Is.is;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static com.jayway.restassured.RestAssured.*;
+import static org.hamcrest.core.Is.*;
+import static org.skyscreamer.jsonassert.JSONAssert.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -45,10 +44,12 @@ public class TransformationServiceTests {
     public void CORSHeaders() throws Exception {
         when().post("/transform").then().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600").header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+                .header("Access-Control-Max-Age", "3600")
+                .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
         when().post("/suggest/column").then().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
-                .header("Access-Control-Max-Age", "3600").header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+                .header("Access-Control-Max-Age", "3600")
+                .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
     }
 
     @Test
@@ -59,8 +60,8 @@ public class TransformationServiceTests {
     @Test
     public void noAction() throws Exception {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
-                .post("/transform").asString();
+        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when().post("/transform")
+                .asString();
         assertEquals(initialContent, transformedContent, false);
     }
 
@@ -86,16 +87,8 @@ public class TransformationServiceTests {
 
     @Test
     public void testInvalidJSONInput() throws Exception {
-        given().contentType(ContentType.JSON).body("invalid content on purpose.").when()
-                .post("/transform").then().statusCode(400).content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
-    }
-
-    @Test
-    public void action3() throws Exception {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("action1.json"));
-        String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test2.json"));
-        given().contentType(ContentType.JSON).body(initialContent).when().post("/transform?actions=" + encode(actions))
-                .asString();
+        given().contentType(ContentType.JSON).body("invalid content on purpose.").when().post("/transform").then()
+                .statusCode(400).content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
     }
 
     @Test
@@ -176,7 +169,7 @@ public class TransformationServiceTests {
     public void stringColumnSuggest() throws Exception {
         String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column1.json"));
         String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("suggest1.json"));
-        Response post =  given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column");
+        Response post = given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column");
         String response = post.asString();
         assertEquals(expectedSuggestions, response, false);
     }

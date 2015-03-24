@@ -4,18 +4,27 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.api.type.Types;
 
+@Configuration
 public class LowerCase implements ActionMetadata {
 
-    public static final String         COLUMN_NAME_PARAMETER  = "column_name";                                                 //$NON-NLS-1$
+    public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
 
-    public static final String         LOWER_CASE_ACTION_NAME = "lowercase";                                                   //$NON-NLS-1$
+    public static final String LOWER_CASE_ACTION_NAME = "lowercase"; //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE               = new LowerCase();
+    public static LowerCase INSTANCE = new LowerCase();
 
-    private LowerCase() {
+    @Bean(name = ACTION_BEAN_PREFIX + LOWER_CASE_ACTION_NAME)
+    public ActionMetadata createInstance() {
+        return new LowerCase();
+    }
+
+    // Please do not instanciate this class, it is spring Bean automatically instanciated.
+    public LowerCase() {
     }
 
     @Override

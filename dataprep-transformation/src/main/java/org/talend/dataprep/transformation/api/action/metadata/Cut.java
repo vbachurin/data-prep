@@ -4,20 +4,29 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.api.type.Types;
 
+@Configuration
 public class Cut implements ActionMetadata {
 
-    public static final String         COLUMN_NAME_PARAMETER = "column_name";                                    //$NON-NLS-1$
+    public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
 
-    public static final String         PATTERN_PARAMETER     = "pattern";                                        //$NON-NLS-1$
+    public static final String PATTERN_PARAMETER = "pattern"; //$NON-NLS-1$
 
-    public static final String         CUT_ACTION_NAME       = "cut";                                            //$NON-NLS-1$
+    public static final String CUT_ACTION_NAME = "cut"; //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE              = new Cut();
+    public static final ActionMetadata INSTANCE = new Cut();
 
-    private Cut() {
+    @Bean(name = ACTION_BEAN_PREFIX + CUT_ACTION_NAME)
+    public ActionMetadata createInstance() {
+        return new Cut();
+    }
+
+    // Please do not instanciate this class, it is spring Bean automatically instanciated.
+    public Cut() {
     }
 
     @Override
@@ -32,7 +41,7 @@ public class Cut implements ActionMetadata {
 
     @Override
     public String getCategory() {
-        return "repair";
+        return "repair"; //$NON-NLS-1$
     }
 
     @Override
@@ -57,7 +66,7 @@ public class Cut implements ActionMetadata {
             String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER);
             String value = row.get(columnName);
             if (value != null) {
-                row.set(columnName, value.replace(parsedParameters.get(PATTERN_PARAMETER), ""));
+                row.set(columnName, value.replace(parsedParameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
             }
         };
     }
