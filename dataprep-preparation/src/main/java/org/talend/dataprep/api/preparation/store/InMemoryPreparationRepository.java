@@ -1,8 +1,8 @@
 package org.talend.dataprep.api.preparation.store;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.talend.dataprep.api.preparation.Object;
@@ -41,7 +41,7 @@ public class InMemoryPreparationRepository implements PreparationRepository {
     }
 
     @Override
-    public <T extends Object> Set<T> listAll(Class<T> clazz) {
+    public <T extends Object> Collection<T> listAll(Class<T> clazz) {
         return store.entrySet().stream().filter(entry -> clazz.isAssignableFrom(entry.getValue().getClass()))
                 .map(entry -> (T) entry.getValue()).collect(Collectors.toSet());
     }

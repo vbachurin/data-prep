@@ -3,7 +3,7 @@ package org.talend.dataprep.api.preparation.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Object;
-import java.util.Set;
+import java.util.Collection;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +38,7 @@ public class PreparationService {
     private ContentCache cache;
 
     @Autowired
-    private PreparationRepository versionRepository = null;
+    private PreparationRepository versionRepository;
 
     private final JsonFactory factory = new JsonFactory();
 
@@ -77,7 +77,7 @@ public class PreparationService {
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
     public Preparation[] listAll(HttpServletResponse response) {
-        Set<Preparation> preparations = versionRepository.listAll(Preparation.class);
+        Collection<Preparation> preparations = versionRepository.listAll(Preparation.class);
         return preparations.toArray(new Preparation[preparations.size()]);
     }
 
