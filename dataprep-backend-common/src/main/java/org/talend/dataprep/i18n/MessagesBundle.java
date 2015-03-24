@@ -19,9 +19,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class provides i18n support and provides a simple way to access {@link ResourceBundleMessageSource} in current
+ * Spring context.
+ */
 @Component
 public class MessagesBundle implements ApplicationContextAware {
 
@@ -32,11 +37,36 @@ public class MessagesBundle implements ApplicationContextAware {
     private MessagesBundle() {
     }
 
-    public static String getString(String code, Locale locale) {
-        return getString(code, locale, new String[0]);
+    /**
+     * Returns the i18n string that corresponds to <code>code</code>. If no i18n string is to be found, returns
+     * <code>code</code>.
+     * 
+     * @param code A i18n key.
+     * @return The i18n message associated with <code>code</code>. Returns <code>null</code> if <code>code</code> is
+     * <code>null</code>.
+     * @see LocaleContextHolder#getLocale()
+     */
+    public static String getString(String code) {
+        return getString(code, new String[0]);
     }
 
-    public static String getString(String code, Locale locale, Object... args) {
+    /**
+     * <p>
+     * Similarly to {@link #getString(String)}, returns the i18n string that corresponds to <code>code</code>. If no
+     * i18n string is to be found, returns <code>code</code>.
+     * </p>
+     * <p>
+     * This overload takes arguments in case the i18n message specifies arguments (in the form of "{0}", "{1}"...).
+     * </p>
+     *
+     * @param code A i18n key.
+     * @return The i18n message associated with <code>code</code>. Returns <code>null</code> if <code>code</code> is
+     * <code>null</code>.
+     * @see LocaleContextHolder#getLocale()
+     * @see java.text.MessageFormat
+     */
+    public static String getString(String code, Object... args) {
+        Locale locale = LocaleContextHolder.getLocale();
         return source.getMessage(code, args, locale);
     }
 

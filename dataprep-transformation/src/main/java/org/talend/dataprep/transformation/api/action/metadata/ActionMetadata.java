@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import org.codehaus.jackson.JsonNode;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.talend.dataprep.api.DataSetRow;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.ActionParser;
@@ -17,16 +16,14 @@ public interface ActionMetadata {
      * the label of the parameter, translated in the user locale.
      */
     default String getLabel() {
-        Locale locale = LocaleContextHolder.getLocale();
-        return MessagesBundle.getString("action." + getName() + ".label", locale);
+        return MessagesBundle.getString("action." + getName() + ".label");
     }
 
     /**
      * the description of the parameter, translated in the user locale.
      */
     default String getDescription() {
-        Locale locale = LocaleContextHolder.getLocale();
-        return MessagesBundle.getString("action." + getName() + ".desc", locale);
+        return MessagesBundle.getString("action." + getName() + ".desc");
     }
 
     Type getType();
