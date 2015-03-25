@@ -69,6 +69,16 @@ public class Item {
             this.parameters = parameters;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return this.name;
+        }
+
         public String getName() {
             return this.name;
         }
