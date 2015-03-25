@@ -7,8 +7,13 @@
         self.visible = false;
         self.metadata = null;
         self.data = null;
+
+        //actions to grid
         self.dataView = new Slick.Data.DataView({inlineFilters: true});
         self.filters = [];
+
+        //actions from grid
+        self.selectedColumnId = null;
 
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------VISIBILITY--------------------------------------------
