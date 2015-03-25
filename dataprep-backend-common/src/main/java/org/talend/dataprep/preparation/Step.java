@@ -4,11 +4,16 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.annotation.Id;
 
-public class Step implements Object {
+public class Step implements Identifiable {
+    public static final Step ROOT_STEP = new Step(null, PreparationActions.ROOT_CONTENT.id());
 
     private String parent = StringUtils.EMPTY;
-
     private String content;
+
+    public Step(final String parentId, final String contentId) {
+        setParent(parentId);
+        setContent(contentId);
+    }
 
     public String getContent() {
         return content;

@@ -3,7 +3,7 @@ package org.talend.dataprep.preparation;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.data.annotation.Id;
 
-public class Preparation implements Object {
+public class Preparation implements Identifiable {
 
     private String dataSetId;
 

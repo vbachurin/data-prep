@@ -1,9 +1,7 @@
 package org.talend.dataprep.preparation.json;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -12,9 +10,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.preparation.*;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 @Component
@@ -33,29 +29,13 @@ class PreparationJsonSerializer extends JsonSerializer<Preparation> implements A
             PreparationRepository versionRepository = getRepository();
             if (versionRepository != null) {
                 // Steps
-                generator.writeFieldName("steps"); //$NON-NLS-1$
-                generator.writeStartArray();
-                List<String> steps = ObjectUtils.listSteps(preparation.getStep(), versionRepository);
-                for (String step : steps) {
-                    generator.writeString(step);
-                }
-                generator.writeEndArray();
+                final List<String> steps = PreparationUtils.listSteps(preparation.getStep(), versionRepository);
+                generator.writeObjectField("steps", steps);
+
                 // Actions
                 Step step = versionRepository.get(preparation.getStep().id(), Step.class);
-                Blob blob = versionRepository.get(step.getContent(), Blob.class);
-                String content = blob.getContent();
-                // Write content to preparation
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode tree = mapper.reader().readTree(content);
-                Iterator<Map.Entry<String, JsonNode>> fields = tree.fields();
-                while (fields.hasNext()) {
-                    Map.Entry<String, JsonNode> next = fields.next();
-                    generator.writeFieldName(next.getKey());
-                    generator.writeRawValue(next.getValue().toString());
-                    if (fields.hasNext()) {
-                        generator.writeRaw(","); //$NON-NLS-1$
-                    }
-                }
+                PreparationActions prepActions = versionRepository.get(step.getContent(), PreparationActions.class);
+                generator.writeObjectField("actions", prepActions.getActions());
             }
         }
         generator.writeEndObject();
