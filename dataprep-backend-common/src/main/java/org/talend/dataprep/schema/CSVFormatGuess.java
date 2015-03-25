@@ -12,7 +12,6 @@ import java.util.List;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 
 import au.com.bytecode.opencsv.CSVReader;

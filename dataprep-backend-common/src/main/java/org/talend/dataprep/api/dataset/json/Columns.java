@@ -5,6 +5,7 @@ import java.util.*;
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.type.Type;
 
 import com.fasterxml.jackson.core.JsonToken;
 
