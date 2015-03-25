@@ -132,7 +132,7 @@ describe('Dataset playground directive', function() {
         expect(playground.find('.modal-body').eq(0).find('.slidable').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
 
         //check right slidable is displayed transformations with right slide action
-        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('transformations')).toBe(true);
+        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('suggestions')).toBe(true);
         expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('slide-hide')).toBe(false);
         expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).find('.action').eq(0).hasClass('right')).toBe(true);
 

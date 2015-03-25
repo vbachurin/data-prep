@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function Datagrid($compile, DatasetGridService, FilterService) {
+    function Datagrid($timeout, $compile, DatasetGridService, FilterService) {
         return {
             restrict: 'E',
             template: '<div id="datagrid" class="datagrid"></div>',
@@ -120,6 +120,10 @@
 
                         grid.setCellCssStyles('highlight', config);
                         grid.invalidate();
+
+                        $timeout(function() {
+                            DatasetGridService.selectedColumnId = column.id;
+                        });
                     });
 
                     //change selected cell column background
