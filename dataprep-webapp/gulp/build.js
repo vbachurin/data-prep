@@ -86,6 +86,7 @@ gulp.task('partials', ['consolidate'], function () {
 gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], function () {
   var htmlFilter = $.filter('*.html');
   var jsFilter = $.filter('**/*.js');
+  var notSlickGridFilter = $.filter('!**/slickgrid/**/*.js');
   var cssFilter = $.filter('**/*.css');
   var assets;
 
@@ -98,8 +99,10 @@ gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], functi
     .pipe(assets = $.useref.assets())
     .pipe($.rev())
     .pipe(jsFilter)
+    .pipe(notSlickGridFilter)
     .pipe($.ngAnnotate())
     .pipe($.uglify({preserveComments: $.uglifySaveLicense}))
+    .pipe(notSlickGridFilter.restore())
     .pipe(jsFilter.restore())
     .pipe(cssFilter)
     .pipe($.csso())
