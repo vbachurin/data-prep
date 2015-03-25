@@ -1,20 +1,17 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public interface ActionMetadata {
 
-    public static final String ACTION_BEAN_PREFIX = "action."; //$NON-NLS-1$
+    String ACTION_BEAN_PREFIX = "action."; //$NON-NLS-1$
 
     String getName();
 
@@ -83,5 +80,5 @@ public interface ActionMetadata {
      * 
      * @return a set of the column types this Action can handle
      */
-    public Set<Type> getCompatibleColumnTypes();
+    Set<Type> getCompatibleColumnTypes();
 }
