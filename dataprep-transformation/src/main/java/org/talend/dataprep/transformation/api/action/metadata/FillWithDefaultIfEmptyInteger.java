@@ -14,7 +14,7 @@ public class FillWithDefaultIfEmptyInteger extends AbstractDefaultIfEmpty {
 
     public static final ActionMetadata INSTANCE = new FillWithDefaultIfEmptyInteger();
 
-    // Please do not instanciate this class, it is spring Bean automatically instanciated.
+    // Please do not instantiate this class, it is spring Bean automatically instantiated.
     public FillWithDefaultIfEmptyInteger() {
     }
 
@@ -34,11 +34,6 @@ public class FillWithDefaultIfEmptyInteger extends AbstractDefaultIfEmpty {
         return new Item[0];
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.INTEGER);

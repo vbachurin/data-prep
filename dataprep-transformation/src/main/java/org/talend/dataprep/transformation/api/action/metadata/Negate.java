@@ -7,9 +7,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.springframework.stereotype.Component;
 
 @Component(Negate.ACTION_BEAN_PREFIX + Negate.NEGATE_ACTION_NAME)
 public class Negate implements ActionMetadata {
@@ -20,7 +20,7 @@ public class Negate implements ActionMetadata {
 
     public static final ActionMetadata INSTANCE = new Negate();
 
-    // Please do not instanciate this class, it is spring Bean automatically instanciated.
+    // Please do not instantiate this class, it is spring Bean automatically instantiated.
     public Negate() {
     }
 
@@ -89,11 +89,6 @@ public class Negate implements ActionMetadata {
         return properCase.toString();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.BOOLEAN);

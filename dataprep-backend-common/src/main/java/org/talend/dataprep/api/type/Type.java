@@ -51,15 +51,15 @@ public enum Type {
 
     /**
      * @return The type's super type, returned value is never null (top level type is returns itself). All other types
-     * are expected at least to return {@link Types#ANY}.
-     * @see Types#ANY
+     * are expected at least to return {@link Type#ANY}.
+     * @see Type#ANY
      */
     public Type getSuperType() {
         return superType;
     }
 
     /**
-     * Returns the type hierarchy starting from this type. Calling this method on {@link Types#ANY} returns all
+     * Returns the type hierarchy starting from this type. Calling this method on {@link Type#ANY} returns all
      * supported types.
      * 
      * @return The list of types assignable from this type, including this type (i.e. . Returned list is never empty
@@ -89,7 +89,7 @@ public enum Type {
     }
 
     /**
-     * Returns the type accessible from {@link Types#ANY} with <code>name</code>.
+     * Returns the type accessible from {@link Type#ANY} with <code>name</code>.
      * 
      * @param name A non-null type name.
      * @return The {@link Type} type corresponding to <code>name</code>.

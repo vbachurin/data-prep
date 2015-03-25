@@ -17,7 +17,7 @@ public class DeleteOnValue extends AbstractDelete {
 
     public static final ActionMetadata INSTANCE = new DeleteOnValue();
 
-    // Please do not instanciate this class, it is spring Bean automatically instanciated.
+    // Please do not instantiate this class, it is spring Bean automatically instantiated.
     public DeleteOnValue() {
     }
 
@@ -37,11 +37,6 @@ public class DeleteOnValue extends AbstractDelete {
         return (value != null && value.trim().equals(parsedParameters.get(VALUE_PARAMETER)));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.STRING);

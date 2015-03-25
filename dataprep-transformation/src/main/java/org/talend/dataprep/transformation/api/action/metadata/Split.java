@@ -32,7 +32,8 @@ public class Split implements ActionMetadata {
 
     public static final ActionMetadata INSTANCE = new Split();
 
-    private Split() {
+    // Please do not instantiate this class, it is spring Bean automatically instantiated.
+    public Split() {
     }
 
     @Override
@@ -74,11 +75,6 @@ public class Split implements ActionMetadata {
         };
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.STRING);

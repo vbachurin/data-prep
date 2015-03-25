@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.springframework.stereotype.Component;
 
 @Component(UpperCase.ACTION_BEAN_PREFIX + UpperCase.UPPER_CASE_ACTION_NAME)
 public class UpperCase implements ActionMetadata {
@@ -19,7 +19,7 @@ public class UpperCase implements ActionMetadata {
 
     public static final ActionMetadata INSTANCE = new UpperCase();
 
-    // Please do not instanciate this class, it is spring Bean automatically instanciated.
+    // Please do not instantiate this class, it is spring Bean automatically instantiated.
     public UpperCase() {
     }
 
@@ -54,11 +54,6 @@ public class UpperCase implements ActionMetadata {
         };
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.STRING);
