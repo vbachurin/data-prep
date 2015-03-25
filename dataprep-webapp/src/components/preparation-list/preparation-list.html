@@ -1,0 +1,10 @@
+<div class="preparation-list">
+    <div class="preparation" ng-repeat="preparation in preparationListCtrl.preparations track by preparation.id">
+        <p class="title">Preparation</p>
+        <p class="description">
+            Auth : {{preparation.author}}<br/>
+            Nb steps : {{preparation.steps.length}}<br/>
+            Created on : {{preparation.creationDate | date}}
+        </p>
+    </div>
+</div>

@@ -6,6 +6,7 @@
 
         /**
          * Get the dataset list
+         * @returns Promise
          */
         self.getDatasets = function() {
             return $http.get(RestURLs.datasetUrl);
