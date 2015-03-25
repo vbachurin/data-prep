@@ -1,5 +1,7 @@
 package org.talend.dataprep.exception;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,11 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Aspect
 class Aspects {
 
+    private static final Log LOG = LogFactory.getLog(Aspects.class);
+
     @Around("execution(* *(..)) && @annotation(requestMapping)")
     public Object exception(ProceedingJoinPoint pjp, RequestMapping requestMapping) throws Throwable {
         try {
             return pjp.proceed(pjp.getArgs());
         } catch (Exception e) {
+            LOG.error("Exception.", e);
             throw Exceptions.Internal(DefaultMessage.UNEXPECTED_EXCEPTION, e);
         }
     }
