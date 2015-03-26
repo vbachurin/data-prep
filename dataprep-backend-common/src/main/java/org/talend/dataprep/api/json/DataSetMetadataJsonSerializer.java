@@ -9,10 +9,14 @@ import org.talend.dataprep.api.Quality;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
+    {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     private final boolean metadata;
 
@@ -37,10 +41,10 @@ class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
                 {
                     generator.writeStringField("id", dataSetMetadata.getId()); //$NON-NLS-1
                     generator.writeStringField("name", dataSetMetadata.getName()); //$NON-NLS-1
-                    generator.writeStringField("author", dataSetMetadata.getAuthor()); //$NON-NLS-1
+                    generator.writeStringField( "author", dataSetMetadata.getAuthor() ); //$NON-NLS-1
                     generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
                     generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
-                    generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
+                    generator.writeNumberField( "nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter() ); //$NON-NLS-1
                     synchronized (DATE_FORMAT) {
                         generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1
                     }
