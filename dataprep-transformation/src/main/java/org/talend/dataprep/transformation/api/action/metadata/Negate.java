@@ -1,12 +1,15 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -14,11 +17,13 @@ import org.talend.dataprep.api.type.Type;
 @Component(Negate.ACTION_BEAN_PREFIX + Negate.NEGATE_ACTION_NAME)
 public class Negate implements ActionMetadata {
 
-    public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
+    public static final Log            LOGGER                = LogFactory.getLog(Negate.class);
 
-    public static final String NEGATE_ACTION_NAME = "negate"; //$NON-NLS-1$
+    public static final String         COLUMN_NAME_PARAMETER = "column_name";                  //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE = new Negate();
+    public static final String         NEGATE_ACTION_NAME    = "negate";                       //$NON-NLS-1$
+
+    public static final ActionMetadata INSTANCE              = new Negate();
 
     // Please do not instantiate this class, it is spring Bean automatically instantiated.
     public Negate() {
@@ -59,7 +64,7 @@ public class Negate implements ActionMetadata {
 
     // TODO move this
     protected static String toProperCase(String from) {
-        java.io.StringReader in = new java.io.StringReader(from.toLowerCase());
+        StringReader in = new StringReader(from.toLowerCase());
         boolean precededBySpace = true;
         StringBuilder properCase = new StringBuilder();
         while (true) {
@@ -81,8 +86,8 @@ public class Negate implements ActionMetadata {
                     precededBySpace = false;
                 }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // should not occurs when reading a String
+                LOGGER.warn("This error should not occurs", e);
             }
         }
 
