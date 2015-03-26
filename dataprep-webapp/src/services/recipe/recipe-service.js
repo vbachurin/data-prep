@@ -13,6 +13,13 @@
         };
 
         /**
+         * Reset the current recipe item list
+         */
+        this.reset = function() {
+            recipe = [];
+        };
+
+        /**
          * Save current value ine param.initialValue
          * @param params
          */

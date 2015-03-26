@@ -5,6 +5,18 @@ describe('Recipe service', function () {
 
     beforeEach(module('data-prep.services.recipe'));
 
+    it('should reset recipe item list', inject(function(RecipeService) {
+        //given
+        RecipeService.getRecipe()[0] = {};
+        expect(RecipeService.getRecipe().length).toBeTruthy();
+
+        //when
+        RecipeService.reset();
+
+        //then
+        expect(RecipeService.getRecipe().length).toBe(0);
+    }));
+
     it('should save current values (or default if not defined) and add recipe item', inject(function(RecipeService) {
         //given
         var column = {

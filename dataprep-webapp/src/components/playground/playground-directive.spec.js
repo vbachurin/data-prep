@@ -1,4 +1,4 @@
-describe('Dataset playground directive', function() {
+describe('Playground directive', function() {
     'use strict';
 
     var scope, createElement, element;
@@ -11,80 +11,7 @@ describe('Dataset playground directive', function() {
         records: '3'
     };
 
-    var data = {
-        'columns': [
-            {
-                'id': 'id',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'number'
-            },
-            {
-                'id': 'Postal',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            },
-            {
-                'id': 'State',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            },
-            {
-                'id': 'Capital',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            },
-            {
-                'id': 'MostPopulousCity',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            }
-        ],
-        'records': [
-            {
-                'id': '1',
-                'Postal': 'AL',
-                'State': 'My Alabama',
-                'Capital': 'Montgomery',
-                'MostPopulousCity': 'Birmingham city'
-            },
-            {
-                'id': '2',
-                'Postal': 'AK',
-                'State': 'Alaska',
-                'Capital': 'Juneau',
-                'MostPopulousCity': 'Anchorage'
-            },
-            {
-                'id': '3',
-                'Postal': 'AL',
-                'State': 'My Alabama 2',
-                'Capital': 'Montgomery',
-                'MostPopulousCity': 'Birmingham city'
-            }
-        ]
-    };
-
-    beforeEach(module('data-prep.dataset-playground'));
+    beforeEach(module('data-prep.playground'));
     beforeEach(module('htmlTemplates'));
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
@@ -96,7 +23,7 @@ describe('Dataset playground directive', function() {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function() {
-            element = angular.element('<dataset-playground></dataset-playground>');
+            element = angular.element('<playground></playground>');
             angular.element('body').append(element);
 
             $compile(element)(scope);
@@ -109,15 +36,15 @@ describe('Dataset playground directive', function() {
         element.remove();
     });
 
-    it('should render dataset playground elements', inject(function(DatasetGridService) {
+    it('should render playground elements', inject(function(PlaygroundService) {
         //given
-        DatasetGridService.setDataset(metadata, data);
+        PlaygroundService.currentMetadata = metadata;
 
         //when
         createElement();
 
         //then
-        var playground = angular.element('body').find('.dataset-playground').eq(0);
+        var playground = angular.element('body').find('.playground').eq(0);
 
         //check header is present and contains description and search filter
         expect(playground.find('.modal-header').length).toBe(1);

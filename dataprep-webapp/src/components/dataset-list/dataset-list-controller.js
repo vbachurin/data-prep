@@ -1,44 +1,17 @@
 (function() {
     'use strict';
 
-    function DatasetListCtrl($q, DatasetService, DatasetListService, DatasetGridService, FilterService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl(DatasetService, DatasetListService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
 
         /**
-         * Last selected dataset metadata
-         * @type {dataset}
-         */
-        vm.lastSelectedMetadata = null;
-
-        /**
-         * Last selected records and columns
-         * @type {data}
-         */
-        vm.lastSelectedData = null;
-
-        /**
-         * Get the dataset data and display data modal
+         * Initiate a new preparation from dataset
          * @param dataset - the dataset to open
          */
         vm.open = function(dataset) {
-            var getDataPromise;
-            if(vm.lastSelectedMetadata && dataset.id === vm.lastSelectedMetadata.id) {
-                getDataPromise = $q.when(true);
-            }
-            else {
-                getDataPromise = DatasetService.getDataFromId(dataset.id, false)
-                    .then(function(data) {
-                        vm.lastSelectedMetadata = dataset;
-                        vm.lastSelectedData = data;
-
-                        FilterService.removeAllFilters();
-                    });
-            }
-            getDataPromise.then(function() {
-                DatasetGridService.setDataset(vm.lastSelectedMetadata, vm.lastSelectedData);
-                DatasetGridService.show();
-            });
+            PlaygroundService.initPlayground(dataset);
+            PlaygroundService.show();
         };
 
         /**
@@ -52,11 +25,6 @@
                 })
                 .then(function() {
                     MessageService.success('DATASET_REMOVE_SUCCESS_TITLE', 'DATASET_REMOVE_SUCCESS', {dataset: dataset.name});
-
-                    if(dataset === vm.lastSelectedMetadata) {
-                        vm.lastSelectedMetadata = null;
-                        vm.lastSelectedData = null;
-                    }
                     DatasetListService.refreshDatasets();
                 });
         };

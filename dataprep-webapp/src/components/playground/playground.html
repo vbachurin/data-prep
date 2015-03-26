@@ -1,10 +1,10 @@
-<talend-modal class="dataset-playground"
+<talend-modal class="playground"
               fullscreen="true"
-              state="datasetCtrl.showDataGrid"
+              state="playgroundCtrl.showPlayground"
               close-button="true">
     <div class="modal-header">
         <ul>
-            <li translate="FILE_DETAILS" translate-value-name="{{datasetCtrl.metadata.name}}" translate-value-records="{{datasetCtrl.metadata.records}}"></li>
+            <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
             <li>
                 <export></export>
             </li>
@@ -13,7 +13,7 @@
 
     <div class="modal-body flex">
         <talend-slidable visible="false" class="flex-side recipe">
-            <recipe metadata="datasetCtrl.metadata"></recipe>
+            <recipe metadata="playgroundCtrl.metadata"></recipe>
         </talend-slidable>
 
         <div class="flex-center">
