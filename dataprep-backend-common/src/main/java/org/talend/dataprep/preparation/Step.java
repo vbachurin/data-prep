@@ -5,9 +5,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.data.annotation.Id;
 
 public class Step implements Identifiable {
+
     public static final Step ROOT_STEP = new Step(null, PreparationActions.ROOT_CONTENT.id());
 
     private String parent = StringUtils.EMPTY;
+
     private String content;
 
     public Step(final String parentId, final String contentId) {
@@ -39,10 +41,6 @@ public class Step implements Identifiable {
 
     @Override
     public String toString() {
-        return "Step {" +
-                "id='" + id() + '\'' +
-                ", parent='" + parent + '\'' +
-                ", content='" + content + '\'' +
-                '}';
+        return "Step {" + "id='" + id() + '\'' + ", parent='" + parent + '\'' + ", content='" + content + '\'' + '}';
     }
 }

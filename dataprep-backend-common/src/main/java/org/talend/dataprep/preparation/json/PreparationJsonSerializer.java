@@ -19,7 +19,8 @@ class PreparationJsonSerializer extends JsonSerializer<Preparation> implements A
     private static ApplicationContext applicationContext;
 
     @Override
-    public void serialize(Preparation preparation, JsonGenerator generator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(Preparation preparation, JsonGenerator generator, SerializerProvider serializerProvider)
+            throws IOException {
         generator.writeStartObject();
         {
             generator.writeStringField("id", preparation.id()); //$NON-NLS-1$

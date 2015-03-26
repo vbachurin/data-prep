@@ -1,15 +1,15 @@
 package org.talend.dataprep.preparation.store;
 
-import org.talend.dataprep.preparation.Identifiable;
-import org.talend.dataprep.preparation.PreparationRepository;
+import static org.talend.dataprep.preparation.PreparationActions.ROOT_CONTENT;
+import static org.talend.dataprep.preparation.Step.ROOT_STEP;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.talend.dataprep.preparation.PreparationActions.ROOT_CONTENT;
-import static org.talend.dataprep.preparation.Step.ROOT_STEP;
+import org.talend.dataprep.preparation.Identifiable;
+import org.talend.dataprep.preparation.PreparationRepository;
 
 public class InMemoryPreparationRepository implements PreparationRepository {
 

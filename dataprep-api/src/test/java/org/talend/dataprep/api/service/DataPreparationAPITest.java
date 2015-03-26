@@ -1,8 +1,16 @@
 package org.talend.dataprep.api.service;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+
+import java.io.InputStream;
+import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
@@ -20,16 +28,9 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.preparation.PreparationRepository;
 
-import java.io.InputStream;
-import java.util.List;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -222,8 +223,7 @@ public class DataPreparationAPITest {
         // Create a preparation based on dataset "1234"
         String preparationId = given().body("1234").post("/api/preparations").asString();
         String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-        given().body(actionContent).when().post("/api/preparations/{id}/actions", preparationId)
-                .then().statusCode(is(200));
+        given().body(actionContent).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
         // Assert preparation step is updated
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(2));

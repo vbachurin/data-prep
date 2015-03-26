@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Action {
+
     private String action;
+
     private Map<String, String> parameters = new HashMap<>(1);
 
     public String getAction() {

@@ -1,7 +1,12 @@
 package org.talend.dataprep.preparation;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PreparationUtils {
 
@@ -10,6 +15,7 @@ public class PreparationUtils {
 
     /**
      * Returns a list of all steps available from <code>step</code> parameter.
+     * 
      * @param step A {@link Step step}.
      * @param repository A {@link PreparationRepository version} repository.
      * @return A list of {@link Step step} id. Empty list if <code>step</code> parameter is <code>null</code>.

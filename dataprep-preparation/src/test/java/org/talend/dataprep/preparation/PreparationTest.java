@@ -38,11 +38,11 @@ import com.jayway.restassured.http.ContentType;
 @IntegrationTest
 public class PreparationTest {
 
-    @Autowired
-    private PreparationRepository repository;
-
     @Value("${local.server.port}")
     public int port;
+
+    @Autowired
+    private PreparationRepository repository;
 
     @Before
     public void setUp() {
@@ -138,7 +138,8 @@ public class PreparationTest {
         final Preparation preparation = new Preparation("1234", s);
         repository.add(preparation);
 
-        PreparationUtils.prettyPrint(repository, preparation, new NullOutputStream()); // Basic walk through code, no assert.
+        PreparationUtils.prettyPrint(repository, preparation, new NullOutputStream()); // Basic walk through code, no
+                                                                                       // assert.
     }
 
     @Test
@@ -165,7 +166,9 @@ public class PreparationTest {
         when().get("/preparations/all")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}]").allowingAnyArrayOrdering());
+                .body(sameJSONAs(
+                        "[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}]")
+                        .allowingAnyArrayOrdering());
     }
 
     @Test

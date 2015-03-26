@@ -1,9 +1,18 @@
 package org.talend.dataprep.preparation.service;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.preparation.Step.ROOT_STEP;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,21 +23,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.metrics.Timed;
-import org.talend.dataprep.preparation.*;
+import org.talend.dataprep.preparation.Preparation;
+import org.talend.dataprep.preparation.PreparationActions;
+import org.talend.dataprep.preparation.PreparationRepository;
+import org.talend.dataprep.preparation.Step;
 import org.talend.dataprep.preparation.api.AppendStep;
 import org.talend.dataprep.preparation.store.ContentCache;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toList;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static org.talend.dataprep.preparation.Step.ROOT_STEP;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
@@ -42,10 +46,9 @@ public class PreparationService {
     @Autowired
     private PreparationRepository versionRepository = null;
 
-    private final JsonFactory factory = new JsonFactory();
-
     /**
      * Get user name from Spring Security context
+     * 
      * @return "anonymous" if no user is currently logged in, the user name otherwise.
      */
     private static String getUserName() {
@@ -59,15 +62,24 @@ public class PreparationService {
         return author;
     }
 
+    private static String getStepId(@ApiParam(value = "version") @PathVariable(value = "version") String version,
+            Preparation preparation) {
+        String stepId;
+        if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
+            stepId = preparation.getStep().id();
+        } else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
+            stepId = ROOT_STEP.id();
+        } else {
+            stepId = version;
+        }
+        return stepId;
+    }
+
     @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
     public List<String> list() {
-        return versionRepository
-                .listAll(Preparation.class)
-                .stream()
-                .map(Preparation::id)
-                .collect(toList());
+        return versionRepository.listAll(Preparation.class).stream().map(Preparation::id).collect(toList());
     }
 
     @RequestMapping(value = "/preparations/all", method = GET, produces = APPLICATION_JSON_VALUE)
@@ -181,8 +193,11 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
-    public PreparationActions getVersionedAction(@ApiParam(value = "id") @PathVariable(value = "id") final String id,
-                                           @ApiParam(value = "version") @PathVariable(value = "version") final String version) {
+    public PreparationActions getVersionedAction(@ApiParam(value = "id")
+    @PathVariable(value = "id")
+    final String id, @ApiParam(value = "version")
+    @PathVariable(value = "version")
+    final String version) {
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation != null) {
             final String stepId = getStepId(version, preparation);
@@ -191,18 +206,5 @@ public class PreparationService {
         } else {
             throw new RuntimeException("Preparation id #" + id + " does not exist.");
         }
-    }
-
-    private static String getStepId(@ApiParam(value = "version") @PathVariable(value = "version") String version,
-                                    Preparation preparation) {
-        String stepId;
-        if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
-            stepId = preparation.getStep().id();
-        } else if ("origin".equalsIgnoreCase(version)) {
-            stepId = ROOT_STEP.id();
-        } else {
-            stepId = version;
-        }
-        return stepId;
     }
 }
