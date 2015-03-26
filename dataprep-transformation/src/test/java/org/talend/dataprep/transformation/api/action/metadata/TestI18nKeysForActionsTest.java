@@ -14,6 +14,8 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 @WebAppConfiguration
 @IntegrationTest
 public class TestI18nKeysForActionsTest {
+
+    public static final Log  LOGGER = LogFactory.getLog(TestI18nKeysForActionsTest.class);
 
     @Autowired
     private ActionMetadata[] allActions;
@@ -60,7 +64,7 @@ public class TestI18nKeysForActionsTest {
             assertNotEquals("", desc);
             assertI18nKeyExists("action." + name + ".desc");
 
-            System.out.println(name + " | " + label + " | " + desc);
+            LOGGER.debug(name + " | " + label + " | " + desc);
 
             for (Parameter param : actionMetadata.getParameters()) {
                 String pname = param.getName();
@@ -77,7 +81,7 @@ public class TestI18nKeysForActionsTest {
                 assertNotEquals("", pdesc);
                 assertI18nKeyExists("parameter." + pname + ".desc");
 
-                System.out.println("  - " + pname + " | " + plabel + " | " + pdesc);
+                LOGGER.debug("  - " + pname + " | " + plabel + " | " + pdesc);
             }
 
             for (Item item : actionMetadata.getItems()) {
@@ -95,9 +99,9 @@ public class TestI18nKeysForActionsTest {
                 assertNotEquals("", pdesc);
                 assertI18nKeyExists("parameter." + pname + ".desc");
 
-                System.out.println("  - " + pname + " | " + plabel + " | " + pdesc);
+                LOGGER.debug("  - " + pname + " | " + plabel + " | " + pdesc);
                 for (Value value : item.getValues()) {
-                    System.out.println("    - " + value);
+                    LOGGER.debug("    - " + value);
 
                     for (Parameter param : value.getParameters()) {
                         String oname = param.getName();
@@ -114,11 +118,11 @@ public class TestI18nKeysForActionsTest {
                         assertNotEquals("", odesc);
                         assertI18nKeyExists("parameter." + oname + ".desc");
 
-                        System.out.println("      - " + oname + " | " + olabel + " | " + odesc);
+                        LOGGER.debug("      - " + oname + " | " + olabel + " | " + odesc);
                     }
                 }
             }
-            System.out.println("");
+            LOGGER.debug("");
         }
     }
 
