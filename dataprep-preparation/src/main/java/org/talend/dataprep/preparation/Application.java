@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.preparation;
+package org.talend.dataprep.preparation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

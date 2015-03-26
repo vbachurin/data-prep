@@ -3,7 +3,7 @@ package org.talend.dataprep.api.preparation;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.data.annotation.Id;
 
-public class Preparation implements Object {
+public class Preparation implements Identifiable {
 
     private String dataSetId;
 
@@ -26,24 +26,24 @@ public class Preparation implements Object {
         return dataSetId;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setDataSetId(String dataSetId) {
+        this.dataSetId = dataSetId;
     }
 
     public String getAuthor() {
         return author;
     }
 
-    public void setDataSetId(String dataSetId) {
-        this.dataSetId = dataSetId;
-    }
-
-    public void setCreationDate(long creationDate) {
-        this.creationDate = creationDate;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public long getCreationDate() {
         return creationDate;
+    }
+
+    public void setCreationDate(long creationDate) {
+        this.creationDate = creationDate;
     }
 
     public Step getStep() {

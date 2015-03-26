@@ -4,11 +4,11 @@ import java.util.Collection;
 
 public interface PreparationRepository {
 
-    void add(Object object);
+    void add(Identifiable object);
 
-    <T extends Object> T get(String id, Class<T> clazz);
+    <T extends Identifiable> T get(String id, Class<T> clazz);
 
-    <T extends Object> Collection<T> listAll(Class<T> clazz);
+    <T extends Identifiable> Collection<T> listAll(Class<T> clazz);
 
     void clear();
 }

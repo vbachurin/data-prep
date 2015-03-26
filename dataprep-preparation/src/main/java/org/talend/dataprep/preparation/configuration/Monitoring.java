@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.preparation.configuration;
+package org.talend.dataprep.preparation.configuration;
 
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;

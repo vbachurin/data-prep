@@ -1,19 +1,21 @@
 package org.talend.dataprep.api.preparation;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+public class PreparationUtils {
 
-public class ObjectUtils {
-
-    private ObjectUtils() {
+    private PreparationUtils() {
     }
 
     /**
      * Returns a list of all steps available from <code>step</code> parameter.
+     * 
      * @param step A {@link Step step}.
      * @param repository A {@link PreparationRepository version} repository.
      * @return A list of {@link Step step} id. Empty list if <code>step</code> parameter is <code>null</code>.
@@ -41,42 +43,6 @@ public class ObjectUtils {
         __listSteps(versions, repository.get(step.getParent(), Step.class), repository);
     }
 
-    /**
-     * Append content of <code>blob2</code> to <code>blob</code> and returns a new blob containing the merge of the
-     * two {@link Blob blobs}.
-     * @param blob A blob with JSON content.
-     * @param content New JSON content to add to <code>blob</code>.
-     * @return A new {@link Blob blob} containing the merge of the 2 {@link Blob blobs}.
-     */
-    public static JSONBlob append(JSONBlob blob, InputStream content) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode tree1 = mapper.reader().readTree(blob.getContent());
-            JsonNode tree2 = mapper.reader().readTree(content);
-            __append(tree1, tree2);
-            String blobContent = mapper.writer().writeValueAsString(tree1);
-            return new JSONBlob(blobContent);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to append content to #" + blob.id(), e);
-        }
-    }
-
-    // Internal method for recursion
-    private static void __append(JsonNode node1, JsonNode node2) {
-        Iterator<Map.Entry<String, JsonNode>> fields = node2.fields();
-        while (fields.hasNext()) {
-            Map.Entry<String, JsonNode> next = fields.next();
-            JsonNode value = next.getValue();
-            if (value.isArray()) {
-                ArrayNode array1 = (ArrayNode) node1.get(next.getKey());
-                ArrayNode array2 = (ArrayNode) value;
-                for (JsonNode jsonNode : array2) {
-                    array1.add(jsonNode);
-                }
-            }
-        }
-    }
-
     private static void prettyPrint(PreparationRepository repository, Step step, OutputStream out) {
         if (step == null) {
             return;
@@ -85,7 +51,7 @@ public class ObjectUtils {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
             writer.append("\t\tStep (").append(step.id()).append(")").append("\n");
             writer.flush();
-            Blob blob = repository.get(step.getContent(), Blob.class);
+            PreparationActions blob = repository.get(step.getContent(), PreparationActions.class);
             prettyPrint(blob, out);
             prettyPrint(repository, repository.get(step.getParent(), Step.class), out);
         } catch (IOException e) {
@@ -93,7 +59,7 @@ public class ObjectUtils {
         }
     }
 
-    private static void prettyPrint(Blob blob, OutputStream out) {
+    private static void prettyPrint(PreparationActions blob, OutputStream out) {
         if (blob == null) {
             return;
         }
@@ -101,7 +67,7 @@ public class ObjectUtils {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
             writer.append("\t\t\tContent: ").append("\n");
             writer.append("======").append("\n");
-            writer.append(blob.getContent()).append("\n");
+            writer.append(blob.serializeActions()).append("\n");
             writer.append("======").append("\n");
             writer.flush();
         } catch (IOException e) {

@@ -13,7 +13,7 @@
     <version>1.0.m2-SNAPSHOT</version>
     <name>dataprep-preparation</name>
     <properties>
-        <start-class>org.talend.dataprep.api.preparation.Application</start-class>
+        <start-class>org.talend.dataprep.preparation.Application</start-class>
     </properties>
     <dependencies>
         <dependency>

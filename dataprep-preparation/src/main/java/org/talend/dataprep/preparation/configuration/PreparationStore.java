@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.preparation.configuration;
+package org.talend.dataprep.preparation.configuration;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.preparation.PreparationRepository;
-import org.talend.dataprep.api.preparation.store.ContentCache;
-import org.talend.dataprep.api.preparation.store.InMemoryPreparationRepository;
-import org.talend.dataprep.api.preparation.store.mongo.MongoDBPreparationRepository;
+import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.InMemoryPreparationRepository;
+import org.talend.dataprep.preparation.store.mongo.MongoDBPreparationRepository;
 
 @Configuration
 public class PreparationStore {

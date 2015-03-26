@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.preparation.configuration;
+package org.talend.dataprep.preparation.configuration;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

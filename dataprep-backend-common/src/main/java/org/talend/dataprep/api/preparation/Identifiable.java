@@ -1,7 +1,6 @@
 package org.talend.dataprep.api.preparation;
 
-public interface Object {
+public interface Identifiable {
 
     String id();
-
 }

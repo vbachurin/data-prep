@@ -4,11 +4,13 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.*;
 import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -29,6 +31,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import org.talend.dataprep.preparation.Application;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -36,11 +39,11 @@ import com.jayway.restassured.http.ContentType;
 @IntegrationTest
 public class PreparationTest {
 
-    @Autowired
-    private PreparationRepository repository;
-
     @Value("${local.server.port}")
     public int port;
+
+    @Autowired
+    private PreparationRepository repository;
 
     @Before
     public void setUp() {
@@ -54,89 +57,90 @@ public class PreparationTest {
 
     @Test
     public void rootObjects() throws Exception {
-        assertThat(repository.get("a829c2197884f7c7e894535509c3b78cecd6a0a8", Blob.class), notNullValue());
-        assertThat(repository.get("a829c2197884f7c7e894535509c3b78cecd6a0a8", Step.class), nullValue());
-        assertThat(repository.get("599725f0e1331d5f8aae24f22cd1ec768b10348d", Blob.class), nullValue());
-        assertThat(repository.get("599725f0e1331d5f8aae24f22cd1ec768b10348d", Step.class), notNullValue());
+        assertThat(repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", PreparationActions.class), notNullValue());
+        assertThat(repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", Step.class), nullValue());
+        assertThat(repository.get("f6e172c33bdacbc69bca9d32b2bd78174712a171", PreparationActions.class), nullValue());
+        assertThat(repository.get("f6e172c33bdacbc69bca9d32b2bd78174712a171", Step.class), notNullValue());
     }
 
     @Test
     public void nullArgs() throws Exception {
         assertThat(repository.get(null, Step.class), nullValue());
-        assertThat(repository.get("a829c2197884f7c7e894535509c3b78cecd6a0a8", null), notNullValue());
-        Class<? extends Object> objectClass = repository.get("a829c2197884f7c7e894535509c3b78cecd6a0a8", null).getClass();
-        assertThat(Blob.class.isAssignableFrom(objectClass), Is.is(true));
+        assertThat(repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", null), notNullValue());
+        Class<? extends Identifiable> objectClass = repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", null).getClass();
+        assertThat(PreparationActions.class.isAssignableFrom(objectClass), Is.is(true));
         assertThat(repository.get(null, null), nullValue());
     }
 
     @Test
     public void initialStep() {
-        Blob newContent = new JSONBlob("{\n" + "  \"actions\": [\n" + "    {\n" + "      \"action\": \"uppercase\",\n"
-                + "      \"parameters\": {\n" + "        \"column_name\": \"lastname\"\n" + "      }\n" + "    }\n" + "  ]\n"
-                + "}");
+        final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
+
+        final PreparationActions newContent = new PreparationActions(actions);
         repository.add(newContent);
-        Step s = new Step();
-        s.setContent(newContent.id());
-        s.setParent(RootStep.INSTANCE.id());
+
+        final Step s = new Step(ROOT_STEP.id(), newContent.id());
         repository.add(s);
+
         Preparation preparation = new Preparation("1234", s);
         repository.add(preparation);
+
         MatcherAssert.assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
     }
 
     @Test
     public void initialStepWithAppend() {
-        String content = "{\n" + "  \"actions\": [\n" + "    {\n" + "      \"action\": \"uppercase\",\n"
-                + "      \"parameters\": {\n" + "        \"column_name\": \"lastname\"\n" + "      }\n" + "    }\n" + "  ]\n"
-                + "}";
-        Blob newContent = ObjectUtils.append(RootBlob.INSTANCE, new ByteArrayInputStream(content.getBytes()));
+        final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
+
+        final PreparationActions newContent = ROOT_CONTENT.append(actions);
         repository.add(newContent);
-        Step s = new Step();
-        s.setContent(newContent.id());
-        s.setParent(RootStep.INSTANCE.id());
+
+        final Step s = new Step(ROOT_STEP.id(), newContent.id());
         repository.add(s);
-        Preparation preparation = new Preparation("1234", s);
+
+        final Preparation preparation = new Preparation("1234", s);
         repository.add(preparation);
+
         MatcherAssert.assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
     }
 
     @Test
     public void stepsWithAppend() {
-        String content = "{\n" + "  \"actions\": [\n" + "    {\n" + "      \"action\": \"uppercase\",\n"
-                + "      \"parameters\": {\n" + "        \"column_name\": \"lastname\"\n" + "      }\n" + "    }\n" + "  ]\n"
-                + "}";
-        JSONBlob newContent1 = ObjectUtils.append(RootBlob.INSTANCE, new ByteArrayInputStream(content.getBytes()));
+        final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
+
+        final PreparationActions newContent1 = ROOT_CONTENT.append(actions);
         repository.add(newContent1);
-        JSONBlob newContent2 = ObjectUtils.append(newContent1, new ByteArrayInputStream(content.getBytes()));
+        final PreparationActions newContent2 = newContent1.append(actions);
         repository.add(newContent2);
+
         // Steps
-        Step s1 = new Step();
-        s1.setContent(newContent1.id());
-        s1.setParent(RootStep.INSTANCE.id());
+        final Step s1 = new Step(ROOT_STEP.id(), newContent1.id());
         repository.add(s1);
-        Step s2 = new Step();
-        s2.setContent(newContent2.id());
-        s2.setParent(s1.id());
+
+        final Step s2 = new Step(s1.id(), newContent2.id());
         repository.add(s2);
+
         // Preparation
-        Preparation preparation = new Preparation("1234", s2);
+        final Preparation preparation = new Preparation("1234", s2);
         repository.add(preparation);
+
         MatcherAssert.assertThat(preparation.id(), Is.is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
     }
 
     @Test
     public void prettyPrint() throws Exception {
-        Blob newContent = new JSONBlob("{\n" + "  \"actions\": [\n" + "    {\n" + "      \"action\": \"uppercase\",\n"
-                + "      \"parameters\": {\n" + "        \"column_name\": \"lastname\"\n" + "      }\n" + "    }\n" + "  ]\n"
-                + "}");
+        final List<Action> actions = getSimpleAction("uppercase", "column_name", "lastname");
+        final PreparationActions newContent = new PreparationActions(actions);
         repository.add(newContent);
-        Step s = new Step();
-        s.setContent(newContent.id());
-        s.setParent(RootStep.INSTANCE.id());
+
+        final Step s = new Step(ROOT_STEP.id(), newContent.id());
         repository.add(s);
-        Preparation preparation = new Preparation("1234", s);
+
+        final Preparation preparation = new Preparation("1234", s);
         repository.add(preparation);
-        ObjectUtils.prettyPrint(repository, preparation, new NullOutputStream()); // Basic walk through code, no assert.
+
+        PreparationUtils.prettyPrint(repository, preparation, new NullOutputStream()); // Basic walk through code, no
+                                                                                       // assert.
     }
 
     @Test
@@ -150,29 +154,31 @@ public class PreparationTest {
     @Test
     public void listAll() throws Exception {
         when().get("/preparations/all").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
-        Preparation preparation = new Preparation("1234", RootStep.INSTANCE);
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
         preparation.setCreationDate(0);
         repository.add(preparation);
         when().get("/preparations/all")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"599725f0e1331d5f8aae24f22cd1ec768b10348d\"],\"actions\":[]}]"));
-        Preparation preparation1 = new Preparation("5678", RootStep.INSTANCE);
+                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}]"));
+        Preparation preparation1 = new Preparation("5678", ROOT_STEP);
         preparation1.setCreationDate(0);
         repository.add(preparation1);
         when().get("/preparations/all")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"599725f0e1331d5f8aae24f22cd1ec768b10348d\"],\"actions\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"creationDate\":0,\"steps\":[\"599725f0e1331d5f8aae24f22cd1ec768b10348d\"],\"actions\":[]}]").allowingAnyArrayOrdering());
+                .body(sameJSONAs(
+                        "[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}]")
+                        .allowingAnyArrayOrdering());
     }
 
     @Test
     public void list() throws Exception {
         when().get("/preparations").then().statusCode(HttpStatus.OK.value()).body(sameJSONAs("[]"));
-        repository.add(new Preparation("1234", RootStep.INSTANCE));
+        repository.add(new Preparation("1234", ROOT_STEP));
         when().get("/preparations").then().statusCode(HttpStatus.OK.value())
                 .body(sameJSONAs("[\"ae242b07084aa7b8341867a8be1707f4d52501d1\"]"));
-        repository.add(new Preparation("5678", RootStep.INSTANCE));
+        repository.add(new Preparation("5678", ROOT_STEP));
         List<String> list = when().get("/preparations").jsonPath().getList("");
         assertThat(list, hasItems("ae242b07084aa7b8341867a8be1707f4d52501d1", "1de0ffaa4e00437dd0c7e1097caf5e5657440ee5"));
     }
@@ -188,7 +194,7 @@ public class PreparationTest {
 
     @Test
     public void get() throws Exception {
-        Preparation preparation = new Preparation("1234", RootStep.INSTANCE);
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
         preparation.setCreationDate(0);
         repository.add(preparation);
         String preparationDetails = when().get("/preparations/{id}", preparation.id()).asString();
@@ -199,16 +205,27 @@ public class PreparationTest {
     @Test
     public void testActionAddUpperCase() throws Exception {
         // Initial preparation
-        Preparation preparation = new Preparation("1234", RootStep.INSTANCE);
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
         preparation.setCreationDate(0);
         repository.add(preparation);
         // Assert initial step in preparation
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("599725f0e1331d5f8aae24f22cd1ec768b10348d"));
+        assertThat(preparation.getStep().id(), is("f6e172c33bdacbc69bca9d32b2bd78174712a171"));
         // Update preparation
         given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("4b80d91048c69239a05dd45c4fdcfe132b779c7f"));
+        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+    }
+
+    private List<Action> getSimpleAction(final String actionName, final String paramKey, final String paramValue) {
+        final Action action = new Action();
+        action.setAction(actionName);
+        action.getParameters().put(paramKey, paramValue);
+
+        final List<Action> actions = new ArrayList<>();
+        actions.add(action);
+
+        return actions;
     }
 }

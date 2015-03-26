@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.preparation.store;
+package org.talend.dataprep.preparation.store;
 
 import java.io.InputStream;
 
