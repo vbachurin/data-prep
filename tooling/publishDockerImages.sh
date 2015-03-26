@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# given a version, tag & push all data-prep LOCAL images with this version to talend-registry
+# given a version, tag all of data-prep images of this version, already publish to talend-registry with 'latest' and push them to the registry
 
 version=$1
 
@@ -15,12 +15,11 @@ images='talend/dataprep-api talend/dataprep-dataset talend/dataprep-transformati
 
 for image in $images;
 do
-  completeName=$image:$version
   echo ========================================
-  echo $completeName
+  echo $image
   echo ========================================
-  docker tag --force $completeName $registry/$completeName
-  docker push $registry/$completeName
+  docker tag --force $registry/$image:$version $registry/$image:latest
+  docker push $registry/$image:latest
   echo ========================================
   echo
 done
