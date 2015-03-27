@@ -13,7 +13,7 @@ public class PreparationMetadataModule extends SimpleModule {
 
     private PreparationMetadataModule() {
         super(DataSetMetadata.class.getName(), new Version(1, 0, 0, null, null, null));
-        addDeserializer(Preparation.class, new PreparationJsonDeserializer());
+        // We can omit deserialization as deserialization is straight forward.
         addSerializer(Preparation.class, new PreparationJsonSerializer());
     }
 

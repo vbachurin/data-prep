@@ -9,6 +9,8 @@ public class Preparation implements Identifiable {
 
     private String author;
 
+    private String name;
+
     private long creationDate;
 
     private Step step;
@@ -20,6 +22,14 @@ public class Preparation implements Identifiable {
         this.dataSetId = dataSetId;
         this.creationDate = System.currentTimeMillis();
         this.step = step;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDataSetId() {

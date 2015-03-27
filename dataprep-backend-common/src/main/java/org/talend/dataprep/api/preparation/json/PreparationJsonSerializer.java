@@ -26,9 +26,10 @@ class PreparationJsonSerializer extends JsonSerializer<Preparation> implements A
             generator.writeStringField("id", preparation.id()); //$NON-NLS-1$
             generator.writeStringField("dataSetId", preparation.getDataSetId()); //$NON-NLS-1$
             generator.writeStringField("author", preparation.getAuthor()); //$NON-NLS-1$
+            generator.writeStringField("name", preparation.getName()); //$NON-NLS-1$
             generator.writeNumberField("creationDate", preparation.getCreationDate()); //$NON-NLS-1$
             PreparationRepository versionRepository = getRepository();
-            if (versionRepository != null) {
+            if (versionRepository != null && preparation.getStep() != null) {
                 // Steps
                 final List<String> steps = PreparationUtils.listSteps(preparation.getStep(), versionRepository);
                 generator.writeObjectField("steps", steps);

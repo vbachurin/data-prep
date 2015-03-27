@@ -1,13 +1,19 @@
 package org.talend.dataprep.api.service.command;
 
+import java.io.StringWriter;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
+import org.springframework.http.MediaType;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.json.PreparationMetadataModule;
 import org.talend.dataprep.api.service.APIService;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
 public class PreparationCreate extends HystrixCommand<String> {
@@ -16,13 +22,13 @@ public class PreparationCreate extends HystrixCommand<String> {
 
     private final String preparationServiceUrl;
 
-    private final String dataSetId;
+    private final Preparation preparation;
 
-    public PreparationCreate(HttpClient client, String preparationServiceUrl, String dataSetId) {
+    public PreparationCreate(HttpClient client, String preparationServiceUrl, Preparation preparation) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
         this.preparationServiceUrl = preparationServiceUrl;
-        this.dataSetId = dataSetId;
+        this.preparation = preparation;
     }
 
     @Override
@@ -32,9 +38,15 @@ public class PreparationCreate extends HystrixCommand<String> {
 
     @Override
     protected String run() throws Exception {
-        HttpPut contentRetrieval = new HttpPut(preparationServiceUrl + "/preparations");
-        contentRetrieval.setEntity(new StringEntity(dataSetId));
-        HttpResponse response = client.execute(contentRetrieval);
+        HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations");
+        // TODO There should be a bean to write Preparation as a JSON string
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(PreparationMetadataModule.DEFAULT);
+        StringWriter preparationJSONValue = new StringWriter();
+        mapper.writer().writeValue(preparationJSONValue, preparation);
+        preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        preparationCreation.setEntity(new StringEntity(preparationJSONValue.toString()));
+        HttpResponse response = client.execute(preparationCreation);
         int statusCode = response.getStatusLine().getStatusCode();
         try {
             if (statusCode == 200) {
@@ -42,7 +54,7 @@ public class PreparationCreate extends HystrixCommand<String> {
             }
             throw new RuntimeException("Unable to retrieve preparation list.");
         } finally {
-            contentRetrieval.releaseConnection();
+            preparationCreation.releaseConnection();
         }
     }
 }

@@ -28,10 +28,10 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.preparation.Application;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-import org.talend.dataprep.preparation.Application;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -160,7 +160,7 @@ public class PreparationTest {
         when().get("/preparations/all")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}]"));
+                .body(sameJSONAs("[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"name\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}]"));
         Preparation preparation1 = new Preparation("5678", ROOT_STEP);
         preparation1.setCreationDate(0);
         repository.add(preparation1);
@@ -168,7 +168,7 @@ public class PreparationTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body(sameJSONAs(
-                        "[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}]")
+                        "[{\"id\":\"ae242b07084aa7b8341867a8be1707f4d52501d1\",\"dataSetId\":\"1234\",\"author\":null,\"name\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}, {\"id\":\"1de0ffaa4e00437dd0c7e1097caf5e5657440ee5\",\"dataSetId\":\"5678\",\"author\":null,\"name\":null,\"creationDate\":0,\"steps\":[\"f6e172c33bdacbc69bca9d32b2bd78174712a171\"],\"actions\":[]}]")
                         .allowingAnyArrayOrdering());
     }
 
@@ -186,10 +186,12 @@ public class PreparationTest {
     @Test
     public void create() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
-        String preparationId = given().body("1234").when().put("/preparations").asString();
+        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}").when().put("/preparations").asString();
         assertThat(preparationId, is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
         assertThat(repository.listAll(Preparation.class).size(), is(1));
-        assertThat(repository.listAll(Preparation.class).iterator().next().id(), is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        Preparation preparation = repository.listAll(Preparation.class).iterator().next();
+        assertThat(preparation.id(), is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        assertThat(preparation.getName(), is("test_name"));
     }
 
     @Test

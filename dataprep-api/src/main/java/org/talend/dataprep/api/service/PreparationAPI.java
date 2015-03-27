@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.metrics.Timed;
 
@@ -41,18 +42,15 @@ public class PreparationAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/preparations", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Create a new preparation for data set with id in body.", notes = "Returns the created preparation id.")
+    @RequestMapping(value = "/api/preparations", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
-    public String createTransformation(@ApiParam(name = "body", value = "Id of the data set.") InputStream body,
+    public String createTransformation(
+            @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        try {
-            HystrixCommand<String> command = new PreparationCreate(client, preparationServiceURL, IOUtils.toString(body));
-            return command.execute();
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to copy preparations to output.", e);
-        }
+        HystrixCommand<String> command = new PreparationCreate(client, preparationServiceURL, preparation);
+        return command.execute();
     }
 
     @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
