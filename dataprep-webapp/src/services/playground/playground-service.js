@@ -28,7 +28,7 @@
         };
 
         //------------------------------------------------------------------------------------------------------
-        //---------------------------------------------------INIT-----------------------------------------------
+        //-------------------------------------------------INIT/LOAD--------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
          * Initiate a preparation.
@@ -43,6 +43,7 @@
                         self.currentMetadata = dataset;
                         self.currentData = data;
                         self.preparationName = '';
+                        self.originalPreparationName = '';
                         PreparationService.currentPreparation = null;
 
                         FilterService.removeAllFilters();
@@ -54,6 +55,50 @@
             else {
                 self.show();
             }
+        };
+
+        /**
+         * Load an existing preparation in the playground :
+         * - set name,
+         * - set current preparation before any preparation request
+         * - load grid with 'head' version content,
+         * - reinit recipe panel with preparation steps
+         * @param preparation - the preparation to load
+         * @returns {*}
+         */
+        self.load = function(preparation) {
+            self.preparationName = preparation.name || '';
+            self.originalPreparationName = preparation.name || '';
+
+            // Update current preparation id before preparation operations
+            PreparationService.currentPreparation = preparation.id;
+            //TODO get all content (with columns and metadata) and pass metadata in setDataset
+            var loadPreparation = function(metadata, columns) {
+                return PreparationService.getContent('head')
+                    .then(function(response) {
+                        self.currentMetadata = metadata/*response.data.metadata*/;
+                        self.currentData = response.data;
+
+                        //TODO : don't need that when response.data will contain columns
+                        var data = response.data;
+                        data.columns = columns;
+
+                        FilterService.removeAllFilters();
+                        RecipeService.refresh();
+                        DatasetGridService.setDataset(metadata/*response.data.metadata*/, data);
+
+                        self.show();
+                    });
+            };
+
+            //TODO : remove that and return directly loadPreparation when backend service can return metadata and columns
+            //Temporary fix : Get matadata and columns from dataset id.
+            return DatasetService.getDataFromId(preparation.dataSetId, true)
+                .then(function(response) {
+                    var metadata = response.metadata;
+                    var columns = response.columns;
+                    return loadPreparation(metadata, columns);
+                });
         };
 
         //------------------------------------------------------------------------------------------------------

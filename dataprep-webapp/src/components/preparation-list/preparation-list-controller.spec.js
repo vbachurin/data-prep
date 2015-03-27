@@ -74,7 +74,7 @@ describe('Playground controller', function() {
 
     beforeEach(module('data-prep.preparation-list'));
 
-    beforeEach(inject(function($q, $rootScope, $controller, PreparationService) {
+    beforeEach(inject(function($q, $rootScope, $controller, PreparationService, PlaygroundService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -85,6 +85,8 @@ describe('Playground controller', function() {
         };
 
         spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
+        spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
+        spyOn(PlaygroundService, 'show').and.callThrough();
     }));
 
     it('should init preparations', inject(function() {
@@ -96,5 +98,28 @@ describe('Playground controller', function() {
 
         //then
         expect(ctrl.preparations).toBe(allPreparations);
+    }));
+
+    it('should load preparation and show playground', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        var preparation = {
+            id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
+            dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
+            author: 'anonymousUser',
+            creationDate: 1427460984585,
+            steps: [
+                '228c16230de53de5992eb44c7aba362ac714ab1c'
+            ],
+            actions: []
+        };
+           
+        //when
+        ctrl.load(preparation);
+        scope.$digest();
+
+        //then
+        expect(PlaygroundService.load).toHaveBeenCalledWith(preparation);
+        expect(PlaygroundService.show).toHaveBeenCalled();
     }));
 });

@@ -62,6 +62,7 @@
         /**
          * Get the dataset content
          * @param datasetId - dataset id
+         * @param metadata - if false, the metadata will not be returned
          */
         self.getDataFromId = function(datasetId, metadata) {
             $rootScope.$emit('talend.loading.start');

@@ -42,7 +42,7 @@ describe('Playground Service', function () {
         expect(PlaygroundService.visible).toBe(false);
     }));
 
-    describe('preparation load', function() {
+    describe('init new preparation', function() {
         var dataset = {id: 'e85afAa78556d5425bc2'};
         var data = [{column: [], records: []}];
         var assertNewPreparationInitialization;
@@ -68,6 +68,8 @@ describe('Playground Service', function () {
             expect(PlaygroundService.currentMetadata).toBeFalsy();
             expect(PlaygroundService.currentData).toBeFalsy();
             expect(PreparationService.currentPreparation).toBeFalsy();
+            expect(PreparationService.preparationName).toBeFalsy();
+            expect(PreparationService.originalPreparationName).toBeFalsy();
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -114,30 +116,45 @@ describe('Playground Service', function () {
             //then
             assertNewPreparationInitialization();
         }));
+
+        it('should reset preparation name', inject(function($rootScope, PlaygroundService) {
+            //given
+            PlaygroundService.preparationName = 'preparation name';
+            PlaygroundService.originalPreparationName = 'preparation name';
+
+            //when
+            PlaygroundService.initPlayground(dataset);
+            $httpBackend.flush();
+            $rootScope.$digest();
+
+            //then
+            expect(PlaygroundService.preparationName).toBeFalsy();
+            expect(PlaygroundService.originalPreparationName).toBeFalsy();
+        }));
+
+        it('should show playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatasetGridService) {
+            //given
+            var dataset = {id: 'e85afAa78556d5425bc2'};
+            var data = [{column: [], records: []}];
+            PlaygroundService.currentMetadata = dataset;
+            PlaygroundService.currentData = data;
+
+            expect(PlaygroundService.visible).toBe(false);
+            expect(PlaygroundService.currentPreparation).toBeFalsy();
+
+            //when
+            PlaygroundService.initPlayground(dataset);
+            $rootScope.$digest();
+
+            //then
+            expect(PlaygroundService.visible).toBe(true);
+            expect(PlaygroundService.currentMetadata).toBe(dataset);
+            expect(PlaygroundService.currentData).toBe(data);
+            expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
+            expect(RecipeService.reset).not.toHaveBeenCalled();
+            expect(DatasetGridService.setDataset).not.toHaveBeenCalled();
+        }));
     });
-
-    it('should show playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatasetGridService) {
-        //given
-        var dataset = {id: 'e85afAa78556d5425bc2'};
-        var data = [{column: [], records: []}];
-        PlaygroundService.currentMetadata = dataset;
-        PlaygroundService.currentData = data;
-
-        expect(PlaygroundService.visible).toBe(false);
-        expect(PlaygroundService.currentPreparation).toBeFalsy();
-
-        //when
-        PlaygroundService.initPlayground(dataset);
-        $rootScope.$digest();
-
-        //then
-        expect(PlaygroundService.visible).toBe(true);
-        expect(PlaygroundService.currentMetadata).toBe(dataset);
-        expect(PlaygroundService.currentData).toBe(data);
-        expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
-        expect(RecipeService.reset).not.toHaveBeenCalled();
-        expect(DatasetGridService.setDataset).not.toHaveBeenCalled();
-    }));
 
     it('should create preparation with provided name when there is no preparation yet', inject(function($rootScope, PlaygroundService, PreparationService) {
         //given

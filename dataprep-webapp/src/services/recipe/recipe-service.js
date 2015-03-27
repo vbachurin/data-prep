@@ -141,7 +141,7 @@
         };
 
         /**
-         * Refresh recipe items
+         * Refresh recipe items with current preparation steps
          */
         this.refresh = function() {
             PreparationService.getDetails()
