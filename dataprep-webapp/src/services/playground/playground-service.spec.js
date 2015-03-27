@@ -61,12 +61,12 @@ describe('Playground Service', function () {
                 .respond(200, data);
         }));
 
-        it('should init a new preparation and show playground when there is no loaded data yet', inject(function($rootScope, PlaygroundService) {
+        it('should init a new preparation and show playground when there is no loaded data yet', inject(function($rootScope, PlaygroundService, PreparationService) {
             //given
             expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeFalsy();
             expect(PlaygroundService.currentData).toBeFalsy();
-            expect(PlaygroundService.currentPreparation).toBeFalsy();
+            expect(PreparationService.currentPreparation).toBeFalsy();
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -77,15 +77,15 @@ describe('Playground Service', function () {
             assertNewPreparationInitialization();
         }));
 
-        it('should init a new preparation and show playground when there is already a created preparation yet', inject(function($rootScope, PlaygroundService) {
+        it('should init a new preparation and show playground when there is already a created preparation yet', inject(function($rootScope, PlaygroundService, PreparationService) {
             //given
             PlaygroundService.currentMetadata = {id : 'e85afAa78556d5425bc2'};
-            PlaygroundService.currentPreparation = {};
+            PreparationService.currentPreparation = {};
 
             expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeTruthy();
             expect(PlaygroundService.currentData).toBeFalsy();
-            expect(PlaygroundService.currentPreparation).toBeTruthy();
+            expect(PreparationService.currentPreparation).toBeTruthy();
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -96,14 +96,14 @@ describe('Playground Service', function () {
             assertNewPreparationInitialization();
         }));
 
-        it('should init a new preparation and show playground when the loaded dataset is not the wanted dataset', inject(function($rootScope, PlaygroundService) {
+        it('should init a new preparation and show playground when the loaded dataset is not the wanted dataset', inject(function($rootScope, PlaygroundService, PreparationService) {
             //given
             PlaygroundService.currentMetadata = {id : 'ab45420c09bf98d9a90'};
 
             expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeTruthy();
             expect(PlaygroundService.currentData).toBeFalsy();
-            expect(PlaygroundService.currentPreparation).toBeFalsy();
+            expect(PreparationService.currentPreparation).toBeFalsy();
 
             //when
             PlaygroundService.initPlayground(dataset);

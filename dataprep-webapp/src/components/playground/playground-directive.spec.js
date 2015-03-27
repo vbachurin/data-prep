@@ -48,7 +48,7 @@ describe('Playground directive', function() {
 
         //check header is present and contains description and search filter
         expect(playground.find('.modal-header').length).toBe(1);
-        expect(playground.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
+        expect(playground.find('.modal-header').eq(0).find('li').eq(1).text().trim()).toBe('File: US States (3 lines)');
 
         //check body is present
         expect(playground.find('.modal-body').length).toBe(1);

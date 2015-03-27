@@ -4,9 +4,18 @@
               close-button="true">
     <div class="modal-header">
         <ul>
-            <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
             <li>
                 <export></export>
+            </li>
+            <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
+            <li>
+                <span class="title">{{::'PREPARATION' | translate}} :</span>
+                <input type="text"
+                       class="discret-input"
+                       placeholder="{{::'ENTER_PREPARATION_NAME' | translate}}"
+                       ng-model="playgroundCtrl.preparationName"
+                       ng-model-options="{updateOn: 'default blur'}"
+                       ng-blur="playgroundCtrl.changeName()"/>
             </li>
         </ul>
     </div>

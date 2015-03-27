@@ -26,9 +26,11 @@
   "NO_TRANSFORMATION"   : "Aucune transformation disponible",
 
   "_comment" : "Datagrid",
-  "FILE_DETAILS"  : "Fichier: {{name}} ({{records}} lignes)",
-  "FILTER"        : "Filtre",
-  "NEW_FILTER"    : "Nouveau filtre...",
+  "ENTER_PREPARATION_NAME"  : "Entrer le nom de la préparation",
+  "FILE_DETAILS"            : "Fichier: {{name}} ({{records}} lignes)",
+  "FILTER"                  : "Filtre",
+  "NEW_FILTER"              : "Nouveau filtre...",
+  "PREPARATION"             : "Préparation",
 
   "_comment" : "Buttons",
   "CANCEL"      : "Annuler",

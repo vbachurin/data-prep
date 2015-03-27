@@ -6,6 +6,12 @@
     color: black;
   }
 
+  .param-input {
+    input {
+      width: 100%;
+    }
+  }
+
   .param-buttons {
     padding-top: 5px;
     border-top: 1px solid $light-gray;

@@ -1,13 +1,14 @@
 (function() {
     'use strict';
 
-    function PlaygroundService(DatasetService, DatasetGridService, FilterService, RecipeService) {
+    function PlaygroundService(DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService) {
         var self = this;
         self.visible = false;
 
         self.currentData = null;
         self.currentMetadata = null;
-        self.currentPreparation = null;
+        self.originalPreparationName = '';
+        self.preparationName = '';
 
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------VISIBILITY--------------------------------------------
@@ -36,11 +37,13 @@
          * @param dataset - the dataset to load
          */
         self.initPlayground = function(dataset) {
-            if(!self.currentMetadata || self.currentPreparation || dataset.id !== self.currentMetadata.id) {
+            if(!self.currentMetadata || PreparationService.currentPreparation || dataset.id !== self.currentMetadata.id) {
                 DatasetService.getDataFromId(dataset.id, false)
                     .then(function(data) {
                         self.currentMetadata = dataset;
                         self.currentData = data;
+                        self.preparationName = '';
+                        PreparationService.currentPreparation = null;
 
                         FilterService.removeAllFilters();
                         RecipeService.reset();
@@ -50,6 +53,22 @@
             }
             else {
                 self.show();
+            }
+        };
+
+        //------------------------------------------------------------------------------------------------------
+        //------------------------------------------------PREPARATION-------------------------------------------
+        //------------------------------------------------------------------------------------------------------
+        /**
+         * Create a new preparation or change its name if it already exists
+         * @param name - the preparation name
+         */
+        self.createOrUpdatePreparation = function(name) {
+            if(PreparationService.currentPreparation && self.originalPreparationName !== name) {
+                //TODO change name if different from current name
+            }
+            else {
+                PreparationService.create(self.currentMetadata.id, name);
             }
         };
     }

@@ -5,7 +5,7 @@ describe('Playground controller', function() {
 
     beforeEach(module('data-prep.playground'));
 
-    beforeEach(inject(function($rootScope, $controller) {
+    beforeEach(inject(function($rootScope, $controller, PlaygroundService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -14,6 +14,8 @@ describe('Playground controller', function() {
             });
             return ctrl;
         };
+
+        spyOn(PlaygroundService, 'createOrUpdatePreparation').and.callFake(function() {});
     }));
 
     it('should bind showPlayground getter with PlaygroundService', inject(function(PlaygroundService) {
@@ -53,4 +55,51 @@ describe('Playground controller', function() {
         expect(ctrl.metadata).toBe(metadata);
     }));
 
+    it('should bind preparationName getter with PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.preparationName).toBeFalsy();
+
+        //when
+        PlaygroundService.preparationName = 'My preparation';
+
+        //then
+        expect(ctrl.preparationName).toBe('My preparation');
+    }));
+
+    it('should bind preparationName setter with PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(PlaygroundService.preparationName).toBeFalsy();
+
+        //when
+        ctrl.preparationName = 'My preparation';
+
+        //then
+        expect(PlaygroundService.preparationName).toBe('My preparation');
+    }));
+
+    it('should call service create/updateName service with clean name', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        ctrl.preparationName = 'My preparation ';
+
+        //when
+        ctrl.changeName();
+
+        //then
+        expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('My preparation');
+    }));
+
+    it('should not call service create/updateName service if name is blank', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        ctrl.preparationName = ' ';
+
+        //when
+        ctrl.changeName();
+
+        //then
+        expect(PlaygroundService.createOrUpdatePreparation).not.toHaveBeenCalled();
+    }));
 });

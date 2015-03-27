@@ -5,6 +5,12 @@
         var vm = this;
         vm.playgroundService = PlaygroundService;
 
+        vm.changeName = function() {
+            var cleanName = vm.preparationName.trim();
+            if(cleanName) {
+                PlaygroundService.createOrUpdatePreparation(cleanName);
+            }
+        };
     }
 
     Object.defineProperty(PlaygroundCtrl.prototype,
@@ -25,6 +31,18 @@
             configurable: false,
             get: function () {
                 return this.playgroundService.currentMetadata;
+            }
+        });
+
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'preparationName', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.playgroundService.preparationName;
+            },
+            set: function(value) {
+                this.playgroundService.preparationName = value;
             }
         });
 

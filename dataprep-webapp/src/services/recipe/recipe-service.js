@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function RecipeService() {
+    function RecipeService(PreparationService) {
         var recipe = [];
 
         /**
@@ -98,6 +98,60 @@
          */
         this.resetParams = function(recipeItem) {
             executeFnOnParams(recipeItem.transformation, resetParamValue);
+        };
+
+        //--------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------PREPARATION---------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+
+        /**
+         * Create a recipe item from Preparation step
+         * @param actionStep
+         * @returns {Object}
+         */
+        var createItem = function(actionStep) {
+            var parameters = _.chain(Object.keys(actionStep[1].parameters))
+                .filter(function(paramKey) {
+                    return paramKey !== 'column_name';
+                })
+                .map(function(paramKey) {
+                    var paramName = paramKey;
+                    var paramValue = actionStep[1].parameters[paramKey];
+                    return {
+                        label: paramName,
+                        name: paramName,
+                        type: isNaN(paramValue) ? 'string' : 'numeric',
+                        inputType: isNaN(paramValue) ? 'text' : 'number',
+                        initialValue: paramValue,
+                        default: paramValue
+                    };
+                })
+                .value();
+            return {
+                column: {
+                    /*jshint camelcase: false */
+                    id: actionStep[1].parameters.column_name
+                },
+                transformation: {
+                    stepId: actionStep[0],
+                    name: actionStep[1].action,
+                    parameters: parameters.length ? parameters : null
+                }
+            };
+        };
+
+        /**
+         * Refresh recipe items
+         */
+        this.refresh = function() {
+            PreparationService.getDetails()
+                .then(function(resp) {
+                    var steps = resp.data.steps.slice(1);
+                    recipe = _.chain(steps)
+                        .zip(resp.data.actions)
+                        .map(createItem)
+                        .value();
+                });
         };
     }
 
