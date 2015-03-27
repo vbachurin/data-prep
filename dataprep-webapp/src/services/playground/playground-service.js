@@ -68,7 +68,11 @@
                 //TODO change name if different from current name
             }
             else {
-                PreparationService.create(self.currentMetadata.id, name);
+                PreparationService.create(self.currentMetadata.id, name)
+                    .then(function() {
+                        self.originalPreparationName = name;
+                        self.preparationName = name;
+                    });
             }
         };
     }

@@ -5,13 +5,14 @@ describe('Playground Service', function () {
 
     beforeEach(module('data-prep.services.playground'));
 
-    beforeEach(inject(function ($injector, DatasetService, FilterService, RecipeService, DatasetGridService) {
+    beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatasetGridService, PreparationService) {
         $httpBackend = $injector.get('$httpBackend');
 
         spyOn(DatasetService, 'getDataFromId').and.callThrough();
         spyOn(FilterService, 'removeAllFilters').and.callFake(function() {});
         spyOn(RecipeService, 'reset').and.callFake(function() {});
         spyOn(DatasetGridService, 'setDataset').and.callFake(function() {});
+        spyOn(PreparationService, 'create').and.returnValue($q.when(true));
     }));
 
     it('should init visible flag to false', inject(function(PlaygroundService) {
@@ -115,7 +116,7 @@ describe('Playground Service', function () {
         }));
     });
 
-    it('should only show playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatasetGridService) {
+    it('should show playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatasetGridService) {
         //given
         var dataset = {id: 'e85afAa78556d5425bc2'};
         var data = [{column: [], records: []}];
@@ -136,5 +137,24 @@ describe('Playground Service', function () {
         expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
         expect(RecipeService.reset).not.toHaveBeenCalled();
         expect(DatasetGridService.setDataset).not.toHaveBeenCalled();
+    }));
+
+    it('should create preparation with provided name when there is no preparation yet', inject(function($rootScope, PlaygroundService, PreparationService) {
+        //given
+        var name = 'My preparation';
+        var dataset = {id: 'e85afAa78556d5425bc2'};
+        PlaygroundService.currentMetadata = dataset;
+
+        expect(PlaygroundService.preparationName).toBeFalsy();
+        expect(PlaygroundService.originalPreparationName).toBeFalsy();
+
+        //when
+        PlaygroundService.createOrUpdatePreparation(name);
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.create).toHaveBeenCalledWith(dataset.id, name);
+        expect(PlaygroundService.preparationName).toBe(name);
+        expect(PlaygroundService.originalPreparationName).toBe(name);
     }));
 });
