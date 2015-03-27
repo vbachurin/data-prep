@@ -21,6 +21,13 @@
   "SORTED_BY"           : "Sorted by",
   "UPLOAD_ERROR"        : "Upload error",
 
+  "_comment" : "Preparations",
+  "CREATED_ON"    : "created on",
+  "OWNED_BY"      : "owned by",
+  "RECIPE"        : "recipe",
+  "ROWS"          : "row(s)",
+  "STEPS"         : "step(s)",
+
   "_comment" : "Datagrid transformations",
   "RECIPE_ITEM_ON_COL"  : "on column",
   "NO_TRANSFORMATION"   : "No transformation available",

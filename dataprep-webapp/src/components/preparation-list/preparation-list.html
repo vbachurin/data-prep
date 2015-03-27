@@ -1,10 +1,15 @@
 <div class="preparation-list">
     <div class="preparation" ng-repeat="preparation in preparationListCtrl.preparations track by preparation.id">
-        <p class="title"><a ng-click="preparationListCtrl.load(preparation)">Preparation</a></p>
+        <p class="title">
+            <a ng-click="preparationListCtrl.load(preparation)">Preparation</a>
+            <a class="favorite" ng-class="{selected: preparation.favorite}" ng-click="preparation.favorite = !preparation.favorite">&#9733;</a>
+        </p>
         <p class="description">
-            Auth : {{preparation.author}}<br/>
-            Nb steps : {{preparation.steps.length}}<br/>
-            Created on : {{preparation.creationDate | date}}
+            {{::'OWNED_BY' | translate}} <span class="important">{{preparation.author}}</span> - {{::'CREATED_ON' | translate}} {{preparation.creationDate | date}}
+        </p>
+        <p class="details">
+            <span class="important">Metadata title</span> (nb {{::'ROWS' | translate}})<br/>
+            <span class="important">{{preparation.steps.length - 1}} {{::'STEPS' | translate}}</span> {{::'RECIPE' | translate}}
         </p>
     </div>
 </div>

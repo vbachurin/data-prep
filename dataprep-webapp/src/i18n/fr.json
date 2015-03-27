@@ -21,6 +21,13 @@
   "SORTED_BY"           : "Trié par",
   "UPLOAD_ERROR"        : "Erreur d'envoi",
 
+  "_comment" : "Preparations",
+  "CREATED_ON"    : "créé le",
+  "OWNED_BY"      : "propriétaire",
+  "RECIPE"        : "recette",
+  "ROWS"          : "ligne(s)",
+  "STEPS"         : "étape(s)",
+
   "_comment" : "Datagrid transformations",
   "RECIPE_ITEM_ON_COL"  : "sur",
   "NO_TRANSFORMATION"   : "Aucune transformation disponible",

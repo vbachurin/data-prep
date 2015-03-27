@@ -102,9 +102,10 @@ describe('Preparation list directive', function() {
         expect(preparationTiles.length).toBe(2);
 
         var description = preparationTiles.eq(0).find('.description').eq(0).text();
+        var details = preparationTiles.eq(0).find('.details').eq(0).text();
         expect(description).toContain('anonymousUser'); //owner
-        expect(description).toContain('4'); //steps
         expect(description).toContain('27'); //creation date day
         expect(description).toContain('2015'); //creation date year
+        expect(details).toContain('3'); //steps
     }));
 });

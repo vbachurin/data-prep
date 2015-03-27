@@ -5,6 +5,9 @@
   $grid-items-background: white;
   $grid-items-shadow: rgba(0, 0, 0, 0.1);
 
+  $title-color: black;
+  $important-color: $dark-blue;
+
   width: 100%;
   padding-top: 10px;
 
@@ -22,16 +25,39 @@
 
     &:focus,
     &:hover {
-      background-color: darken($grid-items-background, 10%);
+      background-color: darken($grid-items-background, 5%);
     }
 
     .title {
-      font-weight: bold;
-      text-align: center;
+      margin: 0;
+
+      a {
+        font-weight: bold;
+        color: $title-color;
+        font-size: 1.2em;
+
+        &.favorite {
+          float: right;
+          color: $medium-gray;
+
+          &.selected {
+            color: $orange;
+          }
+        }
+      }
     }
 
     .description {
+      font-size: 0.8em;
+    }
 
+    .details {
+
+    }
+
+    .important {
+      color: $important-color;
+      font-weight: bold;
     }
   }
 }
