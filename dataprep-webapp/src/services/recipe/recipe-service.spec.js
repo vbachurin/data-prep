@@ -4,35 +4,35 @@ describe('Recipe service', function () {
     'use strict';
 
     var preparationDetails = {
-        "id": "fbaa18e82e913e97e5f0e9d40f04413412be1126",
-        "dataSetId": "8ec053b1-7870-4bc6-af54-523be91dc774",
-        "author": "anonymousUser",
-        "creationDate": 1427447330693,
-        "steps": [
-            "47e2444dd1301120b539804507fd307072294048",
-            "ae1aebf4b3fa9b983c895486612c02c766305410",
-            "24dcd68f2117b9f93662cb58cc31bf36d6e2867a",
-            "599725f0e1331d5f8aae24f22cd1ec768b10348d"
+        'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+        'dataSetId': '8ec053b1-7870-4bc6-af54-523be91dc774',
+        'author': 'anonymousUser',
+        'creationDate': 1427447330693,
+        'steps': [
+            '47e2444dd1301120b539804507fd307072294048',
+            'ae1aebf4b3fa9b983c895486612c02c766305410',
+            '24dcd68f2117b9f93662cb58cc31bf36d6e2867a',
+            '599725f0e1331d5f8aae24f22cd1ec768b10348d'
         ],
-        "actions": [
+        'actions': [
             {
-                "action": "cut",
-                "parameters": {
-                    "pattern": "-",
-                    "column_name": "birth"
+                'action': 'cut',
+                'parameters': {
+                    'pattern': '-',
+                    'column_name': 'birth'
                 }
             },
             {
-                "action": "fillemptywithdefault",
-                "parameters": {
-                    "default_value": 0,
-                    "column_name": "revenue"
+                'action': 'fillemptywithdefault',
+                'parameters': {
+                    'default_value': 0,
+                    'column_name': 'revenue'
                 }
             },
             {
-                "action": "uppercase",
-                "parameters": {
-                    "column_name": "lastname"
+                'action': 'uppercase',
+                'parameters': {
+                    'column_name': 'lastname'
                 }
             }
         ]
