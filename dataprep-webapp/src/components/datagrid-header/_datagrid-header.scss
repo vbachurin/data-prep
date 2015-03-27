@@ -7,8 +7,9 @@
   border: 1px solid rgb(221, 221, 221);
   color: $datagrid-header;
   text-transform: uppercase;
-  font-weight: normal;
-  font-size: 0.9em;
+  font-family: $base-font-family;
+  font-weight: 700;
+  font-size: 0.8em;
   cursor: default;
   padding: 5px 5px 0;
 
@@ -21,7 +22,8 @@
   .grid-header-type {
     height: 100%;
     text-transform: lowercase;
-    font-size: 0.8em;
+    font-size: 0.7em;
+    font-weight: 300;
     text-align: right;
   }
 

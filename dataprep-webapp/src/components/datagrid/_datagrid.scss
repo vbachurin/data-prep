@@ -2,7 +2,7 @@
   $datagrid-line-odd: #f9f9f9;
   $datagrid-line-border: #ddd;
 
-  $datagrid-cell: #6c6c6c;
+  $datagrid-cell: $dark-gray;
   $datagrid-cell-bkg-active: #e1e1e1;
 
   width: 100%;
@@ -45,10 +45,11 @@
   .slick-cell {
     box-sizing: content-box;
     border-color: $datagrid-line-border;
+    border-bottom-color: transparent;
     padding-left: 4px;
     padding-right: 4px;
     color: $datagrid-cell;
-    font-size: .80em;
+    font-size: .65em;
     font-family: $monospace;
 
     &.active {

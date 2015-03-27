@@ -1,6 +1,7 @@
 //override bourbon variable
 $base-font-family: $sourcesanspro;
 $heading-font-family: $base-font-family;
+$monospace: Monaco,Menlo,Consolas,"Courier New",monospace;
 
 body {
   background-color: white;
