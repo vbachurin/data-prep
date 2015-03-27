@@ -37,6 +37,10 @@ header.navigation {
         background: url('/assets/images/top_link_notification.png') no-repeat;
       }
 
+      &.t-top-bar_help {
+        background: url('/assets/images/top_link_help.png') no-repeat;
+      }
+
       &.t-top-bar_profile {
         background: url('/assets/images/top_link_profile.png') no-repeat;
         width: 52px;
