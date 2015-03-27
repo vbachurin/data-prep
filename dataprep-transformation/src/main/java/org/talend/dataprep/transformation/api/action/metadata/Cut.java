@@ -11,15 +11,11 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 
 @Component(Cut.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
-public class Cut implements ActionMetadata {
-
-    public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
+public class Cut extends SingleColumnAction {
 
     public static final String PATTERN_PARAMETER = "pattern"; //$NON-NLS-1$
 
-    public static final String CUT_ACTION_NAME = "cut"; //$NON-NLS-1$
-
-    public static final ActionMetadata INSTANCE = new Cut();
+    public static final String CUT_ACTION_NAME   = "cut";    //$NON-NLS-1$
 
     private Cut() {
     }
@@ -41,14 +37,14 @@ public class Cut implements ActionMetadata {
 
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY),
+        return new Parameter[] { COLUMN_NAME_PARAMETER,
                 new Parameter(PATTERN_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };
     }
 
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER);
+            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             if (value != null) {
                 row.set(columnName, value.replace(parsedParameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$

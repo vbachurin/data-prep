@@ -1,19 +1,49 @@
 [
-  {
-    "category": "repair",
-    "items": [],
-    "name": "fillemptywithdefaultinteger",
-    "parameters": [
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "default_value",
-        "type": "integer",
-        "default": "0"
-      }
-    ]
-  }
+   {
+      "name":"fillemptywithdefaultinteger",
+      "parameters":[
+         {
+            "name":"column_name",
+            "type":"string",
+            "default":"",
+            "description":"The column on which apply this action to",
+            "label":"Column"
+         },
+         {
+            "name":"default_value",
+            "type":"integer",
+            "default":"0",
+            "description":"The value to set in empty cells",
+            "label":"Value"
+         }
+      ],
+      "items":[
+
+      ],
+      "compatibleColumnTypes":[
+         "INTEGER"
+      ],
+      "category":"repair",
+      "description":"Fill empty cells of this column with given value",
+      "label":"Fill empty with value"
+   },
+   {
+      "name":"absolute_int",
+      "parameters":[
+         {
+            "name":"column_name",
+            "type":"string",
+            "default":"",
+            "description":"The column on which apply this action to",
+            "label":"Column"
+         }
+      ],
+      "category":"math",
+      "items":[
+
+      ],
+      "compatibleColumnTypes":[
+         "INTEGER"
+      ]
+   }
 ]

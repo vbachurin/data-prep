@@ -3,6 +3,8 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import java.util.*;
 import java.util.function.Consumer;
 
+import javax.annotation.Nonnull;
+
 import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -34,15 +36,25 @@ public interface ActionMetadata {
     /**
      * return the list of multiple valued parameters required for this Action to be executed. represented as list box on
      * the front end.
+     * 
+     * @return this should never return null
      **/
+    @Nonnull
     Item[] getItems();
 
     /**
      * return the list of input parameters required for this Action to be executed. represent as text input field on the
      * front end.
      **/
+    @Nonnull
     Parameter[] getParameters();
 
+    /**
+     * create a closure to perform the transformation on a DatasetRow according to the parameter.
+     * 
+     * @param parsedParameters
+     * @return
+     */
     Consumer<DataSetRow> create(Map<String, String> parsedParameters);
 
     default Consumer<DataSetRow> create(Iterator<Map.Entry<String, JsonNode>> input) {
