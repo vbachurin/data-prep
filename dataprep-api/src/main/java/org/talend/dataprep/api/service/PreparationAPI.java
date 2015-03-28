@@ -53,6 +53,19 @@ public class PreparationAPI extends APIService {
         return command.execute();
     }
 
+    @RequestMapping(value = "/api/preparations/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a preparation with content in body.", notes = "Returns the updated preparation id.")
+    @Timed
+    public String updateTransformation(
+            @ApiParam(name = "id", value = "The id of the preparation to update.") @PathVariable("id") String id,
+            @ApiParam(name = "body", value = "The updated preparation. Null values are ignored during update. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
+            HttpServletResponse response) {
+        HttpClient client = getClient();
+        HystrixCommand<String> command = new PreparationUpdate(client, preparationServiceURL, id, preparation);
+        return command.execute();
+    }
+
+
     @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preparation by id and details.", notes = "Returns the preparation details.")
     @Timed

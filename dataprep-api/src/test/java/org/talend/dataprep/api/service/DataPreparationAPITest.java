@@ -208,6 +208,21 @@ public class DataPreparationAPITest {
     }
 
     @Test
+    public void testPreparationUpdate() throws Exception {
+        // Create a preparation based on dataset "1234"
+        given().contentType(ContentType.JSON).body("{ \"name\": \"original_name\", \"dataSetId\": \"1234\" }").post("/api/preparations").asString();
+        // Assert on creation name
+        JsonPath longFormat = when().get("/api/preparations/?format=long").jsonPath();
+        assertThat(longFormat.getList("name").size(), is(1));
+        assertThat(longFormat.getList("name").get(0), is("original_name"));
+        // Update name
+        given().contentType(ContentType.JSON).body("{ \"name\": \"updated_name\", \"dataSetId\": \"1234\" }").post("/api/preparations").asString();
+        longFormat = when().get("/api/preparations/?format=long").jsonPath();
+        assertThat(longFormat.getList("name").size(), is(1));
+        assertThat(longFormat.getList("name").get(0), is("updated_name"));
+    }
+
+    @Test
     public void testPreparationGet() throws Exception {
         // Create a preparation based on dataset "1234"
         String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"1234\" }").post("/api/preparations").asString();
