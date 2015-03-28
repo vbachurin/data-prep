@@ -52,7 +52,7 @@ public class PreparationCreate extends HystrixCommand<String> {
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }
-            throw new RuntimeException("Unable to retrieve preparation list.");
+            throw new RuntimeException("Unable to create preparation.");
         } finally {
             preparationCreation.releaseConnection();
         }
