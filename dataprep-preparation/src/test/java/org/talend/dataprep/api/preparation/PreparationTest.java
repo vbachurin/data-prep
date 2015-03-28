@@ -195,6 +195,21 @@ public class PreparationTest {
     }
 
     @Test
+    public void update() throws Exception {
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}").when().put("/preparations").asString();
+        assertThat(preparationId, is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        // Test preparation details update
+        preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name_updated\", \"dataSetId\": \"1234\"}").when().put("/preparations/{id}", preparationId).asString();
+        // Preparation id should not change
+        assertThat(preparationId, is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        Preparation preparation = repository.listAll(Preparation.class).iterator().next();
+        assertThat(preparation.id(), is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        assertThat(preparation.getName(), is("test_name_updated"));
+    }
+
+
+    @Test
     public void get() throws Exception {
         Preparation preparation = new Preparation("1234", ROOT_STEP);
         preparation.setCreationDate(0);

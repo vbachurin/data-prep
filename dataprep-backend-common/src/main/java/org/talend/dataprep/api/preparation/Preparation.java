@@ -75,4 +75,13 @@ public class Preparation implements Identifiable {
         return "Preparation {" + "id='" + id() + '\'' + ", dataSetId='" + dataSetId + '\'' + ", author='" + author + '\''
                 + ", creationDate=" + creationDate + ", step=" + step + '}';
     }
+
+    public Preparation merge(Preparation other) {
+        dataSetId = other.dataSetId != null ? other.dataSetId : dataSetId;
+        author = other.author != null ? other.author : author;
+        name = other.name != null ? other.name : name;
+        creationDate = other.creationDate != 0 ? other.creationDate : creationDate;
+        step = other.step != null ? other.step : step;
+        return this;
+    }
 }
