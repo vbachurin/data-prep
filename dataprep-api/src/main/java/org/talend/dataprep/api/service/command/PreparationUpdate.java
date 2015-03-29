@@ -8,15 +8,23 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.json.PreparationMetadataModule;
 import org.talend.dataprep.api.service.APIService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class PreparationUpdate extends HystrixCommand<String> {
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     private final HttpClient client;
 
@@ -26,10 +34,10 @@ public class PreparationUpdate extends HystrixCommand<String> {
 
     private final Preparation preparation;
 
-    public PreparationUpdate(HttpClient client, String preparationServiceUrl, String id, Preparation preparation) {
+    private PreparationUpdate(HttpClient client, String preparationServiceURL, String id, Preparation preparation) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
-        this.preparationServiceUrl = preparationServiceUrl;
+        this.preparationServiceUrl = preparationServiceURL;
         this.id = id;
         this.preparation = preparation;
     }
@@ -42,9 +50,8 @@ public class PreparationUpdate extends HystrixCommand<String> {
     @Override
     protected String run() throws Exception {
         HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations/" + id);
-        // TODO There should be a bean to write Preparation as a JSON string
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(PreparationMetadataModule.DEFAULT);
+        // Serialize preparation using configured serialization
+        ObjectMapper mapper = builder.build();
         StringWriter preparationJSONValue = new StringWriter();
         mapper.writer().writeValue(preparationJSONValue, preparation);
         preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);

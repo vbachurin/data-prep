@@ -49,8 +49,8 @@ public class PreparationAPI extends APIService {
             @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<String> command = new PreparationCreate(client, preparationServiceURL, preparation);
-        return command.execute();
+        PreparationCreate preparationCreate = getCommand(PreparationCreate.class, client, preparationServiceURL, preparation);
+        return preparationCreate.execute();
     }
 
     @RequestMapping(value = "/api/preparations/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -61,8 +61,8 @@ public class PreparationAPI extends APIService {
             @ApiParam(name = "body", value = "The updated preparation. Null values are ignored during update. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<String> command = new PreparationUpdate(client, preparationServiceURL, id, preparation);
-        return command.execute();
+        PreparationUpdate preparationUpdate = getCommand(PreparationUpdate.class, client, preparationServiceURL, id, preparation);
+        return preparationUpdate.execute();
     }
 
 

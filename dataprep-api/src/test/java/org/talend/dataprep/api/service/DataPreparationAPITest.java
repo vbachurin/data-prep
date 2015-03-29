@@ -226,7 +226,7 @@ public class DataPreparationAPITest {
     public void testPreparationGet() throws Exception {
         // Create a preparation based on dataset "1234"
         String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"1234\" }").post("/api/preparations").asString();
-        JsonPath longFormat = when().get("/api/preparations/{id}/details", preparationId).jsonPath();
+        JsonPath longFormat = given().get("/api/preparations/{id}/details", preparationId).jsonPath();
         assertThat(longFormat.getString("dataSetId"), is("1234"));
         assertThat(longFormat.getString("author"), is("anonymousUser"));
         assertThat(longFormat.getString("id"), is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
