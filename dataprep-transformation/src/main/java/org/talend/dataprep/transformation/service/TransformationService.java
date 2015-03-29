@@ -76,6 +76,7 @@ public class TransformationService {
             return Collections.emptyList();
         }
         try {
+            // TODO Reuse Spring's ObjectMapper
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(DataSetMetadataModule.DEFAULT);
             DataSetMetadata dataSetMetadata = objectMapper.reader(DataSetMetadata.class).readValue(dataset);
