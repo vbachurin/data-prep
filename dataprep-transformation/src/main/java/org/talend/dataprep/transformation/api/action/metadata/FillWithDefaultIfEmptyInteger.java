@@ -14,8 +14,7 @@ public class FillWithDefaultIfEmptyInteger extends AbstractDefaultIfEmpty {
 
     public static final ActionMetadata INSTANCE = new FillWithDefaultIfEmptyInteger();
 
-    // Please do not instantiate this class, it is spring Bean automatically instantiated.
-    public FillWithDefaultIfEmptyInteger() {
+    private FillWithDefaultIfEmptyInteger() {
     }
 
     @Override

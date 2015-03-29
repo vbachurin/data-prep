@@ -19,8 +19,7 @@ public class LowerCase implements ActionMetadata {
 
     public static LowerCase INSTANCE = new LowerCase();
 
-    // Please do not instantiate this class, it is spring Bean automatically instantiated.
-    public LowerCase() {
+    private LowerCase() {
     }
 
     @Override
