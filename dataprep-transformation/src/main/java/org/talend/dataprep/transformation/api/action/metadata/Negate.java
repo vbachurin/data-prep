@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,8 @@ public class Negate extends SingleColumnAction {
 
     public static final String         NEGATE_ACTION_NAME = "negate";                       //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE           = new Negate();
+    private Negate() {
+    }
 
     @Override
     public String getName() {
@@ -33,11 +36,13 @@ public class Negate extends SingleColumnAction {
     }
 
     @Override
+    @Nonnull
     public Item[] getItems() {
         return new Item[0];
     }
 
     @Override
+    @Nonnull
     public Parameter[] getParameters() {
         return new Parameter[] { COLUMN_NAME_PARAMETER };
     }

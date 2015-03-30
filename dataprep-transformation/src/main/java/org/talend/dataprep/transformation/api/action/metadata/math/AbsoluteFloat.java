@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import javax.annotation.Nonnull;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -33,51 +35,31 @@ public class AbsoluteFloat extends SingleColumnAction {
 
     public static final String ABSOLUTE_FLOAT_ACTION_NAME = "absolute_float"; //$NON-NLS-1$
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getName()
-     */
+    private AbsoluteFloat() {
+    }
+
     @Override
     public String getName() {
         return ABSOLUTE_FLOAT_ACTION_NAME;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCategory()
-     */
     @Override
     public String getCategory() {
         return "math";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getItems()
-     */
     @Override
+    @Nonnull
     public Item[] getItems() {
         return new Item[0];
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getParameters()
-     */
     @Override
+    @Nonnull
     public Parameter[] getParameters() {
         return new Parameter[] { COLUMN_NAME_PARAMETER };
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#create(java.util.Map)
-     */
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         return row -> {
@@ -112,11 +94,6 @@ public class AbsoluteFloat extends SingleColumnAction {
         };
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.FLOAT);
