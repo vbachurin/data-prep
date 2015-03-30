@@ -1,15 +1,20 @@
 (function() {
     'use strict';
 
-    function TalendLoading($rootScope) {
+    function TalendLoading($rootScope, $timeout) {
         return {
             restrict: 'E',
             templateUrl: 'components/widgets/loading/loading.html',
             link: function() {
+                var loadingPromise;
+
                 $rootScope.$on('talend.loading.start', function() {
-                    angular.element('body').addClass('loading-open');
+                    loadingPromise = $timeout(function() {
+                        angular.element('body').addClass('loading-open');
+                    }, 200);
                 });
                 $rootScope.$on('talend.loading.stop', function() {
+                    $timeout.cancel(loadingPromise);
                     angular.element('body').removeClass('loading-open');
                 });
             }
