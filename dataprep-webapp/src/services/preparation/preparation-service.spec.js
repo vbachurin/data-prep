@@ -124,18 +124,42 @@ describe('Preparation Service', function () {
     it('should create a new preparation and set current preparation id', inject(function($rootScope, RestURLs, PreparationService) {
         //given
         var datasetId = '8ec053b1-7870-4bc6-af54-523be91dc774';
+        var name = 'The new preparation';
+
         $httpBackend
-            .expectPOST(RestURLs.preparationUrl, datasetId)
+            .expectPOST(RestURLs.preparationUrl, {dataSetId: datasetId, name: name})
             .respond(200, 'fbaa18e82e913e97e5f0e9d40f04413412be1126');
         expect(PreparationService.currentPreparation).toBeFalsy();
 
         //when
-        PreparationService.create(datasetId, 'The new preparation');
+        PreparationService.create(datasetId, name);
         $httpBackend.flush();
         $rootScope.$digest();
 
         //then
         expect(PreparationService.currentPreparation).toBe('fbaa18e82e913e97e5f0e9d40f04413412be1126');
+    }));
+
+    it('should update preparation name', inject(function($rootScope, RestURLs, PreparationService) {
+        //given
+        var updateDone = false;
+        var name = 'The new preparation name';
+        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+
+        $httpBackend
+            .expectPUT(RestURLs.preparationUrl + '/fbaa18e82e913e97e5f0e9d40f04413412be1126', {name: name})
+            .respond(200);
+
+        //when
+        PreparationService.update(name)
+            .then(function() {
+                updateDone = true;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(updateDone).toBe(true);
     }));
 
     it('should create a new preparation and append a transformation step', inject(function($rootScope, RestURLs, PreparationService) {
@@ -151,7 +175,7 @@ describe('Preparation Service', function () {
 
         //given : preparation creation request
         $httpBackend
-            .expectPOST(RestURLs.preparationUrl, datasetId)
+            .expectPOST(RestURLs.preparationUrl, {dataSetId: datasetId, name: 'New preparation'})
             .respond(200, 'fbaa18e82e913e97e5f0e9d40f04413412be1126');
         //given : preparation step append request
         $httpBackend

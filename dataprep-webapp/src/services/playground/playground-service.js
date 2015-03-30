@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function PlaygroundService(DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService) {
+    function PlaygroundService($rootScope, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService) {
         var self = this;
         self.visible = false;
 
@@ -72,11 +72,12 @@
 
             // Update current preparation id before preparation operations
             PreparationService.currentPreparation = preparation.id;
-            //TODO get all content (with columns and metadata) and pass metadata in setDataset
-            var loadPreparation = function(metadata, columns) {
+            //TODO get all content (with columns)
+            var loadPreparation = function(columns) {
+                $rootScope.$emit('talend.loading.start');
                 return PreparationService.getContent('head')
                     .then(function(response) {
-                        self.currentMetadata = metadata/*response.data.metadata*/;
+                        self.currentMetadata = preparation.dataset;
                         self.currentData = response.data;
 
                         //TODO : don't need that when response.data will contain columns
@@ -85,19 +86,21 @@
 
                         FilterService.removeAllFilters();
                         RecipeService.refresh();
-                        DatasetGridService.setDataset(metadata/*response.data.metadata*/, data);
+                        DatasetGridService.setDataset(preparation.dataset, data);
 
                         self.show();
+                    })
+                    .finally(function() {
+                        $rootScope.$emit('talend.loading.stop');
                     });
             };
 
             //TODO : remove that and return directly loadPreparation when backend service can return metadata and columns
-            //Temporary fix : Get matadata and columns from dataset id.
+            //Temporary fix : Get columns from dataset id.
             return DatasetService.getDataFromId(preparation.dataSetId, true)
                 .then(function(response) {
-                    var metadata = response.metadata;
                     var columns = response.columns;
-                    return loadPreparation(metadata, columns);
+                    return loadPreparation(columns);
                 });
         };
 
@@ -109,15 +112,21 @@
          * @param name - the preparation name
          */
         self.createOrUpdatePreparation = function(name) {
-            if(PreparationService.currentPreparation && self.originalPreparationName !== name) {
-                //TODO change name if different from current name
-            }
-            else {
-                PreparationService.create(self.currentMetadata.id, name)
-                    .then(function() {
-                        self.originalPreparationName = name;
-                        self.preparationName = name;
-                    });
+            if(self.originalPreparationName !== name) {
+                if(PreparationService.currentPreparation) {
+                    PreparationService.update(name)
+                        .then(function() {
+                            self.originalPreparationName = name;
+                            self.preparationName = name;
+                        });
+                }
+                else {
+                    PreparationService.create(self.currentMetadata.id, name)
+                        .then(function() {
+                            self.originalPreparationName = name;
+                            self.preparationName = name;
+                        });
+                }
             }
         };
     }

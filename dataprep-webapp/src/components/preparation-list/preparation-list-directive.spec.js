@@ -2,10 +2,49 @@ describe('Preparation list directive', function() {
     'use strict';
 
     var scope, createElement, element;
+    var allDatasets = [
+        {
+            'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            'name': 'customers_jso_light',
+            'author': 'anonymousUser',
+            'records': 15,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 08:06'
+        },
+        {
+            'id': '3b21388c-f54a-4334-9bef-748912d0806f',
+            'name': 'customers_jso',
+            'author': 'anonymousUser',
+            'records': 1000,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 07:35'
+        },
+        {
+            'id': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
+            'name': 'first_interactions',
+            'author': 'anonymousUser',
+            'records': 29379,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 08:05'
+        },
+        {
+            'id': '5e95be9e-88cd-4765-9ecc-ee48cc28b6d5',
+            'name': 'first_interactions_400',
+            'author': 'anonymousUser',
+            'records': 400,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 08:06'
+        }
+    ];
+
     var allPreparations = [
         {
             'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
-            'dataSetId': 'ddb74c89-6d23-4528-9f37-7a9860bb468e',
+            'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
             'author': 'anonymousUser',
             'creationDate': 1427447300300,
             'steps': [
@@ -38,7 +77,7 @@ describe('Preparation list directive', function() {
         },
         {
             'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-            'dataSetId': '8ec053b1-7870-4bc6-af54-523be91dc774',
+            'dataSetId': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
             'author': 'anonymousUser',
             'creationDate': 1427447330693,
             'steps': [
@@ -75,7 +114,9 @@ describe('Preparation list directive', function() {
     beforeEach(module('data-prep.preparation-list'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $q, PreparationService) {
+    beforeEach(inject(function($rootScope, $compile, $q, PreparationService, DatasetListService) {
+        DatasetListService.datasets = allDatasets;
+
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<preparation-list></preparation-list>');
@@ -106,6 +147,17 @@ describe('Preparation list directive', function() {
         expect(description).toContain('anonymousUser'); //owner
         expect(description).toContain('27'); //creation date day
         expect(description).toContain('2015'); //creation date year
+        expect(details).toContain('customers_jso_light'); //dataset name
+        expect(details).toContain('15'); //dataset nb records
+        expect(details).toContain('3'); //steps
+
+        description = preparationTiles.eq(1).find('.description').eq(0).text();
+        details = preparationTiles.eq(1).find('.details').eq(0).text();
+        expect(description).toContain('anonymousUser'); //owner
+        expect(description).toContain('27'); //creation date day
+        expect(description).toContain('2015'); //creation date year
+        expect(details).toContain('first_interactions'); //dataset name
+        expect(details).toContain('29379'); //dataset nb records
         expect(details).toContain('3'); //steps
     }));
 });

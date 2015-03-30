@@ -13,6 +13,7 @@ describe('Playground Service', function () {
         spyOn(RecipeService, 'reset').and.callFake(function() {});
         spyOn(DatasetGridService, 'setDataset').and.callFake(function() {});
         spyOn(PreparationService, 'create').and.returnValue($q.when(true));
+        spyOn(PreparationService, 'update').and.returnValue($q.when(true));
     }));
 
     it('should init visible flag to false', inject(function(PlaygroundService) {
@@ -173,5 +174,26 @@ describe('Playground Service', function () {
         expect(PreparationService.create).toHaveBeenCalledWith(dataset.id, name);
         expect(PlaygroundService.preparationName).toBe(name);
         expect(PlaygroundService.originalPreparationName).toBe(name);
+    }));
+
+    it('should update preparation with provided name when there is loaded preparation', inject(function($rootScope, PlaygroundService, PreparationService) {
+        //given
+        var name = 'My preparation';
+        var newName = 'My new preparation name';
+        PreparationService.currentPreparation = 'e85afAa78556d5425bc2';
+
+        PlaygroundService.preparationName = name;
+        PlaygroundService.originalPreparationName = name;
+
+        //when
+        PlaygroundService.preparationName = newName;
+        PlaygroundService.createOrUpdatePreparation(newName);
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.create).not.toHaveBeenCalled();
+        expect(PreparationService.update).toHaveBeenCalledWith(newName);
+        expect(PlaygroundService.preparationName).toBe(newName);
+        expect(PlaygroundService.originalPreparationName).toBe(newName);
     }));
 });

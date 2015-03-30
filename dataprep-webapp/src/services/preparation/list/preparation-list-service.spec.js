@@ -1,11 +1,49 @@
-describe('Preparation list controller', function() {
+describe('Preparation list service controller', function() {
     'use strict';
 
-    var createController, scope;
+    var allDatasets = [
+        {
+            'id': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            'name': 'customers_jso_light',
+            'author': 'anonymousUser',
+            'records': 15,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 08:06'
+        },
+        {
+            'id': '3b21388c-f54a-4334-9bef-748912d0806f',
+            'name': 'customers_jso',
+            'author': 'anonymousUser',
+            'records': 1000,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 07:35'
+        },
+        {
+            'id': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
+            'name': 'first_interactions',
+            'author': 'anonymousUser',
+            'records': 29379,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 08:05'
+        },
+        {
+            'id': '5e95be9e-88cd-4765-9ecc-ee48cc28b6d5',
+            'name': 'first_interactions_400',
+            'author': 'anonymousUser',
+            'records': 400,
+            'nbLinesHeader': 1,
+            'nbLinesFooter': 0,
+            'created': '03-30-2015 08:06'
+        }
+    ];
+
     var allPreparations = [
         {
             'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
-            'dataSetId': 'ddb74c89-6d23-4528-9f37-7a9860bb468e',
+            'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
             'author': 'anonymousUser',
             'creationDate': 1427447300300,
             'steps': [
@@ -72,54 +110,25 @@ describe('Preparation list controller', function() {
         }
     ];
 
-    beforeEach(module('data-prep.preparation-list'));
+    beforeEach(module('data-prep.services.preparation'));
 
-    beforeEach(inject(function($q, $rootScope, $controller, PreparationService, PlaygroundService) {
-        scope = $rootScope.$new();
-
-        createController = function() {
-            var ctrl =  $controller('PreparationListCtrl', {
-                $scope: scope
-            });
-            return ctrl;
-        };
+    beforeEach(inject(function($q, PreparationService, DatasetListService) {
+        DatasetListService.datasets = allDatasets;
 
         spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
-        spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
-        spyOn(PlaygroundService, 'show').and.callThrough();
     }));
 
-    it('should init preparations', inject(function() {
+    it('should init preparations', inject(function($rootScope, PreparationListService) {
         //given
+        expect(PreparationListService.preparations.length).toBe(0);
 
         //when
-        var ctrl = createController();
-        scope.$digest();
+        PreparationListService.refreshPreparations();
+        $rootScope.$digest();
 
         //then
-        expect(ctrl.preparations).toBe(allPreparations);
-    }));
-
-    it('should load preparation and show playground', inject(function(PlaygroundService) {
-        //given
-        var ctrl = createController();
-        var preparation = {
-            id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
-            dataSetId: 'dacd45cf-5bd0-4768-a9b7-f6c199581efc',
-            author: 'anonymousUser',
-            creationDate: 1427460984585,
-            steps: [
-                '228c16230de53de5992eb44c7aba362ac714ab1c'
-            ],
-            actions: []
-        };
-           
-        //when
-        ctrl.load(preparation);
-        scope.$digest();
-
-        //then
-        expect(PlaygroundService.load).toHaveBeenCalledWith(preparation);
-        expect(PlaygroundService.show).toHaveBeenCalled();
+        expect(PreparationListService.preparations).toBe(allPreparations);
+        expect(PreparationListService.preparations[0].dataset).toBe(allDatasets[0]);
+        expect(PreparationListService.preparations[1].dataset).toBe(allDatasets[2]);
     }));
 });

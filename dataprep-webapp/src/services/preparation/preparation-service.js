@@ -30,19 +30,40 @@
 
         /**
          * Create a new preparation
-         * @param datasetId
+         * @param datasetId - the dataset id
+         * @param name - the name of the new preparation
          * @returns HttpPromise
          */
         this.create = function(datasetId, name) {
             var request = {
                 method: 'POST',
                 url: RestURLs.preparationUrl,
-                data: datasetId
+                data: {
+                    name: name,
+                    dataSetId: datasetId
+                }
             };
 
             return $http(request).then(function(resp) {
                 self.currentPreparation = resp.data;
             });
+        };
+
+        /**
+         * Update the current preparation name
+         * @param name
+         */
+        this.update = function(name) {
+            var request = {
+                method: 'PUT',
+                url: RestURLs.preparationUrl + '/' + self.currentPreparation,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {name: name}
+            };
+
+            return $http(request);
         };
 
         /**

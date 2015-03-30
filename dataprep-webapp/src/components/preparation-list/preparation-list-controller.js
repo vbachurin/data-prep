@@ -1,18 +1,9 @@
 (function() {
     'use strict';
 
-    function PreparationListCtrl(PreparationService, PlaygroundService) {
+    function PreparationListCtrl(PreparationListService, PlaygroundService) {
         var vm = this;
-
-        /**
-         * Refresh preparation list
-         */
-        var refreshPreparations = function() {
-            PreparationService.getPreparations()
-                .then(function(result) {
-                    vm.preparations = result.data;
-                });
-        };
+        vm.preparationListService = PreparationListService;
 
         /**
          * Load a preparation in the playground
@@ -24,8 +15,17 @@
                 .then(PlaygroundService.show);
         };
 
-        refreshPreparations();
+        PreparationListService.refreshPreparations();
     }
+
+    Object.defineProperty(PreparationListCtrl.prototype,
+        'preparations', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.preparationListService.preparations;
+            }
+        });
 
     angular.module('data-prep.preparation-list')
         .controller('PreparationListCtrl', PreparationListCtrl);
