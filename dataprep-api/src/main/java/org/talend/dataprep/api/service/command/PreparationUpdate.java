@@ -24,9 +24,13 @@ import com.netflix.hystrix.HystrixCommand;
 public class PreparationUpdate extends HystrixCommand<String> {
 
     private final HttpClient client;
+
     private final String preparationServiceUrl;
+
     private final String id;
+
     private final Preparation preparation;
+
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 

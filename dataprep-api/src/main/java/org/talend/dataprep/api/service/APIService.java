@@ -24,12 +24,16 @@ public class APIService {
     protected static final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected static final Log LOG = LogFactory.getLog(APIService.class);
+
     @Value("${transformation.service.url}")
     protected String transformServiceUrl;
+
     @Value("${dataset.service.url}")
     protected String contentServiceUrl;
+
     @Value("${preparation.service.url}")
     protected String preparationServiceURL;
+
     @Autowired
     private WebApplicationContext context;
 
