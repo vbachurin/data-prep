@@ -67,7 +67,7 @@ public class Preparation implements Identifiable {
     @Id
     @Override
     public String id() {
-        return DigestUtils.sha1Hex(dataSetId + author);
+        return DigestUtils.sha1Hex(dataSetId + author + name);
     }
 
     @Override
