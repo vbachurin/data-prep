@@ -16,7 +16,7 @@ class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
     static
     {
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     private final boolean metadata;
