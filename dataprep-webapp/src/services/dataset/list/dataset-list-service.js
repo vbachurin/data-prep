@@ -43,6 +43,7 @@
                     .then(function(res) {
                         self.datasets = res.data;
                         datasetsPromise = null;
+                        return self.datasets;
                     });
             }
 
