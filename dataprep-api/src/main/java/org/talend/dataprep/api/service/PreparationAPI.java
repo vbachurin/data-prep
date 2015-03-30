@@ -65,7 +65,6 @@ public class PreparationAPI extends APIService {
         return preparationUpdate.execute();
     }
 
-
     @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preparation by id and details.", notes = "Returns the preparation details.")
     @Timed
@@ -92,8 +91,8 @@ public class PreparationAPI extends APIService {
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationGetContent(client, preparationServiceURL, contentServiceUrl,
-                transformServiceUrl, preparationId, version);
+        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationServiceURL,
+                contentServiceUrl, transformServiceUrl, preparationId, version);
         try {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);

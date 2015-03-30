@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -28,10 +28,11 @@ import com.wordnik.swagger.annotations.*;
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
 
+    private final TransformerFactory factory = new SimpleTransformerFactory();
+    @Autowired(required = true)
+    private Jackson2ObjectMapperBuilder builder;
     @Autowired
     private ActionMetadata[] allActions;
-
-    private final TransformerFactory factory = new SimpleTransformerFactory();
 
     @RequestMapping(value = "/transform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
@@ -76,8 +77,7 @@ public class TransformationService {
             return Collections.emptyList();
         }
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(DataSetMetadataModule.DEFAULT);
+            ObjectMapper objectMapper = builder.build();
             DataSetMetadata dataSetMetadata = objectMapper.reader(DataSetMetadata.class).readValue(dataset);
             // Temporary: no data set actions at this moment
             if (dataSetMetadata != null) {

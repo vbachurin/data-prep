@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.WebApplicationContext;
@@ -23,26 +24,26 @@ public class APIService {
     protected static final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected static final Log LOG = LogFactory.getLog(APIService.class);
-
-    @Autowired
-    private WebApplicationContext context;
-
     @Value("${transformation.service.url}")
     protected String transformServiceUrl;
-
     @Value("${dataset.service.url}")
     protected String contentServiceUrl;
-
     @Value("${preparation.service.url}")
     protected String preparationServiceURL;
+    @Autowired
+    private WebApplicationContext context;
 
     public APIService() {
         connectionManager.setMaxTotal(50);
         connectionManager.setDefaultMaxPerRoute(50);
     }
 
-    protected  <T extends HystrixCommand> T getCommand(Class<T> clazz, Object... args) {
-        return context.getBean(clazz, args);
+    protected <T extends HystrixCommand> T getCommand(Class<T> clazz, Object... args) {
+        try {
+            return context.getBean(clazz, args);
+        } catch (BeansException e) {
+            throw new RuntimeException("Unable to find command " + clazz + " (" + args.length + " in init).", e);
+        }
     }
 
     void setDataSetServiceURL(String dataSetServiceURL) {

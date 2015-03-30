@@ -132,10 +132,11 @@ public class DataSetAPI extends APIService {
             HttpServletResponse response) {
         // Get dataset metadata
         HttpClient client = getClient();
-        HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadata(client, contentServiceUrl, dataSetId);
+        HystrixCommand<DataSetMetadata> retrieveMetadata = getCommand(DataSetGetMetadata.class, client, contentServiceUrl,
+                dataSetId);
         // Asks transformation service for suggested actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = new SuggestColumnActions(client, transformServiceUrl, retrieveMetadata,
-                columnName);
+        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, transformServiceUrl,
+                retrieveMetadata, columnName);
         // Returns actions
         try {
             ServletOutputStream outputStream = response.getOutputStream();
@@ -155,9 +156,11 @@ public class DataSetAPI extends APIService {
             HttpServletResponse response) {
         // Get dataset metadata
         HttpClient client = getClient();
-        HystrixCommand<DataSetMetadata> retrieveMetadata = new DataSetGetMetadata(client, contentServiceUrl, dataSetId);
+        HystrixCommand<DataSetMetadata> retrieveMetadata = getCommand(DataSetGetMetadata.class, client, contentServiceUrl,
+                dataSetId);
         // Asks transformation service for suggested actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = new SuggestDataSetActions(client, transformServiceUrl, retrieveMetadata);
+        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestDataSetActions.class, client, transformServiceUrl,
+                retrieveMetadata);
         // Returns actions
         try {
             ServletOutputStream outputStream = response.getOutputStream();
