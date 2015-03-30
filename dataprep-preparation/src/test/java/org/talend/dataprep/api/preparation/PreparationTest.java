@@ -187,10 +187,10 @@ public class PreparationTest {
     public void create() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}").when().put("/preparations").asString();
-        assertThat(preparationId, is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        assertThat(preparationId, is("170e086992df1848b8fc9459d87938af6be78720"));
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
-        assertThat(preparation.id(), is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        assertThat(preparation.id(), is("170e086992df1848b8fc9459d87938af6be78720"));
         assertThat(preparation.getName(), is("test_name"));
     }
 
@@ -198,13 +198,13 @@ public class PreparationTest {
     public void update() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
         String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}").when().put("/preparations").asString();
-        assertThat(preparationId, is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        assertThat(preparationId, is("170e086992df1848b8fc9459d87938af6be78720"));
         // Test preparation details update
         preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name_updated\", \"dataSetId\": \"1234\"}").when().put("/preparations/{id}", preparationId).asString();
         // Preparation id should not change
-        assertThat(preparationId, is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        assertThat(preparationId, is("0d291a2159ae36ee9177b8b845b3c8f1b0e0f30b"));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
-        assertThat(preparation.id(), is("948bed0012a5f13cd1ab93d51992f8952cbbd03b"));
+        assertThat(preparation.id(), is("0d291a2159ae36ee9177b8b845b3c8f1b0e0f30b"));
         assertThat(preparation.getName(), is("test_name_updated"));
     }
 

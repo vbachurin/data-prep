@@ -116,6 +116,9 @@ public class PreparationService {
             LOGGER.debug("Updating preparation with id " + preparation.id() + ": " + previousPreparation);
         }
         Preparation updated = previousPreparation.merge(preparation);
+        if (!updated.id().equals(id)) {
+            versionRepository.remove(previousPreparation);
+        }
         versionRepository.add(updated);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Updated preparation: " + updated);

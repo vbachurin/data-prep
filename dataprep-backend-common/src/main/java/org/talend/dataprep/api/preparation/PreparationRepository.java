@@ -11,4 +11,6 @@ public interface PreparationRepository {
     <T extends Identifiable> Collection<T> listAll(Class<T> clazz);
 
     void clear();
+
+    void remove(Identifiable object);
 }

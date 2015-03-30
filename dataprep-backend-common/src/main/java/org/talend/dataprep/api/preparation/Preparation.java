@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.preparation;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.annotation.Id;
 
 public class Preparation implements Identifiable {
@@ -67,6 +68,9 @@ public class Preparation implements Identifiable {
     @Id
     @Override
     public String id() {
+        if (StringUtils.isEmpty(name)) {
+            return DigestUtils.sha1Hex(dataSetId + author);
+        }
         return DigestUtils.sha1Hex(dataSetId + author + name);
     }
 
