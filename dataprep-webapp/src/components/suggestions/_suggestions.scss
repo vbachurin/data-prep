@@ -1,6 +1,6 @@
 .suggestions {
   $color: $black;
-  $background: $white;
+  $background: $light-gray;
 
   $border-color: $light-gray;
 
@@ -17,10 +17,10 @@
   color: $color;
 
   .action {
-    background: shade($background, 10%);
+    background: $background;
 
     &:hover {
-      background: shade($background, 5%);
+      background: darken($background, 5%);
     }
   }
 

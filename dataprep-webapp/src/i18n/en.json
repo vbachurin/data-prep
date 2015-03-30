@@ -27,7 +27,7 @@
   "_comment" : "Datagrid",
   "FILE_DETAILS"  : "File: {{name}} ({{records}} lines)",
   "FILTER"        : "Filter",
-  "NEW_FILTER"    : "New filter...",
+  "NEW_FILTER"    : "Type any value here...",
 
   "_comment" : "Buttons",
   "CANCEL"      : "Cancel",

@@ -1,6 +1,6 @@
 .recipe {
-  $color: white;
-  $background: $dark-gray;
+  $color: $dark-gray;
+  $background: $light-gray;
 
   background: $background;
   color: $color;
@@ -32,10 +32,8 @@
   }
 
   .action {
-    background: shade($background, 10%);
-
     &:hover {
-      background: tint($background, 10%);
+      background: darken($background, 10%);
     }
   }
 }
