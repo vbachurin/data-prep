@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function PlaygroundService($rootScope, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService) {
         var self = this;
         self.visible = false;
 
@@ -35,10 +35,11 @@
          * If there is no preparation yet and the dataset to load is still the last loaded, the playground is not changed.
          * Otherwise, the playground is reset with the wanted dataset
          * @param dataset - the dataset to load
+         * @return Promise
          */
         self.initPlayground = function(dataset) {
             if(!self.currentMetadata || PreparationService.currentPreparation || dataset.id !== self.currentMetadata.id) {
-                DatasetService.getDataFromId(dataset.id, false)
+                return DatasetService.getDataFromId(dataset.id, false)
                     .then(function(data) {
                         self.currentMetadata = dataset;
                         self.currentData = data;
@@ -49,11 +50,10 @@
                         FilterService.removeAllFilters();
                         RecipeService.reset();
                         DatasetGridService.setDataset(dataset, data);
-                        self.show();
                     });
             }
             else {
-                self.show();
+                return $q.when(true);
             }
         };
 

@@ -1,6 +1,6 @@
 (function() {
     'use strict';
-    
+
     function TalendLoading($rootScope) {
         return {
             restrict: 'E',
@@ -14,8 +14,8 @@
                 });
             }
         };
-    } 
-    
+    }
+
     angular.module('talend.widget')
         .directive('talendLoading', TalendLoading);
 })();

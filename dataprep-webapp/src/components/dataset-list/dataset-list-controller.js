@@ -10,8 +10,8 @@
          * @param dataset - the dataset to open
          */
         vm.open = function(dataset) {
-            PlaygroundService.initPlayground(dataset);
-            PlaygroundService.show();
+            PlaygroundService.initPlayground(dataset)
+                .then(PlaygroundService.show);
         };
 
         /**

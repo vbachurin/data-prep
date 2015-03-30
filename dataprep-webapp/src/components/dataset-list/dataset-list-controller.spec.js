@@ -48,7 +48,8 @@ describe('Dataset list controller', function () {
             scope.$digest();
 
             spyOn(DatasetService, 'deleteDataset').and.returnValue($q.when(true));
-            spyOn(PlaygroundService, 'initPlayground').and.callFake(function() {});
+            spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
+            spyOn(PlaygroundService, 'show').and.callThrough();
             spyOn(MessageService, 'success').and.callThrough();
         }));
 
@@ -78,6 +79,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(dataset);
+            expect(PlaygroundService.show).toHaveBeenCalled();
         }));
 
         it('should bind datasets getter to DatasetListService.datasets', inject(function (DatasetListService) {

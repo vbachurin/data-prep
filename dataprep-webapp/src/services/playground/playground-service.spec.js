@@ -50,7 +50,6 @@ describe('Playground Service', function () {
 
         beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatasetGridService, RestURLs) {
             assertNewPreparationInitialization = function() {
-                expect(PlaygroundService.visible).toBe(true);
                 expect(PlaygroundService.currentMetadata).toEqual(dataset);
                 expect(PlaygroundService.currentData).toEqual(data);
                 expect(FilterService.removeAllFilters).toHaveBeenCalled();
@@ -133,7 +132,7 @@ describe('Playground Service', function () {
             expect(PlaygroundService.originalPreparationName).toBeFalsy();
         }));
 
-        it('should show playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatasetGridService) {
+        it('should init playground when the wanted dataset is loaded and no preparation was created yet', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatasetGridService) {
             //given
             var dataset = {id: 'e85afAa78556d5425bc2'};
             var data = [{column: [], records: []}];
@@ -148,7 +147,6 @@ describe('Playground Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PlaygroundService.visible).toBe(true);
             expect(PlaygroundService.currentMetadata).toBe(dataset);
             expect(PlaygroundService.currentData).toBe(data);
             expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
