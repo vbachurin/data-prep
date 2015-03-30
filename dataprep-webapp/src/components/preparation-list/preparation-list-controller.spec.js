@@ -74,7 +74,7 @@ describe('Preparation list controller', function() {
 
     beforeEach(module('data-prep.preparation-list'));
 
-    beforeEach(inject(function($q, $rootScope, $controller, PreparationService, PlaygroundService) {
+    beforeEach(inject(function($q, $rootScope, $controller, PreparationService, PlaygroundService, DatasetListService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -84,6 +84,7 @@ describe('Preparation list controller', function() {
             return ctrl;
         };
 
+        spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when([]));
         spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();

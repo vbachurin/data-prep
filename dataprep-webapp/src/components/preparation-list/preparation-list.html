@@ -5,7 +5,8 @@
             <a class="favorite" ng-class="{selected: preparation.favorite}" ng-click="preparation.favorite = !preparation.favorite">&#9733;</a>
         </p>
         <p class="description">
-            {{::'OWNED_BY' | translate}} <span class="important">{{preparation.author}}</span> - {{::'CREATED_ON' | translate}} {{preparation.creationDate | date}}
+            {{::'OWNED_BY' | translate}} <span class="important">{{preparation.author}}</span><br/>
+            {{::'LAST_MODIFICATION' | translate}}: {{preparation.lastModificationDate | date}} {{preparation.lastModificationDate | date:'shortTime'}}
         </p>
         <p class="details">
             <span class="important">{{preparation.dataset.name}}</span> ({{preparation.dataset.records}} {{::'ROWS' | translate}})<br/>

@@ -1,8 +1,9 @@
 (function() {
     'use strict';
 
-    function DatasetListService(DatasetService) {
+    function DatasetListService($q, DatasetService) {
         var self = this;
+        var datasetsPromise;
 
         self.datasets = [];
 
@@ -34,13 +35,30 @@
         };
 
         /**
-         * Refresh datasets
+         * Refresh datasets if no refresh is pending
          */
         self.refreshDatasets = function() {
-            return DatasetService.getDatasets()
-                .then(function(res) {
-                    self.datasets = res.data;
-                });
+            if(! datasetsPromise) {
+                datasetsPromise = DatasetService.getDatasets()
+                    .then(function(res) {
+                        self.datasets = res.data;
+                        datasetsPromise = null;
+                    });
+            }
+
+            return datasetsPromise;
+        };
+
+        /**
+         * Return a promise that resolve the datasets list
+         */
+        self.getDatasetsPromise = function() {
+            if(self.datasets.length) {
+                return $q.when(self.datasets);
+            }
+            else {
+                return self.refreshDatasets();
+            }
         };
     }
 

@@ -22,11 +22,11 @@
   "UPLOAD_ERROR"        : "Erreur d'envoi",
 
   "_comment" : "Preparations",
-  "CREATED_ON"    : "créé le",
-  "OWNED_BY"      : "propriétaire",
-  "RECIPE"        : "recette",
-  "ROWS"          : "ligne(s)",
-  "STEPS"         : "étape(s)",
+  "LAST_MODIFICATION"   : "dernière modification",
+  "OWNED_BY"            : "propriétaire",
+  "RECIPE"              : "recette",
+  "ROWS"                : "ligne(s)",
+  "STEPS"               : "étape(s)",
 
   "_comment" : "Datagrid transformations",
   "RECIPE_ITEM_ON_COL"  : "sur",
