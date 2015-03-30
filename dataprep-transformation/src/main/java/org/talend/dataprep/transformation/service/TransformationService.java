@@ -2,25 +2,16 @@ package org.talend.dataprep.transformation.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.talend.dataprep.api.ColumnMetadata;
-import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.api.json.DataSetMetadataModule;
+import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -31,18 +22,14 @@ import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.exception.Messages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
 
     @Autowired
-    private ActionMetadata[] allActions;
+    private ActionMetadata[]         allActions;
 
     private final TransformerFactory factory = new SimpleTransformerFactory();
 
@@ -70,6 +57,7 @@ public class TransformationService {
         String typeName = column.getType();
         Type type = Type.get(typeName);
         ArrayList<ActionMetadata> suggestedActions = new ArrayList<>();
+        // look for all actions applicable to the column type
         for (ActionMetadata am : allActions) {
             Set<Type> compatibleColumnTypes = am.getCompatibleColumnTypes();
             for (Type columnType : compatibleColumnTypes) {
@@ -89,6 +77,7 @@ public class TransformationService {
             return Collections.emptyList();
         }
         try {
+            // TODO Reuse Spring's ObjectMapper
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(DataSetMetadataModule.DEFAULT);
             DataSetMetadata dataSetMetadata = objectMapper.reader(DataSetMetadata.class).readValue(dataset);

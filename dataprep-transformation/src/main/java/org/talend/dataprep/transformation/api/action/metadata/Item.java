@@ -1,8 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.Locale;
-
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.talend.dataprep.i18n.MessagesBundle;
 
 public class Item {
@@ -28,16 +25,14 @@ public class Item {
      * the label of the parameter, translated in the user locale.
      */
     public String getLabel() {
-        Locale locale = LocaleContextHolder.getLocale();
-        return MessagesBundle.getString("parameter." + getName() + ".label", locale);
+        return MessagesBundle.getString("parameter." + getName() + ".label");
     }
 
     /**
      * the description of the parameter, translated in the user locale.
      */
     public String getDescription() {
-        Locale locale = LocaleContextHolder.getLocale();
-        return MessagesBundle.getString("parameter." + getName() + ".desc", locale);
+        return MessagesBundle.getString("parameter." + getName() + ".desc");
     }
 
     public String getCategory() {

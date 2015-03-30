@@ -1,0 +1,92 @@
+{
+  "records": [
+    {
+      "firstname": "Benjamin",
+      "avgAmount": "668.61",
+      "city": "Santa Fe",
+      "birth": "02-07-1964",
+      "registration": "30-11-2007",
+      "id": "1",
+      "state": "NC",
+      "nbCommands": "72",
+      "lastname": "QUINCY"
+    },
+    {
+      "firstname": "Calvin",
+      "avgAmount": "-200.56",
+      "city": "Columbia",
+      "birth": "01-02-1986",
+      "registration": "25-08-2008",
+      "id": "2",
+      "state": "TN",
+      "nbCommands": "13",
+      "lastname": "JEFFERSON"
+    },
+    {
+      "firstname": "Ulysses",
+      "avgAmount": "-645",
+      "city": "Montpelier",
+      "birth": "05-05-1982",
+      "registration": "26-07-2008",
+      "id": "3",
+      "state": "AL",
+      "nbCommands": "68",
+      "lastname": "JOHNSON"
+    },
+    {
+      "firstname": "Andrew",
+      "avgAmount": "712",
+      "city": "Salem",
+      "birth": "18-09-1948",
+      "registration": "15-03-2008",
+      "id": "4",
+      "state": "NV",
+      "nbCommands": "54",
+      "lastname": "TAFT"
+    },
+    {
+      "firstname": "Richard",
+      "avgAmount": "0",
+      "city": "Little Rock",
+      "birth": "27-08-1969",
+      "registration": "10-09-2008",
+      "id": "5",
+      "state": "HI",
+      "nbCommands": "13",
+      "lastname": "EISENHOWER"
+    },
+    {
+      "firstname": "Franklin",
+      "avgAmount": "-0",
+      "city": "Salem",
+      "birth": "25-07-1980",
+      "registration": "31-03-2007",
+      "id": "6",
+      "state": "IN",
+      "nbCommands": "85",
+      "lastname": "TAYLOR"
+    },
+    {
+      "firstname": "Dwight",
+      "avgAmount": "",
+      "city": "Trenton",
+      "birth": "02-12-1965",
+      "registration": "06-11-2007",
+      "id": "7",
+      "state": "AZ",
+      "nbCommands": "97",
+      "lastname": "TYLER"
+    },
+    {
+      "firstname": "Lyndon",
+      "avgAmount": "totoro",
+      "city": "Montpelier",
+      "birth": "08-04-1976",
+      "registration": "20-11-2007",
+      "id": "8",
+      "state": "ME",
+      "nbCommands": "50",
+      "lastname": "HARRISON"
+    }
+  ]
+}

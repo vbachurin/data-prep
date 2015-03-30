@@ -7,10 +7,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.talend.dataprep.api.DataSetContent;
-import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.dataset.service.analysis.schema.Serializer;
+import org.talend.dataprep.api.dataset.DataSetContent;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
+import org.talend.dataprep.schema.Serializer;
 
 public class LocalDataSetContentStore implements DataSetContentStore {
 

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <logger name="org" level="ERROR"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
 </configuration>

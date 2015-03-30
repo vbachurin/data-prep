@@ -5,8 +5,8 @@ import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.talend.dataprep.api.json.DataSetMetadataModule;
-import org.talend.dataprep.preparation.json.PreparationMetadataModule;
+import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.api.preparation.json.PreparationMetadataModule;
 
 @Configuration
 public class Serialization {

@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.metrics.Timed;
 

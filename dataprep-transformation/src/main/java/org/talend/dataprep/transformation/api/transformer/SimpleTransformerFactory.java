@@ -2,7 +2,7 @@ package org.talend.dataprep.transformation.api.transformer;
 
 import java.util.function.Consumer;
 
-import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public class SimpleTransformerFactory implements TransformerFactory {
