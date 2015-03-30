@@ -199,6 +199,7 @@ public class PreparationService {
 
         // Update preparation head step
         preparation.setStep(newStep);
+        preparation.updateLastModificationDate();
         versionRepository.add(preparation);
 
         if (LOGGER.isDebugEnabled()) {
