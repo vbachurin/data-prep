@@ -72,35 +72,19 @@
 
             // Update current preparation id before preparation operations
             PreparationService.currentPreparation = preparation.id;
-            //TODO get all content (with columns)
-            var loadPreparation = function(columns) {
-                $rootScope.$emit('talend.loading.start');
-                return PreparationService.getContent('head')
-                    .then(function(response) {
-                        self.currentMetadata = preparation.dataset;
-                        self.currentData = response.data;
 
-                        //TODO : don't need that when response.data will contain columns
-                        var data = response.data;
-                        data.columns = columns;
-
-                        FilterService.removeAllFilters();
-                        RecipeService.refresh();
-                        DatasetGridService.setDataset(preparation.dataset, data);
-
-                        self.show();
-                    })
-                    .finally(function() {
-                        $rootScope.$emit('talend.loading.stop');
-                    });
-            };
-
-            //TODO : remove that and return directly loadPreparation when backend service can return metadata and columns
-            //Temporary fix : Get columns from dataset id.
-            return DatasetService.getDataFromId(preparation.dataSetId, true)
+            $rootScope.$emit('talend.loading.start');
+            return PreparationService.getContent('head')
                 .then(function(response) {
-                    var columns = response.columns;
-                    return loadPreparation(columns);
+                    self.currentMetadata = preparation.dataset;
+                    self.currentData = response.data;
+
+                    FilterService.removeAllFilters();
+                    RecipeService.refresh();
+                    DatasetGridService.setDataset(preparation.dataset, response.data);
+                })
+                .finally(function() {
+                    $rootScope.$emit('talend.loading.stop');
                 });
         };
 
