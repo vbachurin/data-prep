@@ -67,8 +67,8 @@
          * @returns {*}
          */
         self.load = function(preparation) {
-            self.preparationName = preparation.name || '';
-            self.originalPreparationName = preparation.name || '';
+            self.preparationName = preparation.name;
+            self.originalPreparationName = preparation.name;
 
             // Update current preparation id before preparation operations
             PreparationService.currentPreparation = preparation.id;

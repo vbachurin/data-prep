@@ -213,4 +213,36 @@ describe('Playground Service', function () {
         expect(PlaygroundService.preparationName).toBe(name);
         expect(PlaygroundService.originalPreparationName).toBe(name);
     }));
+
+    describe('load existing dataset', function() {
+        var data = {
+            records: [{id: '0', firstname: 'toto'}, {id: '1', firstname: 'tata'}, {id: '2', firstname: 'titi'}]
+        };
+
+        beforeEach(inject(function($rootScope, $q, PreparationService, RecipeService) {
+            spyOn($rootScope, '$emit').and.callThrough();
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: data}));
+            spyOn(RecipeService, 'refresh').and.callFake(function() {});
+        }));
+
+        it('should load existing dataset', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatasetGridService) {
+            //given
+            var preparation = {
+                dataset: {id: '1', name: 'my dataset'}
+            };
+
+            //when
+            PlaygroundService.load(preparation);
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+            $rootScope.$apply();
+
+            //then
+            expect(PlaygroundService.currentMetadata).toBe(preparation.dataset);
+            expect(PlaygroundService.currentData).toBe(data);
+            expect(FilterService.removeAllFilters).toHaveBeenCalled();
+            expect(RecipeService.refresh).toHaveBeenCalled();
+            expect(DatasetGridService.setDataset).toHaveBeenCalledWith(preparation.dataset, data);
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        }));
+    });
 });
