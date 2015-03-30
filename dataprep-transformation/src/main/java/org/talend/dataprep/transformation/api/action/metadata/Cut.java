@@ -21,8 +21,7 @@ public class Cut implements ActionMetadata {
 
     public static final ActionMetadata INSTANCE = new Cut();
 
-    // Please do not instantiate this class, it is spring Bean automatically instantiated.
-    public Cut() {
+    private Cut() {
     }
 
     @Override

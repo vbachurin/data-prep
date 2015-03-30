@@ -19,8 +19,7 @@ public class UpperCase implements ActionMetadata {
 
     public static final ActionMetadata INSTANCE = new UpperCase();
 
-    // Please do not instantiate this class, it is spring Bean automatically instantiated.
-    public UpperCase() {
+    private UpperCase() {
     }
 
     @Override

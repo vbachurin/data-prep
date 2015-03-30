@@ -14,8 +14,7 @@ public class FillWithDefaultIfEmpty extends AbstractDefaultIfEmpty {
 
     public static final ActionMetadata INSTANCE = new FillWithDefaultIfEmpty();
 
-    // Please do not instantiate this class, it is spring Bean automatically instantiated.
-    public FillWithDefaultIfEmpty() {
+    private FillWithDefaultIfEmpty() {
     }
 
     @Override

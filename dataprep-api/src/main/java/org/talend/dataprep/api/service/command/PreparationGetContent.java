@@ -62,6 +62,7 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
             if (statusCode == HttpStatus.SC_ACCEPTED) {
+                // TODO Should get actions from context
                 // Preparation has the version... but no longer any content associated with it, rebuilds it
                 // First get the preparation at version
                 HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$

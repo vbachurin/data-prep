@@ -17,8 +17,7 @@ public class DeleteOnValue extends AbstractDelete {
 
     public static final ActionMetadata INSTANCE = new DeleteOnValue();
 
-    // Please do not instantiate this class, it is spring Bean automatically instantiated.
-    public DeleteOnValue() {
+    private DeleteOnValue() {
     }
 
     @Override

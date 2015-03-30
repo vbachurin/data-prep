@@ -32,8 +32,7 @@ public class Split implements ActionMetadata {
 
     public static final ActionMetadata INSTANCE = new Split();
 
-    // Please do not instantiate this class, it is spring Bean automatically instantiated.
-    public Split() {
+    private Split() {
     }
 
     @Override

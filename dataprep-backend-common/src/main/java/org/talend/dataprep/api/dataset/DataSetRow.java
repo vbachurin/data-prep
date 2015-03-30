@@ -2,17 +2,21 @@ package org.talend.dataprep.api.dataset;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class DataSetRow {
 
-    private boolean                   deleted = false;
+    private boolean deleted = false;
 
-    private final Map<String, String> values;
+    private final Map<String, String> values = new HashMap<>();
+
+    public DataSetRow() {
+    }
 
     public DataSetRow(Map<String, String> values) {
-        this.values = values;
+        this.values.putAll(values);
     }
 
     public DataSetRow set(String name, String value) {
@@ -53,5 +57,14 @@ public class DataSetRow {
         } catch (IOException e) {
             throw new RuntimeException("Unable to write row to stream.", e);
         }
+    }
+
+    /**
+     * Clear all values in this row and reset state as it was when created (e.g. {@link #isDeleted()} returns
+     * <code>false</code>).
+     */
+    public void clear() {
+        deleted = false;
+        values.clear();
     }
 }
