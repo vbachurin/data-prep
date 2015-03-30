@@ -1,6 +1,8 @@
 #! /bin/bash
 #git checkout master
 
+cd ..
+
 status=`git status --short --untracked-files=no`
 if [ -n "$status"  ]; then
   echo "git status non vide, dégage !!"
