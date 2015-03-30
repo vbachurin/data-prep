@@ -20,7 +20,7 @@ describe('Playground directive', function() {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function($rootScope, $compile, PreparationListService) {
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<playground></playground>');
@@ -29,6 +29,8 @@ describe('Playground directive', function() {
             $compile(element)(scope);
             scope.$digest();
         };
+
+        spyOn(PreparationListService, 'refreshPreparations').and.callFake(function() {});
     }));
 
     afterEach(function() {
@@ -67,5 +69,22 @@ describe('Playground directive', function() {
         expect(playground.find('.modal-body').eq(0).find('.filter-list').length).toBe(1);
         expect(playground.find('.modal-body').eq(0).find('.filter-list').find('.filter-search').length).toBe(1);
         expect(playground.find('.modal-body').eq(0).find('datagrid').length).toBe(1);
+    }));
+
+    it('should refresh preparation list on playground hide', inject(function(PlaygroundService, PreparationListService) {
+        //given
+        PlaygroundService.currentMetadata = metadata;
+        createElement();
+
+        PlaygroundService.show();
+        scope.$apply();
+        expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
+
+        //when
+        PlaygroundService.hide();
+        scope.$apply();
+
+        //then
+        expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
     }));
 });

@@ -13,12 +13,12 @@
             </ul>
         </div>
 
-        <div class="flex-center" ng-if="homeCtrl.selectedMenu === 0">
+        <div class="flex-center" ng-show="homeCtrl.selectedMenu === 0">
             <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
             <dataset-list></dataset-list>
         </div>
 
-        <div class="flex-center" ng-if="homeCtrl.selectedMenu === 1">
+        <div class="flex-center" ng-show="homeCtrl.selectedMenu === 1">
             <preparation-list></preparation-list>
         </div>
 

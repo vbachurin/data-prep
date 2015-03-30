@@ -1,5 +1,5 @@
 <div class="preparation-list">
-    <div class="preparation" ng-repeat="preparation in preparationListCtrl.preparations track by preparation.id">
+    <div class="preparation" ng-repeat="preparation in preparationListCtrl.preparations track by $index">
         <p class="title">
             <a ng-click="preparationListCtrl.load(preparation)">{{preparation.name}}</a>
             <a class="favorite" ng-class="{selected: preparation.favorite}" ng-click="preparation.favorite = !preparation.favorite">&#9733;</a>

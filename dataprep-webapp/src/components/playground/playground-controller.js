@@ -1,15 +1,25 @@
 (function () {
     'use strict';
 
-    function PlaygroundCtrl(PlaygroundService) {
+    function PlaygroundCtrl(PlaygroundService, PreparationListService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
 
+        /**
+         * Create a preparation or update existing preparation name
+         */
         vm.changeName = function() {
             var cleanName = vm.preparationName.trim();
             if(cleanName) {
                 PlaygroundService.createOrUpdatePreparation(cleanName);
             }
+        };
+
+        /**
+         * Refresh preparation lists
+         */
+        vm.refreshPreparations = function() {
+            PreparationListService.refreshPreparations();
         };
     }
 

@@ -194,4 +194,23 @@ describe('Playground Service', function () {
         expect(PlaygroundService.preparationName).toBe(newName);
         expect(PlaygroundService.originalPreparationName).toBe(newName);
     }));
+
+    it('should do nothing when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationService) {
+        //given
+        var name = 'My preparation';
+        var newName = name;
+
+        PlaygroundService.originalPreparationName = name;
+        PlaygroundService.preparationName = newName;
+
+        //when
+        PlaygroundService.createOrUpdatePreparation(newName);
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.create).not.toHaveBeenCalled();
+        expect(PreparationService.update).not.toHaveBeenCalled();
+        expect(PlaygroundService.preparationName).toBe(name);
+        expect(PlaygroundService.originalPreparationName).toBe(name);
+    }));
 });
