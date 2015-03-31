@@ -28,8 +28,8 @@ describe('Navbar directive', function() {
         scope.$digest();
     }));
     
-    it('should remove navigation-menu \'show\' class', function() {
+    it('should remove navigation-menu "show" class', function() {
         //then
-        expect(element.find('.navigation-menu').hasClass()).toBe(false);
+        expect(element.find('.navigation-menu').hasClass('show')).toBe(false);
     });
 });
