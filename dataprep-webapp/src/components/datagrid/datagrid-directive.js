@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function Datagrid($timeout, $compile, DatasetGridService, FilterService) {
+    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService) {
         return {
             restrict: 'E',
             template: '<div id="datagrid" class="datagrid"></div>',
@@ -134,6 +134,10 @@
                             grid.invalidate();
                         }
                     });
+
+                    $window.addEventListener('resize', function(){
+                        grid.resizeCanvas();
+                    }, true);
                 };
 
                 //------------------------------------------------------------------------------------------------------
