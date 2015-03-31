@@ -1,6 +1,16 @@
 (function() {
     'use strict';
 
+    /**
+     * <talend-slidable visible="visible" side="right" resizable="inventory-data">
+     *      Content
+     * </talend-slidable>
+     *
+     * - 'visible' attribute : bind the 'visible' variable, that controle the slidable visibility, with a custom variable
+     * - 'side' attribute : left (default) | right. This defines the action bar position and the resize bar
+     * - 'resizable' attribute : pass unique ID that will be used to store custom size in local storage (key = {data-prep-' + resizableID + '-width}).
+     * Resize feature is disabled by default and enabled if the attribute si set
+     */
     function TalendSlidable($window) {
         return {
             restrict: 'E',
