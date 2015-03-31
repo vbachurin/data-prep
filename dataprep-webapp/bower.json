@@ -42,7 +42,6 @@
         "slick.grid.js",
         "slick.dataview.js",
         "slick.grid.css",
-        "css/smoothness/jquery-ui-1.8.16.custom.css",
         "controls/slick.pager.css"
       ]
     },
