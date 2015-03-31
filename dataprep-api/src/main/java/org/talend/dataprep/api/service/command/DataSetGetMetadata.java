@@ -4,13 +4,18 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
 
     private final HttpClient client;
@@ -19,7 +24,10 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
 
     private final String contentServiceUrl;
 
-    public DataSetGetMetadata(HttpClient client, String contentServiceUrl, String dataSetId) {
+    @Autowired(required = true)
+    private Jackson2ObjectMapperBuilder builder;
+
+    private DataSetGetMetadata(HttpClient client, String contentServiceUrl, String dataSetId) {
         super(PreparationAPI.DATASET_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.client = client;
@@ -37,8 +45,7 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
                     // Immediately release connection
                     return null;
                 } else if (statusCode == HttpStatus.SC_OK) {
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.registerModule(DataSetMetadataModule.DEFAULT);
+                    ObjectMapper mapper = builder.build();
                     return mapper.reader(DataSetMetadata.class).readValue(response.getEntity().getContent());
                 }
             }

@@ -38,4 +38,12 @@ public class MongoDBPreparationRepository implements PreparationRepository {
     public void clear() {
         store.deleteAll();
     }
+
+    @Override
+    public void remove(Identifiable object) {
+        if (object == null) {
+            return;
+        }
+        store.delete(object);
+    }
 }

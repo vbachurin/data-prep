@@ -53,4 +53,12 @@ public class InMemoryPreparationRepository implements PreparationRepository {
         add(ROOT_CONTENT);
         add(ROOT_STEP);
     }
+
+    @Override
+    public void remove(Identifiable object) {
+        if (object == null) {
+            return;
+        }
+        store.remove(object.id());
+    }
 }

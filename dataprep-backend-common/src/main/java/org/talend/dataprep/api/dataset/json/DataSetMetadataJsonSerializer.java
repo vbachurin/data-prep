@@ -3,6 +3,7 @@ package org.talend.dataprep.api.dataset.json;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -11,8 +12,6 @@ import org.talend.dataprep.api.dataset.Quality;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-
-import java.util.TimeZone;
 
 class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
 

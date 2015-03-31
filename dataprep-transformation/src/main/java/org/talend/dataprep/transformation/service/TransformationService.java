@@ -8,10 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -29,9 +30,17 @@ import com.wordnik.swagger.annotations.*;
 public class TransformationService {
 
     @Autowired
-    private ActionMetadata[]         allActions;
+    private WebApplicationContext context;
 
-    private final TransformerFactory factory = new SimpleTransformerFactory();
+    @Autowired(required = true)
+    private Jackson2ObjectMapperBuilder builder;
+
+    @Autowired
+    private ActionMetadata[] allActions;
+
+    private TransformerFactory getTransformerFactory() {
+        return context.getBean(SimpleTransformerFactory.class);
+    }
 
     @RequestMapping(value = "/transform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
@@ -40,7 +49,7 @@ public class TransformationService {
             @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions,
             @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response) {
         try {
-            Transformer transformer = factory.get(new String(Base64.getDecoder().decode(actions)));
+            Transformer transformer = getTransformerFactory().get(new String(Base64.getDecoder().decode(actions)));
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
             throw Exceptions.User(Messages.UNABLE_TO_PARSE_JSON, e);
@@ -77,9 +86,7 @@ public class TransformationService {
             return Collections.emptyList();
         }
         try {
-            // TODO Reuse Spring's ObjectMapper
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(DataSetMetadataModule.DEFAULT);
+            ObjectMapper objectMapper = builder.build();
             DataSetMetadata dataSetMetadata = objectMapper.reader(DataSetMetadata.class).readValue(dataset);
             // Temporary: no data set actions at this moment
             if (dataSetMetadata != null) {

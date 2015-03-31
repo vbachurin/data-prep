@@ -21,21 +21,24 @@ import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class PreparationCreate extends HystrixCommand<String> {
+public class PreparationUpdate extends HystrixCommand<String> {
 
-    @Autowired(required = true)
+    private final HttpClient client;
+
+    private final String preparationServiceUrl;
+
+    private final String id;
+
+    private final Preparation preparation;
+
+    @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
-    private HttpClient client;
-
-    private String preparationServiceUrl;
-
-    private Preparation preparation;
-
-    private PreparationCreate(HttpClient client, String preparationServiceUrl, Preparation preparation) {
+    private PreparationUpdate(HttpClient client, String preparationServiceURL, String id, Preparation preparation) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
-        this.preparationServiceUrl = preparationServiceUrl;
+        this.preparationServiceUrl = preparationServiceURL;
+        this.id = id;
         this.preparation = preparation;
     }
 
@@ -46,7 +49,7 @@ public class PreparationCreate extends HystrixCommand<String> {
 
     @Override
     protected String run() throws Exception {
-        HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations");
+        HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations/" + id);
         // Serialize preparation using configured serialization
         ObjectMapper mapper = builder.build();
         StringWriter preparationJSONValue = new StringWriter();
@@ -59,7 +62,7 @@ public class PreparationCreate extends HystrixCommand<String> {
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }
-            throw new RuntimeException("Unable to create preparation.");
+            throw new RuntimeException("Unable to update preparation #" + id + ".");
         } finally {
             preparationCreation.releaseConnection();
         }

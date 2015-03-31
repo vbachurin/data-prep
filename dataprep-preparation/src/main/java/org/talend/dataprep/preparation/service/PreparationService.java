@@ -9,7 +9,6 @@ import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -24,12 +23,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.api.preparation.Step;
-import org.talend.dataprep.preparation.store.ContentCache;
 import org.talend.dataprep.metrics.Timed;
-import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.preparation.api.AppendStep;
+import org.talend.dataprep.preparation.store.ContentCache;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -63,8 +62,7 @@ public class PreparationService {
         return author;
     }
 
-    private static String getStepId(@ApiParam(value = "version") @PathVariable(value = "version") String version,
-            Preparation preparation) {
+    private static String getStepId(@ApiParam("version") @PathVariable("version") String version, Preparation preparation) {
         String stepId;
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
             stepId = preparation.getStep().id();
@@ -90,39 +88,56 @@ public class PreparationService {
         return versionRepository.listAll(Preparation.class);
     }
 
-    @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
-    public String create(@ApiParam(value = "datasetId") @RequestBody final String dataSetId) {
-        if (org.apache.commons.lang.StringUtils.isBlank(dataSetId)) {
-            throw new IllegalArgumentException("Unable to create preparation, dataset id is blank");
-        }
+    public String create(@ApiParam("preparation")
+    @RequestBody
+    final Preparation preparation) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Create new preparation for data set " + dataSetId);
+            LOGGER.debug("Create new preparation for data set " + preparation.getDataSetId());
         }
-
-        final Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
+        preparation.setStep(ROOT_STEP);
         preparation.setAuthor(getUserName());
         versionRepository.add(preparation);
-
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Created new preparation: " + preparation);
         }
         return preparation.id();
     }
 
+    @RequestMapping(value = "/preparations/{id}", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Create a preparation", notes = "Returns the id of the updated preparation.")
+    @Timed
+    public String update(@ApiParam("id") @PathVariable("id") String id,
+                         @ApiParam("preparation") @RequestBody final Preparation preparation) {
+        Preparation previousPreparation = versionRepository.get(id, Preparation.class);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating preparation with id " + preparation.id() + ": " + previousPreparation);
+        }
+        Preparation updated = previousPreparation.merge(preparation);
+        if (!updated.id().equals(id)) {
+            versionRepository.remove(previousPreparation);
+        }
+        versionRepository.add(updated);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updated preparation: " + updated);
+        }
+        return updated.id();
+    }
+
     @RequestMapping(value = "/preparations/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
-    public Preparation get(@ApiParam(value = "id") @PathVariable(value = "id") String id) {
+    public Preparation get(@ApiParam("id") @PathVariable("id") String id) {
         return versionRepository.get(id, Preparation.class);
     }
 
     @RequestMapping(value = "/preparations/{id}/content/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
-    public void get(@ApiParam(value = "id") @PathVariable(value = "id") final String id,
-                    @ApiParam(value = "version") @PathVariable(value = "version") final String version,
+    public void get(@ApiParam("id") @PathVariable("id") final String id, 
+                    @ApiParam("version") @PathVariable("version") final String version, 
                     final HttpServletResponse response) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Get content of preparation #" + id + " at version '" + version + "'.");
@@ -157,7 +172,7 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void append(@PathVariable(value = "id") final String id, @RequestBody final AppendStep step) {
+    public void append(@PathVariable("id") final String id, @RequestBody final AppendStep step) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Adding actions to preparation #" + id);
         }
@@ -184,6 +199,7 @@ public class PreparationService {
 
         // Update preparation head step
         preparation.setStep(newStep);
+        preparation.updateLastModificationDate();
         versionRepository.add(preparation);
 
         if (LOGGER.isDebugEnabled()) {
@@ -194,10 +210,10 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
-    public PreparationActions getVersionedAction(@ApiParam(value = "id")
-    @PathVariable(value = "id")
-    final String id, @ApiParam(value = "version")
-    @PathVariable(value = "version")
+    public PreparationActions getVersionedAction(@ApiParam("id")
+    @PathVariable("id")
+    final String id, @ApiParam("version")
+    @PathVariable("version")
     final String version) {
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation != null) {
