@@ -17,7 +17,7 @@ import com.netflix.hystrix.Hystrix;
 @EnableAutoConfiguration
 public class Application implements DisposableBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Application.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
