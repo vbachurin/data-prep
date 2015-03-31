@@ -223,6 +223,20 @@
                 );
 
                 /**
+                 * Scroll to top when loaded dataset change
+                 */
+                scope.$watch(
+                    function () {
+                        return DatasetGridService.metadata;
+                    },
+                    function (metadata) {
+                        if(metadata) {
+                            grid.scrollRowToTop(0);
+                        }
+                    }
+                );
+
+                /**
                  * When filter change, displayed values change, so we reset active cell and cell styles
                  */
                 scope.$watchCollection(
@@ -233,6 +247,7 @@
                         if(grid) {
                             resetCellStyles();
                             grid.resetActiveCell();
+                            grid.scrollRowToTop(0);
                         }
                     }
                 );

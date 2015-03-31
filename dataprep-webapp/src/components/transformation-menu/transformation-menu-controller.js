@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function TransformMenuCtrl($rootScope, DatasetGridService, TransformationService, RecipeService) {
+    function TransformMenuCtrl($rootScope, DatasetGridService, PreparationService, RecipeService) {
         var vm = this;
 
         /**
@@ -33,13 +33,16 @@
             /*jshint camelcase: false */
             params.column_name = vm.column.id;
 
-            TransformationService.transform(vm.metadata.id, vm.menu.name, params)
-                .then(function (response) {
+            PreparationService.append(vm.metadata.id, vm.menu.name, params)
+                .then(function() {
+                    return PreparationService.getContent('head');
+                })
+                .then(function(response) {
                     DatasetGridService.updateRecords(response.data.records);
-                    RecipeService.add(vm.column, vm.menu);
+                    RecipeService.refresh();
+                    vm.showModal = false;
                 })
                 .finally(function () {
-                    vm.showModal = false;
                     $rootScope.$emit('talend.loading.stop');
                 });
         };

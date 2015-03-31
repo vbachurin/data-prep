@@ -42,6 +42,7 @@
      * <talend-modal fullscreen="false"
      *              state="homeCtrl.dataModalSmall"
      *              disable-enter="true"
+     *              on-close="homeCtrl.closeHandler()"
      *              close-button="true">
      *      Modal content
      * </talend-modal>
@@ -49,6 +50,7 @@
      * <talend-modal fullscreen="true"
      *              state="homeCtrl.dataModal"
      *              disable-enter="false"
+     *              on-close="homeCtrl.closeHandler()"
      *              close-button="true">
      *      <div class="modal-header">
      *          <ul>
@@ -65,6 +67,7 @@
      * All mode :
      * Element 'talend-modal' > attr 'fullscreen' : false (default)
      * Element 'talend-modal' > attr 'state' : variable binding that represents the state (true = opened, false = closed)
+     * Element 'talend-modal' > attr 'on-button' : optional close callback which is called at each modal close
      * Element 'talend-modal' > attr 'close-button' : close button on top right
      * Element 'talend-modal' > attr 'talend-modal-close' : close action on click
      * Element 'talend-modal' > attr 'disable-enter' : prevent primary button click on ENTER key press. Default false (action is active)
@@ -86,7 +89,8 @@
                 state: '=',
                 closeButton: '=',
                 fullscreen: '=',
-                disableEnter: '='
+                disableEnter: '=',
+                onClose: '&'
             },
             bindToController: true,
             controllerAs: 'talendModalCtrl',
@@ -163,8 +167,9 @@
                     });
 
                     //enable/disable scroll on main body depending on modal display
-                    //popup focus on show
-                    scope.$watch(function() {return ctrl.state;}, function(newValue) {
+                    //on show : modal focus
+                    //on close : close callback and focus on last opened modal
+                    scope.$watch(function() {return ctrl.state;}, function(newValue, oldValue) {
                         if (newValue) {
                             //register modal in shown modal list and focus on inner element
                             body.addClass('modal-open');
@@ -176,7 +181,8 @@
                             if(inputs.length > 1) {
                                 inputs.eq(1).focus();
                             }
-                        } else {
+                        } else if(oldValue) {
+                            ctrl.onClose();
                             deregisterAndFocusOnLastModal(innerElement);
                         }
                     });

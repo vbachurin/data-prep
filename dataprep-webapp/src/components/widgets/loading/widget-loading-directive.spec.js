@@ -14,7 +14,7 @@ describe('Dropdown directive', function () {
         scope.$digest();
     }));
 
-    it('should add "loading-open" class on body when "talend.loading.start" is emitted', inject(function ($rootScope) {
+    it('should add "loading-open" class on body after 200ms when "talend.loading.start" is emitted', inject(function ($rootScope, $timeout) {
         //given
         var body = angular.element('body');
         expect(body.hasClass('loading-open')).toBe(false);
@@ -22,6 +22,8 @@ describe('Dropdown directive', function () {
         //when
         $rootScope.$emit('talend.loading.start');
         $rootScope.$digest();
+        expect(body.hasClass('loading-open')).toBe(false);
+        $timeout.flush(200);
 
         //then
         expect(body.hasClass('loading-open')).toBe(true);
