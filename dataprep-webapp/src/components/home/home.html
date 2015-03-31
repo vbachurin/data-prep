@@ -5,18 +5,23 @@
 
         <div class="flex-menu-left side-menu">
             <ul>
-                <li><a href="javascript:void(0)" class="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
-                <li><a href="javascript:void(0)">{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
-                <li><a href="javascript:void(0)">{{ ::'ALL_SHAKED_FILES' | translate }}</a></li>
-                <li><a href="javascript:void(0)">{{ ::'FAVORITE_FILES' | translate }}</a></li>
+                <li><a ng-click="homeCtrl.selectedMenu = 0" ng-class="{selected: homeCtrl.selectedMenu === 0}">{{ ::'ALL_FOLDERS' | translate }}</a></li>
+                <li><a ng-click="homeCtrl.selectedMenu = 1" ng-class="{selected: homeCtrl.selectedMenu === 1}">{{ ::'ALL_PREPARATIONS' | translate }}</a></li>
+                <li><a href="javascript:void(0)" ng-class="{selected: homeCtrl.selectedMenu === 2}">{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
+                <li><a href="javascript:void(0)" ng-class="{selected: homeCtrl.selectedMenu === 3}">{{ ::'ALL_SHAKED_FILES' | translate }}</a></li>
+                <li><a href="javascript:void(0)" ng-class="{selected: homeCtrl.selectedMenu === 4}">{{ ::'FAVORITE_FILES' | translate }}</a></li>
             </ul>
         </div>
 
-        <div class="flex-center">
+        <div class="flex-center" ng-show="homeCtrl.selectedMenu === 0">
             <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
             <dataset-list></dataset-list>
         </div>
 
+        <div class="flex-center" ng-show="homeCtrl.selectedMenu === 1">
+            <preparation-list></preparation-list>
+        </div>
+        
         <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-side inventory-data" resizable="inventory-data">
             <p class="title">{{ ::'INVENTORY_DATA' | translate }}</p>
             <hr/>
@@ -28,5 +33,5 @@
         </talend-slidable>
     </div>
 
-    <dataset-playground></dataset-playground>
+    <playground></playground>
 </div>

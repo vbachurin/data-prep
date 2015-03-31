@@ -259,6 +259,10 @@
             padding-left: $navigation-item-space;
             vertical-align: middle;
 
+            .title {
+              font-weight: bold;
+            }
+
             input[type=search] {
               @include box-sizing(border-box);
               border-radius: $base-border-radius;
@@ -269,6 +273,16 @@
               margin: 0;
               padding: 0.5em 0.8em;
               width: 100%;
+            }
+
+            input {
+              display: inline-block;
+              margin: 0;
+              width: auto;
+
+              &.discret-input {
+                background: transparent;
+              }
             }
           }
         }

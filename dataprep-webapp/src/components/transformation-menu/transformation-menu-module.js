@@ -7,6 +7,6 @@
         'data-prep.transformation-params',
         'data-prep.services.dataset',
         'data-prep.services.recipe',
-        'data-prep.services.transformation'
+        'data-prep.services.preparation'
     ]);
 })();

@@ -1,22 +1,22 @@
 describe('Dataset column header directive', function() {
     'use strict';
-    var scope, createElement;
+    var scope, createElement, element;
     
     beforeEach(module('data-prep.datagrid-header'));
     beforeEach(module('htmlTemplates'));
 
     afterEach(function() {
         scope.$destroy();
+        element.remove();
     });
 
     beforeEach(inject(function($rootScope, $compile, $timeout) {
         scope = $rootScope.$new(true);
         createElement = function(directiveScope) {
-            var element = angular.element('<datagrid-header column="column"></datagrid-header>');
+            element = angular.element('<datagrid-header column="column"></datagrid-header>');
             $compile(element)(directiveScope);
             directiveScope.$digest();
             $timeout.flush();
-            return element;
         };
     }));
     
@@ -58,7 +58,7 @@ describe('Dataset column header directive', function() {
         };
 
         //when
-        var element = createElement(scope);
+        createElement(scope);
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
@@ -81,7 +81,7 @@ describe('Dataset column header directive', function() {
         };
 
         //when
-        var element = createElement(scope);
+        createElement(scope);
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
@@ -103,7 +103,7 @@ describe('Dataset column header directive', function() {
             'type': 'string'
         };
 
-        var element = createElement(scope);
+        createElement(scope);
         var menu = element.find('.grid-header-menu').eq(0);
         menu.addClass('show-menu');
 

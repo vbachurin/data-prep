@@ -4,10 +4,9 @@ $subheader-background: #EEEEEF;
 
 .subheader {
   background-color: $subheader-background;
-
   border-bottom: 1px solid $light-gray;
-
   box-shadow: $box-shadow;
+  z-index: 10;
   
   .subheader-wrapper {
     @include outer-container;

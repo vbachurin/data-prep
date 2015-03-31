@@ -1,6 +1,0 @@
-language: java
-jdk:
-  - oraclejdk8
-notifications:
-  slack: talendrd:WJbADAzKqKRRMaUJhZElg0qR
-
