@@ -12,12 +12,6 @@ public class DeleteEmpty extends AbstractDelete {
 
     public static final String DELETE_EMPTY_ACTION_NAME = "delete_empty"; //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE = new DeleteEmpty();
-
-    // Please do not instanciate this class, it is spring Bean automatically instanciated.
-    public DeleteEmpty() {
-    }
-
     @Override
     public String getName() {
         return DELETE_EMPTY_ACTION_NAME;
@@ -28,11 +22,6 @@ public class DeleteEmpty extends AbstractDelete {
         return (value == null || value.trim().length() == 0);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.STRING);

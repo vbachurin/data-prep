@@ -12,10 +12,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.talend.dataprep.api.DataSetContent;
-import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.dataset.service.analysis.schema.Serializer;
+import org.talend.dataprep.api.dataset.DataSetContent;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
+import org.talend.dataprep.schema.Serializer;
 
 public class HDFSContentStore implements DataSetContentStore {
 

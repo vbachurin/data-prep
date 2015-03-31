@@ -25,9 +25,8 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.TransformationServiceTests;
-
 
 /**
  * Test class for DeleteEmpty action. Creates one consumer, and test it.
@@ -39,12 +38,12 @@ public class DeleteOnValueTest {
     @BeforeClass
     public static void setUpClass() throws IOException {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("deleteOnValueAction.json"));
-        
+
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
-        
-        consumer = DeleteOnValue.INSTANCE.create(node.get("actions").get(0).get("parameters").getFields());
+
+        consumer = new DeleteOnValue().create(node.get("actions").get(0).get("parameters").getFields());
     }
 
     @Test
@@ -56,7 +55,7 @@ public class DeleteOnValueTest {
 
         consumer.accept(dsr);
         assertTrue(dsr.isDeleted());
-        
+
         // Assert that action did not change the row values
         assertEquals("David Bowie", dsr.get("name"));
         assertEquals("Berlin", dsr.get("city"));

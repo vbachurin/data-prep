@@ -1,33 +1,34 @@
 package org.talend.dataprep.preparation.store;
 
+import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.talend.dataprep.preparation.Object;
-import org.talend.dataprep.preparation.PreparationRepository;
-import org.talend.dataprep.preparation.RootBlob;
-import org.talend.dataprep.preparation.RootStep;
+import org.talend.dataprep.api.preparation.Identifiable;
+import org.talend.dataprep.api.preparation.PreparationRepository;
 
 public class InMemoryPreparationRepository implements PreparationRepository {
 
-    private final Map<String, Object> store = new HashMap<>();
+    private final Map<String, Identifiable> store = new HashMap<>();
 
     public InMemoryPreparationRepository() {
-        add(RootBlob.INSTANCE);
-        add(RootStep.INSTANCE);
+        add(ROOT_CONTENT);
+        add(ROOT_STEP);
     }
 
-    public void add(Object object) {
+    public void add(Identifiable object) {
         store.put(object.id(), object);
     }
 
-    public <T extends Object> T get(String id, Class<T> clazz) {
+    public <T extends Identifiable> T get(String id, Class<T> clazz) {
         if (id == null) {
             return null;
         }
-        Object value = store.get(id);
+        Identifiable value = store.get(id);
         if (value == null) {
             return null;
         }
@@ -41,7 +42,7 @@ public class InMemoryPreparationRepository implements PreparationRepository {
     }
 
     @Override
-    public <T extends Object> Set<T> listAll(Class<T> clazz) {
+    public <T extends Identifiable> Collection<T> listAll(Class<T> clazz) {
         return store.entrySet().stream().filter(entry -> clazz.isAssignableFrom(entry.getValue().getClass()))
                 .map(entry -> (T) entry.getValue()).collect(Collectors.toSet());
     }
@@ -49,7 +50,15 @@ public class InMemoryPreparationRepository implements PreparationRepository {
     @Override
     public void clear() {
         store.clear();
-        add(RootBlob.INSTANCE);
-        add(RootStep.INSTANCE);
+        add(ROOT_CONTENT);
+        add(ROOT_STEP);
+    }
+
+    @Override
+    public void remove(Identifiable object) {
+        if (object == null) {
+            return;
+        }
+        store.remove(object.id());
     }
 }

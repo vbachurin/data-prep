@@ -8,7 +8,7 @@
         self.data = null;
 
         //actions to grid
-        self.dataView = new Slick.Data.DataView({inlineFilters: true});
+        self.dataView = new Slick.Data.DataView({inlineFilters: false});
         self.filters = [];
 
         //actions from grid

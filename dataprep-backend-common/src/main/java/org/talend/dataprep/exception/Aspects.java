@@ -19,7 +19,7 @@ class Aspects {
         try {
             return pjp.proceed(pjp.getArgs());
         } catch (Exception e) {
-            LOG.error("Exception.", e);
+            LOG.error("Exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
             throw Exceptions.Internal(DefaultMessage.UNEXPECTED_EXCEPTION, e);
         }
     }

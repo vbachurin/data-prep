@@ -7,7 +7,7 @@ var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
 });
 
-gulp.task('styles', ['wiredep', 'injector:css:preprocessor'], function () {
+gulp.task('styles', ['wiredep'], function () {
   return (sass('src/css/', {style: 'expanded'}))
     .on('error', function handleError(err) {
       console.error(err.toString());
@@ -15,24 +15,6 @@ gulp.task('styles', ['wiredep', 'injector:css:preprocessor'], function () {
     })
     .pipe($.autoprefixer())
     .pipe(gulp.dest('.tmp/'));
-});
-
-gulp.task('injector:css:preprocessor', function () {
-//  return gulp.src('src/index.scss')
-//    .pipe($.inject(gulp.src([
-//        'src/**/*.scss',
-//        '!src/index.scss'
-//      ], {read: false}), {
-//      transform: function(filePath) {
-//        filePath = filePath.replace('src/', '');
-////        filePath = filePath.replace('src/components/', '../components/');
-//        return '@import \'' + filePath + '\';';
-//      },
-//      starttag: '// injector',
-//      endtag: '// endinjector',
-//      addRootSlash: false
-//    }))
-//    .pipe(gulp.dest('src/'));
 });
 
 gulp.task('injector:css', ['styles'], function () {
@@ -86,7 +68,6 @@ gulp.task('partials', ['consolidate'], function () {
 gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], function () {
   var htmlFilter = $.filter('*.html');
   var jsFilter = $.filter('**/*.js');
-  var notSlickGridFilter = $.filter('!**/slickgrid/**/*.js');
   var cssFilter = $.filter('**/*.css');
   var assets;
 
@@ -99,10 +80,8 @@ gulp.task('html', ['wiredep', 'injector:css', 'injector:js', 'partials'], functi
     .pipe(assets = $.useref.assets())
     .pipe($.rev())
     .pipe(jsFilter)
-    .pipe(notSlickGridFilter)
     .pipe($.ngAnnotate())
     .pipe($.uglify({preserveComments: $.uglifySaveLicense}))
-    .pipe(notSlickGridFilter.restore())
     .pipe(jsFilter.restore())
     .pipe(cssFilter)
     .pipe($.csso())
@@ -162,6 +141,6 @@ gulp.task('build:dev', ['clean'], function(){
     'src/**/*.*',
     '.tmp/**/*.*',
     '!src/**/*.scss',
-    '!src/**/*.jade',
+    '!src/**/*.jade'
   ]).pipe(gulp.dest('dev/'));
 });

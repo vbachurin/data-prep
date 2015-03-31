@@ -28,8 +28,7 @@
     "angular-mocks": "1.3.14"
   },
   "resolutions": {
-    "angular": "1.3.14",
-    "jquery": "2.1.3"
+    "angular": "1.3.14"
   },
   "overrides": {
     "threedubmedia.jquery.event": {
@@ -43,7 +42,6 @@
         "slick.grid.js",
         "slick.dataview.js",
         "slick.grid.css",
-        "css/smoothness/jquery-ui-1.8.16.custom.css",
         "controls/slick.pager.css"
       ]
     },

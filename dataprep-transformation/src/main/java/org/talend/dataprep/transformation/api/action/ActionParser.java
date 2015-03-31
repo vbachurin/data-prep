@@ -16,7 +16,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 
 @Component
@@ -73,14 +73,8 @@ public class ActionParser implements BeanFactoryAware {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.springframework.beans.factory.BeanFactoryAware#setBeanFactory(org.springframework.beans.factory.BeanFactory)
-     */
     @Override
-    public void setBeanFactory(BeanFactory arg0) throws BeansException {
-        this.beanFactory = arg0;
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        ActionParser.beanFactory = beanFactory;
     }
 }

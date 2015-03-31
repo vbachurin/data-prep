@@ -4,6 +4,7 @@ target/
 *.ipr
 *.iml
 *.iws
+out/
 
 
 dataprep-webapp/src/assets/fonts/font_dl_from_google.sh

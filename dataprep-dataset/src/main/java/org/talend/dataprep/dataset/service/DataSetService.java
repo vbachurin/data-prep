@@ -1,5 +1,7 @@
 package org.talend.dataprep.dataset.service;
 
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -9,10 +11,6 @@ import java.util.UUID;
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +18,17 @@ import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.DataSetMetadata;
-import org.talend.dataprep.api.json.DataSetMetadataModule;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
-import static org.talend.dataprep.api.DataSetMetadata.Builder.metadata;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.*;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -82,10 +83,10 @@ public class DataSetService {
      * Write "general" information about the <code>dataSetMetadata</code> to the JSON <code>generator</code>. General
      * information covers:
      * <ul>
-     * <li>Id: see {@link org.talend.dataprep.api.DataSetMetadata#getId()}</li>
-     * <li>Name: see {@link org.talend.dataprep.api.DataSetMetadata#getName()}</li>
-     * <li>Author: see {@link org.talend.dataprep.api.DataSetMetadata#getAuthor()}</li>
-     * <li>Date of creation: see {@link org.talend.dataprep.api.DataSetMetadata#getCreationDate()}</li>
+     * <li>Id: see {@link DataSetMetadata#getId()}</li>
+     * <li>Name: see {@link DataSetMetadata#getName()}</li>
+     * <li>Author: see {@link DataSetMetadata#getAuthor()}</li>
+     * <li>Date of creation: see {@link DataSetMetadata#getCreationDate()}</li>
      * </ul>
      * </p>
      * <p>
@@ -93,7 +94,7 @@ public class DataSetService {
      * </p>
      * 
      * @param generator The JSON generator this methods writes to.
-     * @param dataSetMetadata The {@link org.talend.dataprep.api.DataSetMetadata metadata} to get information from.
+     * @param dataSetMetadata The {@link DataSetMetadata metadata} to get information from.
      * @throws IOException In case method can't successfully write to <code>generator</code>.
      */
     private static void writeDataSetInformation(JsonGenerator generator, DataSetMetadata dataSetMetadata) throws IOException {

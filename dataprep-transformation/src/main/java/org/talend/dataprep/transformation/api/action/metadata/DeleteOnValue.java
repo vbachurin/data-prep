@@ -13,13 +13,7 @@ public class DeleteOnValue extends AbstractDelete {
 
     public static final String DELETE_ON_VALUE_ACTION_NAME = "delete_on_value"; //$NON-NLS-1$
 
-    public static final String VALUE_PARAMETER = "value"; //$NON-NLS-1$
-
-    public static final ActionMetadata INSTANCE = new DeleteOnValue();
-
-    // Please do not instanciate this class, it is spring Bean automatically instanciated.
-    public DeleteOnValue() {
-    }
+    public static final String VALUE_PARAMETER             = "value";          //$NON-NLS-1$
 
     @Override
     public String getName() {
@@ -37,11 +31,6 @@ public class DeleteOnValue extends AbstractDelete {
         return (value != null && value.trim().equals(parsedParameters.get(VALUE_PARAMETER)));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.STRING);

@@ -1,22 +1,19 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
+import javax.annotation.Nonnull;
+
 import org.codehaus.jackson.JsonNode;
-import org.talend.dataprep.api.DataSetRow;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public interface ActionMetadata {
 
-    public static final String ACTION_BEAN_PREFIX = "action."; //$NON-NLS-1$
+    String ACTION_BEAN_PREFIX = "action."; //$NON-NLS-1$
 
     String getName();
 
@@ -39,15 +36,25 @@ public interface ActionMetadata {
     /**
      * return the list of multiple valued parameters required for this Action to be executed. represented as list box on
      * the front end.
+     * 
+     * @return this should never return null
      **/
+    @Nonnull
     Item[] getItems();
 
     /**
      * return the list of input parameters required for this Action to be executed. represent as text input field on the
      * front end.
      **/
+    @Nonnull
     Parameter[] getParameters();
 
+    /**
+     * create a closure to perform the transformation on a DatasetRow according to the parameter.
+     * 
+     * @param parsedParameters
+     * @return
+     */
     Consumer<DataSetRow> create(Map<String, String> parsedParameters);
 
     default Consumer<DataSetRow> create(Iterator<Map.Entry<String, JsonNode>> input) {
@@ -85,5 +92,5 @@ public interface ActionMetadata {
      * 
      * @return a set of the column types this Action can handle
      */
-    public Set<Type> getCompatibleColumnTypes();
+    Set<Type> getCompatibleColumnTypes();
 }

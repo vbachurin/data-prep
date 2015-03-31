@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <parent>
+        <groupId>org.talend.dataprep</groupId>
+        <artifactId>dataprep-parent</artifactId>
+        <version>1.0.m3-SNAPSHOT</version>
+    </parent>
     <groupId>org.talend.dataprep</groupId>
     <artifactId>dataprep-webapp</artifactId>
-    <version>1.0.m2-SNAPSHOT</version>
+    <version>1.0.m3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>dataprep-webapp</name>
@@ -30,7 +34,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.3.2</version>
                         <executions>
                             <execution>
                                 <id>npm prune</id>
@@ -162,7 +165,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.3.2</version>
                         <executions>
                             <execution>
                                 <id>docker pull ${docker.tools.image.name}</id>

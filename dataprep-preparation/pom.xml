@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m2-SNAPSHOT</version>
+        <version>1.0.m3-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <artifactId>dataprep-preparation</artifactId>
-    <version>1.0.m2-SNAPSHOT</version>
+    <version>1.0.m3-SNAPSHOT</version>
     <name>dataprep-preparation</name>
     <properties>
         <start-class>org.talend.dataprep.preparation.Application</start-class>
@@ -120,7 +120,6 @@
                     <plugin>
                         <groupId>com.spotify</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
-                        <version>0.1.1</version>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
                             <baseImage>dockerfile/java:oracle-java8</baseImage>

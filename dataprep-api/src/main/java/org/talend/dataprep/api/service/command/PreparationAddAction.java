@@ -7,11 +7,15 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.service.APIService;
 
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class PreparationAddAction extends HystrixCommand<Void> {
 
     private final HttpClient client;
@@ -22,7 +26,7 @@ public class PreparationAddAction extends HystrixCommand<Void> {
 
     private final String id;
 
-    public PreparationAddAction(HttpClient client, String preparationServiceUrl, String id, InputStream actions) {
+    private PreparationAddAction(HttpClient client, String preparationServiceUrl, String id, InputStream actions) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
         this.preparationServiceUrl = preparationServiceUrl;

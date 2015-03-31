@@ -1,9 +1,14 @@
 package org.talend.dataprep.preparation.service;
 
+import static java.util.stream.Collectors.toList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.Object;
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -12,18 +17,19 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.PreparationActions;
+import org.talend.dataprep.api.preparation.PreparationRepository;
+import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.metrics.Timed;
-import org.talend.dataprep.preparation.*;
+import org.talend.dataprep.preparation.api.AppendStep;
 import org.talend.dataprep.preparation.store.ContentCache;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -40,13 +46,13 @@ public class PreparationService {
     @Autowired
     private PreparationRepository versionRepository = null;
 
-    private final JsonFactory factory = new JsonFactory();
-
     /**
-     * @return Get user name from Spring Security context, return "anonymous" if no user is currently logged in.
+     * Get user name from Spring Security context
+     * 
+     * @return "anonymous" if no user is currently logged in, the user name otherwise.
      */
     private static String getUserName() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String author;
         if (principal != null) {
             author = principal.toString();
@@ -56,72 +62,93 @@ public class PreparationService {
         return author;
     }
 
-    @RequestMapping(value = "/preparations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    private static String getStepId(@ApiParam("version") @PathVariable("version") String version, Preparation preparation) {
+        String stepId;
+        if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
+            stepId = preparation.getStep().id();
+        } else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
+            stepId = ROOT_STEP.id();
+        } else {
+            stepId = version;
+        }
+        return stepId;
+    }
+
+    @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
-    public void list(HttpServletResponse response) {
-        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
-            generator.writeStartArray();
-            for (Preparation preparation : versionRepository.listAll(Preparation.class)) {
-                generator.writeString(preparation.id());
-            }
-            generator.writeEndArray();
-            generator.flush();
-        } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O exception during message output.", e);
-        }
+    public List<String> list() {
+        return versionRepository.listAll(Preparation.class).stream().map(Preparation::id).collect(toList());
     }
 
-    @RequestMapping(value = "/preparations/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/preparations/all", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
-    public Preparation[] listAll(HttpServletResponse response) {
-        Set<Preparation> preparations = versionRepository.listAll(Preparation.class);
-        return preparations.toArray(new Preparation[preparations.size()]);
+    public Collection<Preparation> listAll() {
+        return versionRepository.listAll(Preparation.class);
     }
 
-    @RequestMapping(value = "/preparations", method = RequestMethod.PUT, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
-    public String create(@ApiParam(value = "content") InputStream preparationContent) {
-        try {
-            String dataSetId = IOUtils.toString(preparationContent);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Create new preparation for data set " + dataSetId);
-            }
-            Preparation preparation = new Preparation(dataSetId, RootStep.INSTANCE);
-            preparation.setAuthor(getUserName());
-            versionRepository.add(preparation);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Created new preparation: " + preparation);
-            }
-            return preparation.id();
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to create preparation.", e);
+    public String create(@ApiParam("preparation")
+    @RequestBody
+    final Preparation preparation) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Create new preparation for data set " + preparation.getDataSetId());
         }
+        preparation.setStep(ROOT_STEP);
+        preparation.setAuthor(getUserName());
+        versionRepository.add(preparation);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Created new preparation: " + preparation);
+        }
+        return preparation.id();
     }
 
-    @RequestMapping(value = "/preparations/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/preparations/{id}", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Create a preparation", notes = "Returns the id of the updated preparation.")
+    @Timed
+    public String update(@ApiParam("id") @PathVariable("id") String id,
+                         @ApiParam("preparation") @RequestBody final Preparation preparation) {
+        Preparation previousPreparation = versionRepository.get(id, Preparation.class);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating preparation with id " + preparation.id() + ": " + previousPreparation);
+        }
+        Preparation updated = previousPreparation.merge(preparation);
+        if (!updated.id().equals(id)) {
+            versionRepository.remove(previousPreparation);
+        }
+        versionRepository.add(updated);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updated preparation: " + updated);
+        }
+        return updated.id();
+    }
+
+    @RequestMapping(value = "/preparations/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
-    public Preparation get(@ApiParam(value = "id") @PathVariable(value = "id") String id) {
+    public Preparation get(@ApiParam("id") @PathVariable("id") String id) {
         return versionRepository.get(id, Preparation.class);
     }
 
-    @RequestMapping(value = "/preparations/{id}/content/{version}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/preparations/{id}/content/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
-    public void get(@ApiParam(value = "id") @PathVariable(value = "id") String id,
-            @ApiParam(value = "version") @PathVariable(value = "version") String version, HttpServletResponse response) {
-        Preparation preparation = versionRepository.get(id, Preparation.class);
+    public void get(@ApiParam("id") @PathVariable("id") final String id, 
+                    @ApiParam("version") @PathVariable("version") final String version, 
+                    final HttpServletResponse response) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Get content of preparation #" + id + " at version '" + version + "'.");
         }
-        Step step = versionRepository.get(getStepId(version, preparation), Step.class);
+
+        final Preparation preparation = versionRepository.get(id, Preparation.class);
+        final Step step = versionRepository.get(getStepId(version, preparation), Step.class);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Get content of preparation #" + id + " at step: " + step);
         }
+
         try {
             if (cache.has(id, step.id())) {
                 if (LOGGER.isDebugEnabled()) {
@@ -142,62 +169,59 @@ public class PreparationService {
         }
     }
 
-    @RequestMapping(value = "/preparations/{id}/actions", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void append(@ApiParam(value = "id") @PathVariable(value = "id") String id, @ApiParam(value = "action") InputStream body) {
-        Preparation preparation = versionRepository.get(id, Preparation.class);
+    public void append(@PathVariable("id") final String id, @RequestBody final AppendStep step) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Adding actions to preparation #" + id);
         }
-        if (preparation != null) {
-            Step head = preparation.getStep();
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Current head for preparation #" + id + ": " + head);
-            }
-            // Add a new step
-            JSONBlob newContent = ObjectUtils.append(versionRepository.get(head.getContent(), JSONBlob.class), body);
-            versionRepository.add(newContent);
-            Step newStep = new Step();
-            newStep.setContent(newContent.id());
-            newStep.setParent(head.id());
-            versionRepository.add(newStep);
-            preparation.setStep(newStep);
-            versionRepository.add(preparation);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Added head to preparation #" + id + ": head is now " + newStep.id());
-            }
-        } else {
+
+        final Preparation preparation = versionRepository.get(id, Preparation.class);
+        if (preparation == null) {
             LOGGER.error("Preparation #" + id + " does not exist");
             throw new RuntimeException("Preparation id #" + id + " does not exist.");
         }
+
+        final Step head = preparation.getStep();
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Current head for preparation #" + id + ": " + head);
+        }
+
+        // Add new actions
+        final PreparationActions headContent = versionRepository.get(head.getContent(), PreparationActions.class);
+        final PreparationActions newContent = headContent.append(step.getActions());
+        versionRepository.add(newContent);
+
+        // Create new step from new content
+        final Step newStep = new Step(head.id(), newContent.id());
+        versionRepository.add(newStep);
+
+        // Update preparation head step
+        preparation.setStep(newStep);
+        preparation.updateLastModificationDate();
+        versionRepository.add(preparation);
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Added head to preparation #" + id + ": head is now " + newStep.id());
+        }
     }
 
-    @RequestMapping(value = "/preparations/{id}/actions/{version}", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
-    public String getVersionedAction(@ApiParam(value = "id") @PathVariable(value = "id") String id,
-            @ApiParam(value = "version") @PathVariable(value = "version") String version) {
-        Preparation preparation = versionRepository.get(id, Preparation.class);
+    public PreparationActions getVersionedAction(@ApiParam("id")
+    @PathVariable("id")
+    final String id, @ApiParam("version")
+    @PathVariable("version")
+    final String version) {
+        final Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation != null) {
-            String stepId = getStepId(version, preparation);
-            Step step = versionRepository.get(stepId, Step.class);
-            return versionRepository.get(step.getContent(), JSONBlob.class).getContent();
+            final String stepId = getStepId(version, preparation);
+            final Step step = versionRepository.get(stepId, Step.class);
+            return versionRepository.get(step.getContent(), PreparationActions.class);
         } else {
             throw new RuntimeException("Preparation id #" + id + " does not exist.");
         }
-    }
-
-    private static String getStepId(@ApiParam(value = "version") @PathVariable(value = "version") String version,
-            Preparation preparation) {
-        String stepId;
-        if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
-            stepId = preparation.getStep().id();
-        } else if ("origin".equalsIgnoreCase(version)) {
-            stepId = RootStep.INSTANCE.id();
-        } else {
-            stepId = version;
-        }
-        return stepId;
     }
 }

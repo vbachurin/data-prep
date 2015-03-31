@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.metrics.Timed;
 
@@ -30,7 +31,7 @@ public class PreparationAPI extends APIService {
             HttpServletResponse response) {
         PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationList(client, preparationServiceURL, listFormat);
+        HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, preparationServiceURL, listFormat);
         try {
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
@@ -41,18 +42,27 @@ public class PreparationAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/preparations", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Create a new preparation for data set with id in body.", notes = "Returns the created preparation id.")
+    @RequestMapping(value = "/api/preparations", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
-    public String createTransformation(@ApiParam(name = "body", value = "Id of the data set.") InputStream body,
+    public String createTransformation(
+            @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        try {
-            HystrixCommand<String> command = new PreparationCreate(client, preparationServiceURL, IOUtils.toString(body));
-            return command.execute();
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to copy preparations to output.", e);
-        }
+        PreparationCreate preparationCreate = getCommand(PreparationCreate.class, client, preparationServiceURL, preparation);
+        return preparationCreate.execute();
+    }
+
+    @RequestMapping(value = "/api/preparations/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a preparation with content in body.", notes = "Returns the updated preparation id.")
+    @Timed
+    public String updateTransformation(
+            @ApiParam(name = "id", value = "The id of the preparation to update.") @PathVariable("id") String id,
+            @ApiParam(name = "body", value = "The updated preparation. Null values are ignored during update. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
+            HttpServletResponse response) {
+        HttpClient client = getClient();
+        PreparationUpdate preparationUpdate = getCommand(PreparationUpdate.class, client, preparationServiceURL, id, preparation);
+        return preparationUpdate.execute();
     }
 
     @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,8 +72,10 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationGet(client, preparationServiceURL, preparationId);
+        HystrixCommand<InputStream> command = getCommand(PreparationGet.class, client, preparationServiceURL, preparationId);
         try {
+            // You cannot use Preparation object mapper here: to serialize steps & actions, you'd need a version
+            // repository not available at API level. Code below copies command result direct to response.
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -81,8 +93,8 @@ public class PreparationAPI extends APIService {
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationGetContent(client, preparationServiceURL, contentServiceUrl,
-                transformServiceUrl, preparationId, version);
+        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationServiceURL,
+                contentServiceUrl, transformServiceUrl, preparationId, version);
         try {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -99,7 +111,7 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<Void> command = new PreparationAddAction(client, preparationServiceURL, preparationId, body);
+        HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationServiceURL, preparationId, body);
         command.execute();
     }
 }

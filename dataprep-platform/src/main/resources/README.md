@@ -36,6 +36,9 @@ transform:
         - data
 ```
 
+##Fig option for accesing the Talend registry   
+you may use the option `--allow-insecure-ssl` when doing a **fig up** to allow fig to acces the Talend registry without errors.
+
 ## License
 
 Copyright (c) 2006-2015 Talend
