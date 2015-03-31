@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -22,7 +22,7 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 @Component
 public class ActionParser implements BeanFactoryAware {
 
-    public static final Log LOGGER = LogFactory.getLog(ActionParser.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger( ActionParser.class );
 
     private static BeanFactory beanFactory;
 

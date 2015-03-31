@@ -3,6 +3,7 @@ package org.talend.dataprep.configuration;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -12,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Component
 public class ServiceCORSFilter implements Filter, ApplicationContextAware {
 
-    private static final Log LOGGER = LogFactory.getLog(ServiceCORSFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( ServiceCORSFilter.class );
 
     private final Set<String> serviceRootPaths = new HashSet<>();
 
@@ -66,7 +67,7 @@ public class ServiceCORSFilter implements Filter, ApplicationContextAware {
         }
         // Log service paths
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Enable Cross Origin settings for paths: " + Arrays.toString(serviceRootPaths.toArray()));
+            LOGGER.info("Enable Cross Origin settings for paths: {}", Arrays.toString(serviceRootPaths.toArray()));
         }
     }
 }

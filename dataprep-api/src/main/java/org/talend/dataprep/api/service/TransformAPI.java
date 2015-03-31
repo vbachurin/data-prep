@@ -33,7 +33,7 @@ public class TransformAPI extends APIService {
             throw new IllegalArgumentException("Data set id cannot be null.");
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Transforming dataset id #" + dataSetId + " (pool: " + connectionManager.getTotalStats() + ")...");
+            LOG.debug("Transforming dataset id #{} (pool: {})...",dataSetId,connectionManager.getTotalStats());
         }
         try {
             // Configure transformation flow
@@ -50,8 +50,8 @@ public class TransformAPI extends APIService {
         } catch (Exception e) {
             throw new RuntimeException("Unable to transform data set #" + dataSetId + ".", e);
         }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Transformation of dataset id #" + dataSetId + " done.");
-        }
+
+        LOG.debug("Transformation of dataset id #{} done.",dataSetId);
+
     }
 }

@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -16,7 +17,7 @@ import org.talend.dataprep.api.type.Type;
 @Component(Negate.ACTION_BEAN_PREFIX + Negate.NEGATE_ACTION_NAME)
 public class Negate extends SingleColumnAction {
 
-    public static final Log            LOGGER             = LogFactory.getLog(Negate.class);
+    public static final Logger LOGGER             = LoggerFactory.getLogger( Negate.class );
 
     public static final String         NEGATE_ACTION_NAME = "negate";                       //$NON-NLS-1$
 

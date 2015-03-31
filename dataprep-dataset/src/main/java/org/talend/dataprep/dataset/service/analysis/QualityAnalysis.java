@@ -5,8 +5,8 @@ import java.util.Random;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 @Component
 public class QualityAnalysis {
 
-    private static final Log LOGGER = LogFactory.getLog(QualityAnalysis.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QualityAnalysis.class);
 
     @Autowired
     DataSetMetadataRepository repository;
@@ -53,7 +53,7 @@ public class QualityAnalysis {
                 repository.add(metadata);
                 message.acknowledge();
             } else {
-                LOGGER.info("Unable to analyze quality of data set #" + dataSetId + ": seems to be removed.");
+                LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
             }
         } catch (JMSException e) {
             throw new RuntimeException(e);

@@ -11,13 +11,17 @@ import java.util.UUID;
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -28,7 +32,11 @@ import org.talend.dataprep.metrics.VolumeMetered;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -36,7 +44,7 @@ public class DataSetService {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
 
-    private static final Log LOG = LogFactory.getLog(DataSetService.class);
+    private static final Logger LOG = LoggerFactory.getLogger( DataSetService.class );
 
     private final JsonFactory factory = new JsonFactory();
 
@@ -167,10 +175,9 @@ public class DataSetService {
         }
         if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
             // Schema is not yet ready (but eventually will, returns 202 to indicate this).
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Data set #" + dataSetId + " not yet ready for service.");
-            }
-            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            LOG.debug("Data set #{} not yet ready for service.",dataSetId);
+
+            response.setStatus( HttpServletResponse.SC_ACCEPTED);
             return;
         }
 

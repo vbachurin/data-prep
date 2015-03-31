@@ -1,6 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -78,10 +83,9 @@ public interface ActionMetadata {
             if (paramIds.contains(currentParameter.getKey())) {
                 parsedParameters.put(currentParameter.getKey(), currentParameter.getValue().asText());
             } else {
-                System.out.println("### " + "Parameter '" + currentParameter.getKey() + "' is not recognized for "
-                        + this.getClass());
-                ActionParser.LOGGER
-                        .warn("Parameter '" + currentParameter.getKey() + "' is not recognized for " + this.getClass());
+                ActionParser.LOGGER.warn("Parameter '{} is not recognized for {}", //
+                        currentParameter.getKey(), //
+                        this.getClass());
             }
         }
         return parsedParameters;

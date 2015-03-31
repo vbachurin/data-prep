@@ -1,14 +1,15 @@
 package org.talend.dataprep.api.service.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 class ReleasableInputStream extends InputStream {
 
-    private static final Log LOG = LogFactory.getLog(ReleasableInputStream.class);
+    private static final Logger LOG = LoggerFactory.getLogger( ReleasableInputStream.class );
 
     private final InputStream delegate;
 
@@ -92,9 +93,8 @@ class ReleasableInputStream extends InputStream {
 
     private void safeClose() {
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Safe close on stream using " + onClose);
-            }
+            LOG.debug("Safe close on stream using {}", onClose);
+
             onClose.run();
         } catch (Throwable t) {
             LOG.error("Unable to invoke onClose closure.", t);

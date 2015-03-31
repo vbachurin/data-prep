@@ -14,10 +14,10 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -38,7 +38,7 @@ import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 @IntegrationTest
 public class TestI18nKeysForActionsTest {
 
-    public static final Log  LOGGER = LogFactory.getLog(TestI18nKeysForActionsTest.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger( TestI18nKeysForActionsTest.class );
 
     @Autowired
     private ActionMetadata[] allActions;
