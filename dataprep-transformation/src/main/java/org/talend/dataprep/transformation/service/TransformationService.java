@@ -66,6 +66,7 @@ public class TransformationService {
         String typeName = column.getType();
         Type type = Type.get(typeName);
         ArrayList<ActionMetadata> suggestedActions = new ArrayList<>();
+        // look for all actions applicable to the column type
         for (ActionMetadata am : allActions) {
             Set<Type> compatibleColumnTypes = am.getCompatibleColumnTypes();
             for (Type columnType : compatibleColumnTypes) {

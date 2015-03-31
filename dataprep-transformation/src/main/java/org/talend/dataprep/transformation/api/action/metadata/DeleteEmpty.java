@@ -12,11 +12,6 @@ public class DeleteEmpty extends AbstractDelete {
 
     public static final String DELETE_EMPTY_ACTION_NAME = "delete_empty"; //$NON-NLS-1$
 
-    public static final ActionMetadata INSTANCE = new DeleteEmpty();
-
-    private DeleteEmpty() {
-    }
-
     @Override
     public String getName() {
         return DELETE_EMPTY_ACTION_NAME;

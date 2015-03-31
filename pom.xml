@@ -11,10 +11,10 @@
   <name>dataprep :: dataprep Parent</name>
   <description>dataprep parent pom</description>
 
-  <modules>
-    <module>dataprep-webapp</module>
-    <module>dataprep-backend</module>
-  </modules>
+	<modules>
+		<module>dataprep-backend</module>
+		<module>dataprep-webapp</module>
+	</modules>
 
   <build>
     <pluginManagement>
