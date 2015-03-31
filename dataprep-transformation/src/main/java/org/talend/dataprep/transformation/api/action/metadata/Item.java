@@ -4,9 +4,9 @@ import org.talend.dataprep.i18n.MessagesBundle;
 
 public class Item {
 
-    private final String name;
+    private final String  name;
 
-    private final String category;
+    private final String  category;
 
     private final Value[] values;
 
@@ -45,9 +45,9 @@ public class Item {
 
     public static class Value {
 
-        final String name;
+        final String      name;
 
-        boolean isDefault = false;
+        boolean           isDefault = false;
 
         final Parameter[] parameters;
 
@@ -64,11 +64,6 @@ public class Item {
             this.parameters = parameters;
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see java.lang.Object#toString()
-         */
         @Override
         public String toString() {
             return this.name;
