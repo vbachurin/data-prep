@@ -31,7 +31,7 @@ public class PreparationAPI extends APIService {
             HttpServletResponse response) {
         PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationList(client, preparationServiceURL, listFormat);
+        HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, preparationServiceURL, listFormat);
         try {
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
@@ -72,8 +72,10 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = new PreparationGet(client, preparationServiceURL, preparationId);
+        HystrixCommand<InputStream> command = getCommand(PreparationGet.class, client, preparationServiceURL, preparationId);
         try {
+            // You cannot use Preparation object mapper here: to serialize steps & actions, you'd need a version
+            // repository not available at API level. Code below copies command result direct to response.
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -109,7 +111,7 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
         HttpClient client = getClient();
-        HystrixCommand<Void> command = new PreparationAddAction(client, preparationServiceURL, preparationId, body);
+        HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationServiceURL, preparationId, body);
         command.execute();
     }
 }

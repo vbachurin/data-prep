@@ -6,9 +6,13 @@ import java.io.InputStream;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class Transform extends ChainedCommand<InputStream, InputStream> {
 
     private final String transformServiceUrl;
@@ -17,7 +21,7 @@ public class Transform extends ChainedCommand<InputStream, InputStream> {
 
     private final HttpClient client;
 
-    public Transform(HttpClient client, String transformServiceUrl, HystrixCommand<InputStream> content, String actions) {
+    private Transform(HttpClient client, String transformServiceUrl, HystrixCommand<InputStream> content, String actions) {
         super(content);
         this.transformServiceUrl = transformServiceUrl;
         this.actions = actions;

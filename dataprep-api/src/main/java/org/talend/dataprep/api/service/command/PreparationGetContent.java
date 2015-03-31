@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.service.APIService;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,6 +36,9 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
     private final String contentServiceUrl;
 
     private final String transformServiceUrl;
+
+    @Autowired
+    private WebApplicationContext context;
 
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
@@ -71,11 +75,11 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
                 JsonNode tree = mapper.reader().readTree(content);
                 // Get the data set
                 String dataSetId = tree.get("dataSetId").textValue();
-                DataSetGet retrieveDataSet = new DataSetGet(client, contentServiceUrl, dataSetId, false, true);
+                DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true);
                 // ... transform it ...
                 HttpGet actionsRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/actions/" + version); //$NON-NLS-1$
                 String actions = IOUtils.toString(client.execute(actionsRetrieval).getEntity().getContent());
-                Transform transformCommand = new Transform(client, transformServiceUrl, retrieveDataSet, Base64.getEncoder()
+                Transform transformCommand = context.getBean(Transform.class, client, transformServiceUrl, retrieveDataSet, Base64.getEncoder()
                         .encodeToString(actions.getBytes()));
                 // ... and send it back to user (but saves it back in preparation service).
                 return new CloneInputStream(transformCommand.execute(), Collections.emptyList()); // TODO
