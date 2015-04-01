@@ -204,6 +204,20 @@ public class DataSetServiceTests {
     }
 
     @Test
+    public void test_TDP_71() throws Exception {
+        String dataSetId = given()
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("us_states_to_clean.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        System.out.println(contentAsString);
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("TDP-71.expected.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
+    }
+
+    @Test
     public void nbLines() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();

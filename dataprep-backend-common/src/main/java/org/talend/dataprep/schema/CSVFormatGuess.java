@@ -84,13 +84,15 @@ class CSVFormatGuess implements FormatGuess {
                 generator.writeStartArray();
                 {
                     while ((line = reader.readNext()) != null) {
-                        List<ColumnMetadata> columns = metadata.getRow().getColumns();
-                        generator.writeStartObject();
-                        for (int i = 0; i < columns.size(); i++) {
-                            ColumnMetadata columnMetadata = columns.get(i);
-                            generator.writeStringField(columnMetadata.getId(), line[i]);
+                        if (line.length > 1) {
+                            List<ColumnMetadata> columns = metadata.getRow().getColumns();
+                            generator.writeStartObject();
+                            for (int i = 0; i < columns.size(); i++) {
+                                ColumnMetadata columnMetadata = columns.get(i);
+                                generator.writeStringField(columnMetadata.getId(), line[i]);
+                            }
+                            generator.writeEndObject();
                         }
-                        generator.writeEndObject();
                     }
                 }
                 generator.writeEndArray();
