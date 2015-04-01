@@ -212,7 +212,6 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        System.out.println(contentAsString);
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("TDP-71.expected.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
