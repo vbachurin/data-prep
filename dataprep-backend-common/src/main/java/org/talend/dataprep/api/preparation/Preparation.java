@@ -5,9 +5,12 @@ import static java.lang.Math.min;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.AccessType;
 
 public class Preparation implements Identifiable {
+
+    @AccessType(AccessType.Type.PROPERTY)
+    private String id;
 
     private String dataSetId;
 
@@ -80,13 +83,20 @@ public class Preparation implements Identifiable {
         this.step = step;
     }
 
-    @Id
     @Override
     public String id() {
+        return getId();
+    }
+
+    public String getId() {
         if (StringUtils.isEmpty(name)) {
             return DigestUtils.sha1Hex(dataSetId + author);
         }
         return DigestUtils.sha1Hex(dataSetId + author + name);
+    }
+
+    public void setId(String id) {
+        // No op
     }
 
     @Override

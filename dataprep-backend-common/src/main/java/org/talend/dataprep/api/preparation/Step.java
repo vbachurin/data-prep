@@ -2,15 +2,18 @@ package org.talend.dataprep.api.preparation;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.AccessType;
 
 public class Step implements Identifiable {
 
     public static final Step ROOT_STEP = new Step(null, PreparationActions.ROOT_CONTENT.id());
 
-    private String parent = StringUtils.EMPTY;
+    private String parentId = StringUtils.EMPTY;
 
-    private String content;
+    private String contentId;
+
+    @AccessType(AccessType.Type.PROPERTY)
+    private String id;
 
     public Step(final String parentId, final String contentId) {
         setParent(parentId);
@@ -18,29 +21,36 @@ public class Step implements Identifiable {
     }
 
     public String getContent() {
-        return content;
+        return contentId;
     }
 
     public void setContent(String content) {
-        this.content = content;
+        this.contentId = content;
     }
 
     public String getParent() {
-        return parent;
+        return parentId;
     }
 
     public void setParent(String parent) {
-        this.parent = parent;
+        this.parentId = parent;
     }
 
-    @Id
     @Override
     public String id() {
-        return DigestUtils.sha1Hex(parent + content);
+        return getId();
+    }
+
+    public String getId() {
+        return DigestUtils.sha1Hex(parentId + contentId);
+    }
+
+    public void setId(String id) {
+        // No op
     }
 
     @Override
     public String toString() {
-        return "Step {" + "id='" + id() + '\'' + ", parent='" + parent + '\'' + ", content='" + content + '\'' + '}';
+        return "Step {" + "id='" + id() + '\'' + ", parent='" + parentId + '\'' + ", content='" + contentId + '\'' + '}';
     }
 }
