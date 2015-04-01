@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.service;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -21,7 +23,7 @@ public class APIService {
 
     public static final HystrixCommandGroupKey DATASET_GROUP = HystrixCommandGroupKey.Factory.asKey("dataset"); //$NON-NLS-1$
 
-    protected static final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+    private final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected static final Logger LOG = LoggerFactory.getLogger( APIService.class );
 
@@ -40,6 +42,15 @@ public class APIService {
     public APIService() {
         connectionManager.setMaxTotal(50);
         connectionManager.setDefaultMaxPerRoute(50);
+    }
+
+    @PreDestroy
+    private void shutdown() {
+        this.connectionManager.shutdown();
+    }
+
+    public PoolingHttpClientConnectionManager getConnectionManager() {
+        return connectionManager;
     }
 
     protected <T extends HystrixCommand> T getCommand(Class<T> clazz, Object... args) {

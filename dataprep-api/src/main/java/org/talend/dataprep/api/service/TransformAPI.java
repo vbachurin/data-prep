@@ -33,7 +33,7 @@ public class TransformAPI extends APIService {
             throw new IllegalArgumentException("Data set id cannot be null.");
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Transforming dataset id #{} (pool: {})...",dataSetId,connectionManager.getTotalStats());
+            LOG.debug("Transforming dataset id #{} (pool: {})...",dataSetId,getConnectionManager().getTotalStats());
         }
         try {
             // Configure transformation flow
