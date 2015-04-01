@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration> <!-- status="debug"> -->
-
-  <appenders>
-    <Console name="console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}" />
-    </Console>
-  </appenders>
-
-  <loggers>
-
-    <logger name="org.springframework" level="info"/>
-
-    <root level="info" includeLocation="true">
-      <appender-ref ref="console"/>
-    </root>
-  </loggers>
+    <appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}"/>
+        </Console>
+    </appenders>
+    <loggers>
+        <root level="error" includeLocation="true">
+            <appender-ref ref="console"/>
+        </root>
+    </loggers>
 </configuration>
 
