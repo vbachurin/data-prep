@@ -1,5 +1,8 @@
 package org.talend.dataprep.preparation.store.mongo;
 
+import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+
 import java.util.Collection;
 
 import javax.annotation.PostConstruct;
@@ -41,14 +44,14 @@ public class MongoDBPreparationRepository implements PreparationRepository {
 
     @Override
     public <T extends Identifiable> Collection<T> listAll(Class<T> clazz) {
-        return (Collection<T>) store.findAll(clazz.toString());
+        return (Collection<T>) store.findAll(clazz.getName());
     }
 
     @Override
     public void clear() {
         store.deleteAll();
-        add(Step.ROOT_STEP);
-        add(PreparationActions.ROOT_CONTENT);
+        add(ROOT_CONTENT);
+        add(ROOT_STEP);
     }
 
     @Override
@@ -56,7 +59,7 @@ public class MongoDBPreparationRepository implements PreparationRepository {
         if (object == null) {
             return;
         }
-        store.delete(object);
+        store.delete(object.getClass().getName(), object.id());
     }
 
     @PostConstruct

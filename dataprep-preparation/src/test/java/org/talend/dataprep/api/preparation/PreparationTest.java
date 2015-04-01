@@ -12,6 +12,7 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -210,7 +211,9 @@ public class PreparationTest {
 
         // Preparation id should not change
         assertThat(preparationId, is("0d291a2159ae36ee9177b8b845b3c8f1b0e0f30b"));
-        preparation = repository.listAll(Preparation.class).iterator().next();
+        Collection<Preparation> preparations = repository.listAll(Preparation.class);
+        assertThat(preparations.size(), is(1));
+        preparation = preparations.iterator().next();
         assertThat(preparation.id(), is("0d291a2159ae36ee9177b8b845b3c8f1b0e0f30b"));
         assertThat(preparation.getName(), is("test_name_updated"));
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));

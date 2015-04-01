@@ -110,12 +110,13 @@ public class Preparation implements Identifiable {
     }
 
     public Preparation merge(Preparation other) {
-        dataSetId = other.dataSetId != null ? other.dataSetId : dataSetId;
-        author = other.author != null ? other.author : author;
-        name = other.name != null ? other.name : name;
-        creationDate = min(other.creationDate, creationDate);
-        lastModificationDate = max(other.lastModificationDate, lastModificationDate);
-        step = other.step != null ? other.step : step;
-        return this;
+        Preparation merge = new Preparation();
+        merge.dataSetId = other.dataSetId != null ? other.dataSetId : dataSetId;
+        merge.author = other.author != null ? other.author : author;
+        merge.name = other.name != null ? other.name : name;
+        merge.creationDate = min(other.creationDate, creationDate);
+        merge.lastModificationDate = max(other.lastModificationDate, lastModificationDate);
+        merge.step = other.step != null ? other.step : step;
+        return merge;
     }
 }
