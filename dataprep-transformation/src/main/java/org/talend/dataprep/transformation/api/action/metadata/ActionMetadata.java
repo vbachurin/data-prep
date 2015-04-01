@@ -18,7 +18,7 @@ import org.talend.dataprep.transformation.api.action.ActionParser;
 
 public interface ActionMetadata {
 
-    String ACTION_BEAN_PREFIX = "action."; //$NON-NLS-1$
+    String ACTION_BEAN_PREFIX = "action#"; //$NON-NLS-1$
 
     String getName();
 
