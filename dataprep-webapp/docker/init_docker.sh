@@ -20,6 +20,12 @@ cd $LOCATION
 cp $JS_FILE $JS_FILE_BACKUP
 sed "s|['\"]apiUrl['\"],[ ]*['\"]http://"$IP_ADDRESS_REGEX":"$PORT_REGEX"['\"]|'apiUrl','http://"$TDP_API_HOST":"$TDP_API_PORT"'|g" $JS_FILE_BACKUP > $JS_FILE
 
+echo 'before: '
+sed 's/[.]constant/\n/g' $JS_FILE_BACKUP | grep '(.apiUrl'
+
+echo 'after: '
+sed 's/[.]constant/\n/g' $JS_FILE | grep '(.apiUrl'
+
 # launch apache service (foreground to prevent command to finish, and container to stop)
 /usr/sbin/apache2ctl -DFOREGROUND
 
