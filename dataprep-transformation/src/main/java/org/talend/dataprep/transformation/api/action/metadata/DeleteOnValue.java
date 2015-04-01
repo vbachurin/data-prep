@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.type.Type;
@@ -15,12 +17,16 @@ public class DeleteOnValue extends AbstractDelete {
 
     public static final String VALUE_PARAMETER             = "value";          //$NON-NLS-1$
 
+    private DeleteOnValue() {
+    }
+
     @Override
     public String getName() {
         return DELETE_ON_VALUE_ACTION_NAME;
     }
 
     @Override
+    @Nonnull
     public Parameter[] getParameters() {
         return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY),
                 new Parameter(VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };

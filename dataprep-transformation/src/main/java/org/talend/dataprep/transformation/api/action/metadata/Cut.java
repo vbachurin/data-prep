@@ -52,11 +52,6 @@ public class Cut extends SingleColumnAction {
         };
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getCompatibleColumnTypes()
-     */
     @Override
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.STRING);

@@ -25,7 +25,7 @@
 
   .content {
     .content-container {
-      width: $width;
+      min-width: $width;
     }
   }
 
@@ -62,5 +62,9 @@
     &.right {
       order: 1;
     }
+  }
+
+  &.no-transition {
+    transition-duration: 0s;
   }
 }

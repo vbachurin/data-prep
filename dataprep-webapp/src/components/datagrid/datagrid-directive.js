@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function Datagrid($timeout, $compile, DatasetGridService, FilterService) {
+    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService) {
         return {
             restrict: 'E',
             template: '<div id="datagrid" class="datagrid"></div>',
@@ -134,6 +134,10 @@
                             grid.invalidate();
                         }
                     });
+
+                    $window.addEventListener('resize', function(){
+                        grid.resizeCanvas();
+                    }, true);
                 };
 
                 //------------------------------------------------------------------------------------------------------
@@ -223,6 +227,20 @@
                 );
 
                 /**
+                 * Scroll to top when loaded dataset change
+                 */
+                scope.$watch(
+                    function () {
+                        return DatasetGridService.metadata;
+                    },
+                    function (metadata) {
+                        if(metadata) {
+                            grid.scrollRowToTop(0);
+                        }
+                    }
+                );
+
+                /**
                  * When filter change, displayed values change, so we reset active cell and cell styles
                  */
                 scope.$watchCollection(
@@ -233,6 +251,7 @@
                         if(grid) {
                             resetCellStyles();
                             grid.resetActiveCell();
+                            grid.scrollRowToTop(0);
                         }
                     }
                 );

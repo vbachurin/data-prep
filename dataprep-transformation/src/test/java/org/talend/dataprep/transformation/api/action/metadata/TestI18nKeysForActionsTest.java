@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,8 +35,8 @@ import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
 @IntegrationTest
+@WebAppConfiguration
 public class TestI18nKeysForActionsTest {
 
     public static final Logger LOGGER = LoggerFactory.getLogger( TestI18nKeysForActionsTest.class );

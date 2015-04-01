@@ -45,6 +45,12 @@
         "controls/slick.pager.css"
       ]
     },
+    "jquery-ui": {
+      "main": [
+        "jquery-ui.js",
+        "themes/base/resizable.css"
+      ]
+    },
     "angular-mass-autocomplete": {
       "main": [
         "massautocomplete.min.js",

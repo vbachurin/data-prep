@@ -4,6 +4,7 @@
     function HomeCtrl(MessageService, DatasetService, DatasetListService, TalendConfirmService) {
         var vm = this;
         vm.showRightPanel = true;
+        vm.selectedMenu = 0;
 
         /**
          * Array of all uploading datasets

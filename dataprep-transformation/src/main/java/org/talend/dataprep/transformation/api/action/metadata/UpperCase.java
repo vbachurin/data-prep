@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import javax.annotation.Nonnull;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -13,6 +15,9 @@ import org.talend.dataprep.api.type.Type;
 public class UpperCase extends SingleColumnAction {
 
     public static final String UPPER_CASE_ACTION_NAME = "uppercase"; //$NON-NLS-1$
+
+    private UpperCase() {
+    }
 
     @Override
     public String getName() {
@@ -25,11 +30,13 @@ public class UpperCase extends SingleColumnAction {
     }
 
     @Override
+    @Nonnull
     public Item[] getItems() {
         return new Item[0];
     }
 
     @Override
+    @Nonnull
     public Parameter[] getParameters() {
         return new Parameter[] { COLUMN_NAME_PARAMETER };
     }

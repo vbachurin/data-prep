@@ -49,7 +49,7 @@ describe('Transform menu controller', function () {
 
     beforeEach(module('data-prep.transformation-menu'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, TransformationService, DatasetGridService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PreparationService, DatasetGridService, RecipeService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -61,14 +61,14 @@ describe('Transform menu controller', function () {
             return ctrl;
         };
 
-        //DatasetGridService.setDataset({}, {});
-
-        spyOn(TransformationService, 'transform').and.returnValue($q.when({data: result}));
+        spyOn(PreparationService, 'append').and.returnValue($q.when(true));
+        spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: result}));
         spyOn($rootScope, '$emit').and.callThrough();
         spyOn(DatasetGridService, 'updateRecords').and.callFake(function() {});
+        spyOn(RecipeService, 'refresh').and.callFake(function() {});
     }));
 
-    it('should do nothing on select if the menu is a divider', inject(function (TransformationService) {
+    it('should do nothing on select if the menu is a divider', inject(function (PreparationService) {
         //given
         var ctrl = createController();
         ctrl.menu = {isDivider: true};
@@ -78,10 +78,11 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(TransformationService.transform).not.toHaveBeenCalled();
+        expect(PreparationService.append).not.toHaveBeenCalled();
+        expect(PreparationService.getContent).not.toHaveBeenCalled();
     }));
 
-    it('should open modal on select if item has parameters', inject(function (TransformationService) {
+    it('should open modal on select if item has parameters', inject(function (PreparationService) {
         //given
         var ctrl = createController();
         ctrl.menu = {parameters: [{name: 'param1', type: 'text', default: '.'}]};
@@ -91,10 +92,11 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeTruthy();
-        expect(TransformationService.transform).not.toHaveBeenCalled();
+        expect(PreparationService.append).not.toHaveBeenCalled();
+        expect(PreparationService.getContent).not.toHaveBeenCalled();
     }));
 
-    it('should open modal on select if item has choice', inject(function (TransformationService) {
+    it('should open modal on select if item has choice', inject(function (PreparationService) {
         //given
         var ctrl = createController();
         ctrl.menu = {items: [{name: 'choice', values: [{name: 'choice1'}, {name: 'choice2'}]}]};
@@ -104,10 +106,11 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeTruthy();
-        expect(TransformationService.transform).not.toHaveBeenCalled();
+        expect(PreparationService.append).not.toHaveBeenCalled();
+        expect(PreparationService.getContent).not.toHaveBeenCalled();
     }));
 
-    it('should call transform on simple menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
+    it('should call transform on simple menu select', inject(function ($rootScope, PreparationService, DatasetGridService, RecipeService) {
         //given
         var ctrl = createController();
         ctrl.menu = {name: 'uppercase', category: 'case'};
@@ -119,12 +122,14 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(TransformationService.transform).toHaveBeenCalledWith('44f5e4ef-96e9-4041-b86a-0bee3d50b18b', 'uppercase', { column_name: 'MostPopulousCity' });
+        expect(PreparationService.append).toHaveBeenCalledWith('44f5e4ef-96e9-4041-b86a-0bee3d50b18b', 'uppercase', { column_name: 'MostPopulousCity' });
+        expect(PreparationService.getContent).toHaveBeenCalledWith('head');
         expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
+        expect(RecipeService.refresh).toHaveBeenCalled();
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
 
-    it('should call transform on parameterized menu select', inject(function ($rootScope, TransformationService, DatasetGridService) {
+    it('should call transform on parameterized menu select', inject(function ($rootScope, PreparationService, DatasetGridService, RecipeService) {
         //given
         var ctrl = createController();
         ctrl.menu = {
@@ -143,11 +148,13 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(TransformationService.transform).toHaveBeenCalledWith(
+        expect(PreparationService.append).toHaveBeenCalledWith(
             '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
             'uppercase',
             { column_name: 'MostPopulousCity', param1: 'param1Value', param2: 4 });
+        expect(PreparationService.getContent).toHaveBeenCalledWith('head');
         expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
+        expect(RecipeService.refresh).toHaveBeenCalled();
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
 });

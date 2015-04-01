@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.transformation.api.action.metadata;
+package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,43 +23,54 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
-import org.talend.dataprep.transformation.api.action.metadata.math.AbsoluteFloat;
-import org.talend.dataprep.transformation.api.action.metadata.math.AbsoluteInt;
 
-/**
- * created by sgandon on 25 mars 2015 Detailled comment
- *
- */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = Application.class)
+@IntegrationTest
+@WebAppConfiguration
 public class AbsoluteTest {
 
-    private static final String         FLOAT_COLUMN = "float_column"; //$NON-NLS-1$
+    private static final String FLOAT_COLUMN = "float_column"; //$NON-NLS-1$
 
-    private static final String         INT_COLUMN   = "int_column";  //$NON-NLS-1$
+    private static final String INT_COLUMN = "int_column"; //$NON-NLS-1$
 
-    private static Consumer<DataSetRow> absFloatConsumer;
+    @Autowired
+    private AbsoluteFloat absFloatAction;
 
-    private static Consumer<DataSetRow> absIntConsumer;
+    @Autowired
+    private AbsoluteInt absIntAction;
 
-    @BeforeClass
-    public static void setUpClass() throws IOException {
+    private Consumer<DataSetRow> absFloatConsumer;
+
+    private Consumer<DataSetRow> absIntConsumer;
+
+    @Before
+    public void setUp() throws IOException {
         String floatAction = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("absoluteFloatAction.json")); //$NON-NLS-1$
 
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = floatAction.trim();
         JsonNode node = mapper.readTree(content);
 
-        absFloatConsumer = new AbsoluteFloat().create(node.get("actions").get(0).get("parameters").getFields()); //$NON-NLS-1$//$NON-NLS-2$
+        absFloatConsumer = absFloatAction.create(node.get("actions").get(0).get("parameters").getFields()); //$NON-NLS-1$//$NON-NLS-2$
 
         String intAction = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("absoluteIntAction.json")); //$NON-NLS-1$
 
         content = intAction.trim();
         node = mapper.readTree(content);
 
-        absIntConsumer = new AbsoluteInt().create(node.get("actions").get(0).get("parameters").getFields()); //$NON-NLS-1$ //$NON-NLS-2$
+        absIntConsumer = absIntAction.create(node.get("actions").get(0).get("parameters").getFields()); //$NON-NLS-1$ //$NON-NLS-2$
 
     }
 

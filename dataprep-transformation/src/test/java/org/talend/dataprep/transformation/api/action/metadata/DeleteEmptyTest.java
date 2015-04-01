@@ -23,27 +23,39 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
 
 /**
  * Test class for DeleteEmpty action. Creates one consumer, and test it.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = Application.class)
+@IntegrationTest
+@WebAppConfiguration
 public class DeleteEmptyTest {
 
-    private static Consumer<DataSetRow> consumer;
+    private Consumer<DataSetRow> consumer;
 
-    @BeforeClass
-    public static void setUpClass() throws IOException {
+    @Autowired
+    private DeleteEmpty deleteEmpty;
+
+    @Before
+    public void setUp() throws IOException {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("deleteEmptyAction.json"));
-
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
-
-        consumer = new DeleteEmpty().create(node.get("actions").get(0).get("parameters").getFields());
+        consumer = deleteEmpty.create(node.get("actions").get(0).get("parameters").getFields());
     }
 
     @Test

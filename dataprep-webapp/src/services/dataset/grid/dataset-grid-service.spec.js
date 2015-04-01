@@ -22,30 +22,6 @@ describe('Dataset grid service', function() {
 
     beforeEach(module('data-prep.services.dataset'));
 
-    it('should init visibility flag', inject(function(DatasetGridService) {
-        //then
-        expect(DatasetGridService.visible).toBe(false);
-    }));
-
-    it('should set visibility flag to true', inject(function(DatasetGridService) {
-        //when
-        DatasetGridService.show();
-
-        //then
-        expect(DatasetGridService.visible).toBe(true);
-    }));
-
-    it('should set visibility flag to false', inject(function(DatasetGridService) {
-        //given
-        DatasetGridService.visible = true;
-
-        //when
-        DatasetGridService.hide();
-
-        //then
-        expect(DatasetGridService.visible).toBe(false);
-    }));
-
     it('should set metadata and data', inject(function(DatasetGridService) {
         //given
         var metadata = {name: 'my dataset'};
