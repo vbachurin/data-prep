@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService) {
+    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService, StatisticsService) {
         return {
             restrict: 'E',
             template: '<div id="datagrid" class="datagrid"></div>',
