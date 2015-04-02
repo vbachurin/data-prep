@@ -1,13 +1,18 @@
 package org.talend.dataprep.test;
 
-import org.apache.commons.io.IOUtils;
-import uk.co.datumedge.hamcrest.json.SameJSONAs;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
 
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+import org.apache.commons.io.IOUtils;
+
+import uk.co.datumedge.hamcrest.json.SameJSONAs;
 
 public class SameJSONFile {
+
+    private SameJSONFile() {
+    }
+
     /**
      * Utilities method to assert that an expected json contained in a file matches a result.
      *

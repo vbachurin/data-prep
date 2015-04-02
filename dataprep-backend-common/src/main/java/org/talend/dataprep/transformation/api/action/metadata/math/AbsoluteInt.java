@@ -82,7 +82,7 @@ public class AbsoluteInt extends SingleColumnAction {
                             absValueStr = String.format("%s", absValue); //$NON-NLS-1$
                         }
                     } catch (NumberFormatException nfe2) {
-                        // the value is not a long nor a float so ignors it
+                        // the value is not a long nor a float so ignores it
                         // and let absValue to be null.
                     }
                 }

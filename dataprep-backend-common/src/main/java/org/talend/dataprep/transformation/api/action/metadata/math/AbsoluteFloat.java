@@ -82,7 +82,7 @@ public class AbsoluteFloat extends SingleColumnAction {
                         long longValue = Long.parseLong(value);
                         absValueStr = Long.toString(Math.abs(longValue));
                     } catch (NumberFormatException nfe1) {
-                        // the value is not a long nor a float so ignors it
+                        // the value is not a long nor a float so ignores it
                         // and let absValue to be null.
                     }
                 }
