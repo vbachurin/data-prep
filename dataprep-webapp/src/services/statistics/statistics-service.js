@@ -2,6 +2,11 @@
     'use strict';
 
     function StatisticsService(DatasetGridService) {
+        /**
+         * Calculate column value distribution
+         * @param columnId
+         * @returns [{colValue: string, nb: integer}} - colValue : the grouped value, frequency : the nb of time the value appears
+         */
         this.getDistribution = function(columnId) {
             var records = DatasetGridService.data.records;
 
@@ -10,14 +15,14 @@
                     return item[columnId];
                 })
                 .map(function(val, index) {
-                    return {colVal: index, nb: val.length};
+                    return {colValue: index, frequency: val.length};
                 })
-                .sortBy('nb')
+                .sortBy('frequency')
                 .reverse()
                 .value();
 
             return result;
-        }
+        };
     }
 
     angular.module('data-prep.services.statistics')

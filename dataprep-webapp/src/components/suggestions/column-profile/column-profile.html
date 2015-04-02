@@ -1,7 +1,10 @@
 <div class="column-profile">
     <ul class="menu talend-accordion">
-        <li>Selected col : {{columnProfileCtrl.selectedColumnId}}</li>
+        <li>Selected col : {{columnProfileCtrl.selectedColumn.id}}</li>
     </ul>
 
-    <highchart id="chart1" config="columnProfileCtrl.chartConfig" height="800px"></highchart>
+    <highchart id="chart1"
+               ng-if="columnProfileCtrl.distribution"
+               config="columnProfileCtrl.chartConfig"
+               height="800px"></highchart>
 </div>
