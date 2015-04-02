@@ -77,7 +77,7 @@
                     return param.name !== 'column_name';
                 })
                 .forEach(function(param) {
-                    param.initialValue = paramValues[param.name];
+                    param.initialValue = param.value = paramValues[param.name];
                     param.inputType = ConverterService.toInputType(param.type);
                 })
                 .value();
@@ -121,8 +121,8 @@
                 transformation: {
                     stepId: actionStep[0],
                     name: actionStep[1].action,
-                    parameters: parameters,//parameters.length ? parameters : null,
-                    items: items//items.length ? items : null
+                    parameters: parameters,
+                    items: items
                 }
             };
         };

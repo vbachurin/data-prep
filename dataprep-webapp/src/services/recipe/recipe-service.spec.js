@@ -232,6 +232,7 @@ describe('Recipe service', function () {
                 label: 'parameter.default_value.label',
                 default: '',
                 initialValue: 'M',
+                value: 'M',
                 inputType: 'text'
             }]);
 
@@ -253,6 +254,7 @@ describe('Recipe service', function () {
                 label: 'parameter.pattern.label',
                 default: '',
                 initialValue: '.',
+                value: '.',
                 inputType: 'text'
             }]);
 
