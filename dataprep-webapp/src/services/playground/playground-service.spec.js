@@ -45,7 +45,7 @@ describe('Playground Service', function () {
 
     describe('init new preparation', function() {
         var dataset = {id: 'e85afAa78556d5425bc2'};
-        var data = [{column: [], records: []}];
+        var data = {column: [], records: []};
         var assertNewPreparationInitialization;
 
         beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatasetGridService, RestURLs) {

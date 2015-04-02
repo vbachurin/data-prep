@@ -71,9 +71,11 @@
   "DATASET_UPDATE_SUCCESS"        : "Le dataset \"{{dataset}}\" a été mis à jour",
 
   "_comment" : "Errors",
-  "GENERIC_ERROR"       : "Une erreur est survenue",
-  "SERVER_ERROR_TITLE"  : "Erreur serveur",
-  "SERVICE_UNAVAILABLE" : "Service non disponible",
-  "UPLOAD_ERROR_TITLE"  : "Erreur d'envoi",
-  "UPLOAD_ERROR"        : "Une erreur est survenue lors de l'envoi du fichier"
+  "GENERIC_ERROR"         : "Une erreur est survenue",
+  "INVALID_DATASET_TITLE" : "Données invalides",
+  "INVALID_DATASET"       : "Les données de ce fichier sont invalides. Veuillez importer un fichier CSV valide pour mettre à jour ce fichier.",
+  "SERVER_ERROR_TITLE"    : "Erreur serveur",
+  "SERVICE_UNAVAILABLE"   : "Service non disponible",
+  "UPLOAD_ERROR_TITLE"    : "Erreur d'envoi",
+  "UPLOAD_ERROR"          : "Une erreur est survenue lors de l'envoi du fichier"
 }
