@@ -30,7 +30,10 @@ describe('Recipe controller', function() {
         };
 
         //when
-        RecipeService.add(column, transformation);
+        RecipeService.getRecipe().push({
+            column: column,
+            transformation: transformation
+        });
 
         //then
         expect(ctrl.recipe.length).toBe(1);
