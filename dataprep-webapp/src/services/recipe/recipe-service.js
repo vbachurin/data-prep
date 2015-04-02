@@ -1,8 +1,9 @@
 (function() {
     'use strict';
 
-    function RecipeService(PreparationService) {
+    function RecipeService(PreparationService, ConverterService) {
         var recipe = [];
+        var listType = 'LIST';
 
         /**
          * Return recipe item list
@@ -20,29 +21,12 @@
         };
 
         /**
-         * Save current value ine param.initialValue
-         * @param params
-         */
-        var saveParamCurrentValue = function(params) {
-            //choice
-            if(params && params.type === 'LIST') {
-                params.initialValue = params.selectedValue;
-            }
-            //parameters
-            else {
-                _.forEach(params, function (param) {
-                    param.initialValue = angular.isDefined(param.value) ? param.value : param.default;
-                });
-            }
-        };
-
-        /**
          * Replace params values with saved initial values
          * @param params
          */
         var resetParamValue = function(params) {
             //choice
-            if(params && params.type === 'LIST') {
+            if(params && params.type === listType) {
                 params.selectedValue = params.initialValue;
             }
             //parameters
@@ -70,29 +54,6 @@
         };
 
         /**
-         * Clone the transformation and create a recipe item
-         * @param column - the targeted column
-         * @param transformation - the applied transformation
-         */
-        var createRecipeItem = function(column, transformation) {
-            return {
-                transformation: angular.copy(transformation),
-                column: column
-            };
-        };
-
-        /**
-         * Add a new item in recipe list
-         * @param column - the targeted column
-         * @param transformation - the applied transformation
-         */
-        this.add = function(column, transformation) {
-            var recipeItem = createRecipeItem(column, transformation);
-            recipe.push(recipeItem);
-            executeFnOnParams(recipeItem.transformation, saveParamCurrentValue);
-        };
-
-        /**
          * Reset all params of the recipe item, with saved values (param.initialValue)
          * @param recipeItem - the item to reset
          */
@@ -105,28 +66,53 @@
         //--------------------------------------------------------------------------------------------------------------
 
         /**
+         * Init parameters initial value and type
+         * @param parameters - the parameters
+         * @param paramValues - the parameters initial values
+         * @returns Array of parameters
+         */
+        var initParameters = function(parameters, paramValues) {
+            return _.chain(parameters)
+                .filter(function(param) {
+                    return param.name !== 'column_name';
+                })
+                .forEach(function(param) {
+                    param.initialValue = paramValues[param.name];
+                    param.inputType = ConverterService.toInputType(param.type);
+                })
+                .value();
+        };
+
+        /**
+         * Init choice initial value, including each choice params initial value and type
+         * @param choices - the choices
+         * @param paramValues - the parameters and choice initial values
+         * @returns Array of choices
+         */
+        var initChoices = function(choices, paramValues) {
+            return _.chain(choices)
+                .forEach(function(choice) {
+                    choice.type = listType;
+                    choice.selectedValue = choice.initialValue = _.find(choice.values, function(choiceItem) {
+                        return choiceItem.name === paramValues[choice.name];
+                    });
+
+                    _.forEach(choice.values, function(choiceItem) {
+                        initParameters(choiceItem.parameters, paramValues);
+                    });
+                })
+                .value();
+        };
+
+        /**
          * Create a recipe item from Preparation step
          * @param actionStep
          * @returns {Object}
          */
         var createItem = function(actionStep) {
-            var parameters = _.chain(Object.keys(actionStep[1].parameters))
-                .filter(function(paramKey) {
-                    return paramKey !== 'column_name';
-                })
-                .map(function(paramKey) {
-                    var paramName = paramKey;
-                    var paramValue = actionStep[1].parameters[paramKey];
-                    return {
-                        label: paramName,
-                        name: paramName,
-                        type: isNaN(paramValue) ? 'string' : 'numeric',
-                        inputType: isNaN(paramValue) ? 'text' : 'number',
-                        initialValue: paramValue,
-                        default: paramValue
-                    };
-                })
-                .value();
+            var parameters = initParameters(actionStep[2].parameters, actionStep[1].parameters);
+            var items = initChoices(actionStep[2].items, actionStep[1].parameters);
+
             return {
                 column: {
                     /*jshint camelcase: false */
@@ -135,7 +121,8 @@
                 transformation: {
                     stepId: actionStep[0],
                     name: actionStep[1].action,
-                    parameters: parameters.length ? parameters : null
+                    parameters: parameters,//parameters.length ? parameters : null,
+                    items: items//items.length ? items : null
                 }
             };
         };
@@ -148,7 +135,7 @@
                 .then(function(resp) {
                     var steps = resp.data.steps.slice(1);
                     recipe = _.chain(steps)
-                        .zip(resp.data.actions)
+                        .zip(resp.data.actions, resp.data.metadata)
                         .map(createItem)
                         .value();
                 });

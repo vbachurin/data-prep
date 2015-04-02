@@ -5,7 +5,7 @@
      * DatasetColumnHeader directive controller
      * @param TransformationService
      */
-    function DatagridHeaderCtrl(TransformationService) {
+    function DatagridHeaderCtrl(TransformationService, ConverterService) {
         var vm = this;
 
         /**
@@ -68,17 +68,7 @@
         var insertType = function(menu) {
             if(menu.parameters) {
                 _.forEach(menu.parameters, function(param) {
-                    switch (param.type) {
-                        case 'numeric':
-                        case 'integer':
-                        case 'double':
-                        case 'float':
-                            param.inputType = 'number';
-                            break;
-                        default:
-                            param.inputType = 'text';
-                            break;
-                    }
+                    param.inputType = ConverterService.toInputType(param.type);
                 });
             }
         };
