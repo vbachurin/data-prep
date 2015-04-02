@@ -11,16 +11,16 @@ public abstract class AbstractDefaultIfEmpty extends SingleColumnAction {
 
     @Override
     public String getCategory() {
-        return "repair";
+        return "repair"; //$NON-NLS-1$
     }
 
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
+    public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             if (value == null || value.trim().length() == 0) {
-                row.set(columnName, parsedParameters.get(DEFAULT_VALUE_PARAMETER));
+                row.set(columnName, parameters.get(DEFAULT_VALUE_PARAMETER));
             }
         };
     }

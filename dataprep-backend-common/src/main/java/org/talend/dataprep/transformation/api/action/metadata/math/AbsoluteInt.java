@@ -45,7 +45,7 @@ public class AbsoluteInt extends SingleColumnAction {
 
     @Override
     public String getCategory() {
-        return "math";
+        return "math"; //$NON-NLS-1$
     }
 
     @Override
@@ -61,9 +61,9 @@ public class AbsoluteInt extends SingleColumnAction {
     }
 
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
+    public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             String absValueStr = null;
             if (value != null) {

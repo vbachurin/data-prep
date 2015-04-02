@@ -3,8 +3,6 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import java.util.*;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-
 import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -15,47 +13,54 @@ public interface ActionMetadata {
 
     String ACTION_BEAN_PREFIX = "action#"; //$NON-NLS-1$
 
+    /**
+     * @return A unique name used to identify action.
+     */
     String getName();
 
     /**
-     * the label of the parameter, translated in the user locale.
+     * @return The label of the parameter, translated in the user locale.
+     * @see MessagesBundle
      */
     default String getLabel() {
         return MessagesBundle.getString("action." + getName() + ".label");
     }
 
     /**
-     * the description of the parameter, translated in the user locale.
+     * @return The description of the parameter, translated in the user locale.
+     * @see MessagesBundle
      */
     default String getDescription() {
         return MessagesBundle.getString("action." + getName() + ".desc");
     }
 
+    /**
+     * @return A 'category' for the action used to group similar actions (eg. 'math', 'repair'...).
+     */
     String getCategory();
 
     /**
-     * return the list of multiple valued parameters required for this Action to be executed. represented as list box on
-     * the front end.
+     * Returns the list of multiple valued parameters required for this Action to be executed. represented as list box
+     * on the front end.
      * 
-     * @return this should never return null
+     * @return A list of {@link Item items}. This should never return null, actions with no item should return empty
+     * list.
      **/
-    @Nonnull
     Item[] getItems();
 
     /**
-     * return the list of input parameters required for this Action to be executed. represent as text input field on the
-     * front end.
+     * @return Returns the list of input parameters required for this Action to be executed. represent as text input
+     * field on the front end.
      **/
-    @Nonnull
     Parameter[] getParameters();
 
     /**
-     * create a closure to perform the transformation on a DatasetRow according to the parameter.
+     * Create a closure to perform the transformation on a DatasetRow according to the parameter.
      * 
-     * @param parsedParameters
-     * @return
+     * @param parameters A key/value map holding all action dependent configuration.
+     * @return A closure that accepts a DatasetRow, closures are expected to execute safely.
      */
-    Consumer<DataSetRow> create(Map<String, String> parsedParameters);
+    Consumer<DataSetRow> create(Map<String, String> parameters);
 
     default Consumer<DataSetRow> create(Iterator<Map.Entry<String, JsonNode>> input) {
         Map<String, String> parsedParameters = parseParameters(input);
@@ -89,7 +94,7 @@ public interface ActionMetadata {
     /**
      * Return the list of column type that this action can applied to.
      * 
-     * @return a set of the column types this Action can handle
+     * @return A set of the column {@link Type types} this Action can handle.
      */
     Set<Type> getCompatibleColumnTypes();
 }
