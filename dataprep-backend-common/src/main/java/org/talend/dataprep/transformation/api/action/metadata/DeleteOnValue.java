@@ -15,7 +15,7 @@ public class DeleteOnValue extends AbstractDelete {
 
     public static final String DELETE_ON_VALUE_ACTION_NAME = "delete_on_value"; //$NON-NLS-1$
 
-    public static final String VALUE_PARAMETER             = "value";          //$NON-NLS-1$
+    public static final String VALUE_PARAMETER = "value"; //$NON-NLS-1$
 
     private DeleteOnValue() {
     }

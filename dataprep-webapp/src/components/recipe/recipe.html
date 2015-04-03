@@ -6,7 +6,7 @@
             {{::'RECIPE_ITEM_ON_COL' | translate}}
             <span class="recipe-description recipe-column-name">{{step.column.id}}</span>
         </a>
-        <ul class="submenu" ng-if="(step.transformation.parameters || step.transformation.items)">
+        <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>
                 <transform-params transformation="step.transformation"></transform-params>
             </li>

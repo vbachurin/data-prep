@@ -175,7 +175,7 @@ public class AbsoluteTest {
     }
 
     @Test
-    public void testAbsoluteFloatWithEmty() {
+    public void testAbsoluteFloatWithEmpty() {
         Map<String, String> values = new HashMap<>();
         values.put(FLOAT_COLUMN, ""); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
@@ -185,7 +185,7 @@ public class AbsoluteTest {
     }
 
     @Test
-    public void testAbsoluteIntWithEMpty() {
+    public void testAbsoluteIntWithEmpty() {
         Map<String, String> values = new HashMap<>();
         values.put(INT_COLUMN, ""); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);

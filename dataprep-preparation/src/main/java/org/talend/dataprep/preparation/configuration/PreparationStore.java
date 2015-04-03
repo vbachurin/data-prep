@@ -3,8 +3,8 @@ package org.talend.dataprep.preparation.configuration;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ import org.talend.dataprep.preparation.store.mongo.MongoDBPreparationRepository;
 @Configuration
 public class PreparationStore {
 
-    private static final Log LOGGER = LogFactory.getLog(PreparationStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( PreparationStore.class );
 
     @Value("${preparation.store}")
     private String preparationStoreConfiguration;
@@ -38,7 +38,7 @@ public class PreparationStore {
 
     @Bean
     public PreparationRepository getVersionRepository() {
-        LOGGER.info("Preparation store: " + preparationStoreConfiguration);
+        LOGGER.info("Preparation store: {}",preparationStoreConfiguration);
         switch (preparationStoreConfiguration) {
             case "mongodb": //$NON-NLS-1$
                 return new MongoDBPreparationRepository();

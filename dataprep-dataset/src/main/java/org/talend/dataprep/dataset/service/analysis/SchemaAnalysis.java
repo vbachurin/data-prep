@@ -7,8 +7,8 @@ import java.util.*;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -25,7 +25,7 @@ import org.talend.dataprep.schema.SchemaParser;
 @Component
 public class SchemaAnalysis {
 
-    private static final Log LOG = LogFactory.getLog(SchemaAnalysis.class);
+    private static final Logger LOG = LoggerFactory.getLogger( SchemaAnalysis.class );
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -81,7 +81,7 @@ public class SchemaAnalysis {
                     throw new RuntimeException("Unable to read data set content.", e);
                 }
             } else {
-                LOG.info("Data set #" + dataSetId + " no longer exists.");
+                LOG.info("Data set #{} no longer exists.",dataSetId);
             }
         } catch (JMSException e) {
             throw new RuntimeException(e);

@@ -9,13 +9,16 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.AccessType;
 
 public class PreparationActions implements Identifiable {
 
     public static final PreparationActions ROOT_CONTENT = new PreparationActions(Collections.<Action>emptyList());
 
     private final List<Action> actions;
+
+    @AccessType(AccessType.Type.PROPERTY)
+    private String id;
 
     public PreparationActions(final List<Action> actions) {
         this.actions = unmodifiableList(actions);
@@ -32,7 +35,7 @@ public class PreparationActions implements Identifiable {
 
     /**
      * Create a new PreparationActions with concatenated new Actions
-     * 
+     *
      * @param newActions - the actions to add
      * @return - the new preparation actions
      */
@@ -45,7 +48,7 @@ public class PreparationActions implements Identifiable {
 
     /**
      * Transform actions list to readable JSON string
-     * 
+     *
      * @throws IOException
      */
     public String serializeActions() throws IOException {
@@ -53,14 +56,21 @@ public class PreparationActions implements Identifiable {
         return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(actions);
     }
 
-    @Id
     @Override
     public String id() {
+        return getId();
+    }
+
+    public String getId() {
         try {
             return DigestUtils.sha1Hex(serializeActions());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setId(String id) {
+        // No op
     }
 
     @Override

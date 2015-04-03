@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 @Component
 public class ContentAnalysis {
 
-    private static final Log LOG = LogFactory.getLog(ContentAnalysis.class);
+    private static final Logger LOG = LoggerFactory.getLogger( ContentAnalysis.class );
 
     @Autowired
     DataSetMetadataRepository repository;
@@ -52,7 +52,7 @@ public class ContentAnalysis {
                     throw new RuntimeException("Unable to read data set content.");
                 }
             } else {
-                LOG.info("Data set #" + dataSetId + " no longer exists.");
+                LOG.info("Data set #{} no longer exists.", dataSetId);
             }
         } catch (JMSException e) {
             throw new RuntimeException(e);

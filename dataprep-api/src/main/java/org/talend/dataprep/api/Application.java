@@ -2,8 +2,8 @@ package org.talend.dataprep.api;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -17,7 +17,7 @@ import com.netflix.hystrix.Hystrix;
 @EnableAutoConfiguration
 public class Application implements DisposableBean {
 
-    private static final Log LOG = LogFactory.getLog(Application.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

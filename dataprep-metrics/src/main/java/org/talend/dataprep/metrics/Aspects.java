@@ -3,12 +3,12 @@ package org.talend.dataprep.metrics;
 import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.security.core.Authentication;
@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 @Aspect
 public class Aspects {
 
-    private static final Log LOGGER = LogFactory.getLog(Aspects.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Aspects.class);
 
     @Autowired
     MetricRepository repository;
@@ -63,9 +63,8 @@ public class Aspects {
             // Get user name
             if (principal instanceof User) {
                 userName = ((User) principal).getUsername();
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Authentication: " + authentication);
-                }
+                LOGGER.debug("Authentication: {}", authentication);
+                
             } else {
                 userName = principal.toString();
             }
@@ -108,8 +107,8 @@ public class Aspects {
             }
         }
         if (argumentIndex < 0) {
-            LOGGER.warn("Unable to find a valid InputStream to wrap for meter in method '" + pjp.getSignature().toLongString()
-                    + "'.");
+            LOGGER.warn("Unable to find a valid InputStream to wrap for meter in method '{}'.", //
+                    pjp.getSignature().toLongString());
         }
         // Wraps InputStream (if any)
         Object[] args = pjp.getArgs();

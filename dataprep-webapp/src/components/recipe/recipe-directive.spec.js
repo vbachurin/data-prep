@@ -24,18 +24,27 @@ describe('Datagrid directive', function() {
     });
 
     it('should render recipe entries', inject(function(RecipeService) {
+        //given
+        RecipeService.reset();
+
         //when
-        RecipeService.add({id: 'col1'}, {
-            name: 'split',
-            category: 'split',
-            parameters: [{name: 'pattern', type: 'string'}],
-            items: []
+        RecipeService.getRecipe().push({
+            column: {id: 'col1'},
+            transformation: {
+                name: 'split',
+                category: 'split',
+                parameters: [{name: 'pattern', type: 'string'}],
+                items: []
+            }
         });
-        RecipeService.add({id: 'col2'}, {
-            name: 'uppercase',
-            category: 'case',
-            parameters: [],
-            items: []
+        RecipeService.getRecipe().push({
+            column: {id: 'col2'},
+            transformation: {
+                name: 'uppercase',
+                category: 'case',
+                parameters: [],
+                items: []
+            }
         });
         scope.$digest();
 

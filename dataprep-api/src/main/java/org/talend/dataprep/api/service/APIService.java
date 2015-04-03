@@ -1,10 +1,10 @@
 package org.talend.dataprep.api.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +23,7 @@ public class APIService {
 
     protected static final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
-    protected static final Log LOG = LogFactory.getLog(APIService.class);
+    protected static final Logger LOG = LoggerFactory.getLogger( APIService.class );
 
     @Value("${transformation.service.url}")
     protected String transformServiceUrl;

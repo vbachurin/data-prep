@@ -27,14 +27,14 @@ public class Parameter {
      * the label of the parameter, translated in the user locale.
      */
     public String getLabel() {
-        return MessagesBundle.getString("parameter." + getName() + ".label");
+        return MessagesBundle.getString("parameter." + getName() + ".label"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
      * the description of the parameter, translated in the user locale.
      */
     public String getDescription() {
-        return MessagesBundle.getString("parameter." + getName() + ".desc");
+        return MessagesBundle.getString("parameter." + getName() + ".desc"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public String getType() {

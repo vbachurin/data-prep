@@ -174,8 +174,6 @@ class SimpleTransformer implements Transformer {
                     writer.without(SerializationFeature.CLOSE_CLOSEABLE).writeValue(output, context.getColumns());
                     // Finished columns, exit this state
                     context.setCurrent(new Selector());
-                } else if (nextToken == JsonToken.END_OBJECT) {
-                    generator.writeEndObject();
                 }
             } catch (IOException e) {
                 throw new RuntimeException("Unable to parse columns information.", e);
@@ -191,6 +189,7 @@ class SimpleTransformer implements Transformer {
 
         private boolean firstRow = true;
 
+        @Override
         public void process(JsonParser parser, JsonToken nextToken, OutputStream output, StateContext context) {
             try {
                 if (nextToken == JsonToken.END_ARRAY) {

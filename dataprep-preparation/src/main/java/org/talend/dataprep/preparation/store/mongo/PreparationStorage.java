@@ -8,6 +8,9 @@ import org.talend.dataprep.api.preparation.Identifiable;
 
 public interface PreparationStorage extends MongoRepository<Identifiable, String> {
 
-    @Query("{ '_class' : ?0 }")
+    @Query("{ '_class' : '?0' }")
     List<Identifiable> findAll(String className);
+
+    @Query(value = "{ '_class' : '?0', '_id' : '?1' }", delete = true)
+    Long delete(String className, String id);
 }

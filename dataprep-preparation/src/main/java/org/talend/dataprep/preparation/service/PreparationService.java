@@ -14,8 +14,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +38,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
 public class PreparationService {
 
-    private static final Log LOGGER = LogFactory.getLog(PreparationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreparationService.class);
 
     @Autowired
     private ContentCache cache;
@@ -94,15 +94,14 @@ public class PreparationService {
     public String create(@ApiParam("preparation")
     @RequestBody
     final Preparation preparation) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Create new preparation for data set " + preparation.getDataSetId());
-        }
+
+        LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
+
         preparation.setStep(ROOT_STEP);
         preparation.setAuthor(getUserName());
         versionRepository.add(preparation);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Created new preparation: " + preparation);
-        }
+        LOGGER.debug("Created new preparation: {}", preparation);
+
         return preparation.id();
     }
 
@@ -112,17 +111,17 @@ public class PreparationService {
     public String update(@ApiParam("id") @PathVariable("id") String id,
                          @ApiParam("preparation") @RequestBody final Preparation preparation) {
         Preparation previousPreparation = versionRepository.get(id, Preparation.class);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Updating preparation with id " + preparation.id() + ": " + previousPreparation);
-        }
+
+        LOGGER.debug("Updating preparation with id {}: {}",preparation.id(),previousPreparation);
+
         Preparation updated = previousPreparation.merge(preparation);
         if (!updated.id().equals(id)) {
             versionRepository.remove(previousPreparation);
         }
         versionRepository.add(updated);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Updated preparation: " + updated);
-        }
+
+        LOGGER.debug("Updated preparation: {}",updated);
+
         return updated.id();
     }
 
@@ -139,29 +138,29 @@ public class PreparationService {
     public void get(@ApiParam("id") @PathVariable("id") final String id, 
                     @ApiParam("version") @PathVariable("version") final String version, 
                     final HttpServletResponse response) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Get content of preparation #" + id + " at version '" + version + "'.");
-        }
+
+        LOGGER.debug("Get content of preparation #{} at version '{}'.",id,version);
+
 
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         final Step step = versionRepository.get(getStepId(version, preparation), Step.class);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Get content of preparation #" + id + " at step: " + step);
-        }
+
+        LOGGER.debug("Get content of preparation #{} at step: {}",id,step);
+
 
         try {
             if (cache.has(id, step.id())) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Cache exists for preparation #" + id + " at step " + step);
-                }
+
+                LOGGER.debug("Cache exists for preparation #{} at step {}",id,step);
+
                 ServletOutputStream stream = response.getOutputStream();
                 response.setStatus(HttpServletResponse.SC_OK);
                 IOUtils.copyLarge(cache.get(id, step.id()), stream);
                 stream.flush();
             } else {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Cache does NOT exist for preparation #" + id + " at step " + step);
-                }
+
+                LOGGER.debug("Cache does NOT exist for preparation #{} at step {}",id,step);
+
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
             }
         } catch (IOException e) {
@@ -179,14 +178,14 @@ public class PreparationService {
 
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation == null) {
-            LOGGER.error("Preparation #" + id + " does not exist");
+            LOGGER.error("Preparation #{} does not exist",id);
             throw new RuntimeException("Preparation id #" + id + " does not exist.");
         }
 
         final Step head = preparation.getStep();
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Current head for preparation #" + id + ": " + head);
-        }
+
+        LOGGER.debug("Current head for preparation #{}: {}",id,head);
+
 
         // Add new actions
         final PreparationActions headContent = versionRepository.get(head.getContent(), PreparationActions.class);
@@ -202,9 +201,8 @@ public class PreparationService {
         preparation.updateLastModificationDate();
         versionRepository.add(preparation);
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Added head to preparation #" + id + ": head is now " + newStep.id());
-        }
+        LOGGER.debug("Added head to preparation #{}: head is now {}",id,newStep.id());
+
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
