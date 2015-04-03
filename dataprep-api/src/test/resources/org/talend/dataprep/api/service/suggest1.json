@@ -24,6 +24,30 @@
     ]
   },
   {
+    "category": "case",
+    "items": [],
+    "name": "propercase",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "category": "quickfix",
+    "items": [],
+    "name": "trim",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
     "category": "quickfix",
     "items": [],
     "name": "fillemptywithdefault",
