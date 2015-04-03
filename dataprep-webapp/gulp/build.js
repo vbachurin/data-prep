@@ -29,7 +29,7 @@ gulp.task('injector:css', ['styles'], function () {
 });
 
 gulp.task('scripts', function () {
-  return gulp.src('src/**/*.js')
+  return gulp.src(['src/**/*.js', '!src/assets/maps/**'])
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'));
 });

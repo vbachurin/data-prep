@@ -3,8 +3,15 @@
         <li>Selected col : {{columnProfileCtrl.selectedColumn.id}}</li>
     </ul>
 
-    <highchart id="chart1"
+    <highchart id="barChart"
                ng-if="columnProfileCtrl.distribution"
-               config="columnProfileCtrl.chartConfig"
-               height="800px"></highchart>
+               config="columnProfileCtrl.chartConfig"></highchart>
+
+    <highchart id="rangeChart"
+               ng-if="columnProfileCtrl.rangeDistribution"
+               config="columnProfileCtrl.chartConfig"></highchart>
+
+    <highchart id="geochart"
+               ng-if="columnProfileCtrl.stateDistribution"
+               config="columnProfileCtrl.chartConfig"></highchart>
 </div>
