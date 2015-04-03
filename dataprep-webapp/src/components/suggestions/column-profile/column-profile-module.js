@@ -5,6 +5,7 @@
         'highcharts-ng',
         'talend.widget',
         'data-prep.services.dataset',
+        'data-prep.services.filter',
         'data-prep.services.statistics'
     ]);
 })();

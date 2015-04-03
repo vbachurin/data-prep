@@ -1,10 +1,19 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, DatasetGridService, StatisticsService) {
+    function ColumnProfileCtrl($scope, $timeout, DatasetGridService, StatisticsService, FilterService) {
         var vm = this;
         vm.datasetGridService = DatasetGridService;
         vm.chartConfig = {};
+
+        /**
+         * Add a 'contains' filter in the angular context
+         * @param columnId - the column id
+         * @param value - the phrase
+         */
+        var addFilter = function(columnId, value) {
+            $timeout(FilterService.addFilter.bind(null, 'contains', columnId, {phrase: value}));
+        };
 
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------CHARTS OPTIONS------------------------------------------
@@ -199,6 +208,7 @@
          */
         var buildGeoDistribution = function(column) {
             var geoChartAction = function() {
+                addFilter(column.id, this['hc-key'].substring(3));
                 console.log('State: '  + this['hc-key'] + ', value: ' + this.value);
             };
 
@@ -268,6 +278,7 @@
          */
         var buildBarDistribution = function(column) {
             var barChartAction = function () {
+                addFilter(column.id, this.category);
                 console.log('Category: ' + this.category + ', value: ' + this.y);
             };
 
@@ -296,6 +307,7 @@
          */
         var buildPieDistribution = function(column) {
             var pieChartAction = function () {
+                addFilter(column.id, this.name);
                 console.log('Category: ' + this.name + ', value: ' + this.y);
             };
 
