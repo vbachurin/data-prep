@@ -11,7 +11,7 @@
                 $rootScope.$on('talend.loading.start', function() {
                     loadingPromise = $timeout(function() {
                         angular.element('body').addClass('loading-open');
-                    }, 200);
+                    }, 120);
                 });
                 $rootScope.$on('talend.loading.stop', function() {
                     $timeout.cancel(loadingPromise);
