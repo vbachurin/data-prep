@@ -36,12 +36,6 @@ public class UpperCase extends SingleColumnAction {
     }
 
     @Override
-    @Nonnull
-    public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER };
-    }
-
-    @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
             String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
