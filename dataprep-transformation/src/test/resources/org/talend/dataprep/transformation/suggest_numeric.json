@@ -23,7 +23,7 @@
       "compatibleColumnTypes":[
          "INTEGER"
       ],
-      "category":"repair",
+      "category":"quickfix",
       "description":"Fill empty cells of this column with given value",
       "label":"Fill empty with value"
    },

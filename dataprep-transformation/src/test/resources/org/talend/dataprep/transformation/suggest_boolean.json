@@ -14,7 +14,7 @@
       ]
    },
    {
-      "category":"repair",
+      "category":"quickfix",
       "items":[
          {
             "name":"default_value",

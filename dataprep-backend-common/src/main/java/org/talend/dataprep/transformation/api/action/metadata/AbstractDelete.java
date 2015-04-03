@@ -13,7 +13,7 @@ public abstract class AbstractDelete implements ActionMetadata {
 
     @Override
     public String getCategory() {
-        return "case"; //$NON-NLS-1$
+        return "cleansing"; //$NON-NLS-1$
     }
 
     @Override
@@ -40,3 +40,4 @@ public abstract class AbstractDelete implements ActionMetadata {
     }
 
 }
+
