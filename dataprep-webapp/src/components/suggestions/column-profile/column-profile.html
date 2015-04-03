@@ -7,6 +7,10 @@
                ng-if="columnProfileCtrl.distribution"
                config="columnProfileCtrl.chartConfig"></highchart>
 
+    <highchart id="pieChart"
+               ng-if="columnProfileCtrl.pieDistribution"
+               config="columnProfileCtrl.chartConfig"></highchart>
+
     <highchart id="rangeChart"
                ng-if="columnProfileCtrl.rangeDistribution"
                config="columnProfileCtrl.chartConfig"></highchart>

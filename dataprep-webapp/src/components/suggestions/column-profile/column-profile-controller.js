@@ -11,6 +11,7 @@
         //------------------------------------------------------------------------------------------------------
         /**
          * Common highcharts options
+         * @param clickFn - the click callback
          * @returns {{exporting: {enabled: boolean}, legend: {enabled: boolean}}}
          */
         var initCommonChartOptions = function(clickFn) {
@@ -39,6 +40,7 @@
 
         /**
          * Geo specific highcharts options
+         * @param clickFn - the click callback
          * @param min - min value (defined for color)
          * @param max - max value (defined for color)
          * @returns {{exporting, legend}|{exporting: {enabled: boolean}, legend: {enabled: boolean}}}
@@ -66,8 +68,27 @@
         };
 
         /**
+         * Pie specific highcharts options
+         * @param clickFn - the click callback
+         * @returns {{credits, exporting, legend, plotOptions}|{exporting: {enabled: boolean}, legend: {enabled: boolean}}}
+         */
+        var initPieChartOptions = function(clickFn) {
+            var options = initCommonChartOptions(clickFn);
+            options.chart = {
+                type: 'pie'
+            };
+            options.plotOptions.pie = {
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true
+                }
+            };
+            return options;
+        };
+
+        /**
          * Bar specific highcharts options
-         * @param clickFn - click callback
+         * @param clickFn - the click callback
          * @returns {{credits, exporting, legend}|{exporting: {enabled: boolean}, legend: {enabled: boolean}}}
          */
         var initBarChartOptions = function(clickFn) {
@@ -158,6 +179,15 @@
          */
         var isBar = function(column) {
             return column.type === 'string';
+        };
+
+        /**
+         * Test if column has a pie type
+         * @param column
+         * @returns {boolean}
+         */
+        var isPie = function(column) {
+            return column.type === 'boolean';
         };
 
         //------------------------------------------------------------------------------------------------------
@@ -260,6 +290,34 @@
             };
         };
 
+        /**
+         * Init a pie distribution chart
+         * @param column
+         */
+        var buildPieDistribution = function(column) {
+            var pieChartAction = function () {
+                console.log('Category: ' + this.name + ', value: ' + this.y);
+            };
+
+            vm.pieDistribution = StatisticsService.getDistribution(column.id);
+
+            vm.chartConfig = {
+                options: initPieChartOptions(pieChartAction),
+                size: {
+                    height: 300
+                },
+                title: {text: column.id},
+                series: [{
+                    id: column.id,
+                    name: 'number of item',
+                    data: _.map(vm.pieDistribution, function(item) {
+                        return [item.colValue, item.frequency];
+                    })
+                }],
+                loading: false
+            };
+        };
+
         //------------------------------------------------------------------------------------------------------
         //-------------------------------------------------WATCHERS---------------------------------------------
         //------------------------------------------------------------------------------------------------------
@@ -274,6 +332,8 @@
                 vm.distribution = null;
                 vm.rangeDistribution = null;
                 vm.stateDistribution = null;
+                vm.pieDistribution = null;
+
                 if(! column) {
                     return;
                 }
@@ -286,6 +346,9 @@
                 }
                 else if(isBar(column)) {
                     buildBarDistribution(column);
+                }
+                else if(isPie(column)) {
+                    buildPieDistribution(column);
                 }
             }
         );
