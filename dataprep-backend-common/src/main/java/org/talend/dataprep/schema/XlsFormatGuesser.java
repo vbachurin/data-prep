@@ -17,9 +17,13 @@ public class XlsFormatGuesser implements FormatGuesser {
     public FormatGuess guess(InputStream stream) {
 
         try {
-            HSSFWorkbook hssfWorkbook = new HSSFWorkbook(stream);
 
-            return new XlsFormatGuess(hssfWorkbook);
+            HSSFWorkbook hssfWorkbook = new HSSFWorkbook(stream);
+            // if poi can read we assume it's correct excel file
+            // && at least one sheet
+            if (hssfWorkbook.getNumberOfSheets() > 0) {
+                new XlsFormatGuess();
+            }
 
         } catch (IOException e) {
             logger.debug("fail to read content: " + e.getMessage(), e);

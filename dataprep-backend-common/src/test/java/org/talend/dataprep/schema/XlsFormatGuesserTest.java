@@ -39,7 +39,6 @@ public class XlsFormatGuesserTest {
 
     @Test
     public void read_bad_xls_file() throws Exception {
-
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("fake.xls")) {
             FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             FormatGuess formatGuess = formatGuesser.guess(inputStream);
@@ -56,9 +55,7 @@ public class XlsFormatGuesserTest {
             FormatGuess formatGuess = formatGuesser.guess(inputStream);
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
-
-            Assert.assertEquals("application/vnd.ms-excel", formatGuess.getMediaType());
-
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
         }
 
     }
