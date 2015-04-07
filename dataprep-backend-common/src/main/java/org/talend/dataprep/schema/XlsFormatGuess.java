@@ -1,19 +1,19 @@
 package org.talend.dataprep.schema;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service("formatGuess#xls")
 public class XlsFormatGuess implements FormatGuess {
 
-    public static final String MEDIA_TYPE = "application/vnd.ms-excel";
+    public static final String    MEDIA_TYPE      = "application/vnd.ms-excel";
 
-    private final Logger       logger     = LoggerFactory.getLogger(getClass());
+    private final Logger          logger          = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private XlsSchemaParser xlsSchemaParser;
 
     public XlsFormatGuess() {
         // no op
@@ -31,22 +31,7 @@ public class XlsFormatGuess implements FormatGuess {
 
     @Override
     public SchemaParser getSchemaParser() {
-
-        return content -> {
-
-            try {
-                HSSFWorkbook hssfWorkbook = new HSSFWorkbook(content);
-
-                List<ColumnMetadata> columnMetadatas = new ArrayList<>();
-
-
-
-                return columnMetadatas;
-            } catch (IOException e) {
-                logger.debug("IOEXception during parsing xls content :" + e.getMessage(), e);
-                throw new RuntimeException(e.getMessage(), e);
-            }
-        };
+        return xlsSchemaParser;
     }
 
     @Override

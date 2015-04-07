@@ -14,11 +14,15 @@ import org.talend.dataprep.api.type.Type;
  */
 public class ColumnMetadata {
 
-    private final Quality quality = new Quality();
+    private final Quality quality    = new Quality();
 
-    private String name;
+    private String        name;
 
-    private String typeName;
+    private String        typeName;
+
+    // number of first lines with a text header
+    // non per default
+    private int           headerSize = 0;
 
     // Needed when objects are read back from the db.
     public ColumnMetadata() {
@@ -49,6 +53,18 @@ public class ColumnMetadata {
         this.typeName = typeName;
     }
 
+    public int getHeaderSize() {
+        return headerSize;
+    }
+
+    public void setHeaderSize(int headerSize) {
+        this.headerSize = headerSize;
+    }
+
+    public Quality getQuality() {
+        return quality;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -68,21 +84,25 @@ public class ColumnMetadata {
         return result;
     }
 
-    public Quality getQuality() {
-        return quality;
+    @Override
+    public String toString() {
+        return "ColumnMetadata{" + "quality=" + quality + ", name='" + name + '\'' + ", typeName='" + typeName + '\''
+                + ", headerSize=" + headerSize + '}';
     }
 
     public static class Builder {
 
-        private Type type;
+        private Type   type;
 
         private String name;
 
-        private int empty;
+        private int    empty;
 
-        private int invalid;
+        private int    invalid;
 
-        private int valid;
+        private int    valid;
+
+        private int    headerSize;
 
         public static ColumnMetadata.Builder column() {
             return new Builder();
@@ -119,11 +139,17 @@ public class ColumnMetadata {
             return this;
         }
 
+        public ColumnMetadata.Builder headerSize(int headerSize) {
+            headerSize = headerSize;
+            return this;
+        }
+
         public ColumnMetadata build() {
             ColumnMetadata columnMetadata = new ColumnMetadata(name, type.getName());
             columnMetadata.getQuality().setEmpty(empty);
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);
+            columnMetadata.setHeaderSize(headerSize);
             return columnMetadata;
         }
     }
