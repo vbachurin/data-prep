@@ -65,7 +65,10 @@ public class TestI18nKeysForActionsTest {
             assertNotEquals("", desc);
             assertI18nKeyExists("action." + name + ".desc");
 
-            LOGGER.debug(name + " | " + label + " | " + desc);
+            String toString = actionMetadata.getName() + "," + actionMetadata.getCategory() + ","
+                    + actionMetadata.getCompatibleColumnTypes() + "," + actionMetadata.getLabel() + ","
+                    + actionMetadata.getDescription();
+            LOGGER.info(toString);
 
             for (Parameter param : actionMetadata.getParameters()) {
                 String pname = param.getName();
@@ -82,7 +85,7 @@ public class TestI18nKeysForActionsTest {
                 assertNotEquals("", pdesc);
                 assertI18nKeyExists("parameter." + pname + ".desc");
 
-                LOGGER.debug("  - " + pname + " | " + plabel + " | " + pdesc);
+                LOGGER.trace("  - " + pname + " | " + plabel + " | " + pdesc);
             }
 
             for (Item item : actionMetadata.getItems()) {
@@ -100,9 +103,9 @@ public class TestI18nKeysForActionsTest {
                 assertNotEquals("", pdesc);
                 assertI18nKeyExists("parameter." + pname + ".desc");
 
-                LOGGER.debug("  - " + pname + " | " + plabel + " | " + pdesc);
+                LOGGER.trace("  - " + pname + " | " + plabel + " | " + pdesc);
                 for (Value value : item.getValues()) {
-                    LOGGER.debug("    - " + value);
+                    LOGGER.trace("    - " + value);
 
                     for (Parameter param : value.getParameters()) {
                         String oname = param.getName();
@@ -119,7 +122,7 @@ public class TestI18nKeysForActionsTest {
                         assertNotEquals("", odesc);
                         assertI18nKeyExists("parameter." + oname + ".desc");
 
-                        LOGGER.debug("      - " + oname + " | " + olabel + " | " + odesc);
+                        LOGGER.trace("      - " + oname + " | " + olabel + " | " + odesc);
                     }
                 }
             }

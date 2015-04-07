@@ -27,7 +27,7 @@ public class Cut extends SingleColumnAction {
 
     @Override
     public String getCategory() {
-        return "repair"; //$NON-NLS-1$
+        return "quickfix"; //$NON-NLS-1$
     }
 
     @Override

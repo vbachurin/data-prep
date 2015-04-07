@@ -5,28 +5,32 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 
-@Component(UpperCase.ACTION_BEAN_PREFIX + UpperCase.UPPER_CASE_ACTION_NAME)
-public class UpperCase extends SingleColumnAction {
+@Component(Trim.ACTION_BEAN_PREFIX + Trim.TRIM_ACTION_NAME)
+public class Trim extends SingleColumnAction {
 
-    public static final String UPPER_CASE_ACTION_NAME = "uppercase"; //$NON-NLS-1$
+    public static final Logger LOGGER           = LoggerFactory.getLogger(Trim.class);
 
-    private UpperCase() {
+    public static final String TRIM_ACTION_NAME = "trim";                             //$NON-NLS-1$
+
+    private Trim() {
     }
 
     @Override
     public String getName() {
-        return UPPER_CASE_ACTION_NAME;
+        return TRIM_ACTION_NAME;
     }
 
     @Override
     public String getCategory() {
-        return "case"; //$NON-NLS-1$
+        return "quickfix"; //$NON-NLS-1$
     }
 
     @Override
@@ -36,12 +40,14 @@ public class UpperCase extends SingleColumnAction {
     }
 
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
+    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
+
             if (value != null) {
-                row.set(columnName, value.toUpperCase());
+                String newValue = value.trim();
+                row.set(columnName, newValue);
             }
         };
     }
@@ -50,4 +56,5 @@ public class UpperCase extends SingleColumnAction {
     public Set<Type> getCompatibleColumnTypes() {
         return Collections.singleton(Type.STRING);
     }
+
 }

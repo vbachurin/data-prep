@@ -18,9 +18,9 @@ import org.talend.dataprep.api.type.Type;
 @Component(Negate.ACTION_BEAN_PREFIX + Negate.NEGATE_ACTION_NAME)
 public class Negate extends SingleColumnAction {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(Negate.class);
+    public static final Logger LOGGER             = LoggerFactory.getLogger(Negate.class);
 
-    public static final String NEGATE_ACTION_NAME = "negate"; //$NON-NLS-1$
+    public static final String NEGATE_ACTION_NAME = "negate";                             //$NON-NLS-1$
 
     private Negate() {
     }
@@ -71,12 +71,6 @@ public class Negate extends SingleColumnAction {
     @Nonnull
     public Item[] getItems() {
         return new Item[0];
-    }
-
-    @Override
-    @Nonnull
-    public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER };
     }
 
     @Override
