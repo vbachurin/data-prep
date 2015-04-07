@@ -1,6 +1,10 @@
 <ul class="talend-accordion">
     <li ng-repeat="step in recipeCtrl.recipe track by $index">
-        <a class="talend-accordion-trigger" on-open="recipeCtrl.resetParams(step)">
+        <a class="talend-accordion-trigger"
+           ng-class="{'inactive': step.inactive}"
+           on-open="recipeCtrl.resetParams(step)"
+           ng-click="recipeCtrl.loadStep(step)" >
+
             {{$index + 1}}.
             <span class="recipe-description">{{step.transformation.name | translate}}</span>
             {{::'RECIPE_ITEM_ON_COL' | translate}}

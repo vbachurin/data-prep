@@ -12,6 +12,10 @@
     a {
       text-decoration: none;
       color: $color;
+
+      &.inactive {
+        color: $medium-gray;
+      }
     }
 
     input {

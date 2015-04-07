@@ -96,6 +96,32 @@
                 });
         };
 
+        /**
+         * Load an existing preparation in the playground, at a specific step.
+         * WARNING : we consider that the preparation is already loaded, only an update is the grid is done
+         * - set current preparation before any preparation request
+         * - load grid with 'stepId' version content,
+         * @param step - the step to load
+         * @returns {*}
+         */
+        self.loadStep = function(step) {
+            //step already loaded
+            if(RecipeService.getActiveThresholdStep() === step) {
+                return;
+            }
+
+            $rootScope.$emit('talend.loading.start');
+            return PreparationService.getContent(step.transformation.stepId)
+                .then(function(response) {
+                    self.currentData = response.data;
+                    RecipeService.disableStepsAfter(step);
+                    DatasetGridService.setDataset(self.currentMetadata, response.data);
+                })
+                .finally(function() {
+                    $rootScope.$emit('talend.loading.stop');
+                });
+        };
+
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------PREPARATION-------------------------------------------
         //------------------------------------------------------------------------------------------------------

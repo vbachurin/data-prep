@@ -4,6 +4,7 @@
     function RecipeService(PreparationService, ConverterService) {
         var recipe = [];
         var listType = 'LIST';
+        var activeThresholdStep = null;
 
         /**
          * Return recipe item list
@@ -18,8 +19,20 @@
          */
         this.reset = function() {
             recipe = [];
+            activeThresholdStep = null;
         };
 
+        /**
+         * Return the step between active and inactive steps
+         * @returns Step
+         */
+        this.getActiveThresholdStep = function() {
+            return activeThresholdStep;
+        };
+
+        //--------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------STEP PARAMS-----------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * Replace params values with saved initial values
          * @param params
@@ -61,10 +74,6 @@
             executeFnOnParams(recipeItem.transformation, resetParamValue);
         };
 
-        //--------------------------------------------------------------------------------------------------------------
-        //------------------------------------------------------PREPARATION---------------------------------------------
-        //--------------------------------------------------------------------------------------------------------------
-
         /**
          * Init parameters initial value and type
          * @param parameters - the parameters
@@ -104,6 +113,9 @@
                 .value();
         };
 
+        //--------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------STEPS--------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * Create a recipe item from Preparation step
          * @param actionStep
@@ -133,12 +145,37 @@
         this.refresh = function() {
             PreparationService.getDetails()
                 .then(function(resp) {
-                    var steps = resp.data.steps.slice(1);
+                    //steps ids are in reverse order and the last is the 'no-transformation' id
+                    var steps = resp.data.steps.slice(0);
+                    steps.pop();
+
+                    activeThresholdStep = null;
                     recipe = _.chain(steps)
+                        .reverse()
                         .zip(resp.data.actions, resp.data.metadata)
                         .map(createItem)
                         .value();
                 });
+        };
+
+        /**
+         * Disable all steps after the given one
+         * @param step - the limit between active and inactive
+         */
+        this.disableStepsAfter = function(step) {
+            var stepFound = false;
+            _.forEach(recipe, function(nextStep) {
+                if(stepFound) {
+                    nextStep.inactive = true;
+                }
+                else {
+                    nextStep.inactive = false;
+                    if(nextStep === step) {
+                        stepFound = true;
+                    }
+                }
+            });
+            activeThresholdStep = step;
         };
     }
 
