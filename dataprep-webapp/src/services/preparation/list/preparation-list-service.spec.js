@@ -131,4 +131,36 @@ describe('Preparation list service controller', function() {
         expect(PreparationListService.preparations[0].dataset).toBe(allDatasets[0]);
         expect(PreparationListService.preparations[1].dataset).toBe(allDatasets[2]);
     }));
+
+    it('should refresh preparations if preparation list is empty', inject(function($rootScope, PreparationListService, PreparationService) {
+        //given
+        expect(PreparationListService.preparations.length).toBe(0);
+
+        //when
+        PreparationListService.getPreparationsPromise();
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.getPreparations).toHaveBeenCalled();
+        expect(PreparationListService.preparations).toBe(allPreparations);
+        expect(PreparationListService.preparations[0].dataset).toBe(allDatasets[0]);
+        expect(PreparationListService.preparations[1].dataset).toBe(allDatasets[2]);
+    }));
+
+    it('should just return existing preparations list if not empty', inject(function($rootScope, PreparationListService, PreparationService) {
+        //given
+        var returnedPreps = null;
+        PreparationListService.preparations = allPreparations;
+
+        //when
+        PreparationListService.getPreparationsPromise()
+            .then(function(preparations) {
+                returnedPreps = preparations;
+            });
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.getPreparations).not.toHaveBeenCalled();
+        expect(returnedPreps).toBe(allPreparations);
+    }));
 });

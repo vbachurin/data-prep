@@ -57,7 +57,7 @@
                     }
                 })
                 .state('nav.home.preparations', {
-                    url: '/preparations',
+                    url: '/preparations?prepid',
                     views: {
                         'home-content': {
                             template: '<preparation-list></preparation-list>'

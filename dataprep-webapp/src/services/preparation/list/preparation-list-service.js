@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function PreparationListService(PreparationService, DatasetListService) {
+    function PreparationListService($q, PreparationService, DatasetListService) {
         var self = this;
         self.preparations = [];
 
@@ -25,11 +25,22 @@
          * Refresh preparation list
          */
         self.refreshPreparations = function() {
-            PreparationService.getPreparations()
+            return PreparationService.getPreparations()
                 .then(function(result) {
                     adaptMetadataInfos(result.data);
                     self.preparations = result.data;
+
+                    return self.preparations;
                 });
+        };
+
+        self.getPreparationsPromise = function() {
+            if(self.preparations.length) {
+                return $q.when(self.preparations);
+            }
+            else {
+                return self.refreshPreparations();
+            }
         };
     }
 

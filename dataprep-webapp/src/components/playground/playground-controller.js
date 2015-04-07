@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function PlaygroundCtrl(PlaygroundService, PreparationListService) {
+    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationListService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
 
@@ -16,10 +16,13 @@
         };
 
         /**
-         * Refresh preparation lists (called on playground close)
+         * Playground close callback
          */
-        vm.refreshPreparations = function() {
-            PreparationListService.refreshPreparations();
+        vm.close = function() {
+            if($stateParams.prepid) {
+                PreparationListService.refreshPreparations();
+                $state.go('nav.home.preparations', {prepid: null});
+            }
         };
     }
 
