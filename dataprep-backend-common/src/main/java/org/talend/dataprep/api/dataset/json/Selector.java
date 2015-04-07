@@ -21,23 +21,33 @@ class Selector implements State {
             currentField = context.getJsonParser().getCurrentName();
             break;
         case START_OBJECT:
-            switch (currentField) {
-            case "metadata":
-                context.setCurrent(Metadata.INSTANCE);
-                break;
-            default:
-                throw new NotImplementedException("No support for '" + currentField + "'.");
-            }
+            startObject(context);
+            break;
         case START_ARRAY:
-            switch (currentField) {
-            case "columns":
-                context.setCurrent(Columns.INSTANCE);
-                break;
-            default:
-                throw new NotImplementedException();
-            }
+            startArray(context);
+            break;
         default:
             break;
+        }
+    }
+
+    private void startArray(Context context) {
+        switch (currentField) {
+        case "columns": //$NON-NLS-1$
+            context.setCurrent(Columns.INSTANCE);
+            break;
+        default:
+            throw new NotImplementedException();
+        }
+    }
+
+    private void startObject(Context context) {
+        switch (currentField) { //$NON-NLS-1$
+        case "metadata":
+            context.setCurrent(Metadata.INSTANCE);
+            break;
+        default:
+            throw new NotImplementedException("No support for '" + currentField + "'.");
         }
     }
 }

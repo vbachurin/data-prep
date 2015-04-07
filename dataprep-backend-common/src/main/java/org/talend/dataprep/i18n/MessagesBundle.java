@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessagesBundle implements ApplicationContextAware {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MessagesBundle.class );
+    private static final Logger LOG = LoggerFactory.getLogger(MessagesBundle.class);
 
     private static ResourceBundleMessageSource source;
 
@@ -73,6 +73,6 @@ public class MessagesBundle implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         source = applicationContext.getBean(ResourceBundleMessageSource.class);
-        LOG.info("Activated i18n messages ({}).",source);
+        LOG.info("Activated i18n messages ({}).", source);
     }
 }

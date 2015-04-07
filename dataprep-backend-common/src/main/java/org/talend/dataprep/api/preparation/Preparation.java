@@ -5,9 +5,12 @@ import static java.lang.Math.min;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.AccessType;
 
 public class Preparation implements Identifiable {
+
+    @AccessType(AccessType.Type.PROPERTY)
+    private String id;
 
     private String dataSetId;
 
@@ -80,13 +83,20 @@ public class Preparation implements Identifiable {
         this.step = step;
     }
 
-    @Id
     @Override
     public String id() {
+        return getId();
+    }
+
+    public String getId() {
         if (StringUtils.isEmpty(name)) {
             return DigestUtils.sha1Hex(dataSetId + author);
         }
         return DigestUtils.sha1Hex(dataSetId + author + name);
+    }
+
+    public void setId(String id) {
+        // No op
     }
 
     @Override
@@ -100,12 +110,13 @@ public class Preparation implements Identifiable {
     }
 
     public Preparation merge(Preparation other) {
-        dataSetId = other.dataSetId != null ? other.dataSetId : dataSetId;
-        author = other.author != null ? other.author : author;
-        name = other.name != null ? other.name : name;
-        creationDate = min(other.creationDate, creationDate);
-        lastModificationDate = max(other.lastModificationDate, lastModificationDate);
-        step = other.step != null ? other.step : step;
-        return this;
+        Preparation merge = new Preparation();
+        merge.dataSetId = other.dataSetId != null ? other.dataSetId : dataSetId;
+        merge.author = other.author != null ? other.author : author;
+        merge.name = other.name != null ? other.name : name;
+        merge.creationDate = min(other.creationDate, creationDate);
+        merge.lastModificationDate = max(other.lastModificationDate, lastModificationDate);
+        merge.step = other.step != null ? other.step : step;
+        return merge;
     }
 }

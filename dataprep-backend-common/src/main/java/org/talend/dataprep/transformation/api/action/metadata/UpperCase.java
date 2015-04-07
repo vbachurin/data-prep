@@ -42,9 +42,9 @@ public class UpperCase extends SingleColumnAction {
     }
 
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
+    public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             if (value != null) {
                 row.set(columnName, value.toUpperCase());

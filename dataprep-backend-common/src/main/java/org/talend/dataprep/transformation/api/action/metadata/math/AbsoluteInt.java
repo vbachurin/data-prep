@@ -30,22 +30,22 @@ import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction
  * This will compute the absolute value for numerical columns
  *
  */
-@Component(AbsoluteFloat.ACTION_BEAN_PREFIX + AbsoluteFloat.ABSOLUTE_FLOAT_ACTION_NAME)
-public class AbsoluteFloat extends SingleColumnAction {
+@Component(AbsoluteInt.ACTION_BEAN_PREFIX + AbsoluteInt.ABSOLUTE_INT_ACTION_NAME)
+public class AbsoluteInt extends SingleColumnAction {
 
-    public static final String ABSOLUTE_FLOAT_ACTION_NAME = "absolute_float"; //$NON-NLS-1$
+    public static final String ABSOLUTE_INT_ACTION_NAME = "absolute_int"; //$NON-NLS-1$
 
-    private AbsoluteFloat() {
+    private AbsoluteInt() {
     }
 
     @Override
     public String getName() {
-        return ABSOLUTE_FLOAT_ACTION_NAME;
+        return ABSOLUTE_INT_ACTION_NAME;
     }
 
     @Override
     public String getCategory() {
-        return "math";
+        return "math"; //$NON-NLS-1$
     }
 
     @Override
@@ -61,28 +61,28 @@ public class AbsoluteFloat extends SingleColumnAction {
     }
 
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
+    public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             String absValueStr = null;
             if (value != null) {
-                // try float first
+                // try long first
                 try {
-                    double doubleValue = Double.parseDouble(value);
-                    double absValue = Math.abs(doubleValue);
-                    if (absValue == (long) absValue) {// this will prevent having .0 for longs.
-                        absValueStr = String.format("%d", (long) absValue); //$NON-NLS-1$
-                    } else {
-                        absValueStr = String.format("%s", absValue); //$NON-NLS-1$
-                    }
-                } catch (NumberFormatException nfe2) {
-                    // try long
+                    long longValue = Long.parseLong(value);
+                    absValueStr = Long.toString(Math.abs(longValue));
+                } catch (NumberFormatException nfe1) {
+                    // try float
                     try {
-                        long longValue = Long.parseLong(value);
-                        absValueStr = Long.toString(Math.abs(longValue));
-                    } catch (NumberFormatException nfe1) {
-                        // the value is not a long nor a float so ignors it
+                        double doubleValue = Double.parseDouble(value);
+                        double absValue = Math.abs(doubleValue);
+                        if (absValue == (long) absValue) {// this will prevent having .0 for longs.
+                            absValueStr = String.format("%d", (long) absValue); //$NON-NLS-1$
+                        } else {
+                            absValueStr = String.format("%s", absValue); //$NON-NLS-1$
+                        }
+                    } catch (NumberFormatException nfe2) {
+                        // the value is not a long nor a float so ignores it
                         // and let absValue to be null.
                     }
                 }
@@ -96,7 +96,7 @@ public class AbsoluteFloat extends SingleColumnAction {
 
     @Override
     public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.FLOAT);
+        return Collections.singleton(Type.INTEGER);
     }
 
 }

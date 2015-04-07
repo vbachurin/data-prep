@@ -71,9 +71,11 @@
   "DATASET_UPDATE_SUCCESS"        : "The dataset \"{{dataset}}\" has been updated",
 
   "_comment" : "Errors",
-  "GENERIC_ERROR"       : "An error occurred",
-  "SERVER_ERROR_TITLE"  : "Server error",
-  "SERVICE_UNAVAILABLE" : "Service unavailable",
-  "UPLOAD_ERROR_TITLE"  : "Upload error",
-  "UPLOAD_ERROR"        : "An error occurred during file upload"
+  "GENERIC_ERROR"         : "An error occurred",
+  "INVALID_DATASET_TITLE" : "Invalid dataset",
+  "INVALID_DATASET"       : "This dataset is not valid. Please import a correct CSV file to update the data",
+  "SERVER_ERROR_TITLE"    : "Server error",
+  "SERVICE_UNAVAILABLE"   : "Service unavailable",
+  "UPLOAD_ERROR_TITLE"    : "Upload error",
+  "UPLOAD_ERROR"          : "An error occurred during file upload"
 }

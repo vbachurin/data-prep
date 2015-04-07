@@ -45,5 +45,15 @@
       "compatibleColumnTypes":[
          "INTEGER"
       ]
-   }
+   },
+   {
+    "name": "delete_empty",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  }
 ]
