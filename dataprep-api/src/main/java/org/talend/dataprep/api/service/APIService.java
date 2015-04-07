@@ -1,8 +1,11 @@
 package org.talend.dataprep.api.service;
 
+import java.io.IOException;
+
 import javax.annotation.PreDestroy;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
@@ -39,6 +42,8 @@ public class APIService {
     @Autowired
     private WebApplicationContext context;
 
+    private CloseableHttpClient httpClient;
+
     public APIService() {
         connectionManager.setMaxTotal(50);
         connectionManager.setDefaultMaxPerRoute(50);
@@ -46,6 +51,11 @@ public class APIService {
 
     @PreDestroy
     private void shutdown() {
+        try {
+            httpClient.close();
+        } catch (IOException e) {
+            LOG.error("Unable to close HTTP client on shutdown.", e);
+        }
         this.connectionManager.shutdown();
     }
 
@@ -74,6 +84,9 @@ public class APIService {
     }
 
     protected HttpClient getClient() {
-        return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        if (httpClient == null) {
+            httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        }
+        return httpClient;
     }
 }
