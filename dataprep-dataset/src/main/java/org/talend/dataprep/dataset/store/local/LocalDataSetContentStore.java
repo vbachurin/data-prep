@@ -1,7 +1,6 @@
 package org.talend.dataprep.dataset.store.local;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Base64;
 
 import org.apache.commons.io.FileUtils;
