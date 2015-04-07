@@ -1,6 +1,11 @@
 package org.talend.dataprep.api.service;
 
+import java.io.IOException;
+
+import javax.annotation.PreDestroy;
+
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
@@ -21,7 +26,7 @@ public class APIService {
 
     public static final HystrixCommandGroupKey DATASET_GROUP = HystrixCommandGroupKey.Factory.asKey("dataset"); //$NON-NLS-1$
 
-    protected static final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+    private final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected static final Logger LOG = LoggerFactory.getLogger( APIService.class );
 
@@ -37,9 +42,25 @@ public class APIService {
     @Autowired
     private WebApplicationContext context;
 
+    private CloseableHttpClient httpClient;
+
     public APIService() {
         connectionManager.setMaxTotal(50);
         connectionManager.setDefaultMaxPerRoute(50);
+    }
+
+    @PreDestroy
+    private void shutdown() {
+        try {
+            httpClient.close();
+        } catch (IOException e) {
+            LOG.error("Unable to close HTTP client on shutdown.", e);
+        }
+        this.connectionManager.shutdown();
+    }
+
+    public PoolingHttpClientConnectionManager getConnectionManager() {
+        return connectionManager;
     }
 
     protected <T extends HystrixCommand> T getCommand(Class<T> clazz, Object... args) {
@@ -63,6 +84,9 @@ public class APIService {
     }
 
     protected HttpClient getClient() {
-        return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        if (httpClient == null) {
+            httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        }
+        return httpClient;
     }
 }
