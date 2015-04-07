@@ -51,6 +51,7 @@
     color: $datagrid-cell;
     font-size: .80em;
     font-family: $monospace;
+    white-space: pre;
 
     &.active {
       border-color: gray;
