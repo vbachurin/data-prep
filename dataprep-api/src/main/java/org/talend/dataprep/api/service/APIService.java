@@ -46,7 +46,7 @@ public class APIService {
 
     public APIService() {
         connectionManager.setMaxTotal(50);
-        connectionManager.setDefaultMaxPerRoute( 50 );
+        connectionManager.setDefaultMaxPerRoute(50);
         httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
     }
 
