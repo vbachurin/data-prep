@@ -1,5 +1,5 @@
 data:
-    image: talend-registry:5000/talend/dataprep-data:1.0.m2
+    image: talend-registry:5000/talend/dataprep-data:1.0.m3-SNAPSHOT
     volumes:
         - /data/db
         - /store
