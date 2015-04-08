@@ -1,7 +1,7 @@
 mongodb:
     image: mongodb
     volumes:
-        - runtime/mongodb:/data/db
+        - runtime/mongo:/data/db
     expose:
         - 27017
 api:
