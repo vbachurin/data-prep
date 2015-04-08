@@ -46,7 +46,8 @@ public class APIService {
 
     public APIService() {
         connectionManager.setMaxTotal(50);
-        connectionManager.setDefaultMaxPerRoute(50);
+        connectionManager.setDefaultMaxPerRoute( 50 );
+        httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
     }
 
     @PreDestroy
@@ -84,9 +85,6 @@ public class APIService {
     }
 
     protected HttpClient getClient() {
-        if (httpClient == null) {
-            httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        }
         return httpClient;
     }
 }
