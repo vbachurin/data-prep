@@ -51,7 +51,7 @@
   "PROCESSING"  : "Processing",
 
   "_comment" : "Confirm",
-  "DELETE_PERMANENTLY"      : "You are going to permanently delete the dataset \"{{dataset}}\".",
+  "DELETE_PERMANENTLY"      : "You are going to permanently delete the {{type}} \"{{name}}\".",
   "ENTER_DATASET_NAME"      : "Enter the dataset name",
   "NO_UNDONE_CONFIRM"       : "This operation cannot be undone. Are you sure ?",
   "UPDATE_EXISTING_DATASET" : "Do you want to update existing \"{{dataset}}\" dataset ?",
@@ -69,6 +69,9 @@
   "DATASET_REMOVE_SUCCESS"        : "The dataset \"{{dataset}}\" has been removed.",
   "DATASET_UPDATE_SUCCESS_TITLE"  : "Update dataset",
   "DATASET_UPDATE_SUCCESS"        : "The dataset \"{{dataset}}\" has been updated",
+
+  "PREPARATION_REMOVE_SUCCESS_TITLE"  : "Preparation removed",
+  "PREPARATION_REMOVE_SUCCESS"        : "The preparation \"{{preparation}}\" has been removed.",
 
   "_comment" : "Errors",
   "GENERIC_ERROR"         : "An error occurred",

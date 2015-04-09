@@ -19,7 +19,7 @@
          * @param dataset - the dataset to delete
          */
         vm.delete = function(dataset) {
-            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {dataset: dataset.name})
+            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type: 'dataset', name: dataset.name})
                 .then(function() {
                     return DatasetService.deleteDataset(dataset);
                 })

@@ -67,6 +67,15 @@
         };
 
         /**
+         * Delete the preparation
+         * @param preparation
+         * @returns promise
+         */
+        this.delete = function(preparation) {
+            return $http.delete(RestURLs.preparationUrl + '/' + preparation.id);
+        };
+
+        /**
          * Append a new transformation in the current preparation
          * @return HttpPromise
          */
