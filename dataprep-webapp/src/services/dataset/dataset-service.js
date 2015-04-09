@@ -66,7 +66,7 @@
          */
         self.getDataFromId = function(datasetId, metadata) {
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata)
+            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '/content?metadata=' + metadata)
                 .then(function(res) {
                     return res.data;
                 })
