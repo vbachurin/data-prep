@@ -25,7 +25,7 @@
                     return PreparationService.delete(preparation);
                 })
                 .then(function() {
-                    MessageService.success('PREPARATION_REMOVE_SUCCESS_TITLE', 'PREPARATION_REMOVE_SUCCESS', {preparation: preparation.name});
+                    MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type:'preparation', name: preparation.name});
                     PreparationListService.refreshPreparations();
                 });
         };
