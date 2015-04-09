@@ -227,6 +227,18 @@ public class DataPreparationAPITest {
     }
 
     @Test
+    public void testPreparationDelete() throws Exception {
+        String preparationId = given().contentType(ContentType.JSON)
+                .body("{ \"name\": \"original_name\", \"dataSetId\": \"1234\" }").post("/api/preparations").asString();
+        assertNotNull(preparationId);
+        String list = when().get("/api/preparations").asString();
+        assertTrue(list.contains(preparationId));
+        when().delete("/api/preparations/" + preparationId).asString();
+        list = when().get("/api/preparations").asString();
+        assertEquals("[]", list);
+    }
+
+    @Test
     public void testPreparationGet() throws Exception {
         // Create a preparation based on dataset "1234"
         String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"1234\" }")

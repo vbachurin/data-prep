@@ -65,6 +65,16 @@ public class PreparationAPI extends APIService {
         return preparationUpdate.execute();
     }
 
+    @RequestMapping(value = "/api/preparations/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Delete a preparation by id", notes = "Delete a preparation content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing preparation id returns empty content.")
+    @Timed
+    public String deletePreparation(
+            @ApiParam(name = "id", value = "The id of the preparation to delete.") @PathVariable("id") String id) {
+        HttpClient client = getClient();
+        PreparationDelete preparationDelete = getCommand(PreparationDelete.class, client, preparationServiceURL, id);
+        return preparationDelete.execute();
+    }
+
     @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preparation by id and details.", notes = "Returns the preparation details.")
     @Timed
