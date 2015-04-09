@@ -19,12 +19,12 @@
          * @param dataset - the dataset to delete
          */
         vm.delete = function(dataset) {
-            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {dataset: dataset.name})
+            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type: 'dataset', name: dataset.name})
                 .then(function() {
                     return DatasetService.deleteDataset(dataset);
                 })
                 .then(function() {
-                    MessageService.success('DATASET_REMOVE_SUCCESS_TITLE', 'DATASET_REMOVE_SUCCESS', {dataset: dataset.name});
+                    MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: dataset.name});
                     DatasetListService.refreshDatasets();
                 });
         };

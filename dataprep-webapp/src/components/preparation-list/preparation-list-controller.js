@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function PreparationListCtrl(PreparationListService, PlaygroundService) {
+    function PreparationListCtrl(PreparationService, PreparationListService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.preparationListService = PreparationListService;
 
@@ -13,6 +13,21 @@
             PlaygroundService
                 .load(preparation)
                 .then(PlaygroundService.show);
+        };
+
+        /**
+         * Delete a preparation
+         * @param preparation - the preparation to delete
+         */
+        vm.delete = function(preparation) {
+            TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type:'preparation', name: preparation.name})
+                .then(function() {
+                    return PreparationService.delete(preparation);
+                })
+                .then(function() {
+                    MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type:'preparation', name: preparation.name});
+                    PreparationListService.refreshPreparations();
+                });
         };
 
         PreparationListService.refreshPreparations();
