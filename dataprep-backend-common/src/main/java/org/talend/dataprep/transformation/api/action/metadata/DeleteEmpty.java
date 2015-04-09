@@ -27,7 +27,7 @@ public class DeleteEmpty extends AbstractDelete {
 
     @Override
     public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.STRING);
+        return Collections.singleton(Type.ANY);
     }
 
 }

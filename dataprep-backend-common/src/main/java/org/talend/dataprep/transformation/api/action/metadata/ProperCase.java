@@ -5,40 +5,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 
-@Component(UpperCase.ACTION_BEAN_PREFIX + UpperCase.UPPER_CASE_ACTION_NAME)
-public class UpperCase extends SingleColumnAction {
+@Component(ProperCase.ACTION_BEAN_PREFIX + ProperCase.PROPER_CASE_ACTION_NAME)
+public class ProperCase extends SingleColumnAction {
 
-    public static final String UPPER_CASE_ACTION_NAME = "uppercase"; //$NON-NLS-1$
-
-    private UpperCase() {
-    }
+    public static final String PROPER_CASE_ACTION_NAME = "propercase"; //$NON-NLS-1$
 
     @Override
     public String getName() {
-        return UPPER_CASE_ACTION_NAME;
+        return PROPER_CASE_ACTION_NAME;
     }
 
     @Override
     public String getCategory() {
-        return "case"; //$NON-NLS-1$
+        return "case";
     }
 
     @Override
-    @Nonnull
     public Item[] getItems() {
         return new Item[0];
-    }
-
-    @Override
-    @Nonnull
-    public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER };
     }
 
     @Override
@@ -47,7 +35,7 @@ public class UpperCase extends SingleColumnAction {
             String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             if (value != null) {
-                row.set(columnName, value.toUpperCase());
+                row.set(columnName, Negate.toProperCase(value));
             }
         };
     }

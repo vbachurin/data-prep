@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.Test;
 
@@ -40,7 +39,6 @@ public class TypeTest {
     @Test
     public void testName() {
         assertThat(Type.STRING.getName(), is("string"));
-        assertThat(Type.STRING.getName(Locale.FRENCH), is("string"));
     }
 
     @Test

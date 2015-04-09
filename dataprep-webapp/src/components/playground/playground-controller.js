@@ -16,7 +16,7 @@
         };
 
         /**
-         * Refresh preparation lists
+         * Refresh preparation lists (called on playground close)
          */
         vm.refreshPreparations = function() {
             PreparationListService.refreshPreparations();

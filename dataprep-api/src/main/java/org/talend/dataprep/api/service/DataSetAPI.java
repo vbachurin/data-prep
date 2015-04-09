@@ -41,7 +41,7 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "content") InputStream dataSetContent) {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating dataset (pool: {} )...", connectionManager.getTotalStats());
+            LOG.debug("Creating dataset (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         HystrixCommand<String> creation = getCommand(CreateDataSet.class, client, contentServiceUrl, name, dataSetContent);
@@ -60,7 +60,7 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "content") InputStream dataSetContent) {
         
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, connectionManager.getTotalStats());
+            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         
         HttpClient client = getClient();
@@ -80,7 +80,7 @@ public class DataSetAPI extends APIService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Requesting dataset #{} (pool: {})...",id,connectionManager.getTotalStats());
+            LOG.debug("Requesting dataset #{} (pool: {})...",id,getConnectionManager().getTotalStats());
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
@@ -90,7 +90,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
             outputStream.flush();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Request dataset #{} (pool: {}) done.",id,connectionManager.getTotalStats());
+                LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
             throw new RuntimeException("Unable to retrieve content for id #" + id + ".", e);
@@ -101,7 +101,7 @@ public class DataSetAPI extends APIService {
     @ApiOperation(value = "List data sets.", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Returns a list of data sets the user can use.")
     public void list(HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Listing datasets (pool: {})...", connectionManager.getTotalStats());
+            LOG.debug("Listing datasets (pool: {})...", getConnectionManager().getTotalStats());
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
@@ -111,7 +111,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(listCommand.execute(), outputStream);
             outputStream.flush();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Listing datasets (pool: {}) done.", connectionManager.getTotalStats());
+                LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
             throw new RuntimeException("Unable to list datasets.", e);
@@ -123,14 +123,14 @@ public class DataSetAPI extends APIService {
     @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Delete dataset #{} (pool: {})...", dataSetId, connectionManager.getTotalStats());
+            LOG.debug("Delete dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, contentServiceUrl, dataSetId);
         try {
             deleteCommand.execute();
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Listing datasets (pool: {}) done.", connectionManager.getTotalStats());
+                LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
             throw new RuntimeException("Unable to list datasets.", e);

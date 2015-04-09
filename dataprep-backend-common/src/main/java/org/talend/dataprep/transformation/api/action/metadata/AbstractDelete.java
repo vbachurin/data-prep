@@ -13,7 +13,7 @@ public abstract class AbstractDelete implements ActionMetadata {
 
     @Override
     public String getCategory() {
-        return "case";
+        return "cleansing"; //$NON-NLS-1$
     }
 
     @Override
@@ -29,14 +29,15 @@ public abstract class AbstractDelete implements ActionMetadata {
     public abstract boolean toDelete(Map<String, String> parsedParameters, String value);
 
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
+    public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER);
+            String columnName = parameters.get(COLUMN_NAME_PARAMETER);
             String value = row.get(columnName);
-            if (toDelete(parsedParameters, value)) {
+            if (toDelete(parameters, value)) {
                 row.setDeleted(true);
             }
         };
     }
 
 }
+

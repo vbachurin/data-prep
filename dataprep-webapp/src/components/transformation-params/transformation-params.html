@@ -2,7 +2,7 @@
     <form ng-submit="paramsCtrl.transformWithParam()" name="paramsCtrl.paramForm">
         <!-- Menu item param -->
         <table ng-if="paramsCtrl.transformation.parameters" class="no-border param">
-            <tr ng-repeat="param in ::paramsCtrl.transformation.parameters track by $index">
+            <tr ng-repeat="param in paramsCtrl.transformation.parameters track by $index">
                 <td class="param-name">{{::param.label}} :</td>
                 <td class="param-input">
                     <input name="{{::(param.name + $index)}}"
@@ -19,22 +19,22 @@
         </table>
 
         <!-- Choice -->
-        <table ng-if="::(paramsCtrl.transformation.items)" class="no-border param-choice">
-            <tbody ng-repeat="item in ::paramsCtrl.transformation.items track by $index">
+        <table ng-if="paramsCtrl.transformation.items" class="no-border param-choice">
+            <tbody ng-repeat="item in paramsCtrl.transformation.items track by $index">
             <tr>
                 <td class="param-choice-name">{{item.label}} :</td>
                 <td class="param-choice-select"><select
                         ng-model="item.selectedValue"
-                        ng-options="option as option.name for option in ::item.values"
+                        ng-options="option as option.name for option in item.values"
                         required></select>
                 </td>
                 <td class="param-desc"><img src="assets/images/information.png" title="{{::item.description}}"/></td>
             </tr>
 
             <!-- invisible tr for nested ng-repeat-start purpose -->
-            <tr ng-repeat-start="option in ::item.values track by $index" ng-if="::false"></tr>
+            <tr ng-repeat-start="option in item.values track by $index" ng-if="::false"></tr>
 
-            <tr ng-repeat="param in ::option.parameters track by $index"
+            <tr ng-repeat="param in option.parameters track by $index"
                 ng-if="item.selectedValue === option">
                 <td class="param-name">{{::param.label}} :</td>
                 <td class="param-input">
@@ -56,9 +56,9 @@
 
             <!-- Choice params -->
             <tbody
-                    ng-repeat-start="option in ::item.values track by $index"
+                    ng-repeat-start="option in item.values track by $index"
                     ng-if="option.parameters && item.selectedValue === option">
-            <tr ng-repeat="param in ::option.parameters track by $index">
+            <tr ng-repeat="param in option.parameters track by $index">
                 <td class="param-name">{{::param.name}} :</td>
                 <td class="param-input">
                     <input name="{{::(param.name + $index)}}"

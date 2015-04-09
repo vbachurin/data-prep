@@ -4,9 +4,9 @@ import org.talend.dataprep.i18n.MessagesBundle;
 
 public class Item {
 
-    private final String  name;
+    private final String name;
 
-    private final String  category;
+    private final String category;
 
     private final Value[] values;
 
@@ -22,17 +22,19 @@ public class Item {
     }
 
     /**
-     * the label of the parameter, translated in the user locale.
+     * @return The label of the parameter, translated in the user locale.
+     * @see MessagesBundle
      */
     public String getLabel() {
-        return MessagesBundle.getString("parameter." + getName() + ".label");
+        return MessagesBundle.getString("parameter." + getName() + ".label"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
-     * the description of the parameter, translated in the user locale.
+     * @return The description of the parameter, translated in the user locale.
+     * @see MessagesBundle
      */
     public String getDescription() {
-        return MessagesBundle.getString("parameter." + getName() + ".desc");
+        return MessagesBundle.getString("parameter." + getName() + ".desc"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public String getCategory() {
@@ -45,11 +47,11 @@ public class Item {
 
     public static class Value {
 
-        final String      name;
-
-        boolean           isDefault = false;
+        final String name;
 
         final Parameter[] parameters;
+
+        boolean isDefault = false;
 
         public Value(String name, Parameter... parameters) {
             super();

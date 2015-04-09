@@ -19,14 +19,14 @@ import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 // @Component(Split.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
 public class Split extends SingleColumnAction {
 
+    public static final String SPLIT_ACTION_NAME = "split"; //$NON-NLS-1$
+
     // The separator shown to the user as a list. An item in this list is the value 'other', which allow the user to
     // manually enter its separator.
-    private static final String SEPARATOR_PARAMETER        = "separator";       //$NON-NLS-1$
+    private static final String SEPARATOR_PARAMETER = "separator"; //$NON-NLS-1$
 
     // The separator manually specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'
     private static final String MANUAL_SEPARATOR_PARAMETER = "manual_separator"; //$NON-NLS-1$
-
-    public static final String  SPLIT_ACTION_NAME          = "split";           //$NON-NLS-1$
 
     private Split() {
     }
@@ -38,7 +38,7 @@ public class Split extends SingleColumnAction {
 
     @Override
     public String getCategory() {
-        return "repair";
+        return "repair"; //$NON-NLS-1$
     }
 
     @Override
@@ -49,12 +49,12 @@ public class Split extends SingleColumnAction {
     }
 
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
-        String realSeparator = (parsedParameters.get(SEPARATOR_PARAMETER).equals("other") ? parsedParameters
-                .get(MANUAL_SEPARATOR_PARAMETER) : parsedParameters.get(SEPARATOR_PARAMETER));
+    public Consumer<DataSetRow> create(Map<String, String> parameters) {
+        String realSeparator = (parameters.get(SEPARATOR_PARAMETER).equals("other") ? parameters.get(MANUAL_SEPARATOR_PARAMETER)
+                : parameters.get(SEPARATOR_PARAMETER));
 
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             if (value != null) {
                 String[] split = value.split(realSeparator);

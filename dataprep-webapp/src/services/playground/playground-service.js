@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService, MessageService) {
         var self = this;
         self.visible = false;
 
@@ -41,6 +41,14 @@
             if(!self.currentMetadata || PreparationService.currentPreparation || dataset.id !== self.currentMetadata.id) {
                 return DatasetService.getDataFromId(dataset.id, false)
                     .then(function(data) {
+                        //TODO : temporary fix because asked to.
+                        //TODO : when error status during import and get dataset content is managed by backend,
+                        //TODO : remove this controle and the 'data-prep.services.utils'/MessageService dependency
+                        if(!data || !data.records) {
+                            MessageService.error('INVALID_DATASET_TITLE', 'INVALID_DATASET');
+                            throw Error('Empty data');
+                        }
+
                         self.currentMetadata = dataset;
                         self.currentData = data;
                         self.preparationName = '';
@@ -82,6 +90,32 @@
                     FilterService.removeAllFilters();
                     RecipeService.refresh();
                     DatasetGridService.setDataset(preparation.dataset, response.data);
+                })
+                .finally(function() {
+                    $rootScope.$emit('talend.loading.stop');
+                });
+        };
+
+        /**
+         * Load an existing preparation in the playground, at a specific step.
+         * WARNING : we consider that the preparation is already loaded, only an update is the grid is done
+         * - set current preparation before any preparation request
+         * - load grid with 'stepId' version content,
+         * @param step - the step to load
+         * @returns {*}
+         */
+        self.loadStep = function(step) {
+            //step already loaded
+            if(RecipeService.getActiveThresholdStep() === step) {
+                return;
+            }
+
+            $rootScope.$emit('talend.loading.start');
+            return PreparationService.getContent(step.transformation.stepId)
+                .then(function(response) {
+                    self.currentData = response.data;
+                    RecipeService.disableStepsAfter(step);
+                    DatasetGridService.setDataset(self.currentMetadata, response.data);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');

@@ -1,15 +1,19 @@
 (function() {
     'use strict';
 
-    function RecipeCtrl(RecipeService) {
+    function RecipeCtrl(RecipeService, PlaygroundService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
         /**
          * Reset the params of the recipe item. Called on param accordion open
-         * @type {RecipeService.resetParams}
          */
         vm.resetParams = RecipeService.resetParams;
+
+        /**
+         * Load selected step and disable next steps
+         */
+        vm.loadStep = PlaygroundService.loadStep;
     }
 
     Object.defineProperty(RecipeCtrl.prototype,

@@ -14,7 +14,7 @@
       ]
    },
    {
-      "category":"repair",
+      "category":"quickfix",
       "items":[
          {
             "name":"default_value",
@@ -38,5 +38,15 @@
             "default":""
          }
       ]
-   }
+   },
+   {
+    "name": "delete_empty",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  }
 ]

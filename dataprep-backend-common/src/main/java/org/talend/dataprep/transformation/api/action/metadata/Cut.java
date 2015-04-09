@@ -15,7 +15,7 @@ public class Cut extends SingleColumnAction {
 
     public static final String PATTERN_PARAMETER = "pattern"; //$NON-NLS-1$
 
-    public static final String CUT_ACTION_NAME   = "cut";    //$NON-NLS-1$
+    public static final String CUT_ACTION_NAME = "cut"; //$NON-NLS-1$
 
     private Cut() {
     }
@@ -27,7 +27,7 @@ public class Cut extends SingleColumnAction {
 
     @Override
     public String getCategory() {
-        return "repair"; //$NON-NLS-1$
+        return "quickfix"; //$NON-NLS-1$
     }
 
     @Override
@@ -42,12 +42,12 @@ public class Cut extends SingleColumnAction {
     }
 
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
+    public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             if (value != null) {
-                row.set(columnName, value.replace(parsedParameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
+                row.set(columnName, value.replace(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
             }
         };
     }
