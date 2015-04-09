@@ -24,7 +24,7 @@
                     return DatasetService.deleteDataset(dataset);
                 })
                 .then(function() {
-                    MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type:'preparation', name: dataset.name});
+                    MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: dataset.name});
                     DatasetListService.refreshDatasets();
                 });
         };
