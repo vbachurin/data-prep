@@ -13,8 +13,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -59,7 +61,7 @@ public class PreparationCreate extends HystrixCommand<String> {
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }
-            throw new RuntimeException("Unable to create preparation.");
+            throw Exceptions.User(APIMessages.UNABLE_TO_CREATE_PREPARATION);
         } finally {
             preparationCreation.releaseConnection();
         }

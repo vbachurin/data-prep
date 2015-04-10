@@ -52,9 +52,7 @@ public class SchemaAnalysis {
                         FormatGuess mediaType = guesser.guess(content);
                         mediaTypes.add(mediaType);
                     } catch (IOException e) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
-                        }
+                        LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
                     }
                 }
                 // Select best format guess

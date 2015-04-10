@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.service.command.DataSetGet;
 import org.talend.dataprep.api.service.command.Transform;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
@@ -32,9 +34,7 @@ public class TransformAPI extends APIService {
         if (dataSetId == null) {
             throw new IllegalArgumentException("Data set id cannot be null.");
         }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Transforming dataset id #{} (pool: {})...",dataSetId,getConnectionManager().getTotalStats());
-        }
+        LOG.debug("Transforming dataset id #{} (pool: {})...",dataSetId,getConnectionManager().getTotalStats());
         try {
             // Configure transformation flow
             String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
@@ -48,10 +48,8 @@ public class TransformAPI extends APIService {
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to transform data set #" + dataSetId + ".", e);
+            throw Exceptions.User(APIMessages.UNABLE_TO_TRANSFORM_DATASET, dataSetId, e);
         }
-
         LOG.debug("Transformation of dataset id #{} done.",dataSetId);
-
     }
 }

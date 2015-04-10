@@ -9,20 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.service.command.CreateDataSet;
-import org.talend.dataprep.api.service.command.CreateOrUpdateDataSet;
-import org.talend.dataprep.api.service.command.DataSetDelete;
-import org.talend.dataprep.api.service.command.DataSetGet;
-import org.talend.dataprep.api.service.command.DataSetGetMetadata;
-import org.talend.dataprep.api.service.command.DataSetList;
-import org.talend.dataprep.api.service.command.SuggestColumnActions;
-import org.talend.dataprep.api.service.command.SuggestDataSetActions;
+import org.talend.dataprep.api.service.command.*;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -39,16 +30,13 @@ public class DataSetAPI extends APIService {
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @ApiParam(value = "content") InputStream dataSetContent) {
-
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating dataset (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         HystrixCommand<String> creation = getCommand(CreateDataSet.class, client, contentServiceUrl, name, dataSetContent);
         String result = creation.execute();
-        
         LOG.debug("Dataset creation done.");
-        
         return result;
     }
 
@@ -58,17 +46,13 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
             @ApiParam(value = "content") InputStream dataSetContent) {
-        
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
-        
         HttpClient client = getClient();
         HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, contentServiceUrl, id, name, dataSetContent);
         String result = creation.execute();
-        
         LOG.debug("Dataset creation or update for #{} done.", id);
-        
         return result;
     }
 
@@ -93,7 +77,7 @@ public class DataSetAPI extends APIService {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to retrieve content for id #" + id + ".", e);
+            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT, id, e);
         }
     }
 
@@ -114,7 +98,7 @@ public class DataSetAPI extends APIService {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to list datasets.", e);
+            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
         }
     }
 
@@ -133,7 +117,7 @@ public class DataSetAPI extends APIService {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to list datasets.", e);
+            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
         }
     }
 
@@ -157,8 +141,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unable to retrieve actions for column '" + columnName + "' in dataset #" + dataSetId
-                    + ".", e);
+            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, columnName, dataSetId, e);
         }
     }
 
@@ -181,7 +164,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unable to retrieve actions for dataset #" + dataSetId + ".", e);
+            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, dataSetId, e);
         }
     }
 

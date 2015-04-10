@@ -5,7 +5,7 @@ public class Exceptions {
     private Exceptions() {
     }
 
-    public static TDPException Internal(Messages message) {
+    public static TDPException Internal(Messages message, Object... args) {
         return new InternalException(message);
     }
 
@@ -16,7 +16,7 @@ public class Exceptions {
         return new InternalException(message, cause);
     }
 
-    public static TDPException User(Messages message) {
+    public static TDPException User(Messages message, Object... args) {
         return new UserException(message);
     }
 
