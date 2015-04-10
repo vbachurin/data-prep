@@ -116,7 +116,7 @@ class SimpleTransformer implements Transformer {
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to select next state. ", e);
+                throw Exceptions.Internal(Messages.UNABLE_TO_PARSE_JSON, e);
             }
         }
     }
@@ -132,7 +132,7 @@ class SimpleTransformer implements Transformer {
                 JsonFactory factory = new JsonFactory();
                 generator = factory.createJsonGenerator(content);
             } catch (IOException e) {
-                throw new RuntimeException("Unable to create JSON Output", e);
+                throw Exceptions.Internal(Messages.UNABLE_TO_WRITE_JSON, e);
             }
         }
 
@@ -176,7 +176,7 @@ class SimpleTransformer implements Transformer {
                     context.setCurrent(new Selector());
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to parse columns information.", e);
+                throw Exceptions.Internal(Messages.UNABLE_TO_WRITE_JSON, e);
             }
         }
     }
@@ -217,7 +217,7 @@ class SimpleTransformer implements Transformer {
                     row.clear(); // Clear values (allow to safely reuse DataSetRow instance)
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to process records.", e);
+                throw Exceptions.User(Messages.UNABLE_TO_PARSE_JSON, e);
             }
         }
     }

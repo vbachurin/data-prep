@@ -2,7 +2,7 @@ package org.talend.dataprep.transformation.exception;
 
 public enum Messages implements org.talend.dataprep.exception.Messages {
 
-    UNABLE_TO_PARSE_JSON, UNEXPECTED_EXCEPTION, UNABLE_TO_COMPUTE_DATASET_ACTIONS;
+    UNABLE_TO_PARSE_JSON, UNEXPECTED_EXCEPTION, UNABLE_TO_COMPUTE_DATASET_ACTIONS, UNABLE_TO_WRITE_JSON;
 
     @Override
     public String getGroup() {
