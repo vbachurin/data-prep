@@ -9,16 +9,12 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.data.annotation.AccessType;
 
-public class PreparationActions implements Identifiable {
+public class PreparationActions extends Identifiable {
 
     public static final PreparationActions ROOT_CONTENT = new PreparationActions(Collections.<Action>emptyList());
 
     private final List<Action> actions;
-
-    @AccessType(AccessType.Type.PROPERTY)
-    private String id;
 
     public PreparationActions(final List<Action> actions) {
         this.actions = unmodifiableList(actions);
@@ -61,6 +57,7 @@ public class PreparationActions implements Identifiable {
         return getId();
     }
 
+    @Override
     public String getId() {
         try {
             return DigestUtils.sha1Hex(serializeActions());
@@ -69,6 +66,7 @@ public class PreparationActions implements Identifiable {
         }
     }
 
+    @Override
     public void setId(String id) {
         // No op
     }
