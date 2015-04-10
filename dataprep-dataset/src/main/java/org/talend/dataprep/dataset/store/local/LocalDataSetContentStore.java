@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.dataset.exceptions.DataSetMessages;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.Serializer;
 
 public class LocalDataSetContentStore implements DataSetContentStore {
@@ -54,7 +56,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
             LOGGER.debug( "Data set #{} stored to '{}'.", dataSetMetadata.getId(),dataSetFile);
 
         } catch (IOException e) {
-            throw new RuntimeException("Unable to save data set in temporary directory.", e);
+            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_STORE_DATASET_CONTENT, dataSetMetadata.getId(), e);
         }
     }
 
@@ -79,7 +81,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw new RuntimeException("Unable to delete data set content #" + dataSetMetadata.getId());
+                throw Exceptions.Internal(DataSetMessages.UNABLE_TO_DELETE_DATASET, dataSetMetadata.getId());
             }
         } else {
             LOGGER.warn("Data set #{} has no content.",dataSetMetadata.getId());
@@ -91,7 +93,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
         try {
             FileUtils.deleteDirectory(new File(storeLocation));
         } catch (IOException e) {
-            throw new RuntimeException("Unable to clear content store.", e);
+            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_CLEAR_DATASETS, e);
         }
     }
 }

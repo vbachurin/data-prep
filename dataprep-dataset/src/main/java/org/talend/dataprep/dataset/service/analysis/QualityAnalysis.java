@@ -13,9 +13,11 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.dataset.exceptions.DataSetMessages;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.exception.Exceptions;
 
 @Component
 public class QualityAnalysis {
@@ -56,7 +58,7 @@ public class QualityAnalysis {
                 LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
             }
         } catch (JMSException e) {
-            throw new RuntimeException(e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
         }
     }
 }

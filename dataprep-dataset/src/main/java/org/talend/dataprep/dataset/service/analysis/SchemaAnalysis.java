@@ -15,9 +15,11 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.dataset.exceptions.DataSetMessages;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.FormatGuesser;
 import org.talend.dataprep.schema.SchemaParser;
@@ -76,13 +78,13 @@ public class SchemaAnalysis {
                             return qualityAnalysisMessage;
                         });
                 } catch (IOException e) {
-                    throw new RuntimeException("Unable to read data set content.", e);
+                    throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);
                 }
             } else {
                 LOG.info("Data set #{} no longer exists.",dataSetId);
             }
         } catch (JMSException e) {
-            throw new RuntimeException(e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
         }
     }
 }
