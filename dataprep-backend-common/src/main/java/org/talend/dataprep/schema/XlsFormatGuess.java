@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 @Service("formatGuess#xls")
 public class XlsFormatGuess implements FormatGuess {
 
-    public static final String    MEDIA_TYPE      = "application/vnd.ms-excel";
+    public static final String MEDIA_TYPE = "application/vnd.ms-excel";
 
-    private final Logger          logger          = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private XlsSchemaParser xlsSchemaParser;
+
+    @Autowired
+    private XlsSerializer xlsSerializer;
 
     public XlsFormatGuess() {
         // no op
@@ -36,6 +39,6 @@ public class XlsFormatGuess implements FormatGuess {
 
     @Override
     public Serializer getSerializer() {
-        return null;
+        return xlsSerializer;
     }
 }

@@ -17,7 +17,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.type.Type;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = XlsFormatGuesserTest.class)
@@ -26,15 +25,16 @@ import org.talend.dataprep.api.type.Type;
 @EnableAutoConfiguration
 public class XlsFormatGuesserTest {
 
-    Logger             logger = LoggerFactory.getLogger(getClass());
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     ApplicationContext applicationContext;
 
-    String             beanId = "formatGuesser#xls";
+    String beanId = "formatGuesser#xls";
 
     @Test
     public void ensure_xls_format_guesser_component_exists() {
+
         FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
         Assert.assertNotNull(formatGuesser);
         Assert.assertTrue(formatGuesser instanceof XlsFormatGuesser);
@@ -64,10 +64,9 @@ public class XlsFormatGuesserTest {
             Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
         }
 
-
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.xls")) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse( inputStream );
-            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize( 4 );
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
         }
 
     }

@@ -2,7 +2,11 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -25,7 +29,7 @@ import org.talend.dataprep.schema.SchemaParser;
 @Component
 public class SchemaAnalysis {
 
-    private static final Logger LOG = LoggerFactory.getLogger( SchemaAnalysis.class );
+    private static final Logger LOG = LoggerFactory.getLogger(SchemaAnalysis.class);
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -81,7 +85,7 @@ public class SchemaAnalysis {
                     throw new RuntimeException("Unable to read data set content.", e);
                 }
             } else {
-                LOG.info("Data set #{} no longer exists.",dataSetId);
+                LOG.info("Data set #{} no longer exists.", dataSetId);
             }
         } catch (JMSException e) {
             throw new RuntimeException(e);
