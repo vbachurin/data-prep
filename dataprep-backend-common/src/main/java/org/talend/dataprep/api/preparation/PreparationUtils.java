@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.talend.dataprep.exception.CommonMessages;
+import org.talend.dataprep.exception.Exceptions;
+
 public class PreparationUtils {
 
     private PreparationUtils() {
@@ -55,7 +58,7 @@ public class PreparationUtils {
             prettyPrint(blob, out);
             prettyPrint(repository, repository.get(step.getParent(), Step.class), out);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_PRINT_PREPARATION, e);
         }
     }
 
@@ -71,7 +74,7 @@ public class PreparationUtils {
             writer.append("======").append("\n");
             writer.flush();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_PRINT_PREPARATION, e);
         }
     }
 
@@ -86,7 +89,7 @@ public class PreparationUtils {
             writer.flush();
             prettyPrint(repository, preparation.getStep(), out);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_PRINT_PREPARATION, e);
         }
     }
 }
