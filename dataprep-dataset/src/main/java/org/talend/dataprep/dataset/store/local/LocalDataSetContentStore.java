@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.exceptions.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetMessages;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.Serializer;

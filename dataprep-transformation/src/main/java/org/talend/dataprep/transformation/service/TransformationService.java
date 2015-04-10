@@ -20,7 +20,7 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
-import org.talend.dataprep.transformation.exception.Messages;
+import org.talend.dataprep.transformation.exception.TransformationMessages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
@@ -52,7 +52,7 @@ public class TransformationService {
             Transformer transformer = getTransformerFactory().get(new String(Base64.getDecoder().decode(actions)));
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
-            throw Exceptions.User(Messages.UNABLE_TO_PARSE_JSON, e);
+            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -95,7 +95,7 @@ public class TransformationService {
                 return Collections.emptyList();
             }
         } catch (IOException e) {
-            throw Exceptions.User(Messages.UNABLE_TO_COMPUTE_DATASET_ACTIONS, e);
+            throw Exceptions.User(TransformationMessages.UNABLE_TO_COMPUTE_DATASET_ACTIONS, e);
         }
     }
 
