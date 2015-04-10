@@ -14,7 +14,7 @@ api:
     expose:
         - 8888
     ports:
-        - "8081:8888"
+        - "8888:8888"
     links:
         - transform
         - dataset
@@ -65,5 +65,5 @@ web:
         - "443:443"
     environment:
         TDP_API_HOST: 10.42.10.99
-        TDP_API_PORT: 8081
+        TDP_API_PORT: 8888
 
