@@ -24,8 +24,10 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.api.AppendStep;
+import org.talend.dataprep.preparation.exception.PreparationMessages;
 import org.talend.dataprep.preparation.store.ContentCache;
 
 import com.wordnik.swagger.annotations.Api;
@@ -153,7 +155,7 @@ public class PreparationService {
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to serve content at version #" + version + " for preparation #" + id, e);
+            throw Exceptions.User(PreparationMessages.UNABLE_TO_SERVE_PREPARATION_CONTENT, version, id, e);
         }
     }
 
@@ -166,7 +168,7 @@ public class PreparationService {
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            throw new RuntimeException("Preparation id #" + id + " does not exist.");
+            throw Exceptions.User(PreparationMessages.PREPARATION_DOES_NOT_EXIST, id);
         }
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
@@ -195,7 +197,7 @@ public class PreparationService {
             final Step step = versionRepository.get(stepId, Step.class);
             return versionRepository.get(step.getContent(), PreparationActions.class);
         } else {
-            throw new RuntimeException("Preparation id #" + id + " does not exist.");
+            throw Exceptions.User(PreparationMessages.PREPARATION_DOES_NOT_EXIST, id);
         }
     }
 }
