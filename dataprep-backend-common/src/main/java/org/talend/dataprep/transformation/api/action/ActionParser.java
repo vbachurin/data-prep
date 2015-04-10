@@ -43,7 +43,7 @@ public class ActionParser implements BeanFactoryAware {
             if (elements.hasNext()) {
                 JsonNode root = elements.next();
                 if (!root.isArray()) {
-                    throw new IllegalArgumentException("'Actions' element should contain an array of 'action' elements.");
+                    throw new IllegalArgumentException("'actions' element should contain an array of 'action' elements.");
                 }
                 List<Consumer<DataSetRow>> parsedActions = new ArrayList<>();
                 Iterator<JsonNode> actionNodes = root.getElements();
