@@ -1,22 +1,26 @@
 package org.talend.dataprep.exception;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-
 import java.io.IOException;
 import java.io.Writer;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+
 class TDPException extends RuntimeException {
 
-    private final Messages message;
+    private final Messages code;
+
+    private final String message;
 
     private Throwable cause;
 
-    public TDPException(Messages message) {
+    public TDPException(Messages code, String message) {
+        this.code = code;
         this.message = message;
     }
 
-    public TDPException(Messages message, Throwable cause) {
+    public TDPException(Messages code, String message, Throwable cause) {
+        this.code = code;
         this.message = message;
         this.cause = cause;
     }
@@ -26,7 +30,8 @@ class TDPException extends RuntimeException {
             JsonGenerator generator = (new JsonFactory()).createGenerator(writer);
             generator.writeStartObject();
             {
-                generator.writeStringField("code", message.getProduct() + '_' + message.getGroup() + '_' + message.getCode());
+                generator.writeStringField("code", code.getProduct() + '_' + code.getGroup() + '_' + code.getCode());
+                generator.writeStringField("message", message);
                 generator.writeStringField("cause", cause.getMessage());
             }
             generator.writeEndObject();
