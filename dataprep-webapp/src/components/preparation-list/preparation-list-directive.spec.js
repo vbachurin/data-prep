@@ -133,7 +133,7 @@ describe('Preparation list directive', function() {
         element.remove();
     });
 
-    it('should render preparations tiles', inject(function() {
+    it('should render preparations tiles', inject(function(TalendConfirmService) {
         //given
 
         //when

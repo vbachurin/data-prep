@@ -14,7 +14,7 @@ api:
     expose:
         - 8888
     ports:
-        - "8081:8888"
+        - "8888:8888"
     links:
         - transform
         - dataset
@@ -26,8 +26,6 @@ api:
         TDP_API_PREPARATION_SERVICE_URL: http://${PREPARATION_PORT_9090_TCP_ADDR}:${PREPARATION_1_PORT_9090_TCP_PORT}
 transform:
     image: talend/dataprep-transformation:1.0.m3-SNAPSHOT
-    volumes_from:
-        - data
     expose:
         - 8180
     environment:
@@ -67,5 +65,5 @@ web:
         - "443:443"
     environment:
         TDP_API_HOST: 10.42.10.99
-        TDP_API_PORT: 8081
+        TDP_API_PORT: 8888
 
