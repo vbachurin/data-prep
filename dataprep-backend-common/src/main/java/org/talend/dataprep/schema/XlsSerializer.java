@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -35,6 +36,7 @@ public class XlsSerializer implements Serializer {
             StringWriter writer = new StringWriter();
             JsonGenerator generator = new JsonFactory().createJsonGenerator(writer);
 
+            // FIXME: ATM we work with only one sheet
             HSSFSheet sheet = hssfWorkbook.getSheetAt(0);
 
             generator.writeStartArray();
@@ -46,7 +48,7 @@ public class XlsSerializer implements Serializer {
                 HSSFRow row = sheet.getRow(i);
 
                 generator.writeStartObject();
-                for (int j = 0; j < columns.size() - 1; j++) {
+                for (int j = 0; j < columns.size(); j++) {
                     ColumnMetadata columnMetadata = columns.get(j);
                     String cellValue = getCellValueAsString(row.getCell(j));
                     logger.debug("cellValue for {}/{}: {}", i, j, cellValue);
@@ -66,7 +68,9 @@ public class XlsSerializer implements Serializer {
     }
 
     protected String getCellValueAsString(Cell cell) {
-
+        if (cell==null){
+            return StringUtils.EMPTY;
+        }
         switch (cell.getCellType()) {
         case Cell.CELL_TYPE_BLANK:
             return "";

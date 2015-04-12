@@ -3,6 +3,7 @@ package org.talend.dataprep.schema;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,13 +18,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = XlsFormatGuesserTest.class)
+@SpringApplicationConfiguration(classes = XlsFormatTest.class)
 @Configuration
 @ComponentScan(basePackages = "org.talend.dataprep")
 @EnableAutoConfiguration
-public class XlsFormatGuesserTest {
+public class XlsFormatTest {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -67,6 +69,42 @@ public class XlsFormatGuesserTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.xls")) {
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
+        }
+
+    }
+
+    @Test
+    public void read_xls_file_then_serialize() throws Exception {
+
+        FormatGuess formatGuess;
+
+        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id( "beer" ).build();
+
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.xls")) {
+            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
+
+            formatGuess = formatGuesser.guess(inputStream);
+        }
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.xls")) {
+
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+
+            dataSetMetadata.getRow().setColumns(columnMetadatas);
+
+        }
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.xls")) {
+
+            Serializer serializer = applicationContext.getBean("serializer#xls", Serializer.class);
+
+            InputStream jsonStream = serializer.serialize(inputStream, dataSetMetadata);
+
+            String json = IOUtils.toString(jsonStream);
+
+            logger.info("json: {}", json);
+
         }
 
     }
