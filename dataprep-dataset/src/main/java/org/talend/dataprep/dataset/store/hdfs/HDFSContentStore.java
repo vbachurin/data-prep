@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.dataset.exception.DataSetMessages;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.Serializer;
 
 public class HDFSContentStore implements DataSetContentStore {
@@ -30,7 +32,7 @@ public class HDFSContentStore implements DataSetContentStore {
             fileSystem = FileSystem.get(new URI(hdfsStoreLocation), new Configuration());
             LOGGER.info("HDFS file system: {} ({}).", fileSystem.getClass(),fileSystem.getUri());
         } catch (Exception e) {
-            throw new RuntimeException("Unable to connect to '" + hdfsStoreLocation + "'.", e);
+            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_CONNECT_TO_HDFS, hdfsStoreLocation, e);
         }
     }
 
@@ -49,7 +51,7 @@ public class HDFSContentStore implements DataSetContentStore {
             IOUtils.copy(dataSetContent, outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unable to store content of data set #" + dataSetMetadata.getId(), e);
+            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_STORE_DATASET_CONTENT, dataSetMetadata.getId(), e);
         }
     }
 
@@ -79,7 +81,7 @@ public class HDFSContentStore implements DataSetContentStore {
         try {
             fileSystem.delete(getPath(dataSetMetadata), true);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to delete content of data set #" + dataSetMetadata.getId(), e);
+            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_DELETE_DATASET, dataSetMetadata.getId(), e);
         }
     }
 
@@ -88,7 +90,7 @@ public class HDFSContentStore implements DataSetContentStore {
         try {
             fileSystem.delete(new Path(HDFS_DIRECTORY), true);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to clear all data set content.", e);
+            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_CLEAR_DATASETS, e);
         }
     }
 }

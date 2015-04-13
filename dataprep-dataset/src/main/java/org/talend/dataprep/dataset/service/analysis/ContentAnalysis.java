@@ -14,9 +14,11 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.dataset.exception.DataSetMessages;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.exception.Exceptions;
 
 @Component
 public class ContentAnalysis {
@@ -49,13 +51,13 @@ public class ContentAnalysis {
                     metadata.getLifecycle().contentIndexed(true);
                     repository.add(metadata);
                 } catch (IOException e) {
-                    throw new RuntimeException("Unable to read data set content.");
+                    throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);
                 }
             } else {
                 LOG.info("Data set #{} no longer exists.", dataSetId);
             }
         } catch (JMSException e) {
-            throw new RuntimeException(e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
         }
     }
 }

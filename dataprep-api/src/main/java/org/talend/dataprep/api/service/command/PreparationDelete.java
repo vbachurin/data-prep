@@ -1,15 +1,14 @@
 package org.talend.dataprep.api.service.command;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -22,9 +21,6 @@ public class PreparationDelete extends HystrixCommand<String> {
     private final String preparationServiceUrl;
 
     private final String id;
-
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     private PreparationDelete(HttpClient client, String preparationServiceURL, String id) {
         super(APIService.PREPARATION_GROUP);
@@ -40,12 +36,12 @@ public class PreparationDelete extends HystrixCommand<String> {
 
     @Override
     protected String run() throws Exception {
-        HttpDelete contentRetrieval = new HttpDelete(preparationServiceUrl + "/preparations/" + id);
+        HttpDelete contentRetrieval = new HttpDelete(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
             return null;
         }
-        throw new RuntimeException("Unable to delete preparation #" + id + ".");
+        throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_PREPARATION);
     }
 }

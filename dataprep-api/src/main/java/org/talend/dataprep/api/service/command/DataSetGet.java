@@ -9,7 +9,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -56,6 +58,6 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
-        throw new RuntimeException("Unable to retrieve content.");
+        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
     }
 }

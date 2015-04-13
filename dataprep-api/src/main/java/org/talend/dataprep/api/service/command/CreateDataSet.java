@@ -12,7 +12,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -38,7 +40,7 @@ public class CreateDataSet extends HystrixCommand<String> {
 
     @Override
     protected String getFallback() {
-        throw new RuntimeException("Fallback not supported in this command.");
+        throw Exceptions.Internal(APIMessages.UNSUPPORTED_FALLBACK);
     }
 
     @Override
@@ -58,6 +60,6 @@ public class CreateDataSet extends HystrixCommand<String> {
         } finally {
             contentCreation.releaseConnection();
         }
-        throw new RuntimeException("Unable to create content.");
+        throw Exceptions.User(APIMessages.UNABLE_TO_CREATE_DATASET);
     }
 }
