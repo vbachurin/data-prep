@@ -275,4 +275,24 @@ describe('Preparation Service', function () {
         //then
         expect(details).toEqual(allPreparations[1]);
     }));
+
+    it('should delete the provided preparation', inject(function($rootScope, RestURLs, PreparationService) {
+        //given
+        var deleted = false;
+        var preparation = {id: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'};
+        $httpBackend
+            .expectDELETE(RestURLs.preparationUrl + '/fbaa18e82e913e97e5f0e9d40f04413412be1126')
+            .respond(200);
+
+        //when
+        PreparationService.delete(preparation)
+            .then(function() {
+                deleted = true;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(deleted).toBe(true);
+    }));
 });
