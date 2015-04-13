@@ -133,7 +133,7 @@ describe('Preparation list directive', function() {
         element.remove();
     });
 
-    it('should render preparations tiles', inject(function(TalendConfirmService) {
+    it('should render preparations tiles', function() {
         //given
 
         //when
@@ -160,5 +160,5 @@ describe('Preparation list directive', function() {
         expect(details).toContain('first_interactions'); //dataset name
         expect(details).toContain('29379'); //dataset nb records
         expect(details).toContain('3'); //steps
-    }));
+    });
 });
