@@ -43,16 +43,25 @@ public class XlsSerializer implements Serializer {
 
             List<ColumnMetadata> columns = metadata.getRow().getColumns();
 
-            for (int i = 0, size = sheet.getLastRowNum(); i < size; i++) {
+            for (int i = 0, size = sheet.getLastRowNum(); i <= size; i++) {
+
+                // is header line?
+                if (isHeaderLine(i, columns)) {
+                    continue;
+                }
 
                 HSSFRow row = sheet.getRow(i);
 
                 generator.writeStartObject();
                 for (int j = 0; j < columns.size(); j++) {
                     ColumnMetadata columnMetadata = columns.get(j);
-                    String cellValue = getCellValueAsString(row.getCell(j));
-                    logger.debug("cellValue for {}/{}: {}", i, j, cellValue);
-                    generator.writeStringField(columnMetadata.getId(), cellValue);
+
+                    // do not write the values if this has been detected as an header
+                    if (i > columnMetadata.getHeaderSize()) {
+                        String cellValue = getCellValueAsString(row.getCell(j));
+                        logger.debug("cellValue for {}/{}: {}", i, j, cellValue);
+                        generator.writeStringField(columnMetadata.getId(), cellValue);
+                    }
                 }
                 generator.writeEndObject();
 
@@ -67,8 +76,20 @@ public class XlsSerializer implements Serializer {
 
     }
 
+    protected boolean isHeaderLine(int lineIndex, List<ColumnMetadata> columns) {
+        boolean headerLine = false;
+
+        for (int j = 0; j < columns.size(); j++) {
+            ColumnMetadata columnMetadata = columns.get(j);
+            if (lineIndex < columnMetadata.getHeaderSize()) {
+                headerLine = true;
+            }
+        }
+        return headerLine;
+    }
+
     protected String getCellValueAsString(Cell cell) {
-        if (cell==null){
+        if (cell == null) {
             return StringUtils.EMPTY;
         }
         switch (cell.getCellType()) {

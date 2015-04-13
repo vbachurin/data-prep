@@ -57,13 +57,15 @@ public class XlsSchemaParser implements SchemaParser {
 
         Map<Integer, Integer> cellTypeChange = guessHeaderChange(cellsTypeMatrix);
 
+
         // average cell type change
-
         int sum = 0;
-
         for (Map.Entry<Integer, Integer> entry : cellTypeChange.entrySet()) {
             sum += entry.getValue();
         }
+
+        // so header size is calculated on the average of value type change for column
+        // I agree it's not the best :-)
 
         final int averageHeaderSize = Math.floorDiv(sum, cellTypeChange.size());
 

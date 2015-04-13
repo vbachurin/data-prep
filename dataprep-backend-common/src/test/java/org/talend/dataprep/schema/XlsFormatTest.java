@@ -20,6 +20,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = XlsFormatTest.class)
 @Configuration
@@ -78,8 +80,7 @@ public class XlsFormatTest {
 
         FormatGuess formatGuess;
 
-        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id( "beer" ).build();
-
+        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.xls")) {
             FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
@@ -105,7 +106,72 @@ public class XlsFormatTest {
 
             logger.info("json: {}", json);
 
+            // {"col0":"beer name ","col1":"country","col2":"quality","col3":"note"},
+            // {"col0":"Little Creatures","col1":"Australie","col2":"Awesome","col3":"10.0"}
+            // {"col0":"Heinekein","col1":"France ","col2":"crappy","col3":""}
+            // {"col0":"Foo","col1":"Australie","col2":"10.0","col3":"6.0"}
+            // {"col0":"Bar","col1":"France ","col2":"crappy","col3":"2.0"}
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            List values = mapper.readValue(json, List.class);
+
+            logger.info("values: {}", values);
+
+            Assertions.assertThat(values).isNotEmpty().hasSize(4)
+                    .containsExactly(new TestObject("Little Creatures", "Australie", "Awesome", "10.0"), //
+                            new TestObject("Heinekein", "France ", "crappy", ""), //
+                            new TestObject("Foo", "Australie", "10.0", "6.0"), //
+                            new TestObject("Bar", "France ", "crappy", "2.0"));
+
         }
 
+    }
+
+    static class TestObject {
+
+        private String col0, col1, col2, col3;
+
+        public TestObject() {
+        }
+
+        public TestObject(String col0, String col1, String col2, String col3) {
+            this.col0 = col0;
+            this.col1 = col1;
+            this.col2 = col2;
+            this.col3 = col3;
+        }
+
+        public String getCol0() {
+            return col0;
+        }
+
+        public void setCol0(String col0) {
+            this.col0 = col0;
+        }
+
+        public String getCol1() {
+            return col1;
+        }
+
+        public void setCol1(String col1) {
+            this.col1 = col1;
+        }
+
+        public String getCol2() {
+            return col2;
+        }
+
+        public void setCol2(String col2) {
+            this.col2 = col2;
+        }
+
+        public String getCol3() {
+            return col3;
+        }
+
+        public void setCol3(String col3) {
+            this.col3 = col3;
+        }
     }
 }

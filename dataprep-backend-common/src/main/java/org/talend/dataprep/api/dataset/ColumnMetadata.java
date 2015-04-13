@@ -140,7 +140,7 @@ public class ColumnMetadata {
         }
 
         public ColumnMetadata.Builder headerSize(int headerSize) {
-            headerSize = headerSize;
+            this.headerSize = headerSize;
             return this;
         }
 
@@ -149,7 +149,7 @@ public class ColumnMetadata {
             columnMetadata.getQuality().setEmpty(empty);
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);
-            columnMetadata.setHeaderSize(headerSize);
+            columnMetadata.setHeaderSize(this.headerSize);
             return columnMetadata;
         }
     }
