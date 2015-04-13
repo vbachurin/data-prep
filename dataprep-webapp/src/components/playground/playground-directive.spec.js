@@ -34,10 +34,13 @@ describe('Playground directive', function() {
         spyOn($state, 'go').and.callFake(function() {});
     }));
 
-    afterEach(function() {
+    afterEach(inject(function($stateParams) {
         scope.$destroy();
         element.remove();
-    });
+
+        $stateParams.prepid = null;
+        $stateParams.datasetid = null;
+    }));
 
     it('should render playground elements', inject(function(PlaygroundService) {
         //given
@@ -95,9 +98,22 @@ describe('Playground directive', function() {
             expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid: null});
         }));
 
+        it('should change route to datasets list on dataset playground hide', inject(function($state, $stateParams, PlaygroundService) {
+            //given: simulate playground route with preparation id
+            $stateParams.datasetid = '1234';
+
+            //when
+            PlaygroundService.hide();
+            scope.$apply();
+
+            //then
+            expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: null});
+        }));
+
         it('should do nothing if playground is not routed', inject(function($state, $stateParams, PlaygroundService, PreparationListService) {
             //given: simulate no preparation id in route
             $stateParams.prepid = null;
+            $stateParams.datasetid = null;
 
             //when
             PlaygroundService.hide();

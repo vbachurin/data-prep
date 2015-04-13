@@ -49,7 +49,7 @@
                     }
                 })
                 .state('nav.home.datasets', {
-                    url: '/datasets',
+                    url: '/datasets?datasetid',
                     views: {
                         'home-content': {
                             template: '<dataset-list></dataset-list>'

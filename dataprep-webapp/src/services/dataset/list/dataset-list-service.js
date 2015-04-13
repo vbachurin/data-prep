@@ -51,7 +51,7 @@
         };
 
         /**
-         * Return a promise that resolve the datasets list
+         * Return a promise that resolves the datasets list
          */
         self.getDatasetsPromise = function() {
             if(self.datasets.length) {

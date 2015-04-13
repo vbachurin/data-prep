@@ -23,6 +23,9 @@
                 PreparationListService.refreshPreparations();
                 $state.go('nav.home.preparations', {prepid: null});
             }
+            else if($stateParams.datasetid) {
+                $state.go('nav.home.datasets', {datasetid: null});
+            }
         };
     }
 

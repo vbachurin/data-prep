@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function DatasetListCtrl(DatasetService, DatasetListService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($stateParams, DatasetService, DatasetListService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
 
@@ -29,7 +29,23 @@
                 });
         };
 
-        DatasetListService.refreshDatasets();
+        /**
+         * Load playground with provided dataset id, if present in route param
+         * @param datasets - list of all user's datasets
+         */
+        var loadUrlSelectedPreparation = function(datasets) {
+            if($stateParams.datasetid) {
+                var selectedDataset = _.find(datasets, function(dataset) {
+                    return dataset.id === $stateParams.datasetid;
+                });
+                if(selectedDataset) {
+                    vm.open(selectedDataset);
+                }
+            }
+        };
+
+        DatasetListService.getDatasetsPromise()
+            .then(loadUrlSelectedPreparation);
     }
 
     Object.defineProperty(DatasetListCtrl.prototype,

@@ -16,13 +16,12 @@
                 <table class="inventory-actions-table">
                     <tbody>
                     <tr>
-                        <td><button class="t-btn t-btn-transparent t-btn-shaker" ng-click="datasetListCtrl.open(dataset)"></button></td>
+                        <td><a class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets({datasetid: dataset.id})"></a></td>
                         <td class="t-right-divider"><button class="t-btn t-btn-transparent t-btn-pushto" ng-click=""></button></td>
                         <td><button class="t-btn t-btn-transparent t-btn-favorite" ng-click=""></button></td>
                         <td class="t-right-divider"><button t-btn-transparent class="t-btn t-btn-transparent t-btn-share" ng-click=""></button></td>
                         <td class="t-right-divider">
-                            <button class="t-btn t-btn-transparent t-btn-remove"
-                                    ng-click="datasetListCtrl.delete(dataset)"></button>
+                            <button class="t-btn t-btn-transparent t-btn-remove" ng-click="datasetListCtrl.delete(dataset)"></button>
                         </td>
                         <td><button type="button" class="t-btn t-btn-transparent t-btn-more" ng-click=""></button></td>
                     </tr>
