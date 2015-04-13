@@ -80,7 +80,7 @@ describe('Playground directive', function() {
             PlaygroundService.show();
             scope.$apply();
             expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
-        }))
+        }));
 
         it('should refresh preparation list and change route to preparations list on preparation playground hide', inject(function($state, $stateParams, PlaygroundService, PreparationListService) {
             //given: simulate playground route with preparation id

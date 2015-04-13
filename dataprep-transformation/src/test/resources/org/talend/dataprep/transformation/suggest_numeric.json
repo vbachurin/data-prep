@@ -55,5 +55,20 @@
         "default": ""
       }
     ]
+  },
+  {
+    "name": "delete_on_value",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "default": ""
+      }
+    ]
   }
 ]

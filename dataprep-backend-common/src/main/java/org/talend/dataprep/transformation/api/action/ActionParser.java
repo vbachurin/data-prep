@@ -17,6 +17,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.exception.CommonMessages;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 
 @Component
@@ -43,7 +45,7 @@ public class ActionParser implements BeanFactoryAware {
             if (elements.hasNext()) {
                 JsonNode root = elements.next();
                 if (!root.isArray()) {
-                    throw new IllegalArgumentException("'Actions' element should contain an array of 'action' elements.");
+                    throw new IllegalArgumentException("'actions' element should contain an array of 'action' elements.");
                 }
                 List<Consumer<DataSetRow>> parsedActions = new ArrayList<>();
                 Iterator<JsonNode> actionNodes = root.getElements();
@@ -69,7 +71,7 @@ public class ActionParser implements BeanFactoryAware {
                 }; // Should not happen, but no action means no op.
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unable to parse actions in '" + actions + "'.", e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_ACTIONS, e);
         }
     }
 

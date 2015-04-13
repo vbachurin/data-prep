@@ -9,16 +9,14 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.data.annotation.AccessType;
+import org.talend.dataprep.exception.CommonMessages;
+import org.talend.dataprep.exception.Exceptions;
 
-public class PreparationActions implements Identifiable {
+public class PreparationActions extends Identifiable {
 
     public static final PreparationActions ROOT_CONTENT = new PreparationActions(Collections.<Action>emptyList());
 
     private final List<Action> actions;
-
-    @AccessType(AccessType.Type.PROPERTY)
-    private String id;
 
     public PreparationActions(final List<Action> actions) {
         this.actions = unmodifiableList(actions);
@@ -61,14 +59,16 @@ public class PreparationActions implements Identifiable {
         return getId();
     }
 
+    @Override
     public String getId() {
         try {
             return DigestUtils.sha1Hex(serializeActions());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_COMPUTE_ID, e);
         }
     }
 
+    @Override
     public void setId(String id) {
         // No op
     }

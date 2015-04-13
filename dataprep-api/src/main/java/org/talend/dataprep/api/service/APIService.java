@@ -14,6 +14,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.WebApplicationContext;
+import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
@@ -47,6 +49,7 @@ public class APIService {
     public APIService() {
         connectionManager.setMaxTotal(50);
         connectionManager.setDefaultMaxPerRoute(50);
+        httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
     }
 
     @PreDestroy
@@ -67,7 +70,7 @@ public class APIService {
         try {
             return context.getBean(clazz, args);
         } catch (BeansException e) {
-            throw new RuntimeException("Unable to find command " + clazz + " (" + args.length + " in init).", e);
+            throw Exceptions.Internal(APIMessages.UNABLE_TO_FIND_COMMAND, clazz, args.length, e);
         }
     }
 
@@ -84,9 +87,6 @@ public class APIService {
     }
 
     protected HttpClient getClient() {
-        if (httpClient == null) {
-            httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-        }
         return httpClient;
     }
 }

@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.talend.dataprep.exception.CommonMessages;
+import org.talend.dataprep.exception.Exceptions;
+
 public class DataSetRow {
 
     private boolean deleted = false;
@@ -55,7 +58,7 @@ public class DataSetRow {
         try {
             stream.write(builder.toString().getBytes());
         } catch (IOException e) {
-            throw new RuntimeException("Unable to write row to stream.", e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 

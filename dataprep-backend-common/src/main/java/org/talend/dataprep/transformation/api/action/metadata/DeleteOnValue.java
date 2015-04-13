@@ -1,6 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +40,10 @@ public class DeleteOnValue extends AbstractDelete {
 
     @Override
     public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.STRING);
+        Set<Type> toReturn = new HashSet();
+        toReturn.add(Type.STRING);
+        toReturn.add(Type.NUMERIC);
+        return toReturn;
     }
 
 }

@@ -17,17 +17,17 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationActions;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.api.AppendStep;
+import org.talend.dataprep.preparation.exception.PreparationMessages;
 import org.talend.dataprep.preparation.store.ContentCache;
 
 import com.wordnik.swagger.annotations.Api;
@@ -91,18 +91,23 @@ public class PreparationService {
     @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
-    public String create(@ApiParam("preparation")
-    @RequestBody
-    final Preparation preparation) {
-
+    public String create(@ApiParam("preparation") @RequestBody final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
-
         preparation.setStep(ROOT_STEP);
         preparation.setAuthor(getUserName());
         versionRepository.add(preparation);
         LOGGER.debug("Created new preparation: {}", preparation);
-
         return preparation.id();
+    }
+
+    @RequestMapping(value = "/preparations/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Delete a preparation by id", notes = "Delete a preparation content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing preparation id returns empty content.")
+    @Timed
+    public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the preparation to delete") String id) {
+        LOGGER.debug("Deletion of preparation #{} requested.", id);
+        Preparation preparationToDelete = versionRepository.get(id, Preparation.class);
+        versionRepository.remove(preparationToDelete);
+        LOGGER.debug("Deletion of preparation #{} done.", id);
     }
 
     @RequestMapping(value = "/preparations/{id}", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
@@ -111,17 +116,13 @@ public class PreparationService {
     public String update(@ApiParam("id") @PathVariable("id") String id,
                          @ApiParam("preparation") @RequestBody final Preparation preparation) {
         Preparation previousPreparation = versionRepository.get(id, Preparation.class);
-
-        LOGGER.debug("Updating preparation with id {}: {}",preparation.id(),previousPreparation);
-
+        LOGGER.debug("Updating preparation with id {}: {}", preparation.id(), previousPreparation);
         Preparation updated = previousPreparation.merge(preparation);
         if (!updated.id().equals(id)) {
             versionRepository.remove(previousPreparation);
         }
         versionRepository.add(updated);
-
-        LOGGER.debug("Updated preparation: {}",updated);
-
+        LOGGER.debug("Updated preparation: {}", updated);
         return updated.id();
     }
 
@@ -135,91 +136,68 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/content/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
-    public void get(@ApiParam("id") @PathVariable("id") final String id, 
-                    @ApiParam("version") @PathVariable("version") final String version, 
+    public void get(@ApiParam("id") @PathVariable("id") final String id,
+                    @ApiParam("version") @PathVariable("version") final String version,
                     final HttpServletResponse response) {
-
-        LOGGER.debug("Get content of preparation #{} at version '{}'.",id,version);
-
-
+        LOGGER.debug("Get content of preparation #{} at version '{}'.", id, version);
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         final Step step = versionRepository.get(getStepId(version, preparation), Step.class);
-
-        LOGGER.debug("Get content of preparation #{} at step: {}",id,step);
-
-
+        LOGGER.debug("Get content of preparation #{} at step: {}", id, step);
         try {
             if (cache.has(id, step.id())) {
-
-                LOGGER.debug("Cache exists for preparation #{} at step {}",id,step);
-
+                LOGGER.debug("Cache exists for preparation #{} at step {}", id, step);
                 ServletOutputStream stream = response.getOutputStream();
                 response.setStatus(HttpServletResponse.SC_OK);
                 IOUtils.copyLarge(cache.get(id, step.id()), stream);
                 stream.flush();
             } else {
-
-                LOGGER.debug("Cache does NOT exist for preparation #{} at step {}",id,step);
-
+                LOGGER.debug("Cache does NOT exist for preparation #{} at step {}", id, step);
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to serve content at version #" + version + " for preparation #" + id, e);
+            throw Exceptions.User(PreparationMessages.UNABLE_TO_SERVE_PREPARATION_CONTENT, version, id, e);
         }
     }
 
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void append(@PathVariable("id") final String id, @RequestBody final AppendStep step) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Adding actions to preparation #" + id);
-        }
-
+    public void append(@PathVariable("id") final String id,
+                       @RequestBody final AppendStep step) {
+        LOGGER.debug("Adding actions to preparation #{}", id);
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation == null) {
-            LOGGER.error("Preparation #{} does not exist",id);
-            throw new RuntimeException("Preparation id #" + id + " does not exist.");
+            LOGGER.error("Preparation #{} does not exist", id);
+            throw Exceptions.User(PreparationMessages.PREPARATION_DOES_NOT_EXIST, id);
         }
-
         final Step head = preparation.getStep();
-
-        LOGGER.debug("Current head for preparation #{}: {}",id,head);
-
-
+        LOGGER.debug("Current head for preparation #{}: {}", id, head);
         // Add new actions
         final PreparationActions headContent = versionRepository.get(head.getContent(), PreparationActions.class);
         final PreparationActions newContent = headContent.append(step.getActions());
         versionRepository.add(newContent);
-
         // Create new step from new content
         final Step newStep = new Step(head.id(), newContent.id());
         versionRepository.add(newStep);
-
         // Update preparation head step
         preparation.setStep(newStep);
         preparation.updateLastModificationDate();
         versionRepository.add(preparation);
-
-        LOGGER.debug("Added head to preparation #{}: head is now {}",id,newStep.id());
-
+        LOGGER.debug("Added head to preparation #{}: head is now {}", id, newStep.id());
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
-    public PreparationActions getVersionedAction(@ApiParam("id")
-    @PathVariable("id")
-    final String id, @ApiParam("version")
-    @PathVariable("version")
-    final String version) {
+    public PreparationActions getVersionedAction(@ApiParam("id") @PathVariable("id") final String id,
+                                                 @ApiParam("version") @PathVariable("version") final String version) {
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation != null) {
             final String stepId = getStepId(version, preparation);
             final Step step = versionRepository.get(stepId, Step.class);
             return versionRepository.get(step.getContent(), PreparationActions.class);
         } else {
-            throw new RuntimeException("Preparation id #" + id + " does not exist.");
+            throw Exceptions.User(PreparationMessages.PREPARATION_DOES_NOT_EXIST, id);
         }
     }
 }

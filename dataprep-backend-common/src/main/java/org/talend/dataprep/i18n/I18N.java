@@ -10,7 +10,7 @@ public class I18N {
     @Bean
     public ResourceBundleMessageSource getResourceBundle() {
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasename("messages"); //$NON-NLS-1$
+        source.setBasenames("messages", "exceptions"); //$NON-NLS-1$ //$NON-NLS-2$
         source.setUseCodeAsDefaultMessage(true);
         return source;
     }

@@ -1,5 +1,5 @@
 mongodb:
-    image: dockerfile/mongodb
+    image: mongo
     volumes:
         - runtime/mongodb:/data/db
     expose:
@@ -21,8 +21,6 @@ api:
         TDP_API_PREPARATION_SERVICE_URL: http://${PREPARATION_PORT_9090_TCP_ADDR}:${PREPARATION_1_PORT_9090_TCP_PORT}
 transform:
     image: talend/dataprep-transformation:1.0.m3-SNAPSHOT
-    volumes:
-        - runtime/dataset/store:/store
     expose:
         - 8180
     environment:

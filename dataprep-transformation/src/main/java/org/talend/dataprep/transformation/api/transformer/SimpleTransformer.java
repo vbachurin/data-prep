@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.Exceptions;
-import org.talend.dataprep.transformation.exception.Messages;
+import org.talend.dataprep.transformation.exception.TransformationMessages;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -61,7 +61,7 @@ class SimpleTransformer implements Transformer {
             output.write('}');
             output.flush();
         } catch (IOException e) {
-            throw Exceptions.User(Messages.UNABLE_TO_PARSE_JSON, e);
+            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -116,7 +116,7 @@ class SimpleTransformer implements Transformer {
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to select next state. ", e);
+                throw Exceptions.Internal(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
             }
         }
     }
@@ -132,7 +132,7 @@ class SimpleTransformer implements Transformer {
                 JsonFactory factory = new JsonFactory();
                 generator = factory.createJsonGenerator(content);
             } catch (IOException e) {
-                throw new RuntimeException("Unable to create JSON Output", e);
+                throw Exceptions.Internal(TransformationMessages.UNABLE_TO_WRITE_JSON, e);
             }
         }
 
@@ -176,7 +176,7 @@ class SimpleTransformer implements Transformer {
                     context.setCurrent(new Selector());
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to parse columns information.", e);
+                throw Exceptions.Internal(TransformationMessages.UNABLE_TO_WRITE_JSON, e);
             }
         }
     }
@@ -217,7 +217,7 @@ class SimpleTransformer implements Transformer {
                     row.clear(); // Clear values (allow to safely reuse DataSetRow instance)
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to process records.", e);
+                throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
             }
         }
     }
