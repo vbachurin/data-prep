@@ -30,11 +30,6 @@ public class LowerCase extends SingleColumnAction {
     }
 
     @Override
-    public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER };
-    }
-
-    @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
             String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
@@ -50,3 +45,4 @@ public class LowerCase extends SingleColumnAction {
         return Collections.singleton(Type.STRING);
     }
 }
+

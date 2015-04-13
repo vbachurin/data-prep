@@ -2,9 +2,12 @@ package org.talend.dataprep.api.preparation;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.path.json.JsonPath.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.*;
 import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.*;
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -14,6 +17,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
@@ -196,6 +200,21 @@ public class PreparationTest {
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         assertThat(preparation.id(), is("170e086992df1848b8fc9459d87938af6be78720"));
         assertThat(preparation.getName(), is("test_name"));
+    }
+
+    @Test
+    public void delete() throws Exception {
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
+        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
+                .when().put("/preparations").asString();
+        assertThat(preparationId, is("170e086992df1848b8fc9459d87938af6be78720"));
+        assertThat(repository.listAll(Preparation.class).size(), is(1));
+        Preparation preparation = repository.listAll(Preparation.class).iterator().next();
+        assertThat(preparation.id(), is("170e086992df1848b8fc9459d87938af6be78720"));
+        assertThat(preparation.getName(), is("test_name"));
+
+        when().delete("/preparations/{id}", preparationId).then().statusCode(HttpStatus.OK.value());
+        assertThat(repository.listAll(Preparation.class).size(), is(0));
     }
 
     @Test

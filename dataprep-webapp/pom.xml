@@ -192,6 +192,7 @@
                                         <argument>run</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
@@ -212,6 +213,7 @@
                                         <argument>run</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
@@ -235,6 +237,7 @@
                                         <argument>1000</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
@@ -256,6 +259,7 @@
                                         <argument>1000</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>

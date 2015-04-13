@@ -215,13 +215,13 @@ describe('Recipe service', function () {
         var recipe = RecipeService.getRecipe();
         expect(recipe.length).toBe(5);
         expect(recipe[0].column.id).toBe('country');
-        expect(recipe[0].transformation.stepId).toBe('1e1f41dd6d4554705abebd8d1896022acdbad217');
+        expect(recipe[0].transformation.stepId).toBe('329ccf0cce42db4dc0ffa9f389c05ff7d75c1748');
         expect(recipe[0].transformation.name).toBe('uppercase');
         expect(recipe[0].transformation.parameters).toEqual([]);
         expect(recipe[0].transformation.items).toEqual([]);
 
         expect(recipe[1].column.id).toBe('gender');
-        expect(recipe[1].transformation.stepId).toBe('0c58ee3034114eb620b8e598e02c74172a43e96a');
+        expect(recipe[1].transformation.stepId).toBe('ec87e2acda2b181fc7eb7c22d91e128c6d0434fc');
         expect(recipe[1].transformation.name).toBe('fillemptywithdefault');
         expect(recipe[1].transformation.items).toEqual([]);
         expect(recipe[1].transformation.parameters).toEqual([
@@ -237,13 +237,13 @@ describe('Recipe service', function () {
             }]);
 
         expect(recipe[2].column.id).toBe('campain');
-        expect(recipe[2].transformation.stepId).toBe('ec87e2acda2b181fc7eb7c22d91e128c6d0434fc');
+        expect(recipe[2].transformation.stepId).toBe('0c58ee3034114eb620b8e598e02c74172a43e96a');
         expect(recipe[2].transformation.name).toBe('negate');
         expect(recipe[2].transformation.parameters).toEqual([]);
         expect(recipe[2].transformation.items).toEqual([]);
 
         expect(recipe[3].column.id).toBe('first_item');
-        expect(recipe[3].transformation.stepId).toBe('329ccf0cce42db4dc0ffa9f389c05ff7d75c1748');
+        expect(recipe[3].transformation.stepId).toBe('1e1f41dd6d4554705abebd8d1896022acdbad217');
         expect(recipe[3].transformation.name).toBe('cut');
         expect(recipe[3].transformation.items).toEqual([]);
         expect(recipe[3].transformation.parameters).toEqual([
@@ -259,7 +259,7 @@ describe('Recipe service', function () {
             }]);
 
         expect(recipe[4].column.id).toBe('campain');
-        expect(recipe[4].transformation.stepId).toBe('f6e172c33bdacbc69bca9d32b2bd78174712a171');
+        expect(recipe[4].transformation.stepId).toBe('2aba0e60054728f046d35315830bce9abc3c5249');
         expect(recipe[4].transformation.name).toBe('fillemptywithdefaultboolean');
         expect(recipe[4].transformation.parameters).toEqual([]);
         expect(recipe[4].transformation.items).toEqual([
@@ -337,5 +337,24 @@ describe('Recipe service', function () {
         expect(recipe[0].transformation.items[0].initialValue).toBe(recipe[0].transformation.items[0].values[1]);
         expect(recipe[0].transformation.items[0].values[0].parameters[0].initialValue).toBe('param1Value');
         expect(recipe[0].transformation.items[0].values[0].parameters[1].initialValue).toBe('my comment');
+    }));
+
+    it('should reset current values to initial saved values in param', inject(function(RecipeService) {
+        //given
+        var recipe = [{transformation: {stepId: '0'}},
+            {transformation: {stepId: '1'}},
+            {transformation: {stepId: '2'}},
+            {transformation: {stepId: '3'}}];
+        RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
+
+        //when
+        RecipeService.disableStepsAfter(recipe[1]);
+
+        //then
+        expect(recipe[0].inactive).toBeFalsy();
+        expect(recipe[1].inactive).toBeFalsy();
+        expect(recipe[2].inactive).toBeTruthy();
+        expect(recipe[3].inactive).toBeTruthy();
+        expect(RecipeService.getActiveThresholdStep()).toBe(recipe[1]);
     }));
 });

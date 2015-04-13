@@ -2,18 +2,14 @@ package org.talend.dataprep.api.preparation;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.data.annotation.AccessType;
 
-public class Step implements Identifiable {
+public class Step extends Identifiable {
 
     public static final Step ROOT_STEP = new Step(null, PreparationActions.ROOT_CONTENT.id());
 
     private String parentId = StringUtils.EMPTY;
 
     private String contentId;
-
-    @AccessType(AccessType.Type.PROPERTY)
-    private String id;
 
     public Step(final String parentId, final String contentId) {
         setParent(parentId);
@@ -41,10 +37,12 @@ public class Step implements Identifiable {
         return getId();
     }
 
+    @Override
     public String getId() {
         return DigestUtils.sha1Hex(parentId + contentId);
     }
 
+    @Override
     public void setId(String id) {
         // No op
     }

@@ -63,9 +63,9 @@ describe('Dataset list controller', function () {
             scope.$digest();
 
             //then
-            expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, [ 'DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM' ], { dataset: 'Customers (50 lines)' });
+            expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, [ 'DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM' ], {type: 'dataset', name: 'Customers (50 lines)' });
             expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
-            expect(MessageService.success).toHaveBeenCalledWith('DATASET_REMOVE_SUCCESS_TITLE', 'DATASET_REMOVE_SUCCESS', {dataset: 'Customers (50 lines)'});
+            expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: 'Customers (50 lines)'});
             expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
         }));
 
