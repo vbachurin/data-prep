@@ -1,7 +1,10 @@
 package org.talend.dataprep.schema;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
@@ -21,6 +24,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = XlsFormatTest.class)
@@ -106,17 +110,19 @@ public class XlsFormatTest {
 
             logger.info("json: {}", json);
 
-            // {"col0":"beer name ","col1":"country","col2":"quality","col3":"note"},
+            ObjectMapper mapper = new ObjectMapper();
+
+            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, TestObject.class);
+
+            List values = mapper.readValue(json, collectionType);
+
+            logger.info("values: {}", values);
+
+            // expected
             // {"col0":"Little Creatures","col1":"Australie","col2":"Awesome","col3":"10.0"}
             // {"col0":"Heinekein","col1":"France ","col2":"crappy","col3":""}
             // {"col0":"Foo","col1":"Australie","col2":"10.0","col3":"6.0"}
             // {"col0":"Bar","col1":"France ","col2":"crappy","col3":"2.0"}
-
-            ObjectMapper mapper = new ObjectMapper();
-
-            List values = mapper.readValue(json, List.class);
-
-            logger.info("values: {}", values);
 
             Assertions.assertThat(values).isNotEmpty().hasSize(4)
                     .containsExactly(new TestObject("Little Creatures", "Australie", "Awesome", "10.0"), //
@@ -172,6 +178,25 @@ public class XlsFormatTest {
 
         public void setCol3(String col3) {
             this.col3 = col3;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+
+            return Optional.ofNullable(obj) //
+                    .filter(that -> that instanceof TestObject) //
+                    .map(that -> (TestObject) that) //
+                    .filter(that -> Objects.equals(this.col0, that.col0)) //
+                    .filter(that -> Objects.equals(this.col1, that.col1)) //
+                    .filter(that -> Objects.equals(this.col2, that.col2)) //
+                    .filter(that -> Objects.equals(this.col3, that.col3)) //
+                    .isPresent();
+        }
+
+        @Override
+        public String toString() {
+            return "TestObject{" + "col0='" + col0 + '\'' + ", col1='" + col1 + '\'' + ", col2='" + col2 + '\'' + ", col3='"
+                    + col3 + '\'' + '}';
         }
     }
 }

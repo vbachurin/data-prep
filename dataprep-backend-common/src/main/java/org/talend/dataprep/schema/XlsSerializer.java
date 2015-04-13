@@ -57,7 +57,7 @@ public class XlsSerializer implements Serializer {
                     ColumnMetadata columnMetadata = columns.get(j);
 
                     // do not write the values if this has been detected as an header
-                    if (i > columnMetadata.getHeaderSize()) {
+                    if (i >= columnMetadata.getHeaderSize()) {
                         String cellValue = getCellValueAsString(row.getCell(j));
                         logger.debug("cellValue for {}/{}: {}", i, j, cellValue);
                         generator.writeStringField(columnMetadata.getId(), cellValue);
