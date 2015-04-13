@@ -17,8 +17,12 @@ public class PreparationUtils {
     }
 
     /**
-     * Returns a list of all steps available from <code>step</code> parameter.
-     * 
+     * Returns a list of all steps available from <code>step</code> parameter. Since all preparations share the same
+     * root, calling this method is equivalent to:
+     * <code>
+     * listSteps(step, PreparationActions.ROOT_CONTENT.getId(), repository);
+     * </code>
+     *
      * @param step A {@link Step step}.
      * @param repository A {@link PreparationRepository version} repository.
      * @return A list of {@link Step step} id. Empty list if <code>step</code> parameter is <code>null</code>.
@@ -26,24 +30,45 @@ public class PreparationUtils {
      * @see Step#getParent()
      */
     public static List<String> listSteps(Step step, PreparationRepository repository) {
+        return listSteps(step, PreparationActions.ROOT_CONTENT.getId(), repository);
+    }
+
+    /**
+     * Returns a list of all steps available from <code>step</code> parameter.
+     *
+     * @param step A {@link Step step}.
+     * @param limit An {@link Step step } id limit for the steps history. History will stop at {@link Step step} with
+     *              this id.
+     * @param repository A {@link PreparationRepository version} repository.
+     * @return A list of {@link Step step} id. Empty list if <code>step</code> parameter is <code>null</code>.
+     * @see Step#id()
+     * @see Step#getParent()
+     */
+    public static List<String> listSteps(Step step, String limit, PreparationRepository repository) {
         if (repository == null) {
             throw new IllegalArgumentException("Repository cannot be null.");
+        }
+        if (limit == null) {
+            throw new IllegalArgumentException("Limit cannot be null.");
         }
         if (step == null) {
             return Collections.emptyList();
         }
         List<String> versions = new LinkedList<>();
-        __listSteps(versions, step, repository);
+        __listSteps(versions, limit, step, repository);
         return versions;
     }
 
     // Internal method for recursion
-    private static void __listSteps(List<String> versions, Step step, PreparationRepository repository) {
+    private static void __listSteps(List<String> versions, String limit, Step step, PreparationRepository repository) {
         if (step == null) {
             return;
         }
         versions.add(step.id());
-        __listSteps(versions, repository.get(step.getParent(), Step.class), repository);
+        if (limit.equals(step.getId())) {
+            return;
+        }
+        __listSteps(versions, limit, repository.get(step.getParent(), Step.class), repository);
     }
 
     private static void prettyPrint(PreparationRepository repository, Step step, OutputStream out) {
