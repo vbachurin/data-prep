@@ -335,6 +335,51 @@ public class PreparationTest {
         assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
     }
 
+    @Test
+    public void testModifyAction() throws Exception {
+        // Initial preparation
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+        long oldModificationDate = preparation.getLastModificationDate();
+        // Add initial action to preparation
+        given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        // Update preparation
+        given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case_modified.json")))
+                .contentType(ContentType.JSON).when().put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
+        assertThat(preparation.getStep().id(), not(is("2b6ae58738239819df3d8c4063e7cb56f53c0d59")));
+    }
+
+    @Test
+    public void testModifyActionWithTwoActions() throws Exception {
+        // Initial preparation
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+        long oldModificationDate = preparation.getLastModificationDate();
+        // Add initial action to preparation
+        given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        // Add step to preparation
+        given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("lower_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getStep().id(), not(is("2b6ae58738239819df3d8c4063e7cb56f53c0d59")));
+        // Update preparation
+        given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case_modified.json")))
+                .contentType(ContentType.JSON).when().put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
+        assertThat(preparation.getStep().id(), not(is("2b6ae58738239819df3d8c4063e7cb56f53c0d59")));
+    }
+
     private List<Action> getSimpleAction(final String actionName, final String paramKey, final String paramValue) {
         final Action action = new Action();
         action.setAction(actionName);

@@ -7,6 +7,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.PreparationActions;
-import org.talend.dataprep.api.preparation.PreparationRepository;
-import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.api.AppendStep;
@@ -48,7 +46,7 @@ public class PreparationService {
 
     /**
      * Get user name from Spring Security context
-     * 
+     *
      * @return "anonymous" if no user is currently logged in, the user name otherwise.
      */
     private static String getUserName() {
@@ -185,6 +183,50 @@ public class PreparationService {
         versionRepository.add(preparation);
         LOGGER.debug("Added head to preparation #{}: head is now {}", id, newStep.id());
     }
+
+    @RequestMapping(value = "/preparations/{id}/actions/{action}", method = PUT, consumes = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Updates an action to in a preparation", notes = "Modifies an action in preparation's steps.")
+    @Timed
+    public void updateAction(@PathVariable("id") final String id,
+                             @PathVariable("action") final String action,
+                             @RequestBody final AppendStep step) {
+        LOGGER.debug("Modifying actions in preparation #{}", id);
+        final Preparation preparation = versionRepository.get(id, Preparation.class);
+        if (preparation == null) {
+            LOGGER.error("Preparation #{} does not exist", id);
+            throw Exceptions.User(PreparationMessages.PREPARATION_DOES_NOT_EXIST, id);
+        }
+        final Step head = preparation.getStep();
+        LOGGER.debug("Current head for preparation #{}: {}", id, head);
+        // Add update preparation step
+        final List<String> steps = PreparationUtils.listSteps(head, action, versionRepository);
+        LOGGER.debug("Rewriting history for {} steps.", steps.size());
+        // Build list of actions added at each step
+        List<AppendStep> appends = new ArrayList<>(steps.size());
+        for (int i = steps.size(); i > 2; i--) {
+            final String stepId = steps.get(i);
+            final List<Action> next = getActions(stepId);
+            final List<Action> previous = getActions(steps.get(i - 1));
+            for (int j = next.size(); j < previous.size(); j--) {
+                next.remove(j);
+            }
+        }
+        appends.add(step);
+        // Rebuild history from modified step
+        final Step modifiedStep = versionRepository.get(steps.get(steps.size() - 1), Step.class);
+        preparation.setStep(versionRepository.get(modifiedStep.getParent(), Step.class));
+        versionRepository.add(preparation);
+        for (AppendStep append : appends) {
+            append(preparation.getId(), append);
+        }
+        final Step newHead = versionRepository.get(id, Preparation.class).getStep();
+        LOGGER.debug("Modified head of preparation #{}: head is now {}", newHead.getId());
+    }
+
+    private List<Action> getActions(String stepId) {
+        return versionRepository.get(versionRepository.get(stepId, Step.class).getContent(), PreparationActions.class).getActions();
+    }
+
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
