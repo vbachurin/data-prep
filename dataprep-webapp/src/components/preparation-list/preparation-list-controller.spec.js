@@ -90,6 +90,10 @@ describe('Preparation list controller', function() {
         spyOn(PlaygroundService, 'show').and.callThrough();
     }));
 
+    afterEach(inject(function($stateParams) {
+        $stateParams.prepid = null;
+    }));
+
     it('should init preparations', inject(function() {
         //given
 
@@ -99,6 +103,32 @@ describe('Preparation list controller', function() {
 
         //then
         expect(ctrl.preparations).toBe(allPreparations);
+    }));
+
+    it('should load preparation on creation if requested in url', inject(function($stateParams, PlaygroundService) {
+        //given
+        $stateParams.prepid = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+
+        //when
+        createController();
+        scope.$digest();
+
+        //then
+        expect(PlaygroundService.load).toHaveBeenCalledWith(allPreparations[1]);
+        expect(PlaygroundService.show).toHaveBeenCalled();
+    }));
+
+    it('should not load preparation on creation if requested preparation is not in preparation list', inject(function($stateParams, PlaygroundService) {
+        //given
+        $stateParams.prepid = 'azerty';
+
+        //when
+        createController();
+        scope.$digest();
+
+        //then
+        expect(PlaygroundService.load).not.toHaveBeenCalled();
+        expect(PlaygroundService.show).not.toHaveBeenCalled();
     }));
 
     it('should load preparation and show playground', inject(function(PlaygroundService) {
@@ -114,6 +144,7 @@ describe('Preparation list controller', function() {
             ],
             actions: []
         };
+        expect(PlaygroundService.load).not.toHaveBeenCalled();
            
         //when
         ctrl.load(preparation);
