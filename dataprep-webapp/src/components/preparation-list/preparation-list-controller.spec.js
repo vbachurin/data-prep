@@ -91,6 +91,7 @@ describe('Preparation list controller', function() {
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
         spyOn(MessageService, 'success').and.returnValue(null);
+        spyOn(MessageService, 'error').and.returnValue(null);
     }));
 
     afterEach(inject(function($stateParams) {
@@ -108,7 +109,7 @@ describe('Preparation list controller', function() {
         expect(ctrl.preparations).toBe(allPreparations);
     }));
 
-    it('should load preparation on creation if requested in url', inject(function($stateParams, PlaygroundService) {
+    it('should load preparation if requested in url', inject(function($stateParams, PlaygroundService) {
         //given
         $stateParams.prepid = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
@@ -121,7 +122,7 @@ describe('Preparation list controller', function() {
         expect(PlaygroundService.show).toHaveBeenCalled();
     }));
 
-    it('should not load preparation on creation if requested preparation is not in preparation list', inject(function($stateParams, PlaygroundService) {
+    it('should show error message if requested preparation is not in preparation list', inject(function($stateParams, PlaygroundService, MessageService) {
         //given
         $stateParams.prepid = 'azerty';
 
@@ -132,6 +133,7 @@ describe('Preparation list controller', function() {
         //then
         expect(PlaygroundService.load).not.toHaveBeenCalled();
         expect(PlaygroundService.show).not.toHaveBeenCalled();
+        expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
     }));
 
     it('should load preparation and show playground', inject(function(PlaygroundService) {
