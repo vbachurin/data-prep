@@ -173,22 +173,4 @@ public class XlsFormatTest {
 
     }
 
-    static class MapBuilder {
-
-        private Map<String, String> theMap = new HashMap<>();
-
-        public MapBuilder() {
-            // no op
-        }
-
-        public MapBuilder addPair(String key, String value) {
-            this.theMap.put(key, value);
-            return this;
-        }
-
-        public Map<String, String> getTheMap() {
-            return theMap;
-        }
-    }
-
 }
