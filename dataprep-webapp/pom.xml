@@ -20,6 +20,7 @@
         <docker.registry.name>talend-registry:5000</docker.registry.name>
         <docker.tools.image.name>${docker.registry.name}/talend/data-prep-webapp-tools:1.0</docker.tools.image.name>
         <!--            <docker.registry.name>tal-qa158.talend.lan:5000</docker.registry.name>-->
+	<docker.user>1000</docker.user>
     </properties>
     <profiles>
         <profile>
@@ -233,6 +234,8 @@
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>run</argument>
+                                        <argument>--user</argument>
+                                        <argument>${docker.user}</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
                                         <argument>--rm=true</argument>
@@ -253,6 +256,8 @@
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>run</argument>
+                                        <argument>--user</argument>
+                                        <argument>${docker.user}</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
                                         <argument>--rm=true</argument>
