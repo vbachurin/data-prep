@@ -265,6 +265,32 @@ public class DataPreparationAPITest {
     }
 
     @Test
+    public void testPreparationUpdateAction() throws Exception {
+        // Create a preparation based on dataset "1234"
+        String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"1234\" }")
+                .post("/api/preparations").asString();
+        String actionContent1 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("upper_case_1.json"));
+        given().body(actionContent1).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        String actionContent2 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("upper_case_2.json"));
+        given().body(actionContent2).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        // Assert on current actions (before update)
+        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.size(), is(3));
+        assertThat(steps.get(0), is("4115f6d965e146ddbff622633895277c96754541")); // <- upper_case_2
+        assertThat(steps.get(1), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59")); // <- upper_case_1
+        assertThat(steps.get(2), is(ROOT_STEP.id()));
+        // Update first action (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action (lower_case_1)
+        String actionContent3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("lower_case_1.json"));
+        given().body(actionContent3).put("/api/preparations/{preparation}/actions/{action}", preparationId, "2b6ae58738239819df3d8c4063e7cb56f53c0d59").then().statusCode(is(200));
+        // Steps id should have changed due to update
+        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.size(), is(3));
+        assertThat(steps.get(0), is("b96bf024a0265376ffaedcc974b8b66b3b2c7f64"));
+        assertThat(steps.get(1), is("1af242477273e0dae4bb3d32cc524b61744c7895"));
+        assertThat(steps.get(2), is(ROOT_STEP.id()));
+    }
+
+    @Test
     public void testPreparationInitialContent() throws Exception {
         // Create a data set
         String body = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv"));

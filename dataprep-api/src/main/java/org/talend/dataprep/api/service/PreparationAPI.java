@@ -126,4 +126,16 @@ public class PreparationAPI extends APIService {
         HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationServiceURL, preparationId, body);
         command.execute();
     }
+
+    @RequestMapping(value = "/api/preparations/{id}/actions/{action}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Updates an action in the preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
+    @Timed
+    public void updatePreparationAction(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
+            @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId,
+            @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
+        HttpClient client = getClient();
+        HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationServiceURL, preparationId, stepId, body);
+        command.execute();
+    }
 }
