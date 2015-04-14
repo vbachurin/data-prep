@@ -88,7 +88,7 @@ public class XlsSerializer implements Serializer {
         return headerLine;
     }
 
-    protected String getCellValueAsString(Cell cell) {
+    protected static String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return StringUtils.EMPTY;
         }

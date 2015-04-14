@@ -59,20 +59,14 @@ public class XlsSchemaParser implements SchemaParser {
         Map<Integer, Integer> cellTypeChange = guessHeaderChange(cellsTypeMatrix);
 
         // average cell type change
-        int sum = 0;
-        for (Map.Entry<Integer, Integer> entry : cellTypeChange.entrySet()) {
-            sum += entry.getValue();
-        }
+        double averageHeaderSizeDouble = cellTypeChange.values().stream().mapToInt(Integer::intValue).average().getAsDouble();
 
-        // so header size is calculated on the average of value type change for column
-        // I agree it's not the best :-)
-
-        final int averageHeaderSize = Math.floorDiv(sum, cellTypeChange.size());
+        int averageHeaderSize = (int) Math.ceil(averageHeaderSizeDouble);
 
         logger.debug("averageHeaderSize: {}, cellTypeChange: {}", averageHeaderSize, cellTypeChange);
 
         // here we have informations regarding types for each rows/col (yup a Matrix!! :-) )
-        // so we can analyse and guess metadatas
+        // so we can analyse and guess metadatas (column type, header value)
         final List<ColumnMetadata> columnMetadatas = new ArrayList<>(cellsTypeMatrix.size());
 
         cellsTypeMatrix.forEach((integer, integerTypeSortedMap) -> {
@@ -80,10 +74,18 @@ public class XlsSchemaParser implements SchemaParser {
 
             Type type = guessColumnType(integerTypeSortedMap, colRowTypeChange, averageHeaderSize);
 
+            String headerText = "col" + integer;
+            if (averageHeaderSize == 1) {
+                // so header value is the first row of the column
+                Cell headerCell = sheet.getRow(0).getCell(integer);
+                headerText = XlsSerializer.getCellValueAsString(headerCell);
+            }
+            // FIXME what do we do if header size is > 1 concat all lines?
+
             columnMetadatas.add(ColumnMetadata.Builder //
                     .column() //
                     .headerSize(averageHeaderSize) //
-                    .name("col" + integer) //
+                    .name(headerText) //
                     .type(type) //
                     .build());
 
@@ -156,6 +158,10 @@ public class XlsSchemaParser implements SchemaParser {
                     break;
                 case Cell.CELL_TYPE_NUMERIC:
                     currentType = Type.NUMERIC;
+                    // TODO test if we have a date
+                    // TODO create a DATE type?
+                    // HSSFDateUtil.isCellDateFormatted(cell)
+
                     break;
                 case Cell.CELL_TYPE_BLANK:
                 case Cell.CELL_TYPE_STRING:
