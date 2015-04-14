@@ -58,7 +58,7 @@ public class XlsSerializer implements Serializer {
 
                     // do not write the values if this has been detected as an header
                     if (i >= columnMetadata.getHeaderSize()) {
-                        String cellValue = getCellValueAsString(row.getCell(j));
+                        String cellValue = XlsUtils.getCellValueAsString(row.getCell(j));
                         logger.debug("cellValue for {}/{}: {}", i, j, cellValue);
                         generator.writeStringField(columnMetadata.getId(), cellValue);
                     }
@@ -88,31 +88,5 @@ public class XlsSerializer implements Serializer {
         return headerLine;
     }
 
-    protected static String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return StringUtils.EMPTY;
-        }
-        switch (cell.getCellType()) {
-        case Cell.CELL_TYPE_BLANK:
-            return "";
-        case Cell.CELL_TYPE_BOOLEAN:
-            return cell.getBooleanCellValue() ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
-        case Cell.CELL_TYPE_ERROR:
-            return "Cell Error type";
-        case Cell.CELL_TYPE_FORMULA:
-            return cell.getCellFormula();
-        case Cell.CELL_TYPE_NUMERIC:
-            // TODO configurable??
-            if (HSSFDateUtil.isCellDateFormatted(cell)) {
-                DateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
-                return sdf.format(cell.getDateCellValue());
-            }
-            return String.valueOf(cell.getNumericCellValue());
-        case Cell.CELL_TYPE_STRING:
-            return StringUtils.trim(cell.getStringCellValue());
-        default:
-            return "Unknown Cell Type: " + cell.getCellType();
-        }
 
-    }
 }

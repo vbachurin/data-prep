@@ -78,7 +78,7 @@ public class XlsSchemaParser implements SchemaParser {
             if (averageHeaderSize == 1) {
                 // so header value is the first row of the column
                 Cell headerCell = sheet.getRow(0).getCell(integer);
-                headerText = XlsSerializer.getCellValueAsString(headerCell);
+                headerText = XlsUtils.getCellValueAsString(headerCell);
             }
             // FIXME what do we do if header size is > 1 concat all lines?
 
