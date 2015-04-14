@@ -53,9 +53,9 @@ describe('Datagrid directive', function() {
 
         //then
         expect(element.find('>ul >li').length).toBe(2);
-        expect(element.find('>ul >li >.talend-accordion-trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. [see] Split on column col1');
-        expect(element.find('>ul >li >.talend-accordion-trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. [see] To uppercase on column col2');
-        expect(element.find('>ul >li >.talend-accordion-trigger').eq(1).hasClass('inactive')).toBe(true);
+        expect(element.find('>ul >li >.talend-accordion-trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column col1');
+        expect(element.find('>ul >li >.talend-accordion-trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column col2');
+        expect(element.find('>ul >li').eq(1).hasClass('inactive')).toBe(true);
     }));
 
 });
