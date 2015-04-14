@@ -198,4 +198,31 @@ public class XlsFormatTest {
         }
 
     }
+
+    @Test
+    public void read_xls_musee() throws Exception {
+
+        FormatGuess formatGuess;
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("liste-musees-de-france-2012.xls")) {
+            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
+            formatGuess = formatGuesser.guess(inputStream);
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("liste-musees-de-france-2012.xls")) {
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            logger.debug("columnMetadatas: {}", columnMetadatas);
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
+
+            //Assertions.assertThat(columnMetadatas.get(7).getType()).isEqualTo(Type.NUMERIC.getName());
+
+        }
+
+    }
+
 }
