@@ -233,8 +233,6 @@
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>run</argument>
-                                        <argument>--user</argument>
-                                        <argument>1000</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
                                         <argument>--rm=true</argument>
@@ -255,8 +253,6 @@
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>run</argument>
-                                        <argument>--user</argument>
-                                        <argument>1000</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
                                         <argument>--rm=true</argument>
