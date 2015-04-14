@@ -54,14 +54,19 @@ public class XlsSchemaParser implements SchemaParser {
 
         SortedMap<Integer, SortedMap<Integer, Type>> cellsTypeMatrix = collectSheetTypeMatrix(sheet);
 
-        logger.trace("cellsTypeMatrix: {}", cellsTypeMatrix);
+        logger.trace( "cellsTypeMatrix: {}", cellsTypeMatrix );
 
         Map<Integer, Integer> cellTypeChange = guessHeaderChange(cellsTypeMatrix);
 
         // average cell type change
-        double averageHeaderSizeDouble = cellTypeChange.values().stream().mapToInt(Integer::intValue).average().getAsDouble();
+        //double averageHeaderSizeDouble = cellTypeChange.values().stream().mapToInt(Integer::intValue).average().getAsDouble();
 
-        int averageHeaderSize = (int) Math.ceil(averageHeaderSizeDouble);
+        //int averageHeaderSize = (int) Math.ceil(averageHeaderSizeDouble);
+
+        // TODO think more about header size calculation
+        // currently can fail
+        // so force an header of size 1
+        int averageHeaderSize = 1;
 
         logger.debug("averageHeaderSize: {}, cellTypeChange: {}", averageHeaderSize, cellTypeChange);
 

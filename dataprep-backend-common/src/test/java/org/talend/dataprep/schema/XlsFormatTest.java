@@ -195,6 +195,10 @@ public class XlsFormatTest {
 
             Assertions.assertThat(columnMetadatas.get(2).getType()).isEqualTo(Type.NUMERIC.getName());
 
+            Assertions.assertThat(columnMetadatas.get(2).getHeaderSize()).isEqualTo(1);
+
+            Assertions.assertThat(columnMetadatas.get(2).getId()).isEqualTo("NoAuto");
+
         }
 
     }
@@ -219,7 +223,11 @@ public class XlsFormatTest {
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
 
-            //Assertions.assertThat(columnMetadatas.get(7).getType()).isEqualTo(Type.NUMERIC.getName());
+            Assertions.assertThat(columnMetadatas.get(7).getType()).isEqualTo(Type.NUMERIC.getName());
+
+            Assertions.assertThat(columnMetadatas.get(7).getHeaderSize()).isEqualTo(1);
+
+            Assertions.assertThat(columnMetadatas.get(7).getId()).isEqualTo("CP");
 
         }
 
