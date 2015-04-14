@@ -133,6 +133,7 @@
                 transformation: {
                     stepId: actionStep[0],
                     name: actionStep[1].action,
+                    label: actionStep[2].label,
                     parameters: parameters,
                     items: items
                 }
