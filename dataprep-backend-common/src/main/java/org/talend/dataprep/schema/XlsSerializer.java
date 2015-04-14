@@ -109,7 +109,7 @@ public class XlsSerializer implements Serializer {
             }
             return String.valueOf(cell.getNumericCellValue());
         case Cell.CELL_TYPE_STRING:
-            return cell.getStringCellValue();
+            return StringUtils.trim(cell.getStringCellValue());
         default:
             return "Unknown Cell Type: " + cell.getCellType();
         }

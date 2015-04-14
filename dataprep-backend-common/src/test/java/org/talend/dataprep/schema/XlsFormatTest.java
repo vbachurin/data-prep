@@ -2,13 +2,14 @@ package org.talend.dataprep.schema;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.data.MapEntry;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,19 +81,18 @@ public class XlsFormatTest {
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
 
             ColumnMetadata columnMetadataFound = columnMetadatas.stream()
-                    .filter(columnMetadata -> StringUtils.equals(columnMetadata.getId(), "col2")).findFirst().get();
+                    .filter(columnMetadata -> StringUtils.equals(columnMetadata.getId(), "country")).findFirst().get();
 
             logger.debug("columnMetadataFound: {}", columnMetadataFound);
 
-            Assertions.assertThat( columnMetadataFound.getType() ).isEqualTo( Type.STRING.getName() );
+            Assertions.assertThat(columnMetadataFound.getType()).isEqualTo(Type.STRING.getName());
 
             columnMetadataFound = columnMetadatas.stream()
-                .filter(columnMetadata -> StringUtils.equals(columnMetadata.getId(), "col3")).findFirst().get();
+                    .filter(columnMetadata -> StringUtils.equals(columnMetadata.getId(), "note")).findFirst().get();
 
-            logger.debug( "columnMetadataFound: {}", columnMetadataFound );
+            logger.debug("columnMetadataFound: {}", columnMetadataFound);
 
-            Assertions.assertThat(columnMetadataFound.getType()).isEqualTo( Type.NUMERIC.getName() );
-
+            Assertions.assertThat(columnMetadataFound.getType()).isEqualTo(Type.NUMERIC.getName());
 
         }
 
@@ -131,91 +131,64 @@ public class XlsFormatTest {
 
             ObjectMapper mapper = new ObjectMapper();
 
-            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, TestObject.class);
+            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, HashMap.class);
 
-            List values = mapper.readValue(json, collectionType);
+            List<Map<String, String>> values = mapper.readValue(json, collectionType);
 
             logger.debug("values: {}", values);
 
             // expected
-            // {"col0":"Little Creatures","col1":"Australie","col2":"Awesome","col3":"10.0"}
-            // {"col0":"Heinekein","col1":"France ","col2":"crappy","col3":""}
-            // {"col0":"Foo","col1":"Australie","col2":"10.0","col3":"6.0"}
-            // {"col0":"Bar","col1":"France ","col2":"crappy","col3":"2.0"}
+            // {country=Australie, note=10.0, beer name =Little Creatures, quality=Awesome}
+            // {country=France , note=, beer name =Heinekein, quality=crappy}
+            // {country=Australie, note=6.0, beer name =Foo, quality=10.0}
+            // {country=France , note=2.0, beer name =Bar, quality=crappy}
 
-            Assertions.assertThat(values).isNotEmpty().hasSize(4)
-                    .containsExactly(new TestObject("Little Creatures", "Australie", "Awesome", "10.0"), //
-                            new TestObject("Heinekein", "France ", "crappy", ""), //
-                            new TestObject("Foo", "Australie", "10.0", "6.0"), //
-                            new TestObject("Bar", "France ", "crappy", "2.0"));
+            Assertions.assertThat(values).isNotEmpty().hasSize(4);
+
+            Assertions.assertThat(values.get(0)) //
+                    .contains(MapEntry.entry("country", "Australie"),//
+                            MapEntry.entry("note", "10.0"), //
+                            MapEntry.entry("beer name", "Little Creatures"), //
+                            MapEntry.entry("quality", "Awesome"));
+
+            Assertions.assertThat(values.get(1)) //
+                    .contains(MapEntry.entry("country", "France"),//
+                            MapEntry.entry("note", ""), //
+                            MapEntry.entry("beer name", "Heinekein"), //
+                            MapEntry.entry("quality", "crappy"));
+
+            Assertions.assertThat(values.get(2)) //
+                    .contains(MapEntry.entry("country", "Australie"),//
+                            MapEntry.entry("note", "6.0"), //
+                            MapEntry.entry("beer name", "Foo"), //
+                            MapEntry.entry("quality", "10.0"));
+
+            Assertions.assertThat(values.get(3)) //
+                    .contains(MapEntry.entry("country", "France"),//
+                            MapEntry.entry("note", "2.0"), //
+                            MapEntry.entry("beer name", "Bar"), //
+                            MapEntry.entry("quality", "crappy"));
 
         }
 
     }
 
-    static class TestObject {
+    static class MapBuilder {
 
-        private String col0, col1, col2, col3;
+        private Map<String, String> theMap = new HashMap<>();
 
-        public TestObject() {
+        public MapBuilder() {
+            // no op
         }
 
-        public TestObject(String col0, String col1, String col2, String col3) {
-            this.col0 = col0;
-            this.col1 = col1;
-            this.col2 = col2;
-            this.col3 = col3;
+        public MapBuilder addPair(String key, String value) {
+            this.theMap.put(key, value);
+            return this;
         }
 
-        public String getCol0() {
-            return col0;
-        }
-
-        public void setCol0(String col0) {
-            this.col0 = col0;
-        }
-
-        public String getCol1() {
-            return col1;
-        }
-
-        public void setCol1(String col1) {
-            this.col1 = col1;
-        }
-
-        public String getCol2() {
-            return col2;
-        }
-
-        public void setCol2(String col2) {
-            this.col2 = col2;
-        }
-
-        public String getCol3() {
-            return col3;
-        }
-
-        public void setCol3(String col3) {
-            this.col3 = col3;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-
-            return Optional.ofNullable(obj) //
-                    .filter(that -> that instanceof TestObject) //
-                    .map(that -> (TestObject) that) //
-                    .filter(that -> Objects.equals(this.col0, that.col0)) //
-                    .filter(that -> Objects.equals(this.col1, that.col1)) //
-                    .filter(that -> Objects.equals(this.col2, that.col2)) //
-                    .filter(that -> Objects.equals(this.col3, that.col3)) //
-                    .isPresent();
-        }
-
-        @Override
-        public String toString() {
-            return "TestObject{" + "col0='" + col0 + '\'' + ", col1='" + col1 + '\'' + ", col2='" + col2 + '\'' + ", col3='"
-                    + col3 + '\'' + '}';
+        public Map<String, String> getTheMap() {
+            return theMap;
         }
     }
+
 }
