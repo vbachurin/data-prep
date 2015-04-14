@@ -36,6 +36,7 @@
                     templateUrl: 'components/navbar/navbar.html'
                 })
                 .state('nav.home', {
+                    abstract: true,
                     url: '/home',
                     templateUrl: 'components/home/home.html',
                     controller: 'HomeCtrl',
@@ -65,7 +66,7 @@
                     }
                 });
 
-            $urlRouterProvider.otherwise('/home');
+            $urlRouterProvider.otherwise('/home/datasets');
         })
 
         //Language from browser
