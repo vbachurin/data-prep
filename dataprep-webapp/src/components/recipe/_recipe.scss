@@ -9,9 +9,11 @@
   li {
     padding: 5px 5px 5px 10px;
 
-    a {
-      text-decoration: none;
-      color: $color;
+    >.talend-accordion-trigger {
+      a {
+        text-decoration: none;
+        color: $color;
+      }
 
       &.inactive {
         color: $medium-gray;

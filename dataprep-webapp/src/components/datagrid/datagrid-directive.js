@@ -122,7 +122,7 @@
                         grid.invalidate();
 
                         $timeout(function() {
-                            DatasetGridService.selectedColumnId = column.id;
+                            DatasetGridService.setSelectedColumn(column.id);
                         });
                     });
 

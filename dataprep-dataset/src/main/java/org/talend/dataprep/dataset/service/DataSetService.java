@@ -20,8 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.dataset.exception.DataSetMessages;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
@@ -127,7 +129,7 @@ public class DataSetService {
             generator.writeEndArray();
             generator.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O exception during message output.", e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
@@ -180,7 +182,7 @@ public class DataSetService {
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O exception during message output.", e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
@@ -239,7 +241,7 @@ public class DataSetService {
             mapper.writer().writeValue(generator, metadata);
             generator.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O exception during data set metadata output.", e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 

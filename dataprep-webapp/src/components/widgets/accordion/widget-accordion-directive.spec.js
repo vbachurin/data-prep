@@ -40,7 +40,7 @@ describe('Accordion directive', function () {
                     '      </ul>' +
                     '   </li>' +
                     '   <li>' +
-                    '      <a class="talend-accordion-trigger">2bis. Replace empty in column STATE</a>' +
+                    '      <a class="talend-accordion-trigger">2bis. <div class="talend-accordion-no-trigger">no-trigger</div> Replace empty in column STATE</a>' +
                     '       <ul class="submenu">' +
                     '           <li>' +
                     '               Value : <input type="text" value="N/A" />' +
@@ -107,6 +107,24 @@ describe('Accordion directive', function () {
             //then
             expectElementToBeVisible(firstSubmenu);
             expectElementToBeHidden(secondSubmenu);
+        });
+
+        it('should not close sub-menus on click on a no-trigger element', function () {
+            //given
+            var element = createElement(scope);
+            var firstSubmenu = element.find('.submenu').eq(0);
+            var secondSubmenu = element.find('.submenu').eq(1);
+
+            clickOnTriggerElement(element, 1);
+            expectElementToBeHidden(firstSubmenu);
+            expectElementToBeVisible(secondSubmenu);
+
+            //when
+            element.find('.talend-accordion-no-trigger').eq(0).click();
+
+            //then
+            expectElementToBeHidden(firstSubmenu);
+            expectElementToBeVisible(secondSubmenu);
         });
     });
 

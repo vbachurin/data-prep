@@ -12,7 +12,7 @@
         self.filters = [];
 
         //actions from grid
-        self.selectedColumnId = null;
+        self.selectedColumn = null;
 
         //------------------------------------------------------------------------------------------------------
         //---------------------------------------------------DATA-----------------------------------------------
@@ -138,6 +138,16 @@
             }
 
             return result;
+        };
+
+        /**
+         * Set the selected column
+         * @param colId - the column id
+         */
+        self.setSelectedColumn = function(colId) {
+            self.selectedColumn = _.find(self.data.columns, function(col) {
+                return col.id === colId;
+            });
         };
 
         //------------------------------------------------------------------------------------------------------

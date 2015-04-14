@@ -2,6 +2,7 @@
     'use strict';
 
     angular.module('data-prep.playground', [
+        'ui.router',
         'pascalprecht.translate',
         'talend.widget',
         'data-prep.datagrid',

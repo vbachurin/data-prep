@@ -12,29 +12,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Aspect
 class Aspects {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Aspects.class );
+    private static final Logger LOG = LoggerFactory.getLogger(Aspects.class);
 
     @Around("execution(* *(..)) && @annotation(requestMapping)")
     public Object exception(ProceedingJoinPoint pjp, RequestMapping requestMapping) throws Throwable {
         try {
             return pjp.proceed(pjp.getArgs());
+        } catch (TDPException e) {
+            throw e; // Let TDPException pass through (to be processed in correct HTTP code by controller advice).
         } catch (Exception e) {
             LOG.error("Exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
-            throw Exceptions.Internal(DefaultMessage.UNEXPECTED_EXCEPTION, e);
-        }
-    }
-
-    enum DefaultMessage implements Messages {
-        UNEXPECTED_EXCEPTION;
-
-        @Override
-        public String getProduct() {
-            return "TDP";
-        }
-
-        @Override
-        public String getGroup() {
-            return "ALL";
+            throw Exceptions.Internal(CommonMessages.UNEXPECTED_EXCEPTION, e);
         }
     }
 

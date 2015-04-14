@@ -261,4 +261,19 @@ describe('Dataset grid service', function() {
         expect(DatasetGridService.filters[0]).toBe(filterFnCol1);
         expect(DatasetGridService.filters[1]).toBe(newFilterFnCol2);
     }));
+
+    it('should set selected column from column id', inject(function(DatasetGridService) {
+        //given
+        var colId = 'state';
+        var data = {
+            columns : [{id: 'firstname'}, {id: 'state'}]
+        };
+        DatasetGridService.data = data;
+
+        //when
+        DatasetGridService.setSelectedColumn(colId);
+
+        //then
+        expect(DatasetGridService.selectedColumn).toBe(data.columns[1]);
+    }));
 });

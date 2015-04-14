@@ -32,6 +32,7 @@ describe('Datagrid directive', function() {
             column: {id: 'col1'},
             transformation: {
                 name: 'split',
+                label: 'Split',
                 category: 'split',
                 parameters: [{name: 'pattern', type: 'string'}],
                 items: []
@@ -41,6 +42,7 @@ describe('Datagrid directive', function() {
             column: {id: 'col2'},
             transformation: {
                 name: 'uppercase',
+                label: 'To uppercase',
                 category: 'case',
                 parameters: [],
                 items: []
@@ -51,9 +53,9 @@ describe('Datagrid directive', function() {
 
         //then
         expect(element.find('>ul >li').length).toBe(2);
-        expect(element.find('>ul >li >a').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. split on column col1');
-        expect(element.find('>ul >li >a').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. uppercase on column col2');
-        expect(element.find('>ul >li >a').eq(1).hasClass('inactive')).toBe(true);
+        expect(element.find('>ul >li >.talend-accordion-trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. [see] Split on column col1');
+        expect(element.find('>ul >li >.talend-accordion-trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. [see] To uppercase on column col2');
+        expect(element.find('>ul >li >.talend-accordion-trigger').eq(1).hasClass('inactive')).toBe(true);
     }));
 
 });

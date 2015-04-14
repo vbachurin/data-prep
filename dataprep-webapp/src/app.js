@@ -47,6 +47,22 @@
                             return $translate('ALL_FOLDERS');
                         }
                     }
+                })
+                .state('nav.home.datasets', {
+                    url: '/datasets?datasetid',
+                    views: {
+                        'home-content': {
+                            template: '<dataset-list></dataset-list>'
+                        }
+                    }
+                })
+                .state('nav.home.preparations', {
+                    url: '/preparations?prepid',
+                    views: {
+                        'home-content': {
+                            template: '<preparation-list></preparation-list>'
+                        }
+                    }
                 });
 
             $urlRouterProvider.otherwise('/home');

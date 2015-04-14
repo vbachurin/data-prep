@@ -3,18 +3,18 @@ describe('Dataset list controller', function () {
 
     var createController, scope;
     var datasets = [
-        {name: 'Customers (50 lines)'},
-        {name: 'Us states'},
-        {name: 'Customers (1K lines)'}
+        {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)'},
+        {id: 'ab45f893d8e923', name: 'Us states'},
+        {id: 'cf98d83dcb9437', name: 'Customers (1K lines)'}
     ];
     var refreshedDatasets = [
-        {name: 'Customers (50 lines)'},
-        {name: 'Us states'}
+        {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)'},
+        {id: 'ab45f893d8e923', name: 'Us states'}
     ];
 
     beforeEach(module('data-prep.dataset-list'));
 
-    beforeEach(inject(function ($rootScope, $controller, DatasetListService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, DatasetListService, PlaygroundService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -27,7 +27,14 @@ describe('Dataset list controller', function () {
 
         spyOn(DatasetListService, 'refreshDatasets').and.callFake(function () {
             DatasetListService.datasets = datasetsValues.shift();
+            return $q.when(DatasetListService.datasets);
         });
+        spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
+        spyOn(PlaygroundService, 'show').and.callThrough();
+    }));
+
+    afterEach(inject(function($stateParams) {
+        $stateParams.datasetid = null;
     }));
 
     it('should get dataset on creation', inject(function (DatasetListService) {
@@ -40,16 +47,40 @@ describe('Dataset list controller', function () {
         expect(ctrl.datasets).toBe(datasets);
     }));
 
+    it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService) {
+        //given
+        $stateParams.datasetid = 'ab45f893d8e923';
+
+        //when
+        createController();
+        scope.$digest();
+
+        //then
+        expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(datasets[1]);
+        expect(PlaygroundService.show).toHaveBeenCalled();
+    }));
+
+    it('should not init playground when dataset id is not in users dataset', inject(function ($stateParams, PlaygroundService) {
+        //given
+        $stateParams.datasetid = 'azerty';
+
+        //when
+        createController();
+        scope.$digest();
+
+        //then
+        expect(PlaygroundService.initPlayground).not.toHaveBeenCalled();
+        expect(PlaygroundService.show).not.toHaveBeenCalled();
+    }));
+
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService, PlaygroundService) {
+        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService) {
             ctrl = createController();
             scope.$digest();
 
             spyOn(DatasetService, 'deleteDataset').and.returnValue($q.when(true));
-            spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
-            spyOn(PlaygroundService, 'show').and.callThrough();
             spyOn(MessageService, 'success').and.callThrough();
         }));
 
