@@ -3,7 +3,7 @@ package org.talend.dataprep.schema;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component("formatGuesser#xls")
 public class XlsFormatGuesser implements FormatGuesser {
 
-    private final Logger   logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private XlsFormatGuess xlsFormatGuess;
@@ -22,13 +22,13 @@ public class XlsFormatGuesser implements FormatGuesser {
 
         try {
 
-            HSSFWorkbook hssfWorkbook = new HSSFWorkbook(stream);
+            Workbook workbook = XlsUtils.getWorkbook(stream);
+
             // if poi can read it we assume it's correct excel file
             // && at least one sheet
-            if (hssfWorkbook.getNumberOfSheets() > 0) {
+            if (workbook.getNumberOfSheets() > 0) {
                 return xlsFormatGuess;
             }
-
         } catch (IOException e) {
             logger.debug("fail to read content: " + e.getMessage(), e);
         }

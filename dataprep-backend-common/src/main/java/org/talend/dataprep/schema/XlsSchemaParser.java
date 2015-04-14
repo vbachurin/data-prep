@@ -11,9 +11,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,12 +31,12 @@ public class XlsSchemaParser implements SchemaParser {
     @Override
     public List<ColumnMetadata> parse(InputStream content) {
         try {
-            HSSFWorkbook hssfWorkbook = new HSSFWorkbook(content);
+            Workbook hssfWorkbook = XlsUtils.getWorkbook(content);
 
             // ATM only first sheet but need to be discuss
             // maybe return List<List<ColumnMetadata>> ??
             // so we couuld parse all sheets
-            HSSFSheet sheet = hssfWorkbook.getSheetAt(0);
+            Sheet sheet = hssfWorkbook.getSheetAt(0);
 
             if (sheet == null) {
                 return Collections.emptyList();
@@ -50,11 +50,11 @@ public class XlsSchemaParser implements SchemaParser {
         }
     }
 
-    protected List<ColumnMetadata> parsePerSheet(HSSFSheet sheet) {
+    protected List<ColumnMetadata> parsePerSheet(Sheet sheet) {
 
         SortedMap<Integer, SortedMap<Integer, Type>> cellsTypeMatrix = collectSheetTypeMatrix(sheet);
 
-        logger.debug("cellsTypeMatrix: {}", cellsTypeMatrix);
+        logger.trace("cellsTypeMatrix: {}", cellsTypeMatrix);
 
         Map<Integer, Integer> cellTypeChange = guessHeaderChange(cellsTypeMatrix);
 
@@ -133,7 +133,7 @@ public class XlsSchemaParser implements SchemaParser {
      * @param sheet key is the column number, value is a Map with key row number and value Type
      * @return
      */
-    protected SortedMap<Integer, SortedMap<Integer, Type>> collectSheetTypeMatrix(HSSFSheet sheet) {
+    protected SortedMap<Integer, SortedMap<Integer, Type>> collectSheetTypeMatrix(Sheet sheet) {
         int firstRowNum = sheet.getFirstRowNum();
         int lastRowNum = sheet.getLastRowNum();
 

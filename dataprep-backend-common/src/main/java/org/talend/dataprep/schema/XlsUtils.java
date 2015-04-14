@@ -1,13 +1,25 @@
 package org.talend.dataprep.schema;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XlsUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(XlsUtils.class);
 
     protected static String getCellValueAsString(Cell cell) {
         if (cell == null) {
@@ -35,6 +47,20 @@ public class XlsUtils {
             return "Unknown Cell Type: " + cell.getCellType();
         }
 
+    }
+
+    protected static Workbook getWorkbook(InputStream stream) throws IOException {
+
+        // TODO that's a pain as we have to keep this :-(
+        // but for some reasons new HSSFWorkbook consume part of the stream
+        byte[] bytes = IOUtils.toByteArray(stream);
+
+        try {
+            return new HSSFWorkbook(new ByteArrayInputStream(bytes));
+        } catch (OfficeXmlFileException e) {
+            LOGGER.debug("OfficeXmlFileException so try XSSFWorkbook");
+            return new XSSFWorkbook(new ByteArrayInputStream(bytes));
+        }
     }
 
 }

@@ -173,4 +173,29 @@ public class XlsFormatTest {
 
     }
 
+    @Test
+    public void read_xls_cinema() throws Exception {
+
+        FormatGuess formatGuess;
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("EXPLOITATION-ListeEtabActifs_Adresse2012.xlsx")) {
+            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
+            formatGuess = formatGuesser.guess(inputStream);
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("EXPLOITATION-ListeEtabActifs_Adresse2012.xlsx")) {
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            logger.debug("columnMetadatas: {}", columnMetadatas);
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(8);
+
+            Assertions.assertThat(columnMetadatas.get(2).getType()).isEqualTo(Type.NUMERIC.getName());
+
+        }
+
+    }
 }
