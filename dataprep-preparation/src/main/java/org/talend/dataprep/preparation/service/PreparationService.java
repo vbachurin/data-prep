@@ -203,15 +203,14 @@ public class PreparationService {
         LOGGER.debug("Rewriting history for {} steps.", steps.size());
         // Build list of actions added at each step
         List<AppendStep> appends = new ArrayList<>(steps.size());
-        for (int i = steps.size(); i > 2; i--) {
-            final String stepId = steps.get(i);
-            final List<Action> next = getActions(stepId);
-            final List<Action> previous = getActions(steps.get(i - 1));
-            for (int j = next.size(); j < previous.size(); j--) {
-                next.remove(j);
-            }
-        }
         appends.add(step);
+        for (int i = steps.size() - 1; i > 0; i--) {
+            final List<Action> previous = getActions(steps.get(i));
+            final List<Action> current = getActions(steps.get(i - 1));
+            final AppendStep appendStep = new AppendStep();
+            appendStep.setActions(current.subList(previous.size(), current.size()));
+            appends.add(appendStep);
+        }
         // Rebuild history from modified step
         final Step modifiedStep = versionRepository.get(steps.get(steps.size() - 1), Step.class);
         preparation.setStep(versionRepository.get(modifiedStep.getParent(), Step.class));
@@ -224,7 +223,7 @@ public class PreparationService {
     }
 
     private List<Action> getActions(String stepId) {
-        return versionRepository.get(versionRepository.get(stepId, Step.class).getContent(), PreparationActions.class).getActions();
+        return new ArrayList<>(versionRepository.get(versionRepository.get(stepId, Step.class).getContent(), PreparationActions.class).getActions());
     }
 
 
