@@ -16,6 +16,11 @@ describe('Recipe controller', function() {
         };
     }));
 
+    afterEach(inject(function(RecipeService) {
+        var recipe = RecipeService.getRecipe();
+        recipe.splice(0, recipe.length);
+    }));
+
     it('should bind recipe getter with RecipeService', inject(function(RecipeService) {
         //given
         var ctrl = createController();
@@ -39,5 +44,71 @@ describe('Recipe controller', function() {
         expect(ctrl.recipe.length).toBe(1);
         expect(ctrl.recipe[0].column).toBe(column);
         expect(ctrl.recipe[0].transformation).toEqual(transformation);
+    }));
+
+    it('should highlight active steps after the targeted one', inject(function(RecipeService) {
+        //given
+        var ctrl = createController();
+
+        var recipe = RecipeService.getRecipe();
+        recipe.push(
+            {},
+            {},
+            {},
+            {}
+        );
+
+        //when
+        ctrl.stepHoverStart(1);
+
+        //then
+        expect(recipe[0].highlight).toBeFalsy();
+        expect(recipe[1].highlight).toBeFalsy();
+        expect(recipe[2].highlight).toBeTruthy();
+        expect(recipe[3].highlight).toBeTruthy();
+    }));
+
+    it('should highlight inactive steps before the targeted one', inject(function(RecipeService) {
+        //given
+        var ctrl = createController();
+
+        var recipe = RecipeService.getRecipe();
+        recipe.push(
+            {},
+            {inactive: true},
+            {inactive: true},
+            {inactive: true}
+        );
+
+        //when
+        ctrl.stepHoverStart(2);
+
+        //then
+        expect(recipe[0].highlight).toBeFalsy();
+        expect(recipe[1].highlight).toBeTruthy();
+        expect(recipe[2].highlight).toBeTruthy();
+        expect(recipe[3].highlight).toBeFalsy();
+    }));
+
+    it('should highlight inactive steps before the targeted one', inject(function(RecipeService) {
+        //given
+        var ctrl = createController();
+
+        var recipe = RecipeService.getRecipe();
+        recipe.push(
+            {},
+            {highlight: true},
+            {highlight: true},
+            {highlight: true}
+        );
+
+        //when
+        ctrl.stepHoverEnd();
+
+        //then
+        expect(recipe[0].highlight).toBeFalsy();
+        expect(recipe[1].highlight).toBeFalsy();
+        expect(recipe[2].highlight).toBeFalsy();
+        expect(recipe[3].highlight).toBeFalsy();
     }));
 });
