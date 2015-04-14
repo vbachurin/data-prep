@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -57,7 +58,6 @@ public class XlsSchemaParser implements SchemaParser {
 
         Map<Integer, Integer> cellTypeChange = guessHeaderChange(cellsTypeMatrix);
 
-
         // average cell type change
         int sum = 0;
         for (Map.Entry<Integer, Integer> entry : cellTypeChange.entrySet()) {
@@ -76,24 +76,53 @@ public class XlsSchemaParser implements SchemaParser {
         final List<ColumnMetadata> columnMetadatas = new ArrayList<>(cellsTypeMatrix.size());
 
         cellsTypeMatrix.forEach((integer, integerTypeSortedMap) -> {
+            int colRowTypeChange = cellTypeChange.get(integer);
 
-            // we guess the type is the one with the type change
-                int colRowTypeChange = cellTypeChange.get(integer);
+            Type type = guessColumnType(integerTypeSortedMap, colRowTypeChange, averageHeaderSize);
 
-                Type type = integerTypeSortedMap.get(colRowTypeChange);
+            columnMetadatas.add(ColumnMetadata.Builder //
+                    .column() //
+                    .headerSize(averageHeaderSize) //
+                    .name("col" + integer) //
+                    .type(type) //
+                    .build());
 
-                // TODO quality
-
-                columnMetadatas.add(ColumnMetadata.Builder //
-                        .column() //
-                        .headerSize(averageHeaderSize) //
-                        .name("col" + integer) //
-                        .type(type) //
-                        .build());
-
-            });
+        });
 
         return columnMetadatas;
+    }
+
+    /**
+     * 
+     * @param columnRows all rows with previously guessed type: key=row number, value= guessed type
+     * @param rowTypeChangeIdx
+     * @param averageHeaderSize
+     * @return
+     */
+    protected Type guessColumnType(SortedMap<Integer, Type> columnRows, int rowTypeChangeIdx, int averageHeaderSize) {
+
+        // calculate number per type
+
+        Map<Type, Long> perTypeNumber = columnRows.tailMap(averageHeaderSize).values() //
+                .stream() //
+                .collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+
+        long maxOccurence = perTypeNumber.values().stream().mapToLong(Long::longValue).max().getAsLong();
+
+        List<Type> duplicatedMax = new ArrayList<>();
+
+        perTypeNumber.forEach((type1, aLong) -> {
+            if (aLong >= maxOccurence) {
+                duplicatedMax.add(type1);
+            }
+        });
+
+        if (duplicatedMax.size() == 1) {
+            return duplicatedMax.get(0);
+        }
+
+        // as we have more than one type we guess ANY
+        return Type.ANY;
     }
 
     /**
@@ -158,7 +187,7 @@ public class XlsSchemaParser implements SchemaParser {
     /**
      * <p>
      * As we can try to be smart and user friendly and not those nerd devs who doesn't mind about users so we try to
-     * guess the header size (we assume those bloody users doesn't have complicated headers!!)
+     * guess the header size (we assume those bloody users don't have complicated headers!!)
      * </p>
      * <p>
      * we scan all entries to find a common header size value (i.e row line with value type change) more simple all

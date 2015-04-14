@@ -8,6 +8,7 @@
     <loggers>
         <logger name="org.talend.dataprep.schema" level="info"/>
         <logger name="org.talend.dataprep.schema.XlsSchemaParser" level="debug"/>
+        <logger name="org.talend.dataprep.schema.XlsFormatTest" level="debug"/>
         <root level="error" includeLocation="true">
             <appender-ref ref="console"/>
         </root>

@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.type.Type;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -46,7 +48,7 @@ public class XlsFormatTest {
         FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
         Assert.assertNotNull(formatGuesser);
         Assert.assertTrue(formatGuesser instanceof XlsFormatGuesser);
-        logger.info("class for bean with id {} is {}", beanId, formatGuesser.getClass());
+        logger.debug("class for bean with id {} is {}", beanId, formatGuesser.getClass());
     }
 
     @Test
@@ -74,7 +76,24 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("test.xls")) {
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
+
+            ColumnMetadata columnMetadataFound = columnMetadatas.stream()
+                    .filter(columnMetadata -> StringUtils.equals(columnMetadata.getId(), "col2")).findFirst().get();
+
+            logger.debug("columnMetadataFound: {}", columnMetadataFound);
+
+            Assertions.assertThat( columnMetadataFound.getType() ).isEqualTo( Type.STRING.getName() );
+
+            columnMetadataFound = columnMetadatas.stream()
+                .filter(columnMetadata -> StringUtils.equals(columnMetadata.getId(), "col3")).findFirst().get();
+
+            logger.debug( "columnMetadataFound: {}", columnMetadataFound );
+
+            Assertions.assertThat(columnMetadataFound.getType()).isEqualTo( Type.NUMERIC.getName() );
+
+
         }
 
     }
@@ -108,7 +127,7 @@ public class XlsFormatTest {
 
             String json = IOUtils.toString(jsonStream);
 
-            logger.info("json: {}", json);
+            logger.debug("json: {}", json);
 
             ObjectMapper mapper = new ObjectMapper();
 
@@ -116,7 +135,7 @@ public class XlsFormatTest {
 
             List values = mapper.readValue(json, collectionType);
 
-            logger.info("values: {}", values);
+            logger.debug("values: {}", values);
 
             // expected
             // {"col0":"Little Creatures","col1":"Australie","col2":"Awesome","col3":"10.0"}
