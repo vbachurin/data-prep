@@ -33,9 +33,9 @@ public class XlsSchemaParser implements SchemaParser {
         try {
             Workbook hssfWorkbook = XlsUtils.getWorkbook(content);
 
-            // ATM only first sheet but need to be discuss
+            // FIXME ATM only first sheet but need to be discuss
             // maybe return List<List<ColumnMetadata>> ??
-            // so we couuld parse all sheets
+            // so we could parse all sheets
             Sheet sheet = hssfWorkbook.getSheetAt(0);
 
             if (sheet == null) {
@@ -60,12 +60,10 @@ public class XlsSchemaParser implements SchemaParser {
 
         // average cell type change
         //double averageHeaderSizeDouble = cellTypeChange.values().stream().mapToInt(Integer::intValue).average().getAsDouble();
-
         //int averageHeaderSize = (int) Math.ceil(averageHeaderSizeDouble);
 
-        // TODO think more about header size calculation
-        // currently can fail
-        // so force an header of size 1
+        // FIXME  think more about header size calculation
+        // currently can fail so force an header of size 1
         int averageHeaderSize = 1;
 
         logger.debug("averageHeaderSize: {}, cellTypeChange: {}", averageHeaderSize, cellTypeChange);
