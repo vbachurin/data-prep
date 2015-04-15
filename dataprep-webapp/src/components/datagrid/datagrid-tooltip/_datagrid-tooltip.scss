@@ -8,7 +8,9 @@
   z-index: 20;
 
   max-width: 50%;
+  max-height: 50%;
   padding: 10px;
+  overflow: auto;
 
   background-color: $background;
   color: $white;
