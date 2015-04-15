@@ -6,8 +6,7 @@ import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
@@ -384,4 +383,63 @@ public class DataSetServiceTests {
             assertTrue(errorCode.has("http-status-code"));
         }
     }
+
+    @Test
+    public void testAskCertification() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId);
+
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
+        assertEquals(0, dataSetMetadata.getGovernance().getCertificationStep());
+
+        when().put("/datasets/{id}/askcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(1, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+    }
+
+    @Test
+    public void testCertify() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId);
+
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
+        assertEquals(0, dataSetMetadata.getGovernance().getCertificationStep());
+
+        when().put("/datasets/{id}/askcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/certify", dataSetId).then().statusCode(HttpStatus.OK.value());
+        dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(2, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+    }
+
+    @Test
+    public void testCertifyNotAsked() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId);
+
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
+        assertEquals(0, dataSetMetadata.getGovernance().getCertificationStep());
+
+        when().put("/datasets/{id}/certify", dataSetId).then().statusCode(HttpStatus.EXPECTATION_FAILED.value());
+        dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(0, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+    }
+
 }

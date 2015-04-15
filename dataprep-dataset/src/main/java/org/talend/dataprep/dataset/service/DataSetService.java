@@ -102,6 +102,19 @@ public class DataSetService {
      * 
      * @param response The HTTP response to interact with caller.
      */
+    private static void writeDataSetInformation(JsonGenerator generator, DataSetMetadata dataSetMetadata) throws IOException {
+        generator.writeStringField("id", dataSetMetadata.getId()); //$NON-NLS-1
+        generator.writeStringField("name", dataSetMetadata.getName()); //$NON-NLS-1
+        generator.writeStringField("author", dataSetMetadata.getAuthor()); //$NON-NLS-1
+        generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
+        generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
+        generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
+        generator.writeNumberField("certified", dataSetMetadata.getGovernance().getCertificationStep()); //$NON-NLS-1
+        synchronized (DATE_FORMAT) {
+            generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1
+        }
+    }
+
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
@@ -216,6 +229,35 @@ public class DataSetService {
             }
         } finally {
             lock.unlock();
+        }
+    }
+
+    @RequestMapping(value = "/datasets/{id}/askcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Ask certification for a dataset", notes = "Mark the dataset with 'certification required', authorized users can certify it later.")
+    @Timed
+    public void askCertification(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+
+        if (dataSetMetadata.getGovernance().getCertificationStep() == 0) {
+            dataSetMetadata.getGovernance().setCertificationStep(1);
+            dataSetMetadataRepository.add(dataSetMetadata);
+        }
+    }
+
+    @RequestMapping(value = "/datasets/{id}/certify", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Certify a dataset", notes = "Mark the dataset as 'certified'.")
+    @Timed
+    public void grantCertification(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
+            HttpServletResponse response) {
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+
+        if (dataSetMetadata.getGovernance().getCertificationStep() == 1) {
+            dataSetMetadata.getGovernance().setCertificationStep(2);
+            dataSetMetadataRepository.add(dataSetMetadata);
+        } else {
+            response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
         }
     }
 
