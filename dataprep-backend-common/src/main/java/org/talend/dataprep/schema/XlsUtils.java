@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -62,10 +63,11 @@ public class XlsUtils {
         byte[] bytes = IOUtils.toByteArray(stream);
 
         try {
-            return new HSSFWorkbook(new ByteArrayInputStream(bytes));
-        } catch (OfficeXmlFileException e) {
-            LOGGER.debug("OfficeXmlFileException so try XSSFWorkbook");
             return new XSSFWorkbook(new ByteArrayInputStream(bytes));
+
+        } catch (Exception e) {
+            LOGGER.debug("{} so try XSSFWorkbook", e.getClass());
+            return new HSSFWorkbook(new ByteArrayInputStream(bytes));
         }
     }
 
