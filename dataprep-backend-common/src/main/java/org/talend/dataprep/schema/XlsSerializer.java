@@ -4,16 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.slf4j.Logger;
@@ -32,12 +27,13 @@ public class XlsSerializer implements Serializer {
 
         try {
 
-            HSSFWorkbook hssfWorkbook = new HSSFWorkbook(rawContent);
+            Workbook workbook = XlsUtils.getWorkbook(rawContent);
+
             StringWriter writer = new StringWriter();
             JsonGenerator generator = new JsonFactory().createJsonGenerator(writer);
 
             // FIXME: ATM we work with only one sheet
-            HSSFSheet sheet = hssfWorkbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(0);
 
             generator.writeStartArray();
 
@@ -50,7 +46,7 @@ public class XlsSerializer implements Serializer {
                     continue;
                 }
 
-                HSSFRow row = sheet.getRow(i);
+                Row row = sheet.getRow(i);
 
                 generator.writeStartObject();
                 for (int j = 0; j < columns.size(); j++) {
@@ -87,6 +83,5 @@ public class XlsSerializer implements Serializer {
         }
         return headerLine;
     }
-
 
 }

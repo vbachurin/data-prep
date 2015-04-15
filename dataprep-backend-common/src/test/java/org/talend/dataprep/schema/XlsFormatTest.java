@@ -174,9 +174,11 @@ public class XlsFormatTest {
     }
 
     @Test
-    public void read_xls_cinema() throws Exception {
+    public void read_xls_cinema_then_serialize() throws Exception {
 
         FormatGuess formatGuess;
+
+        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("EXPLOITATION-ListeEtabActifs_Adresse2012.xlsx")) {
@@ -190,6 +192,9 @@ public class XlsFormatTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("EXPLOITATION-ListeEtabActifs_Adresse2012.xlsx")) {
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+
+            dataSetMetadata.getRow().setColumns(columnMetadatas);
+
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(8);
 
@@ -203,12 +208,35 @@ public class XlsFormatTest {
 
         }
 
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream( "EXPLOITATION-ListeEtabActifs_Adresse2012.xlsx" )) {
+
+            Serializer serializer = applicationContext.getBean("serializer#xls", Serializer.class);
+
+            InputStream jsonStream = serializer.serialize(inputStream, dataSetMetadata);
+
+            String json = IOUtils.toString(jsonStream);
+
+            logger.debug("json: {}", json);
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, HashMap.class);
+
+            List<Map<String, String>> values = mapper.readValue(json, collectionType);
+
+            logger.debug("values: {}", values);
+
+        }
+
     }
 
     @Test
-    public void read_xls_musee() throws Exception {
+    public void read_xls_musee_then_serialize() throws Exception {
 
         FormatGuess formatGuess;
+
+        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("liste-musees-de-france-2012.xls")) {
@@ -221,17 +249,39 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("liste-musees-de-france-2012.xls")) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse( inputStream );
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
 
             ColumnMetadata columnMetadata = columnMetadatas.get(7);
 
-            Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
+            Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo( 1 );
 
-            Assertions.assertThat(columnMetadata.getId()).isEqualTo("CP");
+            Assertions.assertThat(columnMetadata.getId()).isEqualTo( "CP" );
 
-            Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.STRING.getName());
+            Assertions.assertThat(columnMetadata.getType()).isEqualTo( Type.STRING.getName() );
+
+        }
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream("EXPLOITATION-ListeEtabActifs_Adresse2012.xlsx")) {
+
+            Serializer serializer = applicationContext.getBean( "serializer#xls", Serializer.class );
+
+            InputStream jsonStream = serializer.serialize(inputStream, dataSetMetadata);
+
+            String json = IOUtils.toString(jsonStream);
+
+            logger.debug( "json: {}", json );
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType( ArrayList.class,
+                                                                                             HashMap.class );
+
+            List<Map<String, String>> values = mapper.readValue(json, collectionType);
+
+            logger.debug( "values: {}", values );
 
         }
 
