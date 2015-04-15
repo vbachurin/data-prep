@@ -3,6 +3,7 @@ package org.talend.dataprep.schema;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -51,7 +52,12 @@ public class XlsUtils {
 
     protected static Workbook getWorkbook(InputStream stream) throws IOException {
 
+        // Depending on the excel file used the poi object to use is different
+        // so we try one (catch exception then try the other one)
+
+
         // TODO that's a pain as we have to keep this :-(
+        // TODO use ByteBuffer
         // but for some reasons new HSSFWorkbook consume part of the stream
         byte[] bytes = IOUtils.toByteArray(stream);
 
