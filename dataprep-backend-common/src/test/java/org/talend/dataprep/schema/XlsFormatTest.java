@@ -193,11 +193,13 @@ public class XlsFormatTest {
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(8);
 
-            Assertions.assertThat(columnMetadatas.get(2).getType()).isEqualTo(Type.NUMERIC.getName());
+            ColumnMetadata columnMetadata = columnMetadatas.get(2);
 
-            Assertions.assertThat(columnMetadatas.get(2).getHeaderSize()).isEqualTo(1);
+            Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.NUMERIC.getName());
 
-            Assertions.assertThat(columnMetadatas.get(2).getId()).isEqualTo("NoAuto");
+            Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
+
+            Assertions.assertThat(columnMetadata.getId()).isEqualTo("NoAuto");
 
         }
 
@@ -223,11 +225,13 @@ public class XlsFormatTest {
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
 
-            Assertions.assertThat(columnMetadatas.get(7).getType()).isEqualTo(Type.NUMERIC.getName());
+            ColumnMetadata columnMetadata = columnMetadatas.get(7);
 
-            Assertions.assertThat(columnMetadatas.get(7).getHeaderSize()).isEqualTo(1);
+            Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
 
-            Assertions.assertThat(columnMetadatas.get(7).getId()).isEqualTo("CP");
+            Assertions.assertThat(columnMetadata.getId()).isEqualTo("CP");
+
+            Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.STRING.getName());
 
         }
 
