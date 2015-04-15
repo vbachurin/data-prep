@@ -20,6 +20,7 @@ class TDPException extends RuntimeException {
     private Throwable cause;
 
     public TDPException(Messages code, String message, Throwable cause) {
+        super(message, cause);
         this.code = code;
         this.message = message;
         this.cause = cause;
