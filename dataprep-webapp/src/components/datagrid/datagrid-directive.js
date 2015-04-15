@@ -4,11 +4,11 @@
     function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService) {
         return {
             restrict: 'E',
-            template: '<div id="datagrid" class="datagrid"></div>',
+            templateUrl: 'components/datagrid/datagrid.html',
             bindToController: true,
             controllerAs: 'datagridCtrl',
-            controller: function() {},
-            link: function (scope, iElement) {
+            controller: 'DatagridCtrl',
+            link: function (scope, iElement, iAttrs, ctrl) {
                 var options, grid, colHeaderElements = [];
 
                 //------------------------------------------------------------------------------------------------------
@@ -103,6 +103,30 @@
                 };
 
                 /**
+                 * Attach cell hover for tooltips listeners
+                 */
+                var attachTooltipListener = function() {
+                    //show tooltip on hover
+                    grid.onMouseEnter.subscribe(function(e) {
+                        var cell = grid.getCellFromEvent(e);
+                        var row = cell.row;
+                        var column = grid.getColumns()[cell.cell];
+
+                        var item = DatasetGridService.dataView.getItem(row);
+                        var position = {
+                            x: e.clientX,
+                            y: e.clientY
+                        };
+
+                        ctrl.updateTooltip(item, column.id, position);
+                    });
+                    //hide tooltip on leave
+                    grid.onMouseLeave.subscribe(function() {
+                        ctrl.hideTooltip();
+                    });
+                };
+
+                /**
                  * Attach cell action listeners (click, active change, ...)
                  */
                 var attachCellListeners = function() {
@@ -163,6 +187,7 @@
                     attachLongTableListeners();
                     attachColumnHeaderListeners();
                     attachCellListeners();
+                    attachTooltipListener();
                 };
 
                 //------------------------------------------------------------------------------------------------------

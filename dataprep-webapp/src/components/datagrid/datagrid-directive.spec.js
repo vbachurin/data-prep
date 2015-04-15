@@ -173,13 +173,15 @@ describe('Datagrid directive', function() {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function($rootScope, $compile, $timeout, DatasetGridService) {
         scope = $rootScope.$new();
         element = angular.element('<datagrid></datagrid>');
         $compile(element)(scope);
+        $timeout.flush();
         scope.$digest();
 
         angular.element('body').append(element);
+        spyOn(DatasetGridService, 'setSelectedColumn').and.returnValue(null);
     }));
 
     afterEach(function() {
@@ -227,6 +229,23 @@ describe('Datagrid directive', function() {
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
     }));
 
+    it('should set selected column on cell clicked', inject(function($timeout, DatasetGridService) {
+        //given
+        var colIndex = 2;
+
+        DatasetGridService.setDataset(metadata, data);
+        scope.$digest();
+
+        //when
+        var grid = new GridGetter(element);
+        grid.row(0).cell(colIndex).element().click();
+        scope.$digest();
+        $timeout.flush();
+
+        //then
+        expect(DatasetGridService.setSelectedColumn).toHaveBeenCalledWith('State');
+    }));
+
     it('should highlight empty cells only', inject(function(DatasetGridService) {
         //given
         var colIndex = 2;
@@ -244,5 +263,4 @@ describe('Datagrid directive', function() {
         expect(grid.row(1).cell(colIndex).element().hasClass('highlight')).toBe(true);
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
     }));
-
 });
