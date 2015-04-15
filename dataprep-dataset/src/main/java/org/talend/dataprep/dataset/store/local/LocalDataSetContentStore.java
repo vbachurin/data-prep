@@ -1,6 +1,8 @@
 package org.talend.dataprep.dataset.store.local;
 
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Base64;
 
 import org.apache.commons.io.FileUtils;
@@ -16,7 +18,7 @@ import org.talend.dataprep.schema.Serializer;
 
 public class LocalDataSetContentStore implements DataSetContentStore {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( LocalDataSetContentStore.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSetContentStore.class);
 
     private final String storeLocation;
 
@@ -53,7 +55,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
             FileOutputStream fos = new FileOutputStream(dataSetFile);
             IOUtils.copy(dataSetContent, fos);
 
-            LOGGER.debug( "Data set #{} stored to '{}'.", dataSetMetadata.getId(),dataSetFile);
+            LOGGER.debug("Data set #{} stored to '{}'.", dataSetMetadata.getId(), dataSetFile);
 
         } catch (IOException e) {
             throw Exceptions.Internal(DataSetMessages.UNABLE_TO_STORE_DATASET_CONTENT, dataSetMetadata.getId(), e);
@@ -72,7 +74,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {
-            LOGGER.warn("File '{}' does not exist.",getFile(dataSetMetadata));
+            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata));
             return new ByteArrayInputStream(new byte[0]);
         }
     }
@@ -84,14 +86,38 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 throw Exceptions.Internal(DataSetMessages.UNABLE_TO_DELETE_DATASET, dataSetMetadata.getId());
             }
         } else {
-            LOGGER.warn("Data set #{} has no content.",dataSetMetadata.getId());
+            LOGGER.warn("Data set #{} has no content.", dataSetMetadata.getId());
         }
     }
 
     @Override
     public void clear() {
         try {
-            FileUtils.deleteDirectory(new File(storeLocation));
+            Path path = FileSystems.getDefault().getPath(storeLocation);
+            if (!path.toFile().exists()) {
+                return;
+            }
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
+                    // Skip NFS file content
+                    if (!file.startsWith(".nfs")) { //$NON-NLS-1$
+                        Files.delete(file);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+                    if (e == null) {
+                        return FileVisitResult.CONTINUE;
+                    } else {
+                        // directory iteration failed
+                        throw e;
+                    }
+                }
+            });
         } catch (IOException e) {
             throw Exceptions.Internal(DataSetMessages.UNABLE_TO_CLEAR_DATASETS, e);
         }
