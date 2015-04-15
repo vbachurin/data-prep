@@ -28,7 +28,7 @@ public class Exceptions implements ApplicationContextAware {
         Throwable cause = null;
         try {
             Object[] filteredArgs;
-            if (args[args.length - 1] instanceof Throwable) {
+            if (args.length > 0 && args[args.length - 1] instanceof Throwable) {
                 cause = (Throwable) args[args.length - 1];
                 filteredArgs = Arrays.copyOf(args, args.length - 1);
             } else {
@@ -46,7 +46,7 @@ public class Exceptions implements ApplicationContextAware {
             if (cause != null) {
                 LOGGER.error("Unable to send exception user, logging it.", cause);
             }
-            throw new InternalException(null, "Unable to create exception for user.", e);
+            throw new InternalException(CommonMessages.UNEXPECTED_EXCEPTION, "Unable to create exception for user.", e);
         }
     }
 
