@@ -102,7 +102,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
                     // Skip NFS file content
-                    if (!file.startsWith(".nfs")) { //$NON-NLS-1$
+                    if (!file.getFileName().toFile().getName().startsWith(".nfs")) { //$NON-NLS-1$
                         Files.delete(file);
                     }
                     return FileVisitResult.CONTINUE;
