@@ -22,10 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.Application;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.preparation.PreparationRepository;
+import org.talend.dataprep.dataset.DataSetServiceTests;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
@@ -206,6 +209,26 @@ public class DataPreparationAPITest {
         InputStream content = when().get("/api/datasets/{id}/actions", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
         assertThat(contentAsString, sameJSONAs("[]"));
+    }
+
+    @Test
+    public void testAskCertification() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "tagada").asString();
+
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
+        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
+
+        when().put("/api/datasets/{id}/askcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+
+        when().put("/api/datasets/{id}/certify", dataSetId).then().statusCode(HttpStatus.OK.value());
+        dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
     }
 
     @Test

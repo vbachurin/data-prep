@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
@@ -121,6 +122,41 @@ public class DataSetAPI extends APIService {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
+        }
+    }
+
+    @RequestMapping(value = "/api/datasets/{id}/askcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Ask certification for a dataset", notes = "Mark the dataset with 'certification required', authorized users can certify it later.")
+    @Timed
+    public void askCertification(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Ask certification for dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
+        }
+        HttpClient client = getClient();
+        HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, contentServiceUrl, dataSetId, true);
+        try {
+            command.execute();
+        } catch (Exception e) {
+            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
+        }
+    }
+
+    @RequestMapping(value = "/datasets/{id}/certify", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Certify a dataset", notes = "Mark the dataset as 'certified'.")
+    @Timed
+    public void grantCertification(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
+            HttpServletResponse response) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Ask certification for dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
+        }
+        HttpClient client = getClient();
+        HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, contentServiceUrl, dataSetId, false);
+        try {
+            command.execute();
+        } catch (Exception e) {
+            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
         }
     }
 
