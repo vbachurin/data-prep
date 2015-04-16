@@ -4,7 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -51,21 +53,24 @@ public class SuggestColumnActions extends ChainedCommand<InputStream, DataSetMet
         HttpPost post = new HttpPost(transformServiceUrl + "/suggest/column");
         post.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
         DataSetMetadata metadata = getInput();
-        List<ColumnMetadata> columns = metadata.getRow().getColumns();
-        ColumnMetadata columnMetadata = null;
-        for (ColumnMetadata current : columns) {
-            if (current.getId().equals(column)) {
-                columnMetadata = current;
-                break;
-            }
+
+        if (metadata == null) {
+            // FIXME add dataset id in error message?
+            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_METADATA);
         }
-        if (columnMetadata == null) {
+
+        List<ColumnMetadata> columns = metadata.getRow().getColumns();
+
+        Optional<ColumnMetadata> columnMetadata = columns.stream()
+                .filter(columnMetadataCurrent -> StringUtils.equals(column, columnMetadataCurrent.getId())).findFirst();
+
+        if (!columnMetadata.isPresent()) {
             // Column does not exist in data set metadata.
             return new ByteArrayInputStream(new byte[0]);
         }
         ObjectMapper objectMapper = builder.build();
         StringWriter columnMetadataJSON = new StringWriter();
-        objectMapper.writer().writeValue(columnMetadataJSON, columnMetadata);
+        objectMapper.writer().writeValue(columnMetadataJSON, columnMetadata.get());
         post.setEntity(new StringEntity(columnMetadataJSON.toString()));
         HttpResponse response = client.execute(post);
         int statusCode = response.getStatusLine().getStatusCode();
