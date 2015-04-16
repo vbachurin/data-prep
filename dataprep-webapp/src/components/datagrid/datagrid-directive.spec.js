@@ -229,6 +229,46 @@ describe('Datagrid directive', function() {
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
     }));
 
+    it('should set column background on cell clicked', inject(function(DatasetGridService) {
+        //given
+        var colIndex = 2;
+        var grid = new GridGetter(element);
+
+        DatasetGridService.setDataset(metadata, data);
+        scope.$digest();
+
+        //when
+        grid.row(0).cell(colIndex).element().click();
+        scope.$digest();
+
+        //then
+        expect(grid.row(0).cell(colIndex).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(colIndex).element().hasClass('selected')).toBe(true);
+    }));
+
+    it('should not change column background on click on a selected column cell', inject(function(DatasetGridService) {
+        //given
+        var colIndex = 2;
+        var grid = new GridGetter(element);
+
+        DatasetGridService.setDataset(metadata, data);
+        scope.$digest();
+
+        grid.row(0).cell(colIndex).element().click();
+        scope.$digest();
+
+        expect(grid.row(0).cell(colIndex).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(colIndex).element().hasClass('selected')).toBe(true);
+
+        //when
+        grid.row(1).cell(colIndex).element().click();
+        scope.$digest();
+
+        //then
+        expect(grid.row(0).cell(colIndex).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(colIndex).element().hasClass('selected')).toBe(true);
+    }));
+
     it('should set selected column on cell clicked', inject(function($timeout, DatasetGridService) {
         //given
         var colIndex = 2;
@@ -262,5 +302,86 @@ describe('Datagrid directive', function() {
         expect(grid.row(0).cell(colIndex).element().hasClass('highlight')).toBe(false);
         expect(grid.row(1).cell(colIndex).element().hasClass('highlight')).toBe(true);
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
+    }));
+
+    it('should change col cells background on column header click', inject(function(DatasetGridService) {
+        //given
+        DatasetGridService.setDataset(metadata, dataWithEmptyCell);
+        scope.$digest();
+
+        //when
+        element.find('#datagrid-header-1').eq(0).click();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
+    }));
+
+    it('should change selected column on column header click', inject(function($timeout, DatasetGridService) {
+        //given
+        DatasetGridService.setDataset(metadata, dataWithEmptyCell);
+        scope.$digest();
+
+        //when
+        element.find('#datagrid-header-1').eq(0).click();
+        $timeout.flush();
+
+        //then
+        expect(DatasetGridService.setSelectedColumn).toHaveBeenCalledWith('Postal');
+    }));
+
+    it('should do nothing on already selected column header click', inject(function($timeout, DatasetGridService) {
+        //given
+        var grid = new GridGetter(element);
+        DatasetGridService.setDataset(metadata, data);
+        scope.$digest();
+
+        element.find('#datagrid-header-1').eq(0).click();
+        $timeout.flush();
+        expect(DatasetGridService.setSelectedColumn.calls.count()).toBe(1);
+        expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
+
+        //when
+        element.find('#datagrid-header-1').eq(0).click();
+        try {
+            $timeout.flush();
+        }
+
+        //then
+        catch (e) {
+            expect(DatasetGridService.setSelectedColumn.calls.count()).toBe(1);
+            expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
+            expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
+            return;
+        }
+
+        throw Error('should have thrown exception because no deferred task to flush');
+    }));
+
+    it('should reset line style and reset active cell, but keep column selection when filter change', inject(function(FilterService, DatasetGridService) {
+        //given
+        DatasetGridService.setDataset(metadata, data);
+        scope.$digest();
+
+        var grid = new GridGetter(element);
+        grid.row(0).cell(0).element().click();
+        scope.$digest();
+
+        expect(grid.row(0).cell(0).element().hasClass('highlight')).toBe(true);
+        expect(grid.row(0).element().hasClass('active')).toBe(true);
+        expect(grid.row(0).cell(0).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(0).element().hasClass('selected')).toBe(true);
+
+        //when
+        FilterService.addFilter('contains', 'State', {phrase: 'AL'});
+        scope.$digest();
+
+        //then
+        expect(grid.row(0).cell(0).element().hasClass('highlight')).toBe(false);
+        expect(grid.row(0).element().hasClass('active')).toBe(false);
+        expect(grid.row(0).cell(0).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(0).element().hasClass('selected')).toBe(true);
     }));
 });

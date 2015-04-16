@@ -74,6 +74,12 @@
                     colHeaderElements = [];
                 };
 
+                var updateColSelection = function (column) {
+                    $timeout(function() {
+                        DatasetGridService.setSelectedColumn(column.id);
+                    });
+                };
+
                 //------------------------------------------------------------------------------------------------------
                 //-------------------------------------------------LISTENERS--------------------------------------------
                 //------------------------------------------------------------------------------------------------------
@@ -99,6 +105,23 @@
                     grid.onColumnsReordered.subscribe(function () {
                         clearHeaders();
                         insertDatasetHeaders();
+                    });
+
+                    //change column background and update column profil on click
+                    grid.onHeaderClick.subscribe(function(e, args) {
+                        var columnId = args.column.id;
+                        var column = _.find(grid.getColumns(), function(column) {
+                            return column.id === columnId;
+                        });
+
+                        if(column.cssClass !== 'selected') {
+                            resetCellStyles();
+                            resetColumnsClass();
+                            column.cssClass = 'selected';
+                            grid.invalidate();
+
+                            updateColSelection(column);
+                        }
                     });
                 };
 
@@ -145,17 +168,20 @@
                         grid.setCellCssStyles('highlight', config);
                         grid.invalidate();
 
-                        $timeout(function() {
-                            DatasetGridService.setSelectedColumn(column.id);
-                        });
+                        updateColSelection(column);
                     });
 
                     //change selected cell column background
                     grid.onActiveCellChanged.subscribe(function(e,args) {
                         if(angular.isDefined(args.cell)) {
-                            resetColumnsClass();
-                            grid.getColumns()[args.cell].cssClass = 'selected';
-                            grid.invalidate();
+                            var column = grid.getColumns()[args.cell];
+
+                            if(column.cssClass !== 'selected') {
+                                resetColumnsClass();
+                                column.cssClass = 'selected';
+                                grid.invalidate();
+                            }
+
                         }
                     });
 
