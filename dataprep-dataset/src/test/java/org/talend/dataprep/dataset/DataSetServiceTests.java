@@ -35,6 +35,7 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -395,11 +396,11 @@ public class DataSetServiceTests {
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
-        assertEquals(0, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         when().put("/datasets/{id}/askcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertEquals(1, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
     }
 
@@ -414,12 +415,12 @@ public class DataSetServiceTests {
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
-        assertEquals(0, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(Certification. NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         when().put("/datasets/{id}/askcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         when().put("/datasets/{id}/certify", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertEquals(2, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
     }
 
@@ -434,11 +435,11 @@ public class DataSetServiceTests {
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
-        assertEquals(0, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         when().put("/datasets/{id}/certify", dataSetId).then().statusCode(HttpStatus.EXPECTATION_FAILED.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertEquals(0, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
     }
 

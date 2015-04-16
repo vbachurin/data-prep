@@ -23,6 +23,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.DistributedLock;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
@@ -109,7 +110,7 @@ public class DataSetService {
         generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
         generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
         generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
-        generator.writeNumberField("certified", dataSetMetadata.getGovernance().getCertificationStep()); //$NON-NLS-1
+        generator.writeStringField("certification", dataSetMetadata.getGovernance().getCertificationStep().toString()); //$NON-NLS-1
         synchronized (DATE_FORMAT) {
             generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1
         }
@@ -239,8 +240,8 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
 
-        if (dataSetMetadata.getGovernance().getCertificationStep() == 0) {
-            dataSetMetadata.getGovernance().setCertificationStep(1);
+        if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
+            dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
             dataSetMetadataRepository.add(dataSetMetadata);
         }
     }
@@ -253,8 +254,8 @@ public class DataSetService {
             HttpServletResponse response) {
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
 
-        if (dataSetMetadata.getGovernance().getCertificationStep() == 1) {
-            dataSetMetadata.getGovernance().setCertificationStep(2);
+        if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
+            dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
             dataSetMetadataRepository.add(dataSetMetadata);
         } else {
             response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);

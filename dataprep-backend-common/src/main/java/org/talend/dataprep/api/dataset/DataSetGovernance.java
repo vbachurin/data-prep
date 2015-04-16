@@ -5,14 +5,19 @@ package org.talend.dataprep.api.dataset;
  */
 public class DataSetGovernance {
 
-    /* validation step of the certification: 0=nothing, 1=asked, 2=certified */
-    private int certificationStep = 0;
+    public enum Certification {
+        NONE,
+        PENDING,
+        CERTIFIED;
+    }
 
-    public int getCertificationStep() {
+    private Certification certificationStep = Certification.NONE;
+
+    public Certification getCertificationStep() {
         return this.certificationStep;
     }
 
-    public void setCertificationStep(int certificationStep) {
+    public void setCertificationStep(Certification certificationStep) {
         this.certificationStep = certificationStep;
     }
 
