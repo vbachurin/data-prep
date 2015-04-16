@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -35,7 +36,7 @@ public class ProperCase extends SingleColumnAction {
             String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
             String value = row.get(columnName);
             if (value != null) {
-                row.set(columnName, Negate.toProperCase(value));
+                row.set(columnName, WordUtils.capitalizeFully(value));
             }
         };
     }
