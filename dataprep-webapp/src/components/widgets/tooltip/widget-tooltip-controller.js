@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    function DatagridTooltipCtrl($scope) {
+    function TalendTooltipCtrl($scope) {
         var vm = this;
         var blocked = false;
         vm.innerState = vm.requestedState;
@@ -50,7 +50,7 @@
         );
     }
 
-    angular.module('data-prep.datagrid-tooltip')
-        .controller('DatagridTooltipCtrl', DatagridTooltipCtrl);
+    angular.module('talend.widget')
+        .controller('TalendTooltipCtrl', TalendTooltipCtrl);
 })();
 

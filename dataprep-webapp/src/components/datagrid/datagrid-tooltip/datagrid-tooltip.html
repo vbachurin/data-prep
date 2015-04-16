@@ -1,3 +1,8 @@
-<div class="datagrid-tooltip"
-     ng-show="tooltipCtrl.innerState"
-     ng-style="tooltipCtrl.style">{{tooltipCtrl.record[tooltipCtrl.key]}}</div>
+<talend-tooltip
+        position="tooltipCtrl.position"
+        requested-state="tooltipCtrl.requestedState"
+        class="datagrid-tooltip">
+
+     <div class="datagrid-tooltip-content">{{tooltipCtrl.record[tooltipCtrl.key]}}</div>
+
+</talend-tooltip>

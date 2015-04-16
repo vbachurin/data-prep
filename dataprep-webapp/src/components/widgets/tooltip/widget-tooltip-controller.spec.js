@@ -1,15 +1,15 @@
-describe('Datagrid tooltip controller', function () {
+describe('Tooltip widget controller', function () {
     'use strict';
 
     var createController, scope;
 
-    beforeEach(module('data-prep.datagrid-tooltip'));
+    beforeEach(module('talend.widget'));
 
     beforeEach(inject(function($rootScope, $controller) {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('DatagridTooltipCtrl', {
+            var ctrl = $controller('TalendTooltipCtrl', {
                 $scope: scope
             });
             return ctrl;
