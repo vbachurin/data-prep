@@ -20,6 +20,7 @@ class TDPException extends RuntimeException {
     private Throwable cause;
 
     public TDPException(Messages code, String message, Throwable cause) {
+        super(message, cause);
         this.code = code;
         this.message = message;
         this.cause = cause;
@@ -32,7 +33,9 @@ class TDPException extends RuntimeException {
             {
                 generator.writeStringField("code", code.getProduct() + '_' + code.getGroup() + '_' + code.getCode()); //$NON-NLS-1$
                 generator.writeStringField("message", message); //$NON-NLS-1$
-                generator.writeStringField("cause", cause.getMessage()); //$NON-NLS-1$
+                if (cause != null) {
+                    generator.writeStringField("cause", cause.getMessage()); //$NON-NLS-1$
+                }
             }
             generator.writeEndObject();
             generator.flush();

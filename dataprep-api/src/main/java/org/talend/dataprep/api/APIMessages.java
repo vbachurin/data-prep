@@ -24,11 +24,11 @@ public enum APIMessages implements Messages {
 
     @Override
     public String getProduct() {
-        return "TDP";
+        return "TDP"; //$NON-NLS-1$
     }
 
     @Override
     public String getGroup() {
-        return "API";
+        return "API"; //$NON-NLS-1$
     }
 }

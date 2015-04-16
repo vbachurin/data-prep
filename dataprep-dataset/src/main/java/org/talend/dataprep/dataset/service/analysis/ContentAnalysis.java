@@ -10,8 +10,10 @@ import javax.jms.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetMessages;
@@ -23,7 +25,10 @@ import org.talend.dataprep.exception.Exceptions;
 @Component
 public class ContentAnalysis {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ContentAnalysis.class );
+    private static final Logger LOG = LoggerFactory.getLogger(ContentAnalysis.class);
+
+    @Autowired
+    ApplicationContext appContext;
 
     @Autowired
     DataSetMetadataRepository repository;
@@ -35,26 +40,32 @@ public class ContentAnalysis {
     public void indexDataSet(Message message) {
         try {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1
-            DataSetMetadata metadata = repository.get(dataSetId);
-            if (metadata != null) {
-                try (BufferedReader content = new BufferedReader(new InputStreamReader(store.getAsRaw(metadata)))) {
-                    int lineCount = 0;
-                    while (content.readLine() != null) {
-                        lineCount++;
-                    }
-                    DataSetContent datasetContent = metadata.getContent();
-                    datasetContent.setNbLinesInHeader(1);
-                    datasetContent.setNbLinesInFooter(0);
-                    datasetContent.setNbRecords(lineCount - datasetContent.getNbLinesInHeader()
-                            - datasetContent.getNbLinesInFooter());
+            DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
+            datasetLock.lock();
+            try {
+                DataSetMetadata metadata = repository.get(dataSetId);
+                if (metadata != null) {
+                    try (BufferedReader content = new BufferedReader(new InputStreamReader(store.getAsRaw(metadata)))) {
+                        int lineCount = 0;
+                        while (content.readLine() != null) {
+                            lineCount++;
+                        }
+                        DataSetContent datasetContent = metadata.getContent();
+                        datasetContent.setNbLinesInHeader(1);
+                        datasetContent.setNbLinesInFooter(0);
+                        datasetContent.setNbRecords(lineCount - datasetContent.getNbLinesInHeader()
+                                - datasetContent.getNbLinesInFooter());
 
-                    metadata.getLifecycle().contentIndexed(true);
-                    repository.add(metadata);
-                } catch (IOException e) {
-                    throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);
+                        metadata.getLifecycle().contentIndexed(true);
+                        repository.add(metadata);
+                    } catch (IOException e) {
+                        throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);
+                    }
+                } else {
+                    LOG.info("Data set #{} no longer exists.", dataSetId); //$NON-NLS-1$
                 }
-            } else {
-                LOG.info("Data set #{} no longer exists.", dataSetId);
+            } finally {
+                datasetLock.unlock();
             }
         } catch (JMSException e) {
             throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
