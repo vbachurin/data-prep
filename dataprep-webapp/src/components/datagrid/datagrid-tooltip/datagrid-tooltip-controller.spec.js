@@ -1,4 +1,5 @@
 describe('Datagrid tooltip controller', function() {
+    'use strict';
 
     var createController, scope;
 
@@ -11,7 +12,7 @@ describe('Datagrid tooltip controller', function() {
                 $scope: scope
             });
             return ctrl;
-        }
+        };
     }));
 
     it('should init edit mode to false', function() {
