@@ -80,7 +80,7 @@ public class DistributedLock {
     /**
      * Getter for key used for the lock.
      * 
-     * @return the key used forthe lock
+     * @return the key used for the lock
      */
     public String getKey() {
         return lockKey;
