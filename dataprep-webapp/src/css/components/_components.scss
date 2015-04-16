@@ -11,15 +11,15 @@
 
 @import "../../components/playground/playground";
 @import "../../components/datagrid/datagrid";
-@import "../../components/datagrid/datagrid-tooltip/datagrid-tooltip";
-@import "../../components/datagrid-header/datagrid-header";
+@import "../../components/datagrid/tooltip/datagrid-tooltip";
+@import "../../components/datagrid/header/datagrid-header";
 @import "../../components/preparation-list/preparation-list";
 @import "../../components/home/menu";
-@import "../../components/filter-list/filter-list";
+@import "../../components/filter/list/filter-list";
 @import "../../components/navbar/navigation";
 @import "../../components/recipe/recipe";
 @import "../../components/suggestions/suggestions";
-@import "../../components/transformation-params/transformation-params";
+@import "../../components/transformation/params/transformation-params";
 
 @import "button";
 @import "inventory";

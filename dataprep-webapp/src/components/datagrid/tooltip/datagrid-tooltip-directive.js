@@ -21,7 +21,7 @@
     function DatagridTooltip($timeout) {
         return {
             restrict: 'E',
-            templateUrl: 'components/datagrid/datagrid-tooltip/datagrid-tooltip.html',
+            templateUrl: 'components/datagrid/tooltip/datagrid-tooltip.html',
             scope: {
                 record: '=',
                 key: '=',
