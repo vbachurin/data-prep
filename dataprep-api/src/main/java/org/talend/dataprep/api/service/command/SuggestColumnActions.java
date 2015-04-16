@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
@@ -51,7 +51,7 @@ public class SuggestColumnActions extends ChainedCommand<InputStream, DataSetMet
     @Override
     protected InputStream run() throws Exception {
         HttpPost post = new HttpPost(transformServiceUrl + "/suggest/column");
-        post.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
+        post.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         DataSetMetadata metadata = getInput();
 
         if (metadata == null) {
