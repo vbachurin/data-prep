@@ -18,7 +18,7 @@
      * Attr requested-state : show/hide tooltip if not blocked
      *
      */
-    function DatagridTooltip() {
+    function DatagridTooltip($timeout) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid-tooltip/datagrid-tooltip.html',
@@ -29,8 +29,23 @@
                 requestedState: '='
             },
             bindToController: true,
-            controller: function() {},
-            controllerAs: 'tooltipCtrl'
+            controller: 'DatagridTooltipCtrl',
+            controllerAs: 'tooltipCtrl',
+            link: function(scope, iElement, iAttrs, ctrl) {
+                /**
+                 * On edition mode enable, we focus on textarea
+                 */
+                scope.$watch(
+                    function() { return ctrl.editMode; },
+                    function(newValue) {
+                        if(newValue) {
+                            $timeout(function() {
+                                iElement.find('textarea').eq(0).focus();
+                            });
+                        }
+                    }
+                );
+            }
         };
     }
 

@@ -30,16 +30,35 @@
             controllerAs: 'talendTooltipCtrl',
             link: function(scope, iElement, iAttrs, ctrl) {
                 /**
-                 * Block (mouse over) unblock (mouse leave) the visibility change
+                 * Block (mouse over | focus in) unblock (mouse leave | focus out) the visibility change
                  */
-                iElement.hover(
-                    function() {
+                var hasFocus, isOver;
+                var processBlockUnblock = function() {
+                    if(hasFocus || isOver) {
                         ctrl.blockState();
-                    },
-                    function() {
+                    }
+                    else {
                         $timeout(ctrl.unblockState);
                     }
-                );
+                };
+
+                iElement.hover(
+                    function() {
+                        isOver = true;
+                        processBlockUnblock();
+                    },
+                    function() {
+                        isOver = false;
+                        processBlockUnblock();
+                    });
+                iElement.focusin(function() {
+                    hasFocus = true;
+                    processBlockUnblock();
+                });
+                iElement.focusout(function() {
+                    hasFocus = false;
+                    processBlockUnblock();
+                });
 
                 /**
                  * Calculate left/right position.
@@ -56,7 +75,6 @@
                             left: position.x + 'px',
                             right: 'auto'
                         };
-
                     }
                     else {
                         return {

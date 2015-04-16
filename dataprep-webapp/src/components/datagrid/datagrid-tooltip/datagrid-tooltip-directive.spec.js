@@ -11,7 +11,7 @@ describe('Datagrid tooltip directive', function() {
         $compile(element)(scope);
         scope.$digest();
 
-        //angular.element('body').append(element);
+        angular.element('body').append(element);
         $window.innerWidth = 1920;
         $window.innerHeight = 1080;
     }));
@@ -35,4 +35,21 @@ describe('Datagrid tooltip directive', function() {
         expect(element.find('.datagrid-tooltip').hasClass('ng-hide')).toBe(false);
         expect(element.find('.datagrid-tooltip-content').eq(0).text()).toBe('    Toto aux toilettes');
     });
+
+    it('should focus on inner textarea when edit mode is turn on', inject(function($timeout) {
+        //given
+        var textarea = element.find('textarea').eq(0)[0];
+        scope.showTooltip = true;
+        scope.$digest();
+
+        expect(document.activeElement).not.toBe(textarea);
+
+        //when
+        element.find('.datagrid-tooltip-content').eq(0).click();
+        scope.$digest();
+        $timeout.flush();
+
+        //then
+        expect(document.activeElement).toBe(textarea);
+    }));
 });

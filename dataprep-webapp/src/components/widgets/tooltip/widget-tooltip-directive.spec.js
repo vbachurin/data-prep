@@ -7,7 +7,7 @@ describe('Tooltip widget directive', function() {
 
     beforeEach(inject(function($rootScope, $compile, $window) {
         scope = $rootScope.$new();
-        element = angular.element('<talend-tooltip position="position" requested-state="showTooltip">Toto aux toilettes</talend-tooltip>');
+        element = angular.element('<talend-tooltip position="position" requested-state="showTooltip">Toto aux toilettes <textarea></textarea></talend-tooltip>');
         $compile(element)(scope);
         scope.$digest();
 
@@ -170,4 +170,59 @@ describe('Tooltip widget directive', function() {
         //then
         expect(element.hasClass('ng-hide')).toBe(false);
     }));
+
+    it('should block visibility change when content is focused', function() {
+        //given
+        scope.showTooltip = true;
+        scope.$digest();
+
+        element.find('textarea').eq(0).focus();
+        expect(element.hasClass('ng-hide')).toBe(false);
+
+        //when
+        scope.showTooltip = false;
+        scope.$digest();
+
+        //then
+        expect(element.hasClass('ng-hide')).toBe(false);
+    });
+
+    it('should unblock and update visibility change when content is unfocused', inject(function($timeout) {
+        //given
+        scope.showTooltip = true;
+        scope.$digest();
+
+        element.find('textarea').eq(0).focus();
+
+        scope.showTooltip = false;
+        scope.$digest();
+        expect(element.hasClass('ng-hide')).toBe(false);
+
+        //when
+        element.find('textarea').eq(0).focusout();
+        $timeout.flush();
+
+        //then
+        expect(element.hasClass('ng-hide')).toBe(true);
+    }));
+
+    //it('should unblock and update visibility change when mouse is not over anymore', inject(function($timeout) {
+    //    //given
+    //    expect(element.hasClass('ng-hide')).toBe(true);
+    //
+    //    var eventEnter = angular.element.Event('mouseenter');
+    //    element.trigger(eventEnter);
+    //
+    //    scope.showTooltip = true;
+    //    scope.$digest();
+    //    expect(element.hasClass('ng-hide')).toBe(true);
+    //
+    //    //when
+    //    var eventLeave = angular.element.Event('mouseleave');
+    //    element.trigger(eventLeave);
+    //    $timeout.flush();
+    //
+    //    //then
+    //    expect(element.hasClass('ng-hide')).toBe(false);
+    //}));
 });
