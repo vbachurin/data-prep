@@ -2,10 +2,11 @@ describe('Recipe controller', function() {
     'use strict';
 
     var createController, scope;
+    var previousStep = {};
 
     beforeEach(module('data-prep.recipe'));
 
-    beforeEach(inject(function($rootScope, $controller) {
+    beforeEach(inject(function($rootScope, $controller, RecipeService, PlaygroundService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -14,6 +15,9 @@ describe('Recipe controller', function() {
             });
             return ctrl;
         };
+
+        spyOn(RecipeService, 'getPreviousStep').and.returnValue(previousStep);
+        spyOn(PlaygroundService, 'loadStep').and.returnValue(previousStep);
     }));
 
     afterEach(inject(function(RecipeService) {
@@ -46,7 +50,7 @@ describe('Recipe controller', function() {
         expect(ctrl.recipe[0].transformation).toEqual(transformation);
     }));
 
-    it('should highlight active steps after the targeted one', inject(function(RecipeService) {
+    it('should highlight active steps after the targeted one (included)', inject(function(RecipeService) {
         //given
         var ctrl = createController();
 
@@ -63,12 +67,12 @@ describe('Recipe controller', function() {
 
         //then
         expect(recipe[0].highlight).toBeFalsy();
-        expect(recipe[1].highlight).toBeFalsy();
+        expect(recipe[1].highlight).toBeTruthy();
         expect(recipe[2].highlight).toBeTruthy();
         expect(recipe[3].highlight).toBeTruthy();
     }));
 
-    it('should highlight inactive steps before the targeted one', inject(function(RecipeService) {
+    it('should highlight inactive steps before the targeted one (included)', inject(function(RecipeService) {
         //given
         var ctrl = createController();
 
@@ -90,7 +94,7 @@ describe('Recipe controller', function() {
         expect(recipe[3].highlight).toBeFalsy();
     }));
 
-    it('should highlight inactive steps before the targeted one', inject(function(RecipeService) {
+    it('should remove highlight on mouse hover end', inject(function(RecipeService) {
         //given
         var ctrl = createController();
 
@@ -110,5 +114,29 @@ describe('Recipe controller', function() {
         expect(recipe[1].highlight).toBeFalsy();
         expect(recipe[2].highlight).toBeFalsy();
         expect(recipe[3].highlight).toBeFalsy();
+    }));
+
+    it('should load current step content if the step is first inactive', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        var step = {inactive: true};
+
+        //when
+        ctrl.toggleStep(step);
+
+        //then
+        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step);
+    }));
+
+    it('should load previous step content if the step is first active', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        var step = {inactive: false};
+
+        //when
+        ctrl.toggleStep(step);
+
+        //then
+        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
     }));
 });

@@ -114,8 +114,8 @@
             return PreparationService.getContent(step.transformation.stepId)
                 .then(function(response) {
                     self.currentData = response.data;
-                    RecipeService.disableStepsAfter(step);
                     DatasetGridService.setDataset(self.currentMetadata, response.data);
+                    RecipeService.disableStepsAfter(step);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');

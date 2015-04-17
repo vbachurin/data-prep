@@ -11,19 +11,29 @@
         vm.resetParams = RecipeService.resetParams;
 
         /**
-         * Load selected step and disable next steps
+         * Toggle selected step
+         * - step is inactive : activate it with all the previous steps
+         * - step is active : deactivate it with all the following steps
          */
-        vm.loadStep = PlaygroundService.loadStep;
+        vm.toggleStep = function(step) {
+            if(step.inactive) {
+                PlaygroundService.loadStep(step);
+            }
+            else {
+                var previousStep = RecipeService.getPreviousStep(step);
+                PlaygroundService.loadStep(previousStep);
+            }
+        };
 
         /**
          * On step button hover in order to inform actions on steps :
-         * - highlight inactive buttons above the one
-         * - highlight active buttons under the one
+         * - highlight inactive buttons above the one (including the one)
+         * - highlight active buttons under the one (including the one)
          * @param index - the position of the hovered button
          */
         vm.stepHoverStart = function(index) {
             _.forEach(vm.recipe, function(element, elementIndex) {
-                element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index < elementIndex);
+                element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });
         };
 
