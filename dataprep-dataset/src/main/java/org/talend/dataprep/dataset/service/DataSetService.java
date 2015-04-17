@@ -238,11 +238,17 @@ public class DataSetService {
     @Timed
     public void askCertification(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
-        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        datasetLock.lock();
+        try {
+            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
 
-        if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
-            dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
-            dataSetMetadataRepository.add(dataSetMetadata);
+            if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            }
+        } finally {
+            datasetLock.unlock();
         }
     }
 
@@ -252,13 +258,19 @@ public class DataSetService {
     public void grantCertification(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             HttpServletResponse response) {
-        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        datasetLock.lock();
+        try {
+            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
 
-        if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
-            dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
-            dataSetMetadataRepository.add(dataSetMetadata);
-        } else {
-            response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
+            if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            } else {
+                response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
+            }
+        } finally {
+            datasetLock.unlock();
         }
     }
 
