@@ -52,7 +52,7 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
     .pipe(gulp.dest('src/'));
 });
 
-gulp.task('partials', ['consolidate'], function () {
+gulp.task('partials', function () {
   return gulp.src(['src/**/*.html', '.tmp/**/*.html'])
     .pipe($.minifyHtml({
       empty: true,
@@ -136,7 +136,7 @@ gulp.task('build', ['clean'], function (){
 });
 
 gulp.task('build:dev', ['clean'], function(){
-  gulp.stat(['consolidate', 'injector:css', 'injector:js']);
+  gulp.stat(['injector:css', 'injector:js']);
   return gulp.src([
     'src/**/*.*',
     '.tmp/**/*.*',
