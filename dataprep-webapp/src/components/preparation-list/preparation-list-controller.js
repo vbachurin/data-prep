@@ -39,8 +39,12 @@
                 var selectedPrep = _.find(preparations, function(preparation) {
                     return preparation.id === $stateParams.prepid;
                 });
+                
                 if(selectedPrep) {
                     vm.load(selectedPrep);
+                }
+                else {
+                    MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'preparation'});
                 }
             }
         };

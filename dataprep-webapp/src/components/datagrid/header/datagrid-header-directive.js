@@ -4,7 +4,7 @@
     function DatagridHeader() {
         return {
             restrict: 'E',
-            templateUrl: 'components/datagrid-header/datagrid-header.html',
+            templateUrl: 'components/datagrid/header/datagrid-header.html',
             scope: {
                 metadata: '=',
                 column: '='

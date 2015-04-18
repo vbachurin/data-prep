@@ -2,6 +2,7 @@
     'use strict';
 
     function RecipeService(PreparationService, ConverterService) {
+        var initialState;
         var recipe = [];
         var listType = 'LIST';
         var activeThresholdStep = null;
@@ -18,6 +19,7 @@
          * Reset the current recipe item list
          */
         this.reset = function() {
+            initialState = null;
             recipe = [];
             activeThresholdStep = null;
         };
@@ -148,7 +150,8 @@
                 .then(function(resp) {
                     //steps ids are in reverse order and the last is the 'no-transformation' id
                     var steps = resp.data.steps.slice(0);
-                    steps.pop();
+                    var initialStepId = steps.pop();
+                    initialState = {transformation: {stepId: initialStepId}};
 
                     activeThresholdStep = null;
                     recipe = _.chain(steps)
@@ -164,7 +167,7 @@
          * @param step - the limit between active and inactive
          */
         this.disableStepsAfter = function(step) {
-            var stepFound = false;
+            var stepFound = step === initialState;
             _.forEach(recipe, function(nextStep) {
                 if(stepFound) {
                     nextStep.inactive = true;
@@ -177,6 +180,23 @@
                 }
             });
             activeThresholdStep = step;
+        };
+
+        /**
+         * Get the step before the given one
+         * @param step - the given step
+         */
+        this.getPreviousStep = function(step) {
+            var previousStep = initialState;
+            for(var i in recipe) {
+                var currentStep = recipe[i];
+                if(currentStep === step) {
+                    return previousStep;
+                }
+                else {
+                    previousStep = currentStep;
+                }
+            }
         };
     }
 

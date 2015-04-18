@@ -4,7 +4,7 @@
     function TransformMenu() {
         return {
             restrict: 'E',
-            templateUrl: 'components/transformation-menu/transformation-menu.html',
+            templateUrl: 'components/transformation/menu/transformation-menu.html',
             replace: true,
             scope: {
                 metadata: '=',

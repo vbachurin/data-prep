@@ -3,7 +3,7 @@
 
     function DatasetUploadList() {
         return {
-            templateUrl: 'components/dataset-upload-list/dataset-upload-list.html',
+            templateUrl: 'components/dataset/upload-list/dataset-upload-list.html',
             restrict: 'E',
             scope: {
                 datasets: '='

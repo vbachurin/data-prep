@@ -1,7 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +7,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
+import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,38 +22,6 @@ public class Negate extends SingleColumnAction {
     public static final String NEGATE_ACTION_NAME = "negate";                             //$NON-NLS-1$
 
     private Negate() {
-    }
-
-    // TODO move this
-    protected static String toProperCase(String from) {
-        StringReader in = new StringReader(from.toLowerCase());
-        boolean precededBySpace = true;
-        StringBuilder properCase = new StringBuilder();
-        while (true) {
-            try {
-                int i = in.read();
-                if (i == -1) {
-                    break;
-                }
-                char c = (char) i;
-                if (c == ' ' || c == '"' || c == '(' || c == '.' || c == '/' || c == '\\' || c == ',') {
-                    properCase.append(c);
-                    precededBySpace = true;
-                } else {
-                    if (precededBySpace) {
-                        properCase.append(Character.toUpperCase(c));
-                    } else {
-                        properCase.append(c);
-                    }
-                    precededBySpace = false;
-                }
-            } catch (IOException e) {
-                // should not occurs when reading a String
-                LOGGER.warn("This error should not occurs", e);
-            }
-        }
-
-        return properCase.toString();
     }
 
     @Override
@@ -81,7 +48,7 @@ public class Negate extends SingleColumnAction {
 
             if (value != null && (value.trim().equalsIgnoreCase("true") || value.trim().equalsIgnoreCase("false"))) { //$NON-NLS-1$ //$NON-NLS-2$
                 Boolean boolValue = Boolean.valueOf(value);
-                row.set(columnName, toProperCase("" + !boolValue)); //$NON-NLS-1$
+                row.set(columnName, WordUtils.capitalizeFully("" + !boolValue)); //$NON-NLS-1$
             }
         };
     }

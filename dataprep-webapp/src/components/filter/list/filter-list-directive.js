@@ -5,7 +5,7 @@
         return {
             restrict: 'E',
             replace: true,
-            templateUrl: 'components/filter-list/filter-list.html',
+            templateUrl: 'components/filter/list/filter-list.html',
             bindToController: true,
             controllerAs: 'filterCtrl',
             controller: 'FilterListCtrl'

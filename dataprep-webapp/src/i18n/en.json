@@ -72,11 +72,13 @@
   "REMOVE_SUCCESS"        : "The {{type}} \"{{name}}\" has been removed.",
 
   "_comment" : "Errors",
-  "GENERIC_ERROR"         : "An error occurred",
-  "INVALID_DATASET_TITLE" : "Invalid dataset",
-  "INVALID_DATASET"       : "This dataset is not valid. Please import a correct CSV file to update the data",
-  "SERVER_ERROR_TITLE"    : "Server error",
-  "SERVICE_UNAVAILABLE"   : "Service unavailable",
-  "UPLOAD_ERROR_TITLE"    : "Upload error",
-  "UPLOAD_ERROR"          : "An error occurred during file upload"
+  "GENERIC_ERROR"                   : "An error occurred",
+  "INVALID_DATASET_TITLE"           : "Invalid dataset",
+  "INVALID_DATASET"                 : "This dataset is not valid. Please import a correct CSV file to update the data",
+  "PLAYGROUND_FILE_NOT_FOUND_TITLE" : "{{type}} load error",
+  "PLAYGROUND_FILE_NOT_FOUND"       : "The {{type}} with this id does not exist or is inaccessible",
+  "SERVER_ERROR_TITLE"              : "Server error",
+  "SERVICE_UNAVAILABLE"             : "Service unavailable",
+  "UPLOAD_ERROR_TITLE"              : "Upload error",
+  "UPLOAD_ERROR"                    : "An error occurred during file upload"
 }

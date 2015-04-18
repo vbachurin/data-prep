@@ -4,7 +4,7 @@
     function TransformParams() {
         return {
             restrict: 'E',
-            templateUrl: 'components/transformation-params/transformation-params.html',
+            templateUrl: 'components/transformation/params/transformation-params.html',
             replace: true,
             scope: {
                 transformation: '=',

@@ -357,4 +357,31 @@ describe('Recipe service', function () {
         expect(recipe[3].inactive).toBeTruthy();
         expect(RecipeService.getActiveThresholdStep()).toBe(recipe[1]);
     }));
+
+    it('should return the step before provided step', inject(function(RecipeService) {
+        //given
+        var recipe = [{transformation: {stepId: '0'}},
+            {transformation: {stepId: '1'}},
+            {transformation: {stepId: '2'}},
+            {transformation: {stepId: '3'}}];
+        RecipeService.getRecipe().push(recipe[0], recipe[1], recipe[2], recipe[3]);
+
+        //when
+        var previous = RecipeService.getPreviousStep(recipe[2]);
+
+        //then
+        expect(previous).toBe(recipe[1]);
+    }));
+
+    it('should return the initial step when provided step is the first transformation', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var previous = RecipeService.getPreviousStep(RecipeService.getRecipe()[0]);
+
+        //then
+        expect(previous.transformation.stepId).toBe('f6e172c33bdacbc69bca9d32b2bd78174712a171');
+    }));
 });

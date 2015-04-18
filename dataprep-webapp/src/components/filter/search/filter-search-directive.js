@@ -5,7 +5,7 @@
         return {
             restrict: 'E',
             replace: true,
-            templateUrl: 'components/filter-search/filter-search.html',
+            templateUrl: 'components/filter/search/filter-search.html',
             scope: {},
             bindToController: true,
             controllerAs: 'filterCtrl',

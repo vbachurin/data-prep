@@ -1,0 +1,18 @@
+<talend-tooltip
+        position="tooltipCtrl.position"
+        requested-state="tooltipCtrl.requestedState"
+        class="datagrid-tooltip"
+        ng-switch="tooltipCtrl.editMode">
+
+     <div ng-show="!tooltipCtrl.editMode"
+          ng-click="tooltipCtrl.edit()"
+          class="datagrid-tooltip-content">{{tooltipCtrl.record[tooltipCtrl.key]}}</div>
+
+    <div ng-show="tooltipCtrl.editMode">
+        <textarea cols="{{tooltipCtrl.inputValue.length}}"
+                  rows="{{tooltipCtrl.inputValue.length / 30}}"
+                  ng-model="tooltipCtrl.inputValue"></textarea>
+        Update coming soon...
+    </div>
+
+</talend-tooltip>

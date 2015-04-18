@@ -4,7 +4,7 @@
     function DatasetList() {
         return {
             restrict: 'E',
-            templateUrl: 'components/dataset-list/dataset-list.html',
+            templateUrl: 'components/dataset/list/dataset-list.html',
             bindToController: true,
             controllerAs: 'datasetListCtrl',
             controller: 'DatasetListCtrl'

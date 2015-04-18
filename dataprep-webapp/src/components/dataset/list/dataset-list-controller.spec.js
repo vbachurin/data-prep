@@ -14,7 +14,7 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep.dataset-list'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetListService, PlaygroundService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, DatasetListService, PlaygroundService, MessageService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -31,6 +31,7 @@ describe('Dataset list controller', function () {
         });
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
+        spyOn(MessageService, 'error').and.returnValue(null);
     }));
 
     afterEach(inject(function($stateParams) {
@@ -60,7 +61,7 @@ describe('Dataset list controller', function () {
         expect(PlaygroundService.show).toHaveBeenCalled();
     }));
 
-    it('should not init playground when dataset id is not in users dataset', inject(function ($stateParams, PlaygroundService) {
+    it('should show error message when dataset id is not in users dataset', inject(function ($stateParams, PlaygroundService, MessageService) {
         //given
         $stateParams.datasetid = 'azerty';
 
@@ -71,6 +72,7 @@ describe('Dataset list controller', function () {
         //then
         expect(PlaygroundService.initPlayground).not.toHaveBeenCalled();
         expect(PlaygroundService.show).not.toHaveBeenCalled();
+        expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
     }));
 
     describe('already created', function () {

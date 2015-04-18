@@ -38,8 +38,12 @@
                 var selectedDataset = _.find(datasets, function(dataset) {
                     return dataset.id === $stateParams.datasetid;
                 });
+
                 if(selectedDataset) {
                     vm.open(selectedDataset);
+                }
+                else {
+                    MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
                 }
             }
         };
