@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,19 +31,49 @@ public class XlsSchemaParser implements SchemaParser {
 
     @Override
     public List<ColumnMetadata> parse(InputStream content) {
+
+        // FIXME ATM only first sheet but need to be discuss
+        // maybe return List<List<ColumnMetadata>> ??
+        // so we could return all sheets
+
+        Map<String, List<ColumnMetadata>> schema = parseAllSheets(content);
+
+        if (schema.size() > 0) {
+            return schema.values().iterator().next();
+        }
+
+        return Collections.emptyList();
+
+    }
+
+    public Map<String, List<ColumnMetadata>> parseAllSheets(InputStream content) {
         try {
             Workbook hssfWorkbook = XlsUtils.getWorkbook(content);
 
-            // FIXME ATM only first sheet but need to be discuss
-            // maybe return List<List<ColumnMetadata>> ??
-            // so we could parse all sheets
-            Sheet sheet = hssfWorkbook.getSheetAt(0);
+            int sheetNumber = hssfWorkbook.getNumberOfSheets();
 
-            if (sheet == null) {
-                return Collections.emptyList();
+            if (sheetNumber < 1) {
+                return Collections.emptyMap();
             }
 
-            return parsePerSheet(sheet);
+            Map<String, List<ColumnMetadata>> schema = new HashMap<>(sheetNumber);
+
+            for (int i = 0; i < sheetNumber; i++) {
+                Sheet sheet = hssfWorkbook.getSheetAt(i);
+
+                if (sheet.getLastRowNum() < 1) {
+                    continue;
+                }
+
+                List<ColumnMetadata> columnMetadatas = parsePerSheet(sheet);
+
+                String sheetName = sheet.getSheetName();
+
+                schema.put(sheetName == null ? "sheet-" + i : sheetName, columnMetadatas);
+
+            }
+
+            return schema;
 
         } catch (IOException e) {
             logger.debug("IOEXception during parsing xls content :" + e.getMessage(), e);
@@ -54,15 +85,16 @@ public class XlsSchemaParser implements SchemaParser {
 
         SortedMap<Integer, SortedMap<Integer, Type>> cellsTypeMatrix = collectSheetTypeMatrix(sheet);
 
-        logger.trace( "cellsTypeMatrix: {}", cellsTypeMatrix );
+        logger.trace("cellsTypeMatrix: {}", cellsTypeMatrix);
 
         Map<Integer, Integer> cellTypeChange = guessHeaderChange(cellsTypeMatrix);
 
         // average cell type change
-        //double averageHeaderSizeDouble = cellTypeChange.values().stream().mapToInt(Integer::intValue).average().getAsDouble();
-        //int averageHeaderSize = (int) Math.ceil(averageHeaderSizeDouble);
+        // double averageHeaderSizeDouble =
+        // cellTypeChange.values().stream().mapToInt(Integer::intValue).average().getAsDouble();
+        // int averageHeaderSize = (int) Math.ceil(averageHeaderSizeDouble);
 
-        // FIXME  think more about header size calculation
+        // FIXME think more about header size calculation
         // currently can fail so force an header of size 1
         int averageHeaderSize = 1;
 
@@ -137,6 +169,7 @@ public class XlsSchemaParser implements SchemaParser {
      * @return
      */
     protected SortedMap<Integer, SortedMap<Integer, Type>> collectSheetTypeMatrix(Sheet sheet) {
+
         int firstRowNum = sheet.getFirstRowNum();
         int lastRowNum = sheet.getLastRowNum();
 
