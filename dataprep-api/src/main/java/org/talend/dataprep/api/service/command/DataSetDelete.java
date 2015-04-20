@@ -29,11 +29,6 @@ public class DataSetDelete extends HystrixCommand<Void> {
     }
 
     @Override
-    protected Void getFallback() {
-        return null;
-    }
-
-    @Override
     protected Void run() throws Exception {
         HttpDelete contentRetrieval = new HttpDelete(contentServiceUrl + "/" + dataSetId);
         HttpResponse response = client.execute(contentRetrieval);

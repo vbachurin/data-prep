@@ -57,11 +57,6 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
     }
 
     @Override
-    protected InputStream getFallback() {
-        return new ByteArrayInputStream(new byte[0]);
-    }
-
-    @Override
     protected InputStream run() throws Exception {
         HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/content/" + version);
         HttpResponse response = client.execute(contentRetrieval);
@@ -81,8 +76,8 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
                 // ... transform it ...
                 HttpGet actionsRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/actions/" + version); //$NON-NLS-1$
                 String actions = IOUtils.toString(client.execute(actionsRetrieval).getEntity().getContent());
-                Transform transformCommand = context.getBean(Transform.class, client, transformServiceUrl, retrieveDataSet, Base64.getEncoder()
-                        .encodeToString(actions.getBytes()));
+                Transform transformCommand = context.getBean(Transform.class, client, transformServiceUrl, retrieveDataSet,
+                        Base64.getEncoder().encodeToString(actions.getBytes()));
                 // ... and send it back to user (but saves it back in preparation service).
                 return new CloneInputStream(transformCommand.execute(), Collections.emptyList()); // TODO
             } else if (statusCode == HttpStatus.SC_NO_CONTENT) {

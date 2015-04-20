@@ -33,11 +33,6 @@ public class PreparationList extends HystrixCommand<InputStream> {
     }
 
     @Override
-    protected InputStream getFallback() {
-        return new ByteArrayInputStream(new byte[0]);
-    }
-
-    @Override
     protected InputStream run() throws Exception {
         HttpGet contentRetrieval;
         switch (format) {
