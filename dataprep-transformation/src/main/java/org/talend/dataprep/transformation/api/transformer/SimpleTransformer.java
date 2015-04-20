@@ -197,21 +197,18 @@ class SimpleTransformer implements Transformer {
                     output.write("]".getBytes()); //$NON-NLS-1$
                     output.flush();
                     context.setCurrent(new Selector()); // Finished records, exit this state
-                } else if (nextToken == JsonToken.START_OBJECT) {
-                    if (!firstRow) {
-                        output.write(',');
-                    } else {
-                        firstRow = false;
-                    }
                 } else if (nextToken == JsonToken.FIELD_NAME) {
                     currentFieldName = parser.getText(); // Column name
                 } else if (nextToken == JsonToken.VALUE_STRING) {
                     row.set(currentFieldName, parser.getText()); // Value
                 } else if (nextToken == JsonToken.END_OBJECT) {
                     action.accept(row);
-                    if (row.isDeleted()) {
-                        firstRow = true;
-                    } else {
+                    if (! row.isDeleted()) {
+                        if (!firstRow) {
+                            output.write(',');
+                        } else {
+                            firstRow = false;
+                        }
                         row.writeTo(output);
                     }
                     row.clear(); // Clear values (allow to safely reuse DataSetRow instance)

@@ -3,9 +3,10 @@ package org.talend.dataprep.api.dataset;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator;
 import org.talend.dataprep.exception.CommonMessages;
 import org.talend.dataprep.exception.Exceptions;
 
@@ -22,41 +23,63 @@ public class DataSetRow {
         this.values.putAll(values);
     }
 
-    public DataSetRow set(String name, String value) {
+    /**
+     * Set an entry in the dataset row
+     * @param name - the key
+     * @param value - the value
+     */
+    public DataSetRow set(final String name, final String value) {
         values.put(name, value);
         return this;
     }
 
-    public String get(String name) {
+    /**
+     * Get the value associated with the provided key
+     * @param name - the key
+     * @return - the value as string
+     */
+    public String get(final String name) {
         return values.get(name);
     }
 
+    /**
+     * Check if the row is deleted
+     */
     public boolean isDeleted() {
         return this.deleted;
     }
 
+    /**
+     * Set whether the row is deleted
+     */
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
 
-    public void writeTo(OutputStream stream) {
+    /**
+     * Write the row as JSON in the provided OutputStream
+     * @param stream - the stream to write to
+     */
+    public void writeTo(final OutputStream stream) {
         if (isDeleted()) {
             return;
         }
-        StringBuilder builder = new StringBuilder();
-        Iterator<Map.Entry<String, String>> iterator = values.entrySet().iterator();
-        builder.append('{');
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> entry = iterator.next();
-            builder.append('\"').append(entry.getKey()).append('\"').append(':').append('\"').append(entry.getValue())
-                    .append('\"');
-            if (iterator.hasNext()) {
-                builder.append(',');
-            }
-        }
-        builder.append('}');
+
         try {
-            stream.write(builder.toString().getBytes());
+            final JsonGenerator jGenerator = new JsonFactory().createJsonGenerator(stream);
+            jGenerator.writeStartObject();
+
+            values.entrySet().stream().forEach((entry) -> {
+                try {
+                    jGenerator.writeStringField(entry.getKey(), entry.getValue());
+                } catch (IOException e) {
+                    throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+                }
+            });
+
+            jGenerator.writeEndObject();
+            jGenerator.flush();
+
         } catch (IOException e) {
             throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
