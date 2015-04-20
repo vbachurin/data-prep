@@ -1,6 +1,8 @@
 package org.talend.dataprep.exception;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 
 import org.slf4j.Logger;
@@ -35,6 +37,9 @@ class TDPException extends RuntimeException {
                 generator.writeStringField("message", message); //$NON-NLS-1$
                 if (cause != null) {
                     generator.writeStringField("cause", cause.getMessage()); //$NON-NLS-1$
+                    final StringWriter details = new StringWriter();
+                    cause.printStackTrace(new PrintWriter(details));
+                    generator.writeStringField("details", details.toString()); //$NON-NLS-1$
                 }
             }
             generator.writeEndObject();
