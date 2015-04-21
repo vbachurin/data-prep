@@ -31,6 +31,7 @@ public class PreparationAPI extends APIService {
     public void listPreparations(
             @RequestParam(value = "format", defaultValue = "long") @ApiParam(name = "format", value = "Format of the returned document (can be 'long' or 'short'). Defaults to 'long'.") String format,
             HttpServletResponse response) {
+        LOG.debug("Listing preparations (pool: {} )...", getConnectionManager().getTotalStats());
         PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, preparationServiceURL, listFormat);
@@ -39,6 +40,7 @@ public class PreparationAPI extends APIService {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
+            LOG.debug("Listed preparations (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {
             throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
         }
@@ -50,9 +52,12 @@ public class PreparationAPI extends APIService {
     public String createPreparation(
             @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
             HttpServletResponse response) {
+        LOG.debug("Creating preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         PreparationCreate preparationCreate = getCommand(PreparationCreate.class, client, preparationServiceURL, preparation);
-        return preparationCreate.execute();
+        final String preparationId = preparationCreate.execute();
+        LOG.debug("Created preparation (pool: {} )...", getConnectionManager().getTotalStats());
+        return preparationId;
     }
 
     @RequestMapping(value = "/api/preparations/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -62,9 +67,12 @@ public class PreparationAPI extends APIService {
             @ApiParam(name = "id", value = "The id of the preparation to update.") @PathVariable("id") String id,
             @ApiParam(name = "body", value = "The updated preparation. Null values are ignored during update. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
             HttpServletResponse response) {
+        LOG.debug("Updating preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         PreparationUpdate preparationUpdate = getCommand(PreparationUpdate.class, client, preparationServiceURL, id, preparation);
-        return preparationUpdate.execute();
+        final String preparationId = preparationUpdate.execute();
+        LOG.debug("Updated preparation (pool: {} )...", getConnectionManager().getTotalStats());
+        return preparationId;
     }
 
     @RequestMapping(value = "/api/preparations/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -72,9 +80,12 @@ public class PreparationAPI extends APIService {
     @Timed
     public String deletePreparation(
             @ApiParam(name = "id", value = "The id of the preparation to delete.") @PathVariable("id") String id) {
+        LOG.debug("Deleting preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         PreparationDelete preparationDelete = getCommand(PreparationDelete.class, client, preparationServiceURL, id);
-        return preparationDelete.execute();
+        final String preparationId = preparationDelete.execute();
+        LOG.debug("Deleted preparation (pool: {} )...", getConnectionManager().getTotalStats());
+        return preparationId;
     }
 
     @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -83,6 +94,7 @@ public class PreparationAPI extends APIService {
     public void getPreparation(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             HttpServletResponse response) {
+        LOG.debug("Retrieving preparation details (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationGet.class, client, preparationServiceURL, preparationId);
         try {
@@ -92,6 +104,7 @@ public class PreparationAPI extends APIService {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
+            LOG.debug("Retrieved preparation details (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {
             throw Exceptions.User(APIMessages.UNABLE_TO_GET_PREPARATION_DETAILS, e);
         }
@@ -104,6 +117,7 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
             HttpServletResponse response) {
+        LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationServiceURL,
                 contentServiceUrl, transformServiceUrl, preparationId, version);
@@ -111,6 +125,7 @@ public class PreparationAPI extends APIService {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
+            LOG.debug("Retrieved preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {
             throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_CONTENT, e);
         }
@@ -122,9 +137,11 @@ public class PreparationAPI extends APIService {
     public void addPreparationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
+        LOG.debug("Adding action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationServiceURL, preparationId, body);
         command.execute();
+        LOG.debug("Added action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
     }
 
     @RequestMapping(value = "/api/preparations/{id}/actions/{action}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -133,9 +150,11 @@ public class PreparationAPI extends APIService {
     public void updatePreparationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId,
-            @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
+            @ApiParam("New content for the action.") InputStream body, HttpServletResponse response) {
+        LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationServiceURL, preparationId, stepId, body);
         command.execute();
+        LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
     }
 }
