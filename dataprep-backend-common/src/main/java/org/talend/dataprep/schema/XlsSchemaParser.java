@@ -12,6 +12,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -62,7 +63,7 @@ public class XlsSchemaParser implements SchemaParser {
                 Sheet sheet = hssfWorkbook.getSheetAt(i);
 
                 if (sheet.getLastRowNum() < 1) {
-                    logger.debug( "sheet '{}' do not have rows skip ip", sheet.getSheetName() );
+                    logger.debug("sheet '{}' do not have rows skip ip", sheet.getSheetName());
                     continue;
                 }
 
@@ -108,7 +109,7 @@ public class XlsSchemaParser implements SchemaParser {
         cellsTypeMatrix.forEach((integer, integerTypeSortedMap) -> {
             int colRowTypeChange = cellTypeChange.get(integer);
 
-            Type type = guessColumnType(integerTypeSortedMap, colRowTypeChange, averageHeaderSize);
+            Type type = guessColumnType(integerTypeSortedMap, averageHeaderSize);
 
             String headerText = "col" + integer;
             if (averageHeaderSize == 1) {
@@ -116,6 +117,12 @@ public class XlsSchemaParser implements SchemaParser {
                 Cell headerCell = sheet.getRow(0).getCell(integer);
                 headerText = XlsUtils.getCellValueAsString(headerCell);
             }
+
+            // header text cannot be null so use a default one
+            if (StringUtils.isEmpty(headerText)) {
+                headerText = "col_" + integer;
+            }
+
             // FIXME what do we do if header size is > 1 concat all lines?
 
             columnMetadatas.add(ColumnMetadata.Builder //
@@ -133,11 +140,10 @@ public class XlsSchemaParser implements SchemaParser {
     /**
      * 
      * @param columnRows all rows with previously guessed type: key=row number, value= guessed type
-     * @param rowTypeChangeIdx
      * @param averageHeaderSize
      * @return
      */
-    protected Type guessColumnType(SortedMap<Integer, Type> columnRows, int rowTypeChangeIdx, int averageHeaderSize) {
+    protected Type guessColumnType(SortedMap<Integer, Type> columnRows, int averageHeaderSize) {
 
         // calculate number per type
 
@@ -201,6 +207,7 @@ public class XlsSchemaParser implements SchemaParser {
 
                     break;
                 case Cell.CELL_TYPE_BLANK:
+                    continue;
                 case Cell.CELL_TYPE_STRING:
                     currentType = Type.STRING;
                     break;

@@ -292,7 +292,37 @@ public class XlsFormatTest {
     public void test_second_sheet_parsing() throws Exception {
         String fileName = "Talend_Desk-Tableau-Bord-011214.xls";
 
+        FormatGuess formatGuess;
 
+        XlsSchemaParser xlsSchemaParser = applicationContext.getBean(XlsSchemaParser.class);
+
+        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
+            formatGuess = formatGuesser.guess(inputStream);
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+
+            Map<String,List<ColumnMetadata>> xlsSchema = xlsSchemaParser.parseAllSheets( inputStream );
+
+            List<ColumnMetadata> columnMetadatas = xlsSchema.values().iterator().next();
+            logger.debug("columnMetadatas: {}", columnMetadatas);
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(14);
+
+            ColumnMetadata columnMetadata = columnMetadatas.get(7);
+
+            Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
+
+            Assertions.assertThat(columnMetadata.getId()).isEqualTo("telephone");
+
+            Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.NUMERIC.getName());
+
+        }
 
     }
 
