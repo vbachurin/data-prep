@@ -18,17 +18,15 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 
 /**
  * This class is responsible to parse excel file (note poi is used for reading .xls)
  */
-@Service("schemaParser#xls")
 public class XlsSchemaParser implements SchemaParser {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsSchemaParser.class);
 
     @Override
     public List<ColumnMetadata> parse(InputStream content) {
@@ -63,7 +61,7 @@ public class XlsSchemaParser implements SchemaParser {
                 Sheet sheet = hssfWorkbook.getSheetAt(i);
 
                 if (sheet.getLastRowNum() < 1) {
-                    logger.debug("sheet '{}' do not have rows skip ip", sheet.getSheetName());
+                    LOGGER.debug("sheet '{}' do not have rows skip ip", sheet.getSheetName());
                     continue;
                 }
 
@@ -78,7 +76,7 @@ public class XlsSchemaParser implements SchemaParser {
             return schema;
 
         } catch (IOException e) {
-            logger.debug("IOEXception during parsing xls content :" + e.getMessage(), e);
+            LOGGER.debug("IOEXception during parsing xls content :" + e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -87,7 +85,7 @@ public class XlsSchemaParser implements SchemaParser {
 
         SortedMap<Integer, SortedMap<Integer, Type>> cellsTypeMatrix = collectSheetTypeMatrix(sheet);
 
-        logger.trace("cellsTypeMatrix: {}", cellsTypeMatrix);
+        LOGGER.trace("cellsTypeMatrix: {}", cellsTypeMatrix);
 
         Map<Integer, Integer> cellTypeChange = guessHeaderChange(cellsTypeMatrix);
 
@@ -100,7 +98,7 @@ public class XlsSchemaParser implements SchemaParser {
         // currently can fail so force an header of size 1
         int averageHeaderSize = 1;
 
-        logger.debug("averageHeaderSize: {}, cellTypeChange: {}", averageHeaderSize, cellTypeChange);
+        LOGGER.debug("averageHeaderSize: {}, cellTypeChange: {}", averageHeaderSize, cellTypeChange);
 
         // here we have informations regarding types for each rows/col (yup a Matrix!! :-) )
         // so we can analyse and guess metadatas (column type, header value)
@@ -180,7 +178,7 @@ public class XlsSchemaParser implements SchemaParser {
         int firstRowNum = sheet.getFirstRowNum();
         int lastRowNum = sheet.getLastRowNum();
 
-        logger.debug("firstRowNum: {}, lastRowNum: {}", firstRowNum, lastRowNum);
+        LOGGER.debug("firstRowNum: {}, lastRowNum: {}", firstRowNum, lastRowNum);
 
         SortedMap<Integer, SortedMap<Integer, Type>> cellsTypeMatrix = new TreeMap<>();
 

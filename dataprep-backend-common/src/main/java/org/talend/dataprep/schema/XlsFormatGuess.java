@@ -1,8 +1,5 @@
 package org.talend.dataprep.schema;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("formatGuess#xls")
@@ -10,13 +7,9 @@ public class XlsFormatGuess implements FormatGuess {
 
     public static final String MEDIA_TYPE = "application/vnd.ms-excel";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private XlsSchemaParser xlsSchemaParser = new XlsSchemaParser();
 
-    @Autowired
-    private XlsSchemaParser xlsSchemaParser;
-
-    @Autowired
-    private XlsSerializer xlsSerializer;
+    private XlsSerializer xlsSerializer = new XlsSerializer();
 
     public XlsFormatGuess() {
         // no op

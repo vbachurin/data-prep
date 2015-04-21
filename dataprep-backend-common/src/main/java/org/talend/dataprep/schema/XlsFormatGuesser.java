@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component("formatGuesser#xls")
 public class XlsFormatGuesser implements FormatGuesser {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsFormatGuesser.class);
 
     @Autowired
     private XlsFormatGuess xlsFormatGuess;
@@ -30,7 +30,7 @@ public class XlsFormatGuesser implements FormatGuesser {
                 return xlsFormatGuess;
             }
         } catch (IOException e) {
-            logger.debug("fail to read content: " + e.getMessage(), e);
+            LOGGER.debug("fail to read content: " + e.getMessage(), e);
         }
 
         return new NoOpFormatGuess();

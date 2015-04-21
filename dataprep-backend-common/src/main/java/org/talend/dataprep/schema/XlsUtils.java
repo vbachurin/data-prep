@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class XlsUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(XlsUtils.class);
+    private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsUtils.class);
 
     protected static String getCellValueAsString(Cell cell) {
         if (cell == null) {

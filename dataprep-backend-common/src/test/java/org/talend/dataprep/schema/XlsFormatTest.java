@@ -44,15 +44,6 @@ public class XlsFormatTest {
     String beanId = "formatGuesser#xls";
 
     @Test
-    public void ensure_xls_format_guesser_component_exists() {
-
-        FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
-        Assert.assertNotNull(formatGuesser);
-        Assert.assertTrue(formatGuesser instanceof XlsFormatGuesser);
-        logger.debug("class for bean with id {} is {}", beanId, formatGuesser.getClass());
-    }
-
-    @Test
     public void read_bad_xls_file() throws Exception {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("fake.xls")) {
             FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
@@ -125,9 +116,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            Serializer serializer = applicationContext.getBean("serializer#xls", Serializer.class);
-
-            InputStream jsonStream = serializer.serialize(inputStream, dataSetMetadata);
+            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
 
             String json = IOUtils.toString(jsonStream);
 
@@ -214,9 +203,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            Serializer serializer = applicationContext.getBean("serializer#xls", Serializer.class);
-
-            InputStream jsonStream = serializer.serialize(inputStream, dataSetMetadata);
+            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
 
             String json = IOUtils.toString(jsonStream);
 
@@ -268,9 +255,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            Serializer serializer = applicationContext.getBean("serializer#xls", Serializer.class);
-
-            InputStream jsonStream = serializer.serialize(inputStream, dataSetMetadata);
+            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
 
             String json = IOUtils.toString(jsonStream);
 
@@ -294,7 +279,7 @@ public class XlsFormatTest {
 
         FormatGuess formatGuess;
 
-        XlsSchemaParser xlsSchemaParser = applicationContext.getBean(XlsSchemaParser.class);
+        XlsSchemaParser xlsSchemaParser = new XlsSchemaParser();
 
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").sheetNumber(1).build();
 
@@ -328,9 +313,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            Serializer serializer = applicationContext.getBean("serializer#xls", Serializer.class);
-
-            InputStream jsonStream = serializer.serialize(inputStream, dataSetMetadata);
+            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
 
             String json = IOUtils.toString(jsonStream);
 

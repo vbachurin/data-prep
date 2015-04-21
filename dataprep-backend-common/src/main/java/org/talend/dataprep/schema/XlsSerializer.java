@@ -13,14 +13,12 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 
-@Component("serializer#xls")
 public class XlsSerializer implements Serializer {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsSerializer.class);
 
     @Override
     public InputStream serialize(InputStream rawContent, DataSetMetadata metadata) {
@@ -55,7 +53,7 @@ public class XlsSerializer implements Serializer {
                     // do not write the values if this has been detected as an header
                     if (i >= columnMetadata.getHeaderSize()) {
                         String cellValue = XlsUtils.getCellValueAsString(row.getCell(j));
-                        logger.trace("cellValue for {}/{}: {}", i, j, cellValue);
+                        LOGGER.trace( "cellValue for {}/{}: {}", i, j, cellValue );
                         generator.writeStringField(columnMetadata.getId(), cellValue);
                     }
                 }
