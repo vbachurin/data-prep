@@ -1,27 +1,78 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.playground.service:PlaygroundService
+     * @description Playground service. This service provides the entry point to load properly the playground
+     * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.filter.service:FilterService
+     * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.utils.service:MessageService
+     */
     function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService, MessageService) {
         var self = this;
+
+        /**
+         * @ngdoc property
+         * @name visible
+         * @propertyOf data-prep.services.playground.service:PlaygroundService
+         * @description the visibility control
+         */
         self.visible = false;
 
+        /**
+         * @ngdoc property
+         * @name currentData
+         * @propertyOf data-prep.services.playground.service:PlaygroundService
+         * @description the loaded data
+         */
         self.currentData = null;
+
+        /**
+         * @ngdoc property
+         * @name currentMetadata
+         * @propertyOf data-prep.services.playground.service:PlaygroundService
+         * @description the loaded metadata
+         */
         self.currentMetadata = null;
+
+        /**
+         * @ngdoc property
+         * @name originalPreparationName
+         * @propertyOf data-prep.services.playground.service:PlaygroundService
+         * @description the original preparation name - used to check if the name has changed
+         */
         self.originalPreparationName = '';
+
+        /**
+         * @ngdoc property
+         * @name preparationName
+         * @propertyOf data-prep.services.playground.service:PlaygroundService
+         * @description the current preparation
+         */
         self.preparationName = '';
 
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------VISIBILITY--------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
-         * Set visibility flag to true
+         * @ngdoc method
+         * @name show
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @description Display the playground
          */
         self.show = function () {
             self.visible = true;
         };
 
         /**
-         * Set visibility flag to false
+         * @ngdoc method
+         * @name hide
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @description Hide the playground
          */
         self.hide = function () {
             self.visible = false;
@@ -31,11 +82,14 @@
         //-------------------------------------------------INIT/LOAD--------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
-         * Initiate a preparation.
-         * If there is no preparation yet and the dataset to load is still the last loaded, the playground is not changed.
-         * Otherwise, the playground is reset with the wanted dataset
-         * @param dataset - the dataset to load
-         * @return Promise
+         * @ngdoc method
+         * @name initPlayground
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {object} dataset - the dataset to load
+         * @description Initiate a new preparation from dataset.
+         - If there is no preparation yet and the dataset to load is still the last loaded, the playground is not changed.
+         - Otherwise, the playground is reset with the wanted dataset
+         * @returns {promise} - the process promise
          */
         self.initPlayground = function(dataset) {
             if(!self.currentMetadata || PreparationService.currentPreparation || dataset.id !== self.currentMetadata.id) {
@@ -66,13 +120,16 @@
         };
 
         /**
-         * Load an existing preparation in the playground :
-         * - set name,
-         * - set current preparation before any preparation request
-         * - load grid with 'head' version content,
-         * - reinit recipe panel with preparation steps
-         * @param preparation - the preparation to load
-         * @returns {*}
+         * @ngdoc method
+         * @name load
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {object} preparation - the preparation to load
+         * @description Load an existing preparation in the playground :
+          - set name,
+          - set current preparation before any preparation request
+          - load grid with 'head' version content,
+          - reinit recipe panel with preparation steps
+         * @returns {promise} - the process promise
          */
         self.load = function(preparation) {
             self.preparationName = preparation.name;
@@ -97,12 +154,12 @@
         };
 
         /**
-         * Load an existing preparation in the playground, at a specific step.
-         * WARNING : we consider that the preparation is already loaded, only an update is the grid is done
-         * - set current preparation before any preparation request
-         * - load grid with 'stepId' version content,
-         * @param step - the step to load
-         * @returns {*}
+         * @ngdoc method
+         * @name loadStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {object} step - the preparation step to load
+         * @description Load a specific step content in the current preparation, and update the recipe
+         * @returns {promise} - the process promise
          */
         self.loadStep = function(step) {
             //step already loaded
@@ -126,8 +183,12 @@
         //------------------------------------------------PREPARATION-------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
-         * Create a new preparation or change its name if it already exists
-         * @param name - the preparation name
+         * @ngdoc method
+         * @name createOrUpdatePreparation
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} name - the preparation name to create or update
+         * @description Create a new preparation or change its name if it already exists
+         * @returns {promise} - the process promise
          */
         self.createOrUpdatePreparation = function(name) {
             if(self.originalPreparationName !== name) {

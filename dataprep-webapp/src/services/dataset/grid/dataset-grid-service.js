@@ -1,17 +1,55 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.dataset.service:DatasetGridService
+     * @description Dataset grid service. This service holds the datagrid (SliickGrid) view and the (SlickGrid) filters
+     */
     function DatasetGridService() {
         var self = this;
 
+        /**
+         * @ngdoc property
+         * @name metadata
+         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @description the loaded metadata
+         * @type {Object}
+         */
         self.metadata = null;
+        /**
+         * @ngdoc property
+         * @name data
+         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @description the loaded data
+         * @type {Object}
+         */
         self.data = null;
 
-        //actions to grid
+        /**
+         * @ngdoc property
+         * @name dataView
+         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @description the SlickGrid dataView
+         * @type {Object}
+         */
         self.dataView = new Slick.Data.DataView({inlineFilters: false});
+        /**
+         * @ngdoc property
+         * @name filters
+         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @description the filters applied to the dataview
+         * @type {function[]}
+         */
         self.filters = [];
 
-        //actions from grid
+        /**
+         * @ngdoc property
+         * @name selectedColumn
+         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @description the selected grid column
+         * @type {object}
+         */
         self.selectedColumn = null;
 
         //------------------------------------------------------------------------------------------------------
@@ -19,8 +57,11 @@
         //------------------------------------------------------------------------------------------------------
 
         /**
-         * Insert unique id for each record (needed for DataView)
-         * @param records
+         * @ngdoc method
+         * @name insertUniqueIds
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {Object[]} records - the records to adapt
+         * @description [PRIVATE] Insert unique id for each record (needed for DataView)
          */
         var insertUniqueIds = function (records) {
             _.forEach(records, function (item, index) {
@@ -29,8 +70,11 @@
         };
 
         /**
-         * Set dataview records
-         * @param records
+         * @ngdoc method
+         * @name updateDataviewRecords
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {Object[]} records - the records to insert
+         * @description [PRIVATE] Set dataview records
          */
         var updateDataviewRecords = function (records) {
             insertUniqueIds(records);
@@ -42,9 +86,12 @@
         };
 
         /**
-         * Set dataset metadata and records
-         * @param metadata - the new metadata
-         * @param data - the new data
+         * @ngdoc method
+         * @name setDataset
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {Object} metadata - the new metadata to load
+         * @param {Object} data - the new data to load
+         * @description Set dataview records and metadata to the datagrid
          */
         self.setDataset = function (metadata, data) {
             updateDataviewRecords(data.records);
@@ -54,8 +101,11 @@
         };
 
         /**
-         * Update data records
-         * @param records - the new records
+         * @ngdoc method
+         * @name updateRecords
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {Object[]} records - the new records
+         * @description Update the data records in the datagrid
          */
         self.updateRecords = function (records) {
             updateDataviewRecords(records);
@@ -66,10 +116,13 @@
         //------------------------------------------------DATA UTILS--------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
-         * Return the column ids
-         * @param excludeNumeric - if true, the numeric columns won't be returned
-         * @param excludeBoolean - if true, the boolean columns won't be returned
-         * @returns {*}
+         * @ngdoc method
+         * @name getColumns
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {boolean} excludeNumeric - filter the numeric columns
+         * @param {boolean} excludeBoolean - filter the boolean columns
+         * @description Filter the column ids
+         * @returns {string[]} - the column list that match the desired filters
          */
         self.getColumns = function(excludeNumeric, excludeBoolean) {
             var numericTypes = ['numeric', 'integer', 'float', 'double'];
@@ -92,9 +145,14 @@
         };
 
         /**
-         * Return the column id list that match regexp
-         * @param regexp - the regexp that the content must match
-         * @returns {Array}
+         * @ngdoc method
+         * @name getColumnsContaining
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {string} regexp - the regexp
+         * @param {boolean} canBeNumeric - filter the numeric columns
+         * @param {boolean} canBeBoolean - filter the boolean columns
+         * @description Return the column id list that has a value that match the regexp
+         * @returns {Object[]} - the column list that contains a value that match the regexp
          */
         self.getColumnsContaining = function(regexp, canBeNumeric, canBeBoolean) {
             var results = [];
@@ -123,10 +181,13 @@
         };
 
         /**
-         * Return displayed rows index where data[rowId][colId] contains the searched term
-         * @param colId - the column id
-         * @param term - the term the cell must contain
-         * @returns {*}
+         * @ngdoc method
+         * @name getRowsContaining
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {string} colId - the column id
+         * @param {string} term - the term the cell must contain
+         * @description Return displayed rows index where data[rowId][colId] contains the searched term
+         * @returns {Object[]} - the rows that has the value
          */
         self.getRowsContaining = function(colId, term) {
             var result = [];
@@ -141,8 +202,11 @@
         };
 
         /**
-         * Set the selected column
-         * @param colId - the column id
+         * @ngdoc method
+         * @name setSelectedColumn
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {string} colId - the column id
+         * @description Set the selected column
          */
         self.setSelectedColumn = function(colId) {
             self.selectedColumn = _.find(self.data.columns, function(col) {
@@ -154,10 +218,13 @@
         //-------------------------------------------------FILTERS----------------------------------------------
         //------------------------------------------------------------------------------------------------------
         /**
-         * Filter function. It iterates over all filters and return if the provided item fit the predicates
-         * @param item - the item to test
-         * @param args - object containing the filters predicates
-         * @returns {boolean} - true if the item pass all filters
+         * @ngdoc method
+         * @name filterFn
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @param {object} item - the item to test
+         * @param {object} args - object containing the filters predicates
+         * @description [PRIVATE] Filter function. It iterates over all filters and return if the provided item fit the predicates
+         * @returns {boolean} - true if the item pass all the filters
          */
         function filterFn(item, args) {
             for (var i = 0; i < args.filters.length; i++) {
@@ -170,7 +237,10 @@
         }
 
         /**
-         * Update filters in dataview
+         * @ngdoc method
+         * @name updateDataViewFilters
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @description [PRIVATE] Update filters in dataview
          */
         var updateDataViewFilters = function() {
             self.dataView.beginUpdate();
@@ -182,8 +252,11 @@
         };
 
         /**
-         * Add a filter in dataview
-         * @param filter - the filter function to add
+         * @ngdoc method
+         * @name addFilter
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @description Add a filter in dataview
+         * @param {object} filter - the filter function to add
          */
         self.addFilter = function(filter) {
             self.filters.push(filter);
@@ -191,9 +264,12 @@
         };
 
         /**
-         * Update a filter in dataview
-         * @param oldFilter - the filter function to replace
-         * @param newFilter - the new filter function
+         * @ngdoc method
+         * @name updateFilter
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @description Update a filter in dataview
+         * @param {object} oldFilter - the filter function to replace
+         * @param {object} newFilter - the new filter function
          */
         self.updateFilter = function(oldFilter, newFilter) {
             var index = self.filters.indexOf(oldFilter);
@@ -202,8 +278,11 @@
         };
 
         /**
-         * Remove a filter in dataview
-         * @param filter - the filter function to remove
+         * @ngdoc method
+         * @name removeFilter
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @description Remove a filter in dataview
+         * @param {object} filter - the filter function to remove
          */
         self.removeFilter = function(filter) {
             var filterIndex = self.filters.indexOf(filter);
@@ -214,7 +293,10 @@
         };
 
         /**
-         * Remove all filters from dataview
+         * @ngdoc method
+         * @name resetFilters
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @description Remove all filters from dataview
          */
         self.resetFilters = function() {
             self.filters = [];

@@ -33,14 +33,30 @@
         });
     }
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.filter.service:FilterService
+     * @description Filter service. This service holds the filters list and provide the entry point to datagrid filters
+     * @requires data-prep.services.dataset.service:DatasetGridService
+     */
     function FilterService(DatasetGridService) {
         var self = this;
+
+        /**
+         * @ngdoc property
+         * @name filters
+         * @propertyOf data-prep.services.filter.service:FilterService
+         * @description the filters list
+         */
         self.filters = [];
 
         /**
-         * Return the column with a cell that can match the phrase
-         * @param phrase - to match
-         * @returns {Array}
+         * @ngdoc method
+         * @name getColumnsContaining
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} phrase - to match. Wildcard (*) accepted
+         * @description Return the column with a cell that can match the phrase. It take into account a possible wildcard (*)
+         * @returns {string[]} - the columns id that contains a matching value
          */
         self.getColumnsContaining = function(phrase) {
             if (!phrase) {
@@ -55,7 +71,10 @@
         };
 
         /**
-         * Remove all the filters and update datagrid filters
+         * @ngdoc method
+         * @name removeAllFilters
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @description Remove all the filters and update datagrid filters
          */
         self.removeAllFilters = function() {
             DatasetGridService.resetFilters();
@@ -63,10 +82,13 @@
         };
 
         /**
-         * Create 'contains' filter function
-         * @param colId - the column id
-         * @param phrase - the phrase that the item must contain
-         * @returns {Function}
+         * @ngdoc method
+         * @name createContainFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId - the column id
+         * @param {string} phrase - the phrase that the item must contain
+         * @description [PRIVATE] Create a 'contains' filter function
+         * @returns {function} - the predicated function
          */
         var createContainFilter = function(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
@@ -77,10 +99,13 @@
         };
 
         /**
-         * Add a filter and update datagrid filters
-         * @param type - the filter type (ex : contains)
-         * @param colId - the column id
-         * @param args - the filter arguments (ex for 'contains' type : {phrase: 'toto'})
+         * @ngdoc method
+         * @name addFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} type - the filter type (ex : contains)
+         * @param {string} colId - the column id
+         * @param {string} args - the filter arguments (ex for 'contains' type : {phrase: 'toto'})
+         * @description Add a filter and update datagrid filters
          */
         self.addFilter = function(type, colId, args) {
             var filterFn;
@@ -96,8 +121,11 @@
         };
 
         /**
-         * Remove a filter and update datagrid filters
-         * @param filter
+         * @ngdoc method
+         * @name removeFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {object} filter - the filter to delete
+         * @description Remove a filter and update datagrid filters
          */
         self.removeFilter = function(filter) {
             var filterIndex = self.filters.indexOf(filter);
@@ -108,9 +136,12 @@
         };
 
         /**
-         * Update existing filter and update datagrid filters
-         * @param oldFilter - the old filter to update
-         * @param newValue - the new filter value
+         * @ngdoc method
+         * @name updateFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {object} oldFilter - the filter to update
+         * @param {object} newValue - the filter update parameters
+         * @description Update an existing filter and update datagrid filters
          */
         self.updateFilter = function(oldFilter, newValue) {
             var index = self.filters.indexOf(oldFilter);

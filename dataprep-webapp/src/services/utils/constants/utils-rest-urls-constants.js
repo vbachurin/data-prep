@@ -1,6 +1,11 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.utils.service:RestURLs
+     * @description The REST api services url
+     */
     angular.module('data-prep.services.utils')
         .service('RestURLs', ['apiUrl', function(apiUrl) {
             return {
