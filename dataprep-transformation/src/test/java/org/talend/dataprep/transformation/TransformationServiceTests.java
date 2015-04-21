@@ -66,6 +66,14 @@ public class TransformationServiceTests {
     }
 
     @Test
+    public void noActionWithCarrierReturn() throws Exception {
+        String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("carrierReturn.json"));
+        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when().post("/transform")
+                .asString();
+        assertEquals(initialContent, transformedContent, false);
+    }
+
+    @Test
     public void action1() throws Exception {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("action1.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
