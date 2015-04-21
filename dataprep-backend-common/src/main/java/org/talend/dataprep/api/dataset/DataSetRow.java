@@ -12,6 +12,8 @@ import org.talend.dataprep.exception.Exceptions;
 
 public class DataSetRow {
 
+    private final JsonFactory jsonFactory = new JsonFactory();
+
     private boolean deleted = false;
 
     private final Map<String, String> values = new HashMap<>();
@@ -66,7 +68,7 @@ public class DataSetRow {
         }
 
         try {
-            final JsonGenerator jGenerator = new JsonFactory().createJsonGenerator(stream);
+            final JsonGenerator jGenerator = jsonFactory.createJsonGenerator(stream);
             jGenerator.writeStartObject();
 
             values.entrySet().stream().forEach((entry) -> {

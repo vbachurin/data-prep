@@ -203,7 +203,7 @@ class SimpleTransformer implements Transformer {
                     row.set(currentFieldName, parser.getText()); // Value
                 } else if (nextToken == JsonToken.END_OBJECT) {
                     action.accept(row);
-                    if (! row.isDeleted()) {
+                    if (!row.isDeleted()) {
                         if (!firstRow) {
                             output.write(',');
                         } else {
