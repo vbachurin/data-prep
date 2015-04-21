@@ -1,14 +1,13 @@
 package org.talend.dataprep.api.dataset;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.talend.dataprep.exception.CommonMessages;
 import org.talend.dataprep.exception.Exceptions;
+
+import com.fasterxml.jackson.core.JsonGenerator;
 
 public class DataSetRow {
 
@@ -25,6 +24,7 @@ public class DataSetRow {
 
     /**
      * Set an entry in the dataset row
+     * 
      * @param name - the key
      * @param value - the value
      */
@@ -35,6 +35,7 @@ public class DataSetRow {
 
     /**
      * Get the value associated with the provided key
+     * 
      * @param name - the key
      * @return - the value as string
      */
@@ -58,15 +59,15 @@ public class DataSetRow {
 
     /**
      * Write the row as JSON in the provided OutputStream
-     * @param stream - the stream to write to
+     * 
+     * @param jGenerator - the json generator plugged to stream to write to
      */
-    public void writeTo(final OutputStream stream) {
+    public void writeTo(final JsonGenerator jGenerator) {
         if (isDeleted()) {
             return;
         }
 
         try {
-            final JsonGenerator jGenerator = new JsonFactory().createJsonGenerator(stream);
             jGenerator.writeStartObject();
 
             values.entrySet().stream().forEach((entry) -> {
