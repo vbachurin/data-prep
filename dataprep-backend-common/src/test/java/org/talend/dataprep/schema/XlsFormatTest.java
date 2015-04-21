@@ -296,7 +296,7 @@ public class XlsFormatTest {
 
         XlsSchemaParser xlsSchemaParser = applicationContext.getBean(XlsSchemaParser.class);
 
-        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
+        DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").sheetNumber(1).build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
@@ -308,7 +308,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            Map<String,List<ColumnMetadata>> xlsSchema = xlsSchemaParser.parseAllSheets( inputStream );
+            Map<String, List<ColumnMetadata>> xlsSchema = xlsSchemaParser.parseAllSheets(inputStream);
 
             List<ColumnMetadata> columnMetadatas = xlsSchema.values().iterator().next();
             logger.debug("columnMetadatas: {}", columnMetadatas);
@@ -321,6 +321,45 @@ public class XlsFormatTest {
             Assertions.assertThat(columnMetadata.getId()).isEqualTo("telephone");
 
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.NUMERIC.getName());
+
+            dataSetMetadata.getRow().setColumns(columnMetadatas);
+
+        }
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+
+            Serializer serializer = applicationContext.getBean("serializer#xls", Serializer.class);
+
+            InputStream jsonStream = serializer.serialize(inputStream, dataSetMetadata);
+
+            String json = IOUtils.toString(jsonStream);
+
+            logger.trace("json: {}", json);
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, HashMap.class);
+
+            List<Map<String, String>> values = mapper.readValue(json, collectionType);
+
+            logger.trace("values: {}", values);
+
+            Assertions.assertThat(values).isNotEmpty().hasSize(239);
+
+            Assertions.assertThat(values.get(0)) //
+                    .contains(MapEntry.entry("date", "24-Jul-2014"),//
+                            MapEntry.entry("SOCIETE", "COFACE"), //
+                            MapEntry.entry("email", "tony_fernandes@coface.com"));
+
+            Assertions.assertThat(values.get(1)) //
+                    .contains(MapEntry.entry("date", "24-Jul-2014"),//
+                            MapEntry.entry("SOCIETE", "ENABLON"), //
+                            MapEntry.entry("NOM", "COCUD"));
+
+            Assertions.assertThat(values.get(17)) //
+                    .contains(MapEntry.entry("date", "17-Jul-2014"),//
+                            MapEntry.entry("SOCIETE", "SODEBO"), //
+                            MapEntry.entry("Prenom", "Tanguy"));
 
         }
 

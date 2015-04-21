@@ -33,7 +33,7 @@ public class XlsSerializer implements Serializer {
             JsonGenerator generator = new JsonFactory().createJsonGenerator(writer);
 
             // FIXME: ATM we work with only one sheet
-            Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(metadata.getSheetNumber());
 
             generator.writeStartArray();
 

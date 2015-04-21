@@ -39,6 +39,8 @@ public class DataSetMetadata {
 
     private final long creationDate;
 
+    private int sheetNumber;
+
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;
         this.name = name;
@@ -93,6 +95,11 @@ public class DataSetMetadata {
         return author;
     }
 
+    public int getSheetNumber()
+    {
+        return sheetNumber;
+    }
+
     public Date getCreationDate() {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
         calendar.setTimeInMillis(creationDate);
@@ -141,6 +148,8 @@ public class DataSetMetadata {
         private boolean schemaAnalyzed;
 
         private boolean qualityAnalyzed;
+
+        private int sheetNumber;
 
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
@@ -201,6 +210,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder sheetNumber(int sheetNumber) {
+            this.sheetNumber = sheetNumber;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -216,6 +230,7 @@ public class DataSetMetadata {
             }
             RowMetadata row = new RowMetadata(columns);
             DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row);
+            metadata.sheetNumber = this.sheetNumber;
             // Content information
             DataSetContent content = metadata.getContent();
             content.setNbRecords(size);
