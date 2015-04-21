@@ -1,7 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var jsdoc = require("gulp-jsdoc");
 var gulpDocs = require('gulp-ngdocs');
 
 gulp.task('ngdoc', function () {

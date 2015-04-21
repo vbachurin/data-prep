@@ -1,6 +1,22 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc directive
+     * @name data-prep.datagrid.directive:Datagrid
+     * @description Dataset grid directive<br/>
+     Watchers :
+     <ul>
+        <li>Update grid columns on backend column change</li>
+        <li>Update data on backend value change</li>
+        <li>Scroll to top when loaded dataset change</li>
+        <li>When filter change, displayed values change, so we reset active cell and cell styles</li>
+     </ul>
+
+     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.filter.service:FilterService
+     * @restrict E
+     */
     function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService) {
         return {
             restrict: 'E',
@@ -16,7 +32,10 @@
                 //------------------------------------------------------------------------------------------------------
 
                 /**
-                 * Reset columns class
+                 * @ngdoc method
+                 * @name resetColumnsClass
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Reset columns class
                  */
                 var resetColumnsClass = function() {
                     _.forEach(grid.getColumns(), function(column) {
@@ -25,17 +44,23 @@
                 };
 
                 /**
-                 * Reset the cells css
+                 * @ngdoc method
+                 * @name resetCellStyles
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Reset the cells css
                  */
                 var resetCellStyles = function() {
                     grid.setCellCssStyles('highlight', {});
                 };
 
                 /**
-                 * Adapt backend column to slick column. The name with div id depending on index is important. It is used to insert column header dropdown and quality bar
-                 * @param col - the backend column to adapt
-                 * @param index - column index
-                 * @returns {{id: *, field: *, name: string}}
+                 * @ngdoc method
+                 * @name columnItem
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {object} col - the backend column to adapt
+                 * @param {number} index - column index
+                 * @description [PRIVATE] Adapt backend column to slick column. The name with div id depending on index is important. It is used to insert column header dropdown and quality bar
+                 * @returns {object} - the adapted column item
                  */
                 var columnItem = function (col, index) {
                     var divId = 'datagrid-header-' + index;
@@ -49,7 +74,11 @@
                 };
 
                 /**
-                 * Insert the dataset headers (dropdown actions and quality bars)
+                 * @ngdoc method
+                 * @name insertDatasetHeaders
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Insert the dataset column headers (dropdown actions and quality bars).
+                 The columns are from {@link data-prep.services.dataset.service:DatasetGridService DatasetGridService}
                  */
                 var insertDatasetHeaders = function () {
                     _.forEach(DatasetGridService.data.columns, function (col, index) {
@@ -65,7 +94,10 @@
                 };
 
                 /**
-                 * Remove header elements
+                 * @ngdoc method
+                 * @name clearHeaders
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Remove header elements.
                  */
                 var clearHeaders = function () {
                     _.forEach(colHeaderElements, function (element) {
@@ -74,6 +106,13 @@
                     colHeaderElements = [];
                 };
 
+                /**
+                 * @ngdoc method
+                 * @name updateColSelection
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {string} column - the selected column
+                 * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
+                 */
                 var updateColSelection = function (column) {
                     $timeout(function() {
                         DatasetGridService.setSelectedColumn(column.id);
@@ -84,7 +123,10 @@
                 //-------------------------------------------------LISTENERS--------------------------------------------
                 //------------------------------------------------------------------------------------------------------
                 /**
-                 * Attach listeners for big table row management
+                 * @ngdoc method
+                 * @name attachLongTableListeners
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Attach listeners for big table row management
                  */
                 var attachLongTableListeners = function() {
                     DatasetGridService.dataView.onRowCountChanged.subscribe(function () {
@@ -98,7 +140,10 @@
                 };
 
                 /**
-                 * Attach listeners for custom directives management in headers
+                 * @ngdoc method
+                 * @name attachColumnHeaderListeners
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Attach listeners for custom directives management in headers
                  */
                 var attachColumnHeaderListeners = function() {
                     //destroy old elements and insert compiled column header directives
@@ -126,7 +171,10 @@
                 };
 
                 /**
-                 * Attach cell hover for tooltips listeners
+                 * @ngdoc method
+                 * @name attachTooltipListener
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Attach cell hover for tooltips listeners
                  */
                 var attachTooltipListener = function() {
                     //show tooltip on hover
@@ -150,7 +198,10 @@
                 };
 
                 /**
-                 * Attach cell action listeners (click, active change, ...)
+                 * @ngdoc method
+                 * @name attachCellListeners
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Attach cell action listeners (click, active change, ...)
                  */
                 var attachCellListeners = function() {
                     //get clicked content and highlight cells in clicked column containing the content
@@ -194,7 +245,11 @@
                 //---------------------------------------------------INIT-----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
                 /**
-                 * Init Slick grid and attach listeners on dataview and grid
+                 * @ngdoc method
+                 * @name initGridIfNeeded
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Init Slick grid and attach listeners on dataview and grid.
+                 The dataview is initiated and held by {@link data-prep.services.dataset.service:DatasetGridService DatasetGridService}
                  */
                 var initGridIfNeeded = function () {
                     if(grid) {
@@ -220,8 +275,14 @@
                 //--------------------------------------------------UPDATE----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
                 /**
-                 * Clear and update columns
-                 * @param dataCols
+                 * @ngdoc method
+                 * @name updateColumns
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {object[]} dataCols - columns details
+                 * @description [PRIVATE] Clear and update columns headers
+                 This is needed when user reorder columns, because the divs are removed and added in the DOM. So the
+                 nested elements are not in the angular context anymore. By adding them in the angular context correct
+                 this behavior.
                  */
                 var updateColumns = function (dataCols) {
                     clearHeaders();
@@ -235,7 +296,10 @@
                 };
 
                 /**
-                 * Render grid on dataView update
+                 * @ngdoc method
+                 * @name updateData
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Reset the cell styles and re render the grid
                  */
                 var updateData = function () {
                     resetCellStyles();
