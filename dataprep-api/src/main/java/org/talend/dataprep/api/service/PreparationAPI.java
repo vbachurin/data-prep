@@ -150,11 +150,11 @@ public class PreparationAPI extends APIService {
     public void updatePreparationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId,
-            @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
-        LOG.debug("Updating preparation action (pool: {} )...", getConnectionManager().getTotalStats());
+            @ApiParam("New content for the action.") InputStream body, HttpServletResponse response) {
+        LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationServiceURL, preparationId, stepId, body);
         command.execute();
-        LOG.debug("Updated preparation action (pool: {} )...", getConnectionManager().getTotalStats());
+        LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
     }
 }
