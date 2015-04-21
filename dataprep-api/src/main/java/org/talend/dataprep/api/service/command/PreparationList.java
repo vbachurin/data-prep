@@ -55,6 +55,8 @@ public class PreparationList extends HystrixCommand<InputStream> {
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
+        } else {
+            contentRetrieval.releaseConnection();
         }
         throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
     }

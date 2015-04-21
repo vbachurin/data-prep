@@ -30,12 +30,16 @@ public class PreparationDelete extends HystrixCommand<String> {
 
     @Override
     protected String run() throws Exception {
-        HttpDelete contentRetrieval = new HttpDelete(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
-        HttpResponse response = client.execute(contentRetrieval);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= 200) {
-            return null;
+        HttpDelete deletePreparation = new HttpDelete(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
+        try {
+            HttpResponse response = client.execute(deletePreparation);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 200) {
+                return null;
+            }
+            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_PREPARATION);
+        } finally {
+            deletePreparation.releaseConnection();
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_PREPARATION);
     }
 }

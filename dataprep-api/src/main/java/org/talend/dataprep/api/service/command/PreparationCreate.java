@@ -1,6 +1,9 @@
 package org.talend.dataprep.api.service.command;
 
+import java.io.IOException;
 import java.io.StringWriter;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -24,14 +27,16 @@ import com.netflix.hystrix.HystrixCommand;
 @Scope("request")
 public class PreparationCreate extends HystrixCommand<String> {
 
+    private final Preparation preparation;
+
+    private final HttpClient client;
+
+    private final String preparationServiceUrl;
+
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
 
-    private HttpClient client;
-
-    private String preparationServiceUrl;
-
-    private Preparation preparation;
+    private String preparationJSONValue;
 
     private PreparationCreate(HttpClient client, String preparationServiceUrl, Preparation preparation) {
         super(APIService.PREPARATION_GROUP);
@@ -40,18 +45,27 @@ public class PreparationCreate extends HystrixCommand<String> {
         this.preparation = preparation;
     }
 
+    @PostConstruct
+    public void prepare() {
+        try {
+            ObjectMapper mapper = builder.build();
+            StringWriter json = new StringWriter();
+            mapper.writer().writeValue(json, preparation);
+            preparationJSONValue = json.toString();
+        } catch (IOException e) {
+            throw Exceptions.Internal(APIMessages.UNABLE_TO_CREATE_PREPARATION, e);
+        }
+    }
+
     @Override
     protected String run() throws Exception {
         HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations");
-        // Serialize preparation using configured serialization
-        ObjectMapper mapper = builder.build();
-        StringWriter preparationJSONValue = new StringWriter();
-        mapper.writer().writeValue(preparationJSONValue, preparation);
-        preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        preparationCreation.setEntity(new StringEntity(preparationJSONValue.toString()));
-        HttpResponse response = client.execute(preparationCreation);
-        int statusCode = response.getStatusLine().getStatusCode();
         try {
+            // Serialize preparation using configured serialization
+            preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+            preparationCreation.setEntity(new StringEntity(preparationJSONValue));
+            HttpResponse response = client.execute(preparationCreation);
+            int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }

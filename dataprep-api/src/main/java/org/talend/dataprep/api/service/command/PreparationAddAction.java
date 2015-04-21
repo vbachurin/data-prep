@@ -39,13 +39,17 @@ public class PreparationAddAction extends HystrixCommand<Void> {
     @Override
     protected Void run() throws Exception {
         HttpPost actionAppend = new HttpPost(preparationServiceUrl + "/preparations/" + id + "/actions"); //$NON-NLS-1$ //$NON-NLS-2$
-        actionAppend.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)); //$NON-NLS-1$
-        actionAppend.setEntity(new InputStreamEntity(actions));
-        HttpResponse response = client.execute(actionAppend);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= 200) {
-            return null;
+        try {
+            actionAppend.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)); //$NON-NLS-1$
+            actionAppend.setEntity(new InputStreamEntity(actions));
+            HttpResponse response = client.execute(actionAppend);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 200) {
+                return null;
+            }
+            throw Exceptions.User(APIMessages.UNABLE_TO_ACTIONS_TO_PREPARATION, id);
+        } finally {
+            actionAppend.releaseConnection();
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_ACTIONS_TO_PREPARATION, id);
     }
 }

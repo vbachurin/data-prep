@@ -3,7 +3,6 @@ package org.talend.dataprep.api.service.command;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Base64;
-import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -67,19 +66,29 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
                 // Preparation has the version... but no longer any content associated with it, rebuilds it
                 // First get the preparation at version
                 HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
-                ObjectMapper mapper = builder.build();
-                InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
-                JsonNode tree = mapper.reader().readTree(content);
+                JsonNode tree;
+                try {
+                    ObjectMapper mapper = builder.build();
+                    InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
+                    tree = mapper.reader().readTree(content);
+                } finally {
+                    preparationRetrieval.releaseConnection();
+                }
                 // Get the data set
                 String dataSetId = tree.get("dataSetId").textValue();
                 DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true);
                 // ... transform it ...
                 HttpGet actionsRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/actions/" + version); //$NON-NLS-1$
-                String actions = IOUtils.toString(client.execute(actionsRetrieval).getEntity().getContent());
+                String actions;
+                try {
+                    actions = IOUtils.toString(client.execute(actionsRetrieval).getEntity().getContent());
+                } finally {
+                    actionsRetrieval.releaseConnection();
+                }
                 Transform transformCommand = context.getBean(Transform.class, client, transformServiceUrl, retrieveDataSet,
                         Base64.getEncoder().encodeToString(actions.getBytes()));
-                // ... and send it back to user (but saves it back in preparation service).
-                return new CloneInputStream(transformCommand.execute(), Collections.emptyList()); // TODO
+                // ... and send it back to user (but saves it back in preparation service as cache).
+                return new ReleasableInputStream(transformCommand.execute(), contentRetrieval::releaseConnection); // TODO saves it back in preparation service as cache
             } else if (statusCode == HttpStatus.SC_NO_CONTENT) {
                 // Immediately release connection
                 contentRetrieval.releaseConnection();
@@ -87,6 +96,8 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
+        } else {
+            contentRetrieval.releaseConnection();
         }
         throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_CONTENT);
     }

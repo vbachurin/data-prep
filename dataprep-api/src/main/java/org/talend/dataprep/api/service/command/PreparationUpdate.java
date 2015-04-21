@@ -46,15 +46,15 @@ public class PreparationUpdate extends HystrixCommand<String> {
     @Override
     protected String run() throws Exception {
         HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations/" + id);
-        // Serialize preparation using configured serialization
-        ObjectMapper mapper = builder.build();
-        StringWriter preparationJSONValue = new StringWriter();
-        mapper.writer().writeValue(preparationJSONValue, preparation);
-        preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        preparationCreation.setEntity(new StringEntity(preparationJSONValue.toString()));
-        HttpResponse response = client.execute(preparationCreation);
-        int statusCode = response.getStatusLine().getStatusCode();
         try {
+            // Serialize preparation using configured serialization
+            ObjectMapper mapper = builder.build();
+            StringWriter preparationJSONValue = new StringWriter();
+            mapper.writer().writeValue(preparationJSONValue, preparation);
+            preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+            preparationCreation.setEntity(new StringEntity(preparationJSONValue.toString()));
+            HttpResponse response = client.execute(preparationCreation);
+            int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }
