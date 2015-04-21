@@ -39,11 +39,6 @@ public class CreateDataSet extends HystrixCommand<String> {
     }
 
     @Override
-    protected String getFallback() {
-        throw Exceptions.Internal(APIMessages.UNSUPPORTED_FALLBACK);
-    }
-
-    @Override
     protected String run() throws Exception {
         HttpPost contentCreation = new HttpPost(contentServiceUrl + "/?name=" + URLEncoder.encode(name, "UTF-8")); //$NON-NLS-1$
         try {

@@ -1,6 +1,5 @@
 package org.talend.dataprep.api.service.command;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.apache.http.client.HttpClient;
@@ -26,11 +25,6 @@ public class Transform extends ChainedCommand<InputStream, InputStream> {
         this.transformServiceUrl = transformServiceUrl;
         this.actions = actions;
         this.client = client;
-    }
-
-    @Override
-    protected InputStream getFallback() {
-        return new ByteArrayInputStream(new byte[0]);
     }
 
     @Override
