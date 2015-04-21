@@ -40,11 +40,6 @@ public class PreparationUpdateAction extends HystrixCommand<Void> {
     }
 
     @Override
-    protected Void getFallback() {
-        return null;
-    }
-
-    @Override
     protected Void run() throws Exception {
         HttpPut actionAppend = new HttpPut(preparationServiceUrl + "/preparations/" + id + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
         actionAppend.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)); //$NON-NLS-1$

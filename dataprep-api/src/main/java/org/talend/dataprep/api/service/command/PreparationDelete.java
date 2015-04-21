@@ -1,6 +1,5 @@
 package org.talend.dataprep.api.service.command;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -27,11 +26,6 @@ public class PreparationDelete extends HystrixCommand<String> {
         this.client = client;
         this.preparationServiceUrl = preparationServiceURL;
         this.id = id;
-    }
-
-    @Override
-    protected String getFallback() {
-        return StringUtils.EMPTY;
     }
 
     @Override
