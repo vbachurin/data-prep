@@ -62,6 +62,7 @@ public class XlsSchemaParser implements SchemaParser {
                 Sheet sheet = hssfWorkbook.getSheetAt(i);
 
                 if (sheet.getLastRowNum() < 1) {
+                    logger.debug( "sheet '{}' do not have rows skip ip", sheet.getSheetName() );
                     continue;
                 }
 
