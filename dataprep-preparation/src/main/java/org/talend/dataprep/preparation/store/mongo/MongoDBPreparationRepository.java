@@ -3,15 +3,14 @@ package org.talend.dataprep.preparation.store.mongo;
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.talend.dataprep.api.preparation.Identifiable;
-import org.talend.dataprep.api.preparation.PreparationActions;
-import org.talend.dataprep.api.preparation.PreparationRepository;
-import org.talend.dataprep.api.preparation.Step;
+import org.talend.dataprep.api.preparation.*;
 
 public class MongoDBPreparationRepository implements PreparationRepository {
 
@@ -40,6 +39,20 @@ public class MongoDBPreparationRepository implements PreparationRepository {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @see PreparationRepository#getByDataSet(String)
+     */
+    @Override
+    public Collection<Preparation> getByDataSet(String dataSetId) {
+
+        // defensive programming
+        if (StringUtils.isEmpty(dataSetId)) {
+            return new ArrayList<>();
+        }
+
+        return store.findByDataSet(Preparation.class.getName(), dataSetId);
     }
 
     @Override

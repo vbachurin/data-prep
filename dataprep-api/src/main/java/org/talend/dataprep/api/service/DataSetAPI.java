@@ -1,11 +1,9 @@
 package org.talend.dataprep.api.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-
+import com.netflix.hystrix.HystrixCommand;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
@@ -16,10 +14,10 @@ import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
 
-import com.netflix.hystrix.HystrixCommand;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -110,16 +108,18 @@ public class DataSetAPI extends APIService {
             LOG.debug("Delete dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, contentServiceUrl, dataSetId);
+        HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, contentServiceUrl, preparationServiceURL, dataSetId);
         try {
             deleteCommand.execute();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
+            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, e);
         }
     }
+
+
 
     @RequestMapping(value = "/api/datasets/{id}/{column}/actions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get suggested actions for a data set columns.", notes = "Returns the suggested actions for the given column in the dataset in decreasing order of likeness.")

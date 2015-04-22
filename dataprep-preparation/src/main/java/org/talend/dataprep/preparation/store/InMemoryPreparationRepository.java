@@ -3,12 +3,12 @@ package org.talend.dataprep.preparation.store;
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.preparation.Identifiable;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 
 public class InMemoryPreparationRepository implements PreparationRepository {
@@ -41,6 +41,32 @@ public class InMemoryPreparationRepository implements PreparationRepository {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @see PreparationRepository#getByDataSet(String)
+     */
+    @Override
+    public Collection<Preparation> getByDataSet(String dataSetId) {
+
+        // defensive programming
+        if (StringUtils.isEmpty(dataSetId)) {
+            return new ArrayList<>();
+        }
+
+        List<Preparation> filteredPreparations = new ArrayList<>();
+
+        for (Map.Entry<String, Identifiable> entry : store.entrySet()) {
+            // first filter on the class
+            if (Preparation.class.equals(entry.getValue().getClass())) {
+                Preparation preparation = (Preparation) entry.getValue();
+                // second filter on the dataset id
+                if (dataSetId.equals(preparation.getDataSetId())) {
+                    filteredPreparations.add(preparation);
+                }
+            }
+        }
+        return filteredPreparations;
     }
 
     @Override
