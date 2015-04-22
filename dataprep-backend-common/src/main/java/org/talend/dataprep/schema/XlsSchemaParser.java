@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -55,7 +55,7 @@ public class XlsSchemaParser implements SchemaParser {
                 return Collections.emptyMap();
             }
 
-            Map<String, List<ColumnMetadata>> schema = new HashMap<>(sheetNumber);
+            Map<String, List<ColumnMetadata>> schema = new LinkedHashMap<>(sheetNumber);
 
             for (int i = 0; i < sheetNumber; i++) {
                 Sheet sheet = hssfWorkbook.getSheetAt(i);

@@ -295,7 +295,7 @@ public class XlsFormatTest {
 
             Map<String, List<ColumnMetadata>> xlsSchema = xlsSchemaParser.parseAllSheets(inputStream);
 
-            List<ColumnMetadata> columnMetadatas = xlsSchema.values().iterator().next();
+            List<ColumnMetadata> columnMetadatas = new ArrayList<>(xlsSchema.values()).get(1);
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(14);
 
