@@ -7,11 +7,11 @@ import org.talend.dataprep.schema.FormatGuess;
 
 public class DataSetContent {
 
-    private int                     nbRecords;
+    private int nbRecords;
 
-    private int                     nbLinesInHeader;
+    private int nbLinesInHeader;
 
-    private int                     nbLinesInFooter;
+    private int nbLinesInFooter;
 
     private final List<FormatGuess> contentTypes = new LinkedList<>();
 

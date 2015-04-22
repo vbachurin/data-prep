@@ -3,6 +3,9 @@ package org.talend.dataprep.api.dataset;
 import org.springframework.util.StringUtils;
 import org.talend.dataprep.api.type.Type;
 
+import java.util.Objects;
+import java.util.Optional;
+
 /**
  * Represents information about a column in a data set. It includes:
  * <ul>
@@ -19,6 +22,10 @@ public class ColumnMetadata {
     private String name;
 
     private String typeName;
+
+    // number of first lines with a text header
+    // non per default
+    private int headerSize = 0;
 
     // Needed when objects are read back from the db.
     public ColumnMetadata() {
@@ -49,16 +56,26 @@ public class ColumnMetadata {
         this.typeName = typeName;
     }
 
+    public int getHeaderSize() {
+        return headerSize;
+    }
+
+    public void setHeaderSize(int headerSize) {
+        this.headerSize = headerSize;
+    }
+
+    public Quality getQuality() {
+        return quality;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ColumnMetadata)) {
-            return false;
-        }
-        ColumnMetadata that = (ColumnMetadata) o;
-        return name.equals(that.name) && typeName.equals(that.typeName);
+    public boolean equals(Object obj) {
+        return Optional.ofNullable( obj ) //
+            .filter(that -> that instanceof ColumnMetadata) //
+            .map(that -> (ColumnMetadata) that) //
+            .filter(that -> Objects.equals( this.name, that.name )) //
+            .filter(that -> Objects.equals(this.typeName, that.typeName)) //
+            .isPresent();
     }
 
     @Override
@@ -68,8 +85,10 @@ public class ColumnMetadata {
         return result;
     }
 
-    public Quality getQuality() {
-        return quality;
+    @Override
+    public String toString() {
+        return "ColumnMetadata{" + "quality=" + quality + ", name='" + name + '\'' + ", typeName='" + typeName + '\''
+                + ", headerSize=" + headerSize + '}';
     }
 
     public static class Builder {
@@ -83,6 +102,8 @@ public class ColumnMetadata {
         private int invalid;
 
         private int valid;
+
+        private int headerSize;
 
         public static ColumnMetadata.Builder column() {
             return new Builder();
@@ -119,11 +140,17 @@ public class ColumnMetadata {
             return this;
         }
 
+        public ColumnMetadata.Builder headerSize(int headerSize) {
+            this.headerSize = headerSize;
+            return this;
+        }
+
         public ColumnMetadata build() {
             ColumnMetadata columnMetadata = new ColumnMetadata(name, type.getName());
             columnMetadata.getQuality().setEmpty(empty);
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);
+            columnMetadata.setHeaderSize(this.headerSize);
             return columnMetadata;
         }
     }

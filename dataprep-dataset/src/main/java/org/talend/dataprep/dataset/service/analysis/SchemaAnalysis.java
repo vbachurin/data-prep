@@ -52,6 +52,7 @@ public class SchemaAnalysis {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1
             DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
             datasetLock.lock();
+
             try {
 
                 DataSetMetadata metadata = repository.get(dataSetId);
@@ -98,5 +99,6 @@ public class SchemaAnalysis {
         } catch (JMSException e) {
             throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
         }
+
     }
 }
