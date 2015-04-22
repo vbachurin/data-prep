@@ -4,7 +4,7 @@
     /**
      * @ngdoc object
      * @name data-prep.datagrid
-     * @description This module contains the controller and directives the datagrid
+     * @description This module contains the controller and directives for the datagrid
      * @requires data-prep.datagrid-tooltip
      * @requires data-prep.datagrid-header
      * @requires data-prep.services.dataset

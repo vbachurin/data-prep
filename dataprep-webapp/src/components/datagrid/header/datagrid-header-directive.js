@@ -6,20 +6,6 @@
      * @name data-prep.datagrid-header.directive:DatagridHeader
      * @description This directive takes care of a datagrid header item. It creates the header dropdown menu.
      * On creation, it calculate the quality bar values.
-     * <table>
-     *     <tr>
-     *         <th>Attributes</th>
-     *         <th>Description</th>
-     *     </tr>
-     *     <tr>
-     *         <td>metadata</td>
-     *         <td>the loaded metadata</td>
-     *     </tr>
-     *     <tr>
-     *         <td>column</td>
-     *         <td>the column metadata</td>
-     *     </tr>
-     * </table>
      *
      * Watchers:
      * <ul>
@@ -32,6 +18,8 @@
             metadata="metadata"
             column="column">
      </datagrid-header>
+     * @param {object} metadata The loaded metadata
+     * @param {object} metadcolumnata The column metadata
      */
     function DatagridHeader() {
         return {

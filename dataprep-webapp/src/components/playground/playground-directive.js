@@ -1,6 +1,13 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc directive
+     * @name data-prep.playground.directive:Playground
+     * @description This directive create the playground.
+     * It only consumes {@link data-prep.services.playground.service:PlaygroundService PlaygroundService}
+     * @restrict E
+     */
     function Playground() {
         return {
             restrict: 'E',

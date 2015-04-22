@@ -1,14 +1,27 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc controller
+     * @name data-prep.transformation-menu.controller:TransformMenuCtrl
+     * @description Transformation menu item controller.
+     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.recipe.service:RecipeService
+     */
     function TransformMenuCtrl($rootScope, DatasetGridService, PreparationService, RecipeService) {
         var vm = this;
 
         /**
-         * Menu selected. 3 choices :
-         * 1 - divider : no action
-         * 2 - no parameter and no choice is required : transformation call
-         * 3 - parameter or choice required : show modal
+         * @ngdoc method
+         * @name select
+         * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
+         * @description Menu selected. 3 choices :
+         * <ul>
+         *     <li>divider : no action</li>
+         *     <li>no parameter and no choice is required : transformation call</li>
+         *     <li>parameter or choice required : show modal</li>
+         * </ul>
          */
         vm.select = function () {
             if (vm.menu.isDivider) {
@@ -24,7 +37,11 @@
         };
 
         /**
-         * Perform a transformation on the column
+         * @ngdoc method
+         * @name transform
+         * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
+         * @param {object} params - the transformation params
+         * @description Perform a transformation on the column and refresh the recipe
          */
         vm.transform = function (params) {
             $rootScope.$emit('talend.loading.start');

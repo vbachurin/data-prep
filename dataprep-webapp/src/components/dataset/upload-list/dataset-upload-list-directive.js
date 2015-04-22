@@ -6,21 +6,12 @@
      * @name data-prep.dataset-upload-list.directive:DatasetUploadList
      * @description This dataset display the upload list that had an upload error. Unlike the dataset list which is
      * based on a service property for the dataset list, this one is based on a given attribute value.
-     *  <table>
-     *      <tr>
-     *          <th>Attributes</th>
-     *          <th>Description</th>
-     *      </tr>
-     *      <tr>
-     *          <td>datasets</td>
-     *          <td>the upload error datasets</td>
-     *      </tr>
-     *  </table>
      * @restrict E
      * @usage
      <dataset-upload-list
             datasets="datasets">
      </dataset-upload-list>
+     * @param {object[]} datasets The upload error datasets
      */
     function DatasetUploadList() {
         return {

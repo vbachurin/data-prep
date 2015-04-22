@@ -1,13 +1,20 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc controller
+     * @name data-prep.transformation-params.controller:TransformParamsCtrl
+     * @description Transformation parameters controller.
+     */
     function TransformParamsCtrl() {
         var vm = this;
 
         /**
-         * Adapt param default value to the requested type
-         * @param param - the targeted param
-         * @returns {*} - the adapted value
+         * @ngdoc method
+         * @name adaptParamDefaultValue
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @param {object} param - the targeted param
+         * @description [PRIVATE] Adapt params default value to the requested type
          */
         var adaptParamDefaultValue = function (param) {
             switch (param.type) {
@@ -22,8 +29,11 @@
         };
 
         /**
-         * Init params values to default
-         * @param params
+         * @ngdoc method
+         * @name initParamItemValues
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @param {object} param - the targeted param
+         * @description [PRIVATE] Init params values to default
          */
         var initParamItemValues = function (params) {
             _.forEach(params, function (param) {
@@ -35,8 +45,11 @@
         };
 
         /**
-         * Init select item selected value to default value. If no default defined, select the first element
-         * @param choice - the select item
+         * @ngdoc method
+         * @name initChoiceItemDefaultValue
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @param {object} choice - the choice item
+         * @description [PRIVATE] Save a choice item selected value. The value defines the default value. If no default defined, select the first element
          */
         var initChoiceItemDefaultValue = function (choice) {
             var defaultValue = _.find(choice.values, function (value) {
@@ -47,7 +60,10 @@
         };
 
         /**
-         * Init all param values to default for menu params and choice item params
+         * @ngdoc method
+         * @name initParamsValues
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description [PRIVATE] Init all param values to default for menu params and choice item params
          */
         var initParamsValues = function () {
             initParamItemValues(vm.transformation.parameters);
@@ -61,8 +77,11 @@
         };
 
         /**
-         * Get item parameters
-         * @returns {object}
+         * @ngdoc method
+         * @name getParams
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description [PRIVATE] Get item parameters into one object for REST call
+         * @returns {object} - the parameters
          */
         var getParams = function () {
             var params = {};
@@ -76,8 +95,11 @@
         };
 
         /**
-         * Get item choice and choice parameters
-         * @returns {object}
+         * @ngdoc method
+         * @name getChoiceParams
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description [PRIVATE] Get item choice and choice parameters into one object for REST call
+         * @returns {object} - the parameters
          */
         var getChoiceParams = function () {
             var params = {};
@@ -96,7 +118,10 @@
         };
 
         /**
-         * Gather params and perform a transformation on the column
+         * @ngdoc method
+         * @name transformWithParam
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description Gather params and perform a transformation on the column
          */
         vm.transformWithParam = function () {
             var params = getParams();

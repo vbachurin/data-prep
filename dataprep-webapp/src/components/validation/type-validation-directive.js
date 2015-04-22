@@ -4,7 +4,17 @@
     var INTEGER_REGEXP = /^\-?\d+$/;
     var DOUBLE_REGEXP = /^\-?\d+(\.\d+)?$/;
 
-
+    /**
+     * @ngdoc directive
+     * @name data-prep.type-validation.directive:TypeValidation
+     * @description This directive perform a type validation on input value modification.
+     * @restrict E
+     * @usage
+     <input
+            ...
+            type-validation='integer' />
+     * @param {string} typeValidation The wanted type (integer | numeric | double | float)
+     */
     function TypeValidation() {
         return {
             require: 'ngModel',
