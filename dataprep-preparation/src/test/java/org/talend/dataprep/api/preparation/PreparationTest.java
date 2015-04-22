@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.path.json.JsonPath;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.hamcrest.MatcherAssert;
@@ -398,6 +400,48 @@ public class PreparationTest {
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
         assertThat(preparation.getStep().id(), is("91629cad70f47957bcbcdeac436878cc5f713b8a"));
     }
+
+    /**
+     * @see org.talend.dataprep.preparation.service.PreparationService#listByDataSet
+     */
+    @Test
+    public void getByDataSet() throws Exception {
+
+        String wantedDataSetId = "wanted";
+
+        // relevant data
+        Preparation preparation1 = getPreparation(wantedDataSetId, "prep_1");
+        repository.add(preparation1);
+        Preparation preparation2 = getPreparation(wantedDataSetId, "prep_2");
+        repository.add(preparation2);
+
+        // noise data not to be returned by the service
+        repository.add(getPreparation("4523", "prep_3"));
+        repository.add(getPreparation("7534", "prep_4"));
+        repository.add(getPreparation("1598", "prep_5"));
+
+        String result = when().get("/preparations?dataSetId=" + wantedDataSetId).asString();
+        List<String> preparationIds = JsonPath.from(result).get("id");
+        for (String preparationId : preparationIds) {
+            Assert.assertTrue(result.contains(preparationId));
+        }
+
+
+    }
+
+    /**
+     * Return a preparation from the given parameters. Simple function used to simplify code writing.
+     *
+     * @param dataSetId the dataset id.
+     * @param name the preparation name.
+     * @return a preparation from the given parameters.
+     */
+    private Preparation getPreparation(String dataSetId, String name) {
+        Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
+        preparation.setName(name);
+        return preparation;
+    }
+
 
     private List<Action> getSimpleAction(final String actionName, final String paramKey, final String paramValue) {
         final Action action = new Action();

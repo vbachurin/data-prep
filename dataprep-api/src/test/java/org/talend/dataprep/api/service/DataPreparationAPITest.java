@@ -1,16 +1,8 @@
 package org.talend.dataprep.api.service;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.InputStream;
-import java.util.List;
-
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
@@ -28,9 +20,16 @@ import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
+import java.io.InputStream;
+import java.util.List;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -130,6 +129,9 @@ public class DataPreparationAPITest {
         assertTrue(list.contains(dataSetId));
     }
 
+    /**
+     * Simple dataset deletion case.
+     */
     @Test
     public void testDataSetDelete() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1.csv")))
@@ -140,6 +142,25 @@ public class DataPreparationAPITest {
         when().delete("/api/datasets/" + dataSetId).asString();
         list = when().get("/api/datasets").asString();
         assertEquals("[]", list);
+    }
+
+    /**
+     * DataSet deletion test case when the dataset is used by a preparation.
+     */
+    @Test
+    public void testDataSetDeleteWhenUsedByPreparation() throws Exception {
+
+        // create a dataset
+        String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
+
+        // create a preparation that uses the previous dataset
+        String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"" + dataSetId + "\" }")
+                .post("/api/preparations").asString();
+
+        // deletion should fail
+        when().delete("/api/datasets/" + dataSetId).then().log().ifValidationFails().assertThat().statusCode(400);
+
     }
 
     @Test
