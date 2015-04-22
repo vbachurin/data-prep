@@ -56,8 +56,8 @@
          * Ask certification for a dataset
          * @param dataset - the dataset to ask certifiction for
          */
-        vm.askCertification = function (dataset) {
-            DatasetService.askCertificationDataset(dataset)
+        vm.processCertification = function (dataset) {
+            DatasetService.processCertification(dataset)
                 .then(function () {
                     DatasetListService.refreshDatasets();
                 }

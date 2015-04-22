@@ -398,7 +398,7 @@ public class DataSetServiceTests {
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
-        when().put("/datasets/{id}/askcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
@@ -417,29 +417,10 @@ public class DataSetServiceTests {
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification. NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
-        when().put("/datasets/{id}/askcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
-        when().put("/datasets/{id}/certify", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
-        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
-    }
-
-    @Test
-    public void testCertifyNotAsked() throws Exception {
-        int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
-                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
-        int after = dataSetMetadataRepository.size();
-        assertThat(after - before, is(1));
-        assertQueueMessages(dataSetId);
-
-        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
-        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
-
-        when().put("/datasets/{id}/certify", dataSetId).then().statusCode(HttpStatus.EXPECTATION_FAILED.value());
-        dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
     }
 

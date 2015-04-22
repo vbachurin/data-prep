@@ -84,12 +84,8 @@
          * @param dataset
          * @returns promise
          */
-        self.askCertificationDataset = function(dataset) {
-            if (dataset.certification == 'NONE') {
-                return $http.put(RestURLs.datasetUrl + '/' + dataset.id + '/askcertification');
-            }else if (dataset.certification == 'PENDING') {
-                return $http.put(RestURLs.datasetUrl + '/' + dataset.id + '/certify');
-            }
+        self.processCertification = function(dataset) {
+            return $http.put(RestURLs.datasetUrl + '/' + dataset.id + '/processcertification');
         };
 
         /**

@@ -233,10 +233,10 @@ public class DataSetService {
         }
     }
 
-    @RequestMapping(value = "/datasets/{id}/askcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Ask certification for a dataset", notes = "Mark the dataset with 'certification required', authorized users can certify it later.")
+    @RequestMapping(value = "/datasets/{id}/processcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Ask certification for a dataset", notes = "Advance certification step of this dataset.")
     @Timed
-    public void askCertification(
+    public void processCertification(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
         DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         datasetLock.lock();
@@ -246,28 +246,9 @@ public class DataSetService {
             if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
                 dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
                 dataSetMetadataRepository.add(dataSetMetadata);
-            }
-        } finally {
-            datasetLock.unlock();
-        }
-    }
-
-    @RequestMapping(value = "/datasets/{id}/certify", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Certify a dataset", notes = "Mark the dataset as 'certified'.")
-    @Timed
-    public void grantCertification(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            HttpServletResponse response) {
-        DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
-        datasetLock.lock();
-        try {
-            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-
-            if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
+            } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
                 dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
                 dataSetMetadataRepository.add(dataSetMetadata);
-            } else {
-                response.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
             }
         } finally {
             datasetLock.unlock();

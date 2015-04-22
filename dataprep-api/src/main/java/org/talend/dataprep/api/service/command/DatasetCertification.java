@@ -21,14 +21,12 @@ public class DatasetCertification extends HystrixCommand<Void> {
 
     private final String dataSetId;
 
-    private final boolean ask;
 
-    private DatasetCertification(HttpClient client, String contentServiceUrl, String dataSetId, boolean ask) {
+    private DatasetCertification(HttpClient client, String contentServiceUrl, String dataSetId) {
         super(PreparationAPI.TRANSFORM_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.client = client;
         this.dataSetId = dataSetId;
-        this.ask = ask;
     }
 
     @Override
@@ -38,7 +36,7 @@ public class DatasetCertification extends HystrixCommand<Void> {
 
     @Override
     protected Void run() throws Exception {
-        HttpPut contentRetrieval = new HttpPut(contentServiceUrl + "/" + dataSetId + (ask ? "/askcertification" : "/certify"));
+        HttpPut contentRetrieval = new HttpPut(contentServiceUrl + "/" + dataSetId + "/processcertification");
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {

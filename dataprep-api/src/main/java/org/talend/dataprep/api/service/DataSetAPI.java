@@ -124,34 +124,16 @@ public class DataSetAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/datasets/{id}/askcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Ask certification for a dataset", notes = "Mark the dataset with 'certification required', authorized users can certify it later.")
+    @RequestMapping(value = "/api/datasets/{id}/processcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Ask certification for a dataset", notes = "Advance certification step of this dataset.")
     @Timed
-    public void askCertification(
+    public void processCertification(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Ask certification for dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, contentServiceUrl, dataSetId, true);
-        try {
-            command.execute();
-        } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
-        }
-    }
-
-    @RequestMapping(value = "/api/datasets/{id}/certify", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Certify a dataset", notes = "Mark the dataset as 'certified'.")
-    @Timed
-    public void grantCertification(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            HttpServletResponse response) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Ask certification for dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
-        }
-        HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, contentServiceUrl, dataSetId, false);
+        HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, contentServiceUrl, dataSetId);
         try {
             command.execute();
         } catch (Exception e) {
