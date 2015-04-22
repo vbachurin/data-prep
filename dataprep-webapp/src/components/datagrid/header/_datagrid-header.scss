@@ -3,7 +3,7 @@
   $datagrid-header-bkg: $dark-gray;
   $datagrid-header-bkg-active: darken($datagrid-header-bkg, 10%);
 
-  $datagrid-headercell-font-size: .8em;
+  $datagrid-headercell-font-size: .95em;
 
   background-color: $datagrid-header-bkg;
   border: 1px solid transparent; /*rgb(221, 221, 221);*/
@@ -31,6 +31,7 @@
 
   .grid-header-menu {
     @include menu-list;
+    font-family: $base-font-family;
   }
 
   .dropdown-menu,

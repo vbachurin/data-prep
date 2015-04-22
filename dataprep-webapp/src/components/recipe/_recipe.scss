@@ -1,10 +1,18 @@
+
+.talend-accordion{
+  margin: 5px;
+}
+
 .recipe {
-  $color: $dark-gray;
-  $background: $light-gray;
+  $color: $black;
+  $color-not-active: $shadow-gray;
+  $color-not-active-hover: $medium-gray;
+  $background: $white;
 
   background: $background;
   color: $color;
-  font-size: 0.85em;
+  font-size: 0.95em;
+
 
   /*************************************Step text*************************************/
   li {
@@ -12,14 +20,19 @@
     position: relative;
 
     .step-description {
+      padding-right: 30px;
 
       .recipe-description {
-        text-transform: capitalize;
+
 
         &.recipe-column-name {
           font-weight: bold;
+          text-transform: uppercase;
         }
       }
+    }
+    &:hover{
+      background-color: $light-gray;
     }
   }
 
@@ -28,15 +41,15 @@
     text-decoration: none;
     color: $color;
     cursor: pointer;
-
     position: absolute;
     right: 10px;
     top: 0;
-    font-size: 2em;
     line-height: 28px;
+    font-size: 2.8em;
 
     &::after {
       content: attr(active);
+      color: $dark-green;
     }
 
     &.highlight {
@@ -45,22 +58,32 @@
   }
 
   .inactive {
-    color: $medium-gray;
+    color: $color-not-active;
+    font-style: italic;
 
     .step-trigger {
       &::after {
+        color: $color-not-active;
         content: attr(inactive);
+        font-style: normal;
+
       }
 
       &.highlight::after {
         content: attr(active);
+        color: $dark-blue;
       }
+    }
+
+    &:hover{
+      color: $color-not-active-hover;
     }
   }
 
   /*************************************Parameters**********************************/
   .submenu {
-    background: tint($background, 30%);
+    background: darken($background, 10%);
+    padding: 5px;
 
     input {
       color: #000000 !important;
