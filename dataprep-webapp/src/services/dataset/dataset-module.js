@@ -3,9 +3,9 @@
 
     /**
      * @ngdoc object
-     * @name data-prep.services.module:dataset
+     * @name data-prep.services.dataset
      * @description This module contains the services to manipulate datasets
-     * @requires data-prep.services.module:utils
+     * @requires data-prep.services.utils
      */
     angular.module('data-prep.services.dataset', [
         'data-prep.services.utils',

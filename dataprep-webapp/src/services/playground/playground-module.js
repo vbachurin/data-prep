@@ -3,12 +3,12 @@
 
     /**
      * @ngdoc object
-     * @name data-prep.services.module:playground
+     * @name data-prep.services.playground
      * @description This module contains the services to load the playground
-     * @requires data-prep.services.module:dataset
-     * @requires data-prep.services.module:filter
-     * @requires data-prep.services.module:recipe
-     * @requires data-prep.services.module:utils
+     * @requires data-prep.services.dataset
+     * @requires data-prep.services.filter
+     * @requires data-prep.services.recipe
+     * @requires data-prep.services.utils
      */
     angular.module('data-prep.services.playground', [
         'data-prep.services.dataset',

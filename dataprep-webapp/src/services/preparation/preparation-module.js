@@ -3,10 +3,10 @@
 
     /**
      * @ngdoc object
-     * @name data-prep.services.module:preparation
+     * @name data-prep.services.preparation
      * @description This module contains the services to manipulate preparations
-     * @requires data-prep.services.module:dataset
-     * @requires data-prep.services.module:utils
+     * @requires data-prep.services.dataset
+     * @requires data-prep.services.utils
      */
     angular.module('data-prep.services.preparation', [
         'data-prep.services.utils',

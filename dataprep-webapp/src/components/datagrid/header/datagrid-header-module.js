@@ -3,12 +3,12 @@
 
     /**
      * @ngdoc object
-     * @name data-prep.module:datagrid-header
+     * @name data-prep.datagrid-header
      * @description This module contains the controller and directives to manage the datagrid header with transformation menu
      * @requires talend.module:widget
-     * @requires data-prep.module:transformation-menu
-     * @requires data-prep.services.module:transformation
-     * @requires data-prep.services.module:utils
+     * @requires data-prep.transformation-menu
+     * @requires data-prep.services.transformation
+     * @requires data-prep.services.utils
      */
     angular.module('data-prep.datagrid-header', [
         'talend.widget',

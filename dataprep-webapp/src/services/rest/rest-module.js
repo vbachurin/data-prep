@@ -3,9 +3,9 @@
 
     /**
      * @ngdoc object
-     * @name data-prep.services.module:rest
+     * @name data-prep.services.rest
      * @description This module contains the REST interceptor
-     * @requires data-prep.services.module:utils
+     * @requires data-prep.services.utils
      */
     angular.module('data-prep.services.rest', ['data-prep.services.utils']);
 })();
