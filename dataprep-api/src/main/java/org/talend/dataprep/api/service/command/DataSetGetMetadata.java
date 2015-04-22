@@ -42,7 +42,7 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
         HttpResponse response = client.execute(metadataRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         try {
-            if (statusCode >= 200) {
+            if (statusCode >= HttpStatus.SC_OK) {
                 if (statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_ACCEPTED) {
                     // Immediately release connection
                     return null;

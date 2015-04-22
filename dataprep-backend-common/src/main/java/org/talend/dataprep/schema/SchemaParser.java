@@ -19,7 +19,7 @@ public interface SchemaParser {
      * @param content The data set content. It should never be <code>null</code>.
      * @return A list of {@link ColumnMetadata metadata}. When no column name/type can be
      * created, implementations are expected to generate names and select
-     * {@link org.talend.dataprep.api.type.Types#STRING string} as type.
+     * {@link org.talend.dataprep.api.type.Type#STRING string} as type.
      */
     List<ColumnMetadata> parse(InputStream content);
 }

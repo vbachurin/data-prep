@@ -31,4 +31,9 @@ public class Quality {
     public void setValid(int valid) {
         this.valid = valid;
     }
+
+    @Override
+    public String toString() {
+        return "Quality{" + "empty=" + empty + ", invalid=" + invalid + ", valid=" + valid + '}';
+    }
 }
