@@ -130,7 +130,7 @@ public class DataSetAPI extends APIService {
     public void processCertification(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Ask certification for dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
+            LOG.debug("Ask certification for dataset #{}", dataSetId);
         }
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, contentServiceUrl, dataSetId);

@@ -238,10 +238,15 @@ public class DataSetService {
     @Timed
     public void processCertification(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Ask certification for dataset #{}", dataSetId);
+        }
+
         DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         datasetLock.lock();
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+            LOG.trace("Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
 
             if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
                 dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
@@ -250,6 +255,8 @@ public class DataSetService {
                 dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
                 dataSetMetadataRepository.add(dataSetMetadata);
             }
+
+            LOG.debug("New certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
         } finally {
             datasetLock.unlock();
         }

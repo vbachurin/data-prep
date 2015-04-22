@@ -215,6 +215,9 @@ public class DataPreparationAPITest {
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("testCreate.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "tagada").asString();
 
+        // TODO remove this when a better solution is available
+        Thread.sleep(200);
+
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
