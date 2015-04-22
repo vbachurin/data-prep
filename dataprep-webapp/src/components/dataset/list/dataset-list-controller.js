@@ -53,6 +53,18 @@
         };
 
         /**
+         * Ask certification for a dataset
+         * @param dataset - the dataset to ask certifiction for
+         */
+        vm.askCertification = function (dataset) {
+            DatasetService.askCertificationDataset(dataset)
+                .then(function () {
+                    DatasetListService.refreshDatasets();
+                }
+            );
+        };
+
+        /**
          * @ngdoc method
          * @name loadUrlSelectedDataset
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl

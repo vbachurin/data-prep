@@ -23,9 +23,23 @@ $border-color: #CECECE;
   }
 
   .inventory-icon {
-    width: 50px;
+    width: 64px;
+    height: 77px;
     padding: 5px;
     border-bottom: 1px solid $border-color;
+    position: relative;
+  }
+
+  .inventory-icon>img {
+    position: absolute;
+    z-index: 0;
+    top: 5px;
+  }
+
+  .inventory-icon>img.pin {
+    z-index: 1;
+    top: 3px;
+    left: 9px;
   }
 
   .inventory-title {
@@ -137,4 +151,8 @@ $border-color: #CECECE;
 
 .t-btn-more{
   background-image: url('/assets/images/more.png');
+}
+
+.pending{
+  background-color: darkgrey;
 }

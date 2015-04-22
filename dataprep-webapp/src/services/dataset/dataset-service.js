@@ -80,6 +80,19 @@
         };
 
         /**
+         * Ask certification for a dataset
+         * @param dataset
+         * @returns promise
+         */
+        self.askCertificationDataset = function(dataset) {
+            if (dataset.certification == 'NONE') {
+                return $http.put(RestURLs.datasetUrl + '/' + dataset.id + '/askcertification');
+            }else if (dataset.certification == 'PENDING') {
+                return $http.put(RestURLs.datasetUrl + '/' + dataset.id + '/certify');
+            }
+        };
+
+        /**
          * Get the dataset content
          * @param datasetId - dataset id
          * @param metadata - if false, the metadata will not be returned
