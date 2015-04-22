@@ -1,0 +1,63 @@
+.preparation-list {
+  $grid-item-columns: 4;
+  $grid-item-border-size: 15px;
+  $grid-item-border-color: white;
+  $grid-items-background: white;
+  $grid-items-shadow: rgba(0, 0, 0, 0.1);
+
+  $title-color: black;
+  $important-color: $dark-blue;
+
+  width: 100%;
+  padding-top: 10px;
+
+  .preparation {
+    @include transition(all 0.2s ease-in-out);
+    text-align: left;
+    min-width: 310px;
+    float: left;
+    padding: 5px 15px 5px 15px;
+    box-shadow: inset 0px 0px 1px 2px $grid-items-shadow;
+    border: ($grid-item-border-size / 2) solid $grid-item-border-color;
+    background-color: $grid-items-background;
+
+    @include grid-item-columns($grid-item-columns);
+
+    &:focus,
+    &:hover {
+      background-color: darken($grid-items-background, 5%);
+    }
+
+    .title {
+      margin: 0;
+
+      a {
+        font-weight: bold;
+        color: $title-color;
+        font-size: 1.2em;
+
+        &.favorite {
+          float: right;
+          color: $medium-gray;
+
+          &.selected {
+            color: $orange;
+          }
+        }
+      }
+    }
+
+    .description {
+      font-size: 0.8em;
+    }
+
+    .details {
+      padding-left: 20px;
+    }
+
+    .important {
+      color: $important-color;
+      font-weight: bold;
+    }
+  }
+}

@@ -9,21 +9,31 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMetadata> {
 
     private final String transformServiceUrl;
 
     private final HttpClient client;
 
-    public SuggestDataSetActions(HttpClient client, String transformServiceUrl, HystrixCommand<DataSetMetadata> retrieveMetadata) {
+    @Autowired(required = true)
+    private Jackson2ObjectMapperBuilder builder;
+
+    private SuggestDataSetActions(HttpClient client, String transformServiceUrl, HystrixCommand<DataSetMetadata> retrieveMetadata) {
         super(PreparationAPI.TRANSFORM_GROUP, retrieveMetadata);
         this.transformServiceUrl = transformServiceUrl;
         this.client = client;
@@ -34,8 +44,7 @@ public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMe
         HttpPost post = new HttpPost(transformServiceUrl + "/suggest/dataset");
         post.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
         DataSetMetadata metadata = getInput();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(DataSetMetadataModule.DEFAULT);
+        ObjectMapper objectMapper = builder.build();
         StringWriter dataSetMetadataJSON = new StringWriter();
         objectMapper.writer().writeValue(dataSetMetadataJSON, metadata);
         post.setEntity(new StringEntity(dataSetMetadataJSON.toString()));
@@ -50,6 +59,6 @@ public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMe
                 return new ReleasableInputStream(response.getEntity().getContent(), post::releaseConnection);
             }
         }
-        throw new RuntimeException("Unable to retrieve suggested actions.");
+        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS);
     }
 }

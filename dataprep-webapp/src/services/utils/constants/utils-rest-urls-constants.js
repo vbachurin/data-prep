@@ -6,7 +6,8 @@
             return {
                 serverUrl:				apiUrl,
                 datasetUrl:             apiUrl + '/api/datasets',
-                transformUrl:           apiUrl + '/api/transform'
+                transformUrl:           apiUrl + '/api/transform',
+                preparationUrl:         apiUrl + '/api/preparations'
             };
         }]);
 })();

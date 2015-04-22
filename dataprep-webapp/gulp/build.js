@@ -7,7 +7,7 @@ var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
 });
 
-gulp.task('styles', ['wiredep', 'injector:css:preprocessor'], function () {
+gulp.task('styles', ['wiredep'], function () {
   return (sass('src/css/', {style: 'expanded'}))
     .on('error', function handleError(err) {
       console.error(err.toString());
@@ -15,24 +15,6 @@ gulp.task('styles', ['wiredep', 'injector:css:preprocessor'], function () {
     })
     .pipe($.autoprefixer())
     .pipe(gulp.dest('.tmp/'));
-});
-
-gulp.task('injector:css:preprocessor', function () {
-//  return gulp.src('src/index.scss')
-//    .pipe($.inject(gulp.src([
-//        'src/**/*.scss',
-//        '!src/index.scss'
-//      ], {read: false}), {
-//      transform: function(filePath) {
-//        filePath = filePath.replace('src/', '');
-////        filePath = filePath.replace('src/components/', '../components/');
-//        return '@import \'' + filePath + '\';';
-//      },
-//      starttag: '// injector',
-//      endtag: '// endinjector',
-//      addRootSlash: false
-//    }))
-//    .pipe(gulp.dest('src/'));
 });
 
 gulp.task('injector:css', ['styles'], function () {
@@ -47,7 +29,7 @@ gulp.task('injector:css', ['styles'], function () {
 });
 
 gulp.task('scripts', function () {
-  return gulp.src('src/**/*.js')
+  return gulp.src(['src/**/*.js', '!src/assets/maps/**'])
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'));
 });
@@ -70,7 +52,7 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
     .pipe(gulp.dest('src/'));
 });
 
-gulp.task('partials', ['consolidate'], function () {
+gulp.task('partials', function () {
   return gulp.src(['src/**/*.html', '.tmp/**/*.html'])
     .pipe($.minifyHtml({
       empty: true,
@@ -154,11 +136,11 @@ gulp.task('build', ['clean'], function (){
 });
 
 gulp.task('build:dev', ['clean'], function(){
-  gulp.stat(['consolidate', 'injector:css', 'injector:js']);
+  gulp.stat(['injector:css', 'injector:js']);
   return gulp.src([
     'src/**/*.*',
     '.tmp/**/*.*',
     '!src/**/*.scss',
-    '!src/**/*.jade',
+    '!src/**/*.jade'
   ]).pipe(gulp.dest('dev/'));
 });

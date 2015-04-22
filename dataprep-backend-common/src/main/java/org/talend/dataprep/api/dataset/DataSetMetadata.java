@@ -7,6 +7,8 @@ import java.util.*;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.exception.CommonMessages;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -63,7 +65,7 @@ public class DataSetMetadata {
             }
             return mapper.reader(DataSetMetadata.class).readValue(jsonString);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to parse '" + json + "'.", e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -112,7 +114,7 @@ public class DataSetMetadata {
             mapper.writer().writeValue(writer, this);
             writer.flush();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to serialize object to JSON.", e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 

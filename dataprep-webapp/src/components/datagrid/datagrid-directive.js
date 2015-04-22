@@ -1,14 +1,14 @@
 (function () {
     'use strict';
 
-    function Datagrid($timeout, $compile, DatasetGridService, FilterService) {
+    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService) {
         return {
             restrict: 'E',
-            template: '<div id="datagrid" class="datagrid"></div>',
+            templateUrl: 'components/datagrid/datagrid.html',
             bindToController: true,
             controllerAs: 'datagridCtrl',
-            controller: function() {},
-            link: function (scope, iElement) {
+            controller: 'DatagridCtrl',
+            link: function (scope, iElement, iAttrs, ctrl) {
                 var options, grid, colHeaderElements = [];
 
                 //------------------------------------------------------------------------------------------------------
@@ -74,6 +74,12 @@
                     colHeaderElements = [];
                 };
 
+                var updateColSelection = function (column) {
+                    $timeout(function() {
+                        DatasetGridService.setSelectedColumn(column.id);
+                    });
+                };
+
                 //------------------------------------------------------------------------------------------------------
                 //-------------------------------------------------LISTENERS--------------------------------------------
                 //------------------------------------------------------------------------------------------------------
@@ -100,6 +106,47 @@
                         clearHeaders();
                         insertDatasetHeaders();
                     });
+
+                    //change column background and update column profil on click
+                    grid.onHeaderClick.subscribe(function(e, args) {
+                        var columnId = args.column.id;
+                        var column = _.find(grid.getColumns(), function(column) {
+                            return column.id === columnId;
+                        });
+
+                        if(column.cssClass !== 'selected') {
+                            resetCellStyles();
+                            resetColumnsClass();
+                            column.cssClass = 'selected';
+                            grid.invalidate();
+
+                            updateColSelection(column);
+                        }
+                    });
+                };
+
+                /**
+                 * Attach cell hover for tooltips listeners
+                 */
+                var attachTooltipListener = function() {
+                    //show tooltip on hover
+                    grid.onMouseEnter.subscribe(function(e) {
+                        var cell = grid.getCellFromEvent(e);
+                        var row = cell.row;
+                        var column = grid.getColumns()[cell.cell];
+
+                        var item = DatasetGridService.dataView.getItem(row);
+                        var position = {
+                            x: e.clientX,
+                            y: e.clientY
+                        };
+
+                        ctrl.updateTooltip(item, column.id, position);
+                    });
+                    //hide tooltip on leave
+                    grid.onMouseLeave.subscribe(function() {
+                        ctrl.hideTooltip();
+                    });
                 };
 
                 /**
@@ -121,19 +168,26 @@
                         grid.setCellCssStyles('highlight', config);
                         grid.invalidate();
 
-                        $timeout(function() {
-                            DatasetGridService.selectedColumnId = column.id;
-                        });
+                        updateColSelection(column);
                     });
 
                     //change selected cell column background
                     grid.onActiveCellChanged.subscribe(function(e,args) {
                         if(angular.isDefined(args.cell)) {
-                            resetColumnsClass();
-                            grid.getColumns()[args.cell].cssClass = 'selected';
-                            grid.invalidate();
+                            var column = grid.getColumns()[args.cell];
+
+                            if(column.cssClass !== 'selected') {
+                                resetColumnsClass();
+                                column.cssClass = 'selected';
+                                grid.invalidate();
+                            }
+
                         }
                     });
+
+                    $window.addEventListener('resize', function(){
+                        grid.resizeCanvas();
+                    }, true);
                 };
 
                 //------------------------------------------------------------------------------------------------------
@@ -159,6 +213,7 @@
                     attachLongTableListeners();
                     attachColumnHeaderListeners();
                     attachCellListeners();
+                    attachTooltipListener();
                 };
 
                 //------------------------------------------------------------------------------------------------------
@@ -223,6 +278,20 @@
                 );
 
                 /**
+                 * Scroll to top when loaded dataset change
+                 */
+                scope.$watch(
+                    function () {
+                        return DatasetGridService.metadata;
+                    },
+                    function (metadata) {
+                        if(metadata) {
+                            grid.scrollRowToTop(0);
+                        }
+                    }
+                );
+
+                /**
                  * When filter change, displayed values change, so we reset active cell and cell styles
                  */
                 scope.$watchCollection(
@@ -233,6 +302,7 @@
                         if(grid) {
                             resetCellStyles();
                             grid.resetActiveCell();
+                            grid.scrollRowToTop(0);
                         }
                     }
                 );

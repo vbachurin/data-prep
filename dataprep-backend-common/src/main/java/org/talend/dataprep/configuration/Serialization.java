@@ -1,21 +1,25 @@
 package org.talend.dataprep.configuration;
 
-import java.util.Arrays;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.api.preparation.json.PreparationMetadataModule;
+
+import com.fasterxml.jackson.databind.Module;
 
 @Configuration
 public class Serialization {
+
+    @Autowired
+    List<Module> modules;
 
     @Bean
     public Jackson2ObjectMapperBuilder jacksonBuilder() {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         builder.indentOutput(false);
-        builder.modules(Arrays.asList(DataSetMetadataModule.DEFAULT, PreparationMetadataModule.DEFAULT));
+        builder.modules(modules);
         return builder;
     }
 }

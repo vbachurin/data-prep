@@ -11,8 +11,8 @@ import java.util.UUID;
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
@@ -20,8 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.dataset.exception.DataSetMessages;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
@@ -36,7 +38,7 @@ public class DataSetService {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
 
-    private static final Log LOG = LogFactory.getLog(DataSetService.class);
+    private static final Logger LOG = LoggerFactory.getLogger( DataSetService.class );
 
     private final JsonFactory factory = new JsonFactory();
 
@@ -127,7 +129,7 @@ public class DataSetService {
             generator.writeEndArray();
             generator.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O exception during message output.", e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
@@ -167,9 +169,8 @@ public class DataSetService {
         }
         if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
             // Schema is not yet ready (but eventually will, returns 202 to indicate this).
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Data set #" + dataSetId + " not yet ready for service.");
-            }
+            LOG.debug("Data set #{} not yet ready for service.", dataSetId);
+
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return;
         }
@@ -181,7 +182,7 @@ public class DataSetService {
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O exception during message output.", e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
@@ -189,8 +190,7 @@ public class DataSetService {
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
     public void delete(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId,
-            HttpServletResponse response) {
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata != null) {
             contentStore.delete(metadata);
@@ -205,7 +205,7 @@ public class DataSetService {
     public void updateRawDataSet(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
-            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
+            @ApiParam(value = "content") InputStream dataSetContent) {
         DataSetMetadata.Builder builder = metadata().id(dataSetId);
         if (name != null) {
             builder = builder.name(name);
@@ -241,23 +241,8 @@ public class DataSetService {
             mapper.writer().writeValue(generator, metadata);
             generator.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Unexpected I/O exception during data set metadata output.", e);
+            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
-
-    @RequestMapping(value = "/datasets/{id}/versions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get data set versions", notes = "Get a list of data set versions.")
-    @Timed
-    public String[] listDataSetVersions(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId) {
-        return new String[0];
-    }
-
-    @RequestMapping(value = "/datasets/{id}/versions/{version}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get data set versions", notes = "Get a list of data set versions.")
-    @Timed
-    public String[] getVersionDetails(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to get history from.") String dataSetId) {
-        return new String[0];
-    }
-
 
 }

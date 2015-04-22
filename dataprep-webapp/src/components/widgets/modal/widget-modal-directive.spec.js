@@ -15,7 +15,10 @@ describe('Dropdown directive', function () {
         scope = $rootScope.$new();
 
         createElement = function () {
-            var html = '<talend-modal fullscreen="fullscreen" state="state" close-button="closeButton"></talend-modal>';
+            var html = '<talend-modal fullscreen="fullscreen" state="state" on-close="onClose()" close-button="closeButton"></talend-modal>';
+            scope.onClose = function() {
+                scope.closeCallbackCalled = true;
+            };
             element = $compile(html)(scope);
             scope.$digest();
             $timeout.flush();
@@ -387,4 +390,18 @@ describe('Dropdown directive', function () {
         //then
         expect(document.activeElement).toBe(outerModal);
     });
+
+    it('should call close callback', inject(function($rootScope) {
+        //given
+        scope.state = true;
+        createElement();
+        expect(scope.closeCallbackCalled).toBeFalsy();
+
+        //when
+        scope.state = false;
+        $rootScope.$apply();
+
+        //then
+        expect(scope.closeCallbackCalled).toBe(true);
+    }));
 });

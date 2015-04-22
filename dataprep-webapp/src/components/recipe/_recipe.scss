@@ -6,31 +6,68 @@
   color: $color;
   font-size: 0.85em;
 
+  /*************************************Step text*************************************/
   li {
     padding: 5px 5px 5px 10px;
+    position: relative;
 
-    a {
-      text-decoration: none;
-      color: $color;
-    }
+    .step-description {
 
-    input {
-      color: #000000;
-    }
+      .recipe-description {
+        text-transform: capitalize;
 
-    .submenu {
-      background: tint($background, 30%);
-    }
-
-    .recipe-description {
-      text-transform: capitalize;
-
-      &.recipe-column-name {
-        font-weight: bold;
+        &.recipe-column-name {
+          font-weight: bold;
+        }
       }
     }
   }
 
+  /*******************************Active/inactive trigger******************************/
+  .step-trigger {
+    text-decoration: none;
+    color: $color;
+    cursor: pointer;
+
+    position: absolute;
+    right: 10px;
+    top: 0;
+    font-size: 2em;
+    line-height: 28px;
+
+    &::after {
+      content: attr(active);
+    }
+
+    &.highlight {
+      color: $medium-gray;
+    }
+  }
+
+  .inactive {
+    color: $medium-gray;
+
+    .step-trigger {
+      &::after {
+        content: attr(inactive);
+      }
+
+      &.highlight::after {
+        content: attr(active);
+      }
+    }
+  }
+
+  /*************************************Parameters**********************************/
+  .submenu {
+    background: tint($background, 30%);
+
+    input {
+      color: #000000 !important;
+    }
+  }
+
+  /***********************************Panel hide/show*******************************/
   .action {
     &:hover {
       background: darken($background, 10%);

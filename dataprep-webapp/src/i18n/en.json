@@ -6,6 +6,7 @@
 
   "_comment" : "Left side menu",
   "ALL_FOLDERS"       : "All Folders",
+  "ALL_PREPARATIONS"  : "All Preparations",
   "ALL_SHAKED_FILES"  : "All shaked files",
   "FAVORITE_FILES"    : "Favorites",
   "MOST_RECENT_FILES" : "Most revent files",
@@ -20,14 +21,23 @@
   "SORTED_BY"           : "Sorted by",
   "UPLOAD_ERROR"        : "Upload error",
 
+  "_comment" : "Preparations",
+  "LAST_MODIFICATION"   : "last change",
+  "OWNED_BY"            : "owned by",
+  "RECIPE"              : "recipe",
+  "ROWS"                : "row(s)",
+  "STEPS"               : "step(s)",
+
   "_comment" : "Datagrid transformations",
   "RECIPE_ITEM_ON_COL"  : "on column",
   "NO_TRANSFORMATION"   : "No transformation available",
 
   "_comment" : "Datagrid",
-  "FILE_DETAILS"  : "File: {{name}} ({{records}} lines)",
-  "FILTER"        : "Filter",
-  "NEW_FILTER"    : "Type any value here...",
+  "ENTER_PREPARATION_NAME"  : "Enter preparation name",
+  "FILE_DETAILS"            : "File: {{name}} ({{records}} lines)",
+  "FILTER"                  : "Filter",
+  "NEW_FILTER"              : "New filter...",
+  "PREPARATION"             : "Preparation",
 
   "_comment" : "Buttons",
   "CANCEL"      : "Cancel",
@@ -41,7 +51,7 @@
   "PROCESSING"  : "Processing",
 
   "_comment" : "Confirm",
-  "DELETE_PERMANENTLY"      : "You are going to permanently delete the dataset \"{{dataset}}\".",
+  "DELETE_PERMANENTLY"      : "You are going to permanently delete the {{type}} \"{{name}}\".",
   "ENTER_DATASET_NAME"      : "Enter the dataset name",
   "NO_UNDONE_CONFIRM"       : "This operation cannot be undone. Are you sure ?",
   "UPDATE_EXISTING_DATASET" : "Do you want to update existing \"{{dataset}}\" dataset ?",
@@ -60,10 +70,17 @@
   "DATASET_UPDATE_SUCCESS_TITLE"  : "Update dataset",
   "DATASET_UPDATE_SUCCESS"        : "The dataset \"{{dataset}}\" has been updated",
 
+  "REMOVE_SUCCESS_TITLE"  : "{{type}} removed",
+  "REMOVE_SUCCESS"        : "The {{type}} \"{{name}}\" has been removed.",
+
   "_comment" : "Errors",
-  "GENERIC_ERROR"       : "An error occurred",
-  "SERVER_ERROR_TITLE"  : "Server error",
-  "SERVICE_UNAVAILABLE" : "Service unavailable",
-  "UPLOAD_ERROR_TITLE"  : "Upload error",
-  "UPLOAD_ERROR"        : "An error occurred during file upload"
+  "GENERIC_ERROR"                   : "An error occurred",
+  "INVALID_DATASET_TITLE"           : "Invalid dataset",
+  "INVALID_DATASET"                 : "This dataset is not valid. Please import a correct CSV file to update the data",
+  "PLAYGROUND_FILE_NOT_FOUND_TITLE" : "{{type}} load error",
+  "PLAYGROUND_FILE_NOT_FOUND"       : "The {{type}} with this id does not exist or is inaccessible",
+  "SERVER_ERROR_TITLE"              : "Server error",
+  "SERVICE_UNAVAILABLE"             : "Service unavailable",
+  "UPLOAD_ERROR_TITLE"              : "Upload error",
+  "UPLOAD_ERROR"                    : "An error occurred during file upload"
 }

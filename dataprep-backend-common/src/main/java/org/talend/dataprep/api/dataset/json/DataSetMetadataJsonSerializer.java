@@ -3,6 +3,7 @@ package org.talend.dataprep.api.dataset.json;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -15,6 +16,10 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
+    static
+    {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     private final boolean metadata;
 

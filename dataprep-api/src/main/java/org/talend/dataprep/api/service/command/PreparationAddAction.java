@@ -7,11 +7,17 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class PreparationAddAction extends HystrixCommand<Void> {
 
     private final HttpClient client;
@@ -22,7 +28,7 @@ public class PreparationAddAction extends HystrixCommand<Void> {
 
     private final String id;
 
-    public PreparationAddAction(HttpClient client, String preparationServiceUrl, String id, InputStream actions) {
+    private PreparationAddAction(HttpClient client, String preparationServiceUrl, String id, InputStream actions) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
         this.preparationServiceUrl = preparationServiceUrl;
@@ -45,6 +51,6 @@ public class PreparationAddAction extends HystrixCommand<Void> {
         if (statusCode >= 200) {
             return null;
         }
-        throw new RuntimeException("Unable to append action to preparation #" + id + ".");
+        throw Exceptions.User(APIMessages.UNABLE_TO_ACTIONS_TO_PREPARATION, id);
     }
 }

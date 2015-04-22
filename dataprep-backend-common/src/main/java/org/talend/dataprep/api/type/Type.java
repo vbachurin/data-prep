@@ -2,7 +2,6 @@ package org.talend.dataprep.api.type;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 public enum Type {
     ANY("any"), //$NON-NLS-1$
@@ -39,13 +38,6 @@ public enum Type {
      * @return A unique type name.
      */
     public String getName() {
-        return name;
-    }
-
-    /**
-     * @return The type name in given locale.
-     */
-    public String getName(Locale locale) {
         return name;
     }
 

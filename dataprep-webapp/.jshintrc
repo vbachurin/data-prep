@@ -42,6 +42,8 @@
     // SlickGrid
     "Slick": false,
     //Export
-    "Blob": false
+    "Blob": false,
+    // Highcharts
+    "Highcharts": false
   }
 }

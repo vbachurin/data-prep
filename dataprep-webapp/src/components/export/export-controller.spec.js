@@ -8,7 +8,7 @@ describe('Dataset playground controller', function() {
         content: ''
     };
 
-    beforeEach(module('data-prep.dataset-playground'));
+    beforeEach(module('data-prep.playground'));
 
     beforeEach(inject(function($rootScope, $controller, ExportService) {
         //mock

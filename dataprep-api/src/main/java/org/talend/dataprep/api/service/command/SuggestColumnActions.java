@@ -11,14 +11,22 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class SuggestColumnActions extends ChainedCommand<InputStream, DataSetMetadata> {
 
     private final String transformServiceUrl;
@@ -27,7 +35,10 @@ public class SuggestColumnActions extends ChainedCommand<InputStream, DataSetMet
 
     private final HttpClient client;
 
-    public SuggestColumnActions(HttpClient client, String transformServiceUrl, HystrixCommand<DataSetMetadata> retrieveMetadata,
+    @Autowired(required = true)
+    private Jackson2ObjectMapperBuilder builder;
+
+    private SuggestColumnActions(HttpClient client, String transformServiceUrl, HystrixCommand<DataSetMetadata> retrieveMetadata,
             String columnName) {
         super(PreparationAPI.TRANSFORM_GROUP, retrieveMetadata);
         this.transformServiceUrl = transformServiceUrl;
@@ -52,7 +63,7 @@ public class SuggestColumnActions extends ChainedCommand<InputStream, DataSetMet
             // Column does not exist in data set metadata.
             return new ByteArrayInputStream(new byte[0]);
         }
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = builder.build();
         StringWriter columnMetadataJSON = new StringWriter();
         objectMapper.writer().writeValue(columnMetadataJSON, columnMetadata);
         post.setEntity(new StringEntity(columnMetadataJSON.toString()));
@@ -67,6 +78,6 @@ public class SuggestColumnActions extends ChainedCommand<InputStream, DataSetMet
                 return new ReleasableInputStream(response.getEntity().getContent(), post::releaseConnection);
             }
         }
-        throw new RuntimeException("Unable to retrieve suggested actions.");
+        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS);
     }
 }

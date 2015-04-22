@@ -7,6 +7,6 @@ if [[ -z "$DOCKER_IDS" ]]; then
 else
   echo 'docker containers to stop: '$DOCKER_IDS
   docker stop $DOCKER_IDS > /dev/null
-  docker rm $DOCKER_IDS > /dev/null
+  docker rm --volumes=true $DOCKER_IDS > /dev/null
 fi
 

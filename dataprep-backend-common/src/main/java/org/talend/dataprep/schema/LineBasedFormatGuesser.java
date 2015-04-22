@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.*;
 
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.exception.CommonMessages;
+import org.talend.dataprep.exception.Exceptions;
 
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {
@@ -66,7 +68,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw Exceptions.User(CommonMessages.UNABLE_TO_READ_CONTENT, e);
         }
         return null;
     }

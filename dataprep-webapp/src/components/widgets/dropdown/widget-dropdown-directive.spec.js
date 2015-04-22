@@ -178,6 +178,22 @@ describe('Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(false);
         });
 
+        it('should not hide dropdown menu on not ESC keydown', function () {
+            //given
+            var menu = element.find('.dropdown-menu').eq(0);
+            clickDropdownToggle();
+            expect(menu.hasClass('show-menu')).toBe(true);
+
+            var event = angular.element.Event('keydown');
+            event.keyCode = 13;
+
+            //when
+            menu.trigger(event);
+
+            //then
+            expect(menu.hasClass('show-menu')).toBe(true);
+        });
+
         it('should focus on dropdown action when menu is hidden by ESC', function () {
             //given
             jasmine.clock().install();

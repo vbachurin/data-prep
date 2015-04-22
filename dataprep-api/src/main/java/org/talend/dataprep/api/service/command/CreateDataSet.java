@@ -10,10 +10,16 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class CreateDataSet extends HystrixCommand<String> {
 
     private final String contentServiceUrl;
@@ -24,7 +30,7 @@ public class CreateDataSet extends HystrixCommand<String> {
 
     private final HttpClient client;
 
-    public CreateDataSet(HttpClient client, String contentServiceUrl, String name, InputStream dataSetContent) {
+    private CreateDataSet(HttpClient client, String contentServiceUrl, String name, InputStream dataSetContent) {
         super(PreparationAPI.DATASET_GROUP);
         this.contentServiceUrl = contentServiceUrl;
         this.name = name;
@@ -34,7 +40,7 @@ public class CreateDataSet extends HystrixCommand<String> {
 
     @Override
     protected String getFallback() {
-        throw new RuntimeException("Fallback not supported in this command.");
+        throw Exceptions.Internal(APIMessages.UNSUPPORTED_FALLBACK);
     }
 
     @Override
@@ -54,6 +60,6 @@ public class CreateDataSet extends HystrixCommand<String> {
         } finally {
             contentCreation.releaseConnection();
         }
-        throw new RuntimeException("Unable to create content.");
+        throw Exceptions.User(APIMessages.UNABLE_TO_CREATE_DATASET);
     }
 }

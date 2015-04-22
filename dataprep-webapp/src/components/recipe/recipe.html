@@ -1,12 +1,22 @@
 <ul class="talend-accordion">
-    <li ng-repeat="step in recipeCtrl.recipe track by $index">
-        <a class="talend-accordion-trigger" on-open="recipeCtrl.resetParams(step)">
+    <li ng-repeat="step in recipeCtrl.recipe track by $index" ng-class="{'inactive': step.inactive}">
+        <div class="talend-accordion-trigger step-description"
+             on-open="recipeCtrl.resetParams(step)">
+
             {{$index + 1}}.
-            <span class="recipe-description">{{step.transformation.name | translate}}</span>
+            <span class="recipe-description">{{step.transformation.label}}</span>
             {{::'RECIPE_ITEM_ON_COL' | translate}}
             <span class="recipe-description recipe-column-name">{{step.column.id}}</span>
-        </a>
-        <ul class="submenu" ng-if="::(step.transformation.parameters || step.transformation.items)">
+        </div>
+        <div class="step-trigger"
+           ng-class="{downlight: step.downlight, highlight: step.highlight}"
+           ng-click="recipeCtrl.toggleStep(step)"
+           active="&#9679;"
+           inactive="&#9675;"
+           ng-mouseleave="recipeCtrl.stepHoverEnd()"
+           ng-mouseover="recipeCtrl.stepHoverStart($index)"></div>
+
+        <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>
                 <transform-params transformation="step.transformation"></transform-params>
             </li>

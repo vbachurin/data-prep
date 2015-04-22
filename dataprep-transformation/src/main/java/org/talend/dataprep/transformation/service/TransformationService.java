@@ -8,10 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -19,7 +20,7 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
-import org.talend.dataprep.transformation.exception.Messages;
+import org.talend.dataprep.transformation.exception.TransformationMessages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
@@ -29,9 +30,17 @@ import com.wordnik.swagger.annotations.*;
 public class TransformationService {
 
     @Autowired
+    private WebApplicationContext context;
+
+    @Autowired(required = true)
+    private Jackson2ObjectMapperBuilder builder;
+
+    @Autowired
     private ActionMetadata[] allActions;
 
-    private final TransformerFactory factory = new SimpleTransformerFactory();
+    private TransformerFactory getTransformerFactory() {
+        return context.getBean(SimpleTransformerFactory.class);
+    }
 
     @RequestMapping(value = "/transform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
@@ -40,10 +49,10 @@ public class TransformationService {
             @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions,
             @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response) {
         try {
-            Transformer transformer = factory.get(new String(Base64.getDecoder().decode(actions)));
+            Transformer transformer = getTransformerFactory().get(new String(Base64.getDecoder().decode(actions)));
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
-            throw Exceptions.User(Messages.UNABLE_TO_PARSE_JSON, e);
+            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -57,6 +66,7 @@ public class TransformationService {
         String typeName = column.getType();
         Type type = Type.get(typeName);
         ArrayList<ActionMetadata> suggestedActions = new ArrayList<>();
+        // look for all actions applicable to the column type
         for (ActionMetadata am : allActions) {
             Set<Type> compatibleColumnTypes = am.getCompatibleColumnTypes();
             for (Type columnType : compatibleColumnTypes) {
@@ -76,8 +86,7 @@ public class TransformationService {
             return Collections.emptyList();
         }
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(DataSetMetadataModule.DEFAULT);
+            ObjectMapper objectMapper = builder.build();
             DataSetMetadata dataSetMetadata = objectMapper.reader(DataSetMetadata.class).readValue(dataset);
             // Temporary: no data set actions at this moment
             if (dataSetMetadata != null) {
@@ -86,7 +95,7 @@ public class TransformationService {
                 return Collections.emptyList();
             }
         } catch (IOException e) {
-            throw Exceptions.User(Messages.UNABLE_TO_COMPUTE_DATASET_ACTIONS, e);
+            throw Exceptions.User(TransformationMessages.UNABLE_TO_COMPUTE_DATASET_ACTIONS, e);
         }
     }
 

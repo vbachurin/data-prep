@@ -204,6 +204,31 @@ public class DataSetServiceTests {
     }
 
     @Test
+    public void testQuotes() throws Exception {
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("bands_quotes.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test_quotes.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
+    }
+
+    @Test
+    public void testQuotesAndCarriageReturn() throws Exception {
+        String dataSetId = given()
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("bands_quotes_and_carriage_return.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test_quotes_and_carriage_return.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
+    }
+
+    @Test
     public void nbLines() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();

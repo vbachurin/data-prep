@@ -13,6 +13,8 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonMessages;
+import org.talend.dataprep.exception.Exceptions;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -66,7 +68,7 @@ class CSVFormatGuess implements FormatGuess {
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Unable to read content", e);
+                throw Exceptions.User(CommonMessages.UNABLE_TO_READ_CONTENT, e);
             }
             return columnMetadata;
         };
@@ -97,7 +99,7 @@ class CSVFormatGuess implements FormatGuess {
                 generator.flush();
                 return new ByteArrayInputStream(writer.toString().getBytes("UTF-8"));
             } catch (IOException e) {
-                throw new RuntimeException("Unable to serialize to JSON.", e);
+                throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
             }
         };
     }

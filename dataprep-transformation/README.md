@@ -39,7 +39,7 @@ By default, the profile 'docker' isn't active, you need to explicitly enable it 
 * Build a docker image that run the services with name "talend/dataprep-dataset:${version}" (e.g. "talend/dataprep-dataset:1.0.M0-SNAPSHOT").
 After "mvn install" completes, run the following command to quickly test the build:
 ```
-$ docker -p 8180:8180 run talend/dataprep-dataset:latest
+$ docker run -p 8180:8180 talend/dataprep-transformation:latest
 ```
 This runs the latest image version and forwards image's port 8180 to localhost 8180. After initialization, go to http://localhost:8180.
 

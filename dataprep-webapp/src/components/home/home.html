@@ -5,7 +5,8 @@
 
         <div class="flex-menu-left side-menu">
             <ul>
-                <li><a href="javascript:void(0)" class="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
+                <li><a ui-sref="nav.home.datasets" ui-sref-active="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
+                <li><a ui-sref="nav.home.preparations" ui-sref-active="selected">{{ ::'ALL_PREPARATIONS' | translate }}</a></li>
                 <li><a href="javascript:void(0)">{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
                 <li><a href="javascript:void(0)">{{ ::'ALL_SHAKED_FILES' | translate }}</a></li>
                 <li><a href="javascript:void(0)">{{ ::'FAVORITE_FILES' | translate }}</a></li>
@@ -14,10 +15,10 @@
 
         <div class="flex-center">
             <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
-            <dataset-list></dataset-list>
+            <ui-view name="home-content"></ui-view>
         </div>
 
-        <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-side inventory-data">
+        <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-side inventory-data" resizable="inventory-data">
             <p class="title">{{ ::'INVENTORY_DATA' | translate }}</p>
             <hr/>
             <p class="empty">
@@ -28,5 +29,5 @@
         </talend-slidable>
     </div>
 
-    <dataset-playground></dataset-playground>
+    <playground></playground>
 </div>

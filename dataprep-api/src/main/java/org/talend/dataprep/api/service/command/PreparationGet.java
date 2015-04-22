@@ -7,10 +7,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
 
+@Component
+@Scope("request")
 public class PreparationGet extends HystrixCommand<InputStream> {
 
     private final HttpClient client;
@@ -19,7 +25,7 @@ public class PreparationGet extends HystrixCommand<InputStream> {
 
     private final String id;
 
-    public PreparationGet(HttpClient client, String preparationServiceUrl, String id) {
+    private PreparationGet(HttpClient client, String preparationServiceUrl, String id) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
         this.preparationServiceUrl = preparationServiceUrl;
@@ -45,6 +51,6 @@ public class PreparationGet extends HystrixCommand<InputStream> {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
-        throw new RuntimeException("Unable to retrieve preparation list.");
+        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
     }
 }

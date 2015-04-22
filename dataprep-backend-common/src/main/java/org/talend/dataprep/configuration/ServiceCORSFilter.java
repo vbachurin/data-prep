@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -25,10 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Component
 public class ServiceCORSFilter implements Filter, ApplicationContextAware {
 
-    private static final Log LOGGER = LogFactory.getLog(ServiceCORSFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( ServiceCORSFilter.class );
 
     private final Set<String> serviceRootPaths = new HashSet<>();
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
@@ -41,9 +42,11 @@ public class ServiceCORSFilter implements Filter, ApplicationContextAware {
         chain.doFilter(req, res);
     }
 
+    @Override
     public void init(FilterConfig filterConfig) {
     }
 
+    @Override
     public void destroy() {
     }
 
@@ -66,7 +69,7 @@ public class ServiceCORSFilter implements Filter, ApplicationContextAware {
         }
         // Log service paths
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Enable Cross Origin settings for paths: " + Arrays.toString(serviceRootPaths.toArray()));
+            LOGGER.info("Enable Cross Origin settings for paths: {}", Arrays.toString(serviceRootPaths.toArray()));
         }
     }
 }

@@ -6,6 +6,7 @@
 
   "_comment" : "Left side menu",
   "ALL_FOLDERS"       : "Tous les fichiers",
+  "ALL_PREPARATIONS"  : "Toutes les préparations",
   "ALL_SHAKED_FILES"  : "Fichiers transformés",
   "FAVORITE_FILES"    : "Favoris",
   "MOST_RECENT_FILES" : "Fichiers récents",
@@ -20,14 +21,23 @@
   "SORTED_BY"           : "Trié par",
   "UPLOAD_ERROR"        : "Erreur d'envoi",
 
+  "_comment" : "Preparations",
+  "LAST_MODIFICATION"   : "dernière modification",
+  "OWNED_BY"            : "propriétaire",
+  "RECIPE"              : "recette",
+  "ROWS"                : "ligne(s)",
+  "STEPS"               : "étape(s)",
+
   "_comment" : "Datagrid transformations",
   "RECIPE_ITEM_ON_COL"  : "sur",
   "NO_TRANSFORMATION"   : "Aucune transformation disponible",
 
   "_comment" : "Datagrid",
-  "FILE_DETAILS"  : "Fichier: {{name}} ({{records}} lignes)",
-  "FILTER"        : "Filtre",
-  "NEW_FILTER"    : "Nouveau filtre...",
+  "ENTER_PREPARATION_NAME"  : "Entrer le nom de la préparation",
+  "FILE_DETAILS"            : "Fichier: {{name}} ({{records}} lignes)",
+  "FILTER"                  : "Filtre",
+  "NEW_FILTER"              : "Nouveau filtre...",
+  "PREPARATION"             : "Préparation",
 
   "_comment" : "Buttons",
   "CANCEL"      : "Annuler",
@@ -61,9 +71,11 @@
   "DATASET_UPDATE_SUCCESS"        : "Le dataset \"{{dataset}}\" a été mis à jour",
 
   "_comment" : "Errors",
-  "GENERIC_ERROR"       : "Une erreur est survenue",
-  "SERVER_ERROR_TITLE"  : "Erreur serveur",
-  "SERVICE_UNAVAILABLE" : "Service non disponible",
-  "UPLOAD_ERROR_TITLE"  : "Erreur d'envoi",
-  "UPLOAD_ERROR"        : "Une erreur est survenue lors de l'envoi du fichier"
+  "GENERIC_ERROR"         : "Une erreur est survenue",
+  "INVALID_DATASET_TITLE" : "Données invalides",
+  "INVALID_DATASET"       : "Les données de ce fichier sont invalides. Veuillez importer un fichier CSV valide pour mettre à jour ce fichier.",
+  "SERVER_ERROR_TITLE"    : "Erreur serveur",
+  "SERVICE_UNAVAILABLE"   : "Service non disponible",
+  "UPLOAD_ERROR_TITLE"    : "Erreur d'envoi",
+  "UPLOAD_ERROR"          : "Une erreur est survenue lors de l'envoi du fichier"
 }
