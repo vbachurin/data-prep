@@ -33,11 +33,6 @@ public class PreparationGet extends HystrixCommand<InputStream> {
     }
 
     @Override
-    protected InputStream getFallback() {
-        return new ByteArrayInputStream(new byte[0]);
-    }
-
-    @Override
     protected InputStream run() throws Exception {
         HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id);
         HttpResponse response = client.execute(contentRetrieval);
@@ -50,6 +45,8 @@ public class PreparationGet extends HystrixCommand<InputStream> {
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
+        } else {
+            contentRetrieval.releaseConnection();
         }
         throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
     }

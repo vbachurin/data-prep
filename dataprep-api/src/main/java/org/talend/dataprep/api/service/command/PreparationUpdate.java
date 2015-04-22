@@ -3,7 +3,6 @@ package org.talend.dataprep.api.service.command;
 import java.io.StringWriter;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
@@ -45,22 +44,17 @@ public class PreparationUpdate extends HystrixCommand<String> {
     }
 
     @Override
-    protected String getFallback() {
-        return StringUtils.EMPTY;
-    }
-
-    @Override
     protected String run() throws Exception {
         HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations/" + id);
-        // Serialize preparation using configured serialization
-        ObjectMapper mapper = builder.build();
-        StringWriter preparationJSONValue = new StringWriter();
-        mapper.writer().writeValue(preparationJSONValue, preparation);
-        preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        preparationCreation.setEntity(new StringEntity(preparationJSONValue.toString()));
-        HttpResponse response = client.execute(preparationCreation);
-        int statusCode = response.getStatusLine().getStatusCode();
         try {
+            // Serialize preparation using configured serialization
+            ObjectMapper mapper = builder.build();
+            StringWriter preparationJSONValue = new StringWriter();
+            mapper.writer().writeValue(preparationJSONValue, preparation);
+            preparationCreation.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+            preparationCreation.setEntity(new StringEntity(preparationJSONValue.toString()));
+            HttpResponse response = client.execute(preparationCreation);
+            int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }

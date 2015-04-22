@@ -2,18 +2,23 @@
     'use strict';
 
     /**
-     * Configurable tooltip widget
-     *
-     * <talend-tooltip
-     *      record="record"
-     *      key="colId"
-     *      position="position"
-     *      requested-state="showTooltip"></talend-tooltip>
-     *
-     * Attr position : {x: number, y: number} - the position where to display the tooltip
-     * Attr requested-state : show/hide tooltip if not blocked
-     *
-     * The tooltip state is blocked when the mouse is over it
+     * @ngdoc directive
+     * @name talend.widget.directive:TalendTooltip
+     * @description Configurable tooltip widget<br/>
+     * The tooltip state is blocked when the mouse is over it or the focus is on a tooltip inner element.
+     * The requested state is applied when the mouse leave the tooptip and the focus is not on it.<br/>
+     * Watchers :
+     * <ul>
+     *     <li>position : on position change, the tooltip position is recalculated</li>
+     * </ul>
+     * @restrict E
+     * @usage
+      <talend-tooltip
+           position="position"
+           requested-state="showTooltip">
+      </talend-tooltip>
+     * @param {object} position {x: number, y: number} The position where to display the tooltip
+     * @param {boolean} showTooltip Show/hide tooltip if not blocked
      */
     function TalendTooltip($window, $document, $timeout) {
         return {
@@ -29,10 +34,13 @@
             controller: 'TalendTooltipCtrl',
             controllerAs: 'talendTooltipCtrl',
             link: function(scope, iElement, iAttrs, ctrl) {
-                /**
-                 * Block (mouse over | focus in) unblock (mouse leave | focus out) the visibility change
-                 */
                 var hasFocus, isOver;
+                /**
+                 * @ngdoc method
+                 * @name processBlockUnblock
+                 * @methodOf talend.widget.directive:TalendTooltip
+                 * @description [PRIVATE] Block (mouse over || focus in) or unblock (mouse leave && focus out) the visibility change
+                 */
                 var processBlockUnblock = function() {
                     if(hasFocus || isOver) {
                         ctrl.blockState();
@@ -61,11 +69,14 @@
                 });
 
                 /**
-                 * Calculate left/right position.
+                 * @ngdoc method
+                 * @name calculateHorizontalPosition
+                 * @methodOf talend.widget.directive:TalendTooltip
+                 * @param {object} position {{x: Number}} The requested position
+                 * @description [PRIVATE] Calculate left/right position.<br/>
                  * If the place to display is in the first half of the window, the tooltip is displayed on the right
                  * Otherwise, the tooltip is displayed on the left
-                 * @param position - {{x: Number}} the requested position
-                 * @returns {{left: String, right: String}}
+                 * @returns {object} {left: string, right: string} The calculated left and right css
                  */
                 var calculateHorizontalPosition = function(position) {
                     var windowWidth = $window.innerWidth || $document.documentElement.clientWidth || $document.body.clientWidth;
@@ -90,6 +101,16 @@
                  * Otherwise, the tooltip is displayed on the top
                  * @param position - {{y: Number}} the requested position
                  * @returns {{top: String, bottom: String}}
+                 */
+                /**
+                 * @ngdoc method
+                 * @name calculateVerticalPosition
+                 * @methodOf talend.widget.directive:TalendTooltip
+                 * @param {object} position {{y: Number}} The requested position
+                 * @description [PRIVATE] Calculate top/bottom position.<br/>
+                 * If the place to display is in the first half of the window, the tooltip is displayed on the bottom
+                 * Otherwise, the tooltip is displayed on the top
+                 * @returns {object} {{top: String, bottom: String}} The calculated top and bottom css
                  */
                 var calculateVerticalPosition = function(position) {
                     var windowHeight = $window.innerHeight || $document.documentElement.clientHeight || $document.body.clientHeight;

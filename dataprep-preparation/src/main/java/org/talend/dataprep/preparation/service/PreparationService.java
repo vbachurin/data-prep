@@ -6,6 +6,7 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,6 +77,7 @@ public class PreparationService {
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
     public List<String> list() {
+        LOGGER.debug("Get list of preparations (summary).");
         return versionRepository.listAll(Preparation.class).stream().map(Preparation::id).collect(toList());
     }
 
@@ -83,6 +85,7 @@ public class PreparationService {
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
     @Timed
     public Collection<Preparation> listAll() {
+        LOGGER.debug("Get list of preparations (with details).");
         return versionRepository.listAll(Preparation.class);
     }
 
@@ -128,6 +131,7 @@ public class PreparationService {
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
     public Preparation get(@ApiParam("id") @PathVariable("id") String id) {
+        LOGGER.debug("Get content of preparation details for #{}.", id);
         return versionRepository.get(id, Preparation.class);
     }
 
@@ -142,16 +146,17 @@ public class PreparationService {
         final Step step = versionRepository.get(getStepId(version, preparation), Step.class);
         LOGGER.debug("Get content of preparation #{} at step: {}", id, step);
         try {
+            ServletOutputStream stream = response.getOutputStream();
             if (cache.has(id, step.id())) {
                 LOGGER.debug("Cache exists for preparation #{} at step {}", id, step);
-                ServletOutputStream stream = response.getOutputStream();
                 response.setStatus(HttpServletResponse.SC_OK);
                 IOUtils.copyLarge(cache.get(id, step.id()), stream);
-                stream.flush();
             } else {
                 LOGGER.debug("Cache does NOT exist for preparation #{} at step {}", id, step);
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                IOUtils.copy(new ByteArrayInputStream(new byte[0]), stream);
             }
+            stream.flush();
         } catch (IOException e) {
             throw Exceptions.User(PreparationMessages.UNABLE_TO_SERVE_PREPARATION_CONTENT, version, id, e);
         }
@@ -232,6 +237,7 @@ public class PreparationService {
     @Timed
     public PreparationActions getVersionedAction(@ApiParam("id") @PathVariable("id") final String id,
                                                  @ApiParam("version") @PathVariable("version") final String version) {
+        LOGGER.debug("Get list of actions of preparations #{} at version {}.", id, version);
         final Preparation preparation = versionRepository.get(id, Preparation.class);
         if (preparation != null) {
             final String stepId = getStepId(version, preparation);

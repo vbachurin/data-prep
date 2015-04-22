@@ -1,16 +1,31 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.dataset.service:DatasetListService
+     * @description Dataset grid service. This service holds the dataset list like a cache and consume DatasetService to access to the REST api
+     * @requires data-prep.services.dataset.service:DatasetService
+     */
     function DatasetListService($q, DatasetService) {
         var self = this;
         var datasetsPromise;
 
+        /**
+         * @ngdoc property
+         * @name datasets
+         * @propertyOf data-prep.services.dataset.service:DatasetListService
+         * @description the dataset list
+         */
         self.datasets = [];
 
         /**
-         * Get unique name by adding '(num)' at the end
-         * @param name - requested name
-         * @returns string - the resulting name
+         * @ngdoc method
+         * @name getUniqueName
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @param {string} name - the base name
+         * @description Get a unique name from a base name. The existence check is done on the local dataset list. It transform the base name, adding "(number)"
+         * @returns {string} - the unique name
          */
         self.getUniqueName = function(name) {
             var cleanedName = name.replace(/\([0-9]+\)$/, '').trim();
@@ -26,7 +41,12 @@
         };
 
         /**
-         * Check if an existing dataset already has the provided name
+         * @ngdoc method
+         * @name getDatasetByName
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @param {string} name - the dataset name
+         * @description Get the dataset that has the wanted name
+         * @returns {object} - the dataset
          */
         self.getDatasetByName = function(name) {
             return _.find(self.datasets, function(dataset) {
@@ -35,7 +55,11 @@
         };
 
         /**
-         * Refresh datasets if no refresh is pending
+         * @ngdoc method
+         * @name refreshDatasets
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @description Refresh datasets if no refresh is pending
+         * @returns {promise} - the pending GET promise
          */
         self.refreshDatasets = function() {
             if(! datasetsPromise) {
@@ -51,7 +75,11 @@
         };
 
         /**
-         * Return a promise that resolves the datasets list
+         * @ngdoc method
+         * @name getDatasetsPromise
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @description Return a promise that resolves the datasets list
+         * @returns {promise} - the pending GET or resolved promise
          */
         self.getDatasetsPromise = function() {
             if(self.datasets.length) {

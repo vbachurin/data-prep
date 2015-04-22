@@ -1,8 +1,22 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.transformation.service:TransformationService
+     * @description Transformation service. This service provide the entry point to get transformation menu from REST api
+     */
     function TransformationService($http, RestURLs) {
 
+        /**
+         * @ngdoc method
+         * @name getTransformations
+         * @methodOf data-prep.services.transformation.service:TransformationService
+         * @param {string} datasetId - the dataset id
+         * @param {string} column - the column id
+         * @description Fetch the transformations suggestions on a column of the dataset
+         * @returns {HttpPromise} - the GET promise
+         */
         this.getTransformations = function(datasetId, column) {
             var cleanDatasetId = encodeURIComponent(datasetId);
             var cleanColumn = encodeURIComponent(column);

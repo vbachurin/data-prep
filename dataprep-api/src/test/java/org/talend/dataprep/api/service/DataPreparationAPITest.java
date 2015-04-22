@@ -256,7 +256,7 @@ public class DataPreparationAPITest {
         String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"1234\" }")
                 .post("/api/preparations").asString();
         String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-        given().body(actionContent).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        given().contentType(ContentType.JSON).body(actionContent).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
         // Assert preparation step is updated
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(2));
@@ -270,7 +270,7 @@ public class DataPreparationAPITest {
         String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"1234\" }")
                 .post("/api/preparations").asString();
         String actionContent1 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("upper_case_1.json"));
-        given().body(actionContent1).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        given().contentType(ContentType.JSON).body(actionContent1).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
         String actionContent2 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("upper_case_2.json"));
         given().body(actionContent2).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
         // Assert on current actions (before update)
@@ -320,7 +320,7 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         // Add action to preparation
         String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-        given().body(actionContent).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        given().contentType(ContentType.JSON).body(actionContent).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(2));
         assertThat(steps.get(1), is(ROOT_STEP.id()));

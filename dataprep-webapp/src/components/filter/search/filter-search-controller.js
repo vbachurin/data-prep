@@ -1,13 +1,21 @@
 (function() {
     'use strict';
-    
+
+    /**
+     * @ngdoc controller
+     * @name data-prep.filter-search.controller:FilterSearchCtrl
+     * @description Filter search controller.
+     */
     function FilterSearchCtrl(FilterService) {
         var vm = this;
 
         /**
-         * Return a closure function that create a suggestion item from column id
-         * @param term
-         * @returns {Function}
+         * @ngdoc method
+         * @name createSuggestionItem
+         * @methodOf data-prep.filter-search.controller:FilterSearchCtrl
+         * @param {string} term - the filter phrase
+         * @description [PRIVATE] Return a closure function that create a suggestion item from column id
+         * @returns {function} the item creation closure
          */
         var createSuggestionItem = function(term) {
             return function(colId) {
@@ -20,9 +28,12 @@
         };
 
         /**
-         * Create filter suggestions based on the typed term
-         * @param term - the searched term
-         * @returns {*}
+         * @ngdoc method
+         * @name filterSuggestion
+         * @methodOf data-prep.filter-search.controller:FilterSearchCtrl
+         * @param {string} term - the searched term
+         * @description [PRIVATE] Create filter suggestions based on the typed term
+         * @returns {function[]} the suggestion list
          */
         var filterSuggestion = function (term) {
             var cleanTerm = term.toLowerCase().trim();
@@ -37,8 +48,11 @@
         };
 
         /**
-         * Action when user select a suggestion
-         * @param item - the selected suggestion
+         * @ngdoc method
+         * @name suggestionSelect
+         * @methodOf data-prep.filter-search.controller:FilterSearchCtrl
+         * @param {object} item - the filter infos
+         * @description [PRIVATE] Action when user select a suggestion : create the filter and reset the input
          */
         var suggestionSelect = function(item) {
             FilterService.addFilter('contains', item.columnId, {phrase: item.value});
@@ -46,8 +60,10 @@
         };
 
         /**
-         * Mass auto complete suggestions
-         * @type {{suggest: Function}}
+         * @ngdoc property
+         * @name filterSuggestOptions
+         * @propertyOf data-prep.filter-search.controller:FilterSearchCtrl
+         * @description Mass auto complete suggestions options and callbacks
          */
         vm.filterSuggestOptions = {
             suggest: filterSuggestion,

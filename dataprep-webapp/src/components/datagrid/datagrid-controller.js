@@ -1,13 +1,21 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc controller
+     * @name data-prep.datagrid.controller:DatagridCtrl
+     * @description Dataset grid controller.
+     */
     function DatagridCtrl($timeout) {
         var vm = this;
         var tooltipPromise, tooltipHidePromise;
         var tooltipDelay = 300;
 
         /**
-         * Cancel the current tooltip promise
+         * @ngdoc method
+         * @name cancelTooltip
+         * @methodOf data-prep.datagrid.controller:DatagridCtrl
+         * @description [PRIVATE] Cancel the current tooltip promise
          */
         var cancelTooltip = function() {
             if(tooltipPromise) {
@@ -19,9 +27,13 @@
         };
 
         /**
-         * Update the tooltip component and display with a delay
-         * @param record - the current record
-         * @param position - the position where to display it
+         * @ngdoc method
+         * @name createTooltip
+         * @methodOf data-prep.datagrid.controller:DatagridCtrl
+         * @param {object} record - the current record
+         * @param {string} colId - the column id
+         * @param {object} position - the position where to display it {x: number, y: number}
+         * @description [PRIVATE] Update the tooltip component and display with a delay
          */
         var createTooltip = function(record, colId, position) {
             var delay = vm.showTooltip ? 0 : tooltipDelay;
@@ -34,9 +46,13 @@
         };
 
         /**
-         * Cancel the old tooltip promise if necessary and create a new one
-         * @param record - the current record
-         * @param position - the position where to display it
+         * @ngdoc method
+         * @name updateTooltip
+         * @methodOf data-prep.datagrid.controller:DatagridCtrl
+         * @param {object} record - the current record
+         * @param {string} colId - the column id
+         * @param {object} position - the position where to display it {x: number, y: number}
+         * @description Cancel the old tooltip promise if necessary and create a new one
          */
         vm.updateTooltip = function(record, colId, position) {
             cancelTooltip();
@@ -44,7 +60,10 @@
         };
 
         /**
-         * Cancel the old tooltip promise if necessary and hide the tooltip
+         * @ngdoc method
+         * @name hideTooltip
+         * @methodOf data-prep.datagrid.controller:DatagridCtrl
+         * @description Cancel the old tooltip promise if necessary and hide the tooltip
          */
         vm.hideTooltip = function() {
             cancelTooltip();

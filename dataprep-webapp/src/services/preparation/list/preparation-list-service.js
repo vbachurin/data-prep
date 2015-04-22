@@ -1,13 +1,32 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.preparation.service:PreparationListService
+     * @description Preparation list service. This service holds the preparations list and adapt them for the application.
+      It uses PreparationService to get the preparations, and DatasetListService to get the datasets
+     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.dataset.service:DatasetListService
+     */
     function PreparationListService($q, PreparationService, DatasetListService) {
         var self = this;
+
+        /**
+         * @ngdoc property
+         * @name preparations
+         * @propertyOf data-prep.services.preparation.service:PreparationListService
+         * @description the preparations list
+         */
         self.preparations = [];
 
         /**
-         * Bind the corresponding dataset to every preparation
-         * @param preparations
+         * @ngdoc method
+         * @name adaptMetadataInfos
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @param {object[]} preparations - the preparations to adapt
+         * @param {object[]} datasets - the datasets to inject
+         * @description [PRIVATE] Inject the corresponding dataset to every preparation
          */
         var adaptMetadataInfos = function(preparations, datasets) {
             _.forEach(preparations, function(prep) {
@@ -19,7 +38,11 @@
         };
 
         /**
-         * Refresh preparation list
+         * @ngdoc method
+         * @name refreshPreparations
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @description Refresh the preparations list
+         * @returns {Promise} - the process promise
          */
         self.refreshPreparations = function() {
             return $q.all([PreparationService.getPreparations(), DatasetListService.getDatasetsPromise()])
@@ -34,8 +57,11 @@
         };
 
         /**
-         * Return preparation promise that resolve current preparation list if not empty, or call GET service
-         * @returns Promise
+         * @ngdoc method
+         * @name getPreparationsPromise
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @description Return preparation promise that resolve current preparation list if not empty, or call GET service
+         * @returns {Promise} - the process promise
          */
         self.getPreparationsPromise = function() {
             if(self.preparations.length) {

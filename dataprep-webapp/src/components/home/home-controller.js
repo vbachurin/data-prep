@@ -1,26 +1,52 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc controller
+     * @name data-prep.home.controller:HomeCtrl
+     * @description Home controller.
+     * @requires data-prep.services.utils.service:MessageService
+     * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.dataset.service:DatasetListService
+     * @requires talend.widget.service:TalendConfirmService
+     */
     function HomeCtrl(MessageService, DatasetService, DatasetListService, TalendConfirmService) {
         var vm = this;
-        vm.showRightPanel = true;
-        vm.selectedMenu = 0;
 
         /**
-         * Array of all uploading datasets
-         * @type {Array}
+         * @ngdoc property
+         * @name showRightPanel
+         * @propertyOf data-prep.home.controller:HomeCtrl
+         * @description Flag that control the right panel display
+         * @type {boolean}
+         */
+        vm.showRightPanel = true;
+
+        /**
+         * @ngdoc property
+         * @name uploadingDatasets
+         * @propertyOf data-prep.home.controller:HomeCtrl
+         * @description The current uploading datasets
+         * @type {object[]}
          */
         vm.uploadingDatasets = [];
 
         /**
-         * Show/Hide right panel containing inventory data
+         * @ngdoc method
+         * @name toggleRightPanel
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Toggle the right panel containing inventory data
          */
         vm.toggleRightPanel = function() {
             vm.showRightPanel = !vm.showRightPanel;
         };
 
         /**
-         * Upload dataset : Step 1 - file selected
+         * @ngdoc method
+         * @name uploadDatasetFile
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Upload dataset : Step 1 - file selected. It takes the file name, and display the dataset name
+         * change modal
          */
         vm.uploadDatasetFile = function() {
             var file = vm.datasetFile[0];
@@ -34,7 +60,11 @@
         };
 
         /**
-         * Upload dataset : Step 2 - name entered
+         * @ngdoc method
+         * @name uploadDatasetName
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Upload dataset : Step 2 - name entered. It ask for override if a dataset with the same name
+         * exists, and trigger the upload
          */
         vm.uploadDatasetName = function() {
             var file = vm.datasetFile[0];
@@ -62,7 +92,10 @@
         };
 
         /**
-         * Upload dataset : Step 3 - Create a new dataset with a unique name (add (n))
+         * @ngdoc method
+         * @name createDatasetFromExistingName
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Upload dataset : Step 3 - Create a new dataset with a unique name (add (n)).
          */
         vm.createDatasetFromExistingName = function() {
             var file = vm.datasetFile[0];
@@ -72,7 +105,10 @@
         };
 
         /**
-         * Upload dataset : Step 3 bis - Update existing dataset
+         * @ngdoc method
+         * @name updateExistingDataset
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Upload dataset : Step 3 bis - Update existing dataset
          */
         vm.updateExistingDataset = function() {
             var file = vm.datasetFile[0];
@@ -82,7 +118,12 @@
         };
 
         /**
-         * Create a new dataset
+         * @ngdoc method
+         * @name createDataset
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @param {object} file - the file to upload
+         * @param {string} name - the dataset name
+         * @description [PRIVATE] Create a new dataset
          */
         var createDataset = function(file, name) {
             var dataset = DatasetService.fileToDataset(file, name);
@@ -104,9 +145,12 @@
         };
 
         /**
-         * Update existing dataset
-         * @param file - the new file
-         * @param existingDataset - the existing dataset
+         * @ngdoc method
+         * @name updateDataset
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @param {object} file - the file to upload
+         * @param {object} existingDataset - the existing dataset
+         * @description [PRIVATE] Update existing dataset
          */
         var updateDataset = function(file, existingDataset) {
             var dataset = DatasetService.fileToDataset(file, existingDataset.name, existingDataset.id);

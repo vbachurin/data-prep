@@ -1,22 +1,59 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.recipe.service:RecipeService
+     * @description Recipe service. This service provide the entry point to manipulate properly the recipe
+     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.utils.service:ConverterService
+     */
     function RecipeService(PreparationService, ConverterService) {
-        var initialState;
-        var recipe = [];
         var listType = 'LIST';
+
+        /**
+         * @ngdoc property
+         * @name recipe
+         * @propertyOf data-prep.services.recipe.service:RecipeService
+         * @description [PRIVATE] the recipe step list
+         * @type {object[]}
+         */
+        var recipe = [];
+
+        /**
+         * @ngdoc property
+         * @name activeThresholdStep
+         * @propertyOf data-prep.services.recipe.service:RecipeService
+         * @description [PRIVATE] the last recipe step that is active
+         * @type {object}
+         */
         var activeThresholdStep = null;
 
         /**
-         * Return recipe item list
-         * @returns {Array}
+         * @ngdoc property
+         * @name initialState
+         * @propertyOf data-prep.services.recipe.service:RecipeService
+         * @description [PRIVATE] the recipe initial step (without transformation)
+         * @type {object}
+         */
+        var initialState;
+
+        /**
+         * @ngdoc method
+         * @name getRecipe
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Return recipe step list
+         * @returns {object[]} - the GET call promise
          */
         this.getRecipe = function() {
             return recipe;
         };
 
         /**
-         * Reset the current recipe item list
+         * @ngdoc method
+         * @name reset
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Reset the current recipe
          */
         this.reset = function() {
             initialState = null;
@@ -25,8 +62,11 @@
         };
 
         /**
-         * Return the step between active and inactive steps
-         * @returns Step
+         * @ngdoc method
+         * @name getActiveThresholdStep
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get the last active step
+         * @returns {object} - the last active step
          */
         this.getActiveThresholdStep = function() {
             return activeThresholdStep;
@@ -36,8 +76,11 @@
         //----------------------------------------------------STEP PARAMS-----------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
-         * Replace params values with saved initial values
-         * @param params
+         * @ngdoc method
+         * @name resetParamValue
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} params - the params to reset
+         * @description [PRIVATE] Reset params values with saved initial values
          */
         var resetParamValue = function(params) {
             //choice
@@ -53,9 +96,12 @@
         };
 
         /**
-         * Execute function to all params and choices params
-         * @param transformation - the transformation with parameters
-         * @param fn - the function to execute
+         * @ngdoc method
+         * @name executeFnOnParams
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} transformation - the transformation with parameters
+         * @param {function} fn - the function to execute
+         * @description [PRIVATE] Execute function to all params and choices params
          */
         var executeFnOnParams = function(transformation, fn) {
             fn(transformation.parameters);
@@ -69,18 +115,24 @@
         };
 
         /**
-         * Reset all params of the recipe item, with saved values (param.initialValue)
-         * @param recipeItem - the item to reset
+         * @ngdoc method
+         * @name resetParams
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} recipeItem - the item to reset
+         * @description Reset all params of the recipe item, with saved values (param.initialValue)
          */
         this.resetParams = function(recipeItem) {
             executeFnOnParams(recipeItem.transformation, resetParamValue);
         };
 
         /**
-         * Init parameters initial value and type
-         * @param parameters - the parameters
-         * @param paramValues - the parameters initial values
-         * @returns Array of parameters
+         * @ngdoc method
+         * @name initParameters
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} parameters - the parameters
+         * @param {object} paramValues - the parameters initial values
+         * @description [PRIVATE] Init parameters initial value and type
+         * @returns {object[]} - the parameters with initialized values
          */
         var initParameters = function(parameters, paramValues) {
             return _.chain(parameters)
@@ -95,10 +147,13 @@
         };
 
         /**
-         * Init choice initial value, including each choice params initial value and type
-         * @param choices - the choices
-         * @param paramValues - the parameters and choice initial values
-         * @returns Array of choices
+         * @ngdoc method
+         * @name initChoices
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} choices - the choices
+         * @param {object} paramValues - the parameters and choice initial values
+         * @description [PRIVATE] Init choice initial value, including each choice params initial value and type
+         * @returns {object[]} - the choices with initialized values
          */
         var initChoices = function(choices, paramValues) {
             return _.chain(choices)
@@ -119,9 +174,12 @@
         //------------------------------------------------------STEPS--------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
-         * Create a recipe item from Preparation step
-         * @param actionStep
-         * @returns {Object}
+         * @ngdoc method
+         * @name createItem
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object[]} actionStep - the action step array containing [id, actions, metadata]
+         * @description [PRIVATE] Create a recipe item from Preparation step
+         * @returns {object} - the adapted recipe item
          */
         var createItem = function(actionStep) {
             var parameters = initParameters(actionStep[2].parameters, actionStep[1].parameters);
@@ -143,7 +201,10 @@
         };
 
         /**
-         * Refresh recipe items with current preparation steps
+         * @ngdoc method
+         * @name refresh
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Refresh recipe items with current preparation steps
          */
         this.refresh = function() {
             PreparationService.getDetails()
@@ -163,8 +224,11 @@
         };
 
         /**
-         * Disable all steps after the given one
-         * @param step - the limit between active and inactive
+         * @ngdoc method
+         * @name disableStepsAfter
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} step - the limit between active and inactive
+         * @description Disable all steps after the given one
          */
         this.disableStepsAfter = function(step) {
             var stepFound = step === initialState;
@@ -183,8 +247,11 @@
         };
 
         /**
-         * Get the step before the given one
-         * @param step - the given step
+         * @ngdoc method
+         * @name getPreviousStep
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} step - the given step
+         * @description Get the step before the given one
          */
         this.getPreviousStep = function(step) {
             var previousStep = initialState;

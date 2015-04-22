@@ -1,12 +1,21 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name data-prep.services.export.service:ExportService
+     * @description Export service. This service export a loaded dataset to CSV
+     * @requires data-prep.services.dataset.service:DatasetGridService
+     */
     function ExportService(DatasetGridService) {
         var rowSeparator = '\r\n';
 
         /**
-         * Get array of column ids
-         * @returns {Array}
+         * @ngdoc method
+         * @name getDatasets
+         * @methodOf data-prep.services.export.service:ExportService
+         * @description Get the loaded dataset columns
+         * @returns {string[]} - the columns id
          */
         var getColumns = function() {
             return _.map(DatasetGridService.data.columns, function(col) {
@@ -15,11 +24,13 @@
         };
 
         /**
-         * Serialize value :
-         * - Add double-quotes surrounding value
-         * - Double all the double-quotes to escape it
-         * @param value - the value to serialize
-         * @returns {string}
+         * @ngdoc method
+         * @name serializeValue
+         * @methodOf data-prep.services.export.service:ExportService
+         * @description [PRIVATE] Serialize value :
+          - Add double-quotes surrounding value
+          - Double all the double-quotes to escape it
+         * @returns {string} - the serialized value
          */
         var serializeValue = function(value) {
             var quoteEscapedValue = value.replace(/"/g, '""');
@@ -27,9 +38,12 @@
         };
 
         /**
-         * Create line serialization function closure, taking the
-         * @param separator - the value separator
-         * @returns {Function}
+         * @ngdoc method
+         * @name serializeLineFn
+         * @methodOf data-prep.services.export.service:ExportService
+         * @param {string} separator - the value separator
+         * @description [PRIVATE] Create line serialization function closure
+         * @returns {function} - the serialized value
          */
         var serializeLineFn = function(separator) {
             var columns = getColumns();
@@ -41,9 +55,12 @@
         };
 
         /**
-         * Serialize the current data into CSV string
-         * @param separator - the value separator to use
-         * @returns {string}
+         * @ngdoc method
+         * @name serializeToCSV
+         * @methodOf data-prep.services.export.service:ExportService
+         * @param {string} separator - the value separator
+         * @description [PRIVATE] Serialize the current data into CSV string
+         * @returns {string} - the serialized data
          */
         var serializeToCSV = function(separator) {
             var serializeLine = serializeLineFn(separator);
@@ -58,6 +75,15 @@
          * Return all the CSV infos of the current data
          * @param separator
          * @returns {{name: string, content: string, charset: string}}
+         */
+
+        /**
+         * @ngdoc method
+         * @name exportToCSV
+         * @methodOf data-prep.services.export.service:ExportService
+         * @param {string} separator - the value separator
+         * @description Return all the CSV infos of the current data
+         * @returns {object} - the CSV infos and value {{name: string, content: string, charset: string}}
          */
         this.exportToCSV = function(separator) {
             var csv = serializeToCSV(separator);

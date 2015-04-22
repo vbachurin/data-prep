@@ -9,10 +9,9 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 class CloneInputStream extends InputStream {
 
-    private static final Logger LOG = LoggerFactory.getLogger( CloneInputStream.class );
+    private static final Logger LOG = LoggerFactory.getLogger(CloneInputStream.class);
 
     private final InputStream inputStream;
 

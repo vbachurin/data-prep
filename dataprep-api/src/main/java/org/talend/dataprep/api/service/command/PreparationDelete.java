@@ -1,6 +1,5 @@
 package org.talend.dataprep.api.service.command;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -30,18 +29,17 @@ public class PreparationDelete extends HystrixCommand<String> {
     }
 
     @Override
-    protected String getFallback() {
-        return StringUtils.EMPTY;
-    }
-
-    @Override
     protected String run() throws Exception {
-        HttpDelete contentRetrieval = new HttpDelete(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
-        HttpResponse response = client.execute(contentRetrieval);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= 200) {
-            return null;
+        HttpDelete deletePreparation = new HttpDelete(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
+        try {
+            HttpResponse response = client.execute(deletePreparation);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 200) {
+                return null;
+            }
+            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_PREPARATION);
+        } finally {
+            deletePreparation.releaseConnection();
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_PREPARATION);
     }
 }

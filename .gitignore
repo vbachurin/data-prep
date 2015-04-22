@@ -13,4 +13,5 @@ dataprep-webapp/src/assets/fonts/font_dl_from_google.sh
 
 #jenv file
 .java-version
+devENV.sh
 

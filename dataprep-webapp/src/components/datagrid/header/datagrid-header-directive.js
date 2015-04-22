@@ -1,6 +1,26 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc directive
+     * @name data-prep.datagrid-header.directive:DatagridHeader
+     * @description This directive takes care of a datagrid header item. It creates the header dropdown menu.
+     * On creation, it calculate the quality bar values.
+     *
+     * Watchers:
+     * <ul>
+     *    <li>Close transformation menu on retrieve error, base on {@link data-prep.datagrid-header.controller:DatagridHeaderCtrl controller}.transformationsRetrieveError flag</li>
+     * </ul>
+     *
+     * @restrict E
+     * @usage
+     <datagrid-header
+            metadata="metadata"
+            column="column">
+     </datagrid-header>
+     * @param {object} metadata The loaded metadata
+     * @param {object} metadcolumnata The column metadata
+     */
     function DatagridHeader() {
         return {
             restrict: 'E',
@@ -16,6 +36,9 @@
                 post: function (scope, iElement, iAttrs, ctrl) {
                     ctrl.refreshQualityBar();
 
+                    /**
+                     * Close transformation menu on retrieve error
+                     */
                     scope.$watch(
                         function () {
                             return ctrl.transformationsRetrieveError;
