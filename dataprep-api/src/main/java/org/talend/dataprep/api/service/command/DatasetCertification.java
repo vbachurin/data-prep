@@ -2,7 +2,6 @@ package org.talend.dataprep.api.service.command;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -39,7 +38,7 @@ public class DatasetCertification extends HystrixCommand<Void> {
 
     @Override
     protected Void run() throws Exception {
-        HttpPut contentRetrieval = new HttpPut(contentServiceUrl + "/" + dataSetId + (ask ? "/askcertification" : "certify"));
+        HttpPut contentRetrieval = new HttpPut(contentServiceUrl + "/" + dataSetId + (ask ? "/askcertification" : "/certify"));
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
