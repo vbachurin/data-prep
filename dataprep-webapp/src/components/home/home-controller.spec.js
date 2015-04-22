@@ -32,14 +32,6 @@ describe('Home controller', function() {
         expect(ctrl.uploadingDatasets).toEqual([]);
     });
 
-    it('should init displayed page', function() {
-        //when
-        ctrl = createController();
-
-        //then
-        expect(ctrl.selectedMenu).toBe(0);
-    });
-
     describe('with created controller', function() {
         var uploadDefer;
 
