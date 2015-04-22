@@ -4,7 +4,7 @@
     /**
      * @ngdoc directive
      * @name data-prep.dataset-list.directive:DatasetList
-     * @description Dataset list directive
+     * @description This directive display the dataset list from {@link data-prep.services.dataset.service:DatasetListService DatasetListService}
      * @requires data-prep.dataset-list.controller:DatasetListCtrl
      * @restrict E
      */

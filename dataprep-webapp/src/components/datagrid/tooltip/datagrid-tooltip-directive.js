@@ -4,49 +4,50 @@
     /**
      * @ngdoc directive
      * @name data-prep.datagrid-tooltip.directive:DatagridTooltip
-     * @description Datagrid tooltip
-     <pre><datagrid-tooltip
-           record="record"
-           key="colId"
-           position="position"
-           requested-state="showTooltip"></datagrid-tooltip>
-     </pre>
-
-     <table>
-        <tr>
-            <th>Directive own attributes</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>record</td>
-            <td>the object containing the text to display</td>
-        </tr>
-        <tr>
-            <td>key</td>
-            <td>the key of the value to display</td>
-        </tr>
-     </table>
-     <table>
-        <tr>
-            <th>Attributes delegated to {@link talend.widget.directive:TalendTooltip talend-tooptip} widget</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>position</td>
-            <td>{x: number, y: number} - the position where to display the tooltip</td>
-        </tr>
-        <tr>
-            <td>requested-state</td>
-            <td>show/hide tooltip if not blocked</td>
-        </tr>
-     </table>
-
-     Watchers:
-     <ul>
-        <li>Toggle textarea when {@link data-prep.datagrid-tooltip.controller:DatagridTooltipCtrl controller} edit mode change</li>
-     </ul>
-
+     * @description This directive display a tooltip with a customizable content for the datagrid. This content is base
+     * on the `records` and `key` attributes. The displayed value is `record[key]`.
+     * <table>
+     *    <tr>
+     *        <th>Directive own attributes</th>
+     *        <th>Description</th>
+     *    </tr>
+     *    <tr>
+     *        <td>record</td>
+     *        <td>the object containing the text to display</td>
+     *    </tr>
+     *    <tr>
+     *        <td>key</td>
+     *        <td>the key of the value to display</td>
+     *    </tr>
+     * </table>
+     * <table>
+     *    <tr>
+     *        <th>Attributes delegated to {@link talend.widget.directive:TalendTooltip talend-tooptip} widget</th>
+     *        <th>Description</th>
+     *    </tr>
+     *    <tr>
+     *       <td>position</td>
+     *        <td>{x: number, y: number} - the position where to display the tooltip</td>
+     *    </tr>
+     *    <tr>
+     *        <td>requested-state</td>
+     *        <td>show/hide tooltip if not blocked</td>
+     *    </tr>
+     * </table>
+     *
+     *  Watchers:
+     * <ul>
+     *    <li>Toggle textarea when {@link data-prep.datagrid-tooltip.controller:DatagridTooltipCtrl controller} edit mode change</li>
+     * </ul>
+     *
      * @restrict E
+     * @usage
+     <datagrid-tooltip
+             record="record"
+             key="colId"
+             position="position"
+             requested-state="showTooltip">
+     </datagrid-tooltip>
      */
     function DatagridTooltip($timeout) {
         return {

@@ -4,33 +4,34 @@
     /**
      * @ngdoc directive
      * @name data-prep.datagrid-header.directive:DatagridHeader
-     * @description Datagrid header. On creation, refresh quality bar
-     <pre><datagrid-header
-                 metadata="metadata"
-                 column="column"></datagrid-header>
-     </pre>
-
-     <table>
-         <tr>
-             <th>Attributes</th>
-             <th>Description</th>
-         </tr>
-         <tr>
-             <td>metadata</td>
-             <td>the loaded metadata</td>
-         </tr>
-         <tr>
-             <td>column</td>
-             <td>the column metadata</td>
-         </tr>
-     </table>
-
-     Watchers:
-     <ul>
-        <li>Close transformation menu on retrieve error, base on {@link data-prep.datagrid-header.controller:DatagridHeaderCtrl controller}.transformationsRetrieveError flag</li>
-     </ul>
-
+     * @description This directive takes care of a datagrid header item. It creates the header dropdown menu.
+     * On creation, it calculate the quality bar values.
+     * <table>
+     *     <tr>
+     *         <th>Attributes</th>
+     *         <th>Description</th>
+     *     </tr>
+     *     <tr>
+     *         <td>metadata</td>
+     *         <td>the loaded metadata</td>
+     *     </tr>
+     *     <tr>
+     *         <td>column</td>
+     *         <td>the column metadata</td>
+     *     </tr>
+     * </table>
+     *
+     * Watchers:
+     * <ul>
+     *    <li>Close transformation menu on retrieve error, base on {@link data-prep.datagrid-header.controller:DatagridHeaderCtrl controller}.transformationsRetrieveError flag</li>
+     * </ul>
+     *
      * @restrict E
+     * @usage
+     <datagrid-header
+            metadata="metadata"
+            column="column">
+     </datagrid-header>
      */
     function DatagridHeader() {
         return {

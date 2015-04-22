@@ -4,15 +4,15 @@
     /**
      * @ngdoc directive
      * @name data-prep.datagrid.directive:Datagrid
-     * @description Dataset grid directive<br/>
-     Watchers :
-     <ul>
-        <li>Update grid columns on backend column change</li>
-        <li>Update data on backend value change</li>
-        <li>Scroll to top when loaded dataset change</li>
-        <li>When filter change, displayed values change, so we reset active cell and cell styles</li>
-     </ul>
-
+     * @description This directive create the SlickGrid datagrid<br/>
+     * Watchers :
+     * <ul>
+     *         <li>Update grid columns on backend column change</li>
+     *         <li>Update data on backend value change</li>
+     *         <li>Scroll to top when loaded dataset change</li>
+     *         <li>When filter change, displayed values change, so we reset active cell and cell styles</li>
+     * </ul>
+     *
      * @requires data-prep.services.dataset.service:DatasetGridService
      * @requires data-prep.services.filter.service:FilterService
      * @restrict E
