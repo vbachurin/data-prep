@@ -2,14 +2,20 @@
     'use strict';
 
     /**
-     * DatasetColumnHeader directive controller
-     * @param TransformationService
+     * @ngdoc controller
+     * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
+     * @description Dataset Column Header controller.
+     * @requires data-prep.services.transformation.service:TransformationService
+     * @requires data-prep.services.utils.service:ConverterService
      */
     function DatagridHeaderCtrl(TransformationService, ConverterService) {
         var vm = this;
 
         /**
-         * Compute quality bars percentage
+         * @ngdoc method
+         * @name refreshQualityBar
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description [PRIVATE] Compute quality bars percentage
          */
         vm.refreshQualityBar = function () {
             var MIN_PERCENT = 10;
@@ -31,9 +37,12 @@
         };
 
         /**
-         * Insert a divider between each group of menus
-         * @param menuGroups - the menus grouped by category
-         * @returns {Array}
+         * @ngdoc method
+         * @name insertDividers
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @param {object[]} menuGroups - the menus grouped by category
+         * @description [PRIVATE] Insert a divider between each group of menus
+         * @returns {object[]} - each element is a group of menu or a divider
          */
         var insertDividers = function(menuGroups) {
             var divider = {isDivider : true};
@@ -50,9 +59,12 @@
         };
 
         /**
-         * Group all menus by category and insert dividers between each group
-         * @param menus - the menu list
-         * @returns {Array}
+         * @ngdoc method
+         * @name groupMenus
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @param {object[]} menus - the unordered menus
+         * @description [PRIVATE] Group all menus by category and insert dividers between each group
+         * @returns {object[]} - each element is a menu item or a divider
          */
         var groupMenus = function(menus) {
             var groups = _.groupBy(menus, function(menuItem) { return menuItem.category; });
@@ -62,8 +74,11 @@
         };
 
         /**
-         * Insert adapted html input type in each parameter in the menu
-         * @param menu - the menu with parameters to adapt
+         * @ngdoc method
+         * @name insertType
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @param {object[]} menu - the menu item with parameters to adapt
+         * @description [PRIVATE] Insert adapted html input type in each parameter in the menu
          */
         var insertType = function(menu) {
             if(menu.parameters) {
@@ -74,9 +89,11 @@
         };
 
         /**
-         * Adapt each parameter type to HTML input type
-         * @param menus - the menus with parameters to adapt
-         * @returns {*}
+         * @ngdoc method
+         * @name adaptInputTypes
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @param {object[]} menus - the menus with parameters to adapt
+         * @description [PRIVATE] Adapt each parameter type to HTML input type
          */
         var adaptInputTypes = function(menus) {
             _.forEach(menus, function(menu) {
@@ -93,8 +110,11 @@
         };
 
         /**
-         * Remove 'column_name' parameters (automatically sent and not asked to user), and clean empty arrays
-         * @param menus - the menus to clean
+         * @ngdoc method
+         * @name cleanParamsAndItems
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @param {object[]} menus - the menus to clean
+         * @description [PRIVATE] Remove 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
          */
         var cleanParamsAndItems = function(menus) {
             return _.forEach(menus, function(menu) {
@@ -110,7 +130,10 @@
         };
 
         /**
-         * Get transformations from rest call
+         * @ngdoc method
+         * @name initTransformations
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description Get transformations from REST call
          */
         vm.initTransformations = function () {
             if (!vm.transformations && !vm.initTransformationsInProgress) {
