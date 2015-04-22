@@ -2,13 +2,34 @@
     'use strict';
 
     /**
-     * <talend-slidable visible="visible" side="right" resizable="inventory-data">
-     *      Content
-     * </talend-slidable>
-     *
-     * - 'visible' attribute : bind the 'visible' variable, that controle the slidable visibility, with a custom variable
-     * - 'side' attribute : left (default) | right. This defines the action bar position and the resize bar
-     * - 'resizable' attribute : pass unique ID that will be used to store custom size in local storage (key = {data-prep-' + resizableID + '-width}).
+     * @ngdoc directive
+     * @name talend.widget.directive:TalendSlidable
+     * @description Slidable widget.<br/>
+     * If the slidable is resizable, the widget keeps the last width in localstorage so the element is resized in creation<br/>
+     * To customize the slidable width, use the sass mixin to set properly all the flexbox element size
+      <pre>
+
+            .my-slidable-element {
+               &#64;include slidable-size(300px, 20px);
+            }
+
+      </pre>
+     * Parameters :
+     * <ul>
+     *     <li>First param (300px) is the panel width</li>
+     *     <li>Second param (20px) is action bar (used to show/hide) width</li>
+     * </ul>
+     * @restrict E
+     * @usage
+      <talend-slidable
+           visible="visible"
+           side="right"
+           resizable="custom-namespace">
+               Content
+      </talend-slidable>
+     * @param {boolean} visible Controle the slidable visibility
+     * @param {string} side `left` (default) | right. This defines the action bar and the resize bar position
+     * @param {string} resizable Pass unique ID that will be used to store custom size in local storage (key = {data-prep-' + resizable_namespace + '-width}).<br/>
      * Resize feature is disabled by default and enabled if the attribute si set
      */
     function TalendSlidable($window) {

@@ -2,25 +2,29 @@
     'use strict';
 
     /**
-     * <ul class="talend-accordion">
-     *      <li>
-     *          <a class="talend-accordion-trigger" on-open="fn()">
-     *              click me to show content
-     *              <div class="talend-accordion-no-trigger">Click on me will not trigger the accordion</div>
-     *          </a>
-     *          <ul class="submenu">
-     *              <li>
-     *                  Content Here
-     *              </li>
-     *          </ul>
-     *      </li>
-     * </ul>
-     *
-     * .talend-accordion : on the accordion node delimiter
-     * .talend-accordion-trigger : show/hide submenu with the same parent node
-     * .talent-accordion-trigger -> on-open : open callback
-     * .talend-accordion-no-trigger : click will not trigger the accordion action
-     * .submenu : submenu to show. It must have the same parent node as the trigger node
+     * @ngdoc directive
+     * @name talend.widget.directive:TalendAccordion
+     * @description This directive create an accordion item, within a ".talend-accordion" tag
+     * @restrict C
+     * @usage
+     <ul class="talend-accordion">
+           <li>
+               <a class="talend-accordion-trigger" on-open="callback()">
+                   click me to show content
+                   <div class="talend-accordion-no-trigger">Click on me will not trigger the accordion</div>
+               </a>
+               <ul class="submenu">
+                   <li>
+                       Content Here
+                   </li>
+               </ul>
+           </li>
+     </ul>
+     * @param {class} talend-accordion On the accordion node delimiter
+     * @param {class} talend-accordion-trigger Hide submenus with the same parent node and toggle the target submenu
+     * @param {function} on-open On the same element that has `talend-accordion-trigger` class. Provide an `open` callback
+     * @param {class} talend-accordion-no-trigger Element with that class will not trigger the accordion (within a trigger element)
+     * @param {class} submenu Submenu to show. It must have the same parent node as the trigger node
      */
     function TalendAccordionTrigger($timeout) {
         return {

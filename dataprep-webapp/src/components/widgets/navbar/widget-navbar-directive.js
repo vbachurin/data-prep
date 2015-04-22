@@ -2,20 +2,21 @@
     'use strict';
 
     /**
-     * Navbar widget
-     * 
-     * <talend-navbar role="banner">
+     * @ngdoc directive
+     * @name talend.widget.directive:TalendNavbar
+     * @description Navbar widget
+     * @restrict E
+     * @usage
+     * <talend-navbar>
      *      <a href="http://dev.talend.com" class="logo-wrapper">
      *          <span class="logo"></span>
      *      </a>
      *      <a href="javascript:void(0)" class="navigation-menu-button">MENU</a>
      *      <nav role="navigation">
      *          <ul class="navigation-menu show">
-     *              <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_folder"></a></li>
-     *              <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_marketplace"></a></li>
-     *              <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_share"></a></li>
-     *              <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_notification"></a></li>
-     *              <li class="nav-link more"><a href="javascript:void(0)" class="icon t-top-bar_profile nomore"></a>
+     *              <li class="nav-link"><a href="http://dev.talend.com">item</a></li>
+     *              <li class="nav-link more">
+     *                  <a href="javascript:void(0)" class="icon t-top-bar_profile nomore"></a>
      *                  <ul class="submenu">
      *                      <li><a href="javascript:void(0)">Logout</a></li>
      *                      <li class="divider"></li>
@@ -32,16 +33,13 @@
      *          </div>
      *      </div>
      * </talend-navbar>
-     * 
-     * Class 'logo-wrapper' : logo container
-     * Class 'navigation-menu-button' : menu toggle on mobile
-     * Class 'navigation-menu' : menu
-     * Class 'navigation-menu > li.nav-link' : menu items
-     * Class 'navigation-menu > li.more' : dropdown menu items with caret
-     * Class 'navigation-menu > li > ul.submenu' : dropdown submenu
-     * Class 'navigation-tools' : tools (ex: search bar)
-     *
-     * @returns directive
+     * @param {class} logo-wrapper Logo container
+     * @param {class} navigation-menu-button Menu toggle on mobile
+     * @param {class} navigation-menu Menu
+     * @param {class} nav-link `navigation-menu > li.nav-link` Menu items
+     * @param {class} more `navigation-menu > li.more` Dropdown menu items with caret
+     * @param {class} submenu `navigation-menu > li.more > ul.submenu` Dropdown submenu
+     * @param {class} navigation-tools Tools (ex: search bar)
      */
     function TalendNavbar (){
         return {

@@ -1,5 +1,5 @@
 @mixin slidable-size($size, $actionSize) {
-  $width: $size - 20px;
+  $width: $size - $actionSize;
   @include flex(0 $size);
 
   &.slide-hide {
