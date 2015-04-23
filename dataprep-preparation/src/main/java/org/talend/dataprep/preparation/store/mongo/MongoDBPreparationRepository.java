@@ -5,6 +5,7 @@ import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.annotation.PostConstruct;
 
@@ -49,7 +50,7 @@ public class MongoDBPreparationRepository implements PreparationRepository {
 
         // defensive programming
         if (StringUtils.isEmpty(dataSetId)) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         return store.findByDataSet(Preparation.class.getName(), dataSetId);

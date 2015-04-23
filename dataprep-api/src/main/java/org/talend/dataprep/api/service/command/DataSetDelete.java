@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.service.command;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -15,11 +16,15 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.exception.Exceptions;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Delete the dataset if it's not used by any preparation.
@@ -65,24 +70,36 @@ public class DataSetDelete extends HystrixCommand<Void> {
 
     }
 
+    /**
+     * @see HystrixCommand#run()
+     */
     @Override
     protected Void run() throws Exception {
 
-        // make sure the dataset is not used by any preparation
-        PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, client, preparationServiceBaseUrl, dataSetId);
+        List<Preparation> preparations = getPreparationsForDataSet();
 
-        ObjectMapper mapper = builder.build();
-        InputStream content = preparationsForDataSet.execute();
-        JsonNode tree = mapper.reader().readTree(content);
-
-        if (tree.size() > 0) {
-            LOG.debug("DataSet {} is used by preparation and cannot be deleted", dataSetId);
-            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, dataSetId);
+        // if the dataset is used by preparation(s), the deletion is forbidden
+        if (preparations.size() > 0) {
+            LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId, preparations.size());
+            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, dataSetId, preparations);
         }
 
         return doDeleteDataSet();
+    }
 
 
+    /**
+     * @return List of preparation(s) that use this dataset or en empty list if there's none.
+     */
+    private List<Preparation> getPreparationsForDataSet() throws Exception {
+
+        // call preparation api
+        PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, client, preparationServiceBaseUrl, dataSetId);
+        InputStream jsonInput = preparationsForDataSet.execute();
+
+        // parse and return the response
+        ObjectMapper mapper = builder.build();
+        return mapper.readValue(jsonInput, new TypeReference<List<Preparation>>() { });
     }
 
 
@@ -97,7 +114,7 @@ public class DataSetDelete extends HystrixCommand<Void> {
         if (statusCode >= 200) {
             return null;
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, dataSetId);
+        throw Exceptions.Internal(APIMessages.UNABLE_TO_DELETE_DATASET, dataSetId);
     }
 
 }
