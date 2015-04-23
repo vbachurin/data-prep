@@ -51,7 +51,6 @@ public class SimpleDataSetMetadataJsonSerializer {
             generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
             generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
             generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
-
             if(dataSetMetadata.getContent().getContentType() != null) {
                 generator.writeStringField("type", dataSetMetadata.getContent().getContentType().getMediaType()); //$NON-NLS-1
             }
