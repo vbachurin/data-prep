@@ -2,7 +2,7 @@ describe('Dataset list directive', function() {
     'use strict';
 
     function strEndsWith(str, suffix) {
-        return str.match(suffix+"$")==suffix;
+        return str.match(suffix + '$')[0] === suffix;
     }
 
     var scope, createElement;
