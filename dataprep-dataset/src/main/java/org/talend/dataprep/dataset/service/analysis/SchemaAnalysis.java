@@ -2,11 +2,7 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -95,6 +91,7 @@ public class SchemaAnalysis {
                 }
             } finally {
                 datasetLock.unlock();
+                message.acknowledge();
             }
         } catch (JMSException e) {
             throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
