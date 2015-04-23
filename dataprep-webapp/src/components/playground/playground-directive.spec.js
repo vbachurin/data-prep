@@ -85,7 +85,7 @@ describe('Playground directive', function() {
             expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
         }));
 
-        it('should change route to preparations list on preparation playground hide', inject(function($state, $stateParams, PlaygroundService, PreparationListService) {
+        it('should change route to preparations list on preparation playground hide', inject(function($state, $stateParams, PlaygroundService) {
             //given: simulate playground route with preparation id
             $stateParams.prepid = '1234';
 
