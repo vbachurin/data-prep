@@ -34,8 +34,8 @@ class Metadata implements State {
             builder.author((String) values.get("author"));
             String created = (String) values.get("created");
             if (created != null) {
-                synchronized (DataSetMetadataJsonSerializer.DATE_FORMAT) {
-                    Date date = DataSetMetadataJsonSerializer.DATE_FORMAT.parse(created);
+                synchronized (SimpleDataSetMetadataJsonSerializer.DATE_FORMAT) {
+                    Date date = SimpleDataSetMetadataJsonSerializer.DATE_FORMAT.parse(created);
                     builder.created(date.getTime());
                 }
             }

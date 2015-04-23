@@ -37,6 +37,8 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import com.jayway.restassured.RestAssured;
+import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.Separator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -98,11 +100,13 @@ public class DataSetServiceTests {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(metadata().id(id1).name("name1").author("anonymous").created(0).build());
+        final DataSetMetadata metadata = metadata().id(id1).name("name1").author("anonymous").created(0).build();
+        metadata.getContent().setContentType(new CSVFormatGuess(new Separator()));
+        dataSetMetadataRepository.add(metadata);
 
         String expected = "[{\"id\":\""
                 + id1
-                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":\"01-01-1970 00:00\"}]";
+                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"type\":\"text/csv\",\"created\":\"01-01-1970 00:00\"}]";
 
         InputStream content = when().get("/datasets").asInputStream();
         String contentAsString = IOUtils.toString(content);
