@@ -1,8 +1,6 @@
 #! /bin/bash
 #git checkout master
 
-cd ..
-
 status=`git status --short --untracked-files=no`
 if [ -n "$status"  ]; then
   echo "git status non vide, dégage !!"
@@ -44,5 +42,5 @@ execute 'git checkout release/'$1
 echo "GIT admin: update pom.xml's version to "$1" on release/"$1 > /tmp/commit_msg
 execute 'git commit --all --file=/tmp/commit_msg'
 
-execute 'mvn clean -Pdocker install'
-
+cd ..
+execute 'mvn clean install -Pdocker -Duse.docker.tool=true'
