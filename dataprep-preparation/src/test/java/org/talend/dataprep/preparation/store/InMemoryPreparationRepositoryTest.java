@@ -1,5 +1,8 @@
 package org.talend.dataprep.preparation.store;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,12 +10,9 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.api.preparation.Step;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
  * Unit test for the InMemoryPreparationRepository.
+ * 
  * @see InMemoryPreparationRepository
  */
 public class InMemoryPreparationRepositoryTest {
@@ -37,6 +37,7 @@ public class InMemoryPreparationRepositoryTest {
 
     /**
      * Test the getByDataSet method.
+     * 
      * @see PreparationRepository#getByDataSet(String)
      */
     @Test
@@ -57,7 +58,8 @@ public class InMemoryPreparationRepositoryTest {
 
         // add relevant data
         String dataSetId = "wantedId";
-        Collection<Preparation> expected = Arrays.asList(getPreparation(dataSetId, "10"), getPreparation(dataSetId, "11"), getPreparation(dataSetId, "12"));
+        Collection<Preparation> expected = Arrays.asList(getPreparation(dataSetId, "10"), getPreparation(dataSetId, "11"),
+                getPreparation(dataSetId, "12"));
         for (Preparation preparation : expected) {
             repository.add(preparation);
         }
@@ -76,28 +78,29 @@ public class InMemoryPreparationRepositoryTest {
      * Helper method that only generates a step but simplify code.
      */
     private Step getStep(String rootName) {
-        return new Step(rootName+ "_parent", rootName +"_content");
+        return new Step(rootName + "_parent", rootName + "_content");
     }
-
 
     /**
      * Helper method that only generates a preparation but simplify code.
+     * 
      * @param rootName root name for all the preparation attributes.
      * @return a new Preparation.
      */
     private Preparation getPreparation(String rootName) {
-        return getPreparation(rootName+"_setId", rootName);
+        return getPreparation(rootName + "_setId", rootName);
     }
 
     /**
      * Helper method that only generates a preparation but simplify code.
+     * 
      * @param datasetId the preparation dataset id.
      * @param rootName root name for all the preparation attributes.
      * @return a new Preparation.
      */
     private Preparation getPreparation(String datasetId, String rootName) {
         Preparation preparation = new Preparation(datasetId, getStep(rootName));
-        preparation.setName(rootName +"_name");
+        preparation.setName(rootName + "_name");
         return preparation;
     }
 }

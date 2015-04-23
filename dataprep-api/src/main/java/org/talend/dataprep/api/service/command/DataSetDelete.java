@@ -1,10 +1,8 @@
 package org.talend.dataprep.api.service.command;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.HystrixCommand;
-import org.apache.commons.io.IOUtils;
+import java.io.InputStream;
+import java.util.List;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -20,11 +18,9 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.exception.Exceptions;
 
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.HystrixCommand;
 
 /**
  * Delete the dataset if it's not used by any preparation.
@@ -38,20 +34,23 @@ public class DataSetDelete extends HystrixCommand<Void> {
 
     /** Base url for the dataset service api. */
     private final String dataSetServiceBaseUrl;
+
     /** Base url for the preparation service api. */
     private final String preparationServiceBaseUrl;
 
     /** Http client for rest api calls. */
     private final HttpClient client;
+
     /** The dataset id to delete. */
     private final String dataSetId;
+
     /** The spring web context. */
     @Autowired
     private WebApplicationContext context;
-    /** Jackson object parser needed to read the  */
+
+    /** Jackson object parser needed to read the */
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
-
 
     /**
      * Default constructor.
@@ -87,24 +86,25 @@ public class DataSetDelete extends HystrixCommand<Void> {
         return doDeleteDataSet();
     }
 
-
     /**
      * @return List of preparation(s) that use this dataset or en empty list if there's none.
      */
     private List<Preparation> getPreparationsForDataSet() throws Exception {
 
         // call preparation api
-        PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, client, preparationServiceBaseUrl, dataSetId);
+        PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, client,
+                preparationServiceBaseUrl, dataSetId);
         InputStream jsonInput = preparationsForDataSet.execute();
 
         // parse and return the response
         ObjectMapper mapper = builder.build();
-        return mapper.readValue(jsonInput, new TypeReference<List<Preparation>>() { });
+        return mapper.readValue(jsonInput, new TypeReference<List<Preparation>>() {
+        });
     }
-
 
     /**
      * Actual method that deletes the DataSet.
+     * 
      * @throws Exception if an error occurs.
      */
     private Void doDeleteDataSet() throws Exception {

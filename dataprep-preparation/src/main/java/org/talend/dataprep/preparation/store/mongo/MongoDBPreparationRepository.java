@@ -3,7 +3,6 @@ package org.talend.dataprep.preparation.store.mongo;
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 

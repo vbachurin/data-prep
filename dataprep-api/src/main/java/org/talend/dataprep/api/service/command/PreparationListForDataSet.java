@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.service.command;
 
-import com.netflix.hystrix.HystrixCommand;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -11,8 +13,7 @@ import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.exception.Exceptions;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import com.netflix.hystrix.HystrixCommand;
 
 /**
  * Command used to retreive the preparations used by a given dataset.
@@ -23,8 +24,10 @@ public class PreparationListForDataSet extends HystrixCommand<InputStream> {
 
     /** Rest http client. */
     private final HttpClient client;
+
     /** Preparation service base url. */
     private final String preparationServiceUrl;
+
     /** The wanted DataSet id. */
     private final String dataSetId;
 
@@ -48,7 +51,7 @@ public class PreparationListForDataSet extends HystrixCommand<InputStream> {
     @Override
     protected InputStream run() throws Exception {
 
-        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations?dataSetId="+dataSetId ); //$NON-NLS-1$
+        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations?dataSetId=" + dataSetId); //$NON-NLS-1$
 
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();

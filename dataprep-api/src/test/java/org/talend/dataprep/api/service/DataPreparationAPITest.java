@@ -1,8 +1,16 @@
 package org.talend.dataprep.api.service;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+
+import java.io.InputStream;
+import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
@@ -20,16 +28,9 @@ import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
-import java.io.InputStream;
-import java.util.List;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -277,7 +278,8 @@ public class DataPreparationAPITest {
         String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"1234\" }")
                 .post("/api/preparations").asString();
         String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-        given().contentType(ContentType.JSON).body(actionContent).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        given().contentType(ContentType.JSON).body(actionContent).when().post("/api/preparations/{id}/actions", preparationId)
+                .then().statusCode(is(200));
         // Assert preparation step is updated
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(2));
@@ -291,7 +293,8 @@ public class DataPreparationAPITest {
         String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"1234\" }")
                 .post("/api/preparations").asString();
         String actionContent1 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("upper_case_1.json"));
-        given().contentType(ContentType.JSON).body(actionContent1).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        given().contentType(ContentType.JSON).body(actionContent1).when().post("/api/preparations/{id}/actions", preparationId)
+                .then().statusCode(is(200));
         String actionContent2 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("upper_case_2.json"));
         given().body(actionContent2).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
         // Assert on current actions (before update)
@@ -300,9 +303,12 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is("4115f6d965e146ddbff622633895277c96754541")); // <- upper_case_2
         assertThat(steps.get(1), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59")); // <- upper_case_1
         assertThat(steps.get(2), is(ROOT_STEP.id()));
-        // Update first action (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action (lower_case_1)
+        // Update first action (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
+        // (lower_case_1)
         String actionContent3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("lower_case_1.json"));
-        given().body(actionContent3).put("/api/preparations/{preparation}/actions/{action}", preparationId, "2b6ae58738239819df3d8c4063e7cb56f53c0d59").then().statusCode(is(200));
+        given().body(actionContent3)
+                .put("/api/preparations/{preparation}/actions/{action}", preparationId,
+                        "2b6ae58738239819df3d8c4063e7cb56f53c0d59").then().statusCode(is(200));
         // Steps id should have changed due to update
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
@@ -341,28 +347,23 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         // Add action to preparation
         String actionContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-        given().contentType(ContentType.JSON).body(actionContent).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        given().contentType(ContentType.JSON).body(actionContent).when().post("/api/preparations/{id}/actions", preparationId)
+                .then().statusCode(is(200));
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(2));
         assertThat(steps.get(1), is(ROOT_STEP.id()));
         // Request preparation content at different versions (preparation has 2 actions -> Root + Upper Case).
-        assertThat(
-                when().get("/api/preparations/{id}/content", preparationId).asString(),
+        assertThat(when().get("/api/preparations/{id}/content", preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
-        assertThat(
-                when().get("/api/preparations/{id}/content?version=head", preparationId).asString(),
+        assertThat(when().get("/api/preparations/{id}/content?version=head", preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
-        assertThat(
-                when().get("/api/preparations/{id}/content?version=" + steps.get(0), preparationId).asString(),
+        assertThat(when().get("/api/preparations/{id}/content?version=" + steps.get(0), preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
-        assertThat(
-                when().get("/api/preparations/{id}/content?version=" + steps.get(1), preparationId).asString(),
+        assertThat(when().get("/api/preparations/{id}/content?version=" + steps.get(1), preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
-        assertThat(
-                when().get("/api/preparations/{id}/content?version=origin", preparationId).asString(),
+        assertThat(when().get("/api/preparations/{id}/content?version=origin", preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
-        assertThat(
-                when().get("/api/preparations/{id}/content?version=" + ROOT_STEP.id(), preparationId).asString(),
+        assertThat(when().get("/api/preparations/{id}/content?version=" + ROOT_STEP.id(), preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
     }
 

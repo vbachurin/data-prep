@@ -20,7 +20,7 @@ public interface PreparationRepository {
      * @param dataSetId the wanted dataset id.
      * @return all preparations used by a dataset or an empty list if there's none.
      */
-     Collection<Preparation> getByDataSet(String dataSetId);
+    Collection<Preparation> getByDataSet(String dataSetId);
 
     <T extends Identifiable> Collection<T> listAll(Class<T> clazz);
 

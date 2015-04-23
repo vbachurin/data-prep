@@ -81,7 +81,6 @@ public class PreparationService {
         return preparationRepository.listAll(Preparation.class).stream().map(Preparation::id).collect(toList());
     }
 
-
     /**
      * Return all preparations for the given dataset.
      *
@@ -91,11 +90,10 @@ public class PreparationService {
     @RequestMapping(value = "/preparations", method = GET, params = "dataSetId", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations for the given DataSet id", notes = "Returns the list of preparations for the given Dataset id the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
-    public Collection<Preparation> listByDataSet (@RequestParam("dataSetId") @ApiParam("dataSetId") String dataSetId) {
+    public Collection<Preparation> listByDataSet(@RequestParam("dataSetId") @ApiParam("dataSetId") String dataSetId) {
         LOGGER.debug("Get list of preparations for dataset {}.", dataSetId);
         return preparationRepository.getByDataSet(dataSetId);
     }
-
 
     @RequestMapping(value = "/preparations/all", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations the current user is allowed to see. Creation date is always displayed in UTC time zone. This operation return all details on the preparations.")
@@ -108,7 +106,9 @@ public class PreparationService {
     @RequestMapping(value = "/preparations", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
-    public String create(@ApiParam("preparation") @RequestBody final Preparation preparation) {
+    public String create(@ApiParam("preparation")
+    @RequestBody
+    final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
         preparation.setStep(ROOT_STEP);
         preparation.setAuthor(getUserName());
@@ -130,8 +130,9 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}", method = PUT, produces = TEXT_PLAIN_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the updated preparation.")
     @Timed
-    public String update(@ApiParam("id") @PathVariable("id") String id,
-                         @ApiParam("preparation") @RequestBody final Preparation preparation) {
+    public String update(@ApiParam("id") @PathVariable("id") String id, @ApiParam("preparation")
+    @RequestBody
+    final Preparation preparation) {
         Preparation previousPreparation = preparationRepository.get(id, Preparation.class);
         LOGGER.debug("Updating preparation with id {}: {}", preparation.id(), previousPreparation);
         Preparation updated = previousPreparation.merge(preparation);
@@ -154,9 +155,11 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/content/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation details", notes = "Return the details of the preparation with provided id.")
     @Timed
-    public void get(@ApiParam("id") @PathVariable("id") final String id,
-                    @ApiParam("version") @PathVariable("version") final String version,
-                    final HttpServletResponse response) {
+    public void get(@ApiParam("id")
+    @PathVariable("id")
+    final String id, @ApiParam("version")
+    @PathVariable("version")
+    final String version, final HttpServletResponse response) {
         LOGGER.debug("Get content of preparation #{} at version '{}'.", id, version);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         final Step step = preparationRepository.get(getStepId(version, preparation), Step.class);
@@ -181,8 +184,9 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
-    public void append(@PathVariable("id") final String id,
-                       @RequestBody final AppendStep step) {
+    public void append(@PathVariable("id")
+    final String id, @RequestBody
+    final AppendStep step) {
         LOGGER.debug("Adding actions to preparation #{}", id);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
@@ -208,9 +212,10 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/{id}/actions/{action}", method = PUT, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates an action to in a preparation", notes = "Modifies an action in preparation's steps.")
     @Timed
-    public void updateAction(@PathVariable("id") final String id,
-                             @PathVariable("action") final String action,
-                             @RequestBody final AppendStep step) {
+    public void updateAction(@PathVariable("id")
+    final String id, @PathVariable("action")
+    final String action, @RequestBody
+    final AppendStep step) {
         LOGGER.debug("Modifying actions in preparation #{}", id);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
@@ -244,15 +249,18 @@ public class PreparationService {
     }
 
     private List<Action> getActions(String stepId) {
-        return new ArrayList<>(preparationRepository.get(preparationRepository.get(stepId, Step.class).getContent(), PreparationActions.class).getActions());
+        return new ArrayList<>(preparationRepository.get(preparationRepository.get(stepId, Step.class).getContent(),
+                PreparationActions.class).getActions());
     }
-
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
-    public PreparationActions getVersionedAction(@ApiParam("id") @PathVariable("id") final String id,
-                                                 @ApiParam("version") @PathVariable("version") final String version) {
+    public PreparationActions getVersionedAction(@ApiParam("id")
+    @PathVariable("id")
+    final String id, @ApiParam("version")
+    @PathVariable("version")
+    final String version) {
         LOGGER.debug("Get list of actions of preparations #{} at version {}.", id, version);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation != null) {
