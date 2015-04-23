@@ -1,10 +1,14 @@
 package org.talend.dataprep.dataset.service.analysis;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Random;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.Exceptions;
+import org.talend.datascience.statistics.StatisticsClient;
 
 @Component
 public class QualityAnalysis {
@@ -55,6 +60,25 @@ public class QualityAnalysis {
                         quality.setInvalid(invalid);
                         quality.setEmpty(empty);
                     }
+
+                    try {
+                        final File tempFile = File.createTempFile("dataset", metadata.getId());
+                        IOUtils.copy(store.get(metadata), new FileOutputStream(tempFile));
+                        /*
+                         * final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata));
+                         * ObjectMapper mapper = new ObjectMapper(); mapper.registerModule(module);
+                         * mapper.writer().writeValue(tempFile, metadata); final String value = IOUtils.toString(new
+                         * FileInputStream(tempFile)); System.out.println("content: " + value);
+                         */
+                        System.out.println("-> Analyzing...");
+                        final String json = StatisticsClient.doStatistics("local[4]", 0, "2", ";",
+                                tempFile.getAbsolutePath(), "json");
+                        System.out.println("Analysis: " + json);
+                        System.out.println("<- Analyzed.");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     metadata.getLifecycle().qualityAnalyzed(true);
                     repository.add(metadata);
                     message.acknowledge();

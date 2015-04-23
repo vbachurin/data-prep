@@ -54,7 +54,7 @@ public class DataSetServiceTests {
     DataSetContentStore contentStore;
 
     private void assertQueueMessages(String dataSetId) throws Exception {
-        Thread.sleep(1000); // TODO Ugly, need a client to lock until all operations are done
+        Thread.sleep(30000); // TODO Ugly, need a client to lock until all operations are done
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         DataSetLifecycle lifecycle = metadata.getLifecycle();
         assertThat(lifecycle.contentIndexed(), is(true));
