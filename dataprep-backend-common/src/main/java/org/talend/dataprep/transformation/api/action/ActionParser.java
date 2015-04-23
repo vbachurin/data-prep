@@ -24,7 +24,7 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 @Component
 public class ActionParser implements BeanFactoryAware {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger( ActionParser.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( ActionParser.class );
 
     private static BeanFactory beanFactory;
 
