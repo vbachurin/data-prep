@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m3-SNAPSHOT</version>
+        <version>1.0.m4-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <artifactId>dataprep-metrics</artifactId>
-    <version>1.0.m3-SNAPSHOT</version>
+    <version>1.0.m4-SNAPSHOT</version>
     <name>dataprep-metrics</name>
     <dependencies>
         <dependency>
