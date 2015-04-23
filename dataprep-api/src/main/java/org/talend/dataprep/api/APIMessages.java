@@ -3,7 +3,6 @@ package org.talend.dataprep.api;
 import org.talend.dataprep.exception.Messages;
 
 public enum APIMessages implements Messages {
-    UNSUPPORTED_FALLBACK,
     UNABLE_TO_DELETE_PREPARATION,
     UNABLE_TO_CREATE_DATASET,
     UNABLE_TO_CREATE_OR_UPDATE_DATASET,
