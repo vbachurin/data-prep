@@ -52,7 +52,8 @@ public class MongoDBPreparationRepository implements PreparationRepository {
             return Collections.emptyList();
         }
 
-        return store.findByDataSet(Preparation.class.getName(), dataSetId);
+        // double cast needed to convert the list of Identifiable into a Preparation one
+        return (Collection<Preparation>) (Collection<?>) store.findByDataSet(Preparation.class.getName(), dataSetId);
     }
 
     @Override

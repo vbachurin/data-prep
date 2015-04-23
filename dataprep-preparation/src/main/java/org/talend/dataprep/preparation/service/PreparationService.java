@@ -91,8 +91,9 @@ public class PreparationService {
     @ApiOperation(value = "List all preparations for the given DataSet id", notes = "Returns the list of preparations for the given Dataset id the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
     public Collection<Preparation> listByDataSet(@RequestParam("dataSetId") @ApiParam("dataSetId") String dataSetId) {
-        LOGGER.debug("Get list of preparations for dataset {}.", dataSetId);
-        return preparationRepository.getByDataSet(dataSetId);
+        Collection<Preparation> preparations = preparationRepository.getByDataSet(dataSetId);
+        LOGGER.debug("{} preparation(s) use dataset {}.", preparations.size(), dataSetId);
+        return preparations;
     }
 
     @RequestMapping(value = "/preparations/all", method = GET, produces = APPLICATION_JSON_VALUE)
