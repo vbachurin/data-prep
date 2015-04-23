@@ -31,7 +31,7 @@
 .flex-center {
   @include flex(3 0);
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 
 @mixin grid-item-columns($columns) {
