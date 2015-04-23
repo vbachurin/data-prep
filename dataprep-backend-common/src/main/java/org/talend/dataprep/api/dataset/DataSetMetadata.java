@@ -2,7 +2,12 @@ package org.talend.dataprep.api.dataset;
 
 import java.io.InputStream;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.annotation.Id;
@@ -40,6 +45,11 @@ public class DataSetMetadata {
     private final long creationDate;
 
     private int sheetNumber;
+
+    /**
+     * means this dataset is still a draft as we need more informations from the user
+     */
+    private boolean draft;
 
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;
@@ -95,8 +105,7 @@ public class DataSetMetadata {
         return author;
     }
 
-    public int getSheetNumber()
-    {
+    public int getSheetNumber() {
         return sheetNumber;
     }
 
@@ -123,6 +132,16 @@ public class DataSetMetadata {
         } catch (Exception e) {
             throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
+    }
+
+    public boolean isDraft()
+    {
+        return draft;
+    }
+
+    public void setDraft( boolean draft )
+    {
+        this.draft = draft;
     }
 
     public static class Builder {
