@@ -51,7 +51,7 @@ public class InMemoryPreparationRepository implements PreparationRepository {
 
         // defensive programming
         if (StringUtils.isEmpty(dataSetId)) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Preparation> filteredPreparations = new ArrayList<>();

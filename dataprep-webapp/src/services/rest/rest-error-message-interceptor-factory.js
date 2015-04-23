@@ -13,6 +13,15 @@
                     MessageService.error('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
                 }
 
+                else if(rejection.data) {
+
+                    if(rejection.data.code === 'TDP_API_UNABLE_TO_DELETE_DATASET') {
+                        MessageService.error('SERVER_ERROR_TITLE', 'DELETE_DATASET_ERROR');
+                    }
+
+                }
+
+
                 return $q.reject(rejection);
             }
         };
