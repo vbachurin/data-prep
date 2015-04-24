@@ -1,27 +1,32 @@
 package org.talend.dataprep.api.service;
 
-import java.io.InputStream;
-import java.util.Base64;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.HttpClient;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.talend.dataprep.api.APIMessages;
-import org.talend.dataprep.api.service.command.DataSetGet;
-import org.talend.dataprep.api.service.command.Transform;
-import org.talend.dataprep.exception.Exceptions;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.HttpClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.WebApplicationContext;
+import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.service.command.DataSetGet;
+import org.talend.dataprep.api.service.command.Preview;
+import org.talend.dataprep.api.service.command.Transform;
+import org.talend.dataprep.exception.Exceptions;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Base64;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -51,5 +56,17 @@ public class TransformAPI extends APIService {
             throw Exceptions.User(APIMessages.UNABLE_TO_TRANSFORM_DATASET, dataSetId, e);
         }
         LOG.debug("Transformation of dataset id #{} done.",dataSetId);
+    }
+
+    @RequestMapping(value = "/api/transform/preview/append", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void preview(InputStream body, HttpServletResponse response) {
+        try {
+            HystrixCommand<InputStream> transformation = getCommand(Preview.class, getClient(), transformServiceUrl, body);
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(transformation.execute(), outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw Exceptions.User(APIMessages.UNABLE_TO_TRANSFORM_DATASET, null, e);
+        }
     }
 }
