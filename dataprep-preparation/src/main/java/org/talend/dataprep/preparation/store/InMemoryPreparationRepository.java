@@ -56,16 +56,14 @@ public class InMemoryPreparationRepository implements PreparationRepository {
 
         List<Preparation> filteredPreparations = new ArrayList<>();
 
-        for (Map.Entry<String, Identifiable> entry : store.entrySet()) {
-            // first filter on the class
-            if (Preparation.class.equals(entry.getValue().getClass())) {
-                Preparation preparation = (Preparation) entry.getValue();
-                // second filter on the dataset id
-                if (dataSetId.equals(preparation.getDataSetId())) {
-                    filteredPreparations.add(preparation);
-                }
+        // first filter on the class and then second filter on the dataset id
+        store.entrySet().stream().filter(entry -> Preparation.class.equals(entry.getValue().getClass())).forEach(entry -> {
+            Preparation preparation = (Preparation) entry.getValue();
+            // second filter on the dataset id
+            if (dataSetId.equals(preparation.getDataSetId())) {
+                filteredPreparations.add(preparation);
             }
-        }
+        });
         return filteredPreparations;
     }
 
