@@ -24,7 +24,7 @@ describe('Accordion directive', function () {
 
     describe('without open callback', function() {
 
-        beforeEach(inject(function ($rootScope, $compile) {
+        beforeEach(inject(function ($rootScope, $compile, $timeout) {
             scope = $rootScope.$new();
 
             createElement = function () {
@@ -52,6 +52,7 @@ describe('Accordion directive', function () {
                     '</ul>';
                 var element = $compile(template)(scope);
                 scope.$digest();
+                $timeout.flush();
                 return element;
             };
         }));
@@ -129,7 +130,7 @@ describe('Accordion directive', function () {
     });
 
     describe('with open callback', function() {
-        beforeEach(inject(function ($rootScope, $compile) {
+        beforeEach(inject(function ($rootScope, $compile, $timeout) {
             scope = $rootScope.$new();
             scope.onOpen = function() {};
 
@@ -148,6 +149,7 @@ describe('Accordion directive', function () {
                     '</ul>';
                 var element = $compile(template)(scope);
                 scope.$digest();
+                $timeout.flush();
                 return element;
             };
 
