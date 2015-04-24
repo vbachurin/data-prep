@@ -47,7 +47,7 @@ public class DataSetMetadata {
     private int sheetNumber;
 
     /**
-     * means this dataset is still a draft as we need more informations from the user
+     * if <code>true</code> this dataset is still a draft as we need more informations from the user
      */
     private boolean draft;
 
