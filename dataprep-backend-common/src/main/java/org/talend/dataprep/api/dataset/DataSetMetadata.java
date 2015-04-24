@@ -11,6 +11,7 @@ import org.talend.dataprep.exception.CommonMessages;
 import org.talend.dataprep.exception.Exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.talend.dataprep.schema.FormatGuess;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -151,6 +152,8 @@ public class DataSetMetadata {
 
         private int sheetNumber;
 
+        private FormatGuess contentType;
+
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
         }
@@ -215,6 +218,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder contentType(FormatGuess contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -236,6 +244,9 @@ public class DataSetMetadata {
             content.setNbRecords(size);
             content.setNbLinesInHeader(headerSize);
             content.setNbLinesInFooter(footerSize);
+            if(contentType != null) {
+                content.setContentType(contentType);
+            }
             // Lifecycle information
             DataSetLifecycle lifecycle = metadata.getLifecycle();
             lifecycle.contentIndexed(contentAnalyzed);

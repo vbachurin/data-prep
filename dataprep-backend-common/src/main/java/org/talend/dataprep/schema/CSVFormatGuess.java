@@ -18,7 +18,7 @@ import org.talend.dataprep.exception.Exceptions;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-class CSVFormatGuess implements FormatGuess {
+public class CSVFormatGuess implements FormatGuess {
 
     private final Separator sep;
 

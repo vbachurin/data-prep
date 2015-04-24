@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.Quality;
@@ -14,12 +15,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
-
-    static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
-    static
-    {
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
+    private final SimpleDataSetMetadataJsonSerializer metadataJsonSerializer;
 
     private final boolean metadata;
 
@@ -31,6 +27,7 @@ class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
         this.metadata = metadata;
         this.columns = columns;
         this.stream = stream;
+        this.metadataJsonSerializer = new SimpleDataSetMetadataJsonSerializer();
     }
 
     @Override
@@ -40,19 +37,7 @@ class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
             // Write general information about the dataset
             if (metadata) {
                 generator.writeFieldName("metadata"); //$NON-NLS-1
-                generator.writeStartObject();
-                {
-                    generator.writeStringField("id", dataSetMetadata.getId()); //$NON-NLS-1
-                    generator.writeStringField("name", dataSetMetadata.getName()); //$NON-NLS-1
-                    generator.writeStringField("author", dataSetMetadata.getAuthor()); //$NON-NLS-1
-                    generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
-                    generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
-                    generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
-                    synchronized (DATE_FORMAT) {
-                        generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1
-                    }
-                }
-                generator.writeEndObject();
+                metadataJsonSerializer.serialize(dataSetMetadata, generator);
             }
             // Write columns
             if (columns) {

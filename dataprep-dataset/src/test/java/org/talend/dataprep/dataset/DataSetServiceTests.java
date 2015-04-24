@@ -40,6 +40,8 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import com.jayway.restassured.RestAssured;
+import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.Separator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -127,11 +129,12 @@ public class DataSetServiceTests {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(metadata().id(id1).name("name1").author("anonymous").created(0).build());
+        final DataSetMetadata metadata = metadata().id(id1).name("name1").author("anonymous").created(0).contentType(new CSVFormatGuess(new Separator())).build();
+        dataSetMetadataRepository.add(metadata);
 
         String expected = "[{\"id\":\""
                 + id1
-                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":\"01-01-1970 00:00\"}]";
+                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"type\":\"text/csv\",\"created\":\"01-01-1970 00:00\"}]";
 
         InputStream content = when().get("/datasets").asInputStream();
         String contentAsString = IOUtils.toString(content);
@@ -140,7 +143,8 @@ public class DataSetServiceTests {
 
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(metadata().id(id2).name("name2").author("anonymous").created(0).build());
+        DataSetMetadata metadata2 = metadata().id(id2).name("name2").author("anonymous").created(0).contentType(new CSVFormatGuess(new Separator())).build();
+        dataSetMetadataRepository.add(metadata2);
         when().get("/datasets").then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItems(id1, id2));
@@ -159,7 +163,7 @@ public class DataSetServiceTests {
     @Test
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).build();
+        DataSetMetadata dataSetMetadata = metadata().id(expectedId).contentType(new CSVFormatGuess(new Separator())).build();
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
         List<String> ids = from(when().get("/datasets").asString()).get("");
@@ -171,7 +175,7 @@ public class DataSetServiceTests {
     @Test
     public void delete() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(metadata().id(expectedId).build());
+        dataSetMetadataRepository.add(metadata().id(expectedId).contentType(new CSVFormatGuess(new Separator())).build());
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int before = dataSetMetadataRepository.size();
@@ -315,6 +319,8 @@ public class DataSetServiceTests {
         builder.headerSize(1);
         builder.qualityAnalyzed(true);
         builder.schemaAnalyzed(true);
+        builder.contentType(new CSVFormatGuess(new Separator()));
+
         dataSetMetadataRepository.add(builder.build());
         String contentAsString = when().get("/datasets/{id}/metadata", "1234").asString();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("metadata1.json");

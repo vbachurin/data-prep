@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
 import org.talend.dataprep.dataset.exception.DataSetMessages;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -51,6 +52,9 @@ public class DataSetService {
     @Autowired
     private DataSetContentStore contentStore;
 
+    @Autowired
+    private SimpleDataSetMetadataJsonSerializer metadataJsonSerializer;
+
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
     }
@@ -80,51 +84,16 @@ public class DataSetService {
         return author;
     }
 
-    /**
-     * <p>
-     * Write "general" information about the <code>dataSetMetadata</code> to the JSON <code>generator</code>. General
-     * information covers:
-     * <ul>
-     * <li>Id: see {@link DataSetMetadata#getId()}</li>
-     * <li>Name: see {@link DataSetMetadata#getName()}</li>
-     * <li>Author: see {@link DataSetMetadata#getAuthor()}</li>
-     * <li>Date of creation: see {@link DataSetMetadata#getCreationDate()}</li>
-     * </ul>
-     * </p>
-     * <p>
-     * <b>Note:</b> this method only writes fields, callers are expected to start a JSON Object to hold values.
-     * </p>
-     * 
-     * @param generator The JSON generator this methods writes to.
-     * @param dataSetMetadata The {@link DataSetMetadata metadata} to get information from.
-     * @throws IOException In case method can't successfully write to <code>generator</code>.
-     */
-    private static void writeDataSetInformation(JsonGenerator generator, DataSetMetadata dataSetMetadata) throws IOException {
-        generator.writeStringField("id", dataSetMetadata.getId()); //$NON-NLS-1
-        generator.writeStringField("name", dataSetMetadata.getName()); //$NON-NLS-1
-        generator.writeStringField("author", dataSetMetadata.getAuthor()); //$NON-NLS-1
-        generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
-        generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
-        generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
-        synchronized (DATE_FORMAT) {
-            generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1
-        }
-    }
-
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
-    public void list(HttpServletResponse response) {
+    public void list(final HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        Iterable<DataSetMetadata> dataSets = dataSetMetadataRepository.list();
-        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
+        final Iterable<DataSetMetadata> dataSets = dataSetMetadataRepository.list();
+        try (final JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             generator.writeStartArray();
             for (DataSetMetadata dataSetMetadata : dataSets) {
-                generator.writeStartObject();
-                {
-                    writeDataSetInformation(generator, dataSetMetadata);
-                }
-                generator.writeEndObject();
+                metadataJsonSerializer.serialize(dataSetMetadata, generator);
             }
             generator.writeEndArray();
             generator.flush();
