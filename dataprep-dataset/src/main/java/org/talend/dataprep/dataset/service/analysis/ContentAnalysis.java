@@ -66,6 +66,7 @@ public class ContentAnalysis {
                 }
             } finally {
                 datasetLock.unlock();
+                message.acknowledge();
             }
         } catch (JMSException e) {
             throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);

@@ -39,7 +39,7 @@ import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 @WebAppConfiguration
 public class TestI18nKeysForActionsTest {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger( TestI18nKeysForActionsTest.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( TestI18nKeysForActionsTest.class );
 
     @Autowired
     private ActionMetadata[] allActions;

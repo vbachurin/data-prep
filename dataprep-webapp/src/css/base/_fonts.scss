@@ -1,4 +1,5 @@
 $sourcesanspro: "Source Sans Pro", "Lucida Grande", "Tahoma", "Verdana", "Arial", sans-serif;
+$inconsolota: Inconsolata, Monaco, Menlo, Consolas, "Courier New", monospace;
 
 @font-face {
 	font-family: 'Source Sans Pro';
@@ -251,4 +252,36 @@ $sourcesanspro: "Source Sans Pro", "Lucida Grande", "Tahoma", "Verdana", "Arial"
 		url('/assets/fonts/Source_Sans_Pro_900italic.ttf') format('truetype'),
 		/* from http://fonts.gstatic.com/l/font?kit=fpTVHK8qsXbIeTHTrnQH6AE6TnsamRSV10mXzkN7ilc#SourceSansPro */
 		url('/assets/fonts/Source_Sans_Pro_900italic.svg#SourceSansPro') format('svg');
+}
+@font-face {
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 400;
+  src:
+  local('Inconsolata'),
+//  local('  src: local('Inconsolata'), url(http://fonts.gstatic.com/s/inconsolata/v10/BjAYBlHtW3CJxDcjzrnZCJ0EAVxt0G0biEntp43Qt6E.ttf) format('truetype');'),
+    /* from  */
+  url('/assets/fonts/Inconsolata_400.eot?#iefix') format('embedded-opentype'),
+    /* from http://fonts.gstatic.com/s/inconsolata/v10/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff */
+  url('/assets/fonts/Inconsolata_400.woff') format('woff'),
+    /* from http://fonts.gstatic.com/s/inconsolata/v10/BjAYBlHtW3CJxDcjzrnZCJ0EAVxt0G0biEntp43Qt6E.ttf */
+  url('/assets/fonts/Inconsolata_400.ttf') format('truetype'),
+    /* from http://fonts.gstatic.com/l/font?kit=BjAYBlHtW3CJxDcjzrnZCHNsigHlcrQGNV8nkUSFQfc#Inconsolata */
+  url('/assets/fonts/Inconsolata_400.svg#Inconsolata') format('svg');
+}
+@font-face {
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 700;
+  src:
+  local('Inconsolata Bold'),
+  local('Inconsolata-Bold'),
+    /* from  */
+  url('/assets/fonts/Inconsolata_700.eot?#iefix') format('embedded-opentype'),
+    /* from http://fonts.gstatic.com/s/inconsolata/v10/AIed271kqQlcIRSOnQH0yTqR_3kx9_hJXbbyU8S6IN0.woff */
+  url('/assets/fonts/Inconsolata_700.woff') format('woff'),
+    /* from http://fonts.gstatic.com/s/inconsolata/v10/AIed271kqQlcIRSOnQH0yZ_TkvowlIOtbR7ePgFOpF4.ttf */
+  url('/assets/fonts/Inconsolata_700.ttf') format('truetype'),
+    /* from http://fonts.gstatic.com/l/font?kit=AIed271kqQlcIRSOnQH0yXtNmQEE9wZ6UZlmiISB1pg#Inconsolata */
+  url('/assets/fonts/Inconsolata_700.svg#Inconsolata') format('svg');
 }

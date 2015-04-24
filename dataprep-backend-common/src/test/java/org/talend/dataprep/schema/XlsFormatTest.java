@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 @EnableAutoConfiguration
 public class XlsFormatTest {
 
-    Logger logger = LoggerFactory.getLogger(getClass());
+    private final static Logger logger = LoggerFactory.getLogger(XlsFormatTest.class);
 
     @Autowired
     ApplicationContext applicationContext;

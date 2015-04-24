@@ -27,12 +27,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
@@ -51,10 +54,17 @@ public class DataSetServiceTests {
     DataSetMetadataRepository dataSetMetadataRepository;
 
     @Autowired
+    JmsTemplate jmsTemplate;
+
+    @Autowired
     DataSetContentStore contentStore;
 
     private void assertQueueMessages(String dataSetId) throws Exception {
-        Thread.sleep(30000); // TODO Ugly, need a client to lock until all operations are done
+        // Wait for queue messages
+        waitForQueue(Destinations.CONTENT_ANALYSIS, dataSetId);
+        waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
+        waitForQueue(Destinations.SCHEMA_ANALYSIS, dataSetId);
+        // Asserts on metadata status
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         DataSetLifecycle lifecycle = metadata.getLifecycle();
         assertThat(lifecycle.contentIndexed(), is(true));
@@ -69,6 +79,25 @@ public class DataSetServiceTests {
             int empty = column.getQuality().getEmpty();
             assertTrue(empty <= invalid);
             assertTrue(invalid < valid);
+        }
+    }
+
+    private void waitForQueue(String queueName, String dataSetId) {
+        // Wait for potential update still in progress
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        lock.lock();
+        lock.unlock();
+        // Ensure queues are empty
+        try {
+            boolean isEmpty = false;
+            while (!isEmpty) {
+                isEmpty = jmsTemplate.browse(queueName, (session, browser) -> !browser.getEnumeration().hasMoreElements());
+                if (!isEmpty) {
+                    Thread.sleep(200);
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

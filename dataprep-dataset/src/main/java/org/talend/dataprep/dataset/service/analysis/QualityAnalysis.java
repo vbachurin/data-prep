@@ -81,12 +81,12 @@ public class QualityAnalysis {
 
                     metadata.getLifecycle().qualityAnalyzed(true);
                     repository.add(metadata);
-                    message.acknowledge();
                 } else {
                     LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 }
             } finally {
                 datasetLock.unlock();
+                message.acknowledge();
             }
         } catch (JMSException e) {
             throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
