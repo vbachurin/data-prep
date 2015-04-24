@@ -44,7 +44,7 @@ public class DataSetMetadata {
 
     private final long creationDate;
 
-    private int sheetNumber;
+    private int sheetNumber = 0;
 
     /**
      * if <code>true</code> this dataset is still a draft as we need more informations from the user
@@ -134,13 +134,11 @@ public class DataSetMetadata {
         }
     }
 
-    public boolean isDraft()
-    {
+    public boolean isDraft() {
         return draft;
     }
 
-    public void setDraft( boolean draft )
-    {
+    public void setDraft(boolean draft) {
         this.draft = draft;
     }
 
@@ -169,6 +167,8 @@ public class DataSetMetadata {
         private boolean qualityAnalyzed;
 
         private int sheetNumber;
+
+        private boolean draft;
 
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
@@ -234,6 +234,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder draft(boolean draft) {
+            this.draft = draft;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -250,6 +255,7 @@ public class DataSetMetadata {
             RowMetadata row = new RowMetadata(columns);
             DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row);
             metadata.sheetNumber = this.sheetNumber;
+            metadata.draft = this.draft;
             // Content information
             DataSetContent content = metadata.getContent();
             content.setNbRecords(size);
