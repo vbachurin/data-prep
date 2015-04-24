@@ -9,6 +9,7 @@
      */
     angular.module('data-prep.services.dataset', [
         'data-prep.services.utils',
+        'data-prep.services.transformation',
         'angularFileUpload' //file upload with progress support
     ]);
 })();

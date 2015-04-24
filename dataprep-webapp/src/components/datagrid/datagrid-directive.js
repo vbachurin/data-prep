@@ -17,7 +17,7 @@
      * @requires data-prep.services.filter.service:FilterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService) {
+    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService, DatasetPreviewService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -236,6 +236,13 @@
                         }
                     });
 
+                };
+
+                var attachGridMove = function() {
+                    grid.onScroll.subscribe(function() {
+                        DatasetPreviewService.gridRangeIndex = grid.getRenderedRange();
+                    });
+
                     $window.addEventListener('resize', function(){
                         grid.resizeCanvas();
                     }, true);
@@ -269,6 +276,7 @@
                     attachColumnHeaderListeners();
                     attachCellListeners();
                     attachTooltipListener();
+                    attachGridMove();
                 };
 
                 //------------------------------------------------------------------------------------------------------

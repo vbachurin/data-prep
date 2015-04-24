@@ -22,6 +22,21 @@
             var cleanColumn = encodeURIComponent(column);
             return $http.get(RestURLs.datasetUrl + '/' + cleanDatasetId + '/' + cleanColumn + '/actions');
         };
+
+        this.getPreviewAppend = function(records, actions, canceler) {
+            var actionParam = {records: records, actions: actions};
+            var request = {
+                method: 'POST',
+                url: RestURLs.previewUrl + '/append',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: actionParam,
+                timeout: canceler.promise
+            };
+
+            return $http(request);
+        };
     }
 
     angular.module('data-prep.services.transformation')

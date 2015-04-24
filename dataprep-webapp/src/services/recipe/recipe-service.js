@@ -196,7 +196,8 @@
                     label: actionStep[2].label,
                     parameters: parameters,
                     items: items
-                }
+                },
+                actionParameters: actionStep[1]
             };
         };
 

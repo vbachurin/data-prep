@@ -8,7 +8,7 @@
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function RecipeCtrl(RecipeService, PlaygroundService) {
+    function RecipeCtrl(RecipeService, PlaygroundService, DatasetPreviewService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -58,6 +58,19 @@
             _.forEach(vm.recipe, function(element, elementIndex) {
                 element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });
+
+            if(vm.recipe[index].inactive) {
+                var actions = [];
+                _.chain(vm.recipe)
+                    .filter(function(element, elementIndex) {
+                        return elementIndex <= index && element.inactive;
+                    })
+                    .forEach(function(element) {
+                        actions.push(element.actionParameters);
+                    })
+                    .value();
+                DatasetPreviewService.getPreviewAppendRecords(actions);
+            }
         };
 
         /**
@@ -70,6 +83,7 @@
             _.forEach(vm.recipe, function(element) {
                 element.highlight = false;
             });
+            DatasetPreviewService.cancelPreview();
         };
     }
 
