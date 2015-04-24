@@ -11,10 +11,12 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
+     * @requires data-prep.services.preparation:PreparationListService
      */
-    function DatasetListCtrl($stateParams, DatasetService, DatasetListService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($stateParams, DatasetService, DatasetListService, PlaygroundService, TalendConfirmService, MessageService, PreparationListService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
+        vm.preparationListService = PreparationListService;
 
         /**
          * @ngdoc method
@@ -44,6 +46,21 @@
                     MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: dataset.name});
                     DatasetListService.refreshDatasets();
                 });
+        };
+
+        /**
+         * @ngdoc method
+         * @name hasOnlyOnePreparation
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description [PRIVATE] Return true if the given datasetid has one and only one preparation. Useful to display a direct link to the preparation from the dataset itself.
+         * @param {Object} dataset - the dataset to look the preparations for
+         */
+        vm.hasOnlyOnePreparation = function(dataset) {
+            var preparationsForDataset =  PreparationListService.getPreparationsForDataset(dataset);
+            if (preparationsForDataset.length === 1) {
+                return preparationsForDataset[0].id;
+            }
+            return null;
         };
 
         /**

@@ -71,6 +71,20 @@
                 return self.refreshPreparations();
             }
         };
+
+        /**
+         * @ngdoc method
+         * @name getPreparationsForDataset
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @description Return a list of preparations for a given dataset
+         * @returns {Object} - the dataset to look preparations for
+         */
+        self.getPreparationsForDataset = function(wanted) {
+            var preparationsForDataset = _.filter(self.preparations, function(preparation) {
+                return preparation.dataset.id === wanted.id;
+            });
+            return preparationsForDataset;
+        };
     }
 
     angular.module('data-prep.services.preparation')

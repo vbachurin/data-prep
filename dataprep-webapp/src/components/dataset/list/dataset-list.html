@@ -19,6 +19,10 @@
                     <tbody>
                     <tr>
                         <td><a class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets({datasetid: dataset.id})"></a></td>
+                        <td>
+                            <!--<a class="t-btn t-btn-transparent t-btn-recipe" ui-sref="nav.home.datasets({datasetid: dataset.id})"></a>-->
+                            {{datasetListCtrl.hasOnlyOnePreparation(dataset)}}
+                        </td>
                         <td class="t-right-divider"><button class="t-btn t-btn-transparent t-btn-pushto" ng-click=""></button></td>
                         <td><button class="t-btn t-btn-transparent t-btn-favorite" ng-click=""></button></td>
                         <td class="t-right-divider"><button t-btn-transparent class="t-btn t-btn-transparent t-btn-share" ng-click=""></button></td>
