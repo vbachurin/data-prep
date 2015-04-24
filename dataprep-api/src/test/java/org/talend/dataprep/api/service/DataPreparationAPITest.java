@@ -9,6 +9,7 @@ import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -103,10 +104,13 @@ public class DataPreparationAPITest {
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
         assertNotNull(dataSetId);
         assertFalse(dataSetId.equals(StringUtils.EMPTY));
-        InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
+        InputStream expectedContentStream = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(expectedContentStream, writer);
+        String expectedContent = writer.toString();
         String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
                 .asString();
-        assertThat(transformed, sameJSONAsFile(expectedContent));
+        assertEquals(expectedContent, transformed);
     }
 
     @Test
