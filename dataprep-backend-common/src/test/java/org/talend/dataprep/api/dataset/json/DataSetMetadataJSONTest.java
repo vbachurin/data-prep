@@ -12,6 +12,9 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.Separator;
+import org.talend.dataprep.schema.XlsFormatGuess;
 import org.talend.dataprep.test.SameJSONFile;
 
 public class DataSetMetadataJSONTest {
@@ -34,7 +37,7 @@ public class DataSetMetadataJSONTest {
         assertEquals(2, metadata.getContent().getNbRecords());
         assertEquals(1, metadata.getContent().getNbLinesInHeader());
         assertEquals(0, metadata.getContent().getNbLinesInFooter());
-        Date expectedDate = DataSetMetadataJsonSerializer.DATE_FORMAT.parse("02-17-2015 09:02");
+        Date expectedDate = SimpleDataSetMetadataJsonSerializer.DATE_FORMAT.parse("02-17-2015 09:02");
         assertEquals(expectedDate, metadata.getCreationDate());
         List<ColumnMetadata> columns = metadata.getRow().getColumns();
         assertEquals(6, columns.size());
@@ -62,6 +65,7 @@ public class DataSetMetadataJSONTest {
         columns.add(column);
         RowMetadata row = new RowMetadata(columns);
         DataSetMetadata metadata = new DataSetMetadata("1234", "name", "author", 0, row);
+        metadata.getContent().setContentType(new CSVFormatGuess(new Separator()));
         metadata.getLifecycle().qualityAnalyzed(true);
         metadata.getLifecycle().schemaAnalyzed(true);
         StringWriter writer = new StringWriter();
@@ -72,6 +76,7 @@ public class DataSetMetadataJSONTest {
     @Test
     public void testRoundTrip() throws Exception {
         DataSetMetadata metadata = DataSetMetadata.from(DataSetMetadataJSONTest.class.getResourceAsStream("test3.json"));
+        metadata.getContent().setContentType(new CSVFormatGuess(new Separator()));
         assertNotNull(metadata);
         StringWriter writer = new StringWriter();
         metadata.to(writer);

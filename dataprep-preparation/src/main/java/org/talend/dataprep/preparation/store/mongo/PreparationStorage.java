@@ -11,6 +11,9 @@ public interface PreparationStorage extends MongoRepository<Identifiable, String
     @Query("{ '_class' : '?0' }")
     List<Identifiable> findAll(String className);
 
+    @Query("{ '_class' : '?0',  'dataSetId' : '?1' }")
+    List<Identifiable> findByDataSet(String className, String dataSetId);
+
     @Query(value = "{ '_class' : '?0', '_id' : '?1' }", delete = true)
     Long delete(String className, String id);
 }

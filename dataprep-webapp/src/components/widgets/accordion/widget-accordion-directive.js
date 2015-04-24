@@ -36,27 +36,37 @@
             controller: function() {},
             controllerAs: 'accordionCtrl',
             link: function(scope, iElement, iAttr, ctrl) {
+                var accordionElement, parent, subMenu;
+
+                /**
+                 * Init the element that we need. This must be called after all elements initialisation.
+                 */
+                var retrieveUsefullElements = function() {
+                    accordionElement = iElement.closest('.talend-accordion');
+                    parent = iElement.parent();
+                    subMenu = parent.find('.submenu').eq(0);
+                };
+                $timeout(retrieveUsefullElements);
+
                 /**
                  * Close all the submenus contained is the closest .talend-accordion parent
                  */
-                var closeAllAccordions = function() {
-                    iElement.closest('.talend-accordion').find('.submenu').slideUp('fast');
-                    iElement.closest('.talend-accordion').find('.open').removeClass('open');
+                var closeAllAccordions = function () {
+                    accordionElement.find('.submenu').slideUp('fast');
+                    accordionElement.find('.open').removeClass('open');
                 };
 
                 /**
                  * Bind click event : hide all submenus and show/hide current submenu
                  */
-                iElement.bind('click', function(e){
+                iElement.bind('click', function (e) {
                     var noTrigger = angular.element(e.target).hasClass('talend-accordion-no-trigger');
 
-                    if(!noTrigger) {
-                        var parent = angular.element(this).parent();
-                        var subMenu = angular.element(this).parent().find('.submenu');
+                    if (!noTrigger) {
                         var isOpened = subMenu.is(':visible') || subMenu.css('display') === 'block';
 
                         closeAllAccordions();
-                        if(! isOpened) {
+                        if (!isOpened) {
                             $timeout(ctrl.onOpen);
                             parent.addClass('open');
                             subMenu.slideToggle('fast');

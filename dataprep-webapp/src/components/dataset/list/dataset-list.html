@@ -7,8 +7,10 @@
     
     <tbody ng-repeat="dataset in datasetListCtrl.datasets track by $index" class="inventory-entry">
     <tr>
-        <td rowspan="2" class="inventory-icon" width="40px">
-            <img src="/assets/images/csv_file.png" />
+        <td rowspan="2" class="inventory-icon" width="40px" ng-switch="dataset.type">
+            <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
+            <img src="/assets/images/inventory/xls_file.png" ng-switch-when="application/vnd.ms-excel"/>
+            <img src="/assets/images/inventory/generic_file.png" ng-switch-default/>
         </td>
         <td class="inventory-title">{{dataset.name}}</td>
         <td rowspan="2" class="inventory-actions">

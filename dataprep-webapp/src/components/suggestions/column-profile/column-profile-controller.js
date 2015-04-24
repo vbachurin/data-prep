@@ -367,11 +367,11 @@
     }
 
     Object.defineProperty(ColumnProfileCtrl.prototype,
-        'selectedColumnId', {
+        'selectedColumn', {
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.datasetGridService.selectedColumnId;
+                return this.datasetGridService.selectedColumn;
             }
         });
 

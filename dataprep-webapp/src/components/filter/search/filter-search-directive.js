@@ -5,7 +5,7 @@
      * @ngdoc directive
      * @name data-prep.filter-search.directive:FilterSearch
      * @description This directive create an input to add a filter. The `keydown` event is stopped to avoid propagation
-     * to a possible {@link talend.widget.TalendModal TalendModal} container
+     * to a possible {@link talend.widget.directive:TalendModal TalendModal} container
      * @restrict E
      */
     function FilterSearch() {

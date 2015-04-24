@@ -41,6 +41,7 @@ import org.talend.dataprep.preparation.Application;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -119,7 +120,6 @@ public class PreparationTest {
         assertThat(strings, not(hasItem(s1.getId())));
         assertThat(strings, hasItem(s2.getId()));
     }
-
 
     @Test
     public void nullArgs() throws Exception {
@@ -253,7 +253,8 @@ public class PreparationTest {
     @Test
     public void create() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
-        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}").when().put("/preparations").asString();
+        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
+                .when().put("/preparations").asString();
         assertThat(preparationId, is("170e086992df1848b8fc9459d87938af6be78720"));
         assertThat(repository.listAll(Preparation.class).size(), is(1));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
@@ -279,13 +280,15 @@ public class PreparationTest {
     @Test
     public void update() throws Exception {
         assertThat(repository.listAll(Preparation.class).size(), is(0));
-        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}").when().put("/preparations").asString();
+        String preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name\", \"dataSetId\": \"1234\"}")
+                .when().put("/preparations").asString();
         assertThat(preparationId, is("170e086992df1848b8fc9459d87938af6be78720"));
         Preparation preparation = repository.listAll(Preparation.class).iterator().next();
         long oldModificationDate = preparation.getLastModificationDate();
 
         // Test preparation details update
-        preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name_updated\", \"dataSetId\": \"1234\"}").when().put("/preparations/{id}", preparationId).asString();
+        preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"test_name_updated\", \"dataSetId\": \"1234\"}")
+                .when().put("/preparations/{id}", preparationId).asString();
 
         // Preparation id should not change
         assertThat(preparationId, is("0d291a2159ae36ee9177b8b845b3c8f1b0e0f30b"));
@@ -296,7 +299,6 @@ public class PreparationTest {
         assertThat(preparation.getName(), is("test_name_updated"));
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
     }
-
 
     @Test
     public void get() throws Exception {
@@ -343,7 +345,8 @@ public class PreparationTest {
         assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
         // Update preparation
         given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case_modified.json")))
-                .contentType(ContentType.JSON).when().put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
+                .contentType(ContentType.JSON).when()
+                .put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
         assertThat(preparation.getStep().id(), is("b7fad51b715f2f9d42aae663dc85f5b7bb4b9f15"));
@@ -368,7 +371,8 @@ public class PreparationTest {
         assertThat(preparation.getStep().id(), is("7d7396ab3bce49bb634d880bdd20800dd418a5d0"));
         // Update preparation
         given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case_modified.json")))
-                .contentType(ContentType.JSON).when().put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
+                .contentType(ContentType.JSON).when()
+                .put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
         assertThat(preparation.getStep().id(), is("4115f6d965e146ddbff622633895277c96754541"));
@@ -393,10 +397,51 @@ public class PreparationTest {
         assertThat(preparation.getStep().id(), is("7d7396ab3bce49bb634d880bdd20800dd418a5d0"));
         // Update preparation
         given().body(IOUtils.toString(PreparationTest.class.getResourceAsStream("upper_case_modified.json")))
-                .contentType(ContentType.JSON).when().put("/preparations/{id}/actions/{action}", preparation.id(), "2b6ae58738239819df3d8c4063e7cb56f53c0d59");
+                .contentType(ContentType.JSON).when()
+                .put("/preparations/{id}/actions/{action}", preparation.id(), "2b6ae58738239819df3d8c4063e7cb56f53c0d59");
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
         assertThat(preparation.getStep().id(), is("91629cad70f47957bcbcdeac436878cc5f713b8a"));
+    }
+
+    /**
+     * @see org.talend.dataprep.preparation.service.PreparationService#listByDataSet
+     */
+    @Test
+    public void getByDataSet() throws Exception {
+
+        String wantedDataSetId = "wanted";
+
+        // relevant data
+        Preparation preparation1 = getPreparation(wantedDataSetId, "prep_1");
+        repository.add(preparation1);
+        Preparation preparation2 = getPreparation(wantedDataSetId, "prep_2");
+        repository.add(preparation2);
+
+        // noise data not to be returned by the service
+        repository.add(getPreparation("4523", "prep_3"));
+        repository.add(getPreparation("7534", "prep_4"));
+        repository.add(getPreparation("1598", "prep_5"));
+
+        String result = when().get("/preparations?dataSetId=" + wantedDataSetId).asString();
+        List<String> preparationIds = JsonPath.from(result).get("id");
+        for (String preparationId : preparationIds) {
+            Assert.assertTrue(result.contains(preparationId));
+        }
+
+    }
+
+    /**
+     * Return a preparation from the given parameters. Simple function used to simplify code writing.
+     *
+     * @param dataSetId the dataset id.
+     * @param name the preparation name.
+     * @return a preparation from the given parameters.
+     */
+    private Preparation getPreparation(String dataSetId, String name) {
+        Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
+        preparation.setName(name);
+        return preparation;
     }
 
     private List<Action> getSimpleAction(final String actionName, final String paramKey, final String paramValue) {
