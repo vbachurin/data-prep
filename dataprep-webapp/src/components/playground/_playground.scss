@@ -1,6 +1,6 @@
 .playground {
   .datagrid-container {
-    @include calc(height, "100% - 50px");
-    width: 100%;
+    @include calc(height, "100% - 70px");  //MM: I've added 30px margin
+    @include calc(width, "100% - 20px");  //MM: I've added 30px margin
   }
 }

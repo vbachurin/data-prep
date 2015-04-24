@@ -213,7 +213,7 @@
         width: $navigation-height;
         height: $navigation-height;
         line-height: $navigation-height - 1px;
-        border: 1px solid #000000;
+        //border: 1px solid #000000;
         cursor: pointer;
 
         position: absolute;
@@ -244,7 +244,7 @@
         display: table;
         height: $navigation-height;
         min-height: $navigation-height;
-        margin-bottom: $body-margin;
+        margin-bottom: 0px;  //$body-margin;
         width: 100%;
 
         @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
