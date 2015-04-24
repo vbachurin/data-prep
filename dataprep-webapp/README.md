@@ -134,6 +134,14 @@ To run it continuously with source watch, type the command
 During each test run, Karma will generate coverage files, using [karma-coverage plugin](https://github.com/karma-runner/karma-coverage).
 Open the index.html in the coverage folder to display coverage details for each js file.
 
+### Code documentation
+On each entity (controller, directive, function, module, ...) creation and modification, the ngDoc must be updated.
+For more information about how to write ngDoc :
+* https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation
+* https://github.com/angular/dgeni-packages/blob/master/NOTES.md
+
+To generate the documentation into a ngDoc/ forlder, type the command
+`gulp ngdoc`
 
 ### Build a standalone prod distrib
 run

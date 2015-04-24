@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 @Component
 public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(PreparationJsonSerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreparationJsonSerializer.class);
 
     @Autowired(required = false)
     PreparationRepository versionRepository;

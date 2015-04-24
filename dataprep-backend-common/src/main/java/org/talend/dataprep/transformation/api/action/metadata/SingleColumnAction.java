@@ -15,10 +15,6 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Type;
 
-/**
- * created by sgandon on 25 mars 2015 Detailled comment
- *
- */
 public abstract class SingleColumnAction implements ActionMetadata {
 
     public static final String COLUMN_NAME_PARAMETER_NAME = "column_name"; //$NON-NLS-1$

@@ -21,19 +21,17 @@ import com.hazelcast.core.HazelcastInstance;
 
 /**
  * Setup Hazelcast client instance
- *
  */
 @Configuration
-public class HarzelcastSetup {
+public class HazelcastSetup {
 
     @Bean
     public HazelcastInstance hazelcastInstance() {
         Config cfg = new Config();
         cfg.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         cfg.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
-        cfg.getNetworkConfig().getJoin().getTcpIpConfig().getMembers().add("127.0.0.1");
-        HazelcastInstance hz = Hazelcast.newHazelcastInstance(cfg);
-        return hz;
+        cfg.getNetworkConfig().getJoin().getTcpIpConfig().getMembers().add("127.0.0.1"); //$NON-NLS-1$
+        return Hazelcast.newHazelcastInstance(cfg);
     }
 
 }
