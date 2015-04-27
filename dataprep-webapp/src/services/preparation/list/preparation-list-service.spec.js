@@ -203,24 +203,12 @@ describe('Preparation list service controller', function() {
     it('should filter preparations depending on the dataset', inject(function($rootScope, PreparationListService) {
         //given
         PreparationListService.refreshPreparations();
+        $rootScope.$digest();
 
         //when
-        var noPreparation;
-        PreparationListService.getPreparationsForDataset(allDatasets[3]).then(function(preparationList) {
-            noPreparation = preparationList;
-        });
-
-        var onePreparation;
-        PreparationListService.getPreparationsForDataset(allDatasets[1]).then(function(preparationList) {
-            onePreparation = preparationList;
-        });
-
-        var twoPreparations;
-        PreparationListService.getPreparationsForDataset(allDatasets[2]).then(function(preparationList) {
-            twoPreparations = preparationList;
-        });
-
-        $rootScope.$digest();
+        var noPreparation = PreparationListService.getDatasetPreparations(allDatasets[3]);
+        var onePreparation = PreparationListService.getDatasetPreparations(allDatasets[1])
+        var twoPreparations = PreparationListService.getDatasetPreparations(allDatasets[2]);
 
         //then
         expect(noPreparation).toEqual([]);

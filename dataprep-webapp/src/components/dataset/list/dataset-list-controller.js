@@ -79,24 +79,25 @@
          * @param {Object} dataset - the dataset to process
          */
         var setDefaultPreparation = function(dataset) {
-            PreparationListService.getPreparationsForDataset(dataset)
-                .then(function(preparations) {
-
-                    // if there's only one preparation for the dataset, it's the default one
-                    if (preparations.length === 1) {
-                        dataset.defaultPreparationId = preparations[0].id;
-                    }
-
-                });
+            var preparations = PreparationListService.getDatasetPreparations(dataset);
+            // if there's only one preparation for the dataset, it's the default one
+            if (preparations.length === 1) {
+                dataset.defaultPreparationId = preparations[0].id;
+            }
         };
 
 
         // load the datasets
         DatasetListService.getDatasetsPromise().then(loadUrlSelectedDataset);
 
-        // add a watcher on datasets to that the default preparation is set
+        // add a watcher on datasets so that the default preparation is set for each dataset
         $scope.$watch(function() {return vm.datasets;},
-                      function(newValue) {_.forEach(newValue, setDefaultPreparation);});
+                      function(newValue) {
+                            // make sure the preparations are loaded before looking for default dataset
+                            PreparationListService.getPreparationsPromise().then(function() {
+                                _.forEach(newValue, setDefaultPreparation);
+                            });
+                        });
     }
 
     /**

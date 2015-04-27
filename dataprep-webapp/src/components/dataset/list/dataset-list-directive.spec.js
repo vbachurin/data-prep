@@ -51,7 +51,7 @@ describe('Dataset list directive', function() {
             DatasetListService.datasets = datasets;
             return $q.when(datasets);
         });
-        spyOn(PreparationListService, 'getPreparationsForDataset').and.returnValue($q.when([]));
+        spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue($q.when([]));
     }));
 
     it('should render dataset list', function() {

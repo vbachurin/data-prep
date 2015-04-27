@@ -34,12 +34,13 @@ describe('Dataset list controller', function () {
             DatasetListService.datasets = datasetsValues.shift();
             return $q.when(DatasetListService.datasets);
         });
-        spyOn(PreparationListService, 'getPreparationsForDataset').and.callFake(function(dataset) {
+        spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue($q.when(true));
+        spyOn(PreparationListService, 'getDatasetPreparations').and.callFake(function(dataset) {
             var getPreparationsForDataset =
                 _.filter(preparations, function(preparation) {
                     return preparation.datasetid === dataset.id;
                 });
-            return $q.when(getPreparationsForDataset);
+            return getPreparationsForDataset;
         });
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
@@ -58,7 +59,7 @@ describe('Dataset list controller', function () {
 
         //then
         expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-        expect(PreparationListService.getPreparationsForDataset).toHaveBeenCalled();
+        expect(PreparationListService.getDatasetPreparations).toHaveBeenCalled();
         expect(ctrl.datasets).toBe(datasets);
     }));
 
@@ -82,7 +83,7 @@ describe('Dataset list controller', function () {
 
         //then
         expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-        expect(PreparationListService.getPreparationsForDataset.calls.count()).toEqual(datasets.length);
+        expect(PreparationListService.getDatasetPreparations.calls.count()).toEqual(datasets.length);
         expect(ctrl.datasets[0].defaultPreparationId).toBe(preparations[0].id);
         expect(ctrl.datasets[1].defaultPreparationId).not.toBeDefined();
         expect(ctrl.datasets[2].defaultPreparationId).not.toBeDefined();
@@ -127,7 +128,7 @@ describe('Dataset list controller', function () {
             expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
             expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: 'Customers (50 lines)'});
             expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-            expect(PreparationListService.getPreparationsForDataset).toHaveBeenCalled();
+            expect(PreparationListService.getDatasetPreparations).toHaveBeenCalled();
         }));
 
         it('should init and show playground', inject(function ($rootScope, PlaygroundService) {
