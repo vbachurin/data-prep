@@ -207,7 +207,7 @@ describe('Preparation list service controller', function() {
 
         //when
         var noPreparation = PreparationListService.getDatasetPreparations(allDatasets[3]);
-        var onePreparation = PreparationListService.getDatasetPreparations(allDatasets[1])
+        var onePreparation = PreparationListService.getDatasetPreparations(allDatasets[1]);
         var twoPreparations = PreparationListService.getDatasetPreparations(allDatasets[2]);
 
         //then
