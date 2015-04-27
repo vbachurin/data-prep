@@ -9,7 +9,8 @@ public enum DataSetMessages implements Messages {
     UNABLE_TO_CLEAR_DATASETS,
     UNABLE_TO_DELETE_DATASET,
     UNABLE_TO_CONNECT_TO_HDFS,
-    UNABLE_TO_STORE_DATASET_CONTENT;
+    UNABLE_TO_STORE_DATASET_CONTENT,
+    UNABLE_TO_ANALYZE_COLUMN_TYPES;
 
     @Override
     public String getProduct() {

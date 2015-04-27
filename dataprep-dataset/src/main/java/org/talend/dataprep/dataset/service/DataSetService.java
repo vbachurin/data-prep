@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
@@ -60,7 +61,7 @@ public class DataSetService {
     }
 
     private static void queueEvents(String id, JmsTemplate template) {
-        String[] destinations = { Destinations.SCHEMA_ANALYSIS, Destinations.CONTENT_ANALYSIS };
+        String[] destinations = { Destinations.FORMAT_ANALYSIS, Destinations.CONTENT_ANALYSIS };
         for (String destination : destinations) {
             template.send(destination, session -> {
                 Message message = session.createMessage();
@@ -117,7 +118,7 @@ public class DataSetService {
         contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
         // Create the new data set
         dataSetMetadataRepository.add(dataSetMetadata);
-        // Queue events (schema analysis, content indexing for search...)
+        // Queue events (format analysis, content indexing for search...)
         queueEvents(id, jmsTemplate);
         return id;
     }
@@ -139,7 +140,6 @@ public class DataSetService {
         if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
             // Schema is not yet ready (but eventually will, returns 202 to indicate this).
             LOG.debug("Data set #{} not yet ready for service.", dataSetId);
-
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return;
         }
@@ -175,15 +175,21 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
             @ApiParam(value = "content") InputStream dataSetContent) {
-        DataSetMetadata.Builder builder = metadata().id(dataSetId);
-        if (name != null) {
-            builder = builder.name(name);
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        try {
+            lock.lock();
+            DataSetMetadata.Builder builder = metadata().id(dataSetId);
+            if (name != null) {
+                builder = builder.name(name);
+            }
+            DataSetMetadata dataSetMetadata = builder.build();
+            // Save data set content
+            contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
+            dataSetMetadataRepository.add(dataSetMetadata);
+        } finally {
+            lock.unlock();
         }
-        DataSetMetadata dataSetMetadata = builder.build();
-        // Save data set content
-        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
-        dataSetMetadataRepository.add(dataSetMetadata);
-        // Content was changed, so queue events (schema analysis, content indexing for search...)
+        // Content was changed, so queue events (format analysis, content indexing for search...)
         queueEvents(dataSetId, jmsTemplate);
     }
 
