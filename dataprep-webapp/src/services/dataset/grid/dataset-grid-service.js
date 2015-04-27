@@ -34,6 +34,7 @@
          * @type {Object}
          */
         self.dataView = new Slick.Data.DataView({inlineFilters: false});
+
         /**
          * @ngdoc property
          * @name filters

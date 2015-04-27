@@ -64,7 +64,7 @@ public class TypeTransformerSelectorTest {
         final JsonParser parser = factory.createParser(inputStream);
 
         // when
-        transformer.process(parser, generator, action);
+        transformer.process(parser, generator, action, false);
 
         // then
         assertEquals(writer.toString(), expectedContent, false);
@@ -79,7 +79,7 @@ public class TypeTransformerSelectorTest {
 
         // when
         try {
-            transformer.process(parser, generator, action);
+            transformer.process(parser, generator, action, false);
             fail("should have thrown UserException because input json is not valid");
         }
 
@@ -98,7 +98,7 @@ public class TypeTransformerSelectorTest {
 
         // when
         try {
-            transformer.process(parser, generator, action);
+            transformer.process(parser, generator, action, false);
             fail("should have thrown UserException because column json is not valid");
         }
 
@@ -117,7 +117,7 @@ public class TypeTransformerSelectorTest {
 
         // when
         try {
-            transformer.process(parser, generator, action);
+            transformer.process(parser, generator, action, false);
             fail("should have thrown UserException because record json is not valid");
         }
 

@@ -1,6 +1,8 @@
 package org.talend.dataprep.transformation.api.transformer.type;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ import com.fasterxml.jackson.core.JsonToken;
 public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
 
     @Override
-    public void process(final JsonParser parser, final JsonGenerator generator, final Consumer<DataSetRow> action) {
+    public void process(final JsonParser parser, final JsonGenerator generator, final Consumer<DataSetRow> action, boolean preview) {
         try {
             final DataSetRow row = new DataSetRow();
             String currentFieldName = "";
@@ -32,12 +34,14 @@ public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
                     row.clear();
                     break;
                 case END_OBJECT:
+                    final Map<String, String> originalValues = preview ? row.cloneValues() : null;
                     action.accept(row);
-
-                    if (!row.isDeleted()) {
+                    if(preview) {
+                        row.writePreviewTo(generator, originalValues);
+                    }
+                    else {
                         row.writeTo(generator);
                     }
-
                     break;
 
                 // DataSetRow fields

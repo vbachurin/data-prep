@@ -14,7 +14,7 @@
            active="&#9679;"
            inactive="&#9675;"
            ng-mouseleave="recipeCtrl.stepHoverEnd()"
-           ng-mouseover="recipeCtrl.stepHoverStart($index)"></div>
+           ng-mouseenter="recipeCtrl.stepHoverStart($index)"></div>
 
         <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>

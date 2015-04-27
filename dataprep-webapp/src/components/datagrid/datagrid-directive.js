@@ -55,6 +55,31 @@
 
                 /**
                  * @ngdoc method
+                 * @name formatter
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
+                 */
+                var formatter = function(row, cell, value, columnDef, dataContext) {
+                    //deleted row preview
+                    if(dataContext.__tdpDeleted) {
+                        return '<div class="cellDeletedValue"><strike>' + value + '</strike></div>';
+                    }
+
+                    //added/updated cell preview
+                    if(dataContext.__tdpDiff) {
+                        var diffType = dataContext.__tdpDiff[columnDef.id];
+                        switch(diffType) {
+                            case 'new':
+                                return '<div class="cellNewValue">' + value + '</div>';
+                            case 'update' :
+                                return '<div class="cellUpdateValue">' + value + '</div>';
+                        }
+                    }
+                    return value;
+                };
+
+                /**
+                 * @ngdoc method
                  * @name columnItem
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @param {object} col - the backend column to adapt
@@ -67,7 +92,8 @@
                     var colItem = {
                         id: col.id,
                         field: col.id,
-                        name: '<div id="' + divId + '"></div>'
+                        name: '<div id="' + divId + '"></div>',
+                        formatter: formatter
                     };
 
                     return colItem;

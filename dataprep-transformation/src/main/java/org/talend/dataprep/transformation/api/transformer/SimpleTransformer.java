@@ -35,7 +35,7 @@ class SimpleTransformer implements Transformer {
     }
 
     @Override
-    public void transform(InputStream input, OutputStream output) {
+    public void transform(InputStream input, OutputStream output, boolean preview) {
         try {
             if (input == null) {
                 throw new IllegalArgumentException("Input cannot be null.");
@@ -49,7 +49,7 @@ class SimpleTransformer implements Transformer {
             final JsonGenerator generator = factory.createGenerator(output);
             generator.setCodec(builder.build());
 
-            typeStateSelector.process(parser, generator, action);
+            typeStateSelector.process(parser, generator, action, preview);
             output.flush();
         } catch (IOException e) {
             throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);

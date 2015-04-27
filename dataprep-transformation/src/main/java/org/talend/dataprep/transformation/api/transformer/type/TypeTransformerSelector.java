@@ -27,7 +27,7 @@ public class TypeTransformerSelector implements TypeTransformer<DataSetRow> {
     private RecordsTypeTransformer recordsTransformer;
 
     @Override
-    public void process(final JsonParser parser, final JsonGenerator generator, final Consumer<DataSetRow> action) {
+    public void process(final JsonParser parser, final JsonGenerator generator, final Consumer<DataSetRow> action, boolean preview) {
 
         try {
             JsonToken nextToken;
@@ -38,11 +38,11 @@ public class TypeTransformerSelector implements TypeTransformer<DataSetRow> {
                     switch (parser.getText()) {
                     case "columns":
                         generator.writeFieldName("columns");
-                        columnsTransformer.process(parser, generator, null);
+                        columnsTransformer.process(parser, generator, null, preview);
                         break;
                     case "records":
                         generator.writeFieldName("records");
-                        recordsTransformer.process(parser, generator, action);
+                        recordsTransformer.process(parser, generator, action, preview);
                         break;
                     }
                 }

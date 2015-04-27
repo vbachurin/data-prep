@@ -25,7 +25,7 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
     private Jackson2ObjectMapperBuilder builder;
 
     @Override
-    public void process(JsonParser parser, JsonGenerator generator, Consumer<ColumnMetadata> action) {
+    public void process(JsonParser parser, JsonGenerator generator, Consumer<ColumnMetadata> action, boolean preview) {
         try {
             final StringWriter content = new StringWriter();
             final JsonGenerator contentGenerator = new JsonFactory().createGenerator(content);

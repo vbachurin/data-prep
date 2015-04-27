@@ -34,6 +34,8 @@
          * </ul>
          */
         vm.toggleStep = function(step) {
+            DatasetPreviewService.cancelPreview();
+
             if(step.inactive) {
                 PlaygroundService.loadStep(step);
             }
@@ -55,6 +57,8 @@
          * </ul>
          */
         vm.stepHoverStart = function(index) {
+            DatasetPreviewService.cancelPreview();
+
             _.forEach(vm.recipe, function(element, elementIndex) {
                 element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });

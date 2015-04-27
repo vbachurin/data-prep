@@ -10,6 +10,10 @@ import org.talend.dataprep.exception.Exceptions;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 public class DataSetRow {
+    private final static String DIFF_KEY = "__tdpDiff";
+    private final static String DELETED_KEY = "__tdpDeleted";
+    private final static String DIFF_NEW = "new";
+    private final static String DIFF_UPDATE = "update";
 
     private boolean deleted = false;
 
@@ -20,6 +24,10 @@ public class DataSetRow {
 
     public DataSetRow(Map<String, String> values) {
         this.values.putAll(values);
+    }
+
+    public Map<String, String> cloneValues() {
+        return new HashMap<>(values);
     }
 
     /**
@@ -69,14 +77,55 @@ public class DataSetRow {
 
         try {
             jGenerator.writeStartObject();
+            writeValues(jGenerator, values);
+            jGenerator.writeEndObject();
+            jGenerator.flush();
 
-            values.entrySet().stream().forEach((entry) -> {
-                try {
-                    jGenerator.writeStringField(entry.getKey(), entry.getValue());
-                } catch (IOException e) {
-                    throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
-                }
-            });
+        } catch (IOException e) {
+            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+        }
+    }
+
+    /**
+     * Write the row preview as JSON in the provided OutputStream
+     *
+     * @param jGenerator - the json generator plugged to stream to write to
+     * @param originalValues - unchanged values for preview diff
+     */
+    public void writePreviewTo(final JsonGenerator jGenerator, final Map<String, String> originalValues) {
+        final Map<String, String> diff = new HashMap<>();
+
+        try {
+            jGenerator.writeStartObject();
+
+            //row has been deleted : write the old values with DELETE_KEY property
+            if(isDeleted()) {
+                jGenerator.writeBooleanField(DELETED_KEY, true);
+                writeValues(jGenerator, originalValues);
+            }
+
+            //row has been updated : write the new values and get the diff for each value, then write the DIFF_KEY property
+            else {
+                values.entrySet().stream().forEach((entry) -> {
+                    try {
+                        final String originalValue = originalValues.get(entry.getKey());
+                        if(originalValue == null) {
+                            diff.put(entry.getKey(), DIFF_NEW);
+                        }
+                        else if(! entry.getValue().equals(originalValue)) {
+                            diff.put(entry.getKey(), DIFF_UPDATE);
+                        }
+
+                        jGenerator.writeStringField(entry.getKey(), entry.getValue());
+                    } catch (IOException e) {
+                        throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+                    }
+                });
+
+                jGenerator.writeObjectFieldStart(DIFF_KEY);
+                writeValues(jGenerator, diff);
+                jGenerator.writeEndObject();
+            }
 
             jGenerator.writeEndObject();
             jGenerator.flush();
@@ -84,6 +133,16 @@ public class DataSetRow {
         } catch (IOException e) {
             throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
+    }
+
+    private void writeValues(final JsonGenerator jGenerator, final Map<String, String> valuesToWrite) {
+        valuesToWrite.entrySet().stream().forEach((entry) -> {
+            try {
+                jGenerator.writeStringField(entry.getKey(), entry.getValue());
+            } catch (IOException e) {
+                throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+            }
+        });
     }
 
     /**

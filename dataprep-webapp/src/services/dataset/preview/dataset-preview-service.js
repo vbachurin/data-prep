@@ -19,8 +19,13 @@
         self.gridRangeIndex = [];
 
         var getDisplayedRows = function() {
-            var indexes = _.range(self.gridRangeIndex.top, self.gridRangeIndex.bottom);
-            return  _.map(indexes, DatasetGridService.dataView.getItem);
+            var indexes = _.range(self.gridRangeIndex.top, self.gridRangeIndex.bottom + 1);
+            return  _.chain(indexes)
+                .map(DatasetGridService.dataView.getItem)
+                .filter(function(element) {
+                    return element;
+                })
+                .value();
         };
 
         self.getPreviewAppendRecords = function(actions) {
@@ -47,7 +52,7 @@
 
         self.cancelPreview = function() {
             if(previewCanceler) {
-                previewCanceler.resolve();
+                previewCanceler.resolve('user cancel');
                 previewCanceler = null;
             }
 
@@ -55,6 +60,10 @@
                 DatasetGridService.updateRecords(originalRecords);
                 originalRecords = null;
             }
+        };
+
+        self.previewInProgress = function() {
+            return !!originalRecords;
         };
     }
 

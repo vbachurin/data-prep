@@ -5,5 +5,5 @@ import java.io.OutputStream;
 
 public interface Transformer {
 
-    void transform(InputStream input, OutputStream output);
+    void transform(InputStream input, OutputStream output, boolean preview);
 }

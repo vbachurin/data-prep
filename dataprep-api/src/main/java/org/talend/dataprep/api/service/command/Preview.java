@@ -60,7 +60,7 @@ public class Preview extends HystrixCommand<InputStream> {
         String encodedActions = Base64.getEncoder().encodeToString(actionsStr.getBytes());
         InputStream recordsIS = new ByteArrayInputStream(recordsStr.getBytes());
 
-        String uri = transformationServiceUrl + "/transform/?actions=" + encodedActions;
+        String uri = transformationServiceUrl + "/transform/?preview=true&actions=" + encodedActions;
         HttpPost transformationCall = new HttpPost(uri);
         transformationCall.setEntity(new InputStreamEntity(recordsIS));
         return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(),
