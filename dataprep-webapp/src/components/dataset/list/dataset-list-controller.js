@@ -50,27 +50,12 @@
 
         /**
          * @ngdoc method
-         * @name hasOnlyOnePreparation
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description [PRIVATE] Return true if the given datasetid has one and only one preparation. Useful to display a direct link to the preparation from the dataset itself.
-         * @param {Object} dataset - the dataset to look the preparations for
-         */
-        vm.hasOnlyOnePreparation = function(dataset) {
-            var preparationsForDataset =  PreparationListService.getPreparationsForDataset(dataset);
-            if (preparationsForDataset.length === 1) {
-                return preparationsForDataset[0].id;
-            }
-            return null;
-        };
-
-        /**
-         * @ngdoc method
-         * @name loadUrlSelectedPreparation
+         * @name loadUrlSelectedDataset
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description [PRIVATE] Load playground with provided dataset id, if present in route param
          * @param {Object[]} datasets - list of all user's datasets
          */
-        var loadUrlSelectedPreparation = function(datasets) {
+        var loadUrlSelectedDataset = function(datasets) {
             if($stateParams.datasetid) {
                 var selectedDataset = _.find(datasets, function(dataset) {
                     return dataset.id === $stateParams.datasetid;
@@ -85,8 +70,38 @@
             }
         };
 
+
+        /**
+         * @ngdoc method
+         * @name setDefaultPreparation
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description [PRIVATE] set the default preparation id for each dataset. If a dataset has only one preparation, it's its default.
+         * @param {Object} dataset - the dataset to process
+         */
+        var setDefaultPreparation = function(dataset) {
+            PreparationListService.getPreparationsForDataset(dataset)
+                .then(function(preparations) {
+
+                    // if there's only one preparation for the dataset, it's the default one
+                    if (preparations.length === 1) {
+                        dataset.defaultPreparationId = preparations[0].id;
+                    }
+
+                });
+        };
+
+
+        // load the datasets
         DatasetListService.getDatasetsPromise()
-            .then(loadUrlSelectedPreparation);
+
+            // update the default preparation for each dataset
+            .then(function(datasets) {
+                _.forEach(datasets, setDefaultPreparation);
+                return datasets;
+            })
+
+            // load the dataset from the url if any
+            .then(loadUrlSelectedDataset);
     }
 
     /**

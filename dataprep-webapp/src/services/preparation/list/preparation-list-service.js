@@ -76,14 +76,17 @@
          * @ngdoc method
          * @name getPreparationsForDataset
          * @methodOf data-prep.services.preparation.service:PreparationListService
-         * @description Return a list of preparations for a given dataset
-         * @returns {Object} - the dataset to look preparations for
+         * @description Return a promise that holds all the preparation for the given dataset
+         * @returns {Promise} - the preparation list promise
          */
         self.getPreparationsForDataset = function(wanted) {
-            var preparationsForDataset = _.filter(self.preparations, function(preparation) {
-                return preparation.dataset.id === wanted.id;
-            });
-            return preparationsForDataset;
+
+            return self.getPreparationsPromise()
+                .then( function(preparationList) {
+                    return _.filter(preparationList, function(preparation) {
+                        return preparation.dataset.id === wanted.id;
+                    });
+                });
         };
     }
 
