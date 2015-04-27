@@ -26,6 +26,7 @@ The following projects provides back-end services exposed as REST API.
 | [dataprep-api](dataprep-api)         | *Back-end API service for Data Preparation Web UI.* |
 | [dataprep-transformation](dataprep-transformation)         | *Back-end service for data set transformation.* |
 | [dataprep-dataset](dataprep-dataset)         | *Back-end service for data set operations (create, update, content index, get data set metadata...)* |
+| [dataprep-preparation](dataprep-preparation)         | *Back-end service for preparation operations (create, update, get content, add or edit steps in preparations...)* |
 
 
 #### Common and module management
@@ -49,3 +50,6 @@ The following projects provide scripts to automate platform deployment as well a
 - All project are maven based.
 - A parent in pom build the web-app and its dependencies.
 - See [dataprep-dataset](/dataprep-dataset/) for specific build instructions
+
+## IDE setup
+See the [tooling](/tooling/) folder.

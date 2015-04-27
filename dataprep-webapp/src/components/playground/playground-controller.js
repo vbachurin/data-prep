@@ -32,8 +32,8 @@
          * @description Playground close callback. It change the location and refresh the preparations if needed
          */
         vm.close = function() {
+            PreparationListService.refreshPreparations();
             if($stateParams.prepid) {
-                PreparationListService.refreshPreparations();
                 $state.go('nav.home.preparations', {prepid: null});
             }
             else if($stateParams.datasetid) {

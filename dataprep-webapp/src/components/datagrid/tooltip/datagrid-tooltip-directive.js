@@ -40,7 +40,8 @@
             controllerAs: 'tooltipCtrl',
             link: function(scope, iElement, iAttrs, ctrl) {
                 /**
-                 * On edition mode enable, we focus on textarea
+                 * On edition mode enable, we focus on textarea.
+                 * $timeout is necessary because the textarea is not visible yet until angular process the digest cycle
                  */
                 scope.$watch(
                     function() { return ctrl.editMode; },

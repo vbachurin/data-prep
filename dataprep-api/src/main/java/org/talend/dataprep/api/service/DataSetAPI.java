@@ -50,7 +50,8 @@ public class DataSetAPI extends APIService {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, contentServiceUrl, id, name, dataSetContent);
+        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, contentServiceUrl, id, name,
+                dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;
@@ -64,11 +65,12 @@ public class DataSetAPI extends APIService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Requesting dataset #{} (pool: {})...",id,getConnectionManager().getTotalStats());
+            LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, contentServiceUrl, id, metadata, columns);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, contentServiceUrl, id, metadata,
+                columns);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
@@ -110,14 +112,15 @@ public class DataSetAPI extends APIService {
             LOG.debug("Delete dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, contentServiceUrl, dataSetId);
+        HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, contentServiceUrl, preparationServiceURL,
+                dataSetId);
         try {
             deleteCommand.execute();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
+            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, e);
         }
     }
 

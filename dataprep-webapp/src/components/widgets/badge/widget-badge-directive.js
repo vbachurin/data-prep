@@ -51,10 +51,11 @@
                     input.css('width', width);
                 };
 
-                $timeout(function() {
-                    var input = iElement.find('input.editable-input').eq(0);
-                    adjustWidth(input);
-
+                /**
+                 * Attach keydown and blur events listeners
+                 * @param input - the event target
+                 */
+                var attachListeners = function(input) {
                     //Keydown (ESC and ENTER) listeners
                     input.keydown(function(event) {
                         //ENTER : change filter
@@ -76,8 +77,14 @@
 
                     //Blur listener : impact change
                     input.blur(ctrl.manageChange);
+                };
 
-                    //Adjust input size
+                $timeout(function() {
+                    var input = iElement.find('input.editable-input').eq(0);
+                    adjustWidth(input);
+                    attachListeners(input);
+
+                    //Adjust input size on value change
                     if(ctrl.obj) {
                         scope.$watch(
                             function() {
