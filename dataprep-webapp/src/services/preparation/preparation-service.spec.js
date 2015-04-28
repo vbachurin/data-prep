@@ -189,7 +189,7 @@ describe('Preparation Service', function () {
 
 
         //when
-        PreparationService.append(datasetId, action, parameters)
+        PreparationService.appendStep(datasetId, action, parameters)
             .then(function() {
                 done = true;
             });
@@ -225,7 +225,7 @@ describe('Preparation Service', function () {
 
 
         //when
-        PreparationService.append(datasetId, action, parameters)
+        PreparationService.appendStep(datasetId, action, parameters)
             .then(function() {
                 done = true;
             });
@@ -294,5 +294,40 @@ describe('Preparation Service', function () {
 
         //then
         expect(deleted).toBe(true);
+    }));
+
+    it('should update a transformation step in the current preparation', inject(function($rootScope, RestURLs, PreparationService) {
+        //given
+        var done = false;
+        var action = 'fillemptywithdefault';
+        var parameters = {
+            'default_value': 'N/A',
+            'column_name': 'state'
+        };
+        var stepId = '18046df82f0946af05ee766d0ac06f92f63e7047';
+
+        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+
+        //given : preparation step update request
+        $httpBackend
+            .expectPUT(RestURLs.preparationUrl + '/fbaa18e82e913e97e5f0e9d40f04413412be1126/actions/18046df82f0946af05ee766d0ac06f92f63e7047', {
+                actions: [{
+                    action: action,
+                    parameters: parameters
+                }]
+            })
+            .respond(200);
+
+
+        //when
+        PreparationService.updateStep(stepId, action, parameters)
+            .then(function() {
+                done = true;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(done).toBe(true);
     }));
 });
