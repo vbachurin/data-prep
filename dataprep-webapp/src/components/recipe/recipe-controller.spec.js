@@ -1,12 +1,15 @@
+/*jshint camelcase: false */
+
 describe('Recipe controller', function() {
     'use strict';
 
     var createController, scope;
     var previousStep = {};
+    var lastActiveStep = {inactive: false};
 
     beforeEach(module('data-prep.recipe'));
 
-    beforeEach(inject(function($rootScope, $controller, RecipeService, PlaygroundService) {
+    beforeEach(inject(function($rootScope, $controller, $q, RecipeService, PlaygroundService, PreparationService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -16,8 +19,15 @@ describe('Recipe controller', function() {
             return ctrl;
         };
 
+        spyOn($rootScope, '$emit').and.callThrough();
         spyOn(RecipeService, 'getPreviousStep').and.returnValue(previousStep);
-        spyOn(PlaygroundService, 'loadStep').and.returnValue(previousStep);
+        spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(3);
+        spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
+        spyOn(RecipeService, 'getStep').and.callFake(function(index, lastDefault) {
+            return (index === 3 && lastDefault) ? lastActiveStep : null;
+        });
+        spyOn(PreparationService, 'updateStep').and.returnValue($q.when(true));
+        spyOn(PlaygroundService, 'loadStep').and.returnValue($q.when(true));
     }));
 
     afterEach(inject(function(RecipeService) {
@@ -138,5 +148,108 @@ describe('Recipe controller', function() {
 
         //then
         expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
+    }));
+
+    it('should create a closure that update the step parameters', inject(function($rootScope, PreparationService) {
+        //given
+        var ctrl = createController();
+        var step = {
+            column: {id: 'state'},
+            transformation: {
+                stepId: 'a598bc83fc894578a8b823',
+                name: 'cut'
+            },
+            actionParameters: {
+                action: 'cut',
+                parameters: {pattern: '.', column_name: 'state'}
+            }
+        };
+        var parameters = {pattern: '-'};
+
+        //when
+        var updateClosure = ctrl.stepUpdateClosure(step);
+        updateClosure(parameters);
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.updateStep).toHaveBeenCalledWith('a598bc83fc894578a8b823', 'cut', parameters);
+    }));
+
+    it('should update step, refresh recipe, load last active step when parameters are different', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
+        //given
+        var ctrl = createController();
+        var step = {
+            column: {id: 'state'},
+            transformation: {
+                stepId: 'a598bc83fc894578a8b823',
+                name: 'cut'
+            },
+            actionParameters: {
+                action: 'cut',
+                parameters: {pattern: '.', column_name: 'state'}
+            }
+        };
+        var parameters = {pattern: '-'};
+
+        //when
+        ctrl.updateStep(step, parameters);
+        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.updateStep).toHaveBeenCalledWith('a598bc83fc894578a8b823', 'cut', parameters);
+        expect(RecipeService.refresh).toHaveBeenCalled();
+        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(lastActiveStep);
+        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+    }));
+
+    it('should init params object with column id if param is not defined', inject(function($rootScope, PreparationService) {
+        //given
+        var ctrl = createController();
+        var step = {
+            column: {id: 'state'},
+            transformation: {
+                stepId: 'a598bc83fc894578a8b823',
+                name: 'cut'
+            },
+            actionParameters: {
+                action: 'cut',
+                parameters: {pattern: '.', column_name: 'state'}
+            }
+        };
+
+        //when
+        ctrl.updateStep(step);
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.updateStep).toHaveBeenCalledWith('a598bc83fc894578a8b823', 'cut', {column_name: 'state'});
+    }));
+
+    it('should do nothing if parameters are unchanged', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
+        //given
+        var ctrl = createController();
+        var step = {
+            column: {id: 'state'},
+            transformation: {
+                stepId: 'a598bc83fc894578a8b823',
+                name: 'cut'
+            },
+            actionParameters: {
+                action: 'cut',
+                parameters: {pattern: '.', column_name: 'state'}
+            }
+        };
+        var parameters = {pattern: '.'};
+
+        //when
+        ctrl.updateStep(step, parameters);
+        $rootScope.$digest();
+
+        //then
+        expect($rootScope.$emit).not.toHaveBeenCalled();
+        expect(PreparationService.updateStep).not.toHaveBeenCalled();
+        expect(RecipeService.refresh).not.toHaveBeenCalled();
+        expect(PlaygroundService.loadStep).not.toHaveBeenCalled();
     }));
 });

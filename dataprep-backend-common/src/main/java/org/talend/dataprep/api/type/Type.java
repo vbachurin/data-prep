@@ -10,7 +10,8 @@ public enum Type {
     INTEGER("integer", NUMERIC), //$NON-NLS-1$
     DOUBLE("double", NUMERIC), //$NON-NLS-1$
     FLOAT("float", NUMERIC), //$NON-NLS-1$
-    BOOLEAN("boolean", ANY); //$NON-NLS-1$
+    BOOLEAN("boolean", ANY), //$NON-NLS-1$
+    DATE("date", ANY); //$NON-NLS-1$
 
     private final String name;
 
@@ -93,10 +94,29 @@ public enum Type {
         }
         List<Type> types = ANY.list();
         for (Type type : types) {
-            if (type.getName().equals(name)) {
+            if (type.getName().equalsIgnoreCase(name)) {
                 return type;
             }
         }
         throw new IllegalArgumentException("Type '" + name + "' does not exist.");
+    }
+
+    /**
+     * Allows to test existence of a type by name.
+     * @param name A non-null type name.
+     * @return <code>true</code> if type exists, <code>false</code> otherwise.
+     * @see #get(String)
+     */
+    public static boolean has(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null.");
+        }
+        List<Type> types = ANY.list();
+        for (Type type : types) {
+            if (type.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

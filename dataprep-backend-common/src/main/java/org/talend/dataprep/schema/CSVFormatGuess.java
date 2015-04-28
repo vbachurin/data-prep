@@ -50,6 +50,7 @@ public class CSVFormatGuess implements FormatGuess {
                         .draft(false) //
                         .build();
                 }
+                // By default, consider all columns as Strings (to be refined by deeper analysis).
                 for (String column : columns) {
                     columnMetadata.add(column().name(column).type(Type.STRING).build());
                 }
@@ -65,7 +66,7 @@ public class CSVFormatGuess implements FormatGuess {
                             // Not an number
                         }
 
-                        if (columnValue.trim().equalsIgnoreCase("true") || columnValue.trim().equalsIgnoreCase("false")) {
+                        if ("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim())) {
                             columnMetadata.get(i).setType(Type.BOOLEAN.getName());
                         }
                     }

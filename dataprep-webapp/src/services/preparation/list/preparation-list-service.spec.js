@@ -43,7 +43,7 @@ describe('Preparation list service controller', function() {
     var allPreparations = [
         {
             'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
-            'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            'dataSetId': allDatasets[0].id,
             'author': 'anonymousUser',
             'creationDate': 1427447300300,
             'steps': [
@@ -76,7 +76,7 @@ describe('Preparation list service controller', function() {
         },
         {
             'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
-            'dataSetId': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
+            'dataSetId': allDatasets[2].id,
             'author': 'anonymousUser',
             'creationDate': 1427447330693,
             'steps': [
@@ -104,6 +104,42 @@ describe('Preparation list service controller', function() {
                     'action': 'uppercase',
                     'parameters': {
                         'column_name': 'lastname'
+                    }
+                }
+            ]
+        },
+        {
+            'id': 'ds3f51sf3q1df35qsf412qdsf15ds3ff454qg8r4qr',
+            'dataSetId': allDatasets[2].id,
+            'author': 'anonymousUser',
+            'creationDate': 1437487330692,
+            'steps': [
+                '87e38cv438dth4yd6k84x3dr84htryj84xc3k21u'
+            ],
+            'actions': [
+                {
+                    'action': 'cut',
+                    'parameters': {
+                        'pattern': '-',
+                        'column_name': 'birth'
+                    }
+                }
+            ]
+        },
+        {
+            'id': '8v4z38u4n3ioç43f815c3w5v4by3h8u4w3fv4bgyds',
+            'dataSetId': allDatasets[1].id,
+            'author': 'anonymousUser',
+            'creationDate': 1437497330694,
+            'steps': [
+                '3w8xt4hxt3fh125ydx8y6j4i8l4ds358g4zfbe3e'
+            ],
+            'actions': [
+                {
+                    'action': 'cut',
+                    'parameters': {
+                        'pattern': '-',
+                        'column_name': 'birth'
                     }
                 }
             ]
@@ -163,4 +199,21 @@ describe('Preparation list service controller', function() {
         expect(PreparationService.getPreparations).not.toHaveBeenCalled();
         expect(returnedPreps).toBe(allPreparations);
     }));
+
+    it('should filter preparations depending on the dataset', inject(function($rootScope, PreparationListService) {
+        //given
+        PreparationListService.refreshPreparations();
+        $rootScope.$digest();
+
+        //when
+        var noPreparation = PreparationListService.getDatasetPreparations(allDatasets[3]);
+        var onePreparation = PreparationListService.getDatasetPreparations(allDatasets[1]);
+        var twoPreparations = PreparationListService.getDatasetPreparations(allDatasets[2]);
+
+        //then
+        expect(noPreparation).toEqual([]);
+        expect(onePreparation).toEqual([allPreparations[3]]);
+        expect(twoPreparations).toEqual([allPreparations[1], allPreparations[2]]);
+    }));
+
 });

@@ -23,6 +23,7 @@
                 var body = angular.element('body');
 
                 $rootScope.$on('talend.loading.start', function() {
+                    $timeout.cancel(loadingPromise);
                     loadingPromise = $timeout(function() {
                         body.addClass('loading-open');
                     }, 120);

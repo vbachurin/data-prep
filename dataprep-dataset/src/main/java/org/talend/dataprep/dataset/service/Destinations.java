@@ -1,7 +1,8 @@
 package org.talend.dataprep.dataset.service;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+
+import javax.servlet.http.HttpServletResponse;
 
 public interface Destinations {
 
@@ -25,4 +26,11 @@ public interface Destinations {
      * @see org.talend.dataprep.dataset.service.DataSetService#create(String, InputStream, HttpServletResponse)
      */
     String QUALITY_ANALYSIS = "org.talend.tdp.dataset.content.quality"; //$NON-NLS-1
+
+    /**
+     * JMS Destination for format analysis of a data set.
+     *
+     * @see org.talend.dataprep.dataset.service.DataSetService#create(String, InputStream, HttpServletResponse)
+     */
+    String FORMAT_ANALYSIS = "org.talend.tdp.dataset.content.format"; //$NON-NLS-1$
 }

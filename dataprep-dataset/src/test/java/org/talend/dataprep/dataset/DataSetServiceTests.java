@@ -38,10 +38,10 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-
-import com.jayway.restassured.RestAssured;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Separator;
+
+import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -66,6 +66,7 @@ public class DataSetServiceTests {
         waitForQueue(Destinations.CONTENT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
         waitForQueue(Destinations.SCHEMA_ANALYSIS, dataSetId);
+        waitForQueue(Destinations.FORMAT_ANALYSIS, dataSetId);
         // Asserts on metadata status
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         DataSetLifecycle lifecycle = metadata.getLifecycle();
@@ -187,7 +188,8 @@ public class DataSetServiceTests {
     @Test
     public void update() throws Exception {
         String dataSetId = "123456";
-        when().put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .when().put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId);

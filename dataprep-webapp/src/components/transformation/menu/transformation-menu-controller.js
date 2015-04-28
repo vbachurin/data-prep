@@ -50,7 +50,7 @@
             /*jshint camelcase: false */
             params.column_name = vm.column.id;
 
-            PreparationService.append(vm.metadata.id, vm.menu.name, params)
+            PreparationService.appendStep(vm.metadata.id, vm.menu.name, params)
                 .then(function() {
                     return PreparationService.getContent('head');
                 })

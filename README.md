@@ -49,6 +49,7 @@ The following projects provide scripts to automate platform deployment as well a
 ## Build
 - All project are maven based.
 - A parent in pom build the web-app and its dependencies.
+- Specific Maven settings are required. See instructions in [tooling](/tooling/).
 - See [dataprep-dataset](/dataprep-dataset/) for specific build instructions
 
 ## IDE setup
