@@ -61,7 +61,7 @@ describe('Transform menu controller', function () {
             return ctrl;
         };
 
-        spyOn(PreparationService, 'append').and.returnValue($q.when(true));
+        spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
         spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: result}));
         spyOn($rootScope, '$emit').and.callThrough();
         spyOn(DatasetGridService, 'updateRecords').and.callFake(function() {});
@@ -78,7 +78,7 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(PreparationService.append).not.toHaveBeenCalled();
+        expect(PreparationService.appendStep).not.toHaveBeenCalled();
         expect(PreparationService.getContent).not.toHaveBeenCalled();
     }));
 
@@ -92,7 +92,7 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeTruthy();
-        expect(PreparationService.append).not.toHaveBeenCalled();
+        expect(PreparationService.appendStep).not.toHaveBeenCalled();
         expect(PreparationService.getContent).not.toHaveBeenCalled();
     }));
 
@@ -106,7 +106,7 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeTruthy();
-        expect(PreparationService.append).not.toHaveBeenCalled();
+        expect(PreparationService.appendStep).not.toHaveBeenCalled();
         expect(PreparationService.getContent).not.toHaveBeenCalled();
     }));
 
@@ -122,7 +122,7 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(PreparationService.append).toHaveBeenCalledWith('44f5e4ef-96e9-4041-b86a-0bee3d50b18b', 'uppercase', { column_name: 'MostPopulousCity' });
+        expect(PreparationService.appendStep).toHaveBeenCalledWith('44f5e4ef-96e9-4041-b86a-0bee3d50b18b', 'uppercase', { column_name: 'MostPopulousCity' });
         expect(PreparationService.getContent).toHaveBeenCalledWith('head');
         expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(result.records);
         expect(RecipeService.refresh).toHaveBeenCalled();
@@ -148,7 +148,7 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(PreparationService.append).toHaveBeenCalledWith(
+        expect(PreparationService.appendStep).toHaveBeenCalledWith(
             '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
             'uppercase',
             { column_name: 'MostPopulousCity', param1: 'param1Value', param2: 4 });
