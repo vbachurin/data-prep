@@ -28,6 +28,10 @@
             <id>spring-milestones</id>
             <url>http://repo.springsource.org/libs-milestone/</url>
         </repository>
+        <repository>
+            <id>talend</id>
+            <url>http://newbuild.talend.com:8081/nexus/content/repositories/snapshots</url>
+        </repository>
     </repositories>
     <modules>
         <module>../dataprep-backend-common</module>
