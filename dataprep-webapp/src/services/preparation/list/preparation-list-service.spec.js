@@ -168,6 +168,21 @@ describe('Preparation list service controller', function() {
         expect(PreparationListService.preparations[1].dataset).toBe(allDatasets[2]);
     }));
 
+    it('refresh preparation should set default preparation', inject(function($rootScope, PreparationListService) {
+        //given
+        expect(PreparationListService.preparations.length).toBe(0);
+
+        //when
+        PreparationListService.refreshPreparations();
+        $rootScope.$digest();
+
+        //then
+        expect(allDatasets[0].defaultPreparation.id).toBe(allPreparations[0].id);
+        expect(allDatasets[1].defaultPreparation.id).toBe(allPreparations[3].id);
+        expect(allDatasets[2].defaultPreparation).toBeNull();
+    }));
+
+
     it('should refresh preparations if preparation list is empty', inject(function($rootScope, PreparationListService, PreparationService) {
         //given
         expect(PreparationListService.preparations.length).toBe(0);
@@ -198,22 +213,6 @@ describe('Preparation list service controller', function() {
         //then
         expect(PreparationService.getPreparations).not.toHaveBeenCalled();
         expect(returnedPreps).toBe(allPreparations);
-    }));
-
-    it('should filter preparations depending on the dataset', inject(function($rootScope, PreparationListService) {
-        //given
-        PreparationListService.refreshPreparations();
-        $rootScope.$digest();
-
-        //when
-        var noPreparation = PreparationListService.getDatasetPreparations(allDatasets[3]);
-        var onePreparation = PreparationListService.getDatasetPreparations(allDatasets[1]);
-        var twoPreparations = PreparationListService.getDatasetPreparations(allDatasets[2]);
-
-        //then
-        expect(noPreparation).toEqual([]);
-        expect(onePreparation).toEqual([allPreparations[3]]);
-        expect(twoPreparations).toEqual([allPreparations[1], allPreparations[2]]);
     }));
 
 });

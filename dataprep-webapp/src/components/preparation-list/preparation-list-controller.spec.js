@@ -85,6 +85,7 @@ describe('Preparation list controller', function() {
         };
 
         spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when([]));
+        spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when([]));
         spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
         spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
         spyOn(PreparationListService, 'refreshPreparations').and.callThrough();
