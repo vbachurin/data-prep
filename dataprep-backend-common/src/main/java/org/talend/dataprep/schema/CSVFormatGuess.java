@@ -45,7 +45,10 @@ public class CSVFormatGuess implements FormatGuess {
                 // First line has column names
                 String[] columns = reader.readNext();
                 if (columns == null) { // Empty content?
-                    return columnMetadata;
+                    return SchemaParserResult.Builder.parserResult() //
+                        .columnMetadatas(columnMetadata) //
+                        .draft(false) //
+                        .build();
                 }
                 for (String column : columns) {
                     columnMetadata.add(column().name(column).type(Type.STRING).build());
@@ -70,7 +73,11 @@ public class CSVFormatGuess implements FormatGuess {
             } catch (IOException e) {
                 throw Exceptions.User(CommonMessages.UNABLE_TO_READ_CONTENT, e);
             }
-            return columnMetadata;
+            return SchemaParserResult.Builder.parserResult() //
+                .columnMetadatas(columnMetadata) //
+                .draft(false) //
+                .build();
+
         };
     }
 

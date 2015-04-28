@@ -2,7 +2,11 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -24,6 +28,7 @@ import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.FormatGuesser;
 import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 @Component
 public class SchemaAnalysis {
@@ -74,7 +79,15 @@ public class SchemaAnalysis {
                     // Parse information
                     try (InputStream content = store.getAsRaw(metadata)) {
                         SchemaParser parser = bestGuess.getSchemaParser();
-                        metadata.getRow().setColumns(parser.parse(content));
+                        SchemaParserResult result = parser.parse(content);
+
+                        if (result.draft()) {
+                            // leave it in a draft status
+                            return;
+                        }
+
+                        metadata.getRow().setColumns(result.getColumnMetadatas());
+                        metadata.setDraft(false);
                         metadata.getLifecycle().schemaAnalyzed(true);
                         repository.add(metadata);
                         // Quality information needs schema information, since it's ready, asks for quality analysis

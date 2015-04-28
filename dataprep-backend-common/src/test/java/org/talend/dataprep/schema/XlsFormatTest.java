@@ -69,7 +69,7 @@ public class XlsFormatTest {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream).getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
 
@@ -108,7 +108,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream).getColumnMetadatas();
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
 
@@ -184,7 +184,7 @@ public class XlsFormatTest {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream).getColumnMetadatas();
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
 
@@ -239,7 +239,7 @@ public class XlsFormatTest {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream).getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
 

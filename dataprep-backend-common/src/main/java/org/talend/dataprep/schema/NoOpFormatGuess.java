@@ -17,7 +17,10 @@ class NoOpFormatGuess implements FormatGuess {
 
     @Override
     public SchemaParser getSchemaParser() {
-        return content -> Collections.emptyList();
+        return content -> SchemaParserResult.Builder.parserResult() //
+                .columnMetadatas(Collections.emptyList()) //
+                .draft(false) //
+                .build();
     }
 
     @Override

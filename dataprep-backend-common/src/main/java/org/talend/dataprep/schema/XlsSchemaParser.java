@@ -29,7 +29,7 @@ public class XlsSchemaParser implements SchemaParser {
     private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsSchemaParser.class);
 
     @Override
-    public List<ColumnMetadata> parse(InputStream content) {
+    public SchemaParserResult parse(InputStream content) {
 
         // FIXME ATM only first sheet but need to be discuss
         // maybe return List<List<ColumnMetadata>> ??
@@ -37,11 +37,23 @@ public class XlsSchemaParser implements SchemaParser {
 
         Map<String, List<ColumnMetadata>> schema = parseAllSheets(content);
 
-        if (schema.size() > 0) {
-            return schema.values().iterator().next();
+        if (!schema.isEmpty()) {
+            return schema.size() == 1 ? //
+            SchemaParserResult.Builder.parserResult() //
+                    .columnMetadatas(schema.values().iterator().next()) //
+                    .draft(false) //
+                    .build() //
+                    : //
+                    SchemaParserResult.Builder.parserResult() //
+                            .columnMetadatas(Collections.emptyList()) //
+                            .draft(true) //
+                            .build();
         }
 
-        return Collections.emptyList();
+        return SchemaParserResult.Builder.parserResult() //
+                .columnMetadatas(Collections.emptyList()) //
+                .draft(false) //
+                .build();
 
     }
 
