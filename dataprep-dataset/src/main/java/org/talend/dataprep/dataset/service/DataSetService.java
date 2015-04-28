@@ -40,7 +40,11 @@ public class DataSetService {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
 
-    private static final Logger LOG = LoggerFactory.getLogger( DataSetService.class );
+    private static final Logger LOG = LoggerFactory.getLogger(DataSetService.class);
+
+    static {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
+    }
 
     private final JsonFactory factory = new JsonFactory();
 
@@ -55,10 +59,6 @@ public class DataSetService {
 
     @Autowired
     private SimpleDataSetMetadataJsonSerializer metadataJsonSerializer;
-
-    static {
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
-    }
 
     private static void queueEvents(String id, JmsTemplate template) {
         String[] destinations = { Destinations.FORMAT_ANALYSIS, Destinations.CONTENT_ANALYSIS };
@@ -85,6 +85,11 @@ public class DataSetService {
         return author;
     }
 
+    /**
+     * Lists all data set ids handled by service.
+     * 
+     * @param response The HTTP response to interact with caller.
+     */
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
@@ -103,6 +108,15 @@ public class DataSetService {
         }
     }
 
+    /**
+     * Creates a new data set and returns the new data set id as text in the response.
+     * 
+     * @param name An optional name for the new data set (might be <code>null</code>).
+     * @param dataSetContent The raw content of the data set (might be a CSV, XLS...).
+     * @param response The HTTP response to interact with caller.
+     * @return The new data id.
+     * @see #get(boolean, boolean, String, HttpServletResponse)
+     */
     @RequestMapping(value = "/datasets", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
     @Timed
@@ -123,6 +137,15 @@ public class DataSetService {
         return id;
     }
 
+    /**
+     * Returns the data set content for given id. Service might return {@link HttpServletResponse#SC_ACCEPTED} if the
+     * data set exists but analysis is not yet fully completed so content is not yet ready to be served.
+     * 
+     * @param metadata If <code>true</code>, includes data set metadata information.
+     * @param columns If <code>true</code>, includes column metadata information (column types...).
+     * @param dataSetId A data set id.
+     * @param response The HTTP response to interact with caller.
+     */
     @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
@@ -155,11 +178,15 @@ public class DataSetService {
         }
     }
 
+    /**
+     * Deletes a data set with provided id.
+     * 
+     * @param dataSetId A data set id. If data set id is unknown, no exception nor status code to indicate this is set.
+     */
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
-    public void delete(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
+    public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata != null) {
             contentStore.delete(metadata);
@@ -167,6 +194,14 @@ public class DataSetService {
         }
     }
 
+    /**
+     * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
+     * 
+     * @param dataSetId The id of data set to be updated.
+     * @param name The new name for the data set.
+     * @param dataSetContent The new content for the data set. If empty, existing content will <b>not</b> be replaced.
+     * For delete operation, look at {@link #delete(String)}.
+     */
     @RequestMapping(value = "/datasets/{id}/raw", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
     @Timed
@@ -193,6 +228,13 @@ public class DataSetService {
         queueEvents(dataSetId, jmsTemplate);
     }
 
+    /**
+     * Returns the data set {@link DataSetMetadata metadata} for given <code>dataSetId</code>.
+     * 
+     * @param dataSetId A data set id. If <code>null</code> <b>or</b> if no data set with provided id exits, operation
+     * returns {@link HttpServletResponse#SC_NO_CONTENT}
+     * @param response The HTTP response to interact with caller.
+     */
     @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
     @ApiResponses({ @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist."),
