@@ -29,7 +29,7 @@
             <url>http://repo.springsource.org/libs-milestone/</url>
         </repository>
         <repository>
-            <id>talend</id>
+            <id>snapshots</id>
             <url>http://newbuild.talend.com:8081/nexus/content/repositories/snapshots</url>
         </repository>
     </repositories>
