@@ -52,14 +52,13 @@ describe('Dataset list controller', function () {
         $stateParams.datasetid = null;
     }));
 
-    it('should get dataset on creation', inject(function (DatasetListService, PreparationListService) {
+    it('should get dataset on creation', inject(function (DatasetListService) {
         //when
         var ctrl = createController();
         scope.$digest();
 
         //then
         expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-        expect(PreparationListService.getDatasetPreparations).toHaveBeenCalled();
         expect(ctrl.datasets).toBe(datasets);
     }));
 
@@ -82,7 +81,6 @@ describe('Dataset list controller', function () {
         scope.$digest();
 
         //then
-        expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
         expect(PreparationListService.getDatasetPreparations.calls.count()).toEqual(datasets.length);
         expect(ctrl.datasets[0].defaultPreparationId).toBe(preparations[0].id);
         expect(ctrl.datasets[1].defaultPreparationId).not.toBeDefined();
@@ -128,7 +126,6 @@ describe('Dataset list controller', function () {
             expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
             expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: 'Customers (50 lines)'});
             expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-            expect(PreparationListService.getDatasetPreparations).toHaveBeenCalled();
         }));
 
         it('should init and show playground', inject(function ($rootScope, PlaygroundService) {

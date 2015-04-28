@@ -6,6 +6,11 @@
      * @name data-prep.dataset-list.controller:DatasetListCtrl
      * @description Dataset list controller.
      On creation, it fetch dataset list from backend and load playground if 'datasetid' query param is provided
+     <br/>
+     Watchers :
+     <ul>
+        <li>datasets : on dataset list change, set the default preparation id in each element</li>
+     </ul>
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.dataset.service:DatasetListService
      * @requires data-prep.services.playground.service:PlaygroundService
@@ -16,7 +21,6 @@
     function DatasetListCtrl($scope, $stateParams, DatasetService, DatasetListService, PlaygroundService, TalendConfirmService, MessageService, PreparationListService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
-        vm.preparationListService = PreparationListService;
 
         /**
          * @ngdoc method
@@ -75,29 +79,34 @@
          * @ngdoc method
          * @name setDefaultPreparation
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description [PRIVATE] set the default preparation id for each dataset. If a dataset has only one preparation, it's its default.
+         * @description [PRIVATE] Set the default preparation id in the dataset.
+         * If a dataset has only one preparation, it's its default. Otherwise, there is no default
          * @param {Object} dataset - the dataset to process
          */
         var setDefaultPreparation = function(dataset) {
             var preparations = PreparationListService.getDatasetPreparations(dataset);
-            // if there's only one preparation for the dataset, it's the default one
             if (preparations.length === 1) {
                 dataset.defaultPreparationId = preparations[0].id;
             }
         };
 
-
         // load the datasets
-        DatasetListService.getDatasetsPromise().then(loadUrlSelectedDataset);
+        DatasetListService
+            .getDatasetsPromise()
+            .then(loadUrlSelectedDataset);
 
         // add a watcher on datasets so that the default preparation is set for each dataset
-        $scope.$watch(function() {return vm.datasets;},
-                      function(newValue) {
-                            // make sure the preparations are loaded before looking for default dataset
-                            PreparationListService.getPreparationsPromise().then(function() {
-                                _.forEach(newValue, setDefaultPreparation);
-                            });
-                        });
+        $scope.$watch(
+            function() {
+                return vm.datasets;
+            },
+            function(newValue) {
+                // make sure the preparations are loaded before looking for default dataset
+                PreparationListService.getPreparationsPromise()
+                    .then(function() {
+                        _.forEach(newValue, setDefaultPreparation);
+                    });
+            });
     }
 
     /**
