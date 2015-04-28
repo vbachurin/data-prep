@@ -195,7 +195,8 @@ public class DataSetService {
 
     @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
-    @ApiResponses({@ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist.")})
+    @ApiResponses({ @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist."),
+            @ApiResponse(code = HttpServletResponse.SC_ACCEPTED, message = "Data set metadata is not yet ready.") })
     @Timed
     public void getMetadata(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
@@ -207,6 +208,10 @@ public class DataSetService {
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+        if (!metadata.getLifecycle().schemaAnalyzed()) {
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return;
         }
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
