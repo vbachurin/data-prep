@@ -4,7 +4,7 @@
         <th colspan="3">{{ ::'SORTED_BY' | translate }} {{ ::'NAME_SORT' | translate }}</th>
     </tr>
     </thead>
-    
+
     <tbody ng-repeat="dataset in datasetListCtrl.datasets track by $index" class="inventory-entry">
     <tr>
         <td rowspan="2" class="inventory-icon" width="40px" ng-switch="dataset.type">
@@ -18,7 +18,10 @@
                 <table class="inventory-actions-table">
                     <tbody>
                     <tr>
-                        <td><a class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets({datasetid: dataset.id})"></a></td>
+                        <td ng-switch="!!dataset.defaultPreparationId">
+                            <a ng-switch-when="false" class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets({datasetid: dataset.id})"></a>
+                            <a ng-switch-when="true" class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.preparations({prepid: dataset.defaultPreparationId})"></a>
+                        </td>
                         <td class="t-right-divider"><button class="t-btn t-btn-transparent t-btn-pushto" ng-click=""></button></td>
                         <td><button class="t-btn t-btn-transparent t-btn-favorite" ng-click=""></button></td>
                         <td class="t-right-divider"><button t-btn-transparent class="t-btn t-btn-transparent t-btn-share" ng-click=""></button></td>

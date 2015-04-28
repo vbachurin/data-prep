@@ -105,6 +105,11 @@ All the structure is inspired by yeoman project called [generator-gulp-angular](
 The build of the web app is required because we use pre-compiler tools in order to use Jade and scss templating.
 use `gulp --tasks-simple` to find out which build tasks are available.
 
+### Code style
+Interesting style guides to follow : 
+* Todd Motto : https://github.com/toddmotto/angularjs-styleguide
+* John Papa : https://github.com/johnpapa/angular-styleguide
+
 ### Run
 when in folder _checkouts/data-prep/dataprep-webapp_ type the command
 

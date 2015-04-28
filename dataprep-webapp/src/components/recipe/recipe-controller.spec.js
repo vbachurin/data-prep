@@ -1,3 +1,5 @@
+/*jshint camelcase: false */
+
 describe('Recipe controller', function() {
     'use strict';
 
@@ -201,7 +203,7 @@ describe('Recipe controller', function() {
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
 
-    it('should init params object with column id if param is not defined', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
+    it('should init params object with column id if param is not defined', inject(function($rootScope, PreparationService) {
         //given
         var ctrl = createController();
         var step = {
