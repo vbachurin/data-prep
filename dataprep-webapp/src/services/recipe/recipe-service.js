@@ -43,10 +43,26 @@
          * @name getRecipe
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @description Return recipe step list
-         * @returns {object[]} - the GET call promise
+         * @returns {object[]} - The recipe step list
          */
         this.getRecipe = function() {
             return recipe;
+        };
+
+        /**
+         * @ngdoc method
+         * @name getStep
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {number} index The wanted index
+         * @param {boolean} defaultLast Return the last step if no step is identified by the index
+         * @description Return a recipe step identified by index
+         * @returns {object} The recipe step
+         */
+        this.getStep = function(index, defaultLast) {
+            if(index >= recipe.length || index < 0) {
+                return defaultLast ? recipe[recipe.length - 1] : null;
+            }
+            return recipe[index];
         };
 
         /**
@@ -70,6 +86,17 @@
          */
         this.getActiveThresholdStep = function() {
             return activeThresholdStep;
+        };
+
+        /**
+         * @ngdoc method
+         * @name getActiveThresholdStepIndex
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get the last active step index
+         * @returns {number} The last active step index
+         */
+        this.getActiveThresholdStepIndex = function() {
+            return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : -1;
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -208,7 +235,7 @@
          * @description Refresh recipe items with current preparation steps
          */
         this.refresh = function() {
-            PreparationService.getDetails()
+            return PreparationService.getDetails()
                 .then(function(resp) {
                     //steps ids are in reverse order and the last is the 'no-transformation' id
                     var steps = resp.data.steps.slice(0);

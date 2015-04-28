@@ -105,7 +105,7 @@
 
         /**
          * @ngdoc method
-         * @name append
+         * @name appendStep
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {string} datasetId - the dataset id for creation
          * @param {string} action - the action to append
@@ -113,7 +113,7 @@
          * @description Append a new transformation in the current preparation. If the preparation does not exists yet, it is created
          * @returns {promise} - the POST promise
          */
-        this.append = function(datasetId, action, parameters) {
+        this.appendStep = function(datasetId, action, parameters) {
             var appendOperation = function() {
                 var actionParam = adaptTransformAction(action, parameters);
                 var request = {
@@ -132,6 +132,30 @@
                 return self.create(datasetId, 'New preparation').then(appendOperation);
             }
             return appendOperation();
+        };
+
+        /**
+         * @ngdoc method
+         * @name updateStep
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {string} stepId The step to update
+         * @param {string} action The action name
+         * @param {object} parameters The new action parameters
+         * @description Update a step with new parameters
+         * @returns {promise} - the PUT promise
+         */
+        this.updateStep = function(stepId, action, parameters) {
+            var actionParam = adaptTransformAction(action, parameters);
+            var request = {
+                method: 'PUT',
+                url: RestURLs.preparationUrl + '/' + self.currentPreparation + '/actions/' + stepId,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: actionParam
+            };
+
+            return $http(request);
         };
 
         /**

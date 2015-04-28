@@ -18,7 +18,7 @@
 
         <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>
-                <transform-params transformation="step.transformation"></transform-params>
+                <transform-params transformation="step.transformation" on-submit="recipeCtrl.stepUpdateClosure(step)(params)"></transform-params>
             </li>
         </ul>
     </li>

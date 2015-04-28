@@ -7,8 +7,9 @@
      * @description Recipe controller.
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.preparation.service:PreparationService
      */
-    function RecipeCtrl(RecipeService, PlaygroundService, DatasetPreviewService) {
+    function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, DatasetPreviewService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -88,6 +89,51 @@
                 element.highlight = false;
             });
             DatasetPreviewService.cancelPreview();
+        };
+
+        /**
+         * @ngdoc method
+         * @name stepUpdateClosure
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {object} step The step to bind the closure
+         * @description Create a closure function that call the step update with the provided step id
+         * @returns {Function} The function closure binded with the provided step id
+         */
+        vm.stepUpdateClosure = function(step) {
+            return function(newParams) {
+                vm.updateStep(step, newParams);
+            };
+        };
+
+        /**
+         * @ngdoc method
+         * @name updateStep
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {string} stepId The step id to update
+         * @param {object} newParams the new step parameters
+         * @description Update a step parameters in the loaded preparation
+         */
+        vm.updateStep = function(step, newParams) {
+            newParams = newParams || {};
+            /*jshint camelcase: false */
+            newParams.column_name = step.column.id;
+
+            //Parameters has not changed
+            if(JSON.stringify(newParams) === JSON.stringify(step.actionParameters.parameters)) {
+                return;
+            }
+
+            $rootScope.$emit('talend.loading.start');
+            var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
+            PreparationService.updateStep(step.transformation.stepId, step.transformation.name, newParams)
+                .then(RecipeService.refresh)
+                .then(function() {
+                    var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
+                    PlaygroundService.loadStep(activeStep);
+                })
+                .finally(function () {
+                    $rootScope.$emit('talend.loading.stop');
+                });
         };
     }
 
