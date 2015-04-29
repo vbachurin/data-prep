@@ -1,13 +1,13 @@
 package org.talend.dataprep.schema;
 
-import java.io.ByteArrayInputStream;
 import java.util.Collections;
+import java.util.Map;
 
 class NoOpFormatGuess implements FormatGuess {
 
     @Override
     public String getMediaType() {
-        return "*/*";
+        return "*/*"; //$NON-NLS-1$
     }
 
     @Override
@@ -16,12 +16,18 @@ class NoOpFormatGuess implements FormatGuess {
     }
 
     @Override
-    public SchemaParser getSchemaParser() {
-        return content -> Collections.emptyList();
+    public Map<String, String> getParameters() {
+        return Collections.emptyMap();
     }
 
     @Override
-    public Serializer getSerializer() {
-        return (rawContent, metadata) -> new ByteArrayInputStream(new byte[0]);
+    public String getParserService() {
+        return "parser#any"; //$NON-NLS-1$
     }
+
+    @Override
+    public String getSerializerService() {
+        return "serializer#any"; //$NON-NLS-1$
+    }
+
 }

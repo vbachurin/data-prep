@@ -4,10 +4,18 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetMessages;
@@ -15,13 +23,21 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.Serializer;
 
+@Configuration
+@ConditionalOnExpression()
+@ConditionalOnProperty(name = "dataset.content.store", havingValue = "local", matchIfMissing = false)
 public class LocalDataSetContentStore implements DataSetContentStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSetContentStore.class);
 
-    private final String storeLocation;
+    @Autowired
+    private ApplicationContext context;
 
-    public LocalDataSetContentStore(String storeLocation) {
+    @Value("${dataset.content.store.local.location}")
+    private String storeLocation;
+
+    @PostConstruct
+    public void init() {
         if (storeLocation == null) {
             throw new IllegalArgumentException("Store location cannot be null.");
         }
@@ -29,7 +45,6 @@ public class LocalDataSetContentStore implements DataSetContentStore {
             storeLocation += "/"; //$NON-NLS-1$
         }
         LOGGER.info("Content store location: {}", storeLocation);
-        this.storeLocation = storeLocation;
     }
 
     private File getFile(DataSetMetadata dataSetMetadata) {
@@ -56,7 +71,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     @Override
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
-        Serializer serializer = content.getContentType().getSerializer();
+        Serializer serializer = context.getBean(content.getContentType().getSerializerService(), Serializer.class);
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
     }
 

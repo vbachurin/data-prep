@@ -10,6 +10,7 @@ import javax.jms.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,9 @@ import org.talend.dataprep.schema.SchemaParser;
 public class FormatAnalysis {
 
     private static final Logger LOG = LoggerFactory.getLogger(FormatAnalysis.class);
+
+    @Autowired
+    ApplicationContext context;
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -76,8 +80,8 @@ public class FormatAnalysis {
                     dataSetContent.setContentTypeCandidates(orderedGuess); // Remember format guesses
                     // Parse column name information
                     try (InputStream content = store.getAsRaw(metadata)) {
-                        SchemaParser parser = bestGuess.getSchemaParser();
-                        metadata.getRow().setColumns(parser.parse(content));
+                        SchemaParser parser = (SchemaParser) context.getBean(bestGuess.getParserService());
+                        metadata.getRow().setColumns(parser.parse(content, metadata));
                     } catch (IOException e) {
                         throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);
                     }

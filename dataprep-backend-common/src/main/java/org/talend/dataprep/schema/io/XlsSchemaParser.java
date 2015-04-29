@@ -1,15 +1,8 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,18 +11,22 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.schema.SchemaParser;
 
 /**
  * This class is responsible to parse excel file (note poi is used for reading .xls)
  */
+@Service("parser#xls")
 public class XlsSchemaParser implements SchemaParser {
 
-    private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsSchemaParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XlsSchemaParser.class);
 
     @Override
-    public List<ColumnMetadata> parse(InputStream content) {
+    public List<ColumnMetadata> parse(InputStream content, DataSetMetadata metadata) {
 
         // FIXME ATM only first sheet but need to be discuss
         // maybe return List<List<ColumnMetadata>> ??

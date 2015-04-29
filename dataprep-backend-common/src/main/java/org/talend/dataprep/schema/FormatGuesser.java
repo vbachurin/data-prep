@@ -16,6 +16,6 @@ public interface FormatGuesser {
      * (see {@link FormatGuess#getConfidence()}.
      */
     default FormatGuess guess(InputStream stream) {
-        return null;
+        return new NoOpFormatGuess();
     }
 }

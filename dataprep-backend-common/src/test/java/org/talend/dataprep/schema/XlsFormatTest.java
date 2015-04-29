@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.schema.io.XlsSchemaParser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -69,7 +70,7 @@ public class XlsFormatTest {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = getParser(formatGuess).parse(inputStream, null);
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
 
@@ -91,6 +92,15 @@ public class XlsFormatTest {
 
     }
 
+    private SchemaParser getParser(FormatGuess formatGuess) {
+        return (SchemaParser) applicationContext.getBean(formatGuess.getParserService());
+    }
+
+    private Serializer getSerializer(FormatGuess formatGuess) {
+        return (Serializer) applicationContext.getBean(formatGuess.getSerializerService());
+    }
+
+
     @Test
     public void read_xls_file_then_serialize() throws Exception {
 
@@ -108,7 +118,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = getParser(formatGuess).parse(inputStream, null);
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
 
@@ -116,7 +126,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
+            InputStream jsonStream = getSerializer(formatGuess).serialize(inputStream, dataSetMetadata);
 
             String json = IOUtils.toString(jsonStream);
 
@@ -184,7 +194,7 @@ public class XlsFormatTest {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = getParser(formatGuess).parse(inputStream, null);
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
 
@@ -203,7 +213,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
+            InputStream jsonStream = getSerializer(formatGuess).serialize(inputStream, dataSetMetadata);
 
             String json = IOUtils.toString(jsonStream);
 
@@ -239,7 +249,7 @@ public class XlsFormatTest {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream);
+            List<ColumnMetadata> columnMetadatas = getParser(formatGuess).parse(inputStream, null);
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
 
@@ -255,7 +265,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
+            InputStream jsonStream = getSerializer(formatGuess).serialize(inputStream, dataSetMetadata);
 
             String json = IOUtils.toString(jsonStream);
 
@@ -313,7 +323,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            InputStream jsonStream = formatGuess.getSerializer().serialize(inputStream, dataSetMetadata);
+            InputStream jsonStream = getSerializer(formatGuess).serialize(inputStream, dataSetMetadata);
 
             String json = IOUtils.toString(jsonStream);
 
