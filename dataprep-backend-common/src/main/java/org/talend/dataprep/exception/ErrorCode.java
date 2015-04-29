@@ -5,6 +5,13 @@ package org.talend.dataprep.exception;
  */
 public interface ErrorCode {
 
+    /** Internal server error. */
+    int SC_500 =500;
+
+    /** Bad request. */
+    int SC_400 =400;
+
+
     /**
      * @return the product used for the error message... TDP ?
      */

@@ -29,7 +29,7 @@ public class TDPExceptionTest {
         TDPException exception = new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, new NullPointerException("root cause"),
                 context);
 
-        String expected = "{\"code\":\"TDP_ALL_UNEXPECTED_EXCEPTION\",\"message\":\"UNEXPECTED_EXCEPTION\",\"cause\":\"root cause\":{\"key 3\":[true,false,true],\"key 2\":123,\"key 1\":\"Value 1\"}}";
+        String expected = "{\"code\":\"TDP_ALL_UNEXPECTED_EXCEPTION\",\"message\":\"UNEXPECTED_EXCEPTION\",\"cause\":\"root cause\",\"key 3\":\"[true, false, true]\",\"key 2\":\"123\",\"key 1\":\"Value 1\"}";
 
         StringWriter writer = new StringWriter();
         exception.writeTo(writer);

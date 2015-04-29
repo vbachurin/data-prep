@@ -122,8 +122,11 @@ public class TDPException extends RuntimeException {
                 if (cause != null) {
                     generator.writeStringField("cause", cause.getMessage()); //$NON-NLS-1$
                 }
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.writeValue(generator, context);
+                if (context.isEmpty() == false) {
+                    for (Map.Entry<String, Object> entry : context.entrySet()) {
+                        generator.writeStringField(entry.getKey(), entry.getValue().toString());
+                    }
+                }
             }
             generator.writeEndObject();
             generator.flush();
