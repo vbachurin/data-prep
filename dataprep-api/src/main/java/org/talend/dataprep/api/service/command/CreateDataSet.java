@@ -12,11 +12,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
 
 import com.netflix.hystrix.HystrixCommand;
+import org.talend.dataprep.exception.TDPException;
 
 @Component
 @Scope("request")
@@ -55,6 +55,6 @@ public class CreateDataSet extends HystrixCommand<String> {
         } finally {
             contentCreation.releaseConnection();
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_CREATE_DATASET);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET, null);
     }
 }

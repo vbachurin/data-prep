@@ -12,9 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -59,7 +59,7 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 // Data set exists, but content isn't yet analyzed, retry request
                 retryCount++;
                 if (retryCount > MAX_RETRY) {
-                    throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
                 }
                 // Pause before retry
                 final int pauseTime = 100 * retryCount;
@@ -67,13 +67,13 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 try {
                     Thread.sleep(pauseTime);
                 } catch (InterruptedException e) {
-                    throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e);
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e);
                 }
                 return handleResponse(client.execute(contentRetrieval));
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, null);
     }
 }

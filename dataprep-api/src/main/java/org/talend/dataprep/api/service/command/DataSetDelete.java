@@ -1,7 +1,9 @@
 package org.talend.dataprep.api.service.command;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,10 +15,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,7 +82,11 @@ public class DataSetDelete extends HystrixCommand<Void> {
         // if the dataset is used by preparation(s), the deletion is forbidden
         if (preparations.size() > 0) {
             LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId, preparations.size());
-            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, dataSetId, preparations);
+            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+            Map<String, Object> context = new HashMap<>();
+            context.put("dataSetId", dataSetId);
+            context.put("preparations", preparations);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, null, context);
         }
 
         return doDeleteDataSet();
@@ -114,7 +120,10 @@ public class DataSetDelete extends HystrixCommand<Void> {
         if (statusCode >= 200) {
             return null;
         }
-        throw Exceptions.Internal(APIMessages.UNABLE_TO_DELETE_DATASET, dataSetId);
+        //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+        Map<String, Object> context = new HashMap<>();
+        context.put("dataSetId", dataSetId);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, null, context);
     }
 
 }

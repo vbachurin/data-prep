@@ -2,6 +2,8 @@ package org.talend.dataprep.api.service;
 
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -13,10 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.DataSetGet;
 import org.talend.dataprep.api.service.command.Transform;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
@@ -48,7 +50,10 @@ public class TransformAPI extends APIService {
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
         } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_TRANSFORM_DATASET, dataSetId, e);
+            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+            Map<String, Object> context = new HashMap<>();
+            context.put("dataSetId", dataSetId);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, context);
         }
         LOG.debug("Transformation of dataset id #{} done.",dataSetId);
     }

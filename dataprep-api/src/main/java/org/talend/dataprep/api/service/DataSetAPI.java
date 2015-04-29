@@ -2,6 +2,8 @@ package org.talend.dataprep.api.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -10,10 +12,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.*;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -79,7 +81,10 @@ public class DataSetAPI extends APIService {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT, id, e);
+            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+            Map<String, Object> context = new HashMap<>();
+            context.put("id", id);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, context);
         }
     }
 
@@ -100,7 +105,7 @@ public class DataSetAPI extends APIService {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS, e);
         }
     }
 
@@ -120,7 +125,7 @@ public class DataSetAPI extends APIService {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, e);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, e);
         }
     }
 
@@ -144,7 +149,11 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, columnName, dataSetId, e);
+            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+            Map<String, Object> context = new HashMap<>();
+            context.put("columnName", columnName);
+            context.put("dataSetId", dataSetId);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e, context);
         }
     }
 
@@ -167,7 +176,10 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, dataSetId, e);
+            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+            Map<String, Object> context = new HashMap<>();
+            context.put("dataSetId", dataSetId);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e, context);
         }
     }
 

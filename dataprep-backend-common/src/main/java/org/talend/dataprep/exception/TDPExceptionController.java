@@ -12,22 +12,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class TDPExceptionController {
 
-    @ExceptionHandler(InternalException.class)
-    public @ResponseBody String handleInternalError(HttpServletResponse response, InternalException e) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(TDPException.class)
+    public @ResponseBody String handleInternalError(HttpServletResponse response, TDPException e) {
+        response.setStatus(e.getCode().getHttpStatus());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         final StringWriter message = new StringWriter();
         e.writeTo(message);
         return message.toString();
     }
 
-    @ExceptionHandler(UserException.class)
-    public @ResponseBody String handleUserError(HttpServletResponse response, UserException e) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        final StringWriter message = new StringWriter();
-        e.writeTo(message);
-        return message.toString();
-    }
 
 }

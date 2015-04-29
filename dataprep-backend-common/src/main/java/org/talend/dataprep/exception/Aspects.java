@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Collections;
+
 @Configuration
 @Aspect
 class Aspects {
@@ -21,8 +23,8 @@ class Aspects {
         } catch (TDPException e) {
             throw e; // Let TDPException pass through (to be processed in correct HTTP code by controller advice).
         } catch (Exception e) {
-            LOG.error("Exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
-            throw Exceptions.Internal(CommonMessages.UNEXPECTED_EXCEPTION, e);
+            LOG.error("Unexpected exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 

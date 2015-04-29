@@ -5,8 +5,8 @@ import java.util.function.Consumer;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.exception.Exceptions;
-import org.talend.dataprep.transformation.exception.TransformationMessages;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -60,7 +60,7 @@ public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
                 }
             }
         } catch (IOException e) {
-            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 }

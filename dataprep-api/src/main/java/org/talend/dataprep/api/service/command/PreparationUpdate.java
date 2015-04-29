@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.service.command;
 
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -12,10 +14,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -58,7 +60,10 @@ public class PreparationUpdate extends HystrixCommand<String> {
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }
-            throw Exceptions.User(APIMessages.UNABLE_TO_UPDATE_PREPARATION, id);
+            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+            Map<String, Object> context = new HashMap<>();
+            context.put("id", id);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_PREPARATION, null, context);
         } finally {
             preparationCreation.releaseConnection();
         }

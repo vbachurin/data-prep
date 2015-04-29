@@ -7,11 +7,11 @@ import java.util.*;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.schema.FormatGuess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.schema.FormatGuess;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -68,7 +68,7 @@ public class DataSetMetadata {
             }
             return mapper.reader(DataSetMetadata.class).readValue(jsonString);
         } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -122,7 +122,7 @@ public class DataSetMetadata {
             mapper.writer().writeValue(writer, this);
             writer.flush();
         } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 
