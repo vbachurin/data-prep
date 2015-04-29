@@ -27,10 +27,19 @@
         <repository>
             <id>spring-milestones</id>
             <url>http://repo.springsource.org/libs-milestone/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>snapshots</id>
             <url>http://newbuild.talend.com:8081/nexus/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
     <modules>
