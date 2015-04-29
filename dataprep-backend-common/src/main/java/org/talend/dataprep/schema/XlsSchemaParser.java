@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
@@ -45,7 +46,7 @@ public class XlsSchemaParser implements SchemaParser {
                     .build() //
                     : //
                     SchemaParserResult.Builder.parserResult() //
-                            .columnMetadatas(Collections.emptyList()) //
+                            .columnMetadatas(new ArrayList(schema.values())) //
                             .draft(true) //
                             .build();
         }
@@ -198,7 +199,14 @@ public class XlsSchemaParser implements SchemaParser {
         for (int rowCounter = firstRowNum; rowCounter <= lastRowNum; rowCounter++) {
 
             int cellCounter = 0;
-            Iterator<Cell> cellIterator = sheet.getRow(rowCounter).cellIterator();
+
+            Row row = sheet.getRow(rowCounter);
+
+            if (row == null) {
+                continue;
+            }
+
+            Iterator<Cell> cellIterator = row.cellIterator();
 
             Type currentType;
 

@@ -16,8 +16,11 @@
         <td rowspan="2" class="inventory-actions">
             <div class="inventory-actions-wrapper">
                 <table class="inventory-actions-table">
-                    <tbody>
-                    <tr>
+                    <tbody ng-switch="dataset.draft">
+                    <tr ng-switch-when="true">
+                        draft
+                    </tr>
+                    <tr ng-switch-when="false">
                         <td ng-switch="!!dataset.defaultPreparationId">
                             <a ng-switch-when="false" class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets({datasetid: dataset.id})"></a>
                             <a ng-switch-when="true" class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.preparations({prepid: dataset.defaultPreparationId})"></a>

@@ -14,9 +14,9 @@ import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.exception.CommonMessages;
 import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.schema.FormatGuess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.schema.FormatGuess;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -50,7 +50,7 @@ public class DataSetMetadata {
     /**
      * if <code>true</code> this dataset is still a draft as we need more informations from the user
      */
-    private boolean draft;
+    private boolean draft = true;
 
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;
@@ -108,6 +108,10 @@ public class DataSetMetadata {
 
     public int getSheetNumber() {
         return sheetNumber;
+    }
+
+    public void setSheetNumber(int sheetNumber) {
+        this.sheetNumber = sheetNumber;
     }
 
     public Date getCreationDate() {
@@ -169,7 +173,7 @@ public class DataSetMetadata {
 
         private int sheetNumber;
 
-        private boolean draft;
+        private boolean draft = true;
 
         private FormatGuess contentType;
 
@@ -237,8 +241,7 @@ public class DataSetMetadata {
             return this;
         }
 
-        public Builder draft(boolean draft)
-        {
+        public Builder draft(boolean draft) {
             this.draft = draft;
             return this;
         }
@@ -270,7 +273,7 @@ public class DataSetMetadata {
             content.setNbRecords(size);
             content.setNbLinesInHeader(headerSize);
             content.setNbLinesInFooter(footerSize);
-            if(contentType != null) {
+            if (contentType != null) {
                 content.setContentType(contentType);
             }
             // Lifecycle information

@@ -48,9 +48,10 @@ public class SimpleDataSetMetadataJsonSerializer {
             generator.writeStringField("id", dataSetMetadata.getId()); //$NON-NLS-1
             generator.writeStringField("name", dataSetMetadata.getName()); //$NON-NLS-1
             generator.writeStringField("author", dataSetMetadata.getAuthor()); //$NON-NLS-1
-            generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
+            generator.writeNumberField( "records", dataSetMetadata.getContent().getNbRecords() ); //$NON-NLS-1
             generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
             generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
+            generator.writeBooleanField( "draft", dataSetMetadata.isDraft() ); //$NON-NLS-1
             if(dataSetMetadata.getContent().getContentType() != null) {
                 generator.writeStringField("type", dataSetMetadata.getContent().getContentType().getMediaType()); //$NON-NLS-1
             }
