@@ -18,7 +18,7 @@
                 <table class="inventory-actions-table">
                     <tbody ng-switch="dataset.draft">
                     <tr ng-switch-when="true">
-                        draft
+                        draft {{dataset.contentType}}
                     </tr>
                     <tr ng-switch-when="false">
                         <td ng-switch="!!dataset.defaultPreparationId">
