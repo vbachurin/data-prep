@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 import org.talend.dataprep.schema.io.CSVSchemaParser;
 import org.talend.dataprep.schema.io.CSVSerializer;
 
-@Service(CSVFormatGuess.BEAN_ID)
-public class CSVFormatGuess implements FormatGuess {
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
     public static final String SEPARATOR_PARAMETER = "SEPARATOR"; //$NON-NLS-1$
 

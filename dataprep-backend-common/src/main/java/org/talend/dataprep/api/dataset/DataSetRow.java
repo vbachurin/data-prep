@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.talend.dataprep.exception.CommonErrorCodes;
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import org.talend.dataprep.exception.TDPException;
 
 public class DataSetRow implements Cloneable {
     private final static String DIFF_KEY = "__tdpDiff";
@@ -148,7 +148,7 @@ public class DataSetRow implements Cloneable {
             jGenerator.flush();
 
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 

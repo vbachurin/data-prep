@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -61,7 +61,7 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
                     // Data set exists, but content isn't yet analyzed, retry request
                     retryCount++;
                     if (retryCount > MAX_RETRY) {
-                        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_METADATA);
+                        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA);
                     }
                     // Pause before retry
                     final int pauseTime = 100 * retryCount;
@@ -69,7 +69,7 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
                     try {
                         Thread.sleep(pauseTime);
                     } catch (InterruptedException e) {
-                        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_METADATA, e);
+                        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA, e);
                     }
                     return handleResponse(client.execute(metadataRetrieval));
                 } else if (statusCode == HttpStatus.SC_OK) {
@@ -77,7 +77,7 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
                     return mapper.reader(DataSetMetadata.class).readValue(response.getEntity().getContent());
                 }
             }
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_METADATA);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA);
         } finally {
             metadataRetrieval.releaseConnection();
         }

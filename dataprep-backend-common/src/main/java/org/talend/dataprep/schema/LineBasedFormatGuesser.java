@@ -13,8 +13,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {
@@ -80,7 +80,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                 }
             }
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_READ_CONTENT, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
         }
         return null;
     }

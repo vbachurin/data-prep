@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.talend.dataprep.exception.Exceptions;
-import org.talend.dataprep.transformation.exception.TransformationMessages;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -38,7 +38,7 @@ public interface TypeTransformer<T> {
             try {
                 generator.writeObject(obj);
             } catch (IOException e) {
-                throw Exceptions.Internal(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+                throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
             }
         });
         generator.writeEndArray();

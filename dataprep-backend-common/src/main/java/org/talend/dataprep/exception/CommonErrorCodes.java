@@ -1,6 +1,6 @@
 package org.talend.dataprep.exception;
 
-public enum CommonMessages implements Messages {
+public enum CommonErrorCodes implements ErrorCode {
     UNEXPECTED_EXCEPTION,
     UNABLE_TO_PARSE_JSON,
     UNABLE_TO_SERIALIZE_TO_JSON,
@@ -18,4 +18,7 @@ public enum CommonMessages implements Messages {
     public String getGroup() {
         return "ALL"; //$NON-NLS-1$
     }
+
+    @Override
+    public int getHttpStatus() {return 400;}
 }

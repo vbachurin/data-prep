@@ -5,14 +5,14 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.exception.Exceptions;
-import org.talend.dataprep.transformation.exception.TransformationMessages;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
+import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 /**
@@ -79,9 +79,9 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
             }
 
         } catch (JsonParseException e) {
-            throw Exceptions.Internal(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (IOException e) {
-            throw Exceptions.Internal(TransformationMessages.UNABLE_TO_WRITE_JSON, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_WRITE_JSON, e);
         }
     }
 

@@ -1,0 +1,36 @@
+package org.talend.dataprep.api;
+
+import org.talend.dataprep.exception.ErrorCode;
+
+public enum APIErrorCodes implements ErrorCode {
+    UNABLE_TO_DELETE_PREPARATION, //400
+    UNABLE_TO_CREATE_DATASET, //400
+    UNABLE_TO_CREATE_OR_UPDATE_DATASET, //400
+    UNABLE_TO_DELETE_DATASET, //400
+    UNABLE_TO_RETRIEVE_DATASET_CONTENT, //400
+    UNABLE_TO_RETRIEVE_DATASET_METADATA, //400
+    UNABLE_TO_LIST_DATASETS, //400
+    UNABLE_TO_ACTIONS_TO_PREPARATION, //400
+    UNABLE_TO_CREATE_PREPARATION, //500 or 400
+    UNABLE_TO_RETRIEVE_PREPARATION_LIST, //400
+    UNABLE_TO_RETRIEVE_PREPARATION_CONTENT, //400
+    UNABLE_TO_UPDATE_PREPARATION, //400
+    UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, //400
+    UNABLE_TO_FIND_COMMAND, //500
+    UNABLE_TO_GET_PREPARATION_DETAILS, //400
+    UNABLE_TO_TRANSFORM_DATASET, //400
+    UNABLE_TO_UPDATE_ACTION_IN_PREPARATION; //400
+
+    @Override
+    public String getProduct() {
+        return "TDP"; //$NON-NLS-1$
+    }
+
+    @Override
+    public String getGroup() {
+        return "API"; //$NON-NLS-1$
+    }
+
+    @Override
+    public int getHttpStatus() {return 400;}
+}

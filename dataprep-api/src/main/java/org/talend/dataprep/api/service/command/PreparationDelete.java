@@ -5,9 +5,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -37,7 +37,7 @@ public class PreparationDelete extends HystrixCommand<String> {
             if (statusCode >= 200) {
                 return null;
             }
-            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_PREPARATION);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_PREPARATION);
         } finally {
             deletePreparation.releaseConnection();
         }

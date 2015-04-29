@@ -14,14 +14,14 @@ import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.DiffTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
-import org.talend.dataprep.transformation.exception.TransformationMessages;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
@@ -82,7 +82,7 @@ public class TransformationService {
                         .get();
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
-            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -125,7 +125,7 @@ public class TransformationService {
                 return Collections.emptyList();
             }
         } catch (IOException e) {
-            throw Exceptions.User(TransformationMessages.UNABLE_TO_COMPUTE_DATASET_ACTIONS, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_COMPUTE_DATASET_ACTIONS, e);
         }
     }
 

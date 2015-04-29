@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.service.command;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -10,9 +12,9 @@ import org.apache.http.message.BasicHeader;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -47,7 +49,10 @@ public class PreparationAddAction extends HystrixCommand<Void> {
             if (statusCode >= 200) {
                 return null;
             }
-            throw Exceptions.User(APIMessages.UNABLE_TO_ACTIONS_TO_PREPARATION, id);
+            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+            Map<String, Object> context = new HashMap<>();
+            context.put("id", id);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_ACTIONS_TO_PREPARATION, null, context);
         } finally {
             actionAppend.releaseConnection();
         }

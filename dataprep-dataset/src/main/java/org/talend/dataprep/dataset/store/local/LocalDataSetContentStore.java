@@ -3,6 +3,8 @@ package org.talend.dataprep.dataset.store.local;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -18,8 +20,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.exception.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
@@ -65,7 +68,10 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
             }
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_STORE_DATASET_CONTENT, dataSetMetadata.getId(), e);
+            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+            Map<String, Object> context = new HashMap<>();
+            context.put("id", dataSetMetadata.getId());
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, context);
         }
     }
 
@@ -90,7 +96,10 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw Exceptions.Internal(DataSetMessages.UNABLE_TO_DELETE_DATASET, dataSetMetadata.getId());
+                //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
+                Map<String, Object> context = new HashMap<>();
+                context.put("id", dataSetMetadata.getId());
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, null, context);
             }
         } else {
             LOGGER.warn("Data set #{} has no content.", dataSetMetadata.getId());
@@ -126,7 +135,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 }
             });
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_CLEAR_DATASETS, e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CLEAR_DATASETS, e);
         }
     }
 }

@@ -24,10 +24,10 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
-import org.talend.dataprep.dataset.exception.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
@@ -112,7 +112,7 @@ public class DataSetService {
             generator.writeEndArray();
             generator.flush();
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
@@ -182,7 +182,7 @@ public class DataSetService {
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
@@ -269,7 +269,7 @@ public class DataSetService {
             builder.build().writer().writeValue(generator, metadata);
             generator.flush();
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
