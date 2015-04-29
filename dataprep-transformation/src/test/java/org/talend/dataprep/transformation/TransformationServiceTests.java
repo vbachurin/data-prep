@@ -96,8 +96,7 @@ public class TransformationServiceTests {
 
     @Test
     public void testInvalidJSONInput() throws Exception {
-        given().contentType(ContentType.JSON).body("invalid content on purpose.").when().post("/transform").then()
-                .statusCode(400).content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
+        given().contentType(ContentType.JSON).body("invalid content on purpose.").when().post("/transform").then().statusCode(400).content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
     }
 
     @Test
