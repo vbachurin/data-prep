@@ -156,7 +156,7 @@ describe('Preparation list service controller', function() {
 
     it('should init preparations', inject(function($rootScope, PreparationListService) {
         //given
-        expect(PreparationListService.preparations.length).toBe(0);
+        expect(PreparationListService.preparations).toBeNull();
 
         //when
         PreparationListService.refreshPreparations();
@@ -170,7 +170,7 @@ describe('Preparation list service controller', function() {
 
     it('refresh preparation should set default preparation', inject(function($rootScope, PreparationListService) {
         //given
-        expect(PreparationListService.preparations.length).toBe(0);
+        expect(PreparationListService.preparations).toBeNull();
 
         //when
         PreparationListService.refreshPreparations();
@@ -185,7 +185,7 @@ describe('Preparation list service controller', function() {
 
     it('should refresh preparations if preparation list is empty', inject(function($rootScope, PreparationListService, PreparationService) {
         //given
-        expect(PreparationListService.preparations.length).toBe(0);
+        expect(PreparationListService.preparations).toBeNull();
 
         //when
         PreparationListService.getPreparationsPromise();

@@ -18,7 +18,7 @@
          * @propertyOf data-prep.services.preparation.service:PreparationListService
          * @description the preparations list
          */
-        self.preparations = [];
+        self.preparations = null;
 
         /**
          * @ngdoc method
@@ -87,11 +87,11 @@
          * @returns {Promise} - the process promise
          */
         self.getPreparationsPromise = function() {
-            if(self.preparations.length) {
-                return $q.when(self.preparations);
+            if(self.preparations === null) {
+                return self.refreshPreparations();
             }
             else {
-                return self.refreshPreparations();
+                return $q.when(self.preparations);
             }
         };
 

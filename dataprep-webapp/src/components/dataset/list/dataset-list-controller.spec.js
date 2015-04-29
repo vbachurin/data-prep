@@ -51,13 +51,18 @@ describe('Dataset list controller', function () {
         expect(ctrl.datasets).toBe(datasets);
     }));
 
-    it('should refresh preparations to set default preparation on creation', inject(function (PreparationListService) {
-        //when
+    it('should refresh preparations to set default preparation when dataset list changed', inject(function (PreparationListService, DatasetListService) {
+        //given
         createController();
+        scope.$digest();
+        expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
+
+        //when
+        DatasetListService.datasets = refreshedDatasets;
         scope.$digest();
 
         //then
-        expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
+        expect(PreparationListService.refreshPreparations.calls.count()).toEqual(2);
     }));
 
     it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService) {
