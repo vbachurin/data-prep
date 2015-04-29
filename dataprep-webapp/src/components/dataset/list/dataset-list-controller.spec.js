@@ -53,7 +53,7 @@ describe('Dataset list controller', function () {
 
     it('should refresh preparations to set default preparation on creation', inject(function (PreparationListService) {
         //when
-        var ctrl = createController();
+        createController();
         scope.$digest();
 
         //then
