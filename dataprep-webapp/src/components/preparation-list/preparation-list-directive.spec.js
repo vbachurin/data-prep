@@ -126,6 +126,7 @@ describe('Preparation list directive', function() {
 
         spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
         spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(allDatasets));
+        spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(allDatasets));
     }));
 
     afterEach(function() {

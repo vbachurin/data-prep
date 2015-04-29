@@ -18,7 +18,7 @@
          * @propertyOf data-prep.services.preparation.service:PreparationListService
          * @description the preparations list
          */
-        self.preparations = [];
+        self.preparations = null;
 
         /**
          * @ngdoc method
@@ -39,6 +39,28 @@
 
         /**
          * @ngdoc method
+         * @name setDefaultPreparation
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @param {object[]} AllPreparations - the preparations to use
+         * @param {object[]} datasets - the datasets to update
+         * @description [PRIVATE] Set the default preparation for the given dataset if any
+         */
+        var setDefaultPreparation = function(AllPreparations, datasets) {
+
+            // group preparation per dataset
+            var datasetPreps = _.groupBy(AllPreparations, function(preparation){
+                return preparation.dataSetId;
+            });
+
+            // reset default preparation for all datasets
+            _.forEach(datasets, function(dataset){
+                var preparations = datasetPreps[dataset.id];
+                dataset.defaultPreparation = preparations && preparations.length === 1 ?  preparations[0] : null;
+            });
+        };
+
+        /**
+         * @ngdoc method
          * @name refreshPreparations
          * @methodOf data-prep.services.preparation.service:PreparationListService
          * @description Refresh the preparations list
@@ -50,6 +72,7 @@
                     var preparationResult = results[0];
                     var datasets = results[1];
                     adaptMetadataInfos(preparationResult.data, datasets);
+                    setDefaultPreparation(preparationResult.data, datasets);
                     self.preparations = preparationResult.data;
 
                     return self.preparations;
@@ -64,26 +87,14 @@
          * @returns {Promise} - the process promise
          */
         self.getPreparationsPromise = function() {
-            if(self.preparations.length) {
-                return $q.when(self.preparations);
+            if(self.preparations === null) {
+                return self.refreshPreparations();
             }
             else {
-                return self.refreshPreparations();
+                return $q.when(self.preparations);
             }
         };
 
-        /**
-         * @ngdoc method
-         * @name getDatasetPreparations
-         * @methodOf data-prep.services.preparation.service:PreparationListService
-         * @description Return all the preparation(s) for the given dataset
-         * @returns {Object[]} - the preparation list for the given dataset
-         */
-        self.getDatasetPreparations = function(wanted) {
-            return _.filter(self.preparations, function(preparation) {
-                return preparation.dataset.id === wanted.id;
-            });
-        };
     }
 
     angular.module('data-prep.services.preparation')
