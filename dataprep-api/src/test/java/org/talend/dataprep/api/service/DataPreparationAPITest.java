@@ -104,35 +104,28 @@ public class DataPreparationAPITest {
 
     @Test
     public void testTransformOneAction() throws Exception {
-<<<<<<< HEAD
-        String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
-=======
 
         // TODO temp log to see what's going in newbuild
         LOG.error("testTransformOneAction start");
 
->>>>>>> 94e0fca... TDP-107|temp commit to analyze ko unit test on newbuild
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test2.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
 
         assertNotNull(dataSetId);
         assertFalse(dataSetId.equals(StringUtils.EMPTY));
-<<<<<<< HEAD
-        InputStream expectedContentStream = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(expectedContentStream, writer);
-        String expectedContent = writer.toString();
-=======
 
         // TODO temp log to see what's going in newbuild
         LOG.error("dataset id created id " + dataSetId);
 
         InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
         String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
->>>>>>> 94e0fca... TDP-107|temp commit to analyze ko unit test on newbuild
         String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
                 .asString();
-        assertEquals(expectedContent, transformed);
+
+        // TODO temp log to see what's going in newbuild
+        LOG.error("transformed is " + transformed);
+
+        assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 
     @Test
