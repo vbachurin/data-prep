@@ -10,9 +10,8 @@ import java.util.List;
  * Preparation error codes.
  */
 public enum PreparationErrorCodes implements ErrorCode {
-    PREPARATION_DOES_NOT_EXIST(SC_400, "id"), // TODO should be 404 ?
-    UNABLE_TO_SERVE_PREPARATION_CONTENT(SC_400, "id", "version"); //400
-
+    PREPARATION_DOES_NOT_EXIST(400, "id"), // TODO should be 404 ?
+    UNABLE_TO_SERVE_PREPARATION_CONTENT(400, "id", "version"); // 400
 
     /** The http status to use. */
     private int httpStatus;
@@ -22,10 +21,11 @@ public enum PreparationErrorCodes implements ErrorCode {
 
     /**
      * default constructor.
+     * 
      * @param httpStatus the http status to use.
      */
     PreparationErrorCodes(int httpStatus) {
-        this.httpStatus= httpStatus;
+        this.httpStatus = httpStatus;
         this.expectedContextEntries = Collections.emptyList();
     }
 

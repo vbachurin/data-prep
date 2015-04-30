@@ -98,12 +98,14 @@ public class DataPreparationAPITest {
 
     @Test
     public void testTransformOneAction() throws Exception {
-        String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
+
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test2.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
         assertNotNull(dataSetId);
         assertFalse(dataSetId.equals(StringUtils.EMPTY));
+
         InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
+        String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
         String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
                 .asString();
         assertThat(transformed, sameJSONAsFile(expectedContent));
