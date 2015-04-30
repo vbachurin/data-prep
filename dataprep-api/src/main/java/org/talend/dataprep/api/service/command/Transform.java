@@ -5,6 +5,8 @@ import java.io.InputStream;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,9 @@ import com.netflix.hystrix.HystrixCommand;
 @Component
 @Scope("request")
 public class Transform extends ChainedCommand<InputStream, InputStream> {
+
+    /** This class' logger. */
+    private static final Logger LOG = LoggerFactory.getLogger(Transform.class);
 
     private final String transformServiceUrl;
 
@@ -29,9 +34,19 @@ public class Transform extends ChainedCommand<InputStream, InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
+
         String uri = transformServiceUrl + "/transform/?actions=" + actions; //$NON-NLS-1$
+
+        // TODO temp log to see what's going in newbuild
+        LOG.error("post on " + uri);
+
+        InputStreamEntity datasetContent = new InputStreamEntity(getInput());
+
+        // TODO temp log to see what's going in newbuild
+        LOG.error("dataset retrieved...");
+
         HttpPost transformationCall = new HttpPost(uri);
-        transformationCall.setEntity(new InputStreamEntity(getInput()));
+        transformationCall.setEntity(datasetContent);
         return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(),
                 transformationCall::releaseConnection);
     }
