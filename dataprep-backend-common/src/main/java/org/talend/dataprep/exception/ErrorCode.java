@@ -7,24 +7,15 @@ import java.util.List;
  */
 public interface ErrorCode {
 
-    /** Internal server error. */
-    int SC_500 =500;
-
-    /** Bad request. */
-    int SC_400 =400;
-
-
     /**
-     * @return the product used for the error message... TDP ?
+     * @return the product used for the error message... Hum... TDP ? ;-)
      */
     String getProduct();
-
 
     /**
      * @return the group this message belongs to (API, DATASET, PREPARATION...)
      */
     String getGroup();
-
 
     /**
      * @return the http status to return.
@@ -42,6 +33,5 @@ public interface ErrorCode {
     default String getCode() {
         return this.toString();
     }
-
 
 }

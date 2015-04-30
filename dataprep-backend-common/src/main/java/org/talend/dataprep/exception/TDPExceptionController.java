@@ -30,7 +30,7 @@ public class TDPExceptionController {
     @ExceptionHandler(TDPException.class)
     public @ResponseBody String handleError(HttpServletResponse response, TDPException e) {
 
-        LOGGER.error("An error occured", e);
+        LOGGER.error("An error occurred", e);
 
         response.setStatus(e.getCode().getHttpStatus());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

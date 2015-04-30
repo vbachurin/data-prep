@@ -5,26 +5,28 @@ import java.util.Collections;
 import java.util.List;
 
 public enum CommonErrorCodes implements ErrorCode {
-    UNEXPECTED_EXCEPTION(SC_500),
-    UNABLE_TO_PARSE_JSON(SC_500),
-    UNABLE_TO_SERIALIZE_TO_JSON(SC_500),
-    UNABLE_TO_COMPUTE_ID(SC_500),
-    UNABLE_TO_PRINT_PREPARATION(SC_500),
-    UNABLE_TO_READ_CONTENT(SC_500),
-    UNABLE_TO_PARSE_ACTIONS(SC_500),
-    UNABLE_TO_PARSE_REQUEST(SC_400);        // e.g IllegalArgumentException
+    UNEXPECTED_EXCEPTION(500),
+    UNABLE_TO_PARSE_JSON(500),
+    UNABLE_TO_SERIALIZE_TO_JSON(500),
+    UNABLE_TO_COMPUTE_ID(500),
+    UNABLE_TO_PRINT_PREPARATION(500),
+    UNABLE_TO_READ_CONTENT(500),
+    UNABLE_TO_PARSE_ACTIONS(500),
+    UNABLE_TO_PARSE_REQUEST(400); // e.g IllegalArgumentException
 
     /** The http status to use. */
     private int httpStatus;
+
     /** Expected entries to be in the context. */
     private List<String> expectedContextEntries;
 
     /**
      * default constructor.
+     * 
      * @param httpStatus the http status to use.
      */
     CommonErrorCodes(int httpStatus) {
-        this.httpStatus= httpStatus;
+        this.httpStatus = httpStatus;
         this.expectedContextEntries = Collections.emptyList();
     }
 
@@ -35,7 +37,7 @@ public enum CommonErrorCodes implements ErrorCode {
      * @param contextEntries expected context entries.
      */
     CommonErrorCodes(int httpStatus, String... contextEntries) {
-        this.httpStatus= httpStatus;
+        this.httpStatus = httpStatus;
         this.expectedContextEntries = Arrays.asList(contextEntries);
     }
 

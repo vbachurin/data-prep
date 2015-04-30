@@ -80,7 +80,7 @@ public class DataSetAPI extends APIService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }

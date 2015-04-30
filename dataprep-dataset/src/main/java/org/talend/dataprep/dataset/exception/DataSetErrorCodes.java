@@ -10,15 +10,14 @@ import java.util.List;
  * Dataset error codes.
  */
 public enum DataSetErrorCodes implements ErrorCode {
-    UNEXPECTED_IO_EXCEPTION(SC_500),
-    UNABLE_TO_READ_DATASET_CONTENT(SC_500),
-    UNEXPECTED_JMS_EXCEPTION(SC_500),
-    UNABLE_TO_CLEAR_DATASETS(SC_500),
-    UNABLE_TO_DELETE_DATASET(SC_400, "dataSetId"),
-    UNABLE_TO_CONNECT_TO_HDFS(SC_500, "location"),
-    UNABLE_TO_STORE_DATASET_CONTENT(SC_500, "id"),
-    UNABLE_TO_ANALYZE_COLUMN_TYPES(SC_500);
-
+    UNEXPECTED_IO_EXCEPTION(500),
+    UNABLE_TO_READ_DATASET_CONTENT(500),
+    UNEXPECTED_JMS_EXCEPTION(500),
+    UNABLE_TO_CLEAR_DATASETS(500),
+    UNABLE_TO_DELETE_DATASET(400, "dataSetId"),
+    UNABLE_TO_CONNECT_TO_HDFS(500, "location"),
+    UNABLE_TO_STORE_DATASET_CONTENT(500, "id"),
+    UNABLE_TO_ANALYZE_COLUMN_TYPES(500);
 
     /** The http status to use. */
     private int httpStatus;
@@ -28,10 +27,11 @@ public enum DataSetErrorCodes implements ErrorCode {
 
     /**
      * default constructor.
+     * 
      * @param httpStatus the http status to use.
      */
     DataSetErrorCodes(int httpStatus) {
-        this.httpStatus= httpStatus;
+        this.httpStatus = httpStatus;
         this.expectedContextEntries = Collections.emptyList();
     }
 
@@ -42,7 +42,7 @@ public enum DataSetErrorCodes implements ErrorCode {
      * @param contextEntries expected context entries.
      */
     DataSetErrorCodes(int httpStatus, String... contextEntries) {
-        this.httpStatus= httpStatus;
+        this.httpStatus = httpStatus;
         this.expectedContextEntries = Arrays.asList(contextEntries);
     }
 
@@ -53,7 +53,6 @@ public enum DataSetErrorCodes implements ErrorCode {
     public String getProduct() {
         return "TDP"; //$NON-NLS-1$
     }
-
 
     /**
      * @return the group.
