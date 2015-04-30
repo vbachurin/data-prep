@@ -120,6 +120,10 @@ public class DataPreparationAPITest {
         String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
         String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
                 .asString();
+
+        // TODO temp log to see what's going in newbuild
+        LOG.error("transformed is " + transformed);
+
         assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 

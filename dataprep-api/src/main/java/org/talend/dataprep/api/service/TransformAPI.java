@@ -3,8 +3,6 @@ package org.talend.dataprep.api.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -20,12 +18,12 @@ import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.DataSetGet;
 import org.talend.dataprep.api.service.command.Transform;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import org.talend.dataprep.exception.TDPExceptionContext;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -38,15 +36,16 @@ public class TransformAPI extends APIService {
         if (dataSetId == null) {
             throw new IllegalArgumentException("Data set id cannot be null.");
         }
-        LOG.debug("Transforming dataset id #{} (pool: {})...",dataSetId,getConnectionManager().getTotalStats());
+        LOG.debug("Transforming dataset id #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         try {
             // Configure transformation flow
             String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
-            HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, contentServiceUrl, dataSetId, false, false);
-            HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, transformServiceUrl, contentRetrieval,
-                    encodedActions);
+            HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, contentServiceUrl, dataSetId,
+                    false, false);
+            HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, transformServiceUrl,
+                    contentRetrieval, encodedActions);
             // Perform transformation
             ServletOutputStream outputStream = response.getOutputStream();
 
@@ -65,9 +64,9 @@ public class TransformAPI extends APIService {
             LOG.error("completely done !!!");
 
         } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, TDPExceptionContext.build().put("dataSetId", dataSetId));
-        }
- catch (Throwable e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, TDPExceptionContext.build().put("dataSetId",
+                    dataSetId));
+        } catch (Throwable e) {
             LOG.error("error while PreparationAPITest " + e.getMessage(), e);
             throw e;
         }
