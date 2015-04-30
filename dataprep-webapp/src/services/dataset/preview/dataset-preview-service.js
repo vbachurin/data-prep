@@ -28,24 +28,58 @@
                 .value();
         };
 
+        var getDisplayedRowsTdpIds = function() {
+           return _.map(getDisplayedRows(), function(element) {
+               return element.tdpId;
+           });
+        };
+
+        var passfilters = function(row) {
+            return ! DatasetGridService.filters.length || DatasetGridService.getAllFiltersFn()(row);
+        };
+
+        var filterViableRecord = function(records) {
+            return _.filter(records, function(row) {
+                return row.__tdpRowDiff !== 'new' || passfilters(row);
+            });
+        };
+
+        var replaceRecords = function(recordsTdpId) {
+            return function(response) {
+                //save the original records
+                originalRecords = DatasetGridService.data.records;
+                modifiedRecords = originalRecords.slice(0);
+
+                //filter if necessary
+                var viableRecords = filterViableRecord(response.data.records);
+
+                //insert records at the tdp ids insertion points
+                _.forEach(recordsTdpId, function(tdpId) {
+                    modifiedRecords[tdpId] = viableRecords.shift();
+                });
+
+                //if all viable records are not already inserted, we insert them after the last targeted tdp id
+                var insertionIndex = recordsTdpId[recordsTdpId.length - 1] + 1;
+                while(viableRecords.length) {
+                    modifiedRecords[insertionIndex++] = viableRecords.shift();
+                }
+
+                //update grid
+                DatasetGridService.updateRecords(modifiedRecords);
+            };
+        };
+
         self.getPreviewAppendRecords = function(actions) {
             self.cancelPreview();
 
             previewCanceler = $q.defer();
             var records = getDisplayedRows();
+            var recordsTdpId = _.map(records, function(element) {
+                return element.tdpId;
+            });
 
             PreparationService.getPreviewAppend(records, actions, previewCanceler)
-                .then(function(response) {
-                    originalRecords = DatasetGridService.data.records;
-                    modifiedRecords = originalRecords.slice(0);
-
-                    _.forEach(records, function(originalElement, arrayIndex) {
-                        var tdpIndex = originalElement.tdpId;
-                        modifiedRecords[tdpIndex] = response.data.records[arrayIndex];
-                    });
-
-                    DatasetGridService.updateRecords(modifiedRecords);
-                })
+                .then(replaceRecords(recordsTdpId))
                 .finally(function() {
                     previewCanceler = null;
                 });
@@ -55,21 +89,10 @@
             self.cancelPreview();
 
             previewCanceler = $q.defer();
-            var recordsTdpId = _.map(getDisplayedRows(), function(element) {
-                return element.tdpId;
-            });
+            var recordsTdpId = getDisplayedRowsTdpIds();
 
             PreparationService.getPreviewDisable(currentStep, stepToDisable, recordsTdpId, previewCanceler)
-                .then(function(response) {
-                    originalRecords = DatasetGridService.data.records;
-                    modifiedRecords = originalRecords.slice(0);
-
-                    _.forEach(recordsTdpId, function(tdpId, arrayIndex) {
-                        modifiedRecords[tdpId] = response.data.records[arrayIndex];
-                    });
-
-                    DatasetGridService.updateRecords(modifiedRecords);
-                })
+                .then(replaceRecords(recordsTdpId))
                 .finally(function() {
                     previewCanceler = null;
                 });
@@ -79,21 +102,10 @@
             self.cancelPreview();
 
             previewCanceler = $q.defer();
-            var recordsTdpId = _.map(getDisplayedRows(), function(element) {
-                return element.tdpId;
-            });
+            var recordsTdpId = getDisplayedRowsTdpIds();
 
             PreparationService.getPreviewUpdate(step, newParams, lastActiveStep, recordsTdpId, previewCanceler)
-                .then(function(response) {
-                    originalRecords = DatasetGridService.data.records;
-                    modifiedRecords = originalRecords.slice(0);
-
-                    _.forEach(recordsTdpId, function(tdpId, arrayIndex) {
-                        modifiedRecords[tdpId] = response.data.records[arrayIndex];
-                    });
-
-                    DatasetGridService.updateRecords(modifiedRecords);
-                })
+                .then(replaceRecords(recordsTdpId))
                 .finally(function() {
                     previewCanceler = null;
                 });

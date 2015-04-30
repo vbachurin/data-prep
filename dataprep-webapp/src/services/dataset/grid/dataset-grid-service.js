@@ -237,6 +237,12 @@
             return true;
         }
 
+        self.getAllFiltersFn = function() {
+            return function(item) {
+                return filterFn(item, self);
+            };
+        };
+
         /**
          * @ngdoc method
          * @name updateDataViewFilters

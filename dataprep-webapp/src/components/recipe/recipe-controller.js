@@ -112,6 +112,8 @@
          * @description Update a step parameters in the loaded preparation
          */
         vm.updateStep = function(step, newParams) {
+            DatasetPreviewService.cancelPreview();
+
             newParams = newParams || {};
             /*jshint camelcase: false */
             newParams.column_name = step.column.id;
