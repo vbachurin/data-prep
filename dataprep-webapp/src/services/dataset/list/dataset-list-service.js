@@ -17,7 +17,7 @@
          * @propertyOf data-prep.services.dataset.service:DatasetListService
          * @description the dataset list
          */
-        self.datasets = [];
+        self.datasets = null;
 
         /**
          * @ngdoc method
@@ -82,11 +82,11 @@
          * @returns {promise} - the pending GET or resolved promise
          */
         self.getDatasetsPromise = function() {
-            if(self.datasets.length) {
-                return $q.when(self.datasets);
+            if(self.datasets === null) {
+                return self.refreshDatasets();
             }
             else {
-                return self.refreshDatasets();
+                return $q.when(self.datasets);
             }
         };
     }

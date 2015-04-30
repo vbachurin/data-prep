@@ -11,11 +11,6 @@ describe('Dataset list controller', function () {
         {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)'},
         {id: 'ab45f893d8e923', name: 'Us states'}
     ];
-    var preparations = [
-        {id: 'z68x48e61w23d8', name: 'clean up names', datasetid : datasets[0].id},     // default preparation for datasets[0]
-        {id: 'd68d789s8e354e', name: 'fill missing dates', datasetid : datasets[1].id},
-        {id: '8w848ds9q6823w', name: 'format cyties names', datasetid : datasets[1].id}
-    ];
 
     beforeEach(module('data-prep.dataset-list'));
 
@@ -35,13 +30,7 @@ describe('Dataset list controller', function () {
             return $q.when(DatasetListService.datasets);
         });
         spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue($q.when(true));
-        spyOn(PreparationListService, 'getDatasetPreparations').and.callFake(function(dataset) {
-            var getPreparationsForDataset =
-                _.filter(preparations, function(preparation) {
-                    return preparation.datasetid === dataset.id;
-                });
-            return getPreparationsForDataset;
-        });
+        spyOn(PreparationListService, 'refreshPreparations').and.returnValue($q.when(true));
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
@@ -62,6 +51,20 @@ describe('Dataset list controller', function () {
         expect(ctrl.datasets).toBe(datasets);
     }));
 
+    it('should refresh preparations to set default preparation when dataset list changed', inject(function (PreparationListService, DatasetListService) {
+        //given
+        createController();
+        scope.$digest();
+        expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
+
+        //when
+        DatasetListService.datasets = refreshedDatasets;
+        scope.$digest();
+
+        //then
+        expect(PreparationListService.refreshPreparations.calls.count()).toEqual(2);
+    }));
+
     it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService) {
         //given
         $stateParams.datasetid = 'ab45f893d8e923';
@@ -73,18 +76,6 @@ describe('Dataset list controller', function () {
         //then
         expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(datasets[1]);
         expect(PlaygroundService.show).toHaveBeenCalled();
-    }));
-
-    it('should set the default preparation for each dataset', inject(function (DatasetListService, PreparationListService) {
-        //when
-        var ctrl = createController();
-        scope.$digest();
-
-        //then
-        expect(PreparationListService.getDatasetPreparations.calls.count()).toEqual(datasets.length);
-        expect(ctrl.datasets[0].defaultPreparationId).toBe(preparations[0].id);
-        expect(ctrl.datasets[1].defaultPreparationId).not.toBeDefined();
-        expect(ctrl.datasets[2].defaultPreparationId).not.toBeDefined();
     }));
 
     it('should show error message when dataset id is not in users dataset', inject(function ($stateParams, PlaygroundService, MessageService) {
