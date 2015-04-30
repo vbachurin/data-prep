@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.api.service.api.PreviewDisableInput;
 import org.talend.dataprep.api.service.api.PreviewUpdateInput;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +26,7 @@ import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class PreviewUpdate extends HystrixCommand<InputStream> {
+public class PreviewDisable extends HystrixCommand<InputStream> {
 
     private final HttpClient client;
 
@@ -33,7 +34,7 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
     private final String transformationServiceUrl;
     private final String preparationServiceUrl;
 
-    private final PreviewUpdateInput input;
+    private final PreviewDisableInput input;
 
     @Autowired
     private WebApplicationContext context;
@@ -41,7 +42,7 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
 
-    private PreviewUpdate(final HttpClient client, final String contentServiceUrl, final String transformationServiceUrl, final String preparationServiceUrl, final PreviewUpdateInput input) {
+    private PreviewDisable(final HttpClient client, final String contentServiceUrl, final String transformationServiceUrl, final String preparationServiceUrl, final PreviewDisableInput input) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
         this.contentServiceUrl = contentServiceUrl;
@@ -57,18 +58,21 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
         final JsonNode preparationDetails = getPreparationDetails(input.getPreparationId());
 
         //extract actions by steps in chronological order, until input defined last active step
-        final List<String> stepsIds = getActionsStepIds(preparationDetails, input.getLastActiveStepId());
+        final List<String> stepsIds = getActionsStepIds(preparationDetails, input.getCurrentStepId());
         final Map<String, Action> originalActions = getActions(preparationDetails, stepsIds);
 
-        //modify actions to include the update
-        final Map<String, Action> modifiedActions = new LinkedHashMap<>(originalActions);
-        if(modifiedActions.get(input.getStepId()) != null) {
-            modifiedActions.put(input.getStepId(), input.getAction());
+        //extract actions without disabled steps
+        final Map<String, Action> disableActions = new LinkedHashMap<>(originalActions.size());
+        for(final Map.Entry<String, Action> entry : originalActions.entrySet()) {
+            if(entry.getKey().equals(input.getDisableStepId())) {
+                break;
+            }
+            disableActions.put(entry.getKey(), entry.getValue());
         }
 
         //serialize and base 64 encode the 2 actions list
-        final String oldEncodedActions = serializeAndEncodeActions(originalActions);
-        final String newEncodedActions = serializeAndEncodeActions(modifiedActions);
+        final String currentEncodedActions = serializeAndEncodeActions(originalActions);
+        final String disableEncodedActions = serializeAndEncodeActions(disableActions);
 
         //get dataset content
         final InputStream content = getDatasetContent(preparationDetails);
@@ -76,18 +80,8 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
         //get usable tdpIds
         final String encodedTdpIds = serializeAndEncodeList(input.getTdpIds());
 
-
         //call transformation preview with content and the 2 transformations
-        return previewTransformation(content, oldEncodedActions, newEncodedActions, encodedTdpIds);
-
-
-        //Implement this new service :
-        //          - on each row, apply the 2 transformations and determine the row to display in preview with the flags set
-        //                   flag NEW : deleted by old but not by new
-        //                   flag UPDATED : not deleted at all and value has changed
-        //                   flag DELETED : not deleted by old by is by new
-        //          - write rows that has index input.getTdpIds() (index represents not deleted row from old transfo) + the ones with NEW flag
-
+        return previewTransformation(content, currentEncodedActions, disableEncodedActions, encodedTdpIds);
     }
 
     /**
@@ -97,7 +91,7 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
      * @param newEncodedActions
      * @param encodedTdpIds
      * @return
-     * @throws IOException
+     * @throws java.io.IOException
      */
     private InputStream previewTransformation(final InputStream content, final String oldEncodedActions, final String newEncodedActions,final String encodedTdpIds) throws IOException {
         final String uri = this.transformationServiceUrl + "/transform/preview?oldActions=" + oldEncodedActions + "&newActions=" + newEncodedActions + "&indexes=" + encodedTdpIds;
@@ -148,7 +142,7 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
      * @param preparationDetails - the Json node preparation details
      * @param stepsIds - the step ids in the chronological order
      * @return The map of couples in the StepsIds order
-     * @throws IOException
+     * @throws java.io.IOException
      */
     private Map<String, Action> getActions(final JsonNode preparationDetails, final List<String> stepsIds) throws IOException {
         final ObjectMapper mapper = builder.build();
@@ -190,7 +184,7 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
      * Call Preparation Service to get preparation details
      * @param preparationId - the preparation id
      * @return the resulting Json node object
-     * @throws IOException
+     * @throws java.io.IOException
      */
     private JsonNode getPreparationDetails(final String preparationId) throws IOException {
         final ObjectMapper mapper = builder.build();

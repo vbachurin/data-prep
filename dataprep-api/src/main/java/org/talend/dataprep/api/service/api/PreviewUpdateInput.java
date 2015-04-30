@@ -4,7 +4,7 @@ import org.talend.dataprep.api.preparation.Action;
 
 import java.util.List;
 
-public class UpdatePreviewInput {
+public class PreviewUpdateInput {
     private String stepId;
     private Action action;
     private List<Integer> tdpIds;

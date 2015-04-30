@@ -1,3 +1,12 @@
+@mixin cellImitation() {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 1px 4px 2px;
+}
+
 .datagrid {
   $datagrid-line-odd: #f9f9f9;
   $datagrid-line-border: #ddd;
@@ -76,15 +85,18 @@
     }
 
     .cellNewValue {
+      @include cellImitation();
       background-color: rgba(193, 217, 6, 0.5);
     }
 
     .cellUpdateValue {
+      @include cellImitation();
       background-color: rgba(255, 166, 22, 0.5);
     }
 
     .cellDeletedValue {
       color: $white;
+      @include cellImitation();
       background-color: rgba(255, 0, 0, 0.5);
     }
   }

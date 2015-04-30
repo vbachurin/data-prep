@@ -65,7 +65,12 @@
                 element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });
 
-            appendPreview(index);
+            if(vm.recipe[index].inactive) {
+                previewAppend(index);
+            }
+            else {
+                previewDisable(index);
+            }
         };
 
         /**
@@ -132,11 +137,7 @@
         //---------------------------------------------------------------------------------------------
         //---------------------------------------------Preview-----------------------------------------
         //---------------------------------------------------------------------------------------------
-        var appendPreview = function(stepPosition) {
-            if(! vm.recipe[stepPosition].inactive) {
-                return;
-            }
-
+        var previewAppend = function(stepPosition) {
             var actions = [];
             _.chain(vm.recipe)
                 .filter(function(element, elementIndex) {
@@ -147,6 +148,13 @@
                 })
                 .value();
             DatasetPreviewService.getPreviewAppendRecords(actions);
+        };
+
+        var previewDisable = function(stepPosition) {
+            var stepToDisable = RecipeService.getStep(stepPosition);
+            var currentActiveStep = RecipeService.getLastActiveStep();
+
+            DatasetPreviewService.getPreviewDisableRecords(currentActiveStep, stepToDisable);
         };
 
         var updatePreview = function(step, params) {
@@ -165,10 +173,6 @@
 
         vm.previewUpdateClosure = function(step) {
             return function(params) {
-                console.log('trigger preview');
-                console.log(step);
-                console.log(params);
-
                 updatePreview(step, params);
             };
         };

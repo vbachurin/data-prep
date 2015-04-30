@@ -66,7 +66,7 @@
                     }
                     //new row preview
                     else if(dataContext.__tdpRowDiff === 'new') {
-                        return '<div class="cellNewValue">' + value + '</div>';
+                        return '<div class="cellNewValue">' + (value ? value : ' ') + '</div>';
                     }
                     //updated cell preview
                     if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id] === 'update') {

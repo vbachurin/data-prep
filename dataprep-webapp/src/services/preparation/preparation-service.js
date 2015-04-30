@@ -199,6 +199,27 @@
             return $http(request);
         };
 
+        this.getPreviewDisable = function(currentStep, stepToDisable, recordsTdpId, canceler) {
+            var params = {
+                tdpIds: recordsTdpId,
+                currentStepId: currentStep.transformation.stepId,
+                disableStepId: stepToDisable.transformation.stepId,
+                preparationId: self.currentPreparation
+            };
+
+            var request = {
+                method: 'POST',
+                url: RestURLs.previewUrl + '/disable',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: params,
+                timeout: canceler.promise
+            };
+
+            return $http(request);
+        };
+
         this.getPreviewUpdate = function(step, newParams, lastActiveStep, recordsTdpId, canceler) {
             var actionParam = {
                 stepId: step.transformation.stepId,

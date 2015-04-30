@@ -51,6 +51,30 @@
                 });
         };
 
+        self.getPreviewDisableRecords = function(currentStep, stepToDisable) {
+            self.cancelPreview();
+
+            previewCanceler = $q.defer();
+            var recordsTdpId = _.map(getDisplayedRows(), function(element) {
+                return element.tdpId;
+            });
+
+            PreparationService.getPreviewDisable(currentStep, stepToDisable, recordsTdpId, previewCanceler)
+                .then(function(response) {
+                    originalRecords = DatasetGridService.data.records;
+                    modifiedRecords = originalRecords.slice(0);
+
+                    _.forEach(recordsTdpId, function(tdpId, arrayIndex) {
+                        modifiedRecords[tdpId] = response.data.records[arrayIndex];
+                    });
+
+                    DatasetGridService.updateRecords(modifiedRecords);
+                })
+                .finally(function() {
+                    previewCanceler = null;
+                });
+        };
+
         self.getPreviewUpdateRecords = function(step, newParams, lastActiveStep) {
             self.cancelPreview();
 

@@ -13,7 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.api.UpdatePreviewInput;
+import org.talend.dataprep.api.service.api.PreviewDisableInput;
+import org.talend.dataprep.api.service.api.PreviewUpdateInput;
 import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
@@ -176,8 +177,20 @@ public class PreparationAPI extends APIService {
         }
     }
 
+    @RequestMapping(value = "/api/preparations/preview/disable", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void previewDisable(@RequestBody PreviewDisableInput input, HttpServletResponse response) {
+        try {
+            HystrixCommand<InputStream> transformation = getCommand(PreviewDisable.class, getClient(),  contentServiceUrl, transformServiceUrl, preparationServiceURL, input);
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(transformation.execute(), outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw Exceptions.User(APIMessages.UNABLE_TO_TRANSFORM_DATASET, null, e);
+        }
+    }
+
     @RequestMapping(value = "/api/preparations/preview/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void previewUpdate(@RequestBody UpdatePreviewInput input, HttpServletResponse response) {
+    public void previewUpdate(@RequestBody PreviewUpdateInput input, HttpServletResponse response) {
         try {
             HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), contentServiceUrl, transformServiceUrl, preparationServiceURL, input);
             ServletOutputStream outputStream = response.getOutputStream();

@@ -11,10 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.APIMessages;
-import org.talend.dataprep.api.service.api.UpdatePreviewInput;
 import org.talend.dataprep.api.service.command.DataSetGet;
-import org.talend.dataprep.api.service.command.PreviewAppend;
-import org.talend.dataprep.api.service.command.PreviewUpdate;
 import org.talend.dataprep.api.service.command.Transform;
 import org.talend.dataprep.exception.Exceptions;
 
