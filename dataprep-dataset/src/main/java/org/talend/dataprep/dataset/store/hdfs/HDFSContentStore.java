@@ -41,11 +41,6 @@ public class HDFSContentStore implements DataSetContentStore {
     }
 
     @Override
-    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent, String actions) {
-
-    }
-
-    @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try (FSDataOutputStream outputStream = fileSystem.create(getPath(dataSetMetadata))) {
             IOUtils.copy(dataSetContent, outputStream);

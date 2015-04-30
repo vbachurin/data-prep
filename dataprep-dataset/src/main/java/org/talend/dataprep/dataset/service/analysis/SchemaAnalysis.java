@@ -1,8 +1,8 @@
 package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.io.StringWriter;
+import java.util.Iterator;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -14,24 +14,25 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
-import org.talend.dataprep.api.dataset.DataSetContent;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.exception.DataSetMessages;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.Exceptions;
-import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.schema.FormatGuesser;
-import org.talend.dataprep.schema.SchemaParser;
+import org.talend.datascience.statistics.StatisticsClientJson;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Component
 public class SchemaAnalysis {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SchemaAnalysis.class);
-
-    @Autowired
-    JmsTemplate jmsTemplate;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaAnalysis.class);
 
     @Autowired
     DataSetMetadataRepository repository;
@@ -40,54 +41,67 @@ public class SchemaAnalysis {
     DataSetContentStore store;
 
     @Autowired
-    List<FormatGuesser> guessers = new LinkedList<>();
+    JmsTemplate jmsTemplate;
+
+    @Autowired
+    StatisticsClientJson statisticsClient;
 
     @JmsListener(destination = Destinations.SCHEMA_ANALYSIS)
-    public void analyseDataSetSchema(Message message) {
+    public void indexDataSet(Message message) {
         try {
-            String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1
+            String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
             DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
             datasetLock.lock();
-
             try {
-
                 DataSetMetadata metadata = repository.get(dataSetId);
                 if (metadata != null) {
-                    // Guess media type based on InputStream
-                    Set<FormatGuess> mediaTypes = new HashSet<>();
-                    for (FormatGuesser guesser : guessers) {
-                        try (InputStream content = store.getAsRaw(metadata)) {
-                            FormatGuess mediaType = guesser.guess(content);
-                            mediaTypes.add(mediaType);
-                        } catch (IOException e) {
-                            LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
+                    try {
+                        LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
+                        // Create a content with the expected format for the StatisticsClientJson class
+                        final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata));
+                        ObjectMapper mapper = new ObjectMapper();
+                        mapper.registerModule(module);
+                        final StringWriter content = new StringWriter();
+                        mapper.writer().writeValue(content, metadata);
+                        // Determine schema for the content
+                        String elasticDataSchema = statisticsClient.inferSchemaInMemory(content.toString());
+                        LOGGER.debug("Analysis result: {}" + elasticDataSchema);
+                        // Set column types back in data set metadata
+                        final Iterator<JsonNode> columns = mapper.readTree(elasticDataSchema).get("column").elements(); //$NON-NLS-1$
+                        final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
+                        for (; columns.hasNext() && schemaColumns.hasNext(); ) {
+                            final JsonNode column = columns.next();
+                            final ColumnMetadata schemaColumn = schemaColumns.next();
+                            final String typeName = column.get("suggested type").asText(); //$NON-NLS-1$
+                            if (Type.BOOLEAN.getName().equals(schemaColumn.getType()) && Type.STRING.getName().equals(typeName)) {
+                                LOGGER.info("Ignore incorrect detection (boolean -> string) for column {}.", schemaColumn.getId());
+                            } else if (Type.has(typeName)) {
+                                // Go through Type to ensure normalized type names.
+                                schemaColumn.setType(Type.get(typeName).getName());
+                            } else {
+                                LOGGER.error("Type '{}' does not exist.", typeName);
+                            }
                         }
-                    }
-                    // Select best format guess
-                    List<FormatGuess> orderedGuess = new LinkedList<>(mediaTypes);
-                    Collections.sort(orderedGuess, (g1, g2) -> ((int) (g2.getConfidence() - g1.getConfidence())));
-                    FormatGuess bestGuess = orderedGuess.get(0);
-                    DataSetContent dataSetContent = metadata.getContent();
-                    dataSetContent.setContentType(bestGuess);
-                    dataSetContent.setContentTypeCandidates(orderedGuess); // Remember format guesses
-                    repository.add(metadata);
-                    // Parse information
-                    try (InputStream content = store.getAsRaw(metadata)) {
-                        SchemaParser parser = bestGuess.getSchemaParser();
-                        metadata.getRow().setColumns(parser.parse(content));
+                        if (columns.hasNext() || schemaColumns.hasNext()) {
+                            // Awkward situation: analysis code and parsed content information did not find same number of columns
+                            LOGGER.warn(
+                                    "Column type analysis and parsed columns for #{} do not yield same number of columns (content parsed: {} / analysis: {}).",
+                                    dataSetId, schemaColumns.hasNext(), columns.hasNext());
+                        }
+                        LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                         metadata.getLifecycle().schemaAnalyzed(true);
                         repository.add(metadata);
-                        // Quality information needs schema information, since it's ready, asks for quality analysis
+                        // Asks for a in depth schema analysis (for column type information).
                         jmsTemplate.send(Destinations.QUALITY_ANALYSIS, session -> {
-                            Message qualityAnalysisMessage = session.createMessage();
-                            qualityAnalysisMessage.setStringProperty("dataset.id", metadata.getId()); //$NON-NLS-1
-                                return qualityAnalysisMessage;
-                            });
+                            Message schemaAnalysisMessage = session.createMessage();
+                            schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
+                            return schemaAnalysisMessage;
+                        });
                     } catch (IOException e) {
-                        throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);
+                        throw Exceptions.Internal(DataSetMessages.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
                     }
                 } else {
-                    LOG.info("Data set #{} no longer exists.", dataSetId);
+                    LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 }
             } finally {
                 datasetLock.unlock();
@@ -96,6 +110,5 @@ public class SchemaAnalysis {
         } catch (JMSException e) {
             throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
         }
-
     }
 }

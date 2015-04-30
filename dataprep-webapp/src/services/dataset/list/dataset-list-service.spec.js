@@ -65,7 +65,7 @@ describe('Dataset List Service', function () {
 
     it('should call refresh when datasets is not initialized yet', inject(function ($rootScope, DatasetListService, DatasetService) {
         //given
-        DatasetListService.datasets = [];
+        DatasetListService.datasets = null;
         var resolvedDatasets = [];
 
         //when

@@ -3,7 +3,6 @@ package org.talend.dataprep.dataset.store.local;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Base64;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -38,25 +37,17 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     }
 
     @Override
-    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent, String actions) {
-        try {
-            LOGGER.info("Actions: {}", new String(Base64.getDecoder().decode(actions)));
-            LOGGER.info("Content: {}", IOUtils.toString(dataSetJsonContent));
-        } catch (IOException e) {
-            LOGGER.error("Unable to dump content & actions.", e);
-        }
-    }
-
-    @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try {
-            File dataSetFile = getFile(dataSetMetadata);
-            FileUtils.touch(dataSetFile);
-            FileOutputStream fos = new FileOutputStream(dataSetFile);
-            IOUtils.copy(dataSetContent, fos);
-
-            LOGGER.debug("Data set #{} stored to '{}'.", dataSetMetadata.getId(), dataSetFile);
-
+            if(dataSetContent.available() > 0) {
+                File dataSetFile = getFile(dataSetMetadata);
+                FileUtils.touch(dataSetFile);
+                FileOutputStream fos = new FileOutputStream(dataSetFile);
+                IOUtils.copy(dataSetContent, fos);
+                LOGGER.debug("Data set #{} stored to '{}'.", dataSetMetadata.getId(), dataSetFile);
+            } else {
+                LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
+            }
         } catch (IOException e) {
             throw Exceptions.Internal(DataSetMessages.UNABLE_TO_STORE_DATASET_CONTENT, dataSetMetadata.getId(), e);
         }

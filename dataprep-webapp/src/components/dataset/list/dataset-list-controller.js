@@ -13,12 +13,12 @@
      </ul>
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.dataset.service:DatasetListService
+     * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
-     * @requires data-prep.services.preparation:PreparationListService
      */
-    function DatasetListCtrl($scope, $stateParams, DatasetService, DatasetListService, PlaygroundService, TalendConfirmService, MessageService, PreparationListService) {
+    function DatasetListCtrl($scope, $stateParams, DatasetService, DatasetListService, PreparationListService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
 
@@ -75,38 +75,22 @@
         };
 
 
-        /**
-         * @ngdoc method
-         * @name setDefaultPreparation
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description [PRIVATE] Set the default preparation id in the dataset.
-         * If a dataset has only one preparation, it's its default. Otherwise, there is no default
-         * @param {Object} dataset - the dataset to process
-         */
-        var setDefaultPreparation = function(dataset) {
-            var preparations = PreparationListService.getDatasetPreparations(dataset);
-            if (preparations.length === 1) {
-                dataset.defaultPreparationId = preparations[0].id;
+        // add a watcher on datasets so that the default preparation is set for each dataset
+        $scope.$watch(
+            function() {
+                return vm.datasets;
+            },
+            function() {
+                // refresh the preparations so that default preparation is set by the dataset
+                PreparationListService.refreshPreparations();
             }
-        };
+        );
 
         // load the datasets
         DatasetListService
             .getDatasetsPromise()
             .then(loadUrlSelectedDataset);
 
-        // add a watcher on datasets so that the default preparation is set for each dataset
-        $scope.$watch(
-            function() {
-                return vm.datasets;
-            },
-            function(newValue) {
-                // make sure the preparations are loaded before looking for default dataset
-                PreparationListService.getPreparationsPromise()
-                    .then(function() {
-                        _.forEach(newValue, setDefaultPreparation);
-                    });
-            });
     }
 
     /**
