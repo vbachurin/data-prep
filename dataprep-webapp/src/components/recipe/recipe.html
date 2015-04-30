@@ -11,8 +11,6 @@
         <div class="step-trigger"
            ng-class="{downlight: step.downlight, highlight: step.highlight}"
            ng-click="recipeCtrl.toggleStep(step)"
-           active="&#9679;"
-           inactive="&#9675;"
            ng-mouseleave="recipeCtrl.stepHoverEnd()"
            ng-mouseenter="recipeCtrl.stepHoverStart($index)"></div>
 
