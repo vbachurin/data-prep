@@ -17,6 +17,7 @@ import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 @Component
 @Scope("request")
@@ -59,7 +60,7 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 // Data set exists, but content isn't yet analyzed, retry request
                 retryCount++;
                 if (retryCount > MAX_RETRY) {
-                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, null, TDPExceptionContext.build().put("id", dataSetId));
                 }
                 // Pause before retry
                 final int pauseTime = 100 * retryCount;
@@ -67,13 +68,13 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 try {
                     Thread.sleep(pauseTime);
                 } catch (InterruptedException e) {
-                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e);
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id", dataSetId));
                 }
                 return handleResponse(client.execute(contentRetrieval));
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, null);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, null, TDPExceptionContext.build().put("id", dataSetId));
     }
 }
