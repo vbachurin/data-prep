@@ -2,8 +2,9 @@ package org.talend.dataprep.exception;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Root class for all TDP exceptions.
@@ -41,9 +41,14 @@ public class TDPException extends RuntimeException {
         super(code.getCode(), cause);
         this.code = code;
         this.cause = cause;
-        this.context = context;
+        if (context == null) {
+            this.context = TDPExceptionContext.build();
+        }
+        else {
+            this.context = context;
+        }
 
-        //TODO Vince check if context match the expected one from the error code
+        checkContext();
     }
 
     /**
@@ -68,10 +73,24 @@ public class TDPException extends RuntimeException {
 
 
     /**
-     * @return the error code.
+     * Make sure that the context is filled with the expected context entries from the error code.
+     * If an entry is missing, only a warning log is issued.
      */
-    public ErrorCode getCode() {
-        return code;
+    private void checkContext() {
+
+        List<String> missingEntries = new ArrayList<>();
+
+        for (String expectedEntry : code.getExpectedContextEntries()) {
+            if (context.contains(expectedEntry) == false) {
+                missingEntries.add(expectedEntry);
+            }
+        }
+
+        if (missingEntries.size() > 0) {
+            LOGGER.warn("TDPException context for {}, is missing the given entry(ies) \n{}. \nStacktrace for info",
+                    code.getCode(), missingEntries, this);
+        }
+
     }
 
 
@@ -79,7 +98,7 @@ public class TDPException extends RuntimeException {
      * Describe this error in json into the given writer.
      * @param writer where to write this error.
      */
-    public void writeTo(Writer writer) {
+    void writeTo(Writer writer) {
         try {
             JsonGenerator generator = (new JsonFactory()).createGenerator(writer);
             generator.writeStartObject();
@@ -100,5 +119,13 @@ public class TDPException extends RuntimeException {
         } catch (IOException e) {
             LOGGER.error("Unable to write exception to " + writer + ".", e);
         }
+    }
+
+
+    /**
+     * @return the error code.
+     */
+    public ErrorCode getCode() {
+        return code;
     }
 }

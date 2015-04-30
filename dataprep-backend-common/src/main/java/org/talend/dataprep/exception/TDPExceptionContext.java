@@ -45,4 +45,13 @@ public class TDPExceptionContext {
     Iterable<? extends Map.Entry<String, Object>> entries() {
         return context.entrySet();
     }
+
+    /**
+     * @param key the key to check.
+     * @return true if this context contains the given key.
+     */
+    boolean contains(String key) {
+        return context.containsKey(key);
+    }
+
 }
