@@ -16,6 +16,7 @@ import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -81,10 +82,7 @@ public class DataSetAPI extends APIService {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
         } catch (Exception e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", id);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, context);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id", id));
         }
     }
 
@@ -149,11 +147,9 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("columnName", columnName);
-            context.put("dataSetId", dataSetId);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e, context);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS,
+                    e,
+                    TDPExceptionContext.build().put("columnName", columnName).put("dataSetId", dataSetId));
         }
     }
 
@@ -176,10 +172,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("dataSetId", dataSetId);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e, context);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e, TDPExceptionContext.build().put("dataSetId", dataSetId));
         }
     }
 

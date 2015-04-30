@@ -21,6 +21,7 @@ import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 @Component
 @Scope("request")
@@ -60,10 +61,7 @@ public class PreparationUpdate extends HystrixCommand<String> {
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", id);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_PREPARATION, null, context);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_PREPARATION, null, TDPExceptionContext.build().put("id", id));
         } finally {
             preparationCreation.releaseConnection();
         }

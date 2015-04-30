@@ -17,6 +17,7 @@ import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 @Component
 @Scope("request")
@@ -52,10 +53,7 @@ public class PreparationUpdateAction extends HystrixCommand<Void> {
             if (statusCode >= 200) {
                 return null;
             }
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", id);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_ACTION_IN_PREPARATION, null, context);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_ACTION_IN_PREPARATION, null, TDPExceptionContext.build().put("id", id));
         } finally {
             actionAppend.releaseConnection();
         }

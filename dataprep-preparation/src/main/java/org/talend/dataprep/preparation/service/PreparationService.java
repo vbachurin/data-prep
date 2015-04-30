@@ -8,7 +8,9 @@ import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.api.AppendStep;
 import org.talend.dataprep.preparation.exception.PreparationErrorCodes;
@@ -176,11 +179,9 @@ public class PreparationService {
             }
             stream.flush();
         } catch (IOException e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", id);
-            context.put("version", version);
-            throw new TDPException(PreparationErrorCodes.UNABLE_TO_SERVE_PREPARATION_CONTENT, e, context);
+            throw new TDPException(PreparationErrorCodes.UNABLE_TO_SERVE_PREPARATION_CONTENT,
+                    e,
+                    TDPExceptionContext.build().put("id", id).put("version", version));
         }
     }
 
@@ -194,10 +195,7 @@ public class PreparationService {
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", id);
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, context);
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, TDPExceptionContext.build().put("id", id));
         }
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
@@ -226,10 +224,7 @@ public class PreparationService {
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", id);
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, context);
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, TDPExceptionContext.build().put("id", id));
         }
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
@@ -277,10 +272,7 @@ public class PreparationService {
             final Step step = preparationRepository.get(stepId, Step.class);
             return preparationRepository.get(step.getContent(), PreparationActions.class);
         } else {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", id);
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, context);
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, TDPExceptionContext.build().put("id", id));
         }
     }
 }

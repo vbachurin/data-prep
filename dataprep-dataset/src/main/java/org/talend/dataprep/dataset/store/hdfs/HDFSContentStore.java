@@ -4,8 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -23,7 +21,11 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.exception.TDPException;
+<<<<<<< HEAD
 import org.talend.dataprep.schema.FormatGuess;
+=======
+import org.talend.dataprep.exception.TDPExceptionContext;
+>>>>>>> 9483274... TDP-107|change context from Map to concrete class that wraps the map
 import org.talend.dataprep.schema.Serializer;
 
 @org.springframework.context.annotation.Configuration
@@ -47,10 +49,7 @@ public class HDFSContentStore implements DataSetContentStore {
             fileSystem = FileSystem.get(new URI(hdfsStoreLocation), new Configuration());
             LOGGER.info("HDFS file system: {} ({}).", fileSystem.getClass(), fileSystem.getUri());
         } catch (Exception e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("location", hdfsStoreLocation);
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CONNECT_TO_HDFS, e, context);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CONNECT_TO_HDFS, e, TDPExceptionContext.build().put("location", hdfsStoreLocation));
         }
     }
 
@@ -64,10 +63,9 @@ public class HDFSContentStore implements DataSetContentStore {
             IOUtils.copy(dataSetContent, outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", dataSetMetadata.getId());
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, context);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT,
+                    e,
+                    TDPExceptionContext.build().put("id", dataSetMetadata.getId()));
         }
     }
 
@@ -97,10 +95,7 @@ public class HDFSContentStore implements DataSetContentStore {
         try {
             fileSystem.delete(getPath(dataSetMetadata), true);
         } catch (IOException e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", dataSetMetadata.getId());
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET,e, context);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET,e, TDPExceptionContext.build().put("dataSetId", dataSetMetadata.getId()));
         }
     }
 
