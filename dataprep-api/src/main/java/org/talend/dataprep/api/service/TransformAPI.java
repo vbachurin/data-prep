@@ -49,11 +49,32 @@ public class TransformAPI extends APIService {
                     encodedActions);
             // Perform transformation
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(transformation.execute(), outputStream);
+
+            // TODO temp log to see what's going in newbuild
+            LOG.error("TransformAPI about to start");
+
+            InputStream input = transformation.execute();
+
+            // TODO temp log to see what's going in newbuild
+            LOG.error("done, copying input to output");
+
+            IOUtils.copyLarge(input, outputStream);
             outputStream.flush();
+
+            // TODO temp log to see what's going in newbuild
+            LOG.error("completely done !!!");
+
         } catch (IOException e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, TDPExceptionContext.build().put("dataSetId", dataSetId));
         }
-        LOG.debug("Transformation of dataset id #{} done.",dataSetId);
+ catch (Throwable e) {
+            LOG.error("error while PreparationAPITest " + e.getMessage(), e);
+            throw e;
+        }
+
+        // TODO temp log to see what's going in newbuild
+        LOG.error("finished !!!");
+
+        LOG.debug("Transformation of dataset id #{} done.", dataSetId);
     }
 }
