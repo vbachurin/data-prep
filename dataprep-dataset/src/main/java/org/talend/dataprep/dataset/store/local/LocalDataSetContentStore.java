@@ -60,7 +60,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try {
-            if(dataSetContent.available() > 0) {
+            if (dataSetContent.available() > 0) {
                 File dataSetFile = getFile(dataSetMetadata);
                 FileUtils.touch(dataSetFile);
                 FileOutputStream fos = new FileOutputStream(dataSetFile);
@@ -70,7 +70,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
             }
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put("dataSetId", dataSetMetadata.getId()));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put(
+                    "id", dataSetMetadata.getId()));
         }
     }
 
@@ -95,7 +96,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, null, TDPExceptionContext.build().put("dataSetId", dataSetMetadata.getId()));
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, null, TDPExceptionContext.build().put(
+                        "dataSetId", dataSetMetadata.getId()));
             }
         } else {
             LOGGER.warn("Data set #{} has no content.", dataSetMetadata.getId());

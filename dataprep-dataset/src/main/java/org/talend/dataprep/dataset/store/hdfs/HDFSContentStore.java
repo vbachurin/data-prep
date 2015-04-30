@@ -49,7 +49,8 @@ public class HDFSContentStore implements DataSetContentStore {
             fileSystem = FileSystem.get(new URI(hdfsStoreLocation), new Configuration());
             LOGGER.info("HDFS file system: {} ({}).", fileSystem.getClass(), fileSystem.getUri());
         } catch (Exception e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CONNECT_TO_HDFS, e, TDPExceptionContext.build().put("location", hdfsStoreLocation));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CONNECT_TO_HDFS, e, TDPExceptionContext.build().put("location",
+                    hdfsStoreLocation));
         }
     }
 
@@ -63,9 +64,8 @@ public class HDFSContentStore implements DataSetContentStore {
             IOUtils.copy(dataSetContent, outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT,
-                    e,
-                    TDPExceptionContext.build().put("id", dataSetMetadata.getId()));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id",
+                    dataSetMetadata.getId()));
         }
     }
 
@@ -95,7 +95,8 @@ public class HDFSContentStore implements DataSetContentStore {
         try {
             fileSystem.delete(getPath(dataSetMetadata), true);
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET,e, TDPExceptionContext.build().put("dataSetId", dataSetMetadata.getId()));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, e, TDPExceptionContext.build().put("dataSetId",
+                    dataSetMetadata.getId()));
         }
     }
 

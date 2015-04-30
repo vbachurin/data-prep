@@ -2,6 +2,10 @@ package org.talend.dataprep.dataset.exception;
 
 import org.talend.dataprep.exception.ErrorCode;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Dataset error codes.
  */
@@ -10,15 +14,17 @@ public enum DataSetErrorCodes implements ErrorCode {
     UNABLE_TO_READ_DATASET_CONTENT(SC_500),
     UNEXPECTED_JMS_EXCEPTION(SC_500),
     UNABLE_TO_CLEAR_DATASETS(SC_500),
-    UNABLE_TO_DELETE_DATASET(SC_500),
-    UNABLE_TO_CONNECT_TO_HDFS(SC_500),
-    UNABLE_TO_STORE_DATASET_CONTENT(SC_500),
+    UNABLE_TO_DELETE_DATASET(SC_400, "dataSetId"),
+    UNABLE_TO_CONNECT_TO_HDFS(SC_500, "location"),
+    UNABLE_TO_STORE_DATASET_CONTENT(SC_500, "id"),
     UNABLE_TO_ANALYZE_COLUMN_TYPES(SC_500);
 
 
     /** The http status to use. */
     private int httpStatus;
 
+    /** Expected entries to be in the context. */
+    private List<String> expectedContextEntries;
 
     /**
      * default constructor.
@@ -26,6 +32,18 @@ public enum DataSetErrorCodes implements ErrorCode {
      */
     DataSetErrorCodes(int httpStatus) {
         this.httpStatus= httpStatus;
+        this.expectedContextEntries = Collections.emptyList();
+    }
+
+    /**
+     * default constructor.
+     *
+     * @param httpStatus the http status to use.
+     * @param contextEntries expected context entries.
+     */
+    DataSetErrorCodes(int httpStatus, String... contextEntries) {
+        this.httpStatus= httpStatus;
+        this.expectedContextEntries = Arrays.asList(contextEntries);
     }
 
     /**
@@ -51,5 +69,12 @@ public enum DataSetErrorCodes implements ErrorCode {
     @Override
     public int getHttpStatus() {
         return httpStatus;
+    }
+
+    /**
+     * @return the expected context entries.
+     */
+    public List<String> getExpectedContextEntries() {
+        return expectedContextEntries;
     }
 }

@@ -1,6 +1,11 @@
 package org.talend.dataprep.transformation.exception;
 
 import org.talend.dataprep.exception.ErrorCode;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Transformation error codes.
  */
@@ -14,7 +19,8 @@ public enum TransformationErrorCodes implements ErrorCode {
 
     /** The http status to use. */
     private int httpStatus;
-
+    /** Expected entries to be in the context. */
+    private List<String> expectedContextEntries;
 
     /**
      * default constructor.
@@ -22,7 +28,20 @@ public enum TransformationErrorCodes implements ErrorCode {
      */
     TransformationErrorCodes(int httpStatus) {
         this.httpStatus= httpStatus;
+        this.expectedContextEntries = Collections.emptyList();
     }
+
+    /**
+     * default constructor.
+     *
+     * @param httpStatus the http status to use.
+     * @param contextEntries expected context entries.
+     */
+    TransformationErrorCodes(int httpStatus, String... contextEntries) {
+        this.httpStatus = httpStatus;
+        this.expectedContextEntries = Arrays.asList(contextEntries);
+    }
+
 
 
     /**
@@ -49,5 +68,13 @@ public enum TransformationErrorCodes implements ErrorCode {
     @Override
     public int getHttpStatus() {
         return httpStatus;
+    }
+
+
+    /**
+     * @return the expected context entries.
+     */
+    public List<String> getExpectedContextEntries() {
+        return expectedContextEntries;
     }
 }

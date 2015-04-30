@@ -2,8 +2,6 @@ package org.talend.dataprep.api.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -147,9 +145,8 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS,
-                    e,
-                    TDPExceptionContext.build().put("columnName", columnName).put("dataSetId", dataSetId));
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e, TDPExceptionContext.build()
+                    .put("columnName", columnName).put("dataSetId", dataSetId));
         }
     }
 
@@ -172,7 +169,8 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e, TDPExceptionContext.build().put("dataSetId", dataSetId));
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, e, TDPExceptionContext.build().put(
+                    "dataSetId", dataSetId));
         }
     }
 

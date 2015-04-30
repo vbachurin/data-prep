@@ -1,5 +1,7 @@
 package org.talend.dataprep.exception;
 
+import java.util.List;
+
 /**
  * Interface used to unify error message behaviour.
  */
@@ -29,6 +31,10 @@ public interface ErrorCode {
      */
     int getHttpStatus();
 
+    /**
+     * @return the expected context entries if any.
+     */
+    List<String> getExpectedContextEntries();
 
     /**
      * @return the full code for this message.
@@ -36,4 +42,6 @@ public interface ErrorCode {
     default String getCode() {
         return this.toString();
     }
+
+
 }
