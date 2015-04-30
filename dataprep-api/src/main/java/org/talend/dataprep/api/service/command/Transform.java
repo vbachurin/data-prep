@@ -1,9 +1,6 @@
 package org.talend.dataprep.api.service.command;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -39,24 +36,17 @@ public class Transform extends ChainedCommand<InputStream, InputStream> {
     @Override
     protected InputStream run() throws Exception {
 
-        String uri = transformServiceUrl + "/transform/?actions=" + actions; //$NON-NLS-1$
-        InputStreamEntity datasetContent = new InputStreamEntity(getInput());
 
+        String uri = transformServiceUrl + "/transform/?actions=" + actions; //$NON-NLS-1$
         HttpPost transformationCall = new HttpPost(uri);
+
+        InputStreamEntity datasetContent = new InputStreamEntity(getInput());
         transformationCall.setEntity(datasetContent);
 
         try {
-            // TODO temp log to see what's going in newbuild
-            LOG.error("about to call the transformation");
+
             HttpResponse response = client.execute(transformationCall);
-
-            // TODO temp log to see what's going in newbuild
-            LOG.error("response is = " + response.getStatusLine().getStatusCode() + '-'
-                    + response.getStatusLine().getReasonPhrase());
             InputStream content = response.getEntity().getContent();
-
-            // TODO temp log to see what's going in newbuild
-            LOG.error("no error in transform !!!");
 
             return new ReleasableInputStream(content, transformationCall::releaseConnection);
         } catch (Exception e) {
