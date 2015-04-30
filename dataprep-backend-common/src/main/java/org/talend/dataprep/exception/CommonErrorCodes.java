@@ -11,7 +11,8 @@ public enum CommonErrorCodes implements ErrorCode {
     UNABLE_TO_COMPUTE_ID(SC_500),
     UNABLE_TO_PRINT_PREPARATION(SC_500),
     UNABLE_TO_READ_CONTENT(SC_500),
-    UNABLE_TO_PARSE_ACTIONS(SC_500);
+    UNABLE_TO_PARSE_ACTIONS(SC_500),
+    UNABLE_TO_PARSE_REQUEST(SC_400);        // e.g IllegalArgumentException
 
     /** The http status to use. */
     private int httpStatus;
