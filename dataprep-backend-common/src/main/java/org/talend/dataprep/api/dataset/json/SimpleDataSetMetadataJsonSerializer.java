@@ -12,6 +12,7 @@ import org.talend.dataprep.schema.FormatGuess;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
+@Component
 public class SimpleDataSetMetadataJsonSerializer {
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
@@ -21,6 +22,7 @@ public class SimpleDataSetMetadataJsonSerializer {
 
     private ApplicationContext applicationContext;
 
+    @Autowired
     public SimpleDataSetMetadataJsonSerializer( ApplicationContext applicationContext )
     {
         this.applicationContext = applicationContext;
