@@ -104,30 +104,16 @@ public class DataPreparationAPITest {
     @Test
     public void testTransformOneAction() throws Exception {
 
-        // TODO temp log to see what's going in newbuild
-        LOG.error("testTransformOneAction start");
-
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test2.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
 
         assertNotNull(dataSetId);
         assertFalse(dataSetId.equals(StringUtils.EMPTY));
 
-        // TODO temp log to see what's going in newbuild
-        LOG.error("dataset id created id " + dataSetId);
-
-        String dataset = given().get("/api/datasets/" + dataSetId).asString();
-
-        // TODO temp log to see what's going in newbuild
-        LOG.error("dataset is " + dataset);
-
         InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
         String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
         String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
                 .asString();
-
-        // TODO temp log to see what's going in newbuild
-        LOG.error("transformed is " + transformed);
 
         assertThat(transformed, sameJSONAsFile(expectedContent));
     }
