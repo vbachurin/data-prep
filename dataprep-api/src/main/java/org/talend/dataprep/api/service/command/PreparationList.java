@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -43,7 +44,7 @@ public class PreparationList extends HystrixCommand<InputStream> {
             contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/all"); //$NON-NLS-1$
             break;
         default:
-            throw new IllegalArgumentException("Unsupported format: " + format);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_REQUEST, new IllegalArgumentException("Unsupported format: " + format));
         }
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();

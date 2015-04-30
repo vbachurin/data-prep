@@ -16,6 +16,7 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.PreviewDiffInput;
 import org.talend.dataprep.api.service.api.PreviewUpdateInput;
 import org.talend.dataprep.api.service.command.*;
+import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 
@@ -45,7 +46,7 @@ public class PreparationAPI extends APIService {
             outputStream.flush();
             LOG.debug("Listed preparations (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST, e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -108,8 +109,9 @@ public class PreparationAPI extends APIService {
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
             LOG.debug("Retrieved preparation details (pool: {} )...", getConnectionManager().getTotalStats());
-        } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_GET_PREPARATION_DETAILS, e);
+        }
+        catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -130,7 +132,7 @@ public class PreparationAPI extends APIService {
             outputStream.flush();
             LOG.debug("Retrieved preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_CONTENT, e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
