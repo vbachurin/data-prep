@@ -48,6 +48,7 @@ public class XlsSchemaParser implements SchemaParser {
                     SchemaParserResult.Builder.parserResult() //
                             .columnMetadatas(new ArrayList(schema.values())) //
                             .draft(true) //
+                            .sheetNumber(schema.size()) //
                             .build();
         }
 

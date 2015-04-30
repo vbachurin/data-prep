@@ -52,6 +52,10 @@
                 });
         };
 
+        vm.update = function(dataset){
+            console.log("update");
+        }
+
         /**
          * @ngdoc method
          * @name loadUrlSelectedDataset

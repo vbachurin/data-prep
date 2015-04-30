@@ -17,6 +17,7 @@ import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.FormatGuess;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -51,6 +52,11 @@ public class DataSetMetadata {
      * if <code>true</code> this dataset is still a draft as we need more informations from the user
      */
     private boolean draft = true;
+
+    /**
+     * available only when draft is <code>true</code> i.e until some informations has been confirmed by the user
+     */
+    private SchemaParserResult schemaParserResult;
 
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;
@@ -145,6 +151,16 @@ public class DataSetMetadata {
 
     public void setDraft(boolean draft) {
         this.draft = draft;
+    }
+
+    public SchemaParserResult getSchemaParserResult()
+    {
+        return schemaParserResult;
+    }
+
+    public void setSchemaParserResult( SchemaParserResult schemaParserResult )
+    {
+        this.schemaParserResult = schemaParserResult;
     }
 
     public static class Builder {

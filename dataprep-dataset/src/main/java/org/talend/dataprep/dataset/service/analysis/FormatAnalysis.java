@@ -83,6 +83,7 @@ public class FormatAnalysis {
                         if (schemaParserResult.draft()){
                             metadata.setSheetNumber( -1 );
                             metadata.setDraft( true );
+                            metadata.setSchemaParserResult( schemaParserResult );
                             return;
                         }
                         metadata.setDraft( false );

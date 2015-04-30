@@ -4,15 +4,19 @@ import java.util.List;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
+// FIXME improve to store sheet name
 public class SchemaParserResult {
 
     private boolean draft;
 
     private List<ColumnMetadata> columnMetadatas;
 
-    private SchemaParserResult(boolean draft, List<ColumnMetadata> columnMetadatas) {
+    private int sheetNumber;
+
+    private SchemaParserResult(boolean draft, List<ColumnMetadata> columnMetadatas, int sheetNumber) {
         this.draft = draft;
         this.columnMetadatas = columnMetadatas;
+        this.sheetNumber = sheetNumber;
     }
 
     private SchemaParserResult() {
@@ -27,11 +31,18 @@ public class SchemaParserResult {
         return columnMetadatas;
     }
 
+    public int getSheetNumber()
+    {
+        return sheetNumber;
+    }
+
     public static class Builder {
 
         private boolean draft;
 
         private List<ColumnMetadata> columnMetadatas;
+
+        private int sheetNumber;
 
         public static SchemaParserResult.Builder parserResult() {
             return new Builder();
@@ -47,8 +58,13 @@ public class SchemaParserResult {
             return this;
         }
 
+        public Builder sheetNumber(int sheetNumber) {
+            this.sheetNumber = sheetNumber;
+            return this;
+        }
+
         public SchemaParserResult build() {
-            return new SchemaParserResult(this.draft, this.columnMetadatas);
+            return new SchemaParserResult(this.draft, this.columnMetadatas,this.sheetNumber);
         }
     }
 }
