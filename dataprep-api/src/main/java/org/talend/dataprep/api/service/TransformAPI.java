@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.HashMap;
@@ -52,7 +53,7 @@ public class TransformAPI extends APIService {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, TDPExceptionContext.build().put("dataSetId", dataSetId));
         }
         LOG.debug("Transformation of dataset id #{} done.",dataSetId);
