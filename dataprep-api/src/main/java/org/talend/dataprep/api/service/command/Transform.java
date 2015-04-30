@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.service.command;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 
 import org.apache.http.HttpResponse;
@@ -36,6 +38,13 @@ public class Transform extends ChainedCommand<InputStream, InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
+
+        InputStreamEntity anotherInputStream = new InputStreamEntity(getInput());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        anotherInputStream.writeTo(out);
+
+        // TODO temp log to see what's going in newbuild
+        LOG.error("dataset content = " + new String(out.toByteArray()));
 
         String uri = transformServiceUrl + "/transform/?actions=" + actions; //$NON-NLS-1$
         InputStreamEntity datasetContent = new InputStreamEntity(getInput());
