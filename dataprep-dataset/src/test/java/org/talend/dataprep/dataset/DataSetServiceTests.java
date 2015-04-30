@@ -131,7 +131,7 @@ public class DataSetServiceTests {
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
         final DataSetMetadata metadata = metadata().id(id1).name("name1").author("anonymous").created(0)
-                .contentType(new CSVFormatGuess()).build();
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
 
         metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
         dataSetMetadataRepository.add(metadata);
@@ -148,7 +148,7 @@ public class DataSetServiceTests {
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
         DataSetMetadata metadata2 = metadata().id(id2).name("name2").author("anonymous").created(0)
-                .contentType(new CSVFormatGuess()).build();
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
         metadata2.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
         dataSetMetadataRepository.add(metadata2);
         when().get("/datasets").then().statusCode(HttpStatus.OK.value());
@@ -169,7 +169,7 @@ public class DataSetServiceTests {
     @Test
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).contentType(new CSVFormatGuess()).build();
+        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
         dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
                 Character.toString(new Separator().separator));
         dataSetMetadataRepository.add(dataSetMetadata);
@@ -184,7 +184,7 @@ public class DataSetServiceTests {
     public void delete() throws Exception {
         String expectedId = UUID.randomUUID().toString();
 
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).contentType(new CSVFormatGuess()).build();
+        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
 
         dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
                 Character.toString(new Separator().separator));
@@ -334,7 +334,7 @@ public class DataSetServiceTests {
                 .headerSize(1) //
                 .qualityAnalyzed(true) //
                 .schemaAnalyzed(true) //
-                .contentType(new CSVFormatGuess());
+                .formatGuessId(new CSVFormatGuess().getBeanId());
 
         DataSetMetadata metadata = builder.build();
         metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));

@@ -79,11 +79,11 @@ public class FormatAnalysis {
                     FormatGuess bestGuess = bestGuessResult.getFormatGuess();
                     DataSetContent dataSetContent = metadata.getContent();
                     dataSetContent.setParameters( bestGuessResult.getParameters() );
-                    dataSetContent.setContentType( bestGuess );
+                    dataSetContent.setFormatGuessId( bestGuess.getBeanId() );
                     dataSetContent.setContentTypeCandidates( orderedGuess ); // Remember format guesses
                     // Parse column name information
                     try (InputStream content = store.getAsRaw(metadata)) {
-                        SchemaParser parser = (SchemaParser) context.getBean(bestGuess.getParserService());
+                        SchemaParser parser = bestGuess.getSchemaParser();
                         metadata.getRow().setColumns(parser.parse( content, metadata ));
                     } catch (IOException e) {
                         throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);

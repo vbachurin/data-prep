@@ -21,6 +21,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetMessages;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
 @Configuration
@@ -71,7 +72,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     @Override
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
-        Serializer serializer = context.getBean(content.getContentType().getSerializerService(), Serializer.class);
+        Serializer serializer = context.getBean(content.getFormatGuessId(), FormatGuess.class).getSerializer();
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
     }
 

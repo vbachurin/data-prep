@@ -68,14 +68,14 @@ public class DataSetMetadataJSONTest {
      *
      * @param writer A non-null writer.
      */
-    public void to(Writer writer) {
+    public void to(DataSetMetadata dataSetMetadata, Writer writer) {
         if (writer == null) {
             throw new IllegalArgumentException("Writer cannot be null.");
         }
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(dataSetMetadataModule);
-            mapper.writer().writeValue(writer, this);
+            mapper.writer().writeValue(writer, dataSetMetadata);
             writer.flush();
         } catch (Exception e) {
             throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
@@ -133,7 +133,7 @@ public class DataSetMetadataJSONTest {
         metadata.getLifecycle().qualityAnalyzed(true);
         metadata.getLifecycle().schemaAnalyzed(true);
         StringWriter writer = new StringWriter();
-        to( writer );
+        to(metadata, writer );
         assertThat(writer.toString(), SameJSONFile.sameJSONAsFile(DataSetMetadataJSONTest.class.getResourceAsStream("test2.json")));
     }
 
@@ -144,7 +144,7 @@ public class DataSetMetadataJSONTest {
         metadata.getContent().setFormatGuessId( new CSVFormatGuess().getBeanId() );
         assertNotNull(metadata);
         StringWriter writer = new StringWriter();
-        to( writer );
+        to(metadata, writer );
         assertThat(writer.toString(), SameJSONFile.sameJSONAsFile(DataSetMetadataJSONTest.class.getResourceAsStream("test3.json")));
     }
 
