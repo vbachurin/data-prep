@@ -24,6 +24,7 @@ import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -50,10 +51,7 @@ public class TransformAPI extends APIService {
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
         } catch (Exception e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("dataSetId", dataSetId);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, context);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, TDPExceptionContext.build().put("dataSetId", dataSetId));
         }
         LOG.debug("Transformation of dataset id #{} done.",dataSetId);
     }

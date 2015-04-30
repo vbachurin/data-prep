@@ -3,8 +3,6 @@ package org.talend.dataprep.dataset.store.local;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -15,6 +13,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.schema.Serializer;
 
 public class LocalDataSetContentStore implements DataSetContentStore {
@@ -51,10 +50,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
             }
         } catch (IOException e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("id", dataSetMetadata.getId());
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, context);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put("dataSetId", dataSetMetadata.getId()));
         }
     }
 
@@ -79,10 +75,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-                Map<String, Object> context = new HashMap<>();
-                context.put("id", dataSetMetadata.getId());
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, null, context);
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, null, TDPExceptionContext.build().put("dataSetId", dataSetMetadata.getId()));
             }
         } else {
             LOGGER.warn("Data set #{} has no content.", dataSetMetadata.getId());

@@ -23,6 +23,7 @@ import org.talend.dataprep.exception.TDPException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 /**
  * Delete the dataset if it's not used by any preparation.
@@ -82,11 +83,9 @@ public class DataSetDelete extends HystrixCommand<Void> {
         // if the dataset is used by preparation(s), the deletion is forbidden
         if (preparations.size() > 0) {
             LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId, preparations.size());
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("dataSetId", dataSetId);
-            context.put("preparations", preparations);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, null, context);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET,
+                    null,
+                    TDPExceptionContext.build().put("dataSetId", dataSetId).put("preparations", preparations));
         }
 
         return doDeleteDataSet();
@@ -120,10 +119,7 @@ public class DataSetDelete extends HystrixCommand<Void> {
         if (statusCode >= 200) {
             return null;
         }
-        //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-        Map<String, Object> context = new HashMap<>();
-        context.put("dataSetId", dataSetId);
-        throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, null, context);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, null, TDPExceptionContext.build().put("dataSetId", dataSetId));
     }
 
 }

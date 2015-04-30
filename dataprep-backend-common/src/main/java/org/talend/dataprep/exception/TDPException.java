@@ -20,8 +20,6 @@ public class TDPException extends RuntimeException {
 
     /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(TDPException.class);
-    /** package prefix to remove while cleaning stacktrace. */
-    private static final String PACKAGE_PREFIX = "org.talend"; //$NON-NLS-1$
 
 
     /** The error code for this exception. */
@@ -29,7 +27,7 @@ public class TDPException extends RuntimeException {
     /** The exception cause. */
     private Throwable cause;
     /** Context of the error when it occurred (used to detail the user error message in frontend). */
-    private Map<String, Object> context;
+    private TDPExceptionContext context;
 
 
     /**
@@ -39,18 +37,13 @@ public class TDPException extends RuntimeException {
      * @param cause the root cause of this error.
      * @param context the context of the error when it occurred (used to detail the user error message in frontend).
      */
-    public TDPException(ErrorCode code, Throwable cause, Map<String, Object> context) {
+    public TDPException(ErrorCode code, Throwable cause, TDPExceptionContext context) {
         super(code.getCode(), cause);
         this.code = code;
         this.cause = cause;
-        if (context == null) {
-            this.context = Collections.emptyMap();
-        }
-        else {
-            this.context = context;
-        }
+        this.context = context;
 
-        cleanStackTrace();
+        //TODO Vince check if context match the expected one from the error code
     }
 
     /**
@@ -60,7 +53,7 @@ public class TDPException extends RuntimeException {
      * @param cause the root cause of this error.
      */
     public TDPException(ErrorCode code, Throwable cause) {
-        this(code, cause, Collections.emptyMap());
+        this(code, cause, null);
     }
 
 
@@ -70,7 +63,7 @@ public class TDPException extends RuntimeException {
      * @param code the error code that holds all the .
      */
     public TDPException(ErrorCode code) {
-        this(code, null, Collections.emptyMap());
+        this(code, null, null);
     }
 
 
@@ -79,32 +72,6 @@ public class TDPException extends RuntimeException {
      */
     public ErrorCode getCode() {
         return code;
-    }
-
-
-    /**
-     * @return the error context.
-     */
-    public Map<String, Object> getContext() {
-        return context;
-    }
-
-    /**
-     * Removes all stack trace elements added by processing in this class.
-     */
-    private void cleanStackTrace() {
-        final StackTraceElement[] elements = this.getStackTrace();
-        StackTraceElement[] cleanedElements = elements;
-        int i = 0;
-        for (StackTraceElement element : elements) {
-            final String className = element.getClassName();
-            if (className.startsWith(PACKAGE_PREFIX)) {
-                cleanedElements = Arrays.copyOfRange(elements, i, elements.length);
-                break;
-            }
-            i++;
-        }
-        this.setStackTrace(cleanedElements);
     }
 
 
@@ -122,8 +89,8 @@ public class TDPException extends RuntimeException {
                 if (cause != null) {
                     generator.writeStringField("cause", cause.getMessage()); //$NON-NLS-1$
                 }
-                if (context.isEmpty() == false) {
-                    for (Map.Entry<String, Object> entry : context.entrySet()) {
+                if (context != null) {
+                    for (Map.Entry<String, Object> entry : context.entries()) {
                         generator.writeStringField(entry.getKey(), entry.getValue().toString());
                     }
                 }

@@ -21,6 +21,7 @@ import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 public class APIService {
 
@@ -72,11 +73,7 @@ public class APIService {
         try {
             return context.getBean(clazz, args);
         } catch (BeansException e) {
-            //TODO Vince : trouver un moyen plus élégant d'alimenter le contexte
-            Map<String, Object> context = new HashMap<>();
-            context.put("class", clazz);
-            context.put("args", args);
-            throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e, context);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e, TDPExceptionContext.build().put("class", clazz).put("args", args));
         }
     }
 
