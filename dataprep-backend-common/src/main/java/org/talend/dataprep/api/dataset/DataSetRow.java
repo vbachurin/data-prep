@@ -4,15 +4,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.exception.CommonMessages;
 import org.talend.dataprep.exception.Exceptions;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
-public class DataSetRow {
+public class DataSetRow implements Cloneable {
     private final static String DIFF_KEY = "__tdpDiff";
-    private final static String DELETED_KEY = "__tdpDeleted";
-    private final static String DIFF_NEW = "new";
+    private final static String ROW_DIFF_KEY = "__tdpRowDiff";
+    private final static String ROW_DIFF_DELETED = "delete";
+    private final static String ROW_DIFF_NEW = "new";
     private final static String DIFF_UPDATE = "update";
 
     private boolean deleted = false;
@@ -89,30 +91,38 @@ public class DataSetRow {
     /**
      * Write the row preview as JSON in the provided OutputStream
      *
+     * @param oldRow - unchanged values for preview diff
      * @param jGenerator - the json generator plugged to stream to write to
-     * @param originalValues - unchanged values for preview diff
      */
-    public void writePreviewTo(final JsonGenerator jGenerator, final Map<String, String> originalValues) {
-        final Map<String, String> diff = new HashMap<>();
+    public void writePreviewTo(final JsonGenerator jGenerator, final DataSetRow oldRow) {
+        if(oldRow.isDeleted() && isDeleted()) {
+            return;
+        }
 
         try {
             jGenerator.writeStartObject();
 
-            //row has been deleted : write the old values with DELETE_KEY property
-            if(isDeleted()) {
-                jGenerator.writeBooleanField(DELETED_KEY, true);
-                writeValues(jGenerator, originalValues);
+            //row is no more deleted : we write row values with the *NEW* flag
+            if (oldRow.isDeleted() && ! isDeleted()) {
+                jGenerator.writeStringField(ROW_DIFF_KEY, ROW_DIFF_NEW);
+                writeValues(jGenerator, values);
+            }
+
+            //row has been deleted : we write row values  with the *DELETED* flag
+            else if (!oldRow.isDeleted() && isDeleted()) {
+                jGenerator.writeStringField(ROW_DIFF_KEY, ROW_DIFF_DELETED);
+                writeValues(jGenerator, oldRow.cloneValues());
             }
 
             //row has been updated : write the new values and get the diff for each value, then write the DIFF_KEY property
             else {
+                final Map<String, String> diff = new HashMap<>();
+                final Map<String, String> originalValues = oldRow.cloneValues();
+
                 values.entrySet().stream().forEach((entry) -> {
                     try {
                         final String originalValue = originalValues.get(entry.getKey());
-                        if(originalValue == null) {
-                            diff.put(entry.getKey(), DIFF_NEW);
-                        }
-                        else if(! entry.getValue().equals(originalValue)) {
+                        if(!StringUtils.equals(entry.getValue(), originalValue)) {
                             diff.put(entry.getKey(), DIFF_UPDATE);
                         }
 
@@ -152,5 +162,12 @@ public class DataSetRow {
     public void clear() {
         deleted = false;
         values.clear();
+    }
+
+    @Override
+    public DataSetRow clone() {
+        final DataSetRow clone = new DataSetRow(this.cloneValues());
+        clone.setDeleted(this.isDeleted());
+        return clone;
     }
 }

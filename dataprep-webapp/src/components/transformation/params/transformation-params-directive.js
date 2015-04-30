@@ -13,6 +13,8 @@
      </transform-params>
      * @param {object} transformation The transformation containing parameters
      * @param {function} onSubmit The callback executed on form submit
+     * @param {function} onSubmitHoverOn The callback executed on mouseenter on form submit
+     * @param {function} onSubmitHoverOff The callback executed on mouseleave on form submit
      */
     function TransformParams() {
         return {
@@ -21,7 +23,9 @@
             replace: true,
             scope: {
                 transformation: '=',
-                onSubmit: '&'
+                onSubmit: '&',
+                onSubmitHoverOn: '&',
+                onSubmitHoverOff: '&'
             },
             bindToController: true,
             controllerAs: 'paramsCtrl',

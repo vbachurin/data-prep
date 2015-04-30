@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.service.api.UpdatePreviewInput;
 import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.Timed;
@@ -156,5 +158,33 @@ public class PreparationAPI extends APIService {
         HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationServiceURL, preparationId, stepId, body);
         command.execute();
         LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
+    }
+
+    //---------------------------------------------------------------------------------
+    //----------------------------------------PREVIEW----------------------------------
+    //---------------------------------------------------------------------------------
+
+    @RequestMapping(value = "/api/preparations/preview/append", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void previewAppend(InputStream body, HttpServletResponse response) {
+        try {
+            HystrixCommand<InputStream> transformation = getCommand(PreviewAppend.class, getClient(), transformServiceUrl, body);
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(transformation.execute(), outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw Exceptions.User(APIMessages.UNABLE_TO_TRANSFORM_DATASET, null, e);
+        }
+    }
+
+    @RequestMapping(value = "/api/preparations/preview/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void previewUpdate(@RequestBody UpdatePreviewInput input, HttpServletResponse response) {
+        try {
+            HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), contentServiceUrl, transformServiceUrl, preparationServiceURL, input);
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(transformation.execute(), outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw Exceptions.User(APIMessages.UNABLE_TO_TRANSFORM_DATASET, null, e);
+        }
     }
 }

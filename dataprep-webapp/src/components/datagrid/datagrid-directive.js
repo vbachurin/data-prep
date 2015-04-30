@@ -61,20 +61,19 @@
                  */
                 var formatter = function(row, cell, value, columnDef, dataContext) {
                     //deleted row preview
-                    if(dataContext.__tdpDeleted) {
-                        return '<div class="cellDeletedValue"><strike>' + value + '</strike></div>';
+                    if(dataContext.__tdpRowDiff === 'delete') {
+                        return '<div class="cellDeletedValue"><strike>' + (value ? value : ' ') + '</strike></div>';
+                    }
+                    //new row preview
+                    else if(dataContext.__tdpRowDiff === 'new') {
+                        return '<div class="cellNewValue">' + value + '</div>';
+                    }
+                    //updated cell preview
+                    if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id] === 'update') {
+                        return '<div class="cellUpdateValue">' + value + '</div>';
                     }
 
-                    //added/updated cell preview
-                    if(dataContext.__tdpDiff) {
-                        var diffType = dataContext.__tdpDiff[columnDef.id];
-                        switch(diffType) {
-                            case 'new':
-                                return '<div class="cellNewValue">' + value + '</div>';
-                            case 'update' :
-                                return '<div class="cellUpdateValue">' + value + '</div>';
-                        }
-                    }
+                    //no preview
                     return value;
                 };
 

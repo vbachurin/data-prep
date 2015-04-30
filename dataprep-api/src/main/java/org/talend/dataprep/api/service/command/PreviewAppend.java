@@ -25,7 +25,7 @@ import java.util.Base64;
 
 @Component
 @Scope("request")
-public class Preview extends HystrixCommand<InputStream> {
+public class PreviewAppend extends HystrixCommand<InputStream> {
 
     private final HttpClient client;
 
@@ -39,7 +39,7 @@ public class Preview extends HystrixCommand<InputStream> {
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
 
-    private Preview(HttpClient client, String transformationServiceUrl, InputStream body) {
+    private PreviewAppend(final HttpClient client, final String transformationServiceUrl, final InputStream body) {
         super(APIService.PREPARATION_GROUP);
         this.client = client;
         this.transformationServiceUrl = transformationServiceUrl;
@@ -49,18 +49,18 @@ public class Preview extends HystrixCommand<InputStream> {
     @Override
     protected InputStream run() throws Exception {
 
-        ObjectMapper mapper = builder.build();
-        JsonNode tree = mapper.reader().readTree(body);
-        JsonNode actions = tree.get("actions");
-        JsonNode records = tree.get("records");
+        final ObjectMapper mapper = builder.build();
+        final JsonNode tree = mapper.reader().readTree(body);
+        final JsonNode actions = tree.get("actions");
+        final JsonNode records = tree.get("records");
 
-        String actionsStr = "{\"actions\": " + actions.toString() + "}";
-        String recordsStr = "{\"records\": " + records.toString() + "}";
+        final String actionsStr = "{\"actions\": " + actions.toString() + "}";
+        final String recordsStr = "{\"records\": " + records.toString() + "}";
 
-        String encodedActions = Base64.getEncoder().encodeToString(actionsStr.getBytes());
+        final String encodedActions = Base64.getEncoder().encodeToString(actionsStr.getBytes());
         InputStream recordsIS = new ByteArrayInputStream(recordsStr.getBytes());
 
-        String uri = transformationServiceUrl + "/transform/?preview=true&actions=" + encodedActions;
+        final String uri = transformationServiceUrl + "/transform/preview?newActions=" + encodedActions;
         HttpPost transformationCall = new HttpPost(uri);
         transformationCall.setEntity(new InputStreamEntity(recordsIS));
         return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(),

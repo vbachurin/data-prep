@@ -17,6 +17,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.transformer.DiffTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
@@ -41,17 +42,45 @@ public class TransformationService {
     private TransformerFactory getTransformerFactory() {
         return context.getBean(SimpleTransformerFactory.class);
     }
+    private TransformerFactory getDiffTransformerFactory() {
+        return context.getBean(DiffTransformerFactory.class);
+    }
 
     @RequestMapping(value = "/transform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
     @VolumeMetered
     public void transform(
             @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions,
-            @ApiParam(value = "Preview mode (add diff in rows, add deleted rows, ...)") @RequestParam(value = "preview", defaultValue = "false", required = false) boolean preview,
             @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response) {
         try {
-            Transformer transformer = getTransformerFactory().get(new String(Base64.getDecoder().decode(actions)));
-            transformer.transform(content, response.getOutputStream(), preview);
+            final Transformer transformer = getTransformerFactory()
+                        .withActions(new String(Base64.getDecoder().decode(actions)))
+                        .get();
+            transformer.transform(content, response.getOutputStream());
+        } catch (IOException e) {
+            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+        }
+    }
+
+    @RequestMapping(value = "/transform/preview", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Transform input data", notes = "This operation returns the input data diff between the old and the new transformation actions")
+    @VolumeMetered
+    public void transformPreview(
+            @ApiParam(value = "Old actions to perform on content (encoded in Base64).") @RequestParam(value = "oldActions", required = false) final String oldActions,
+            @ApiParam(value = "New actions to perform on content (encoded in Base64).") @RequestParam(value = "newActions", required = false) final String newActions,
+            @ApiParam(value = "The row indexes to return") @RequestParam(value = "indexes", required = false) final String indexes,
+            @ApiParam(value = "Data set content as JSON") final InputStream content,
+            final HttpServletResponse response) {
+        try {
+            final String decodedIndexes = indexes == null ? null : new String(Base64.getDecoder().decode(indexes));
+            final String decodedOldActions = oldActions == null ? null : new String(Base64.getDecoder().decode(oldActions));
+            final String decodedNewActions = newActions == null ? null : new String(Base64.getDecoder().decode(newActions));
+
+            final Transformer transformer = getDiffTransformerFactory()
+                        .withIndexes(decodedIndexes)
+                        .withActions(decodedOldActions, decodedNewActions)
+                        .get();
+            transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
             throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
         }

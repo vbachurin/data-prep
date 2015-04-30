@@ -180,6 +180,49 @@
         this.getDetails = function() {
             return $http.get(RestURLs.preparationUrl + '/' + self.currentPreparation + '/details');
         };
+
+        //---------------------------------------------------------------------------------
+        //----------------------------------------PREVIEW----------------------------------
+        //---------------------------------------------------------------------------------
+        this.getPreviewAppend = function(records, actions, canceler) {
+            var actionParam = {records: records, actions: actions};
+            var request = {
+                method: 'POST',
+                url: RestURLs.previewUrl + '/append',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: actionParam,
+                timeout: canceler.promise
+            };
+
+            return $http(request);
+        };
+
+        this.getPreviewUpdate = function(step, newParams, lastActiveStep, recordsTdpId, canceler) {
+            var actionParam = {
+                stepId: step.transformation.stepId,
+                action : {
+                    action: step.actionParameters.action,
+                    parameters: newParams
+                },
+                tdpIds: recordsTdpId,
+                lastActiveStepId: lastActiveStep.transformation.stepId,
+                preparationId: self.currentPreparation
+            };
+
+            var request = {
+                method: 'POST',
+                url: RestURLs.previewUrl + '/update',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: actionParam,
+                timeout: canceler.promise
+            };
+
+            return $http(request);
+        };
     }
 
     angular.module('data-prep.services.preparation')

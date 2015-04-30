@@ -23,6 +23,9 @@
          */
         vm.resetParams = RecipeService.resetParams;
 
+        //---------------------------------------------------------------------------------------------
+        //------------------------------------------Mouse handlers-------------------------------------
+        //---------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name toggleStep
@@ -58,24 +61,11 @@
          * </ul>
          */
         vm.stepHoverStart = function(index) {
-            DatasetPreviewService.cancelPreview();
-
             _.forEach(vm.recipe, function(element, elementIndex) {
                 element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });
 
-            if(vm.recipe[index].inactive) {
-                var actions = [];
-                _.chain(vm.recipe)
-                    .filter(function(element, elementIndex) {
-                        return elementIndex <= index && element.inactive;
-                    })
-                    .forEach(function(element) {
-                        actions.push(element.actionParameters);
-                    })
-                    .value();
-                DatasetPreviewService.getPreviewAppendRecords(actions);
-            }
+            appendPreview(index);
         };
 
         /**
@@ -91,6 +81,9 @@
             DatasetPreviewService.cancelPreview();
         };
 
+        //---------------------------------------------------------------------------------------------
+        //------------------------------------------Params update--------------------------------------
+        //---------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name stepUpdateClosure
@@ -134,6 +127,50 @@
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });
+        };
+
+        //---------------------------------------------------------------------------------------------
+        //---------------------------------------------Preview-----------------------------------------
+        //---------------------------------------------------------------------------------------------
+        var appendPreview = function(stepPosition) {
+            if(! vm.recipe[stepPosition].inactive) {
+                return;
+            }
+
+            var actions = [];
+            _.chain(vm.recipe)
+                .filter(function(element, elementIndex) {
+                    return elementIndex <= stepPosition && element.inactive;
+                })
+                .forEach(function(element) {
+                    actions.push(element.actionParameters);
+                })
+                .value();
+            DatasetPreviewService.getPreviewAppendRecords(actions);
+        };
+
+        var updatePreview = function(step, params) {
+            params = params || {};
+            /*jshint camelcase: false */
+            params.column_name = step.column.id;
+
+            //Parameters has not changed
+            if(step.inactive || JSON.stringify(params) === JSON.stringify(step.actionParameters.parameters)) {
+                return;
+            }
+
+            var lastActiveStep = RecipeService.getLastActiveStep();
+            DatasetPreviewService.getPreviewUpdateRecords(step, params, lastActiveStep);
+        };
+
+        vm.previewUpdateClosure = function(step) {
+            return function(params) {
+                console.log('trigger preview');
+                console.log(step);
+                console.log(params);
+
+                updatePreview(step, params);
+            };
         };
     }
 

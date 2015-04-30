@@ -13,7 +13,7 @@
                 datasetUrl:             apiUrl + '/api/datasets',
                 transformUrl:           apiUrl + '/api/transform',
                 preparationUrl:         apiUrl + '/api/preparations',
-                previewUrl:             apiUrl + '/api/transform/preview'
+                previewUrl:             apiUrl + '/api/preparations/preview'
             };
         }]);
 })();

@@ -6,7 +6,7 @@
      * @name data-prep.services.dataset.service:DatasetPreviewService
      * @description Dataset preview service. This service holds the preview datagrid (SliickGrid) view and the (SlickGrid) filters
      */
-    function DatasetPreviewService($q, DatasetGridService, TransformationService) {
+    function DatasetPreviewService($q, DatasetGridService, PreparationService) {
         var self = this;
 
         //original
@@ -29,11 +29,12 @@
         };
 
         self.getPreviewAppendRecords = function(actions) {
-            //TODO if same actions and same displayed records, display modifiedRecords without REST call
+            self.cancelPreview();
 
             previewCanceler = $q.defer();
             var records = getDisplayedRows();
-            TransformationService.getPreviewAppend(records, actions, previewCanceler)
+
+            PreparationService.getPreviewAppend(records, actions, previewCanceler)
                 .then(function(response) {
                     originalRecords = DatasetGridService.data.records;
                     modifiedRecords = originalRecords.slice(0);
@@ -41,6 +42,30 @@
                     _.forEach(records, function(originalElement, arrayIndex) {
                         var tdpIndex = originalElement.tdpId;
                         modifiedRecords[tdpIndex] = response.data.records[arrayIndex];
+                    });
+
+                    DatasetGridService.updateRecords(modifiedRecords);
+                })
+                .finally(function() {
+                    previewCanceler = null;
+                });
+        };
+
+        self.getPreviewUpdateRecords = function(step, newParams, lastActiveStep) {
+            self.cancelPreview();
+
+            previewCanceler = $q.defer();
+            var recordsTdpId = _.map(getDisplayedRows(), function(element) {
+                return element.tdpId;
+            });
+
+            PreparationService.getPreviewUpdate(step, newParams, lastActiveStep, recordsTdpId, previewCanceler)
+                .then(function(response) {
+                    originalRecords = DatasetGridService.data.records;
+                    modifiedRecords = originalRecords.slice(0);
+
+                    _.forEach(recordsTdpId, function(tdpId, arrayIndex) {
+                        modifiedRecords[tdpId] = response.data.records[arrayIndex];
                     });
 
                     DatasetGridService.updateRecords(modifiedRecords);

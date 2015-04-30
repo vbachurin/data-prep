@@ -25,7 +25,7 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
     private Jackson2ObjectMapperBuilder builder;
 
     @Override
-    public void process(JsonParser parser, JsonGenerator generator, Consumer<ColumnMetadata> action, boolean preview) {
+    public void process(final JsonParser parser, final JsonGenerator generator, final List<Integer> indexes, final boolean preview, final Consumer<ColumnMetadata>... actions) {
         try {
             final StringWriter content = new StringWriter();
             final JsonGenerator contentGenerator = new JsonFactory().createGenerator(content);
@@ -71,7 +71,7 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
                     contentGenerator.flush();
 
                     final List<ColumnMetadata> columns = getColumnsMetadata(content);
-                    transform(columns, action);
+                    transform(columns, actions);
                     write(generator, columns);
 
                     return;
@@ -87,12 +87,11 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
 
     /**
      * Apply columns transformations
-     * 
-     * @param columns - the columns list
+     *  @param columns - the columns list
      * @param action - transformation action
      */
     // TODO Temporary: actions may transform columns, for now just print them as is
-    private void transform(final List<ColumnMetadata> columns, final Consumer<ColumnMetadata> action) {
+    private void transform(final List<ColumnMetadata> columns, final Consumer<ColumnMetadata>... action) {
     }
 
     /**

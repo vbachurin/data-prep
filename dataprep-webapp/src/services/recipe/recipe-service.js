@@ -99,6 +99,17 @@
             return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : -1;
         };
 
+        /**
+         * @ngdoc method
+         * @name getLastActiveStep
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get the last active step (last step if activeThresholdStep var is not set)
+         * @returns {object} The last active step
+         */
+        this.getLastActiveStep = function() {
+            return activeThresholdStep ? activeThresholdStep : recipe[recipe.length - 1];
+        };
+
         //--------------------------------------------------------------------------------------------------------------
         //----------------------------------------------------STEP PARAMS-----------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
