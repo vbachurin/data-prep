@@ -22,7 +22,7 @@ public class CSVSerializer implements Serializer {
     @Override
     public InputStream serialize(InputStream rawContent, DataSetMetadata metadata) {
         try {
-            final Map<String, String> parameters = metadata.getContent().getContentType().getParameters();
+            final Map<String, String> parameters = metadata.getContent().getParameters();
             final String separator = parameters.get(CSVFormatGuess.SEPARATOR_PARAMETER);
             CSVReader reader = new CSVReader(new InputStreamReader(rawContent), separator.charAt(0));
             StringWriter writer = new StringWriter();

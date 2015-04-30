@@ -8,7 +8,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.schema.Serializer;
 
 @Service("serializer#any")
-class NoOpSerializer implements Serializer {
+public class NoOpSerializer implements Serializer {
 
     @Override
     public InputStream serialize(InputStream rawContent, DataSetMetadata metadata) {

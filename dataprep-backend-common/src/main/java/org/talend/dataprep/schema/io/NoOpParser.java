@@ -10,7 +10,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.schema.SchemaParser;
 
 @Service("parser#any")
-class NoOpParser implements SchemaParser {
+public class NoOpParser implements SchemaParser {
 
     @Override
     public List<ColumnMetadata> parse(InputStream content, DataSetMetadata metadata) {

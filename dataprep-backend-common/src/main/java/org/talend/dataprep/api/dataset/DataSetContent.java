@@ -1,9 +1,12 @@
 package org.talend.dataprep.api.dataset;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.FormatGuesser;
 
 public class DataSetContent {
 
@@ -13,21 +16,41 @@ public class DataSetContent {
 
     private int nbLinesInFooter;
 
-    private final List<FormatGuess> contentTypes = new LinkedList<>();
+    private Map<String, String> parameters = new HashMap<>();
 
-    private FormatGuess contentType;
+    // FIXME is it really used???
+    private final List<FormatGuesser.Result> contentTypes = new LinkedList<>();
 
-    public void setContentTypeCandidates(List<FormatGuess> guessList) {
+    private String formatGuessId;
+
+    public void setContentTypeCandidates(List<FormatGuesser.Result> guessList) {
         contentTypes.clear();
         contentTypes.addAll(guessList);
     }
 
-    public FormatGuess getContentType() {
-        return contentType;
+    /**
+     * @return A map that contains additional information about the format (e.g. a separator for a CSV format).
+     */
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
-    public void setContentType(FormatGuess contentType) {
-        this.contentType = contentType;
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void addParameter(String key, String value) {
+        this.parameters.put(key, value);
+    }
+
+    public String getFormatGuessId()
+    {
+        return formatGuessId;
+    }
+
+    public void setFormatGuessId( String formatGuessId )
+    {
+        this.formatGuessId = formatGuessId;
     }
 
     public int getNbRecords() {

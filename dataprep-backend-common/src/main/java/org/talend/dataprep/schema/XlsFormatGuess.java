@@ -1,11 +1,22 @@
 package org.talend.dataprep.schema;
 
-import java.util.Collections;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.schema.io.XlsSchemaParser;
+import org.talend.dataprep.schema.io.XlsSerializer;
 
+@Component(XlsFormatGuess.BEAN_ID)
 public class XlsFormatGuess implements FormatGuess {
 
     public static final String MEDIA_TYPE = "application/vnd.ms-excel";
+
+    protected static final String BEAN_ID = "formatGuess#xls";
+
+    @Autowired
+    private XlsSchemaParser schemaParser;
+
+    @Autowired
+    private XlsSerializer serializer;
 
     @Override
     public String getMediaType() {
@@ -18,17 +29,17 @@ public class XlsFormatGuess implements FormatGuess {
     }
 
     @Override
-    public Map<String, String> getParameters() {
-        return Collections.emptyMap();
+    public SchemaParser getSchemaParser() {
+        return schemaParser;
     }
 
     @Override
-    public String getParserService() {
-        return "parser#xls"; //$NON-NLS-1$
+    public Serializer getSerializer() {
+        return serializer;
     }
 
     @Override
-    public String getSerializerService() {
-        return "serializer#xls"; //$NON-NLS-1$
+    public String getBeanId() {
+        return BEAN_ID;
     }
 }

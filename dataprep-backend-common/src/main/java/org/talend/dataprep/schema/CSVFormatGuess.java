@@ -1,17 +1,27 @@
 package org.talend.dataprep.schema;
 
 import java.beans.Transient;
-import java.util.Collections;
-import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.talend.dataprep.schema.io.CSVSchemaParser;
+import org.talend.dataprep.schema.io.CSVSerializer;
+
+@Service(CSVFormatGuess.BEAN_ID)
 public class CSVFormatGuess implements FormatGuess {
 
     public static final String SEPARATOR_PARAMETER = "SEPARATOR"; //$NON-NLS-1$
 
-    private final Separator sep;
+    protected static final String BEAN_ID = "formatGuess#csv";
 
-    public CSVFormatGuess(Separator sep) {
-        this.sep = sep;
+    @Autowired
+    private CSVSchemaParser schemaParser;
+
+    @Autowired
+    private CSVSerializer serializer;
+
+    public CSVFormatGuess() {
+        //
     }
 
     @Override
@@ -25,20 +35,19 @@ public class CSVFormatGuess implements FormatGuess {
     }
 
     @Override
-    public Map<String, String> getParameters() {
-        return Collections.singletonMap(SEPARATOR_PARAMETER, String.valueOf(sep.separator));
+    public SchemaParser getSchemaParser()
+    {
+        return this.schemaParser;
     }
 
     @Override
-    @Transient
-    public String getParserService() {
-        return "parser#csv"; //$NON-NLS-1$
+    public Serializer getSerializer()
+    {
+        return this.serializer;
     }
 
     @Override
-    @Transient
-    public String getSerializerService() {
-        return "serializer#csv"; //$NON-NLS-1$
+    public String getBeanId() {
+        return BEAN_ID;
     }
-
 }

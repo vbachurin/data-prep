@@ -27,7 +27,7 @@ public class CSVSchemaParser implements SchemaParser {
     public List<ColumnMetadata> parse(InputStream content, DataSetMetadata metadata) {
         List<ColumnMetadata> columnMetadata = new LinkedList<>();
         try {
-            final Map<String, String> parameters = metadata.getContent().getContentType().getParameters();
+            final Map<String, String> parameters = metadata.getContent().getParameters();
             final char separator = parameters.get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
             CSVReader reader = new CSVReader(new InputStreamReader(content), separator);
             // First line has column names

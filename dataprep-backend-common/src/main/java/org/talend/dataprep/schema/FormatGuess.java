@@ -1,7 +1,5 @@
 package org.talend.dataprep.schema;
 
-import java.util.Map;
-
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 /**
@@ -20,21 +18,18 @@ public interface FormatGuess {
     float getConfidence();
 
     /**
-     * @return A map that contains additional information about the format (e.g. a separator for a CSV format).
-     */
-    Map<String, String> getParameters();
-
-    /**
-     * @return A service id to a {@link org.talend.dataprep.schema.SchemaParser} that allowed data prep to read
-     * {@link ColumnMetadata column metadata} information from the data set.
+     * @return {@link org.talend.dataprep.schema.SchemaParser} that allowed data prep to read {@link ColumnMetadata
+     * column metadata} information from the data set.
      * @see org.springframework.context.ApplicationContext#getBean(String)
      */
-    String getParserService();
+    SchemaParser getSchemaParser();
 
     /**
-     * @return A service id to a {@link org.talend.dataprep.schema.Serializer serializer} able to transform the
-     * underlying data set content into JSON stream.
+     * @return {@link org.talend.dataprep.schema.Serializer serializer} able to transform the underlying data set
+     * content into JSON stream.
      * @see org.springframework.context.ApplicationContext#getBean(String)
      */
-    String getSerializerService();
+    Serializer getSerializer();
+
+    String getBeanId();
 }
