@@ -9,7 +9,7 @@ describe('Recipe controller', function() {
 
     beforeEach(module('data-prep.recipe'));
 
-    beforeEach(inject(function($rootScope, $controller, $q, RecipeService, PlaygroundService, PreparationService) {
+    beforeEach(inject(function($rootScope, $controller, $q, RecipeService, PlaygroundService, PreparationService, DatasetPreviewService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -28,6 +28,9 @@ describe('Recipe controller', function() {
         });
         spyOn(PreparationService, 'updateStep').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'loadStep').and.returnValue($q.when(true));
+        spyOn(DatasetPreviewService, 'getPreviewAppendRecords').and.returnValue($q.when(true));
+        spyOn(DatasetPreviewService, 'getPreviewDisableRecords').and.returnValue($q.when(true));
+        spyOn(DatasetPreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
     }));
 
     afterEach(inject(function(RecipeService) {
