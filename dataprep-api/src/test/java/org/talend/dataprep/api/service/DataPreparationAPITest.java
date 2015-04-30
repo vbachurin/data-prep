@@ -64,8 +64,8 @@ public class DataPreparationAPITest {
         RestAssured.port = port;
         for (APIService apiService : apiServices) {
             apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
-            apiService.setTransformationServiceURL("http://localhost:" + port + "/");
-            apiService.setPreparationServiceURL("http://localhost:" + port + "/");
+            apiService.setTransformationServiceURL("http://localhost:" + port);
+            apiService.setPreparationServiceURL("http://localhost:" + port);
         }
     }
 
