@@ -116,7 +116,7 @@ public class DataPreparationAPITest {
         // TODO temp log to see what's going in newbuild
         LOG.error("dataset id created id " + dataSetId);
 
-        String dataset = given().get("/api/datasets/" + dataSetId).then().toString();
+        String dataset = given().get("/api/datasets/" + dataSetId).asString();
 
         // TODO temp log to see what's going in newbuild
         LOG.error("dataset is " + dataset);

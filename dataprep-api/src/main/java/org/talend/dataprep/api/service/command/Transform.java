@@ -39,13 +39,6 @@ public class Transform extends ChainedCommand<InputStream, InputStream> {
     @Override
     protected InputStream run() throws Exception {
 
-        InputStreamEntity anotherInputStream = new InputStreamEntity(getInput());
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        anotherInputStream.writeTo(out);
-
-        // TODO temp log to see what's going in newbuild
-        LOG.error("dataset content = " + new String(out.toByteArray()));
-
         String uri = transformServiceUrl + "/transform/?actions=" + actions; //$NON-NLS-1$
         InputStreamEntity datasetContent = new InputStreamEntity(getInput());
 
