@@ -116,6 +116,11 @@ public class DataPreparationAPITest {
         // TODO temp log to see what's going in newbuild
         LOG.error("dataset id created id " + dataSetId);
 
+        String dataset = given().get("/api/datasets/" + dataSetId).then().toString();
+
+        // TODO temp log to see what's going in newbuild
+        LOG.error("dataset is " + dataset);
+
         InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
         String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
         String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
