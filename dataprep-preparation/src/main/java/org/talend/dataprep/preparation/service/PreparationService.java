@@ -179,9 +179,8 @@ public class PreparationService {
             }
             stream.flush();
         } catch (IOException e) {
-            throw new TDPException(PreparationErrorCodes.UNABLE_TO_SERVE_PREPARATION_CONTENT,
-                    e,
-                    TDPExceptionContext.build().put("id", id).put("version", version));
+            throw new TDPException(PreparationErrorCodes.UNABLE_TO_SERVE_PREPARATION_CONTENT, e, TDPExceptionContext.build()
+                    .put("id", id).put("version", version));
         }
     }
 
@@ -195,7 +194,7 @@ public class PreparationService {
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
         }
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
@@ -224,7 +223,7 @@ public class PreparationService {
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
         }
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
@@ -272,7 +271,7 @@ public class PreparationService {
             final Step step = preparationRepository.get(stepId, Step.class);
             return preparationRepository.get(step.getContent(), PreparationActions.class);
         } else {
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, null, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
         }
     }
 }

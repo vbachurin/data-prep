@@ -50,7 +50,7 @@ public class PreparationAddAction extends HystrixCommand<Void> {
             if (statusCode >= 200) {
                 return null;
             }
-            throw new TDPException(APIErrorCodes.UNABLE_TO_ACTIONS_TO_PREPARATION, null, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(APIErrorCodes.UNABLE_TO_ACTIONS_TO_PREPARATION, TDPExceptionContext.build().put("id", id));
         } finally {
             actionAppend.releaseConnection();
         }

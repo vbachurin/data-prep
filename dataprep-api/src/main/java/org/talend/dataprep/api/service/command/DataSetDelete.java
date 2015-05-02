@@ -83,9 +83,8 @@ public class DataSetDelete extends HystrixCommand<Void> {
         // if the dataset is used by preparation(s), the deletion is forbidden
         if (preparations.size() > 0) {
             LOG.debug("DataSet {} is used by {} preparation(s) and cannot be deleted", dataSetId, preparations.size());
-            throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET,
-                    null,
-                    TDPExceptionContext.build().put("dataSetId", dataSetId).put("preparations", preparations));
+            throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build()
+                    .put("dataSetId", dataSetId).put("preparations", preparations));
         }
 
         return doDeleteDataSet();
@@ -119,7 +118,7 @@ public class DataSetDelete extends HystrixCommand<Void> {
         if (statusCode >= 200) {
             return null;
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, null, TDPExceptionContext.build().put("dataSetId", dataSetId));
+        throw new TDPException(APIErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build().put("dataSetId", dataSetId));
     }
 
 }

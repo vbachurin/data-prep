@@ -60,15 +60,17 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 // Data set exists, but content isn't yet analyzed, retry request
                 retryCount++;
                 if (retryCount > MAX_RETRY) {
-                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, null, TDPExceptionContext.build().put("id", dataSetId));
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, TDPExceptionContext.build().put(
+                            "id", dataSetId));
                 }
                 // Pause before retry
-                final int pauseTime = 1000 * retryCount;
+                final int pauseTime = 100 * retryCount;
                 LOGGER.info("Data set #{} content is not ready, pausing for {} ms.", dataSetId, pauseTime);
                 try {
                     Thread.sleep(pauseTime);
                 } catch (InterruptedException e) {
-                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id", dataSetId));
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, TDPExceptionContext.build().put(
+                            "id", dataSetId));
                 }
                 return handleResponse(client.execute(contentRetrieval));
             } else if (statusCode == HttpStatus.SC_OK) {
