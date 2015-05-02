@@ -61,7 +61,7 @@ public class PreparationUpdate extends HystrixCommand<String> {
             if (statusCode == 200) {
                 return IOUtils.toString(response.getEntity().getContent());
             }
-            throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_PREPARATION, null, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_PREPARATION, TDPExceptionContext.build().put("id", id));
         } finally {
             preparationCreation.releaseConnection();
         }

@@ -76,7 +76,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, null, TDPExceptionContext.build().put(
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build().put(
                         "dataSetId", dataSetMetadata.getId()));
             }
         } else {

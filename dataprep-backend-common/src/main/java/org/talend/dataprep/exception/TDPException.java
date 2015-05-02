@@ -51,13 +51,23 @@ public class TDPException extends RuntimeException {
     }
 
     /**
-     * Light constructor without context.
+     * Lightweight constructor without context.
      *
      * @param code the error code that holds all the .
      * @param cause the root cause of this error.
      */
     public TDPException(ErrorCode code, Throwable cause) {
         this(code, cause, null);
+    }
+
+    /**
+     * Lightweight constructor without a cause.
+     *
+     * @param code the error code that holds all the .
+     * @param context the exception context.
+     */
+    public TDPException(ErrorCode code, TDPExceptionContext context) {
+        this(code, null, context);
     }
 
     /**
@@ -68,6 +78,7 @@ public class TDPException extends RuntimeException {
     public TDPException(ErrorCode code) {
         this(code, null, null);
     }
+
 
     /**
      * Make sure that the context is filled with the expected context entries from the error code. If an entry is
