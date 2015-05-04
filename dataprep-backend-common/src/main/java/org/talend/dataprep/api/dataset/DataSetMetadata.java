@@ -1,7 +1,5 @@
 package org.talend.dataprep.api.dataset;
 
-import java.io.InputStream;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -9,14 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.data.annotation.Id;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
 import org.talend.dataprep.schema.FormatGuess;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.talend.dataprep.schema.SchemaParserResult;
 
 /**
@@ -66,28 +58,6 @@ public class DataSetMetadata {
         this.rowMetadata = rowMetadata;
     }
 
-    /**
-     * @param json A valid JSON stream, may be <code>null</code>.
-     * @return The {@link DataSetMetadata} instance parsed from stream or <code>null</code> if parameter is null. If
-     * stream is empty, also returns <code>null</code>.
-     */
-    public static DataSetMetadata from(InputStream json) {
-        if (json == null) {
-            return null;
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.DEFAULT);
-            String jsonString = IOUtils.toString(json).trim();
-            if (jsonString.isEmpty()) {
-                return null; // Empty stream
-            }
-            return mapper.reader(DataSetMetadata.class).readValue(jsonString);
-        } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_JSON, e);
-        }
-    }
-
     public String getId() {
         return id;
     }
@@ -126,25 +96,6 @@ public class DataSetMetadata {
         return calendar.getTime();
     }
 
-    /**
-     * Writes the current {@link DataSetMetadata} to <code>writer</code> as JSON format.
-     *
-     * @param writer A non-null writer.
-     */
-    public void to(Writer writer) {
-        if (writer == null) {
-            throw new IllegalArgumentException("Writer cannot be null.");
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.DEFAULT);
-            mapper.writer().writeValue(writer, this);
-            writer.flush();
-        } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
-        }
-    }
-
     public boolean isDraft() {
         return draft;
     }
@@ -153,13 +104,11 @@ public class DataSetMetadata {
         this.draft = draft;
     }
 
-    public SchemaParserResult getSchemaParserResult()
-    {
+    public SchemaParserResult getSchemaParserResult() {
         return schemaParserResult;
     }
 
-    public void setSchemaParserResult( SchemaParserResult schemaParserResult )
-    {
+    public void setSchemaParserResult(SchemaParserResult schemaParserResult) {
         this.schemaParserResult = schemaParserResult;
     }
 
@@ -192,6 +141,8 @@ public class DataSetMetadata {
         private boolean draft = true;
 
         private FormatGuess contentType;
+
+        private String formatGuessId;
 
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
@@ -262,8 +213,8 @@ public class DataSetMetadata {
             return this;
         }
 
-        public Builder contentType(FormatGuess contentType) {
-            this.contentType = contentType;
+        public Builder formatGuessId(String formatGuessId) {
+            this.formatGuessId = formatGuessId;
             return this;
         }
 
@@ -289,8 +240,9 @@ public class DataSetMetadata {
             content.setNbRecords(size);
             content.setNbLinesInHeader(headerSize);
             content.setNbLinesInFooter(footerSize);
-            if (contentType != null) {
-                content.setContentType(contentType);
+
+            if (formatGuessId != null) {
+                content.setFormatGuessId(formatGuessId);
             }
             // Lifecycle information
             DataSetLifecycle lifecycle = metadata.getLifecycle();

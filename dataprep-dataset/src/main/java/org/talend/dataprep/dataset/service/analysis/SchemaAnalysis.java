@@ -10,6 +10,7 @@ import javax.jms.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,9 @@ public class SchemaAnalysis {
     @Autowired
     StatisticsClientJson statisticsClient;
 
+    @Autowired
+    ApplicationContext applicationContext;
+
     @JmsListener(destination = Destinations.SCHEMA_ANALYSIS)
     public void indexDataSet(Message message) {
         try {
@@ -58,7 +62,7 @@ public class SchemaAnalysis {
                     try {
                         LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                         // Create a content with the expected format for the StatisticsClientJson class
-                        final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata));
+                        final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata),applicationContext);
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.registerModule(module);
                         final StringWriter content = new StringWriter();

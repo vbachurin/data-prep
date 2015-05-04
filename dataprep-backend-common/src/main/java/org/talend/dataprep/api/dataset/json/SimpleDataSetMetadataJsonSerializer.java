@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.schema.FormatGuess;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -15,6 +18,13 @@ public class SimpleDataSetMetadataJsonSerializer {
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    public SimpleDataSetMetadataJsonSerializer(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -45,18 +55,21 @@ public class SimpleDataSetMetadataJsonSerializer {
             generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
             generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
             generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
+
             generator.writeBooleanField("draft", dataSetMetadata.isDraft()); //$NON-NLS-1
-            if (dataSetMetadata.getContent() != null && dataSetMetadata.getContent().getContentType() != null) {
-                generator.writeStringField("contentType", //
-                        dataSetMetadata.getContent().getContentType().getMediaType());//$NON-NLS-1
-            }
-            if (dataSetMetadata.getContent().getContentType() != null) {
-                generator.writeStringField("type", dataSetMetadata.getContent().getContentType().getMediaType()); //$NON-NLS-1
+
+            if (dataSetMetadata.getContent().getFormatGuessId() != null) {
+                FormatGuess formatGuess = applicationContext.getBean(dataSetMetadata.getContent().getFormatGuessId(), //
+                        FormatGuess.class);
+
+                generator.writeStringField("type", formatGuess.getMediaType()); //$NON-NLS-1
+
             }
 
             // data we need for extra dataset validation (i.e sheetNumber for excell sheet)
             if (dataSetMetadata.getSchemaParserResult() != null) {
-                generator.writeNumberField("schemaParserResult.sheetNumber", dataSetMetadata.getSchemaParserResult().getSheetNumber());
+                generator.writeNumberField("schemaParserResult.sheetNumber", dataSetMetadata.getSchemaParserResult()
+                        .getSheetNumber());
             }
 
             synchronized (DATE_FORMAT) {

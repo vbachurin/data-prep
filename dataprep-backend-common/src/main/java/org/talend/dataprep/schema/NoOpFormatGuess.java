@@ -1,13 +1,24 @@
 package org.talend.dataprep.schema;
 
-import java.io.ByteArrayInputStream;
-import java.util.Collections;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.schema.io.NoOpParser;
+import org.talend.dataprep.schema.io.NoOpSerializer;
 
-class NoOpFormatGuess implements FormatGuess {
+@Component(NoOpFormatGuess.BEAN_ID)
+public class NoOpFormatGuess implements FormatGuess {
+
+    protected static final String BEAN_ID = "formatGuess#any";
+
+    @Autowired
+    private NoOpSerializer serializer;
+
+    @Autowired
+    private NoOpParser parser;
 
     @Override
     public String getMediaType() {
-        return "*/*";
+        return "*/*"; //$NON-NLS-1$
     }
 
     @Override
@@ -16,15 +27,19 @@ class NoOpFormatGuess implements FormatGuess {
     }
 
     @Override
-    public SchemaParser getSchemaParser() {
-        return content -> SchemaParserResult.Builder.parserResult() //
-                .columnMetadatas(Collections.emptyList()) //
-                .draft(false) //
-                .build();
+    public Serializer getSerializer()
+    {
+        return serializer;
     }
 
     @Override
-    public Serializer getSerializer() {
-        return (rawContent, metadata) -> new ByteArrayInputStream(new byte[0]);
+    public SchemaParser getSchemaParser()
+    {
+        return parser;
+    }
+
+    @Override
+    public String getBeanId() {
+        return BEAN_ID;
     }
 }

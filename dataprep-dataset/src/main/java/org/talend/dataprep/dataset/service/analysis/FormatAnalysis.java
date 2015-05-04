@@ -2,7 +2,11 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -10,6 +14,7 @@ import javax.jms.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -28,14 +33,17 @@ import org.talend.dataprep.schema.SchemaParserResult;
 
 /**
  * Analyzes the raw content of a dataset and determine the best format (XLS, CSV...) for the data set raw content. It
- * also parses column name information.
- * Once analyzed, data prep would know how to access content.
+ * also parses column name information. Once analyzed, data prep would know how to access content.
+ * 
  * @see DataSetContentStore#get(DataSetMetadata)
  */
 @Component
 public class FormatAnalysis {
 
     private static final Logger LOG = LoggerFactory.getLogger(FormatAnalysis.class);
+
+    @Autowired
+    ApplicationContext context;
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -59,35 +67,40 @@ public class FormatAnalysis {
                 DataSetMetadata metadata = repository.get(dataSetId);
                 if (metadata != null) {
                     // Guess media type based on InputStream
-                    Set<FormatGuess> mediaTypes = new HashSet<>();
+                    Set<FormatGuesser.Result> mediaTypes = new HashSet<>();
                     for (FormatGuesser guesser : guessers) {
                         try (InputStream content = store.getAsRaw(metadata)) {
-                            FormatGuess mediaType = guesser.guess(content);
+                            FormatGuesser.Result mediaType = guesser.guess(content);
                             mediaTypes.add(mediaType);
                         } catch (IOException e) {
                             LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
                         }
                     }
                     // Select best format guess
-                    List<FormatGuess> orderedGuess = new LinkedList<>(mediaTypes);
-                    Collections.sort(orderedGuess, (g1, g2) -> ((int) (g2.getConfidence() - g1.getConfidence())));
-                    FormatGuess bestGuess = orderedGuess.get(0);
+                    List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
+                    Collections.sort(orderedGuess, (g1, g2) -> ((int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess()
+                            .getConfidence())));
+
+                    FormatGuesser.Result bestGuessResult = orderedGuess.get(0);
+                    FormatGuess bestGuess = bestGuessResult.getFormatGuess();
                     DataSetContent dataSetContent = metadata.getContent();
-                    dataSetContent.setContentType(bestGuess);
+                    dataSetContent.setParameters(bestGuessResult.getParameters());
+                    dataSetContent.setFormatGuessId(bestGuess.getBeanId());
                     dataSetContent.setContentTypeCandidates(orderedGuess); // Remember format guesses
                     // Parse column name information
                     try (InputStream content = store.getAsRaw(metadata)) {
                         SchemaParser parser = bestGuess.getSchemaParser();
 
-                        SchemaParserResult schemaParserResult = parser.parse( content );
-                        if (schemaParserResult.draft()){
-                            metadata.setSheetNumber( -1 );
-                            metadata.setDraft( true );
-                            metadata.setSchemaParserResult( schemaParserResult );
+                        SchemaParserResult schemaParserResult = parser.parse(content, metadata);
+                        if (schemaParserResult.draft()) {
+                            metadata.setSheetNumber(-1);
+                            metadata.setDraft(true);
+                            metadata.setSchemaParserResult(schemaParserResult);
                             return;
                         }
-                        metadata.setDraft( false );
+                        metadata.setDraft(false);
                         metadata.getRow().setColumns(schemaParserResult.getColumnMetadatas());
+
                     } catch (IOException e) {
                         throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);
                     }
@@ -96,8 +109,8 @@ public class FormatAnalysis {
                     jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
                         Message schemaAnalysisMessage = session.createMessage();
                         schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                        return schemaAnalysisMessage;
-                    });
+                            return schemaAnalysisMessage;
+                        });
                 } else {
                     LOG.info("Data set #{} no longer exists.", dataSetId);
                 }
