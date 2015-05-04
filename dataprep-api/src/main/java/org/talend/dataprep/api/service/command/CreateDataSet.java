@@ -55,6 +55,6 @@ public class CreateDataSet extends HystrixCommand<String> {
         } finally {
             contentCreation.releaseConnection();
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET, null);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_DATASET);
     }
 }

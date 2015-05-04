@@ -57,6 +57,6 @@ public class CreateOrUpdateDataSet extends HystrixCommand<String> {
         } finally {
             contentCreation.releaseConnection();
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET, null);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_CREATE_OR_UPDATE_DATASET);
     }
 }
