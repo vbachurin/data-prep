@@ -55,13 +55,10 @@ public class TransformAPI extends APIService {
 
             IOUtils.copyLarge(input, outputStream);
             outputStream.flush();
-
-        } catch (IOException e) {
+        } catch (Throwable e) {
+            LOG.error("error while applying transform " + e.getMessage(), e);
             throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e, TDPExceptionContext.build().put("dataSetId",
                     dataSetId));
-        } catch (Throwable e) {
-            LOG.error("error while PreparationAPITest " + e.getMessage(), e);
-            throw e;
         }
 
         LOG.debug("Transformation of dataset id #{} done.", dataSetId);
