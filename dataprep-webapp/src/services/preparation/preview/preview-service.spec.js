@@ -61,7 +61,7 @@ describe('Preparation Service', function () {
         spyOn(DatasetGridService, 'updateRecords').and.returnValue(null);
 
         //simulate datagrid get item to have displayedTdpIds = [0,1,2,6,7,10]
-        spyOn(DatasetGridService.dataView, "getItem").and.callFake(function(id) {
+        spyOn(DatasetGridService.dataView, 'getItem').and.callFake(function(id) {
             switch(id) {
                 case 0:
                     return data.records[0];
@@ -77,7 +77,7 @@ describe('Preparation Service', function () {
                     return data.records[10];
             }
             return null;
-        })
+        });
     }));
 
     it('should call and display a diff preview', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
@@ -105,7 +105,7 @@ describe('Preparation Service', function () {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
-        var newParams = {value: "--"};
+        var newParams = {value: '--'};
         var displayedTdpIds = [0,1,2,6,7,10];
 
         //when
