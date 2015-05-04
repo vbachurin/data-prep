@@ -39,9 +39,6 @@ import com.jayway.restassured.path.json.JsonPath;
 @WebIntegrationTest
 public class DataPreparationAPITest {
 
-    /** This class' logger. */
-    private static final Logger LOG = LoggerFactory.getLogger(DataPreparationAPITest.class);
-
     @Value("${local.server.port}")
     public int port;
 
@@ -108,9 +105,6 @@ public class DataPreparationAPITest {
 
         assertNotNull(dataSetId);
         assertFalse(dataSetId.equals(StringUtils.EMPTY));
-
-        LOG.error("Dataset content is...");
-        when().get("api/datasets/" + dataSetId).then().log().all();
 
         InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
         String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
