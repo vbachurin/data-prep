@@ -20,10 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.Application;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.PreparationRepository;
@@ -36,8 +35,7 @@ import com.jayway.restassured.path.json.JsonPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@IntegrationTest
+@WebIntegrationTest
 public class DataPreparationAPITest {
 
     /** This class' logger. */
