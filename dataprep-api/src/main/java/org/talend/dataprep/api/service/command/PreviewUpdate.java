@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -35,6 +36,10 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
 
     private final PreviewUpdateInput input;
 
+    private ObjectMapper objectMapper;
+    private ObjectReader jsonReader;
+    private ObjectWriter jsonWriter;
+
     @Autowired
     private WebApplicationContext context;
 
@@ -57,13 +62,13 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
         final JsonNode preparationDetails = getPreparationDetails(input.getPreparationId());
 
         //extract actions by steps in chronological order, until input defined last active step
-        final List<String> stepsIds = getActionsStepIds(preparationDetails, input.getLastActiveStepId());
+        final List<String> stepsIds = getActionsStepIds(preparationDetails, input.getCurrentStepId());
         final Map<String, Action> originalActions = getActions(preparationDetails, stepsIds);
 
         //modify actions to include the update
         final Map<String, Action> modifiedActions = new LinkedHashMap<>(originalActions);
-        if(modifiedActions.get(input.getStepId()) != null) {
-            modifiedActions.put(input.getStepId(), input.getAction());
+        if(modifiedActions.get(input.getUpdateStepId()) != null) {
+            modifiedActions.put(input.getUpdateStepId(), input.getAction());
         }
 
         //serialize and base 64 encode the 2 actions list
@@ -79,24 +84,14 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
 
         //call transformation preview with content and the 2 transformations
         return previewTransformation(content, oldEncodedActions, newEncodedActions, encodedTdpIds);
-
-
-        //Implement this new service :
-        //          - on each row, apply the 2 transformations and determine the row to display in preview with the flags set
-        //                   flag NEW : deleted by old but not by new
-        //                   flag UPDATED : not deleted at all and value has changed
-        //                   flag DELETED : not deleted by old by is by new
-        //          - write rows that has index input.getTdpIds() (index represents not deleted row from old transfo) + the ones with NEW flag
-
     }
 
     /**
      * Call the transformation service to compute preview between old and new transformation
-     * @param content
-     * @param oldEncodedActions
-     * @param newEncodedActions
-     * @param encodedTdpIds
-     * @return
+     * @param content - the dataset content
+     * @param oldEncodedActions - the old actions
+     * @param newEncodedActions - the preview actions
+     * @param encodedTdpIds - the TDP ids
      * @throws IOException
      */
     private InputStream previewTransformation(final InputStream content, final String oldEncodedActions, final String newEncodedActions,final String encodedTdpIds) throws IOException {
@@ -125,8 +120,7 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
      * @return the serialized and encoded actions
      */
     private String serializeAndEncodeActions(final Map<String, Action> stepActions) throws JsonProcessingException {
-        final ObjectWriter writer = builder.build().writer();
-        final String serialized = "{\"actions\": " + writer.writeValueAsString(stepActions.values()) + "}";
+        final String serialized = "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions.values()) + "}";
 
         return Base64.getEncoder().encodeToString(serialized.getBytes());
     }
@@ -137,8 +131,7 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
      * @return the serialized and encoded list
      */
     private String serializeAndEncodeList(final List<Integer> listToEncode) throws JsonProcessingException {
-        final ObjectWriter writer = builder.build().writer();
-        final String serialized = writer.writeValueAsString(listToEncode);
+        final String serialized = getJsonWriter().writeValueAsString(listToEncode);
 
         return Base64.getEncoder().encodeToString(serialized.getBytes());
     }
@@ -151,12 +144,11 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
      * @throws IOException
      */
     private Map<String, Action> getActions(final JsonNode preparationDetails, final List<String> stepsIds) throws IOException {
-        final ObjectMapper mapper = builder.build();
         final Map<String, Action> result = new LinkedHashMap<>(stepsIds.size());
         final JsonNode actionsNode = preparationDetails.get("actions");
 
         for(int i = 0; i < stepsIds.size(); ++i) {
-            result.put(stepsIds.get(i), mapper.readValue(actionsNode.get(i).toString(), Action.class));
+            result.put(stepsIds.get(i), getObjectMapper().readValue(actionsNode.get(i).toString(), Action.class));
         }
 
         return result;
@@ -193,13 +185,33 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
      * @throws IOException
      */
     private JsonNode getPreparationDetails(final String preparationId) throws IOException {
-        final ObjectMapper mapper = builder.build();
-        final HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparationId); //$NON-NLS-1$
+        final HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparationId);
         try {
             InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
-            return mapper.reader().readTree(content);
+            return getJsonReader().readTree(content);
         } finally {
             preparationRetrieval.releaseConnection();
         }
+    }
+
+    public ObjectMapper getObjectMapper() {
+        if(objectMapper == null) {
+            objectMapper = builder.build();
+        }
+        return objectMapper;
+    }
+
+    public ObjectReader getJsonReader() {
+        if(jsonReader == null) {
+            jsonReader = getObjectMapper().reader();
+        }
+        return jsonReader;
+    }
+
+    public ObjectWriter getJsonWriter() {
+        if(jsonWriter == null) {
+            jsonWriter = getObjectMapper().writer();
+        }
+        return jsonWriter;
     }
 }

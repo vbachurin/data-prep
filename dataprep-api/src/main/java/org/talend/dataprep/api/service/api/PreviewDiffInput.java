@@ -2,12 +2,10 @@ package org.talend.dataprep.api.service.api;
 
 import java.util.List;
 
-import org.talend.dataprep.api.preparation.Action;
-
-public class PreviewDisableInput {
+public class PreviewDiffInput {
     private String preparationId;
     private String currentStepId;
-    private String disableStepId;
+    private String previewStepId;
     private List<Integer> tdpIds;
 
     public String getPreparationId() {
@@ -26,12 +24,12 @@ public class PreviewDisableInput {
         this.currentStepId = currentStepId;
     }
 
-    public String getDisableStepId() {
-        return disableStepId;
+    public String getPreviewStepId() {
+        return previewStepId;
     }
 
-    public void setDisableStepId(String disableStepId) {
-        this.disableStepId = disableStepId;
+    public void setPreviewStepId(String previewStepId) {
+        this.previewStepId = previewStepId;
     }
 
     public List<Integer> getTdpIds() {

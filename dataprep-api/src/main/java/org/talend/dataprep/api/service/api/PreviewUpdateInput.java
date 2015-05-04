@@ -5,19 +5,11 @@ import org.talend.dataprep.api.preparation.Action;
 import java.util.List;
 
 public class PreviewUpdateInput {
-    private String stepId;
     private Action action;
     private List<Integer> tdpIds;
-    private String lastActiveStepId;
+    private String currentStepId;
+    private String updateStepId;
     private String preparationId;
-
-    public String getStepId() {
-        return stepId;
-    }
-
-    public void setStepId(String stepId) {
-        this.stepId = stepId;
-    }
 
     public Action getAction() {
         return action;
@@ -35,12 +27,20 @@ public class PreviewUpdateInput {
         this.tdpIds = tdpIds;
     }
 
-    public String getLastActiveStepId() {
-        return lastActiveStepId;
+    public String getCurrentStepId() {
+        return currentStepId;
     }
 
-    public void setLastActiveStepId(String lastActiveStepId) {
-        this.lastActiveStepId = lastActiveStepId;
+    public void setCurrentStepId(String currentStepId) {
+        this.currentStepId = currentStepId;
+    }
+
+    public String getUpdateStepId() {
+        return updateStepId;
+    }
+
+    public void setUpdateStepId(String updateStepId) {
+        this.updateStepId = updateStepId;
     }
 
     public String getPreparationId() {

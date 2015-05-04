@@ -90,6 +90,13 @@ public class DataSetRow implements Cloneable {
 
     /**
      * Write the row preview as JSON in the provided OutputStream
+     * We just applied the 2 transformations and this row has been determined to be displayed in preview.
+     * Here we decide the flags to set and write is to the response
+     * <ul>
+     *     <li>flag NEW : deleted by old but not by new</li>
+     *     <li>flag UPDATED : not deleted at all and value has changed</li>
+     *     <li>flag DELETED : not deleted by old by is by new</li>
+     * </ul>
      *
      * @param oldRow - unchanged values for preview diff
      * @param jGenerator - the json generator plugged to stream to write to

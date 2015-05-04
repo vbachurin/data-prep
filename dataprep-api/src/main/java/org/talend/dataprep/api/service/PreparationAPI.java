@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.service.api.PreviewDisableInput;
+import org.talend.dataprep.api.service.api.PreviewDiffInput;
 import org.talend.dataprep.api.service.api.PreviewUpdateInput;
 import org.talend.dataprep.api.service.command.*;
 import org.talend.dataprep.exception.Exceptions;
@@ -165,22 +165,10 @@ public class PreparationAPI extends APIService {
     //----------------------------------------PREVIEW----------------------------------
     //---------------------------------------------------------------------------------
 
-    @RequestMapping(value = "/api/preparations/preview/append", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void previewAppend(InputStream body, HttpServletResponse response) {
+    @RequestMapping(value = "/api/preparations/preview/diff", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void previewDiff(@RequestBody PreviewDiffInput input, HttpServletResponse response) {
         try {
-            HystrixCommand<InputStream> transformation = getCommand(PreviewAppend.class, getClient(), transformServiceUrl, body);
-            ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(transformation.execute(), outputStream);
-            outputStream.flush();
-        } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_TRANSFORM_DATASET, null, e);
-        }
-    }
-
-    @RequestMapping(value = "/api/preparations/preview/disable", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public void previewDisable(@RequestBody PreviewDisableInput input, HttpServletResponse response) {
-        try {
-            HystrixCommand<InputStream> transformation = getCommand(PreviewDisable.class, getClient(),  contentServiceUrl, transformServiceUrl, preparationServiceURL, input);
+            HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(),  contentServiceUrl, transformServiceUrl, preparationServiceURL, input);
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
