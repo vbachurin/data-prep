@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -28,8 +28,6 @@ import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Separator;
 import org.talend.dataprep.test.SameJSONFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DataSetMetadataJSONTest.class)
 @Configuration
@@ -37,9 +35,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableAutoConfiguration
 public class DataSetMetadataJSONTest {
 
-
     @Autowired
-    DataSetMetadataModule dataSetMetadataModule;
+    Jackson2ObjectMapperBuilder builder;
 
     /**
      * @param json A valid JSON stream, may be <code>null</code>.
@@ -47,19 +44,10 @@ public class DataSetMetadataJSONTest {
      * stream is empty, also returns <code>null</code>.
      */
     public DataSetMetadata from(InputStream json) {
-        if (json == null) {
-            return null;
-        }
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(dataSetMetadataModule);
-            String jsonString = IOUtils.toString( json ).trim();
-            if (jsonString.isEmpty()) {
-                return null; // Empty stream
-            }
-            return mapper.reader(DataSetMetadata.class).readValue(jsonString);
+            return builder.build().reader(DataSetMetadata.class).readValue(json);
         } catch (Exception e) {
-            throw Exceptions.User( CommonMessages.UNABLE_TO_PARSE_JSON, e );
+            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -73,10 +61,7 @@ public class DataSetMetadataJSONTest {
             throw new IllegalArgumentException("Writer cannot be null.");
         }
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(dataSetMetadataModule);
-            mapper.writer().writeValue(writer, dataSetMetadata);
-            writer.flush();
+            builder.build().writer().writeValue(writer, dataSetMetadata);
         } catch (Exception e) {
             throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
@@ -84,10 +69,18 @@ public class DataSetMetadataJSONTest {
 
     @Test
     public void testArguments() throws Exception {
-        DataSetMetadata metadata = from(null);
-        assertNull(metadata);
-        metadata = from(new ByteArrayInputStream(new byte[0]));
-        assertNull(metadata);
+        try {
+            from(null);
+            fail("Expected an JSON parse exception.");
+        } catch (Exception e) {
+            assertEquals(CommonMessages.UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+        }
+        try {
+            from(new ByteArrayInputStream(new byte[0]));
+            fail("Expected an JSON parse exception.");
+        } catch (Exception e) {
+            assertEquals(CommonMessages.UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+        }
     }
 
     @Test
