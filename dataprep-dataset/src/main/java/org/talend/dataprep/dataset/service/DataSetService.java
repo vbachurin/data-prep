@@ -174,6 +174,12 @@ public class DataSetService {
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return;
         }
+        if (columns && !dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+            // Quality is not yet ready (but eventually will, returns 202 to indicate this).
+            LOG.debug("Column information #{} not yet ready for service (missing quelity information).", dataSetId);
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            return;
+        }
 
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
