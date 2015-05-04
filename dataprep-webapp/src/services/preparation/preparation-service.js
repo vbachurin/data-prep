@@ -184,32 +184,18 @@
         //---------------------------------------------------------------------------------
         //----------------------------------------PREVIEW----------------------------------
         //---------------------------------------------------------------------------------
-        this.getPreviewAppend = function(records, actions, canceler) {
-            var actionParam = {records: records, actions: actions};
-            var request = {
-                method: 'POST',
-                url: RestURLs.previewUrl + '/append',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: actionParam,
-                timeout: canceler.promise
-            };
 
-            return $http(request);
-        };
-
-        this.getPreviewDisable = function(currentStep, stepToDisable, recordsTdpId, canceler) {
+        this.getPreviewDiff = function(currentStep, previewStep, recordsTdpId, canceler) {
             var params = {
                 tdpIds: recordsTdpId,
                 currentStepId: currentStep.transformation.stepId,
-                disableStepId: stepToDisable.transformation.stepId,
+                previewStepId: previewStep.transformation.stepId,
                 preparationId: self.currentPreparation
             };
 
             var request = {
                 method: 'POST',
-                url: RestURLs.previewUrl + '/disable',
+                url: RestURLs.previewUrl + '/diff',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -220,15 +206,15 @@
             return $http(request);
         };
 
-        this.getPreviewUpdate = function(step, newParams, lastActiveStep, recordsTdpId, canceler) {
+        this.getPreviewUpdate = function(currentStep, updateStep, newParams, recordsTdpId, canceler) {
             var actionParam = {
-                stepId: step.transformation.stepId,
                 action : {
-                    action: step.actionParameters.action,
+                    action: updateStep.actionParameters.action,
                     parameters: newParams
                 },
                 tdpIds: recordsTdpId,
-                lastActiveStepId: lastActiveStep.transformation.stepId,
+                currentStepId: currentStep.transformation.stepId,
+                updateStepId: updateStep.transformation.stepId,
                 preparationId: self.currentPreparation
             };
 

@@ -17,7 +17,7 @@
      * @requires data-prep.services.filter.service:FilterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService, DatasetPreviewService) {
+    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService, PreviewService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -265,7 +265,7 @@
 
                 var attachGridMove = function() {
                     grid.onScroll.subscribe(function() {
-                        DatasetPreviewService.gridRangeIndex = grid.getRenderedRange();
+                        PreviewService.gridRangeIndex = grid.getRenderedRange();
                     });
 
                     $window.addEventListener('resize', function(){

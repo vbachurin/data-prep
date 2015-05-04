@@ -8,8 +8,9 @@
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.preparation.service:PreviewService
      */
-    function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, DatasetPreviewService) {
+    function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -38,7 +39,7 @@
          * </ul>
          */
         vm.toggleStep = function(step) {
-            DatasetPreviewService.cancelPreview();
+            PreviewService.cancelPreview();
 
             if(step.inactive) {
                 PlaygroundService.loadStep(step);
@@ -83,7 +84,7 @@
             _.forEach(vm.recipe, function(element) {
                 element.highlight = false;
             });
-            DatasetPreviewService.cancelPreview();
+            PreviewService.cancelPreview();
         };
 
         //---------------------------------------------------------------------------------------------
@@ -112,7 +113,7 @@
          * @description Update a step parameters in the loaded preparation
          */
         vm.updateStep = function(step, newParams) {
-            DatasetPreviewService.cancelPreview();
+            PreviewService.cancelPreview();
 
             newParams = newParams || {};
             /*jshint camelcase: false */
@@ -139,40 +140,62 @@
         //---------------------------------------------------------------------------------------------
         //---------------------------------------------Preview-----------------------------------------
         //---------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name previewAppend
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {string} step Position The step position index to preview
+         * @description [PRIVATE] Call the preview service to display the diff between the current step and the disabled targeted step
+         */
         var previewAppend = function(stepPosition) {
-            var actions = [];
-            _.chain(vm.recipe)
-                .filter(function(element, elementIndex) {
-                    return elementIndex <= stepPosition && element.inactive;
-                })
-                .forEach(function(element) {
-                    actions.push(element.actionParameters);
-                })
-                .value();
-            DatasetPreviewService.getPreviewAppendRecords(actions);
+            var previewStep = RecipeService.getStep(stepPosition);
+            var currentStep = RecipeService.getLastActiveStep();
+
+            PreviewService.getPreviewDiffRecords(currentStep, previewStep);
         };
 
+        /**
+         * @ngdoc method
+         * @name previewDisable
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {string} stepPosition The step position index to disable for the preview
+         * @description [PRIVATE] Call the preview service to display the diff between the current step and the step before the active targeted step
+         */
         var previewDisable = function(stepPosition) {
-            var stepToDisable = RecipeService.getStep(stepPosition);
-            var currentActiveStep = RecipeService.getLastActiveStep();
+            var previewStep = RecipeService.getStepBefore(stepPosition);
+            var currentStep = RecipeService.getLastActiveStep();
 
-            DatasetPreviewService.getPreviewDisableRecords(currentActiveStep, stepToDisable);
+            PreviewService.getPreviewDiffRecords(currentStep, previewStep);
         };
 
-        var updatePreview = function(step, params) {
-            params = params || {};
+        /**
+         * @ngdoc method
+         * @name updatePreview
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {string} updateStep The step position index to update for the preview
+         * @param {object} params The new step params
+         * @description [PRIVATE] Call the preview service to display the diff between the original steps and the updated steps
+         */
+        var updatePreview = function(updateStep, params) {
             /*jshint camelcase: false */
-            params.column_name = step.column.id;
+            params.column_name = updateStep.column.id;
 
             //Parameters has not changed
-            if(step.inactive || JSON.stringify(params) === JSON.stringify(step.actionParameters.parameters)) {
+            if(updateStep.inactive || JSON.stringify(params) === JSON.stringify(updateStep.actionParameters.parameters)) {
                 return;
             }
 
-            var lastActiveStep = RecipeService.getLastActiveStep();
-            DatasetPreviewService.getPreviewUpdateRecords(step, params, lastActiveStep);
+            var currentStep = RecipeService.getLastActiveStep();
+            PreviewService.getPreviewUpdateRecords(currentStep, updateStep, params);
         };
 
+        /**
+         * @ngdoc method
+         * @name previewUpdateClosure
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @param {object} step The step to update
+         * @description [PRIVATE] Create a closure with a target step that call the update preview on execution
+         */
         vm.previewUpdateClosure = function(step) {
             return function(params) {
                 updatePreview(step, params);
