@@ -64,7 +64,7 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                             "id", dataSetId));
                 }
                 // Pause before retry
-                final int pauseTime = 100 * retryCount;
+                final int pauseTime = 200 * retryCount;
                 LOGGER.info("Data set #{} content is not ready, pausing for {} ms.", dataSetId, pauseTime);
                 try {
                     Thread.sleep(pauseTime);
