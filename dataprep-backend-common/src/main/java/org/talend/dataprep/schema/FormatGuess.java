@@ -1,7 +1,5 @@
 package org.talend.dataprep.schema;
 
-import java.beans.Transient;
-
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 /**
@@ -20,16 +18,18 @@ public interface FormatGuess {
     float getConfidence();
 
     /**
-     * @return A {@link org.talend.dataprep.schema.SchemaParser} that allowed data prep to read
-     * {@link ColumnMetadata column metadata} information from the data set.
+     * @return {@link org.talend.dataprep.schema.SchemaParser} that allowed data prep to read {@link ColumnMetadata
+     * column metadata} information from the data set.
+     * @see org.springframework.context.ApplicationContext#getBean(String)
      */
-    @Transient
     SchemaParser getSchemaParser();
 
     /**
-     * @return A {@link org.talend.dataprep.schema.Serializer serializer} able to transform the
-     * underlying data set content into JSON stream.
+     * @return {@link org.talend.dataprep.schema.Serializer serializer} able to transform the underlying data set
+     * content into JSON stream.
+     * @see org.springframework.context.ApplicationContext#getBean(String)
      */
-    @Transient
     Serializer getSerializer();
+
+    String getBeanId();
 }

@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +61,12 @@ public class DataSetService {
 
     @Autowired
     private SimpleDataSetMetadataJsonSerializer metadataJsonSerializer;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     private static void queueEvents(String id, JmsTemplate template) {
         String[] destinations = { Destinations.FORMAT_ANALYSIS, Destinations.CONTENT_ANALYSIS };
@@ -170,7 +178,7 @@ public class DataSetService {
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
             ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata)));
+            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata), applicationContext));
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
@@ -258,9 +266,7 @@ public class DataSetService {
         }
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.get(true, true, null));
-            mapper.writer().writeValue(generator, metadata);
+            builder.build().writer().writeValue(generator, metadata);
             generator.flush();
         } catch (IOException e) {
             throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);

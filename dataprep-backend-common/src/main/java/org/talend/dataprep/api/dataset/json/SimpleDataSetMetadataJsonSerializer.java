@@ -1,26 +1,31 @@
 package org.talend.dataprep.api.dataset.json;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.schema.FormatGuess;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 
 @Component
 public class SimpleDataSetMetadataJsonSerializer {
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
-    static
-    {
+    static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    public SimpleDataSetMetadataJsonSerializer( ApplicationContext applicationContext )
+    {
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -51,8 +56,11 @@ public class SimpleDataSetMetadataJsonSerializer {
             generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
             generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
             generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
-            if(dataSetMetadata.getContent().getContentType() != null) {
-                generator.writeStringField("type", dataSetMetadata.getContent().getContentType().getMediaType()); //$NON-NLS-1
+            if (dataSetMetadata.getContent().getFormatGuessId() != null) {
+                FormatGuess formatGuess = applicationContext.getBean(dataSetMetadata.getContent().getFormatGuessId(), //
+                        FormatGuess.class);
+
+                generator.writeStringField( "type", formatGuess.getMediaType() ); //$NON-NLS-1
             }
 
             synchronized (DATE_FORMAT) {
