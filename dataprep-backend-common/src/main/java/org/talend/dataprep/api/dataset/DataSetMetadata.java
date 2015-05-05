@@ -1,23 +1,8 @@
 package org.talend.dataprep.api.dataset;
 
-import java.io.InputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
-import org.apache.commons.io.IOUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.annotation.Id;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.schema.FormatGuess;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -56,28 +41,6 @@ public class DataSetMetadata {
         this.rowMetadata = rowMetadata;
     }
 
-    /**
-     * @param json A valid JSON stream, may be <code>null</code>.
-     * @return The {@link DataSetMetadata} instance parsed from stream or <code>null</code> if parameter is null. If
-     * stream is empty, also returns <code>null</code>.
-     */
-    public static DataSetMetadata from(InputStream json) {
-        if (json == null) {
-            return null;
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.DEFAULT);
-            String jsonString = IOUtils.toString(json).trim();
-            if (jsonString.isEmpty()) {
-                return null; // Empty stream
-            }
-            return mapper.reader(DataSetMetadata.class).readValue(jsonString);
-        } catch (Exception e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        }
-    }
-
     public String getId() {
         return id;
     }
@@ -110,25 +73,6 @@ public class DataSetMetadata {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
         calendar.setTimeInMillis(creationDate);
         return calendar.getTime();
-    }
-
-    /**
-     * Writes the current {@link DataSetMetadata} to <code>writer</code> as JSON format.
-     *
-     * @param writer A non-null writer.
-     */
-    public void to(Writer writer) {
-        if (writer == null) {
-            throw new IllegalArgumentException("Writer cannot be null.");
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.DEFAULT);
-            mapper.writer().writeValue(writer, this);
-            writer.flush();
-        } catch (Exception e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
-        }
     }
 
     public static class Builder {

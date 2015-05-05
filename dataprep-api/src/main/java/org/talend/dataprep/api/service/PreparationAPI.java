@@ -109,8 +109,7 @@ public class PreparationAPI extends APIService {
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
             LOG.debug("Retrieved preparation details (pool: {} )...", getConnectionManager().getTotalStats());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }

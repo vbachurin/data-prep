@@ -93,6 +93,70 @@ public class DataSetRow implements Cloneable {
         }
     }
 
+    /**
+     * Write the row preview as JSON in the provided OutputStream We just applied the 2 transformations and this row has
+     * been determined to be displayed in preview. Here we decide the flags to set and write is to the response
+     * <ul>
+     * <li>flag NEW : deleted by old but not by new</li>
+     * <li>flag UPDATED : not deleted at all and value has changed</li>
+     * <li>flag DELETED : not deleted by old by is by new</li>
+     * </ul>
+     *
+     * @param oldRow - unchanged values for preview diff
+     * @param jGenerator - the json generator plugged to stream to write to
+     */
+    public void writePreviewTo(final JsonGenerator jGenerator, final DataSetRow oldRow) {
+        if (oldRow.isDeleted() && isDeleted()) {
+            return;
+        }
+
+        try {
+            jGenerator.writeStartObject();
+
+            // row is no more deleted : we write row values with the *NEW* flag
+            if (oldRow.isDeleted() && !isDeleted()) {
+                jGenerator.writeStringField(ROW_DIFF_KEY, ROW_DIFF_NEW);
+                writeValues(jGenerator, values);
+            }
+
+            // row has been deleted : we write row values with the *DELETED* flag
+            else if (!oldRow.isDeleted() && isDeleted()) {
+                jGenerator.writeStringField(ROW_DIFF_KEY, ROW_DIFF_DELETED);
+                writeValues(jGenerator, oldRow.cloneValues());
+            }
+
+            // row has been updated : write the new values and get the diff for each value, then write the DIFF_KEY
+            // property
+            else {
+                final Map<String, String> diff = new HashMap<>();
+                final Map<String, String> originalValues = oldRow.cloneValues();
+
+                values.entrySet().stream().forEach((entry) -> {
+                    try {
+                        final String originalValue = originalValues.get(entry.getKey());
+                        if (!StringUtils.equals(entry.getValue(), originalValue)) {
+                            diff.put(entry.getKey(), DIFF_UPDATE);
+                        }
+
+                        jGenerator.writeStringField(entry.getKey(), entry.getValue());
+                    } catch (IOException e) {
+                        throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
+                    }
+                });
+
+                jGenerator.writeObjectFieldStart(DIFF_KEY);
+                writeValues(jGenerator, diff);
+                jGenerator.writeEndObject();
+            }
+
+            jGenerator.writeEndObject();
+            jGenerator.flush();
+
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
+        }
+    }
+
     private void writeValues(final JsonGenerator jGenerator, final Map<String, String> valuesToWrite) {
         valuesToWrite.entrySet().stream().forEach((entry) -> {
             try {
