@@ -73,9 +73,9 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
                     }
                     // Pause before retry
                     final int pauseTime = PAUSE * retryCount;
-                    LOGGER.info("Data set #{} metadata is not ready, pausing for {} ms.", dataSetId, pauseTime);
+                    LOGGER.debug("Data set #{} metadata is not ready, pausing for {} ms.", dataSetId, pauseTime);
                     try {
-                        TimeUnit.MILLISECONDS.sleep(PAUSE);
+                        TimeUnit.MILLISECONDS.sleep(pauseTime);
                     } catch (InterruptedException e) {
                         throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_METADATA, e);
                     }
