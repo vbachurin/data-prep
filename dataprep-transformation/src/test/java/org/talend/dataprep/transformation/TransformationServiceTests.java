@@ -214,6 +214,25 @@ public class TransformationServiceTests {
         assertEquals("[]", response, false);
     }
 
+    /**
+     * Check that the error listing service returns a list parsable of error codes. The content is not checked
+     * 
+     * @throws Exception if an error occurs.
+     */
+    @Test
+    public void shouldListErrors() throws Exception {
+        String errors = when().get("/transform/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualErrors = mapper.readTree(errors);
+
+        assertTrue(actualErrors.isArray());
+        assertTrue(actualErrors.size() > 0);
+        for (final JsonNode errorCode : actualErrors) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
+    }
     @Test
     public void previewDiff() throws Exception {
         //given
