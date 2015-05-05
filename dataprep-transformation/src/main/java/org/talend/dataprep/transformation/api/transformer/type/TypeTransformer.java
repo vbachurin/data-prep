@@ -20,9 +20,11 @@ public interface TypeTransformer<T> {
      *
      * @param parser - the json parser
      * @param generator - the json generator plugged to the output stream to write into
+     * @param indexes - The records indexes to transform.
      * @param action - the action to execute on TypeState object
+     * @param preview - preview mode
      */
-    void process(JsonParser parser, JsonGenerator generator, Consumer<T> action);
+    void process(JsonParser parser, JsonGenerator generator, List<Integer> indexes, boolean preview, Consumer<T>... action);
 
     /**
      * Write objects array to output stream

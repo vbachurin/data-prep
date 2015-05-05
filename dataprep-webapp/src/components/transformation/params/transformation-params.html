@@ -83,6 +83,8 @@
     <div class="param-buttons">
         <button ng-disabled="paramsCtrl.paramForm.$invalid"
                 class="param-primary-button t-btn-primary"
-                ng-click="paramsCtrl.transformWithParam()">Submit</button>
+                ng-click="paramsCtrl.transformWithParam()"
+                ng-mouseleave="paramsCtrl.submitHoverOff()"
+                ng-mouseenter="paramsCtrl.submitHoverOn()">Submit</button>
     </div>
 </div>

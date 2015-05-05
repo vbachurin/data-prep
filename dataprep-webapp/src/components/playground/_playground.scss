@@ -3,4 +3,22 @@
     @include calc(height, "100% - 70px");  //MM: I've added 30px margin
     @include calc(width, "100% - 20px");  //MM: I've added 30px margin
   }
+
+  .previewBadge {
+    display: table;
+    line-height: 24px;
+    border-radius: 5px;
+
+    position: absolute;
+    top: 14px;
+    right: 55px;
+
+    background: rgba(255, 255, 255, 0.5);
+
+    .previewBadgeElement {
+      display: table-cell;
+      vertical-align: middle;
+      padding: 0 5px;
+    }
+  }
 }

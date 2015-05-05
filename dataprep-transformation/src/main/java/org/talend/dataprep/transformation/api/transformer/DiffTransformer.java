@@ -3,6 +3,8 @@ package org.talend.dataprep.transformation.api.transformer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import com.fasterxml.jackson.core.JsonParser;
 
 @Component
 @Scope("request")
-class SimpleTransformer implements Transformer {
+class DiffTransformer implements Transformer {
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
@@ -28,10 +30,14 @@ class SimpleTransformer implements Transformer {
     @Autowired
     private TypeTransformerSelector typeStateSelector;
 
-    private final Consumer<DataSetRow> action;
+    private final Consumer<DataSetRow> oldAction;
+    private final Consumer<DataSetRow> newAction;
+    private final List<Integer> indexes;
 
-    SimpleTransformer(Consumer<DataSetRow> action) {
-        this.action = action;
+    DiffTransformer(final List<Integer> indexes, final Consumer<DataSetRow> oldAction, final Consumer<DataSetRow> newAction) {
+        this.oldAction = oldAction;
+        this.newAction = newAction;
+        this.indexes = indexes == null ? null : new ArrayList<>(indexes);
     }
 
     @Override
@@ -49,7 +55,7 @@ class SimpleTransformer implements Transformer {
             final JsonGenerator generator = factory.createGenerator(output);
             generator.setCodec(builder.build());
 
-            typeStateSelector.process(parser, generator, null, false, action);
+            typeStateSelector.process(parser, generator, indexes, true, oldAction, newAction);
             output.flush();
         } catch (IOException e) {
             throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);

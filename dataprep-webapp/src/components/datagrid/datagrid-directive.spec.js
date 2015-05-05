@@ -151,6 +151,126 @@ describe('Datagrid directive', function() {
             }
         ]
     };
+
+    var newData = {
+        'columns': [
+            {
+                'id': 'id',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'number'
+            },
+            {
+                'id': 'Postal',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'State',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                '__tdpRowDiff': 'new',
+                'id': '1',
+                'Postal': '',
+                'State': 'My Alabama'
+            }
+        ]
+    };
+
+    var deleteData = {
+        'columns': [
+            {
+                'id': 'id',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'number'
+            },
+            {
+                'id': 'Postal',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'State',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                '__tdpRowDiff': 'delete',
+                'id': '1',
+                'Postal': '',
+                'State': 'My Alabama'
+            }
+        ]
+    };
+
+    var updateData = {
+        'columns': [
+            {
+                'id': 'id',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'number'
+            },
+            {
+                'id': 'Postal',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'State',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                '__tdpDiff': {State: 'update'},
+                'id': '1',
+                'Postal': 'AL',
+                'State': 'My Alabama'
+            }
+        ]
+    };
     function GridGetter(element) {
         this.row = function(index) {
             return new GridGetter(element.find('.slick-row').eq(index));
@@ -383,5 +503,43 @@ describe('Datagrid directive', function() {
         expect(grid.row(0).element().hasClass('active')).toBe(false);
         expect(grid.row(0).cell(0).element().hasClass('selected')).toBe(true);
         expect(grid.row(1).cell(0).element().hasClass('selected')).toBe(true);
+    }));
+
+    it('should add a "new cell" class and fill content with a space if empty', inject(function(FilterService, DatasetGridService) {
+        //when
+        DatasetGridService.setDataset(metadata, newData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).text()).toBe(' ');
+        expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(true);
+    }));
+
+    it('should add a "delete cell" class and fill content with a space if empty', inject(function(FilterService, DatasetGridService) {
+        //when
+        DatasetGridService.setDataset(metadata, deleteData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).text()).toBe(' ');
+        expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
+    }));
+
+    it('should add an "update cell" class', inject(function(FilterService, DatasetGridService) {
+        //when
+        DatasetGridService.setDataset(metadata, updateData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(false);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(false);
+        expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(true);
     }));
 });

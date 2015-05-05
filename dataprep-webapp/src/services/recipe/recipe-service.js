@@ -67,6 +67,25 @@
 
         /**
          * @ngdoc method
+         * @name getStepBefore
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {number} index The targeted step index
+         * @description Return the step just before the provided index
+         * @returns {object} The recipe step
+         */
+        this.getStepBefore = function(index) {
+            if(index <= 0) {
+                return initialState;
+            }
+            else if(index >= recipe.length) {
+                return recipe[recipe.length - 1];
+            }
+
+            return recipe[index - 1];
+        };
+
+        /**
+         * @ngdoc method
          * @name reset
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @description Reset the current recipe
@@ -97,6 +116,17 @@
          */
         this.getActiveThresholdStepIndex = function() {
             return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : -1;
+        };
+
+        /**
+         * @ngdoc method
+         * @name getLastActiveStep
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get the last active step (last step if activeThresholdStep var is not set)
+         * @returns {object} The last active step
+         */
+        this.getLastActiveStep = function() {
+            return activeThresholdStep ? activeThresholdStep : recipe[recipe.length - 1];
         };
 
         //--------------------------------------------------------------------------------------------------------------

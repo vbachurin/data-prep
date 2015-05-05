@@ -7,6 +7,8 @@ import static org.talend.dataprep.transformation.exception.TransformationMessage
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
@@ -41,9 +43,17 @@ public class TypeTransformerSelectorTest {
 
     private StringWriter writer;
 
-    private final Consumer<DataSetRow> action = (row) -> {
+    private final Consumer<DataSetRow> identityAction = (row) -> {};
+    private final Consumer<DataSetRow> changeLastnameAction = (row) -> {
         final String transformedLastname = row.get("lastname").toUpperCase();
         row.set("lastname", transformedLastname);
+    };
+    private final Consumer<DataSetRow> getChangeNameAndDeleteAction = (row) -> {
+        final String transformedLastname = row.get("lastname").toUpperCase();
+        final String transformedFirstname = row.get("firstname").toUpperCase();
+        row.set("lastname", transformedLastname);
+        row.set("firstname", transformedFirstname);
+        row.setDeleted(row.get("city").equals("Columbia"));
     };
 
     @Before
@@ -64,7 +74,7 @@ public class TypeTransformerSelectorTest {
         final JsonParser parser = factory.createParser(inputStream);
 
         // when
-        transformer.process(parser, generator, action);
+        transformer.process(parser, generator, null, false, changeLastnameAction);
 
         // then
         assertEquals(writer.toString(), expectedContent, false);
@@ -79,7 +89,7 @@ public class TypeTransformerSelectorTest {
 
         // when
         try {
-            transformer.process(parser, generator, action);
+            transformer.process(parser, generator, null, false, changeLastnameAction);
             fail("should have thrown UserException because input json is not valid");
         }
 
@@ -98,7 +108,7 @@ public class TypeTransformerSelectorTest {
 
         // when
         try {
-            transformer.process(parser, generator, action);
+            transformer.process(parser, generator, null, false, changeLastnameAction);
             fail("should have thrown UserException because column json is not valid");
         }
 
@@ -117,7 +127,7 @@ public class TypeTransformerSelectorTest {
 
         // when
         try {
-            transformer.process(parser, generator, action);
+            transformer.process(parser, generator, null, false, changeLastnameAction);
             fail("should have thrown UserException because record json is not valid");
         }
 
@@ -125,5 +135,27 @@ public class TypeTransformerSelectorTest {
         catch (Exception e) {
             Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
         }
+    }
+
+    @Test
+    public void process_should_write_preview_for_the_given_indexes() throws Exception {
+        // given
+        final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("preview.json");
+        final String expectedContent = IOUtils.toString(TypeTransformerSelectorTest.class
+                .getResourceAsStream("preview_result.json"));
+
+        final JsonFactory factory = new JsonFactory();
+        final JsonParser parser = factory.createParser(inputStream);
+
+        final List<Integer> indexes = new ArrayList<>(3);
+        indexes.add(1);
+        indexes.add(3);
+        indexes.add(5);
+
+        // when
+        transformer.process(parser, generator, indexes, true, identityAction, getChangeNameAndDeleteAction);
+
+        // then
+        assertEquals(writer.toString(), expectedContent, false);
     }
 }

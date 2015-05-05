@@ -34,6 +34,7 @@
          * @type {Object}
          */
         self.dataView = new Slick.Data.DataView({inlineFilters: false});
+
         /**
          * @ngdoc property
          * @name filters
@@ -235,6 +236,19 @@
             }
             return true;
         }
+
+        /**
+         * @ngdoc method
+         * @name getAllFiltersFn
+         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @description [PRIVATE] Create a closure that contains the active filters to execute
+         * @returns {function} The filters closure
+         */
+        self.getAllFiltersFn = function() {
+            return function(item) {
+                return filterFn(item, self);
+            };
+        };
 
         /**
          * @ngdoc method
