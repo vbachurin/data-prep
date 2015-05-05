@@ -8,12 +8,11 @@
      * On creation, it fetch the user's preparations and load the requested one if a `prepid` is present as query param
      * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.preparation.service:PreparationListService
-     * @requires data-prep.services.dataset.service:DatasetListService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function PreparationListCtrl($stateParams, PreparationListService, DatasetListService, PlaygroundService, PreparationRestService, TalendConfirmService, MessageService) {
+    function PreparationListCtrl($stateParams, PreparationListService, PlaygroundService, PreparationRestService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.preparationListService = PreparationListService;
 

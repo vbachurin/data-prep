@@ -74,7 +74,7 @@ describe('Preparation list controller', function() {
 
     beforeEach(module('data-prep.preparation-list'));
 
-    beforeEach(inject(function($q, $rootScope, $controller, PreparationRestService, PreparationListService, PlaygroundService, DatasetListService, MessageService) {
+    beforeEach(inject(function($q, $rootScope, $controller, PreparationRestService, PreparationListService, PlaygroundService, MessageService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -84,11 +84,12 @@ describe('Preparation list controller', function() {
             return ctrl;
         };
 
-        spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when([]));
-        spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when([]));
-        spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
         spyOn(PreparationRestService, 'delete').and.returnValue($q.when(true));
-        spyOn(PreparationListService, 'refreshPreparations').and.callThrough();
+        spyOn(PreparationListService, 'refreshPreparations').and.returnValue(null);
+        spyOn(PreparationListService, 'getPreparationsPromise').and.callFake(function() {
+            PreparationListService.preparations = allPreparations;
+            return $q.when(allPreparations);
+        });
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
         spyOn(MessageService, 'success').and.returnValue(null);
@@ -170,7 +171,6 @@ describe('Preparation list controller', function() {
             id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
             name: 'my preparation'
         };
-        expect(PreparationListService.refreshPreparations.calls.count()).toBe(1);
 
         //when
         ctrl.delete(preparation);
@@ -180,7 +180,7 @@ describe('Preparation list controller', function() {
         expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type:'preparation', name: preparation.name});
         expect(PreparationRestService.delete).toHaveBeenCalledWith(preparation);
         expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type:'preparation', name: preparation.name});
-        expect(PreparationListService.refreshPreparations.calls.count()).toBe(2);
+        expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
     }));
 
     it('should do nothing on delete dismiss', inject(function($q, TalendConfirmService, PreparationRestService, MessageService,PreparationListService) {
@@ -192,7 +192,6 @@ describe('Preparation list controller', function() {
             id: 'de618c62ef97b3a95b5c171bc077ffe22e1d6f79',
             name: 'my preparation'
         };
-        expect(PreparationListService.refreshPreparations.calls.count()).toBe(1);
 
         //when
         ctrl.delete(preparation);
@@ -202,6 +201,6 @@ describe('Preparation list controller', function() {
         expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type:'preparation', name: preparation.name});
         expect(PreparationRestService.delete).not.toHaveBeenCalled();
         expect(MessageService.success).not.toHaveBeenCalled();
-        expect(PreparationListService.refreshPreparations.calls.count()).toBe(1);
+        expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
     }));
 });

@@ -5,10 +5,10 @@ describe('Playground Service', function () {
 
     beforeEach(module('data-prep.services.playground'));
 
-    beforeEach(inject(function ($injector, $q, DatasetRestService, FilterService, RecipeService, DatasetGridService, PreparationRestService) {
+    beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatasetGridService, PreparationRestService) {
         $httpBackend = $injector.get('$httpBackend');
 
-        spyOn(DatasetRestService, 'getDataFromId').and.callThrough();
+        spyOn(DatasetService, 'getContent').and.callThrough();
         spyOn(FilterService, 'removeAllFilters').and.callFake(function() {});
         spyOn(RecipeService, 'reset').and.callFake(function() {});
         spyOn(DatasetGridService, 'setDataset').and.callFake(function() {});
@@ -48,7 +48,7 @@ describe('Playground Service', function () {
         var data = {column: [], records: []};
         var assertNewPreparationInitialization;
 
-        beforeEach(inject(function(PlaygroundService, DatasetRestService, FilterService, RecipeService, DatasetGridService, RestURLs) {
+        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatasetGridService, RestURLs) {
             assertNewPreparationInitialization = function() {
                 expect(PlaygroundService.currentMetadata).toEqual(dataset);
                 expect(PlaygroundService.currentData).toEqual(data);

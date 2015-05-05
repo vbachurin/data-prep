@@ -14,7 +14,7 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep.dataset-list'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetListService, PreparationListService, PlaygroundService, MessageService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, DatasetService, PreparationListService, PlaygroundService, MessageService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -25,9 +25,8 @@ describe('Dataset list controller', function () {
             return ctrl;
         };
 
-        spyOn(DatasetListService, 'refreshDatasets').and.callFake(function () {
-            DatasetListService.datasets = datasetsValues.shift();
-            return $q.when(DatasetListService.datasets);
+        spyOn(DatasetService, 'getDatasets').and.callFake(function () {
+            return $q.when(datasetsValues.shift());
         });
         spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue($q.when(true));
         spyOn(PreparationListService, 'refreshPreparations').and.returnValue($q.when(true));
@@ -41,28 +40,13 @@ describe('Dataset list controller', function () {
         $stateParams.datasetid = null;
     }));
 
-    it('should get dataset on creation', inject(function (DatasetListService) {
+    it('should get dataset on creation', inject(function (DatasetService) {
         //when
-        var ctrl = createController();
-        scope.$digest();
-
-        //then
-        expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
-        expect(ctrl.datasets).toBe(datasets);
-    }));
-
-    it('should refresh preparations to set default preparation when dataset list changed', inject(function (PreparationListService, DatasetListService) {
-        //given
         createController();
         scope.$digest();
-        expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
-
-        //when
-        DatasetListService.datasets = refreshedDatasets;
-        scope.$digest();
 
         //then
-        expect(PreparationListService.refreshPreparations.calls.count()).toEqual(2);
+        expect(DatasetService.getDatasets).toHaveBeenCalled();
     }));
 
     it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService) {
@@ -95,15 +79,15 @@ describe('Dataset list controller', function () {
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetRestService) {
+        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService) {
             ctrl = createController();
             scope.$digest();
 
-            spyOn(DatasetRestService, 'deleteDataset').and.returnValue($q.when(true));
+            spyOn(DatasetService, 'delete').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.callThrough();
         }));
 
-        it('should delete dataset, show toast and refresh dataset list', inject(function ($q, MessageService, DatasetRestService, PreparationListService, DatasetListService, TalendConfirmService) {
+        it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, PreparationListService, TalendConfirmService) {
             //given
             var dataset = datasets[0];
             spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
@@ -114,9 +98,8 @@ describe('Dataset list controller', function () {
 
             //then
             expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, [ 'DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM' ], {type: 'dataset', name: 'Customers (50 lines)' });
-            expect(DatasetRestService.deleteDataset).toHaveBeenCalledWith(dataset);
+            expect(DatasetService.delete).toHaveBeenCalledWith(dataset);
             expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: 'Customers (50 lines)'});
-            expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
         }));
 
         it('should init and show playground', inject(function ($rootScope, PlaygroundService) {
@@ -132,26 +115,12 @@ describe('Dataset list controller', function () {
             expect(PlaygroundService.show).toHaveBeenCalled();
         }));
 
-        it('should bind datasets getter to DatasetListService.datasets', inject(function (DatasetListService) {
+        it('should bind datasets getter to DatasetService.datasetsList()', inject(function (DatasetService) {
             //given
-            expect(ctrl.datasets).toBe(datasets);
-
-            //when
-            DatasetListService.datasets = refreshedDatasets;
+            spyOn(DatasetService, 'datasetsList').and.returnValue(refreshedDatasets);
 
             //then
             expect(ctrl.datasets).toBe(refreshedDatasets);
-        }));
-
-        it('should bind datasets setter to DatasetListService.datasets', inject(function (DatasetListService) {
-            //given
-            expect(DatasetListService.datasets).toBe(datasets);
-
-            //when
-            ctrl.datasets = refreshedDatasets;
-
-            //then
-            expect(DatasetListService.datasets).toBe(refreshedDatasets);
         }));
     });
 });

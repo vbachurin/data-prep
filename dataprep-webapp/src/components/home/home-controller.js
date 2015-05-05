@@ -6,11 +6,10 @@
      * @name data-prep.home.controller:HomeCtrl
      * @description Home controller.
      * @requires data-prep.services.utils.service:MessageService
-     * @requires data-prep.services.dataset.service:DatasetRestService
-     * @requires data-prep.services.dataset.service:DatasetListService
+     * @requires data-prep.services.dataset.service:DatasetService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function HomeCtrl(MessageService, DatasetRestService, DatasetListService, TalendConfirmService) {
+    function HomeCtrl(MessageService, DatasetService, TalendConfirmService) {
         var vm = this;
 
         /**
@@ -71,7 +70,7 @@
             var name = vm.datasetName;
 
             // if the name exists, ask for update or creation
-            vm.existingDatasetFromName = DatasetListService.getDatasetByName(name);
+            vm.existingDatasetFromName = DatasetService.getDatasetByName(name);
             if(vm.existingDatasetFromName) {
                 TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], {dataset: vm.datasetName})
                     .then(
@@ -100,7 +99,7 @@
         vm.createDatasetFromExistingName = function() {
             var file = vm.datasetFile[0];
             var name = vm.datasetName;
-            name = DatasetListService.getUniqueName(name);
+            name = DatasetService.getUniqueName(name);
             createDataset(file, name);
         };
 
@@ -126,16 +125,15 @@
          * @description [PRIVATE] Create a new dataset
          */
         var createDataset = function(file, name) {
-            var dataset = DatasetRestService.fileToDataset(file, name);
+            var dataset = DatasetService.fileToDataset(file, name);
             vm.uploadingDatasets.push(dataset);
 
-            DatasetRestService.createDataset(dataset)
+            DatasetService.create(dataset)
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    DatasetListService.refreshDatasets();
                     MessageService.success('DATASET_CREATE_SUCCESS_TITLE', 'DATASET_CREATE_SUCCESS', {dataset: dataset.name});
                 })
                 .catch(function() {
@@ -153,16 +151,15 @@
          * @description [PRIVATE] Update existing dataset
          */
         var updateDataset = function(file, existingDataset) {
-            var dataset = DatasetRestService.fileToDataset(file, existingDataset.name, existingDataset.id);
+            var dataset = DatasetService.fileToDataset(file, existingDataset.name, existingDataset.id);
             vm.uploadingDatasets.push(dataset);
 
-            DatasetRestService.updateDataset(dataset)
+            DatasetService.update(dataset)
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    DatasetListService.refreshDatasets();
                     MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset: dataset.name});
                 })
                 .catch(function() {

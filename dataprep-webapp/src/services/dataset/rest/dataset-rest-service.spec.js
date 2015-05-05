@@ -1,4 +1,4 @@
-describe('Dataset Service', function () {
+describe('Dataset Rest Service', function () {
     'use strict';
 
     var $httpBackend;
@@ -7,25 +7,6 @@ describe('Dataset Service', function () {
 
     beforeEach(inject(function ($injector) {
         $httpBackend = $injector.get('$httpBackend');
-    }));
-
-    it('should adapt infos to dataset object for upload', inject(function (DatasetRestService) {
-        //given
-        var file = {
-            path: '/path/to/file'
-        };
-        var name = 'myDataset';
-        var id = 'e85afAa78556d5425bc2';
-
-        //when
-        var dataset = DatasetRestService.fileToDataset(file, name, id);
-
-        //then
-        expect(dataset.name).toBe(name);
-        expect(dataset.progress).toBe(0);
-        expect(dataset.file).toBe(file);
-        expect(dataset.error).toBe(false);
-        expect(dataset.id).toBe(id);
     }));
 
     it('should call dataset list rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
@@ -61,7 +42,7 @@ describe('Dataset Service', function () {
             .respond(200, 'e85afAa78556d5425bc2');
 
         //when
-        DatasetRestService.createDataset(dataset).then(function (res) {
+        DatasetRestService.create(dataset).then(function (res) {
             datasetId = res.data;
         });
         $httpBackend.flush();
@@ -80,7 +61,7 @@ describe('Dataset Service', function () {
             .respond(200);
 
         //when
-        DatasetRestService.updateDataset(dataset);
+        DatasetRestService.update(dataset);
         $httpBackend.flush();
         $rootScope.$digest();
 
@@ -97,7 +78,7 @@ describe('Dataset Service', function () {
             .respond(200);
 
         //when
-        DatasetRestService.deleteDataset(dataset);
+        DatasetRestService.delete(dataset);
         $httpBackend.flush();
         $rootScope.$digest();
 
@@ -116,7 +97,7 @@ describe('Dataset Service', function () {
             .respond(200, data);
 
         //when
-        DatasetRestService.getDataFromId(datasetId, false).then(function (data) {
+        DatasetRestService.getContent(datasetId, false).then(function (data) {
             result = data;
         });
         $httpBackend.flush();

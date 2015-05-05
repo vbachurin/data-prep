@@ -38,7 +38,7 @@ describe('Dataset list directive', function() {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($rootScope, $compile, $q, DatasetListService, PreparationListService) {
+    beforeEach(inject(function($rootScope, $compile, $q, DatasetService, PreparationListService) {
         scope = $rootScope.$new();
         createElement = function() {
             var element = angular.element('<dataset-list></dataset-list>');
@@ -47,8 +47,8 @@ describe('Dataset list directive', function() {
             return element;
         };
 
-        spyOn(DatasetListService, 'refreshDatasets').and.callFake(function() {
-            DatasetListService.datasets = datasets;
+        spyOn(DatasetService, 'datasetsList').and.returnValue(datasets);
+        spyOn(DatasetService, 'getDatasets').and.callFake(function() {
             return $q.when(datasets);
         });
         spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue($q.when([]));

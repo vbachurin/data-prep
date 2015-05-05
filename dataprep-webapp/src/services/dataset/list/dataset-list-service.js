@@ -21,41 +21,6 @@
 
         /**
          * @ngdoc method
-         * @name getUniqueName
-         * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {string} name - the base name
-         * @description Get a unique name from a base name. The existence check is done on the local dataset list. It transform the base name, adding "(number)"
-         * @returns {string} - the unique name
-         */
-        self.getUniqueName = function(name) {
-            var cleanedName = name.replace(/\([0-9]+\)$/, '').trim();
-            var result = cleanedName;
-
-            var index = 1;
-            while(self.getDatasetByName(result)) {
-                result = cleanedName + ' (' + index + ')';
-                index ++;
-            }
-
-            return result;
-        };
-
-        /**
-         * @ngdoc method
-         * @name getDatasetByName
-         * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {string} name - the dataset name
-         * @description Get the dataset that has the wanted name
-         * @returns {object} - the dataset
-         */
-        self.getDatasetByName = function(name) {
-            return _.find(self.datasets, function(dataset) {
-                return dataset.name === name;
-            });
-        };
-
-        /**
-         * @ngdoc method
          * @name refreshDatasets
          * @methodOf data-prep.services.dataset.service:DatasetListService
          * @description Refresh datasets if no refresh is pending
@@ -89,6 +54,65 @@
                 return $q.when(self.datasets);
             }
         };
+
+        /**
+         * @ngdoc method
+         * @name create
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @param {object} dataset The dataset to delete
+         * @description Create a dataset from backend and refresh its internal list
+         * @returns {promise} The pending POST promise
+         */
+        self.create = function(dataset) {
+            var creationPromise = DatasetRestService.create(dataset);
+            creationPromise.then(function() {
+                self.refreshDatasets();
+            });
+            return creationPromise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name update
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @param {object} dataset The dataset to delete
+         * @description Update a dataset from backend and refresh its internal list
+         * @returns {promise} The pending POST promise
+         */
+        self.update = function(dataset) {
+            var updatePromise = DatasetRestService.update(dataset);
+            updatePromise.then(function() {
+                self.refreshDatasets();
+            });
+            return updatePromise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name delete
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @param {object} dataset The dataset to delete
+         * @description Delete a dataset from backend and from its internal list
+         * @returns {promise} The pending DELETE promise
+         */
+        self.delete = function(dataset) {
+            return DatasetRestService.delete(dataset)
+                .then(function() {
+                    var index = self.datasets.indexOf(dataset);
+                    self.datasets.splice(index, 1);
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name getContent
+         * @name data-prep.services.dataset.service:DatasetListService
+         * @param {string} datasetId The dataset id
+         * @param {boolean} metadata If false, the metadata will not be returned
+         * @description Get a dataset content
+         * @returns {promise} The pending GET promise
+         */
+        self.getContent = DatasetRestService.getContent;
     }
 
     angular.module('data-prep.services.dataset')

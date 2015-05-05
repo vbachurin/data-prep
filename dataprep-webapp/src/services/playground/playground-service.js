@@ -5,14 +5,14 @@
      * @ngdoc service
      * @name data-prep.services.playground.service:PlaygroundService
      * @description Playground service. This service provides the entry point to load properly the playground
-     * @requires data-prep.services.dataset.service:DatasetRestService
+     * @requires data-prep.services.dataset.service:DatasetService
      * @requires data-prep.services.dataset.service:DatasetGridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.utils.service:MessageService
      */
-    function PlaygroundService($rootScope, $q, DatasetRestService, DatasetGridService, FilterService, RecipeService, PreparationRestService, MessageService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationRestService, MessageService) {
         var self = this;
 
         /**
@@ -93,7 +93,7 @@
          */
         self.initPlayground = function(dataset) {
             if(!self.currentMetadata || PreparationRestService.currentPreparation || dataset.id !== self.currentMetadata.id) {
-                return DatasetRestService.getDataFromId(dataset.id, false)
+                return DatasetService.getContent(dataset.id, false)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,

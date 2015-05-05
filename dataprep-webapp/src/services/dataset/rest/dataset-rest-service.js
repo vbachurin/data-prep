@@ -22,27 +22,13 @@
 
         /**
          * @ngdoc method
-         * @name fileToDataset
-         * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description Convert file to dataset object for upload
-         * @param {file} file - the file tu upload
-         * @param {string} name - the dataset name
-         * @param {string} id - the dataset id (used to update existing dataset)
-         * @returns {Object} - the adapted dataset infos {name: string, progress: number, file: *, error: boolean}
-         */
-        self.fileToDataset = function(file, name, id) {
-            return {name: name, progress: 0, file: file, error: false, id: id};
-        };
-
-        /**
-         * @ngdoc method
-         * @name createDataset
+         * @name create
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Create the dataset
          * @param {dataset} dataset - the dataset infos to create
          * @returns {Promise} - the $upload promise
          */
-        self.createDataset = function(dataset) {
+        self.create = function(dataset) {
             return $upload.http({
                 url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(dataset.name),
                 headers: {'Content-Type': 'text/plain'},
@@ -52,13 +38,13 @@
 
         /**
          * @ngdoc method
-         * @name updateDataset
+         * @name update
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Update the dataset
          * @param {dataset} dataset - the dataset infos to update
          * @returns {Promise} - the $upload promise
          */
-        self.updateDataset = function(dataset) {
+        self.update = function(dataset) {
             return $upload.http({
                 url: RestURLs.datasetUrl + '/' + dataset.id + '?name=' + encodeURIComponent(dataset.name),
                 method: 'PUT',
@@ -69,31 +55,26 @@
 
         /**
          * @ngdoc method
-         * @name deleteDataset
+         * @name delete
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Delete the dataset
          * @param {dataset} dataset - the dataset infos to update
-         * @returns {Promise} - the DELETE promise
+         * @returns {Promise} The DELETE promise
          */
-        self.deleteDataset = function(dataset) {
+        self.delete = function(dataset) {
             return $http.delete(RestURLs.datasetUrl + '/' + dataset.id);
         };
 
         /**
-         * Get the dataset content
-         * @param datasetId - dataset id
-         * @param metadata - if false, the metadata will not be returned
-         */
-        /**
          * @ngdoc method
-         * @name getDataFromId
+         * @name getContent
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Get the dataset content
-         * @param {string} datasetId - the dataset id
-         * @param {boolean} metadata - if false, the metadata will not be returned
+         * @param {string} datasetId The dataset id
+         * @param {boolean} metadata If false, the metadata will not be returned
          * @returns {Promise} - the GET promise
          */
-        self.getDataFromId = function(datasetId, metadata) {
+        self.getContent = function(datasetId, metadata) {
             $rootScope.$emit('talend.loading.start');
             return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata)
                 .then(function(res) {
