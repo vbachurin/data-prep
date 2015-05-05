@@ -139,6 +139,7 @@ public class DataPreparationAPITest {
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
         assertNotNull(dataSetId);
         String list = when().get("/api/datasets").asString();
+        System.out.println("list = " + list);
         assertTrue(list.contains(dataSetId));
         when().delete("/api/datasets/" + dataSetId).asString();
         list = when().get("/api/datasets").asString();

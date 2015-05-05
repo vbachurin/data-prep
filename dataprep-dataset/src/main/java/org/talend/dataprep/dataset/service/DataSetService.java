@@ -202,9 +202,15 @@ public class DataSetService {
     @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
-        if (metadata != null) {
-            contentStore.delete(metadata);
-            dataSetMetadataRepository.remove(dataSetId);
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        try {
+            lock.lock();
+            if (metadata != null) {
+                contentStore.delete(metadata);
+                dataSetMetadataRepository.remove(dataSetId);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
