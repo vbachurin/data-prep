@@ -102,4 +102,16 @@ describe('Playground controller', function() {
         //then
         expect(PlaygroundService.createOrUpdatePreparation).not.toHaveBeenCalled();
     }));
+
+    it('should bind previewInProgress getter with PreviewService', inject(function(PlaygroundService, PreviewService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.previewInProgress).toBeFalsy();
+
+        //when
+        spyOn(PreviewService, 'previewInProgress').and.returnValue(true);
+
+        //then
+        expect(ctrl.previewInProgress).toBe(true);
+    }));
 });

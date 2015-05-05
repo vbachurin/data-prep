@@ -184,7 +184,13 @@
         //---------------------------------------------------------------------------------
         //----------------------------------------PREVIEW----------------------------------
         //---------------------------------------------------------------------------------
-
+        /**
+         * @ngdoc method
+         * @name getPreviewDiff
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description POST preview diff between 2 unchanged steps of a recipe
+         * @returns {promise} The POST promise
+         */
         this.getPreviewDiff = function(currentStep, previewStep, recordsTdpId, canceler) {
             var params = {
                 tdpIds: recordsTdpId,
@@ -206,6 +212,13 @@
             return $http(request);
         };
 
+        /**
+         * @ngdoc method
+         * @name getPreviewUpdate
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description POST preview diff between 2 same actions but with 1 updated step
+         * @returns {promise} The POST promise
+         */
         this.getPreviewUpdate = function(currentStep, updateStep, newParams, recordsTdpId, canceler) {
             var actionParam = {
                 action : {

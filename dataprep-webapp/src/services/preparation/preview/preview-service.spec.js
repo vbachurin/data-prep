@@ -49,6 +49,23 @@ describe('Preparation Service', function () {
             {firstname: 'Pupu'}
         ]
     };
+    //diff inserted at ids [0,1,2,6,7,10], with 'Tata Bis' filtered
+    var filteredModifiedData = {
+        records: [
+            {firstname: 'Tata'},
+            {firstname: 'Tete'},
+            {firstname: 'Titi'},
+            {tdpId : 3, firstname: 'Toto'},
+            {tdpId : 4, firstname: 'Tutu'},
+            {tdpId : 5, firstname: 'Tyty'},
+            {__tdpRowDiff: 'delete', firstname: 'Papa'}, //row is deleted in preview
+            {firstname: 'Pepe', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
+            {tdpId : 8, firstname: 'Pipi'},
+            {tdpId : 9, firstname: 'Popo'},
+            {firstname: 'Pupu'},
+            { tdpId: 11, firstname: 'Pypy' }
+        ]
+    };
 
     beforeEach(module('data-prep.services.preparation'));
 
@@ -101,6 +118,26 @@ describe('Preparation Service', function () {
         expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
     }));
 
+    it('should filter preview records according to active filters', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
+        //given
+        var currentStep = {transformation: { stepId: '1'}};
+        var previewStep = {transformation: { stepId: '2'}};
+
+        DatasetGridService.addFilter(function(item) {
+            return item.firstname !== 'Tata Bis';
+        });
+
+        //when
+        PreviewService.getPreviewDiffRecords(currentStep, previewStep);
+        $rootScope.$digest();
+
+        //then
+        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(filteredModifiedData.records);
+
+        //finally
+        DatasetGridService.resetFilters();
+    }));
+
     it('should call and display a update preview', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
@@ -122,5 +159,38 @@ describe('Preparation Service', function () {
         expect(previewArgs[3]).toEqual(displayedTdpIds);
 
         expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
+    }));
+
+    it('should resolve preview canceler to cancel the pending request', inject(function(PreviewService, PreparationService) {
+        //given
+        var currentStep = {transformation: { stepId: '1'}};
+        var previewStep = {transformation: { stepId: '2'}};
+
+        PreviewService.getPreviewDiffRecords(currentStep, previewStep); //pending request as we do not call $digest
+
+        //when
+        PreviewService.cancelPreview();
+
+        //then
+        var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
+        expect(previewArgs[3].promise.$$state.status).toBe(1);
+        expect(previewArgs[3].promise.$$state.value).toBe('user cancel');
+    }));
+
+    it('should reinit datagrid with original values', inject(function($rootScope, PreviewService, DatasetGridService) {
+        //given
+        var currentStep = {transformation: { stepId: '1'}};
+        var previewStep = {transformation: { stepId: '2'}};
+
+        PreviewService.getPreviewDiffRecords(currentStep, previewStep);
+        $rootScope.$digest();
+        expect(DatasetGridService.updateRecords.calls.count()).toBe(1);
+
+        //when
+        PreviewService.cancelPreview();
+
+        //then
+        expect(DatasetGridService.updateRecords.calls.count()).toBe(2);
+        expect(DatasetGridService.updateRecords.calls.argsFor(1)[0]).toBe(data.records);
     }));
 });
