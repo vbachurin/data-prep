@@ -14,9 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -66,7 +67,8 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 retryCount++;
                 if (retryCount > MAX_RETRY) {
                     LOGGER.error("Failed to retrieve data set content after {} tries.", retryCount);
-                    throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT_DATASET_NOT_READY,
+                            TDPExceptionContext.build().put("id", dataSetId));
                 }
                 // Pause before retry
                 final int pauseTime = PAUSE * retryCount;
@@ -74,13 +76,16 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 try {
                     TimeUnit.MILLISECONDS.sleep(pauseTime);
                 } catch (InterruptedException e) {
-                    throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e);
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, TDPExceptionContext.build().put(
+                            "id", dataSetId));
                 }
                 return handleResponse(client.execute(contentRetrieval));
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
+        Exception cause = new Exception(response.getStatusLine().getStatusCode() + response.getStatusLine().getReasonPhrase());
+        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, cause, TDPExceptionContext.build().put("id",
+                dataSetId));
     }
 }

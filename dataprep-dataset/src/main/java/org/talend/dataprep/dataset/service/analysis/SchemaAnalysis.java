@@ -20,11 +20,11 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.dataset.exception.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.datascience.statistics.StatisticsClientJson;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -105,7 +105,7 @@ public class SchemaAnalysis {
                             return schemaAnalysisMessage;
                         });
                     } catch (IOException e) {
-                        throw Exceptions.Internal(DataSetMessages.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
+                        throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
                     }
                 } else {
                     LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
@@ -115,7 +115,7 @@ public class SchemaAnalysis {
                 message.acknowledge();
             }
         } catch (JMSException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
         }
     }
 }

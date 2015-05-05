@@ -330,4 +330,169 @@ describe('Preparation Service', function () {
         //then
         expect(done).toBe(true);
     }));
+
+    it('should call preview POST request', inject(function($rootScope, $q, RestURLs, PreparationService) {
+        //given
+        var done = false;
+        var canceled = false;
+        var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
+        var previewStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}};
+        var recordsTdpId = [1,2,3,4,5];
+        var canceler = $q.defer();
+
+        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+
+        var expectedParams = {
+            tdpIds: [1,2,3,4,5],
+            currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
+            previewStepId: '856980bacf0890c89bc318856980bacf0890c89b',
+            preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+        };
+
+        $httpBackend
+            .expectPOST(RestURLs.previewUrl + '/diff', expectedParams)
+            .respond(200);
+
+
+        //when
+        PreparationService.getPreviewDiff(currentStep, previewStep, recordsTdpId, canceler)
+            .then(function() {
+                done = true;
+            })
+            .catch(function() {
+                canceled = true;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(done).toBe(true);
+        expect(canceled).toBe(false);
+    }));
+
+    it('should cancel POST preview by resolving the given promise', inject(function($rootScope, $q, RestURLs, PreparationService) {
+        //given
+        var done = false;
+        var canceled = false;
+        var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
+        var previewStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}};
+        var recordsTdpId = [1,2,3,4,5];
+        var canceler = $q.defer();
+
+        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+
+        var expectedParams = {
+            tdpIds: [1,2,3,4,5],
+            currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
+            previewStepId: '856980bacf0890c89bc318856980bacf0890c89b',
+            preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+        };
+
+        $httpBackend
+            .expectPOST(RestURLs.previewUrl + '/diff', expectedParams)
+            .respond(200);
+
+        //when
+        PreparationService.getPreviewDiff(currentStep, previewStep, recordsTdpId, canceler)
+            .then(function() {
+                done = true;
+            })
+            .catch(function() {
+                canceled = true;
+            });
+        canceler.resolve(true);
+        $rootScope.$digest();
+
+        //then
+        expect(done).toBe(false);
+        expect(canceled).toBe(true);
+    }));
+
+    it('should call update preview POST request', inject(function($rootScope, $q, RestURLs, PreparationService) {
+        //given
+        var done = false;
+        var canceled = false;
+        var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
+        var updateStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}, actionParameters: {action: 'cut'}};
+        var newParams = {value: 'toto'};
+        var recordsTdpId = [1,2,3,4,5];
+        var canceler = $q.defer();
+
+        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+
+        var expectedParams = {
+            action : {
+                action: 'cut',
+                parameters: newParams
+            },
+            tdpIds: [1,2,3,4,5],
+            currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
+            updateStepId: '856980bacf0890c89bc318856980bacf0890c89b',
+            preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+        };
+
+        $httpBackend
+            .expectPOST(RestURLs.previewUrl + '/update', expectedParams)
+            .respond(200);
+
+
+        //when
+        PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, recordsTdpId, canceler)
+            .then(function() {
+                done = true;
+            })
+            .catch(function() {
+                canceled = true;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(done).toBe(true);
+        expect(canceled).toBe(false);
+    }));
+
+    it('should cancel POST update preview by resolving the given promise', inject(function($rootScope, $q, RestURLs, PreparationService) {
+        //given
+        var done = false;
+        var canceled = false;
+        var currentStep = {transformation: {stepId: '18046df82f0946af05ee766d0ac06f92f63e7047'}};
+        var updateStep = {transformation: {stepId: '856980bacf0890c89bc318856980bacf0890c89b'}, actionParameters: {action: 'cut'}};
+        var newParams = {value: 'toto'};
+        var recordsTdpId = [1,2,3,4,5];
+        var canceler = $q.defer();
+
+        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+
+        var expectedParams = {
+            action : {
+                action: 'cut',
+                parameters: newParams
+            },
+            tdpIds: [1,2,3,4,5],
+            currentStepId: '18046df82f0946af05ee766d0ac06f92f63e7047',
+            updateStepId: '856980bacf0890c89bc318856980bacf0890c89b',
+            preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'
+        };
+
+        $httpBackend
+            .expectPOST(RestURLs.previewUrl + '/update', expectedParams)
+            .respond(200);
+
+
+        //when
+        PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, recordsTdpId, canceler)
+            .then(function() {
+                done = true;
+            })
+            .catch(function() {
+                canceled = true;
+            });
+        canceler.resolve(true);
+        $rootScope.$digest();
+
+        //then
+        expect(done).toBe(false);
+        expect(canceled).toBe(true);
+    }));
 });

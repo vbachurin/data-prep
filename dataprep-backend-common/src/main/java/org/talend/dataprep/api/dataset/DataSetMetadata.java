@@ -1,22 +1,8 @@
 package org.talend.dataprep.api.dataset;
 
-import java.io.InputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
-import org.apache.commons.io.IOUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.annotation.Id;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -88,7 +74,6 @@ public class DataSetMetadata {
         calendar.setTimeInMillis(creationDate);
         return calendar.getTime();
     }
-
 
     public static class Builder {
 

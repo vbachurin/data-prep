@@ -17,7 +17,7 @@
      * @requires data-prep.services.filter.service:FilterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService) {
+    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService, PreviewService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -55,6 +55,30 @@
 
                 /**
                  * @ngdoc method
+                 * @name formatter
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
+                 */
+                var formatter = function(row, cell, value, columnDef, dataContext) {
+                    //deleted row preview
+                    if(dataContext.__tdpRowDiff === 'delete') {
+                        return '<div class="cellDeletedValue"><strike>' + (value ? value : ' ') + '</strike></div>';
+                    }
+                    //new row preview
+                    else if(dataContext.__tdpRowDiff === 'new') {
+                        return '<div class="cellNewValue">' + (value ? value : ' ') + '</div>';
+                    }
+                    //updated cell preview
+                    if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id] === 'update') {
+                        return '<div class="cellUpdateValue">' + value + '</div>';
+                    }
+
+                    //no preview
+                    return value;
+                };
+
+                /**
+                 * @ngdoc method
                  * @name columnItem
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @param {object} col - the backend column to adapt
@@ -67,7 +91,8 @@
                     var colItem = {
                         id: col.id,
                         field: col.id,
-                        name: '<div id="' + divId + '"></div>'
+                        name: '<div id="' + divId + '"></div>',
+                        formatter: formatter
                     };
 
                     return colItem;
@@ -236,6 +261,13 @@
                         }
                     });
 
+                };
+
+                var attachGridMove = function() {
+                    grid.onScroll.subscribe(function() {
+                        PreviewService.gridRangeIndex = grid.getRenderedRange();
+                    });
+
                     $window.addEventListener('resize', function(){
                         grid.resizeCanvas();
                     }, true);
@@ -269,6 +301,7 @@
                     attachColumnHeaderListeners();
                     attachCellListeners();
                     attachTooltipListener();
+                    attachGridMove();
                 };
 
                 //------------------------------------------------------------------------------------------------------

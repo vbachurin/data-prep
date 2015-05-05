@@ -22,8 +22,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Separator;
 import org.talend.dataprep.test.SameJSONFile;
@@ -47,7 +47,7 @@ public class DataSetMetadataJSONTest {
         try {
             return builder.build().reader(DataSetMetadata.class).readValue(json);
         } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
@@ -63,7 +63,7 @@ public class DataSetMetadataJSONTest {
         try {
             builder.build().writer().writeValue(writer, dataSetMetadata);
         } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 
@@ -73,13 +73,13 @@ public class DataSetMetadataJSONTest {
             from(null);
             fail("Expected an JSON parse exception.");
         } catch (Exception e) {
-            assertEquals(CommonMessages.UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            assertEquals(CommonErrorCodes.UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
         }
         try {
             from(new ByteArrayInputStream(new byte[0]));
             fail("Expected an JSON parse exception.");
         } catch (Exception e) {
-            assertEquals(CommonMessages.UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            assertEquals(CommonErrorCodes.UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
         }
     }
 
@@ -121,24 +121,26 @@ public class DataSetMetadataJSONTest {
         columns.add(column);
         RowMetadata row = new RowMetadata(columns);
         DataSetMetadata metadata = new DataSetMetadata("1234", "name", "author", 0, row);
-        metadata.getContent().addParameter( CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator) );
-        metadata.getContent().setFormatGuessId( new CSVFormatGuess().getBeanId() );
+        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
+        metadata.getContent().setFormatGuessId(new CSVFormatGuess().getBeanId());
         metadata.getLifecycle().qualityAnalyzed(true);
         metadata.getLifecycle().schemaAnalyzed(true);
         StringWriter writer = new StringWriter();
-        to(metadata, writer );
-        assertThat(writer.toString(), SameJSONFile.sameJSONAsFile(DataSetMetadataJSONTest.class.getResourceAsStream("test2.json")));
+        to(metadata, writer);
+        assertThat(writer.toString(),
+                SameJSONFile.sameJSONAsFile(DataSetMetadataJSONTest.class.getResourceAsStream("test2.json")));
     }
 
     @Test
     public void testRoundTrip() throws Exception {
-        DataSetMetadata metadata = from( DataSetMetadataJSONTest.class.getResourceAsStream( "test3.json" ) );
-        metadata.getContent().addParameter( CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator) );
-        metadata.getContent().setFormatGuessId( new CSVFormatGuess().getBeanId() );
+        DataSetMetadata metadata = from(DataSetMetadataJSONTest.class.getResourceAsStream("test3.json"));
+        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
+        metadata.getContent().setFormatGuessId(new CSVFormatGuess().getBeanId());
         assertNotNull(metadata);
         StringWriter writer = new StringWriter();
-        to(metadata, writer );
-        assertThat(writer.toString(), SameJSONFile.sameJSONAsFile(DataSetMetadataJSONTest.class.getResourceAsStream("test3.json")));
+        to(metadata, writer);
+        assertThat(writer.toString(),
+                SameJSONFile.sameJSONAsFile(DataSetMetadataJSONTest.class.getResourceAsStream("test3.json")));
     }
 
 }

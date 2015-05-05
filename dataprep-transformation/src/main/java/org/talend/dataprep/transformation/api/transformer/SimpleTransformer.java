@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
-import org.talend.dataprep.transformation.exception.TransformationMessages;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -49,10 +49,10 @@ class SimpleTransformer implements Transformer {
             final JsonGenerator generator = factory.createGenerator(output);
             generator.setCodec(builder.build());
 
-            typeStateSelector.process(parser, generator, action);
+            typeStateSelector.process(parser, generator, null, false, action);
             output.flush();
         } catch (IOException e) {
-            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 }

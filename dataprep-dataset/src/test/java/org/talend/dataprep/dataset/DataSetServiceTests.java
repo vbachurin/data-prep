@@ -5,6 +5,7 @@ import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
@@ -41,6 +42,8 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Separator;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -353,4 +356,23 @@ public class DataSetServiceTests {
         assertThat(HttpServletResponse.SC_NO_CONTENT, is(statusCode));
     }
 
+    /**
+     * Check that the error listing service returns a list parsable of error codes. The content is not checked
+     * 
+     * @throws Exception if an error occurs.
+     */
+    @Test
+    public void shouldListErrors() throws Exception {
+        String errors = when().get("/datasets/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(errors);
+
+        assertTrue(rootNode.isArray());
+        assertTrue(rootNode.size() > 0);
+        for (final JsonNode errorCode : rootNode) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
+    }
 }

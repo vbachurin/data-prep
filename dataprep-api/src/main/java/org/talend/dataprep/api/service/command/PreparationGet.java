@@ -9,9 +9,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -48,6 +48,6 @@ public class PreparationGet extends HystrixCommand<InputStream> {
         } else {
             contentRetrieval.releaseConnection();
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
     }
 }

@@ -1,8 +1,8 @@
 package org.talend.dataprep.api.dataset.json;
 
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -24,7 +24,7 @@ class Context {
         try {
             current.handle(this, builder, token);
         } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 

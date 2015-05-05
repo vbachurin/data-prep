@@ -5,6 +5,8 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -24,10 +26,12 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
-import org.talend.dataprep.dataset.exception.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.JsonErrorCode;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
@@ -112,7 +116,7 @@ public class DataSetService {
             generator.writeEndArray();
             generator.flush();
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
@@ -184,11 +188,12 @@ public class DataSetService {
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
             ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata), applicationContext));
+            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata),
+                    applicationContext));
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
         }
     }
 
@@ -281,7 +286,30 @@ public class DataSetService {
             builder.build().writer().writeValue(generator, metadata);
             generator.flush();
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_IO_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
+        }
+    }
+
+    /**
+     * List all dataset related error codes.
+     */
+    @RequestMapping(value = "/datasets/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all dataset related error codes.", notes = "Returns the list of all dataset related error codes.")
+    @Timed
+    public String listErrors() {
+        try {
+
+            // need to cast the typed dataset errors into mock ones to use json parsing
+            List<JsonErrorCode> errors = new ArrayList<>(DataSetErrorCodes.values().length);
+            for (DataSetErrorCodes code : DataSetErrorCodes.values()) {
+                errors.add(new JsonErrorCode(code));
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(errors);
+
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 

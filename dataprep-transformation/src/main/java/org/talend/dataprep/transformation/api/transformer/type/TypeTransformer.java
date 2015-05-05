@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.talend.dataprep.exception.Exceptions;
-import org.talend.dataprep.transformation.exception.TransformationMessages;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -20,9 +20,11 @@ public interface TypeTransformer<T> {
      *
      * @param parser - the json parser
      * @param generator - the json generator plugged to the output stream to write into
+     * @param indexes - The records indexes to transform.
      * @param action - the action to execute on TypeState object
+     * @param preview - preview mode
      */
-    void process(JsonParser parser, JsonGenerator generator, Consumer<T> action);
+    void process(JsonParser parser, JsonGenerator generator, List<Integer> indexes, boolean preview, Consumer<T>... action);
 
     /**
      * Write objects array to output stream
@@ -36,7 +38,7 @@ public interface TypeTransformer<T> {
             try {
                 generator.writeObject(obj);
             } catch (IOException e) {
-                throw Exceptions.Internal(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+                throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
             }
         });
         generator.writeEndArray();

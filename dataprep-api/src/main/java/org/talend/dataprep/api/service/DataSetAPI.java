@@ -10,10 +10,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.*;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -78,8 +80,8 @@ public class DataSetAPI extends APIService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
-        } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT, id, e);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -99,8 +101,8 @@ public class DataSetAPI extends APIService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
-        } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -114,13 +116,11 @@ public class DataSetAPI extends APIService {
         HttpClient client = getClient();
         HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, contentServiceUrl, preparationServiceURL,
                 dataSetId);
-        try {
-            deleteCommand.execute();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
-            }
-        } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, e);
+
+        deleteCommand.execute();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
         }
     }
 
@@ -144,7 +144,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, columnName, dataSetId, e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -167,7 +167,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, dataSetId, e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 

@@ -18,9 +18,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.exception.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
@@ -55,7 +56,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try {
-            if(dataSetContent.available() > 0) {
+            if (dataSetContent.available() > 0) {
                 File dataSetFile = getFile(dataSetMetadata);
                 FileUtils.touch(dataSetFile);
                 FileOutputStream fos = new FileOutputStream(dataSetFile);
@@ -65,7 +66,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
             }
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_STORE_DATASET_CONTENT, dataSetMetadata.getId(), e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id",
+                    dataSetMetadata.getId()));
         }
     }
 
@@ -90,7 +92,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw Exceptions.Internal(DataSetMessages.UNABLE_TO_DELETE_DATASET, dataSetMetadata.getId());
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build().put("dataSetId",
+                        dataSetMetadata.getId()));
             }
         } else {
             LOGGER.warn("Data set #{} has no content.", dataSetMetadata.getId());
@@ -126,7 +129,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 }
             });
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_CLEAR_DATASETS, e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CLEAR_DATASETS, e);
         }
     }
 }
