@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,9 +13,12 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.schema.Serializer;
 
+@Service("serializer#xls")
 public class XlsSerializer implements Serializer {
 
     private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsSerializer.class);
@@ -72,9 +75,7 @@ public class XlsSerializer implements Serializer {
 
     protected boolean isHeaderLine(int lineIndex, List<ColumnMetadata> columns) {
         boolean headerLine = false;
-
-        for (int j = 0; j < columns.size(); j++) {
-            ColumnMetadata columnMetadata = columns.get(j);
+        for (ColumnMetadata columnMetadata : columns) {
             if (lineIndex < columnMetadata.getHeaderSize()) {
                 headerLine = true;
             }

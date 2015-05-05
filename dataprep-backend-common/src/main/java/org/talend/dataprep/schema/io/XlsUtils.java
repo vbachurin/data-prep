@@ -1,4 +1,4 @@
-package org.talend.dataprep.schema;
+package org.talend.dataprep.schema.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class XlsUtils {
 
     private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsUtils.class);
 
-    protected static String getCellValueAsString(Cell cell) {
+    public static String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return StringUtils.EMPTY;
         }
@@ -49,7 +49,7 @@ public class XlsUtils {
 
     }
 
-    protected static Workbook getWorkbook(InputStream stream) throws IOException {
+    public static Workbook getWorkbook(InputStream stream) throws IOException {
 
         // Depending on the excel file used the poi object to use is different
         // so we try one (catch exception then try the other one)

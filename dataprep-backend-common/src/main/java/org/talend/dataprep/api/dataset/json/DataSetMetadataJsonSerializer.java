@@ -2,10 +2,8 @@ package org.talend.dataprep.api.dataset.json;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.Quality;
@@ -14,7 +12,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
+public class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
+
     private final SimpleDataSetMetadataJsonSerializer metadataJsonSerializer;
 
     private final boolean metadata;
@@ -23,15 +22,17 @@ class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadata> {
 
     private final InputStream stream;
 
-    public DataSetMetadataJsonSerializer(boolean metadata, boolean columns, InputStream stream) {
+    public DataSetMetadataJsonSerializer(boolean metadata, boolean columns, InputStream stream,
+            ApplicationContext applicationContext) {
         this.metadata = metadata;
         this.columns = columns;
         this.stream = stream;
-        this.metadataJsonSerializer = new SimpleDataSetMetadataJsonSerializer();
+        this.metadataJsonSerializer = new SimpleDataSetMetadataJsonSerializer(applicationContext);
     }
 
     @Override
-    public void serialize(DataSetMetadata dataSetMetadata, JsonGenerator generator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(DataSetMetadata dataSetMetadata, JsonGenerator generator, SerializerProvider serializerProvider)
+            throws IOException {
         generator.writeStartObject();
         {
             // Write general information about the dataset
