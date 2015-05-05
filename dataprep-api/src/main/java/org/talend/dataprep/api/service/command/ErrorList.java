@@ -56,12 +56,14 @@ public class ErrorList extends HystrixCommand<InputStream> {
         int statusCode = responseStatus.getStatusCode();
         if (statusCode >= 200) {
             if (statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_ACCEPTED) {
+                contentRetrieval.releaseConnection();
                 return new ByteArrayInputStream(new byte[0]);
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
 
+        contentRetrieval.releaseConnection();
         String message = serviceUrl + " call returned " + responseStatus.getStatusCode() + '-' + responseStatus.getReasonPhrase();
         Exception cause = new Exception(message);
         throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_ERRORS, cause);

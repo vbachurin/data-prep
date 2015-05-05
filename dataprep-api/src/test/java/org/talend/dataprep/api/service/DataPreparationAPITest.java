@@ -11,7 +11,6 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -392,6 +391,7 @@ public class DataPreparationAPITest {
             assertTrue(errorCode.has("http-status-code"));
         }
     }
+
     @Test
     public void testPreparationDiffPreview() throws Exception {
         //given
