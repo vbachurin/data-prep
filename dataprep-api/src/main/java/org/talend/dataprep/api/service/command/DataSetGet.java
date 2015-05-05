@@ -3,6 +3,7 @@ package org.talend.dataprep.api.service.command;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIMessages;
@@ -22,7 +24,11 @@ import com.netflix.hystrix.HystrixCommand;
 @Scope("request")
 public class DataSetGet extends HystrixCommand<InputStream> {
 
-    private static final int MAX_RETRY = 5;
+    @Value("${http.retry.pause}")
+    public int PAUSE;
+
+    @Value("${http.retry.max_retry}")
+    private int MAX_RETRY;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetGet.class);
 
@@ -59,13 +65,14 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 // Data set exists, but content isn't yet analyzed, retry request
                 retryCount++;
                 if (retryCount > MAX_RETRY) {
+                    LOGGER.error("Failed to retrieve data set content after {} tries.", retryCount);
                     throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
                 }
                 // Pause before retry
-                final int pauseTime = 500 * retryCount;
+                final int pauseTime = PAUSE * retryCount;
                 LOGGER.info("Data set #{} content is not ready, pausing for {} ms.", dataSetId, pauseTime);
                 try {
-                    Thread.sleep(pauseTime);
+                    TimeUnit.MILLISECONDS.sleep(pauseTime);
                 } catch (InterruptedException e) {
                     throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e);
                 }
