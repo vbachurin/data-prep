@@ -21,11 +21,8 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.exception.TDPException;
-<<<<<<< HEAD
-import org.talend.dataprep.schema.FormatGuess;
-=======
 import org.talend.dataprep.exception.TDPExceptionContext;
->>>>>>> 9483274... TDP-107|change context from Map to concrete class that wraps the map
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
 @org.springframework.context.annotation.Configuration
@@ -73,7 +70,7 @@ public class HDFSContentStore implements DataSetContentStore {
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
         if (content.getFormatGuessId() != null) {
-            Serializer serializer = context.getBean( content.getFormatGuessId(), FormatGuess.class ).getSerializer();
+            Serializer serializer = context.getBean(content.getFormatGuessId(), FormatGuess.class).getSerializer();
             return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
         } else {
             return new ByteArrayInputStream(new byte[0]);

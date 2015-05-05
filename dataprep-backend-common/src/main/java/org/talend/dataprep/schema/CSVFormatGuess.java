@@ -1,18 +1,12 @@
 package org.talend.dataprep.schema;
 
-import java.beans.Transient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.schema.io.CSVSchemaParser;
 import org.talend.dataprep.schema.io.CSVSerializer;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.TDPException;
+@Service(CSVFormatGuess.BEAN_ID)
+public class CSVFormatGuess implements FormatGuess {
 
     public static final String SEPARATOR_PARAMETER = "SEPARATOR"; //$NON-NLS-1$
 
@@ -39,14 +33,12 @@ import org.talend.dataprep.exception.TDPException;
     }
 
     @Override
-    public SchemaParser getSchemaParser()
-    {
+    public SchemaParser getSchemaParser() {
         return this.schemaParser;
     }
 
     @Override
-    public Serializer getSerializer()
-    {
+    public Serializer getSerializer() {
         return this.serializer;
     }
 

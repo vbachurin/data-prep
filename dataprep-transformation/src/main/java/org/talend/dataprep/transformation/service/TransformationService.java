@@ -45,6 +45,7 @@ public class TransformationService {
     private TransformerFactory getTransformerFactory() {
         return context.getBean(SimpleTransformerFactory.class);
     }
+
     private TransformerFactory getDiffTransformerFactory() {
         return context.getBean(DiffTransformerFactory.class);
     }
@@ -56,33 +57,32 @@ public class TransformationService {
             @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions,
             @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response) {
         try {
-            final Transformer transformer = getTransformerFactory()
-                        .withActions(new String(Base64.getDecoder().decode(actions)))
-                        .get();
+            final Transformer transformer = getTransformerFactory().withActions(new String(Base64.getDecoder().decode(actions)))
+                    .get();
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
-            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 
     @RequestMapping(value = "/transform/preview", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data diff between the old and the new transformation actions")
     @VolumeMetered
-    public void transformPreview(
-            @ApiParam(value = "Old actions to perform on content (encoded in Base64).") @RequestParam(value = "oldActions", required = false) final String oldActions,
-            @ApiParam(value = "New actions to perform on content (encoded in Base64).") @RequestParam(value = "newActions", required = false) final String newActions,
-            @ApiParam(value = "The row indexes to return") @RequestParam(value = "indexes", required = false) final String indexes,
-            @ApiParam(value = "Data set content as JSON") final InputStream content,
-            final HttpServletResponse response) {
+    public void transformPreview(@ApiParam(value = "Old actions to perform on content (encoded in Base64).")
+    @RequestParam(value = "oldActions", required = false)
+    final String oldActions, @ApiParam(value = "New actions to perform on content (encoded in Base64).")
+    @RequestParam(value = "newActions", required = false)
+    final String newActions, @ApiParam(value = "The row indexes to return")
+    @RequestParam(value = "indexes", required = false)
+    final String indexes, @ApiParam(value = "Data set content as JSON")
+    final InputStream content, final HttpServletResponse response) {
         try {
             final String decodedIndexes = indexes == null ? null : new String(Base64.getDecoder().decode(indexes));
             final String decodedOldActions = oldActions == null ? null : new String(Base64.getDecoder().decode(oldActions));
             final String decodedNewActions = newActions == null ? null : new String(Base64.getDecoder().decode(newActions));
 
-            final Transformer transformer = getDiffTransformerFactory()
-                        .withIndexes(decodedIndexes)
-                        .withActions(decodedOldActions, decodedNewActions)
-                        .get();
+            final Transformer transformer = getDiffTransformerFactory().withIndexes(decodedIndexes)
+                    .withActions(decodedOldActions, decodedNewActions).get();
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);

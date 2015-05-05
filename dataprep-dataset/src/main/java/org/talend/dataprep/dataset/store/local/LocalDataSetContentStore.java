@@ -21,12 +21,8 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.exception.TDPException;
-<<<<<<< HEAD
-import org.talend.dataprep.exception.Exceptions;
-import org.talend.dataprep.schema.FormatGuess;
-=======
 import org.talend.dataprep.exception.TDPExceptionContext;
->>>>>>> 9483274... TDP-107|change context from Map to concrete class that wraps the map
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
 @Configuration
@@ -70,8 +66,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
             }
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put(
-                    "id", dataSetMetadata.getId()));
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id",
+                    dataSetMetadata.getId()));
         }
     }
 
@@ -96,8 +92,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build().put(
-                        "dataSetId", dataSetMetadata.getId()));
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build().put("dataSetId",
+                        dataSetMetadata.getId()));
             }
         } else {
             LOGGER.warn("Data set #{} has no content.", dataSetMetadata.getId());

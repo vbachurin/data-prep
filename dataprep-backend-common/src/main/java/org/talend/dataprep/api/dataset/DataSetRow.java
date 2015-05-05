@@ -4,17 +4,22 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.talend.dataprep.exception.CommonErrorCodes;
 import org.apache.commons.lang.StringUtils;
-
-import com.fasterxml.jackson.core.JsonGenerator;
+import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+
 public class DataSetRow implements Cloneable {
+
     private final static String DIFF_KEY = "__tdpDiff";
+
     private final static String ROW_DIFF_KEY = "__tdpRowDiff";
+
     private final static String ROW_DIFF_DELETED = "delete";
+
     private final static String ROW_DIFF_NEW = "new";
+
     private final static String DIFF_UPDATE = "update";
 
     private boolean deleted = false;
@@ -84,44 +89,44 @@ public class DataSetRow implements Cloneable {
             jGenerator.flush();
 
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 
     /**
-     * Write the row preview as JSON in the provided OutputStream
-     * We just applied the 2 transformations and this row has been determined to be displayed in preview.
-     * Here we decide the flags to set and write is to the response
+     * Write the row preview as JSON in the provided OutputStream We just applied the 2 transformations and this row has
+     * been determined to be displayed in preview. Here we decide the flags to set and write is to the response
      * <ul>
-     *     <li>flag NEW : deleted by old but not by new</li>
-     *     <li>flag UPDATED : not deleted at all and value has changed</li>
-     *     <li>flag DELETED : not deleted by old by is by new</li>
+     * <li>flag NEW : deleted by old but not by new</li>
+     * <li>flag UPDATED : not deleted at all and value has changed</li>
+     * <li>flag DELETED : not deleted by old by is by new</li>
      * </ul>
      *
      * @param oldRow - unchanged values for preview diff
      * @param jGenerator - the json generator plugged to stream to write to
      */
     public void writePreviewTo(final JsonGenerator jGenerator, final DataSetRow oldRow) {
-        if(oldRow.isDeleted() && isDeleted()) {
+        if (oldRow.isDeleted() && isDeleted()) {
             return;
         }
 
         try {
             jGenerator.writeStartObject();
 
-            //row is no more deleted : we write row values with the *NEW* flag
-            if (oldRow.isDeleted() && ! isDeleted()) {
+            // row is no more deleted : we write row values with the *NEW* flag
+            if (oldRow.isDeleted() && !isDeleted()) {
                 jGenerator.writeStringField(ROW_DIFF_KEY, ROW_DIFF_NEW);
                 writeValues(jGenerator, values);
             }
 
-            //row has been deleted : we write row values  with the *DELETED* flag
+            // row has been deleted : we write row values with the *DELETED* flag
             else if (!oldRow.isDeleted() && isDeleted()) {
                 jGenerator.writeStringField(ROW_DIFF_KEY, ROW_DIFF_DELETED);
                 writeValues(jGenerator, oldRow.cloneValues());
             }
 
-            //row has been updated : write the new values and get the diff for each value, then write the DIFF_KEY property
+            // row has been updated : write the new values and get the diff for each value, then write the DIFF_KEY
+            // property
             else {
                 final Map<String, String> diff = new HashMap<>();
                 final Map<String, String> originalValues = oldRow.cloneValues();
@@ -129,13 +134,13 @@ public class DataSetRow implements Cloneable {
                 values.entrySet().stream().forEach((entry) -> {
                     try {
                         final String originalValue = originalValues.get(entry.getKey());
-                        if(!StringUtils.equals(entry.getValue(), originalValue)) {
+                        if (!StringUtils.equals(entry.getValue(), originalValue)) {
                             diff.put(entry.getKey(), DIFF_UPDATE);
                         }
 
                         jGenerator.writeStringField(entry.getKey(), entry.getValue());
                     } catch (IOException e) {
-                        throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+                        throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
                     }
                 });
 
@@ -157,7 +162,7 @@ public class DataSetRow implements Cloneable {
             try {
                 jGenerator.writeStringField(entry.getKey(), entry.getValue());
             } catch (IOException e) {
-                throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+                throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
             }
         });
     }
