@@ -24,7 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.MockErrorCode;
+import org.talend.dataprep.exception.JsonErrorCode;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.metrics.Timed;
@@ -287,9 +287,9 @@ public class PreparationService {
     public String listErrors() {
         try {
             // need to cast the typed dataset errors into mock ones to use json parsing
-            List<MockErrorCode> errors = new ArrayList<>(PreparationErrorCodes.values().length);
+            List<JsonErrorCode> errors = new ArrayList<>(PreparationErrorCodes.values().length);
             for (PreparationErrorCodes code : PreparationErrorCodes.values()) {
-                errors.add(new MockErrorCode(code));
+                errors.add(new JsonErrorCode(code));
             }
 
             ObjectMapper mapper = new ObjectMapper();

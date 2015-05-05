@@ -5,9 +5,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Mock class used to ease ErrorCode json manipulation.
+ * Class used to ease ErrorCode json manipulation.
  */
-public class MockErrorCode implements ErrorCode {
+public class JsonErrorCode implements ErrorCode {
 
     /** The error code product. */
     private String product;
@@ -29,7 +29,7 @@ public class MockErrorCode implements ErrorCode {
     /**
      * Default empty constructor needed for json parsing.
      */
-    public MockErrorCode() {
+    public JsonErrorCode() {
     }
 
     /**
@@ -37,7 +37,7 @@ public class MockErrorCode implements ErrorCode {
      * 
      * @param copy the error code to copy.
      */
-    public MockErrorCode(ErrorCode copy) {
+    public JsonErrorCode(ErrorCode copy) {
         this.product = copy.getProduct();
         this.group = copy.getGroup();
         this.code = copy.getCode();

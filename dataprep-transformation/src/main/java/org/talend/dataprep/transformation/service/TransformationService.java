@@ -15,7 +15,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.MockErrorCode;
+import org.talend.dataprep.exception.JsonErrorCode;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -141,9 +141,9 @@ public class TransformationService {
     public String listErrors(HttpServletResponse response) {
         try {
             // need to cast the typed dataset errors into mock ones to use json parsing
-            List<MockErrorCode> errors = new ArrayList<>(TransformationErrorCodes.values().length);
+            List<JsonErrorCode> errors = new ArrayList<>(TransformationErrorCodes.values().length);
             for (TransformationErrorCodes code : TransformationErrorCodes.values()) {
-                errors.add(new MockErrorCode(code));
+                errors.add(new JsonErrorCode(code));
             }
 
             ObjectMapper mapper = new ObjectMapper();

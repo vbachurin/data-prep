@@ -30,7 +30,7 @@ import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.MockErrorCode;
+import org.talend.dataprep.exception.JsonErrorCode;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -182,7 +182,8 @@ public class DataSetService {
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
             ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata), applicationContext));
+            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata),
+                    applicationContext));
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
@@ -287,9 +288,9 @@ public class DataSetService {
         try {
 
             // need to cast the typed dataset errors into mock ones to use json parsing
-            List<MockErrorCode> errors = new ArrayList<>(DataSetErrorCodes.values().length);
+            List<JsonErrorCode> errors = new ArrayList<>(DataSetErrorCodes.values().length);
             for (DataSetErrorCodes code : DataSetErrorCodes.values()) {
-                errors.add(new MockErrorCode(code));
+                errors.add(new JsonErrorCode(code));
             }
 
             ObjectMapper mapper = new ObjectMapper();

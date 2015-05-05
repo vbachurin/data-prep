@@ -17,7 +17,7 @@ import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.ErrorList;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.ErrorCode;
-import org.talend.dataprep.exception.MockErrorCode;
+import org.talend.dataprep.exception.JsonErrorCode;
 import org.talend.dataprep.metrics.Timed;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -96,8 +96,8 @@ public class CommonAPI extends APIService {
      */
     private void writeErrorsFromEnum(JsonGenerator generator, ErrorCode[] codes) throws IOException {
         for (ErrorCode code : codes) {
-            // cast to MockErrorCode needed to ease json handling
-            MockErrorCode mock = new MockErrorCode(code);
+            // cast to JsonErrorCode needed to ease json handling
+            JsonErrorCode mock = new JsonErrorCode(code);
             generator.writeObject(mock);
         }
         generator.flush();
@@ -113,10 +113,10 @@ public class CommonAPI extends APIService {
     private void writeErrorsFromApi(JsonFactory factory, JsonGenerator generator, InputStream input) throws IOException {
         JsonParser parser = factory.createParser(input);
         parser.setCodec(new ObjectMapper());
-        Iterator<List<MockErrorCode>> iterator = parser.readValuesAs(new TypeReference<List<MockErrorCode>>() {
+        Iterator<List<JsonErrorCode>> iterator = parser.readValuesAs(new TypeReference<List<JsonErrorCode>>() {
         });
-        List<MockErrorCode> errors = iterator.next();
-        for (MockErrorCode error : errors) {
+        List<JsonErrorCode> errors = iterator.next();
+        for (JsonErrorCode error : errors) {
             generator.writeObject(error);
         }
         generator.flush();
