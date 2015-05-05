@@ -14,7 +14,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.MockErrorCode;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.DiffTransformerFactory;
@@ -129,4 +132,24 @@ public class TransformationService {
         }
     }
 
+    /**
+     * List all transformation related error codes.
+     */
+    @RequestMapping(value = "/transform/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all transformation related error codes.", notes = "Returns the list of all transformation related error codes.")
+    @Timed
+    public String listErrors(HttpServletResponse response) {
+        try {
+            // need to cast the typed dataset errors into mock ones to use json parsing
+            List<MockErrorCode> errors = new ArrayList<>(TransformationErrorCodes.values().length);
+            for (TransformationErrorCodes code : TransformationErrorCodes.values()) {
+                errors.add(new MockErrorCode(code));
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(errors);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
 }

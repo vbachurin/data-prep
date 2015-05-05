@@ -2,12 +2,14 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
@@ -17,8 +19,6 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -30,6 +30,8 @@ import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
@@ -372,6 +374,24 @@ public class DataPreparationAPITest {
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
     }
 
+    /**
+     * Test that errors are properly listed and displayed.
+     */
+    @Test
+    public void shouldListErrors() throws IOException {
+        String errors = when().get("/api/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(errors);
+
+        // content is not checked, only mandatory fields
+        assertTrue(rootNode.isArray());
+        assertTrue(rootNode.size() > 0);
+        for (final JsonNode errorCode : rootNode) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
+    }
     @Test
     public void testPreparationDiffPreview() throws Exception {
         //given
