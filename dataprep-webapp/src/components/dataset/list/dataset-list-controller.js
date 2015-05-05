@@ -11,14 +11,14 @@
      <ul>
         <li>datasets : on dataset list change, set the default preparation id in each element</li>
      </ul>
-     * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.dataset.service:DatasetListService
      * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function DatasetListCtrl($scope, $stateParams, DatasetService, DatasetListService, PreparationListService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($scope, $stateParams, DatasetRestService, DatasetListService, PreparationListService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetListService = DatasetListService;
 
@@ -44,7 +44,7 @@
         vm.delete = function(dataset) {
             TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type: 'dataset', name: dataset.name})
                 .then(function() {
-                    return DatasetService.deleteDataset(dataset);
+                    return DatasetRestService.deleteDataset(dataset);
                 })
                 .then(function() {
                     MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: dataset.name});

@@ -69,12 +69,12 @@ describe('Preparation Service', function () {
 
     beforeEach(module('data-prep.services.preparation'));
 
-    beforeEach(inject(function ($q, PreviewService, DatasetGridService, PreparationService) {
+    beforeEach(inject(function ($q, PreviewService, DatasetGridService, PreparationRestService) {
         DatasetGridService.data = data;
         PreviewService.gridRangeIndex = gridRangeIndex;
         
-        spyOn(PreparationService, 'getPreviewDiff').and.returnValue($q.when(diff));
-        spyOn(PreparationService, 'getPreviewUpdate').and.returnValue($q.when(diff));
+        spyOn(PreparationRestService, 'getPreviewDiff').and.returnValue($q.when(diff));
+        spyOn(PreparationRestService, 'getPreviewUpdate').and.returnValue($q.when(diff));
         spyOn(DatasetGridService, 'updateRecords').and.returnValue(null);
 
         //simulate datagrid get item to have displayedTdpIds = [0,1,2,6,7,10]
@@ -97,7 +97,7 @@ describe('Preparation Service', function () {
         });
     }));
 
-    it('should call and display a diff preview', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
+    it('should call and display a diff preview', inject(function($rootScope, PreviewService, PreparationRestService, DatasetGridService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
@@ -108,9 +108,9 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.getPreviewDiff).toHaveBeenCalled();
+        expect(PreparationRestService.getPreviewDiff).toHaveBeenCalled();
 
-        var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
+        var previewArgs = PreparationRestService.getPreviewDiff.calls.mostRecent().args;
         expect(previewArgs[0]).toBe(currentStep);
         expect(previewArgs[1]).toBe(previewStep);
         expect(previewArgs[2]).toEqual(displayedTdpIds);
@@ -118,7 +118,7 @@ describe('Preparation Service', function () {
         expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
     }));
 
-    it('should filter preview records according to active filters', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
+    it('should filter preview records according to active filters', inject(function($rootScope, PreviewService, PreparationRestService, DatasetGridService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
@@ -138,7 +138,7 @@ describe('Preparation Service', function () {
         DatasetGridService.resetFilters();
     }));
 
-    it('should call and display a update preview', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
+    it('should call and display a update preview', inject(function($rootScope, PreviewService, PreparationRestService, DatasetGridService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
@@ -150,9 +150,9 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.getPreviewUpdate).toHaveBeenCalled();
+        expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalled();
 
-        var previewArgs = PreparationService.getPreviewUpdate.calls.mostRecent().args;
+        var previewArgs = PreparationRestService.getPreviewUpdate.calls.mostRecent().args;
         expect(previewArgs[0]).toBe(currentStep);
         expect(previewArgs[1]).toBe(previewStep);
         expect(previewArgs[2]).toBe(newParams);
@@ -161,7 +161,7 @@ describe('Preparation Service', function () {
         expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
     }));
 
-    it('should resolve preview canceler to cancel the pending request', inject(function(PreviewService, PreparationService) {
+    it('should resolve preview canceler to cancel the pending request', inject(function(PreviewService, PreparationRestService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
@@ -172,7 +172,7 @@ describe('Preparation Service', function () {
         PreviewService.cancelPreview();
 
         //then
-        var previewArgs = PreparationService.getPreviewDiff.calls.mostRecent().args;
+        var previewArgs = PreparationRestService.getPreviewDiff.calls.mostRecent().args;
         expect(previewArgs[3].promise.$$state.status).toBe(1);
         expect(previewArgs[3].promise.$$state.value).toBe('user cancel');
     }));

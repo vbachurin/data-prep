@@ -5,8 +5,8 @@ describe('Dataset List Service', function () {
 
     beforeEach(module('data-prep.services.dataset'));
 
-    beforeEach(inject(function ($q, DatasetService) {
-        spyOn(DatasetService, 'getDatasets').and.returnValue($q.when({data: datasets}));
+    beforeEach(inject(function ($q, DatasetRestService) {
+        spyOn(DatasetRestService, 'getDatasets').and.returnValue($q.when({data: datasets}));
     }));
 
     it('should get unique dataset name', inject(function (DatasetListService) {
@@ -46,7 +46,7 @@ describe('Dataset List Service', function () {
         expect(DatasetListService.datasets).toBe(datasets);
     }));
 
-    it('should not trigger another refresh when one is already pending', inject(function ($rootScope, DatasetListService, DatasetService) {
+    it('should not trigger another refresh when one is already pending', inject(function ($rootScope, DatasetListService, DatasetRestService) {
         //given
         var oldDatasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
         DatasetListService.datasets = oldDatasets;
@@ -60,10 +60,10 @@ describe('Dataset List Service', function () {
 
         //then
         expect(DatasetListService.datasets).toBe(datasets);
-        expect(DatasetService.getDatasets.calls.count()).toBe(1);
+        expect(DatasetRestService.getDatasets.calls.count()).toBe(1);
     }));
 
-    it('should call refresh when datasets is not initialized yet', inject(function ($rootScope, DatasetListService, DatasetService) {
+    it('should call refresh when datasets is not initialized yet', inject(function ($rootScope, DatasetListService, DatasetRestService) {
         //given
         DatasetListService.datasets = null;
         var resolvedDatasets = [];
@@ -78,10 +78,10 @@ describe('Dataset List Service', function () {
         //then
         expect(DatasetListService.datasets).toBe(datasets);
         expect(resolvedDatasets).toBe(datasets);
-        expect(DatasetService.getDatasets).toHaveBeenCalled();
+        expect(DatasetRestService.getDatasets).toHaveBeenCalled();
     }));
 
-    it('should not refresh and return resolved promise when datasets is initialized', inject(function ($rootScope, DatasetListService, DatasetService) {
+    it('should not refresh and return resolved promise when datasets is initialized', inject(function ($rootScope, DatasetListService, DatasetRestService) {
         //given
         DatasetListService.datasets = datasets;
         var resolvedDatasets = [];
@@ -96,6 +96,6 @@ describe('Dataset List Service', function () {
         //then
         expect(DatasetListService.datasets).toBe(datasets);
         expect(resolvedDatasets).toBe(datasets);
-        expect(DatasetService.getDatasets).not.toHaveBeenCalled();
+        expect(DatasetRestService.getDatasets).not.toHaveBeenCalled();
     }));
 });

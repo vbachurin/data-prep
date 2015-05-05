@@ -5,15 +5,15 @@ describe('Playground Service', function () {
 
     beforeEach(module('data-prep.services.playground'));
 
-    beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatasetGridService, PreparationService) {
+    beforeEach(inject(function ($injector, $q, DatasetRestService, FilterService, RecipeService, DatasetGridService, PreparationRestService) {
         $httpBackend = $injector.get('$httpBackend');
 
-        spyOn(DatasetService, 'getDataFromId').and.callThrough();
+        spyOn(DatasetRestService, 'getDataFromId').and.callThrough();
         spyOn(FilterService, 'removeAllFilters').and.callFake(function() {});
         spyOn(RecipeService, 'reset').and.callFake(function() {});
         spyOn(DatasetGridService, 'setDataset').and.callFake(function() {});
-        spyOn(PreparationService, 'create').and.returnValue($q.when(true));
-        spyOn(PreparationService, 'update').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'create').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'update').and.returnValue($q.when(true));
     }));
 
     it('should init visible flag to false', inject(function(PlaygroundService) {
@@ -48,7 +48,7 @@ describe('Playground Service', function () {
         var data = {column: [], records: []};
         var assertNewPreparationInitialization;
 
-        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatasetGridService, RestURLs) {
+        beforeEach(inject(function(PlaygroundService, DatasetRestService, FilterService, RecipeService, DatasetGridService, RestURLs) {
             assertNewPreparationInitialization = function() {
                 expect(PlaygroundService.currentMetadata).toEqual(dataset);
                 expect(PlaygroundService.currentData).toEqual(data);
@@ -62,14 +62,14 @@ describe('Playground Service', function () {
                 .respond(200, data);
         }));
 
-        it('should init a new preparation and show playground when there is no loaded data yet', inject(function($rootScope, PlaygroundService, PreparationService) {
+        it('should init a new preparation and show playground when there is no loaded data yet', inject(function($rootScope, PlaygroundService, PreparationRestService) {
             //given
             expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeFalsy();
             expect(PlaygroundService.currentData).toBeFalsy();
-            expect(PreparationService.currentPreparation).toBeFalsy();
-            expect(PreparationService.preparationName).toBeFalsy();
-            expect(PreparationService.originalPreparationName).toBeFalsy();
+            expect(PreparationRestService.currentPreparation).toBeFalsy();
+            expect(PreparationRestService.preparationName).toBeFalsy();
+            expect(PreparationRestService.originalPreparationName).toBeFalsy();
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -80,15 +80,15 @@ describe('Playground Service', function () {
             assertNewPreparationInitialization();
         }));
 
-        it('should init a new preparation and show playground when there is already a created preparation yet', inject(function($rootScope, PlaygroundService, PreparationService) {
+        it('should init a new preparation and show playground when there is already a created preparation yet', inject(function($rootScope, PlaygroundService, PreparationRestService) {
             //given
             PlaygroundService.currentMetadata = {id : 'e85afAa78556d5425bc2'};
-            PreparationService.currentPreparation = {};
+            PreparationRestService.currentPreparation = {};
 
             expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeTruthy();
             expect(PlaygroundService.currentData).toBeFalsy();
-            expect(PreparationService.currentPreparation).toBeTruthy();
+            expect(PreparationRestService.currentPreparation).toBeTruthy();
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -99,14 +99,14 @@ describe('Playground Service', function () {
             assertNewPreparationInitialization();
         }));
 
-        it('should init a new preparation and show playground when the loaded dataset is not the wanted dataset', inject(function($rootScope, PlaygroundService, PreparationService) {
+        it('should init a new preparation and show playground when the loaded dataset is not the wanted dataset', inject(function($rootScope, PlaygroundService, PreparationRestService) {
             //given
             PlaygroundService.currentMetadata = {id : 'ab45420c09bf98d9a90'};
 
             expect(PlaygroundService.visible).toBe(false);
             expect(PlaygroundService.currentMetadata).toBeTruthy();
             expect(PlaygroundService.currentData).toBeFalsy();
-            expect(PreparationService.currentPreparation).toBeFalsy();
+            expect(PreparationRestService.currentPreparation).toBeFalsy();
 
             //when
             PlaygroundService.initPlayground(dataset);
@@ -155,7 +155,7 @@ describe('Playground Service', function () {
         }));
     });
 
-    it('should create preparation with provided name when there is no preparation yet', inject(function($rootScope, PlaygroundService, PreparationService) {
+    it('should create preparation with provided name when there is no preparation yet', inject(function($rootScope, PlaygroundService, PreparationRestService) {
         //given
         var name = 'My preparation';
         var dataset = {id: 'e85afAa78556d5425bc2'};
@@ -169,16 +169,16 @@ describe('Playground Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.create).toHaveBeenCalledWith(dataset.id, name);
+        expect(PreparationRestService.create).toHaveBeenCalledWith(dataset.id, name);
         expect(PlaygroundService.preparationName).toBe(name);
         expect(PlaygroundService.originalPreparationName).toBe(name);
     }));
 
-    it('should update preparation with provided name when there is loaded preparation', inject(function($rootScope, PlaygroundService, PreparationService) {
+    it('should update preparation with provided name when there is loaded preparation', inject(function($rootScope, PlaygroundService, PreparationRestService) {
         //given
         var name = 'My preparation';
         var newName = 'My new preparation name';
-        PreparationService.currentPreparation = 'e85afAa78556d5425bc2';
+        PreparationRestService.currentPreparation = 'e85afAa78556d5425bc2';
 
         PlaygroundService.preparationName = name;
         PlaygroundService.originalPreparationName = name;
@@ -189,8 +189,8 @@ describe('Playground Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.create).not.toHaveBeenCalled();
-        expect(PreparationService.update).toHaveBeenCalledWith(newName);
+        expect(PreparationRestService.create).not.toHaveBeenCalled();
+        expect(PreparationRestService.update).toHaveBeenCalledWith(newName);
         expect(PlaygroundService.preparationName).toBe(newName);
         expect(PlaygroundService.originalPreparationName).toBe(newName);
     }));
@@ -200,9 +200,9 @@ describe('Playground Service', function () {
             records: [{id: '0', firstname: 'toto'}, {id: '1', firstname: 'tata'}, {id: '2', firstname: 'titi'}]
         };
 
-        beforeEach(inject(function($rootScope, $q, PreparationService, RecipeService) {
+        beforeEach(inject(function($rootScope, $q, PreparationRestService, RecipeService) {
             spyOn($rootScope, '$emit').and.callThrough();
-            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: data}));
+            spyOn(PreparationRestService, 'getContent').and.returnValue($q.when({data: data}));
             spyOn(RecipeService, 'refresh').and.callFake(function() {});
             spyOn(RecipeService, 'disableStepsAfter').and.callFake(function() {});
         }));
@@ -250,7 +250,7 @@ describe('Playground Service', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
 
-        it('should do nothing if current step (threshold between active and inactive) is already selected', inject(function($rootScope, PlaygroundService, RecipeService, PreparationService) {
+        it('should do nothing if current step (threshold between active and inactive) is already selected', inject(function($rootScope, PlaygroundService, RecipeService, PreparationRestService) {
             //given
             var step = {
                 transformation: {stepId: 'a4353089cb0e039ac2'}
@@ -262,11 +262,11 @@ describe('Playground Service', function () {
 
             //then
             expect($rootScope.$emit).not.toHaveBeenCalledWith('talend.loading.start');
-            expect(PreparationService.getContent).not.toHaveBeenCalled();
+            expect(PreparationRestService.getContent).not.toHaveBeenCalled();
         }));
     });
 
-    it('should do nothing when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationService) {
+    it('should do nothing when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationRestService) {
         //given
         var name = 'My preparation';
         var newName = name;
@@ -279,8 +279,8 @@ describe('Playground Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.create).not.toHaveBeenCalled();
-        expect(PreparationService.update).not.toHaveBeenCalled();
+        expect(PreparationRestService.create).not.toHaveBeenCalled();
+        expect(PreparationRestService.update).not.toHaveBeenCalled();
         expect(PlaygroundService.preparationName).toBe(name);
         expect(PlaygroundService.originalPreparationName).toBe(name);
     }));

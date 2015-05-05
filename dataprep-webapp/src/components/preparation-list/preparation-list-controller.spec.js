@@ -74,7 +74,7 @@ describe('Preparation list controller', function() {
 
     beforeEach(module('data-prep.preparation-list'));
 
-    beforeEach(inject(function($q, $rootScope, $controller, PreparationService, PreparationListService, PlaygroundService, DatasetListService, MessageService) {
+    beforeEach(inject(function($q, $rootScope, $controller, PreparationRestService, PreparationListService, PlaygroundService, DatasetListService, MessageService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -86,8 +86,8 @@ describe('Preparation list controller', function() {
 
         spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when([]));
         spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when([]));
-        spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
-        spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
+        spyOn(PreparationRestService, 'delete').and.returnValue($q.when(true));
         spyOn(PreparationListService, 'refreshPreparations').and.callThrough();
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
@@ -161,7 +161,7 @@ describe('Preparation list controller', function() {
         expect(PlaygroundService.show).toHaveBeenCalled();
     }));
 
-    it('should delete preparation, show success message, and refresh list on confirm', inject(function($q, TalendConfirmService, PreparationService, MessageService,PreparationListService) {
+    it('should delete preparation, show success message, and refresh list on confirm', inject(function($q, TalendConfirmService, PreparationRestService, MessageService,PreparationListService) {
         //given
         spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
 
@@ -178,12 +178,12 @@ describe('Preparation list controller', function() {
 
         //then
         expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type:'preparation', name: preparation.name});
-        expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
+        expect(PreparationRestService.delete).toHaveBeenCalledWith(preparation);
         expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type:'preparation', name: preparation.name});
         expect(PreparationListService.refreshPreparations.calls.count()).toBe(2);
     }));
 
-    it('should do nothing on delete dismiss', inject(function($q, TalendConfirmService, PreparationService, MessageService,PreparationListService) {
+    it('should do nothing on delete dismiss', inject(function($q, TalendConfirmService, PreparationRestService, MessageService,PreparationListService) {
         //given
         spyOn(TalendConfirmService, 'confirm').and.returnValue($q.reject(null));
 
@@ -200,7 +200,7 @@ describe('Preparation list controller', function() {
 
         //then
         expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type:'preparation', name: preparation.name});
-        expect(PreparationService.delete).not.toHaveBeenCalled();
+        expect(PreparationRestService.delete).not.toHaveBeenCalled();
         expect(MessageService.success).not.toHaveBeenCalled();
         expect(PreparationListService.refreshPreparations.calls.count()).toBe(1);
     }));

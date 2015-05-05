@@ -7,10 +7,10 @@
      * @description Recipe controller.
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.preparation.service:PreviewService
      */
-    function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, PreviewService) {
+    function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationRestService, PreviewService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -126,7 +126,7 @@
 
             $rootScope.$emit('talend.loading.start');
             var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
-            PreparationService.updateStep(step.transformation.stepId, step.transformation.name, newParams)
+            PreparationRestService.updateStep(step.transformation.stepId, step.transformation.name, newParams)
                 .then(RecipeService.refresh)
                 .then(function() {
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);

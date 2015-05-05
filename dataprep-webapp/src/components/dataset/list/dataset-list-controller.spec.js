@@ -95,15 +95,15 @@ describe('Dataset list controller', function () {
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService) {
+        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetRestService) {
             ctrl = createController();
             scope.$digest();
 
-            spyOn(DatasetService, 'deleteDataset').and.returnValue($q.when(true));
+            spyOn(DatasetRestService, 'deleteDataset').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.callThrough();
         }));
 
-        it('should delete dataset, show toast and refresh dataset list', inject(function ($q, MessageService, DatasetService, PreparationListService, DatasetListService, TalendConfirmService) {
+        it('should delete dataset, show toast and refresh dataset list', inject(function ($q, MessageService, DatasetRestService, PreparationListService, DatasetListService, TalendConfirmService) {
             //given
             var dataset = datasets[0];
             spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
@@ -114,7 +114,7 @@ describe('Dataset list controller', function () {
 
             //then
             expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, [ 'DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM' ], {type: 'dataset', name: 'Customers (50 lines)' });
-            expect(DatasetService.deleteDataset).toHaveBeenCalledWith(dataset);
+            expect(DatasetRestService.deleteDataset).toHaveBeenCalledWith(dataset);
             expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: 'Customers (50 lines)'});
             expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
         }));

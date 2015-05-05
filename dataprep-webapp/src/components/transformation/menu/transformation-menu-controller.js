@@ -6,10 +6,10 @@
      * @name data-prep.transformation-menu.controller:TransformMenuCtrl
      * @description Transformation menu item controller.
      * @requires data-prep.services.dataset.service:DatasetGridService
-     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.recipe.service:RecipeService
      */
-    function TransformMenuCtrl($rootScope, DatasetGridService, PreparationService, RecipeService) {
+    function TransformMenuCtrl($rootScope, DatasetGridService, PreparationRestService, RecipeService) {
         var vm = this;
 
         /**
@@ -50,9 +50,9 @@
             /*jshint camelcase: false */
             params.column_name = vm.column.id;
 
-            PreparationService.appendStep(vm.metadata.id, vm.menu.name, params)
+            PreparationRestService.appendStep(vm.metadata.id, vm.menu.name, params)
                 .then(function() {
-                    return PreparationService.getContent('head');
+                    return PreparationRestService.getContent('head');
                 })
                 .then(function(response) {
                     DatasetGridService.updateRecords(response.data.records);

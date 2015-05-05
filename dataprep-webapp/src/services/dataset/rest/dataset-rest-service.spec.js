@@ -9,7 +9,7 @@ describe('Dataset Service', function () {
         $httpBackend = $injector.get('$httpBackend');
     }));
 
-    it('should adapt infos to dataset object for upload', inject(function (DatasetService) {
+    it('should adapt infos to dataset object for upload', inject(function (DatasetRestService) {
         //given
         var file = {
             path: '/path/to/file'
@@ -18,7 +18,7 @@ describe('Dataset Service', function () {
         var id = 'e85afAa78556d5425bc2';
 
         //when
-        var dataset = DatasetService.fileToDataset(file, name, id);
+        var dataset = DatasetRestService.fileToDataset(file, name, id);
 
         //then
         expect(dataset.name).toBe(name);
@@ -28,7 +28,7 @@ describe('Dataset Service', function () {
         expect(dataset.id).toBe(id);
     }));
 
-    it('should call dataset list rest service', inject(function ($rootScope, DatasetService, RestURLs) {
+    it('should call dataset list rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var result = null;
         var datasets = [
@@ -41,7 +41,7 @@ describe('Dataset Service', function () {
             .respond(200, datasets);
 
         //when
-        DatasetService.getDatasets().then(function (response) {
+        DatasetRestService.getDatasets().then(function (response) {
             result = response.data;
         });
         $httpBackend.flush();
@@ -51,7 +51,7 @@ describe('Dataset Service', function () {
         expect(result).toEqual(datasets);
     }));
 
-    it('should call dataset creation rest service', inject(function ($rootScope, DatasetService, RestURLs) {
+    it('should call dataset creation rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var datasetId = null;
         var dataset = {name: 'my dataset', file: {path: '/path/to/file'}, error: false};
@@ -61,7 +61,7 @@ describe('Dataset Service', function () {
             .respond(200, 'e85afAa78556d5425bc2');
 
         //when
-        DatasetService.createDataset(dataset).then(function (res) {
+        DatasetRestService.createDataset(dataset).then(function (res) {
             datasetId = res.data;
         });
         $httpBackend.flush();
@@ -71,7 +71,7 @@ describe('Dataset Service', function () {
         expect(datasetId).toBe('e85afAa78556d5425bc2');
     }));
 
-    it('should call dataset update rest service', inject(function ($rootScope, DatasetService, RestURLs) {
+    it('should call dataset update rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var dataset = {name: 'my dataset', file: {path: '/path/to/file'}, error: false, id: 'e85afAa78556d5425bc2'};
 
@@ -80,7 +80,7 @@ describe('Dataset Service', function () {
             .respond(200);
 
         //when
-        DatasetService.updateDataset(dataset);
+        DatasetRestService.updateDataset(dataset);
         $httpBackend.flush();
         $rootScope.$digest();
 
@@ -88,7 +88,7 @@ describe('Dataset Service', function () {
         //expect PUT not to throw any exception
     }));
 
-    it('should call dataset delete rest service', inject(function ($rootScope, DatasetService, RestURLs) {
+    it('should call dataset delete rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var dataset = {name: 'my dataset', file: {path: '/path/to/file'}, error: false, id: 'e85afAa78556d5425bc2'};
 
@@ -97,7 +97,7 @@ describe('Dataset Service', function () {
             .respond(200);
 
         //when
-        DatasetService.deleteDataset(dataset);
+        DatasetRestService.deleteDataset(dataset);
         $httpBackend.flush();
         $rootScope.$digest();
 
@@ -105,7 +105,7 @@ describe('Dataset Service', function () {
         //expect DELETE not to throw any exception
     }));
 
-    it('should call dataset get rest service', inject(function ($rootScope, DatasetService, RestURLs) {
+    it('should call dataset get rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var result = null;
         var datasetId = 'e85afAa78556d5425bc2';
@@ -116,7 +116,7 @@ describe('Dataset Service', function () {
             .respond(200, data);
 
         //when
-        DatasetService.getDataFromId(datasetId, false).then(function (data) {
+        DatasetRestService.getDataFromId(datasetId, false).then(function (data) {
             result = data;
         });
         $httpBackend.flush();

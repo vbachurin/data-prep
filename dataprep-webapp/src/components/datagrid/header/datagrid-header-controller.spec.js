@@ -112,11 +112,11 @@ describe('DatasetColumnHeader controller', function () {
     }));
 
     describe('with transformation list success', function() {
-        beforeEach(inject(function ($q, TransformationService) {
-            spyOn(TransformationService, 'getTransformations').and.returnValue($q.when({data: menusMock()}));
+        beforeEach(inject(function ($q, TransformationRestService) {
+            spyOn(TransformationRestService, 'getTransformations').and.returnValue($q.when({data: menusMock()}));
         }));
 
-        it('should init grouped and divided transformation menu', inject(function($rootScope, TransformationService) {
+        it('should init grouped and divided transformation menu', inject(function($rootScope, TransformationRestService) {
             //given
             var ctrl = createController();
 
@@ -125,7 +125,7 @@ describe('DatasetColumnHeader controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationService.getTransformations).toHaveBeenCalledWith(metadata.id, column.id);
+            expect(TransformationRestService.getTransformations).toHaveBeenCalledWith(metadata.id, column.id);
             expect(ctrl.transformations.length).toBe(5);
             expect(ctrl.transformations[0].name).toBe('uppercase');
             expect(ctrl.transformations[1].name).toBe('lowercase');
@@ -151,7 +151,7 @@ describe('DatasetColumnHeader controller', function () {
             expect(ctrl.transformations[4].items[0].values[3].parameters[2].inputType).toBe('number');
         }));
 
-        it('should not get transformations is transformations are already initiated', inject(function($rootScope, TransformationService) {
+        it('should not get transformations is transformations are already initiated', inject(function($rootScope, TransformationRestService) {
             //given
             var ctrl = createController();
             ctrl.initTransformations();
@@ -162,13 +162,13 @@ describe('DatasetColumnHeader controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationService.getTransformations.calls.count()).toBe(1);
+            expect(TransformationRestService.getTransformations.calls.count()).toBe(1);
         }));
     });
 
     describe('with transformation list error', function() {
-        beforeEach(inject(function ($q, TransformationService) {
-            spyOn(TransformationService, 'getTransformations').and.returnValue($q.reject('server error'));
+        beforeEach(inject(function ($q, TransformationRestService) {
+            spyOn(TransformationRestService, 'getTransformations').and.returnValue($q.reject('server error'));
         }));
 
         it('should change inProgress and error flags', inject(function($rootScope) {

@@ -116,7 +116,7 @@ describe('Preparation list directive', function() {
     beforeEach(module('data-prep.preparation-list'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $q, PreparationService, DatasetListService) {
+    beforeEach(inject(function($rootScope, $compile, $q, PreparationRestService, DatasetListService) {
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<preparation-list></preparation-list>');
@@ -124,7 +124,7 @@ describe('Preparation list directive', function() {
             scope.$digest();
         };
 
-        spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
+        spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
         spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(allDatasets));
         spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(allDatasets));
     }));

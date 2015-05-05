@@ -4,10 +4,10 @@
     /**
      * @ngdoc service
      * @name data-prep.services.dataset.service:DatasetListService
-     * @description Dataset grid service. This service holds the dataset list like a cache and consume DatasetService to access to the REST api
-     * @requires data-prep.services.dataset.service:DatasetService
+     * @description Dataset grid service. This service holds the dataset list like a cache and consume DatasetRestService to access to the REST api
+     * @requires data-prep.services.dataset.service:DatasetRestService
      */
-    function DatasetListService($q, DatasetService) {
+    function DatasetListService($q, DatasetRestService) {
         var self = this;
         var datasetsPromise;
 
@@ -63,7 +63,7 @@
          */
         self.refreshDatasets = function() {
             if(! datasetsPromise) {
-                datasetsPromise = DatasetService.getDatasets()
+                datasetsPromise = DatasetRestService.getDatasets()
                     .then(function(res) {
                         self.datasets = res.data;
                         datasetsPromise = null;

@@ -3,16 +3,16 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.services.dataset.service:DatasetService
+     * @name data-prep.services.dataset.service:DatasetRestService
      * @description Dataset service. This service provide the entry point to the backend dataset REST api.
      */
-    function DatasetService($rootScope, $upload, $http, RestURLs) {
+    function DatasetRestService($rootScope, $upload, $http, RestURLs) {
         var self = this;
 
         /**
          * @ngdoc method
          * @name getDatasets
-         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Get the dataset list
          * @returns {Promise} - the GET call promise
          */
@@ -23,7 +23,7 @@
         /**
          * @ngdoc method
          * @name fileToDataset
-         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Convert file to dataset object for upload
          * @param {file} file - the file tu upload
          * @param {string} name - the dataset name
@@ -37,7 +37,7 @@
         /**
          * @ngdoc method
          * @name createDataset
-         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Create the dataset
          * @param {dataset} dataset - the dataset infos to create
          * @returns {Promise} - the $upload promise
@@ -53,7 +53,7 @@
         /**
          * @ngdoc method
          * @name updateDataset
-         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Update the dataset
          * @param {dataset} dataset - the dataset infos to update
          * @returns {Promise} - the $upload promise
@@ -70,7 +70,7 @@
         /**
          * @ngdoc method
          * @name deleteDataset
-         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Delete the dataset
          * @param {dataset} dataset - the dataset infos to update
          * @returns {Promise} - the DELETE promise
@@ -87,7 +87,7 @@
         /**
          * @ngdoc method
          * @name getDataFromId
-         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Get the dataset content
          * @param {string} datasetId - the dataset id
          * @param {boolean} metadata - if false, the metadata will not be returned
@@ -106,5 +106,5 @@
     }
 
     angular.module('data-prep.services.dataset')
-        .service('DatasetService', DatasetService);
+        .service('DatasetRestService', DatasetRestService);
 })();

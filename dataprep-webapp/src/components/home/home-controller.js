@@ -6,11 +6,11 @@
      * @name data-prep.home.controller:HomeCtrl
      * @description Home controller.
      * @requires data-prep.services.utils.service:MessageService
-     * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.dataset.service:DatasetListService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function HomeCtrl(MessageService, DatasetService, DatasetListService, TalendConfirmService) {
+    function HomeCtrl(MessageService, DatasetRestService, DatasetListService, TalendConfirmService) {
         var vm = this;
 
         /**
@@ -126,10 +126,10 @@
          * @description [PRIVATE] Create a new dataset
          */
         var createDataset = function(file, name) {
-            var dataset = DatasetService.fileToDataset(file, name);
+            var dataset = DatasetRestService.fileToDataset(file, name);
             vm.uploadingDatasets.push(dataset);
 
-            DatasetService.createDataset(dataset)
+            DatasetRestService.createDataset(dataset)
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
@@ -153,10 +153,10 @@
          * @description [PRIVATE] Update existing dataset
          */
         var updateDataset = function(file, existingDataset) {
-            var dataset = DatasetService.fileToDataset(file, existingDataset.name, existingDataset.id);
+            var dataset = DatasetRestService.fileToDataset(file, existingDataset.name, existingDataset.id);
             vm.uploadingDatasets.push(dataset);
 
-            DatasetService.updateDataset(dataset)
+            DatasetRestService.updateDataset(dataset)
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })

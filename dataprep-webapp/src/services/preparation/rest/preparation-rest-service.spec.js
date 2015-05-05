@@ -102,7 +102,7 @@ describe('Preparation Service', function () {
         $httpBackend = $injector.get('$httpBackend');
     }));
 
-    it('should get all preparations', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should get all preparations', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var preparations = null;
         $httpBackend
@@ -110,7 +110,7 @@ describe('Preparation Service', function () {
             .respond(200, allPreparations);
 
         //when
-        PreparationService.getPreparations()
+        PreparationRestService.getPreparations()
             .then(function(response) {
                 preparations = response.data;
             });
@@ -121,7 +121,7 @@ describe('Preparation Service', function () {
         expect(preparations).toEqual(allPreparations);
     }));
 
-    it('should create a new preparation and set current preparation id', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should create a new preparation and set current preparation id', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var datasetId = '8ec053b1-7870-4bc6-af54-523be91dc774';
         var name = 'The new preparation';
@@ -129,29 +129,29 @@ describe('Preparation Service', function () {
         $httpBackend
             .expectPOST(RestURLs.preparationUrl, {dataSetId: datasetId, name: name})
             .respond(200, 'fbaa18e82e913e97e5f0e9d40f04413412be1126');
-        expect(PreparationService.currentPreparation).toBeFalsy();
+        expect(PreparationRestService.currentPreparation).toBeFalsy();
 
         //when
-        PreparationService.create(datasetId, name);
+        PreparationRestService.create(datasetId, name);
         $httpBackend.flush();
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.currentPreparation).toBe('fbaa18e82e913e97e5f0e9d40f04413412be1126');
+        expect(PreparationRestService.currentPreparation).toBe('fbaa18e82e913e97e5f0e9d40f04413412be1126');
     }));
 
-    it('should update preparation name', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should update preparation name', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var updateDone = false;
         var name = 'The new preparation name';
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
         $httpBackend
             .expectPUT(RestURLs.preparationUrl + '/fbaa18e82e913e97e5f0e9d40f04413412be1126', {name: name})
             .respond(200);
 
         //when
-        PreparationService.update(name)
+        PreparationRestService.update(name)
             .then(function() {
                 updateDone = true;
             });
@@ -162,7 +162,7 @@ describe('Preparation Service', function () {
         expect(updateDone).toBe(true);
     }));
 
-    it('should create a new preparation and append a transformation step', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should create a new preparation and append a transformation step', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var done = false;
         var datasetId = '8ec053b1-7870-4bc6-af54-523be91dc774';
@@ -171,7 +171,7 @@ describe('Preparation Service', function () {
             'default_value': 'N/A',
             'column_name': 'state'
         };
-        expect(PreparationService.currentPreparation).toBeFalsy();
+        expect(PreparationRestService.currentPreparation).toBeFalsy();
 
         //given : preparation creation request
         $httpBackend
@@ -189,7 +189,7 @@ describe('Preparation Service', function () {
 
 
         //when
-        PreparationService.appendStep(datasetId, action, parameters)
+        PreparationRestService.appendStep(datasetId, action, parameters)
             .then(function() {
                 done = true;
             });
@@ -197,11 +197,11 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.currentPreparation).toBe('fbaa18e82e913e97e5f0e9d40f04413412be1126');
+        expect(PreparationRestService.currentPreparation).toBe('fbaa18e82e913e97e5f0e9d40f04413412be1126');
         expect(done).toBe(true);
     }));
 
-    it('should append a transformation step in the current preparation', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should append a transformation step in the current preparation', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var done = false;
         var datasetId = '8ec053b1-7870-4bc6-af54-523be91dc774';
@@ -211,7 +211,7 @@ describe('Preparation Service', function () {
             'column_name': 'state'
         };
 
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
         //given : preparation step append request
         $httpBackend
@@ -225,7 +225,7 @@ describe('Preparation Service', function () {
 
 
         //when
-        PreparationService.appendStep(datasetId, action, parameters)
+        PreparationRestService.appendStep(datasetId, action, parameters)
             .then(function() {
                 done = true;
             });
@@ -236,16 +236,16 @@ describe('Preparation Service', function () {
         expect(done).toBe(true);
     }));
 
-    it('should get the requested version of preparation content', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should get the requested version of preparation content', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var content = null;
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
         $httpBackend
             .expectGET(RestURLs.preparationUrl + '/fbaa18e82e913e97e5f0e9d40f04413412be1126/content?version=head')
             .respond(200, records);
 
         //when
-        PreparationService.getContent('head')
+        PreparationRestService.getContent('head')
             .then(function(response) {
                 content = response.data;
             });
@@ -256,16 +256,16 @@ describe('Preparation Service', function () {
         expect(content).toEqual(records);
     }));
 
-    it('should get the current preparation details', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should get the current preparation details', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var details = null;
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
         $httpBackend
             .expectGET(RestURLs.preparationUrl + '/fbaa18e82e913e97e5f0e9d40f04413412be1126/details')
             .respond(200, allPreparations[1]);
 
         //when
-        PreparationService.getDetails()
+        PreparationRestService.getDetails()
             .then(function(response) {
                 details = response.data;
             });
@@ -276,7 +276,7 @@ describe('Preparation Service', function () {
         expect(details).toEqual(allPreparations[1]);
     }));
 
-    it('should delete the provided preparation', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should delete the provided preparation', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var deleted = false;
         var preparation = {id: 'fbaa18e82e913e97e5f0e9d40f04413412be1126'};
@@ -285,7 +285,7 @@ describe('Preparation Service', function () {
             .respond(200);
 
         //when
-        PreparationService.delete(preparation)
+        PreparationRestService.delete(preparation)
             .then(function() {
                 deleted = true;
             });
@@ -296,7 +296,7 @@ describe('Preparation Service', function () {
         expect(deleted).toBe(true);
     }));
 
-    it('should update a transformation step in the current preparation', inject(function($rootScope, RestURLs, PreparationService) {
+    it('should update a transformation step in the current preparation', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var done = false;
         var action = 'fillemptywithdefault';
@@ -306,7 +306,7 @@ describe('Preparation Service', function () {
         };
         var stepId = '18046df82f0946af05ee766d0ac06f92f63e7047';
 
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
         //given : preparation step update request
         $httpBackend
@@ -320,7 +320,7 @@ describe('Preparation Service', function () {
 
 
         //when
-        PreparationService.updateStep(stepId, action, parameters)
+        PreparationRestService.updateStep(stepId, action, parameters)
             .then(function() {
                 done = true;
             });
@@ -331,7 +331,7 @@ describe('Preparation Service', function () {
         expect(done).toBe(true);
     }));
 
-    it('should call preview POST request', inject(function($rootScope, $q, RestURLs, PreparationService) {
+    it('should call preview POST request', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
         //given
         var done = false;
         var canceled = false;
@@ -340,7 +340,7 @@ describe('Preparation Service', function () {
         var recordsTdpId = [1,2,3,4,5];
         var canceler = $q.defer();
 
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
         var expectedParams = {
             tdpIds: [1,2,3,4,5],
@@ -355,7 +355,7 @@ describe('Preparation Service', function () {
 
 
         //when
-        PreparationService.getPreviewDiff(currentStep, previewStep, recordsTdpId, canceler)
+        PreparationRestService.getPreviewDiff(currentStep, previewStep, recordsTdpId, canceler)
             .then(function() {
                 done = true;
             })
@@ -370,7 +370,7 @@ describe('Preparation Service', function () {
         expect(canceled).toBe(false);
     }));
 
-    it('should cancel POST preview by resolving the given promise', inject(function($rootScope, $q, RestURLs, PreparationService) {
+    it('should cancel POST preview by resolving the given promise', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
         //given
         var done = false;
         var canceled = false;
@@ -379,7 +379,7 @@ describe('Preparation Service', function () {
         var recordsTdpId = [1,2,3,4,5];
         var canceler = $q.defer();
 
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
         var expectedParams = {
             tdpIds: [1,2,3,4,5],
@@ -393,7 +393,7 @@ describe('Preparation Service', function () {
             .respond(200);
 
         //when
-        PreparationService.getPreviewDiff(currentStep, previewStep, recordsTdpId, canceler)
+        PreparationRestService.getPreviewDiff(currentStep, previewStep, recordsTdpId, canceler)
             .then(function() {
                 done = true;
             })
@@ -408,7 +408,7 @@ describe('Preparation Service', function () {
         expect(canceled).toBe(true);
     }));
 
-    it('should call update preview POST request', inject(function($rootScope, $q, RestURLs, PreparationService) {
+    it('should call update preview POST request', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
         //given
         var done = false;
         var canceled = false;
@@ -418,7 +418,7 @@ describe('Preparation Service', function () {
         var recordsTdpId = [1,2,3,4,5];
         var canceler = $q.defer();
 
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
         var expectedParams = {
             action : {
@@ -437,7 +437,7 @@ describe('Preparation Service', function () {
 
 
         //when
-        PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, recordsTdpId, canceler)
+        PreparationRestService.getPreviewUpdate(currentStep, updateStep, newParams, recordsTdpId, canceler)
             .then(function() {
                 done = true;
             })
@@ -452,7 +452,7 @@ describe('Preparation Service', function () {
         expect(canceled).toBe(false);
     }));
 
-    it('should cancel POST update preview by resolving the given promise', inject(function($rootScope, $q, RestURLs, PreparationService) {
+    it('should cancel POST update preview by resolving the given promise', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
         //given
         var done = false;
         var canceled = false;
@@ -462,7 +462,7 @@ describe('Preparation Service', function () {
         var recordsTdpId = [1,2,3,4,5];
         var canceler = $q.defer();
 
-        PreparationService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        PreparationRestService.currentPreparation = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
 
         var expectedParams = {
             action : {
@@ -481,7 +481,7 @@ describe('Preparation Service', function () {
 
 
         //when
-        PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, recordsTdpId, canceler)
+        PreparationRestService.getPreviewUpdate(currentStep, updateStep, newParams, recordsTdpId, canceler)
             .then(function() {
                 done = true;
             })

@@ -8,7 +8,7 @@
      * @requires data-prep.services.dataset.service:DatasetGridService
      * @requires data-prep.services.preparation.service:PreviewService
      */
-    function PreviewService($q, DatasetGridService, PreparationService) {
+    function PreviewService($q, DatasetGridService, PreparationRestService) {
         var self = this;
 
         /**
@@ -152,7 +152,7 @@
             previewCanceler = $q.defer();
             displayedTdpIds = getDisplayedTdpIds();
 
-            PreparationService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
+            PreparationRestService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
                 .then(replaceRecords(displayedTdpIds))
                 .finally(function() {
                     previewCanceler = null;
@@ -172,7 +172,7 @@
             previewCanceler = $q.defer();
             displayedTdpIds = getDisplayedTdpIds();
 
-            PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
+            PreparationRestService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
                 .then(replaceRecords(displayedTdpIds))
                 .finally(function() {
                     previewCanceler = null;

@@ -5,11 +5,11 @@
      * @ngdoc service
      * @name data-prep.services.preparation.service:PreparationListService
      * @description Preparation list service. This service holds the preparations list and adapt them for the application.
-      It uses PreparationService to get the preparations, and DatasetListService to get the datasets
-     * @requires data-prep.services.preparation.service:PreparationService
+      It uses PreparationRestService to get the preparations, and DatasetListService to get the datasets
+     * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function PreparationListService($q, PreparationService, DatasetListService) {
+    function PreparationListService($q, PreparationRestService, DatasetListService) {
         var self = this;
 
         /**
@@ -67,7 +67,7 @@
          * @returns {Promise} - the process promise
          */
         self.refreshPreparations = function() {
-            return $q.all([PreparationService.getPreparations(), DatasetListService.getDatasetsPromise()])
+            return $q.all([PreparationRestService.getPreparations(), DatasetListService.getDatasetsPromise()])
                 .then(function(results) {
                     var preparationResult = results[0];
                     var datasets = results[1];

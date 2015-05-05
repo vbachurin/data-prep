@@ -148,10 +148,10 @@ describe('Preparation list service controller', function() {
 
     beforeEach(module('data-prep.services.preparation'));
 
-    beforeEach(inject(function($q, PreparationService, DatasetListService) {
+    beforeEach(inject(function($q, PreparationRestService, DatasetListService) {
         DatasetListService.datasets = allDatasets;
 
-        spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
+        spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
     }));
 
     it('should init preparations', inject(function($rootScope, PreparationListService) {
@@ -183,7 +183,7 @@ describe('Preparation list service controller', function() {
     }));
 
 
-    it('should refresh preparations if preparation list is empty', inject(function($rootScope, PreparationListService, PreparationService) {
+    it('should refresh preparations if preparation list is empty', inject(function($rootScope, PreparationListService, PreparationRestService) {
         //given
         expect(PreparationListService.preparations).toBeNull();
 
@@ -192,13 +192,13 @@ describe('Preparation list service controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.getPreparations).toHaveBeenCalled();
+        expect(PreparationRestService.getPreparations).toHaveBeenCalled();
         expect(PreparationListService.preparations).toBe(allPreparations);
         expect(PreparationListService.preparations[0].dataset).toBe(allDatasets[0]);
         expect(PreparationListService.preparations[1].dataset).toBe(allDatasets[2]);
     }));
 
-    it('should just return existing preparations list if not empty', inject(function($rootScope, PreparationListService, PreparationService) {
+    it('should just return existing preparations list if not empty', inject(function($rootScope, PreparationListService, PreparationRestService) {
         //given
         var returnedPreps = null;
         PreparationListService.preparations = allPreparations;
@@ -211,7 +211,7 @@ describe('Preparation list service controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.getPreparations).not.toHaveBeenCalled();
+        expect(PreparationRestService.getPreparations).not.toHaveBeenCalled();
         expect(returnedPreps).toBe(allPreparations);
     }));
 

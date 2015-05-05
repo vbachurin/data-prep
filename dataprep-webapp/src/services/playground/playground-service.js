@@ -5,14 +5,14 @@
      * @ngdoc service
      * @name data-prep.services.playground.service:PlaygroundService
      * @description Playground service. This service provides the entry point to load properly the playground
-     * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.dataset.service:DatasetGridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.recipe.service:RecipeService
-     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.utils.service:MessageService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService, MessageService) {
+    function PlaygroundService($rootScope, $q, DatasetRestService, DatasetGridService, FilterService, RecipeService, PreparationRestService, MessageService) {
         var self = this;
 
         /**
@@ -92,8 +92,8 @@
          * @returns {promise} - the process promise
          */
         self.initPlayground = function(dataset) {
-            if(!self.currentMetadata || PreparationService.currentPreparation || dataset.id !== self.currentMetadata.id) {
-                return DatasetService.getDataFromId(dataset.id, false)
+            if(!self.currentMetadata || PreparationRestService.currentPreparation || dataset.id !== self.currentMetadata.id) {
+                return DatasetRestService.getDataFromId(dataset.id, false)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,
@@ -107,7 +107,7 @@
                         self.currentData = data;
                         self.preparationName = '';
                         self.originalPreparationName = '';
-                        PreparationService.currentPreparation = null;
+                        PreparationRestService.currentPreparation = null;
 
                         FilterService.removeAllFilters();
                         RecipeService.reset();
@@ -136,10 +136,10 @@
             self.originalPreparationName = preparation.name;
 
             // Update current preparation id before preparation operations
-            PreparationService.currentPreparation = preparation.id;
+            PreparationRestService.currentPreparation = preparation.id;
 
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.getContent('head')
+            return PreparationRestService.getContent('head')
                 .then(function(response) {
                     self.currentMetadata = preparation.dataset;
                     self.currentData = response.data;
@@ -168,7 +168,7 @@
             }
 
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.getContent(step.transformation.stepId)
+            return PreparationRestService.getContent(step.transformation.stepId)
                 .then(function(response) {
                     self.currentData = response.data;
                     DatasetGridService.setDataset(self.currentMetadata, response.data);
@@ -192,15 +192,15 @@
          */
         self.createOrUpdatePreparation = function(name) {
             if(self.originalPreparationName !== name) {
-                if(PreparationService.currentPreparation) {
-                    PreparationService.update(name)
+                if(PreparationRestService.currentPreparation) {
+                    PreparationRestService.update(name)
                         .then(function() {
                             self.originalPreparationName = name;
                             self.preparationName = name;
                         });
                 }
                 else {
-                    PreparationService.create(self.currentMetadata.id, name)
+                    PreparationRestService.create(self.currentMetadata.id, name)
                         .then(function() {
                             self.originalPreparationName = name;
                             self.preparationName = name;

@@ -3,16 +3,16 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.services.preparation.service:PreparationService
+     * @name data-prep.services.preparation.service:PreparationRestService
      * @description Preparation service. This service provides the entry point to preparation REST api. It holds the loaded preparation.
      */
-    function PreparationService($http, RestURLs) {
+    function PreparationRestService($http, RestURLs) {
         var self = this;
 
         /**
          * @ngdoc property
          * @name currentPreparation
-         * @propertyOf data-prep.services.preparation.service:PreparationService
+         * @propertyOf data-prep.services.preparation.service:PreparationRestService
          * @description the currently loaded preparation
          */
         this.currentPreparation = null;
@@ -20,7 +20,7 @@
         /**
          * @ngdoc method
          * @name adaptTransformAction
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} action - the action to adapt
          * @param {object} parameters - the action parameters
          * @description [PRIVATE] Adapt transformation action to api
@@ -38,7 +38,7 @@
         /**
          * @ngdoc method
          * @name getPreparations
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @description Get All the user's preparations
          * @returns {promise} - the GET promise
          */
@@ -49,7 +49,7 @@
         /**
          * @ngdoc method
          * @name create
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} datasetId - the dataset id
          * @param {string} name - the preparation name
          * @description Create a new preparation
@@ -73,7 +73,7 @@
         /**
          * @ngdoc method
          * @name update
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} name - the new preparation name
          * @description Update the current preparation name
          * @returns {promise} - the PUT promise
@@ -94,7 +94,7 @@
         /**
          * @ngdoc method
          * @name delete
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {object} preparation - the preparation to delete
          * @description Delete a preparation
          * @returns {promise} - the DELETE promise
@@ -106,7 +106,7 @@
         /**
          * @ngdoc method
          * @name appendStep
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} datasetId - the dataset id for creation
          * @param {string} action - the action to append
          * @param {object} parameters - the action parameters
@@ -137,7 +137,7 @@
         /**
          * @ngdoc method
          * @name updateStep
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} stepId The step to update
          * @param {string} action The action name
          * @param {object} parameters The new action parameters
@@ -161,7 +161,7 @@
         /**
          * @ngdoc method
          * @name getContent
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} version - the version (step id) to load
          * @description Get preparation records at the specific 'version' step
          * @returns {promise} - the GET promise
@@ -173,7 +173,7 @@
         /**
          * @ngdoc method
          * @name getDetails
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @description Get current preparation details
          * @returns {promise} - the GET promise
          */
@@ -187,7 +187,7 @@
         /**
          * @ngdoc method
          * @name getPreviewDiff
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @description POST preview diff between 2 unchanged steps of a recipe
          * @returns {promise} The POST promise
          */
@@ -215,7 +215,7 @@
         /**
          * @ngdoc method
          * @name getPreviewUpdate
-         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @description POST preview diff between 2 same actions but with 1 updated step
          * @returns {promise} The POST promise
          */
@@ -246,5 +246,5 @@
     }
 
     angular.module('data-prep.services.preparation')
-        .service('PreparationService', PreparationService);
+        .service('PreparationRestService', PreparationRestService);
 })();
