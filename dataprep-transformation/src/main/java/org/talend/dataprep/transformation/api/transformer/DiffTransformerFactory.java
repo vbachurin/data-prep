@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -20,7 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class DiffTransformerFactory implements TransformerFactory {
 
-    private static final Consumer<DataSetRow> IDLE_CONSUMER = (row) -> {};
+    private static final Consumer<DataSetRow> IDLE_CONSUMER = (row) -> {
+    };
 
     @Autowired
     private WebApplicationContext context;
@@ -28,7 +29,9 @@ public class DiffTransformerFactory implements TransformerFactory {
     final ActionParser parser = new ActionParser();
 
     private Consumer<DataSetRow> oldActions;
+
     private Consumer<DataSetRow> newActions;
+
     private List<Integer> indexes;
 
     @Override
@@ -60,8 +63,7 @@ public class DiffTransformerFactory implements TransformerFactory {
             }
             return result;
         } catch (IOException e) {
-            //TODO : change the error
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_ACTIONS, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_ACTIONS, e);
         }
     }
 }

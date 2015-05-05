@@ -2,7 +2,7 @@ package org.talend.dataprep.transformation.api.transformer.type;
 
 import static org.junit.Assert.fail;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
-import static org.talend.dataprep.transformation.exception.TransformationMessages.UNABLE_TO_PARSE_JSON;
+import static org.talend.dataprep.transformation.exception.TransformationErrorCodes.UNABLE_TO_PARSE_JSON;
 
 import java.io.IOException;
 import java.io.InputStream;

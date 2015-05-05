@@ -2,6 +2,7 @@ package org.talend.dataprep.api.preparation;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -39,6 +40,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.preparation.Application;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
@@ -429,6 +432,27 @@ public class PreparationTest {
             Assert.assertTrue(result.contains(preparationId));
         }
 
+    }
+
+    /**
+     * Check that the error listing service returns a list parsable of error codes. The content is not checked
+     * 
+     * @throws Exception if an error occurs.
+     */
+    @Test
+    public void shouldListErrors() throws Exception {
+        String errors = when().get("/preparations/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualErrorCodes = mapper.readTree(errors);
+
+        assertTrue(actualErrorCodes.isArray());
+        assertTrue(actualErrorCodes.size() > 0);
+        // only checks mandatory attributes
+        for (final JsonNode currentCode : actualErrorCodes) {
+            assertTrue(currentCode.has("code"));
+            assertTrue(currentCode.has("http-status-code"));
+        }
     }
 
     /**

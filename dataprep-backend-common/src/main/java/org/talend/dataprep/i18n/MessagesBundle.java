@@ -71,7 +71,7 @@ public class MessagesBundle implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         source = applicationContext.getBean(ResourceBundleMessageSource.class);
         LOG.info("Activated i18n messages ({}).", source);
     }

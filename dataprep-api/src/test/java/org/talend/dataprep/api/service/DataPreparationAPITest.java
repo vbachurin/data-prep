@@ -2,14 +2,15 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -19,24 +20,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.Application;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@IntegrationTest
+@WebIntegrationTest
 public class DataPreparationAPITest {
 
     @Value("${local.server.port}")
@@ -59,8 +60,8 @@ public class DataPreparationAPITest {
         RestAssured.port = port;
         for (APIService apiService : apiServices) {
             apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
-            apiService.setTransformationServiceURL("http://localhost:" + port + "/");
-            apiService.setPreparationServiceURL("http://localhost:" + port + "/");
+            apiService.setTransformationServiceURL("http://localhost:" + port);
+            apiService.setPreparationServiceURL("http://localhost:" + port);
         }
     }
 
@@ -99,18 +100,19 @@ public class DataPreparationAPITest {
 
     @Test
     public void testTransformOneAction() throws Exception {
-        String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
+
         String dataSetId = given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test2.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/api/datasets").asString();
+
         assertNotNull(dataSetId);
         assertFalse(dataSetId.equals(StringUtils.EMPTY));
-        InputStream expectedContentStream = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(expectedContentStream, writer);
-        String expectedContent = writer.toString();
+
+        InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
+        String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
         String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
                 .asString();
-        assertEquals(expectedContent, transformed);
+
+        assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 
     @Test
@@ -369,6 +371,25 @@ public class DataPreparationAPITest {
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=" + ROOT_STEP.id(), preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
+    }
+
+    /**
+     * Test that errors are properly listed and displayed.
+     */
+    @Test
+    public void shouldListErrors() throws IOException {
+        String errors = when().get("/api/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(errors);
+
+        // content is not checked, only mandatory fields
+        assertTrue(rootNode.isArray());
+        assertTrue(rootNode.size() > 0);
+        for (final JsonNode errorCode : rootNode) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
     }
 
     @Test

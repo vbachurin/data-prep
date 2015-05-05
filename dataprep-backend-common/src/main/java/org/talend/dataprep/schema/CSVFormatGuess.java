@@ -33,15 +33,12 @@ public class CSVFormatGuess implements FormatGuess {
     }
 
     @Override
-
-    public SchemaParser getSchemaParser()
-    {
+    public SchemaParser getSchemaParser() {
         return this.schemaParser;
     }
 
     @Override
-    public Serializer getSerializer()
-    {
+    public Serializer getSerializer() {
         return this.serializer;
     }
 

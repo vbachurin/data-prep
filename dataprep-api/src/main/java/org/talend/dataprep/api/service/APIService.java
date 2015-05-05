@@ -1,6 +1,8 @@
 package org.talend.dataprep.api.service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
@@ -14,11 +16,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.WebApplicationContext;
-import org.talend.dataprep.api.APIMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.api.APIErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 public class APIService {
 
@@ -30,7 +33,7 @@ public class APIService {
 
     private final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
-    protected static final Logger LOG = LoggerFactory.getLogger( APIService.class );
+    protected static final Logger LOG = LoggerFactory.getLogger(APIService.class);
 
     @Value("${transformation.service.url}")
     protected String transformServiceUrl;
@@ -70,7 +73,7 @@ public class APIService {
         try {
             return context.getBean(clazz, args);
         } catch (BeansException e) {
-            throw Exceptions.Internal(APIMessages.UNABLE_TO_FIND_COMMAND, clazz, args.length, e);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e, TDPExceptionContext.build().put("class", clazz).put("args", args));
         }
     }
 

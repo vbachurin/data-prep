@@ -1,0 +1,10 @@
+{
+  "code": "TDP_ALL_UNEXPECTED_EXCEPTION",
+  "message": "UNEXPECTED_EXCEPTION",
+  "cause": "root cause",
+  "context": {
+    "key 3": "[true, false, true]",
+    "key 2": "123",
+    "key 1": "Value 1"
+  }
+}

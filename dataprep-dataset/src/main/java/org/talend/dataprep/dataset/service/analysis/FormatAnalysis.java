@@ -21,11 +21,11 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.exception.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.FormatGuesser;
 import org.talend.dataprep.schema.SchemaParser;
@@ -102,7 +102,7 @@ public class FormatAnalysis {
                         metadata.getRow().setColumns(schemaParserResult.getColumnMetadatas());
 
                     } catch (IOException e) {
-                        throw Exceptions.Internal(DataSetMessages.UNABLE_TO_READ_DATASET_CONTENT, e);
+                        throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
                     }
                     repository.add(metadata);
                     // Asks for a in depth schema analysis (for column type information).
@@ -119,7 +119,7 @@ public class FormatAnalysis {
                 message.acknowledge();
             }
         } catch (JMSException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
         }
 
     }
