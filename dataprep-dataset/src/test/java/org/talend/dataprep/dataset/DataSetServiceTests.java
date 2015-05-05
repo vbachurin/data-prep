@@ -20,6 +20,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.spark.SparkContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +65,15 @@ public class DataSetServiceTests {
     @Autowired
     DataSetContentStore contentStore;
 
+    @Autowired
+    SparkContext sparkContext;
+    
     private void assertQueueMessages(String dataSetId) throws Exception {
+        // Wait for Spark jobs to finish
+        while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
+            // TODO Is there a better way to wait for all Spark jobs to complete?
+            Thread.sleep(200);
+        }
         // Wait for queue messages
         waitForQueue(Destinations.CONTENT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
