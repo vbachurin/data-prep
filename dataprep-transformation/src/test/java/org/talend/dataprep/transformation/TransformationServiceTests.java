@@ -1,8 +1,10 @@
 package org.talend.dataprep.transformation;
 
-import static com.jayway.restassured.RestAssured.*;
-import static org.hamcrest.core.Is.*;
-import static org.skyscreamer.jsonassert.JSONAssert.*;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.core.Is.is;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -18,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
@@ -95,7 +99,8 @@ public class TransformationServiceTests {
 
     @Test
     public void testInvalidJSONInput() throws Exception {
-        given().contentType(ContentType.JSON).body("invalid content on purpose.").when().post("/transform").then().statusCode(400).content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
+        given().contentType(ContentType.JSON).body("invalid content on purpose.").when().post("/transform").then()
+                .statusCode(400).content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
     }
 
     @Test
@@ -208,4 +213,23 @@ public class TransformationServiceTests {
         assertEquals("[]", response, false);
     }
 
+    /**
+     * Check that the error listing service returns a list parsable of error codes. The content is not checked
+     * 
+     * @throws Exception if an error occurs.
+     */
+    @Test
+    public void shouldListErrors() throws Exception {
+        String errors = when().get("/transform/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualErrors = mapper.readTree(errors);
+
+        assertTrue(actualErrors.isArray());
+        assertTrue(actualErrors.size() > 0);
+        for (final JsonNode errorCode : actualErrors) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
+    }
 }

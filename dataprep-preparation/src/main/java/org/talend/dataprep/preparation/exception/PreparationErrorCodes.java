@@ -1,17 +1,17 @@
 package org.talend.dataprep.preparation.exception;
 
-import org.talend.dataprep.exception.ErrorCode;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.talend.dataprep.exception.ErrorCode;
 
 /**
  * Preparation error codes.
  */
 public enum PreparationErrorCodes implements ErrorCode {
-    PREPARATION_DOES_NOT_EXIST(400, "id"), // TODO should be 404 ?
-    UNABLE_TO_SERVE_PREPARATION_CONTENT(400, "id", "version"); // 400
+    PREPARATION_DOES_NOT_EXIST(400, "id"),
+    UNABLE_TO_SERVE_PREPARATION_CONTENT(400, "id", "version");
 
     /** The http status to use. */
     private int httpStatus;

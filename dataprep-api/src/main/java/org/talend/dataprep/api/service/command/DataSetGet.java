@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 import com.netflix.hystrix.HystrixCommand;
-import org.talend.dataprep.exception.TDPExceptionContext;
 
 @Component
 @Scope("request")
@@ -61,11 +61,10 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 retryCount++;
                 if (retryCount > MAX_RETRY) {
                     throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT_DATASET_NOT_READY,
-                            TDPExceptionContext.build().put(
-                            "id", dataSetId));
+                            TDPExceptionContext.build().put("id", dataSetId));
                 }
                 // Pause before retry
-                final int pauseTime = 150 * retryCount;
+                final int pauseTime = 100 * retryCount;
                 LOGGER.info("Data set #{} content is not ready, pausing for {} ms.", dataSetId, pauseTime);
                 try {
                     Thread.sleep(pauseTime);

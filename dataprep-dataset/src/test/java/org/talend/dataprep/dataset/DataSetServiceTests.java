@@ -4,7 +4,8 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
@@ -41,6 +42,8 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Separator;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -126,32 +129,6 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void list() throws Exception {
-        when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
-        // Adds 1 data set to store
-        String id1 = UUID.randomUUID().toString();
-        final DataSetMetadata metadata = metadata().id(id1).name("name1").author("anonymous").created(0).contentType(new CSVFormatGuess(new Separator())).build();
-        dataSetMetadataRepository.add(metadata);
-
-        String expected = "[{\"id\":\""
-                + id1
-                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"type\":\"text/csv\",\"created\":\"01-01-1970 00:00\"}]";
-
-        InputStream content = when().get("/datasets").asInputStream();
-        String contentAsString = IOUtils.toString(content);
-
-        assertThat(contentAsString, sameJSONAs(expected).allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
-
-        // Adds a new data set to store
-        String id2 = UUID.randomUUID().toString();
-        DataSetMetadata metadata2 = metadata().id(id2).name("name2").author("anonymous").created(0).contentType(new CSVFormatGuess(new Separator())).build();
-        dataSetMetadataRepository.add(metadata2);
-        when().get("/datasets").then().statusCode(HttpStatus.OK.value());
-        List<String> ids = from(when().get("/datasets").asString()).get("id");
-        assertThat(ids, hasItems(id1, id2));
-    }
-
-    @Test
     public void create() throws Exception {
         int before = dataSetMetadataRepository.size();
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
@@ -188,8 +165,8 @@ public class DataSetServiceTests {
     @Test
     public void update() throws Exception {
         String dataSetId = "123456";
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
-                .when().put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv"))).when()
+                .put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId);
@@ -337,4 +314,23 @@ public class DataSetServiceTests {
         assertThat(HttpServletResponse.SC_NO_CONTENT, is(statusCode));
     }
 
+    /**
+     * Check that the error listing service returns a list parsable of error codes. The content is not checked
+     * 
+     * @throws Exception if an error occurs.
+     */
+    @Test
+    public void shouldListErrors() throws Exception {
+        String errors = when().get("/datasets/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(errors);
+
+        assertTrue(rootNode.isArray());
+        assertTrue(rootNode.size() > 0);
+        for (final JsonNode errorCode : rootNode) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
+    }
 }
