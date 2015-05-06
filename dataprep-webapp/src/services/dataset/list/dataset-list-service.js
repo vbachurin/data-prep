@@ -59,8 +59,9 @@
          * @returns {promise} The pending POST promise
          */
         self.create = function(dataset) {
-            return DatasetRestService.create(dataset)
-                .then(self.refreshDatasets);
+            var promise = DatasetRestService.create(dataset);
+            promise.then(self.refreshDatasets);
+            return promise;
         };
 
         /**
@@ -72,8 +73,9 @@
          * @returns {promise} The pending POST promise
          */
         self.update = function(dataset) {
-            return DatasetRestService.update(dataset)
-                .then(self.refreshDatasets);
+            var promise = DatasetRestService.update(dataset);
+            promise.then(self.refreshDatasets);
+            return promise;
         };
 
         /**

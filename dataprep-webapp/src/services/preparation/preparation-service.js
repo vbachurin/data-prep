@@ -63,8 +63,9 @@
          * @returns {promise} The process promise
          */
         self.getPreparations = function() {
-            return PreparationListService.getPreparationsPromise()
-                .then(consolidatePreparationsAndDatasets);
+            return self.preparationsList() !== null ?
+                $q.when(self.preparationsList()) :
+                PreparationListService.refreshPreparations().then(consolidatePreparationsAndDatasets);
         };
 
         /**

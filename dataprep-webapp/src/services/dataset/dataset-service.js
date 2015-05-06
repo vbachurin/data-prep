@@ -8,7 +8,7 @@
      * @requires data-prep.services.dataset.service:DatasetListService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetService(DatasetListService, PreparationListService) {
+    function DatasetService($q, DatasetListService, PreparationListService) {
         var self = this;
 
         /**
@@ -38,12 +38,13 @@
          * @ngdoc method
          * @name getDatasets
          * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Return a promise that resolves the datasets list. See {@link data-prep.services.dataset.service:DatasetListService DatasetListService}.getDatasetsPromise
+         * @description Return a promise that resolves the datasets list.
          * @returns {promise} The pending GET or resolved promise
          */
         self.getDatasets = function() {
-            return DatasetListService.getDatasetsPromise()
-                .then(consolidatePreparationsAndDatasets);
+            return self.datasetsList() !== null ?
+                $q.when(self.datasetsList()) :
+                DatasetListService.refreshDatasets().then(consolidatePreparationsAndDatasets);
         };
 
         /**
@@ -68,8 +69,9 @@
          * @returns {promise} The pending DELETE promise
          */
         self.create = function(dataset) {
-            return DatasetListService.create(dataset)
-                .then(consolidatePreparationsAndDatasets);
+            var promise = DatasetListService.create(dataset);
+            promise.then(consolidatePreparationsAndDatasets);
+            return promise;
         };
 
         /**
@@ -81,8 +83,9 @@
          * @returns {promise} The pending PUT promise
          */
         self.update = function(dataset) {
-            return DatasetListService.update(dataset)
-                .then(consolidatePreparationsAndDatasets);
+            var promise = DatasetListService.update(dataset);
+            promise.then(consolidatePreparationsAndDatasets);
+            return promise;
         };
 
         /**
