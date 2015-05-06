@@ -263,6 +263,23 @@ public class DataSetServiceTests {
         assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is(expectedName));
     }
 
+    /**
+     * Test the import of the avengers file to check the proper format analysis
+     */
+    @Test
+    public void test4() throws Exception {
+        String dataSetId = given().log().all()
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("avengers.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+
+        // assertQueueMessages(dataSetId);
+
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("avengers_expected.json");
+        String datasetContent = given().log().all().when().get("/datasets/{id}?metadata=true&columns=true", dataSetId).asString();
+
+        assertThat(datasetContent, sameJSONAsFile(expected));
+    }
+
     @Test
     public void testQuotes() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("bands_quotes.csv")))

@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "id": "eef468c3-e35d-4606-ae60-d80c65546ec6",
+    "name": "avengers",
+    "author": "anonymousUser",
+    "records": 5,
+    "nbLinesHeader": 1,
+    "nbLinesFooter": 0,
+    "type": "text/csv",
+    "created": "05-06-2015 15:39"
+  },
+  "columns": [
+    {
+      "id": "nickname",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 5
+      },
+      "type": "string"
+    },
+    {
+      "id": "secret firstname",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 5
+      },
+      "type": "string"
+    },
+    {
+      "id": " secret lastname",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 5
+      },
+      "type": "string"
+    },
+    {
+      "id": "date of birth",
+      "quality": {
+        "empty": 0,
+        "invalid": 1,
+        "valid": 4
+      },
+      "type": "date"
+    },
+    {
+      "id": " city",
+      "quality": {
+        "empty": 1,
+        "invalid": 0,
+        "valid": 4
+      },
+      "type": "string"
+    }
+  ],
+  "records": [
+    {
+      "nickname": "Spiderman",
+      "secret firstname": "Peter",
+      " secret lastname": "Parker",
+      "date of birth": "",
+      " city": "New York City"
+    },
+    {
+      "nickname": "Superman",
+      "secret firstname": "Clark",
+      " secret lastname": "Kent",
+      "date of birth": "02/28/1938",
+      " city": ""
+    },
+    {
+      "nickname": "Batman",
+      "secret firstname": "Bruce",
+      " secret lastname": "Wayne",
+      "date of birth": "05/01/1939",
+      " city": "Metropolis"
+    },
+    {
+      "nickname": "Captain America",
+      "secret firstname": "Stevens",
+      " secret lastname": "Rogers",
+      "date of birth": "04/04/1918",
+      " city": "NYC"
+    },
+    {
+      "nickname": "Iron Man",
+      "secret firstname": "Tony",
+      " secret lastname": "Stark",
+      "date of birth": "03/05/1963",
+      " city": "N/A"
+    }
+  ]
+}
