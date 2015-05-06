@@ -243,4 +243,56 @@ describe('Transform params controller', function () {
         //then
         expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment', param1: 'param1Value', param2: 4});
     });
+
+    it('should extract param and call ctrl onSubmitHoverOn function', function() {
+        //given
+        var transformation = {
+            name: 'uppercase',
+            category: 'case',
+            parameters: [
+                {name: 'param1', type: 'text', default: ''},
+                {name: 'param2', type: 'integer', default: '5'}
+            ]
+        };
+        var ctrl = createController(transformation);
+        ctrl.transformation.parameters[0].value = 'param1Value';
+        ctrl.transformation.parameters[1].value = 4;
+
+        var hoverArgs = {};
+        ctrl.onSubmitHoverOn = function(args) {
+            hoverArgs = args;
+        };
+
+        //when
+        ctrl.submitHoverOn();
+
+        //then
+        expect(hoverArgs.params).toEqual({ param1: 'param1Value', param2: 4 });
+    });
+
+    it('should extract param and call ctrl onSubmitHoverOff function', function() {
+        //given
+        var transformation = {
+            name: 'uppercase',
+            category: 'case',
+            parameters: [
+                {name: 'param1', type: 'text', default: ''},
+                {name: 'param2', type: 'integer', default: '5'}
+            ]
+        };
+        var ctrl = createController(transformation);
+        ctrl.transformation.parameters[0].value = 'param1Value';
+        ctrl.transformation.parameters[1].value = 4;
+
+        var hoverArgs = {};
+        ctrl.onSubmitHoverOff = function(args) {
+            hoverArgs = args;
+        };
+
+        //when
+        ctrl.submitHoverOff();
+
+        //then
+        expect(hoverArgs.params).toEqual({ param1: 'param1Value', param2: 4 });
+    });
 });

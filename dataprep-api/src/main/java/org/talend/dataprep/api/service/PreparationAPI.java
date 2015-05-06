@@ -4,16 +4,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.service.api.PreviewDiffInput;
+import org.talend.dataprep.api.service.api.PreviewUpdateInput;
 import org.talend.dataprep.api.service.command.*;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -42,7 +46,7 @@ public class PreparationAPI extends APIService {
             outputStream.flush();
             LOG.debug("Listed preparations (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -106,7 +110,7 @@ public class PreparationAPI extends APIService {
             outputStream.flush();
             LOG.debug("Retrieved preparation details (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_GET_PREPARATION_DETAILS, e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -127,7 +131,7 @@ public class PreparationAPI extends APIService {
             outputStream.flush();
             LOG.debug("Retrieved preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_PREPARATION_CONTENT, e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -153,8 +157,39 @@ public class PreparationAPI extends APIService {
             @ApiParam("New content for the action.") InputStream body, HttpServletResponse response) {
         LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationServiceURL, preparationId, stepId, body);
+        HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationServiceURL, preparationId,
+                stepId, body);
         command.execute();
         LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
+    }
+
+    // ---------------------------------------------------------------------------------
+    // ----------------------------------------PREVIEW----------------------------------
+    // ---------------------------------------------------------------------------------
+
+    @RequestMapping(value = "/api/preparations/preview/diff", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void previewDiff(@RequestBody PreviewDiffInput input, HttpServletResponse response) {
+        try {
+            HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), contentServiceUrl,
+                    transformServiceUrl, preparationServiceURL, input);
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(transformation.execute(), outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
+        }
+    }
+
+    @RequestMapping(value = "/api/preparations/preview/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void previewUpdate(@RequestBody PreviewUpdateInput input, HttpServletResponse response) {
+        try {
+            HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), contentServiceUrl,
+                    transformServiceUrl, preparationServiceURL, input);
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(transformation.execute(), outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_TRANSFORM_DATASET, e);
+        }
     }
 }

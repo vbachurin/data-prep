@@ -4,26 +4,35 @@ import java.io.StringWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+ * Controller advice applied to all controller so that they can handle TDPExceptions.
+ */
 @ControllerAdvice
 public class TDPExceptionController {
 
-    @ExceptionHandler(InternalException.class)
-    public @ResponseBody String handleInternalError(HttpServletResponse response, InternalException e) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        final StringWriter message = new StringWriter();
-        e.writeTo(message);
-        return message.toString();
-    }
+    /** This class' logger. */
+    protected static final Logger LOGGER = LoggerFactory.getLogger(TDPExceptionController.class);
 
-    @ExceptionHandler(UserException.class)
-    public @ResponseBody String handleUserError(HttpServletResponse response, UserException e) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    /**
+     * Send the TDPException into the http response.
+     *
+     * @param response the http response where to write the error.
+     * @param e the TDP exception.
+     * @return the http response.
+     */
+    @ExceptionHandler(TDPException.class)
+    public @ResponseBody String handleError(HttpServletResponse response, TDPException e) {
+
+        LOGGER.error("An error occurred", e);
+
+        response.setStatus(e.getCode().getHttpStatus());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         final StringWriter message = new StringWriter();
         e.writeTo(message);

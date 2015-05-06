@@ -1,14 +1,26 @@
 package org.talend.dataprep.schema;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {
+
+    @Autowired
+    private CSVFormatGuess csvFormatGuess;
 
     private static Separator guessSeparator(InputStream is, String encoding) {
         try {
@@ -68,18 +80,19 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                 }
             }
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_READ_CONTENT, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
         }
         return null;
     }
 
     @Override
-    public FormatGuess guess(InputStream stream) {
+    public FormatGuesser.Result guess(InputStream stream) {
         Separator sep = guessSeparator(stream, "UTF-8");
         if (sep != null) {
-            return new CSVFormatGuess(sep);
+            return new FormatGuesser.Result(csvFormatGuess, //
+                    Collections.singletonMap(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.separator)));
         }
-        return new NoOpFormatGuess(); // Fallback
+        return new FormatGuesser.Result(new NoOpFormatGuess(), Collections.emptyMap()); // Fallback
     }
 
 }

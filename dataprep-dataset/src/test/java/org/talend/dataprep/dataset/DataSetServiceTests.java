@@ -5,6 +5,7 @@ import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.spark.SparkContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,8 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Separator;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -61,7 +65,15 @@ public class DataSetServiceTests {
     @Autowired
     DataSetContentStore contentStore;
 
+    @Autowired
+    SparkContext sparkContext;
+    
     private void assertQueueMessages(String dataSetId) throws Exception {
+        // Wait for Spark jobs to finish
+        while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
+            // TODO Is there a better way to wait for all Spark jobs to complete?
+            Thread.sleep(200);
+        }
         // Wait for queue messages
         waitForQueue(Destinations.CONTENT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
@@ -130,7 +142,10 @@ public class DataSetServiceTests {
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
         // Adds 1 data set to store
         String id1 = UUID.randomUUID().toString();
-        final DataSetMetadata metadata = metadata().id(id1).name("name1").author("anonymous").created(0).contentType(new CSVFormatGuess(new Separator())).build();
+        final DataSetMetadata metadata = metadata().id(id1).name("name1").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+
+        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
         dataSetMetadataRepository.add(metadata);
 
         String expected = "[{\"id\":\""
@@ -144,7 +159,9 @@ public class DataSetServiceTests {
 
         // Adds a new data set to store
         String id2 = UUID.randomUUID().toString();
-        DataSetMetadata metadata2 = metadata().id(id2).name("name2").author("anonymous").created(0).contentType(new CSVFormatGuess(new Separator())).build();
+        DataSetMetadata metadata2 = metadata().id(id2).name("name2").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        metadata2.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
         dataSetMetadataRepository.add(metadata2);
         when().get("/datasets").then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
@@ -164,7 +181,9 @@ public class DataSetServiceTests {
     @Test
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).contentType(new CSVFormatGuess(new Separator())).build();
+        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
+                Character.toString(new Separator().separator));
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
         List<String> ids = from(when().get("/datasets").asString()).get("");
@@ -176,7 +195,13 @@ public class DataSetServiceTests {
     @Test
     public void delete() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        dataSetMetadataRepository.add(metadata().id(expectedId).contentType(new CSVFormatGuess(new Separator())).build());
+
+        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
+
+        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
+                Character.toString(new Separator().separator));
+        dataSetMetadataRepository.add(dataSetMetadata);
+
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int before = dataSetMetadataRepository.size();
@@ -188,8 +213,8 @@ public class DataSetServiceTests {
     @Test
     public void update() throws Exception {
         String dataSetId = "123456";
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
-                .when().put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv"))).when()
+                .put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId);
@@ -313,17 +338,20 @@ public class DataSetServiceTests {
     @Test
     public void getMetadata() throws Exception {
         DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id("1234");
-        builder.row(ColumnMetadata.Builder.column().empty(0).invalid(0).valid(0).name("id").type(Type.STRING));
-        builder.created(0);
-        builder.name("name");
-        builder.author("author");
-        builder.footerSize(0);
-        builder.headerSize(1);
-        builder.qualityAnalyzed(true);
-        builder.schemaAnalyzed(true);
-        builder.contentType(new CSVFormatGuess(new Separator()));
+        builder.row(ColumnMetadata.Builder.column().empty(0).invalid(0).valid(0).name("id").type(Type.STRING))//
+                .created(0)//
+                .name("name")//
+                .author("author")//
+                .footerSize(0) //
+                .headerSize(1) //
+                .qualityAnalyzed(true) //
+                .schemaAnalyzed(true) //
+                .formatGuessId(new CSVFormatGuess().getBeanId());
 
-        dataSetMetadataRepository.add(builder.build());
+        DataSetMetadata metadata = builder.build();
+        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
+
+        dataSetMetadataRepository.add(metadata);
         String contentAsString = when().get("/datasets/{id}/metadata", "1234").asString();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("metadata1.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
@@ -337,4 +365,23 @@ public class DataSetServiceTests {
         assertThat(HttpServletResponse.SC_NO_CONTENT, is(statusCode));
     }
 
+    /**
+     * Check that the error listing service returns a list parsable of error codes. The content is not checked
+     * 
+     * @throws Exception if an error occurs.
+     */
+    @Test
+    public void shouldListErrors() throws Exception {
+        String errors = when().get("/datasets/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(errors);
+
+        assertTrue(rootNode.isArray());
+        assertTrue(rootNode.size() > 0);
+        for (final JsonNode errorCode : rootNode) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
+    }
 }

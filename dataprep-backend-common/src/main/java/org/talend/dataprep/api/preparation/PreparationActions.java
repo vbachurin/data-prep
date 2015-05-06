@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
 public class PreparationActions extends Identifiable {
 
@@ -64,7 +64,7 @@ public class PreparationActions extends Identifiable {
         try {
             return DigestUtils.sha1Hex(serializeActions());
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_COMPUTE_ID, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_COMPUTE_ID, e);
         }
     }
 

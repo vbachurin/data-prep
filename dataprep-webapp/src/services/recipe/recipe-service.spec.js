@@ -466,4 +466,40 @@ describe('Recipe service', function () {
         //then
         expect(index).toBe(-1);
     }));
+
+    it('should return the initial state if the index is 0', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var step = RecipeService.getStepBefore(0);
+
+        //then
+        expect(step).toEqual({ transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }});
+    }));
+
+    it('should return the last step if the index is bigger than the recipe size', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var step = RecipeService.getStepBefore(1000);
+
+        //then
+        expect(step).toEqual(RecipeService.getRecipe()[4]);
+    }));
+
+    it('should return the step before the one identified by the index', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var step = RecipeService.getStepBefore(2);
+
+        //then
+        expect(step).toEqual(RecipeService.getRecipe()[1]);
+    }));
 });

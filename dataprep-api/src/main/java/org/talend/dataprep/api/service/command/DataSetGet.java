@@ -3,6 +3,7 @@ package org.talend.dataprep.api.service.command;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -10,11 +11,13 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -22,7 +25,11 @@ import com.netflix.hystrix.HystrixCommand;
 @Scope("request")
 public class DataSetGet extends HystrixCommand<InputStream> {
 
-    private static final int MAX_RETRY = 5;
+    @Value("${http.retry.pause}")
+    public int PAUSE;
+
+    @Value("${http.retry.max_retry}")
+    private int MAX_RETRY;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetGet.class);
 
@@ -59,21 +66,26 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                 // Data set exists, but content isn't yet analyzed, retry request
                 retryCount++;
                 if (retryCount > MAX_RETRY) {
-                    throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
+                    LOGGER.error("Failed to retrieve data set content after {} tries.", retryCount);
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT_DATASET_NOT_READY,
+                            TDPExceptionContext.build().put("id", dataSetId));
                 }
                 // Pause before retry
-                final int pauseTime = 100 * retryCount;
-                LOGGER.info("Data set #{} content is not ready, pausing for {} ms.", dataSetId, pauseTime);
+                final int pauseTime = PAUSE * retryCount;
+                LOGGER.debug("Data set #{} content is not ready, pausing for {} ms.", dataSetId, pauseTime);
                 try {
-                    Thread.sleep(pauseTime);
+                    TimeUnit.MILLISECONDS.sleep(pauseTime);
                 } catch (InterruptedException e) {
-                    throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e);
+                    throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, TDPExceptionContext.build().put(
+                            "id", dataSetId));
                 }
                 return handleResponse(client.execute(contentRetrieval));
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT);
+        Exception cause = new Exception(response.getStatusLine().getStatusCode() + response.getStatusLine().getReasonPhrase());
+        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, cause, TDPExceptionContext.build().put("id",
+                dataSetId));
     }
 }

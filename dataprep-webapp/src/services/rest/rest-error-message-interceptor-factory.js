@@ -18,6 +18,11 @@
              * @description Display the error message depending on the error status and error code
              */
             responseError: function(rejection) {
+                //user cancel the request : we do not show message
+                if(rejection.config.timeout && rejection.config.timeout.$$state.value === 'user cancel') {
+                    return $q.reject(rejection);
+                }
+
                 if(rejection.status === 0) {
                     MessageService.error('SERVER_ERROR_TITLE', 'SERVICE_UNAVAILABLE');
                 }
