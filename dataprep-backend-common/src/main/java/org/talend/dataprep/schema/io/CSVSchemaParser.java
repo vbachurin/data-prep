@@ -39,22 +39,6 @@ public class CSVSchemaParser implements SchemaParser {
             for (String column : columns) {
                 columnMetadata.add(column().name(column).type(Type.STRING).build());
             }
-            // Best guess (and naive) on data types
-            String[] line;
-            while ((line = reader.readNext()) != null) {
-                for (int i = 0; i < line.length; i++) {
-                    String columnValue = line[i];
-                    try {
-                        Integer.parseInt(columnValue);
-                        columnMetadata.get(i).setType(Type.INTEGER.getName());
-                    } catch (NumberFormatException e) {
-                        // Not an number
-                    }
-                    if ("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim())) {
-                        columnMetadata.get(i).setType(Type.BOOLEAN.getName());
-                    }
-                }
-            }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
         }
