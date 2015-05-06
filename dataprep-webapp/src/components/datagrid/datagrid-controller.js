@@ -21,9 +21,6 @@
             if(tooltipPromise) {
                 $timeout.cancel(tooltipPromise);
             }
-            if(tooltipHidePromise) {
-                $timeout.cancel(tooltipHidePromise);
-            }
         };
 
         /**
@@ -36,13 +33,12 @@
          * @description [PRIVATE] Update the tooltip component and display with a delay
          */
         var createTooltip = function(record, colId, position) {
-            var delay = vm.showTooltip ? 0 : tooltipDelay;
             tooltipPromise = $timeout(function() {
                 vm.record = record;
                 vm.position = position;
                 vm.colId = colId;
                 vm.showTooltip = true;
-            }, delay);
+            }, tooltipDelay);
         };
 
         /**
@@ -69,7 +65,7 @@
             cancelTooltip();
             tooltipHidePromise = $timeout(function() {
                 vm.showTooltip = false;
-            }, tooltipDelay);
+            }, tooltipDelay / 3);
         };
     }
 

@@ -217,7 +217,7 @@
                         var toolTipText = item[column.id];
 
                         // no text no tooltip
-                        if (toolTipText === "") {
+                        if (toolTipText === '') {
                             return;
                         }
 
