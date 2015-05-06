@@ -5,10 +5,10 @@
      * @ngdoc service
      * @name data-prep.services.recipe.service:RecipeService
      * @description Recipe service. This service provide the entry point to manipulate properly the recipe
-     * @requires data-prep.services.preparation.service:PreparationRestService
+     * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function RecipeService(PreparationRestService, ConverterService) {
+    function RecipeService(PreparationService, ConverterService) {
         var listType = 'LIST';
 
         /**
@@ -265,7 +265,7 @@
          * @description Refresh recipe items with current preparation steps
          */
         this.refresh = function() {
-            return PreparationRestService.getDetails()
+            return PreparationService.getDetails()
                 .then(function(resp) {
                     //steps ids are in reverse order and the last is the 'no-transformation' id
                     var steps = resp.data.steps.slice(0);

@@ -12,12 +12,11 @@
         <li>datasets : on dataset list change, set the default preparation id in each element</li>
      </ul>
      * @requires data-prep.services.dataset.service:DatasetService
-     * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function DatasetListCtrl($scope, $stateParams, DatasetService, PreparationListService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($scope, $stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, PreparationListService) {
         var vm = this;
         vm.datasetService = DatasetService;
 
@@ -72,8 +71,11 @@
             }
         };
 
+        // load the datasets
+        DatasetService
+            .getDatasets()
+            .then(loadUrlSelectedDataset);
 
-        // add a watcher on datasets so that the default preparation is set for each dataset
         $scope.$watch(
             function() {
                 return vm.datasets;
@@ -83,11 +85,6 @@
                 PreparationListService.refreshPreparations();
             }
         );
-
-        // load the datasets
-        DatasetService
-            .getDatasets()
-            .then(loadUrlSelectedDataset);
 
     }
 

@@ -95,6 +95,90 @@
             }
         };
 
+        /**
+         * @ngdoc method
+         * @name getContent
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @param {string} preparationId The preparation id to load
+         * @param {string} version The version (step id) to load
+         * @description Get preparation records at the specific 'version' step
+         * @returns {promise} The GET promise
+         */
+        this.getContent = PreparationRestService.getContent;
+
+        /**
+         * @ngdoc method
+         * @name getDetails
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @param {string} preparationId The preparation id to load
+         * @description Get current preparation details
+         * @returns {promise} The GET promise
+         */
+        this.getDetails = PreparationRestService.getDetails;
+
+        /**
+         * @ngdoc method
+         * @name create
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @param {string} datasetId The dataset id
+         * @param {string} name The preparation name
+         * @description Create a new preparation
+         * @returns {promise} The POST promise
+         */
+        this.create = PreparationRestService.create;
+
+        /**
+         * @ngdoc method
+         * @name update
+         * @methodOf data-prep.services.preparation.service:PreparationRestService
+         * @param {string} preparationId The preparation id
+         * @param {string} name The new preparation name
+         * @description Update the current preparation name
+         * @returns {promise} The PUT promise
+         */
+        this.update = PreparationRestService.update;
+
+        /**
+         * @ngdoc method
+         * @name delete
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @param {object} preparation The preparation to delete
+         * @description Delete a preparation from backend and from its internal list
+         * @returns {promise} The DELETE promise
+         */
+        self.delete = function(preparation) {
+            return PreparationRestService.delete(preparation.id)
+                .then(function() {
+                    var index = self.preparations.indexOf(preparation);
+                    self.preparations.splice(index, 1);
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name updateStep
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @param {object} preparationId The preparation id to update
+         * @param {object} step The step to update
+         * @param {object} parameters The new action parameters
+         * @description Update a step with new parameters
+         * @returns {promise} The PUT promise
+         */
+        this.updateStep = function(preparationId, step, parameters) {
+            return PreparationRestService.updateStep(preparationId, step.transformation.stepId, step.transformation.name, parameters);
+        };
+
+        /**
+         * @ngdoc method
+         * @name appendStep
+         * @methodOf data-prep.services.preparation.service:PreparationListService
+         * @param {object} preparationId The preparation id
+         * @param {object} action The action name
+         * @param {object} parameters The new action parameters
+         * @description Append a step to the preparation
+         * @returns {promise} The POST promise
+         */
+        this.appendStep = PreparationRestService.appendStep;
     }
 
     angular.module('data-prep.services.preparation')

@@ -87,7 +87,7 @@ describe('Dataset list controller', function () {
             spyOn(MessageService, 'success').and.callThrough();
         }));
 
-        it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, PreparationListService, TalendConfirmService) {
+        it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService) {
             //given
             var dataset = datasets[0];
             spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));

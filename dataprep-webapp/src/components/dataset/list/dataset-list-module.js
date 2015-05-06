@@ -9,15 +9,14 @@
      * @requires data-prep.services.dataset
      * @requires data-prep.services.playground
      * @requires data-prep.services.utils
-     * @requires data-prep.services.preparation
      */
     angular.module('data-prep.dataset-list', [
         'ui.router',
         'pascalprecht.translate',
         'talend.widget',
         'data-prep.services.dataset',
+        'data-prep.services.preparation',
         'data-prep.services.playground',
-        'data-prep.services.utils',
-        'data-prep.services.preparation'
+        'data-prep.services.utils'
     ]);
 })();

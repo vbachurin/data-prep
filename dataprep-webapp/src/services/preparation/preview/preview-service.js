@@ -6,9 +6,9 @@
      * @name data-prep.services.preparation.service:PreviewService
      * @description Preview service. This service holds the preview datagrid (SlickGrid) view
      * @requires data-prep.services.dataset.service:DatasetGridService
-     * @requires data-prep.services.preparation.service:PreviewService
+     * @requires data-prep.services.preparation.service:PreparationService
      */
-    function PreviewService($q, DatasetGridService, PreparationRestService) {
+    function PreviewService($q, DatasetGridService, PreparationService) {
         var self = this;
 
         /**
@@ -61,6 +61,9 @@
             var indexes = _.range(self.gridRangeIndex.top, self.gridRangeIndex.bottom + 1);
             return  _.chain(indexes)
                 .map(DatasetGridService.dataView.getItem)
+                .filter(function(item) {
+                    return item;
+                })
                 .value();
         };
 
@@ -152,7 +155,7 @@
             previewCanceler = $q.defer();
             displayedTdpIds = getDisplayedTdpIds();
 
-            PreparationRestService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
+            PreparationService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
                 .then(replaceRecords(displayedTdpIds))
                 .finally(function() {
                     previewCanceler = null;
@@ -172,7 +175,7 @@
             previewCanceler = $q.defer();
             displayedTdpIds = getDisplayedTdpIds();
 
-            PreparationRestService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
+            PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
                 .then(replaceRecords(displayedTdpIds))
                 .finally(function() {
                     previewCanceler = null;

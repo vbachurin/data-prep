@@ -186,8 +186,8 @@ describe('Recipe service', function () {
     };
 
     beforeEach(module('data-prep.services.recipe'));
-    beforeEach(inject(function($q, PreparationRestService) {
-        spyOn(PreparationRestService, 'getDetails').and.returnValue($q.when({
+    beforeEach(inject(function($q, PreparationService) {
+        spyOn(PreparationService, 'getDetails').and.returnValue($q.when({
             data: preparationDetails
         }));
     }));

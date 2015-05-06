@@ -9,7 +9,7 @@ describe('Recipe controller', function() {
 
     beforeEach(module('data-prep.recipe'));
 
-    beforeEach(inject(function($rootScope, $controller, $q, RecipeService, PlaygroundService, PreparationRestService, PreviewService) {
+    beforeEach(inject(function($rootScope, $controller, $q, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -26,7 +26,7 @@ describe('Recipe controller', function() {
             RecipeService.reset();
             RecipeService.getRecipe().push(lastActiveStep);
         });
-        spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
+        spyOn(PreparationService, 'updateStep').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'loadStep').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
@@ -216,7 +216,7 @@ describe('Recipe controller', function() {
         expect(PreviewService.cancelPreview).toHaveBeenCalled();
     }));
 
-    it('should create a closure that update the step parameters', inject(function($rootScope, PreparationRestService) {
+    it('should create a closure that update the step parameters', inject(function($rootScope, PreparationService) {
         //given
         var ctrl = createController();
         var step = {
@@ -238,10 +238,10 @@ describe('Recipe controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreparationRestService.updateStep).toHaveBeenCalledWith('a598bc83fc894578a8b823', 'cut', parameters);
+        expect(PreparationService.updateStep).toHaveBeenCalledWith(step, parameters);
     }));
 
-    it('should update step, refresh recipe, load last active step when parameters are different', inject(function($rootScope, PreparationRestService, RecipeService, PlaygroundService) {
+    it('should update step, refresh recipe, load last active step when parameters are different', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
         //given
         var ctrl = createController();
         var step = {
@@ -263,36 +263,13 @@ describe('Recipe controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreparationRestService.updateStep).toHaveBeenCalledWith('a598bc83fc894578a8b823', 'cut', parameters);
+        expect(PreparationService.updateStep).toHaveBeenCalledWith(step, parameters);
         expect(RecipeService.refresh).toHaveBeenCalled();
         expect(PlaygroundService.loadStep).toHaveBeenCalledWith(lastActiveStep);
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
 
-    it('should init params object with column id if param is not defined', inject(function($rootScope, PreparationRestService) {
-        //given
-        var ctrl = createController();
-        var step = {
-            column: {id: 'state'},
-            transformation: {
-                stepId: 'a598bc83fc894578a8b823',
-                name: 'cut'
-            },
-            actionParameters: {
-                action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
-            }
-        };
-
-        //when
-        ctrl.updateStep(step);
-        $rootScope.$digest();
-
-        //then
-        expect(PreparationRestService.updateStep).toHaveBeenCalledWith('a598bc83fc894578a8b823', 'cut', {column_name: 'state'});
-    }));
-
-    it('should do nothing if parameters are unchanged', inject(function($rootScope, PreparationRestService, RecipeService, PlaygroundService) {
+    it('should do nothing if parameters are unchanged', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
         //given
         var ctrl = createController();
         var step = {
@@ -314,7 +291,7 @@ describe('Recipe controller', function() {
 
         //then
         expect($rootScope.$emit).not.toHaveBeenCalled();
-        expect(PreparationRestService.updateStep).not.toHaveBeenCalled();
+        expect(PreparationService.updateStep).not.toHaveBeenCalled();
         expect(RecipeService.refresh).not.toHaveBeenCalled();
         expect(PlaygroundService.loadStep).not.toHaveBeenCalled();
     }));

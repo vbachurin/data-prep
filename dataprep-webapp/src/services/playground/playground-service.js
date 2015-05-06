@@ -9,10 +9,10 @@
      * @requires data-prep.services.dataset.service:DatasetGridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.recipe.service:RecipeService
-     * @requires data-prep.services.preparation.service:PreparationRestService
+     * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:MessageService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationRestService, MessageService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService, MessageService) {
         var self = this;
 
         /**
@@ -92,7 +92,7 @@
          * @returns {promise} - the process promise
          */
         self.initPlayground = function(dataset) {
-            if(!self.currentMetadata || PreparationRestService.currentPreparation || dataset.id !== self.currentMetadata.id) {
+            if(!self.currentMetadata || PreparationService.currentPreparationId || dataset.id !== self.currentMetadata.id) {
                 return DatasetService.getContent(dataset.id, false)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
@@ -107,7 +107,7 @@
                         self.currentData = data;
                         self.preparationName = '';
                         self.originalPreparationName = '';
-                        PreparationRestService.currentPreparation = null;
+                        PreparationService.currentPreparationId = null;
 
                         FilterService.removeAllFilters();
                         RecipeService.reset();
@@ -136,10 +136,10 @@
             self.originalPreparationName = preparation.name;
 
             // Update current preparation id before preparation operations
-            PreparationRestService.currentPreparation = preparation.id;
+            PreparationService.currentPreparationId = preparation.id;
 
             $rootScope.$emit('talend.loading.start');
-            return PreparationRestService.getContent('head')
+            return PreparationService.getContent('head')
                 .then(function(response) {
                     self.currentMetadata = preparation.dataset;
                     self.currentData = response.data;
@@ -168,7 +168,7 @@
             }
 
             $rootScope.$emit('talend.loading.start');
-            return PreparationRestService.getContent(step.transformation.stepId)
+            return PreparationService.getContent(step.transformation.stepId)
                 .then(function(response) {
                     self.currentData = response.data;
                     DatasetGridService.setDataset(self.currentMetadata, response.data);
@@ -192,20 +192,11 @@
          */
         self.createOrUpdatePreparation = function(name) {
             if(self.originalPreparationName !== name) {
-                if(PreparationRestService.currentPreparation) {
-                    PreparationRestService.update(name)
-                        .then(function() {
-                            self.originalPreparationName = name;
-                            self.preparationName = name;
-                        });
-                }
-                else {
-                    PreparationRestService.create(self.currentMetadata.id, name)
-                        .then(function() {
-                            self.originalPreparationName = name;
-                            self.preparationName = name;
-                        });
-                }
+                PreparationService.setName(self.currentMetadata, name)
+                    .then(function() {
+                        self.originalPreparationName = name;
+                        self.preparationName = name;
+                    });
             }
         };
     }
