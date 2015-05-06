@@ -27,6 +27,11 @@
             link: function (scope, iElement, iAttrs, ctrl) {
                 var options, grid, colHeaderElements = [];
 
+                // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
+                // To do so, the text is put into an invisible span so that the span can be measured.
+                var tooltipRuler = angular.element('<span id="tooltip-ruler" style="display:none"></span>');
+                iElement.append(tooltipRuler);
+
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------------COL UTILES--------------------------------------------
                 //------------------------------------------------------------------------------------------------------
@@ -207,13 +212,25 @@
                         var cell = grid.getCellFromEvent(e);
                         var row = cell.row;
                         var column = grid.getColumns()[cell.cell];
-
                         var item = DatasetGridService.dataView.getItem(row);
+
+                        var toolTipText = item[column.id];
+
+                        // no text no tooltip
+                        if (toolTipText === "") {
+                            return;
+                        }
+
+                        tooltipRuler.text(toolTipText);
+
+                        if (column.width >= tooltipRuler.width()) {
+                            return;
+                        }
+
                         var position = {
                             x: e.clientX,
                             y: e.clientY
                         };
-
                         ctrl.updateTooltip(item, column.id, position);
                     });
                     //hide tooltip on leave
