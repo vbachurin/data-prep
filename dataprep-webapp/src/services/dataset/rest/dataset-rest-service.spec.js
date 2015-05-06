@@ -86,7 +86,7 @@ describe('Dataset Rest Service', function () {
         //expect DELETE not to throw any exception
     }));
 
-    it('should call dataset get rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
+    it('should call dataset get content rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var result = null;
         var datasetId = 'e85afAa78556d5425bc2';

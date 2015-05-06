@@ -42,7 +42,7 @@
          * @returns {promise} The pending GET or resolved promise
          */
         self.getDatasets = function() {
-            return self.datasetsList() !== null ?
+            return self.datasetsList() ?
                 $q.when(self.datasetsList()) :
                 DatasetListService.refreshDatasets().then(consolidatePreparationsAndDatasets);
         };
