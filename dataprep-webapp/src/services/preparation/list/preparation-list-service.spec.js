@@ -164,55 +164,5 @@ describe('Preparation list service controller', function() {
 
         //then
         expect(PreparationListService.preparations).toBe(allPreparations);
-        expect(PreparationListService.preparations[0].dataset).toBe(allDatasets[0]);
-        expect(PreparationListService.preparations[1].dataset).toBe(allDatasets[2]);
     }));
-
-    it('refresh preparation should set default preparation', inject(function($rootScope, PreparationListService) {
-        //given
-        expect(PreparationListService.preparations).toBeNull();
-
-        //when
-        PreparationListService.refreshPreparations();
-        $rootScope.$digest();
-
-        //then
-        expect(allDatasets[0].defaultPreparation.id).toBe(allPreparations[0].id);
-        expect(allDatasets[1].defaultPreparation.id).toBe(allPreparations[3].id);
-        expect(allDatasets[2].defaultPreparation).toBeNull();
-    }));
-
-
-    it('should refresh preparations if preparation list is empty', inject(function($rootScope, PreparationListService, PreparationRestService) {
-        //given
-        expect(PreparationListService.preparations).toBeNull();
-
-        //when
-        PreparationListService.getPreparationsPromise();
-        $rootScope.$digest();
-
-        //then
-        expect(PreparationRestService.getPreparations).toHaveBeenCalled();
-        expect(PreparationListService.preparations).toBe(allPreparations);
-        expect(PreparationListService.preparations[0].dataset).toBe(allDatasets[0]);
-        expect(PreparationListService.preparations[1].dataset).toBe(allDatasets[2]);
-    }));
-
-    it('should just return existing preparations list if not empty', inject(function($rootScope, PreparationListService, PreparationRestService) {
-        //given
-        var returnedPreps = null;
-        PreparationListService.preparations = allPreparations;
-
-        //when
-        PreparationListService.getPreparationsPromise()
-            .then(function(preparations) {
-                returnedPreps = preparations;
-            });
-        $rootScope.$digest();
-
-        //then
-        expect(PreparationRestService.getPreparations).not.toHaveBeenCalled();
-        expect(returnedPreps).toBe(allPreparations);
-    }));
-
 });

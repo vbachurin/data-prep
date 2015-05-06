@@ -74,7 +74,7 @@ describe('Preparation list controller', function() {
 
     beforeEach(module('data-prep.preparation-list'));
 
-    beforeEach(inject(function($q, $rootScope, $controller, PreparationService, PreparationListService, PlaygroundService, MessageService) {
+    beforeEach(inject(function($q, $rootScope, $controller, PreparationService, PlaygroundService, MessageService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -85,11 +85,10 @@ describe('Preparation list controller', function() {
         };
 
         spyOn(PreparationService, 'delete').and.returnValue($q.when(true));
-        spyOn(PreparationListService, 'refreshPreparations').and.returnValue(null);
-        spyOn(PreparationListService, 'getPreparationsPromise').and.callFake(function() {
-            PreparationListService.preparations = allPreparations;
+        spyOn(PreparationService, 'getPreparations').and.callFake(function() {
             return $q.when(allPreparations);
         });
+        spyOn(PreparationService, 'preparationsList').and.returnValue(allPreparations);
         spyOn(PlaygroundService, 'load').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
         spyOn(MessageService, 'success').and.returnValue(null);
@@ -100,15 +99,15 @@ describe('Preparation list controller', function() {
         $stateParams.prepid = null;
     }));
 
-    it('should init preparations', inject(function() {
+    it('should init preparations', inject(function(PreparationService) {
         //given
 
         //when
-        var ctrl = createController();
+        createController();
         scope.$digest();
 
         //then
-        expect(ctrl.preparations).toBe(allPreparations);
+        expect(PreparationService.getPreparations).toHaveBeenCalled();
     }));
 
     it('should load preparation if requested in url', inject(function($stateParams, PlaygroundService) {
@@ -162,7 +161,7 @@ describe('Preparation list controller', function() {
         expect(PlaygroundService.show).toHaveBeenCalled();
     }));
 
-    it('should delete preparation, show success message, and refresh list on confirm', inject(function($q, TalendConfirmService, PreparationService, MessageService,PreparationListService) {
+    it('should delete preparation, show success message on confirm', inject(function($q, TalendConfirmService, PreparationService, MessageService) {
         //given
         spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
 
@@ -180,10 +179,9 @@ describe('Preparation list controller', function() {
         expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type:'preparation', name: preparation.name});
         expect(PreparationService.delete).toHaveBeenCalledWith(preparation);
         expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type:'preparation', name: preparation.name});
-        expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
     }));
 
-    it('should do nothing on delete dismiss', inject(function($q, TalendConfirmService, PreparationService, MessageService,PreparationListService) {
+    it('should do nothing on delete dismiss', inject(function($q, TalendConfirmService, PreparationService, MessageService) {
         //given
         spyOn(TalendConfirmService, 'confirm').and.returnValue($q.reject(null));
 
@@ -201,6 +199,5 @@ describe('Preparation list controller', function() {
         expect(TalendConfirmService.confirm).toHaveBeenCalledWith({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type:'preparation', name: preparation.name});
         expect(PreparationService.delete).not.toHaveBeenCalled();
         expect(MessageService.success).not.toHaveBeenCalled();
-        expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
     }));
 });

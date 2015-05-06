@@ -6,10 +6,10 @@
      * @name data-prep.playground.controller:PlaygroundCtrl
      * @description Playground controller.
      * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires data-prep.services.preparation.service:PreparationListService
+     * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.preparation.service:PreviewService
      */
-    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationListService, PreviewService) {
+    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
@@ -34,7 +34,7 @@
          * @description Playground close callback. It change the location and refresh the preparations if needed
          */
         vm.close = function() {
-            PreparationListService.refreshPreparations();
+            PreparationService.refreshPreparations();
             if($stateParams.prepid) {
                 $state.go('nav.home.preparations', {prepid: null});
             }

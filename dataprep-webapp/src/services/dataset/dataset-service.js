@@ -6,8 +6,9 @@
      * @name data-prep.services.dataset.service:DatasetService
      * @description Dataset general service. This service manage the operations that touches the datasets
      * @requires data-prep.services.dataset.service:DatasetListService
+     * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetService(DatasetListService) {
+    function DatasetService(DatasetListService, PreparationListService) {
         var self = this;
 
         /**
@@ -23,12 +24,27 @@
 
         /**
          * @ngdoc method
+         * @name consolidatePreparationsAndDatasets
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description [PRIVATE] Refresh the metadata within the preparations
+         */
+        var consolidatePreparationsAndDatasets = function(response) {
+            PreparationListService.refreshMetadataInfos(self.datasetsList())
+                .then(DatasetListService.refreshDefaultPreparation);
+            return response;
+        };
+
+        /**
+         * @ngdoc method
          * @name getDatasets
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @description Return a promise that resolves the datasets list. See {@link data-prep.services.dataset.service:DatasetListService DatasetListService}.getDatasetsPromise
-         * @returns {promise} - the pending GET or resolved promise
+         * @returns {promise} The pending GET or resolved promise
          */
-        self.getDatasets = DatasetListService.getDatasetsPromise;
+        self.getDatasets = function() {
+            return DatasetListService.getDatasetsPromise()
+                .then(consolidatePreparationsAndDatasets);
+        };
 
         /**
          * @ngdoc method
@@ -38,7 +54,10 @@
          * @description Delete a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} delete function
          * @returns {promise} The pending DELETE promise
          */
-        self.delete = DatasetListService.delete;
+        self.delete = function(dataset) {
+            return DatasetListService.delete(dataset)
+                .then(consolidatePreparationsAndDatasets);
+        };
 
         /**
          * @ngdoc method
@@ -48,7 +67,10 @@
          * @description Create a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} create function
          * @returns {promise} The pending DELETE promise
          */
-        self.create = DatasetListService.create;
+        self.create = function(dataset) {
+            return DatasetListService.create(dataset)
+                .then(consolidatePreparationsAndDatasets);
+        };
 
         /**
          * @ngdoc method
@@ -58,7 +80,10 @@
          * @description Update a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} update function
          * @returns {promise} The pending PUT promise
          */
-        self.update = DatasetListService.update;
+        self.update = function(dataset) {
+            return DatasetListService.update(dataset)
+                .then(consolidatePreparationsAndDatasets);
+        };
 
         /**
          * @ngdoc method

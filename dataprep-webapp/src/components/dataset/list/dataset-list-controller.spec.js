@@ -14,7 +14,7 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep.dataset-list'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetService, PreparationListService, PlaygroundService, MessageService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, DatasetService, PlaygroundService, MessageService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -28,8 +28,6 @@ describe('Dataset list controller', function () {
         spyOn(DatasetService, 'getDatasets').and.callFake(function () {
             return $q.when(datasetsValues.shift());
         });
-        spyOn(PreparationListService, 'getPreparationsPromise').and.returnValue($q.when(true));
-        spyOn(PreparationListService, 'refreshPreparations').and.returnValue($q.when(true));
 
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();

@@ -15,7 +15,6 @@
         'pascalprecht.translate',
         'talend.widget',
         'data-prep.services.dataset',
-        'data-prep.services.preparation',
         'data-prep.services.playground',
         'data-prep.services.utils'
     ]);

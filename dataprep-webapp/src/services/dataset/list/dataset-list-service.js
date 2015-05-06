@@ -47,12 +47,7 @@
          * @returns {promise} - the pending GET or resolved promise
          */
         self.getDatasetsPromise = function() {
-            if(self.datasets === null) {
-                return self.refreshDatasets();
-            }
-            else {
-                return $q.when(self.datasets);
-            }
+            return self.datasets === null ? self.refreshDatasets() : $q.when(self.datasets);
         };
 
         /**
@@ -64,11 +59,8 @@
          * @returns {promise} The pending POST promise
          */
         self.create = function(dataset) {
-            var creationPromise = DatasetRestService.create(dataset);
-            creationPromise.then(function() {
-                self.refreshDatasets();
-            });
-            return creationPromise;
+            return DatasetRestService.create(dataset)
+                .then(self.refreshDatasets);
         };
 
         /**
@@ -80,11 +72,8 @@
          * @returns {promise} The pending POST promise
          */
         self.update = function(dataset) {
-            var updatePromise = DatasetRestService.update(dataset);
-            updatePromise.then(function() {
-                self.refreshDatasets();
-            });
-            return updatePromise;
+            return DatasetRestService.update(dataset)
+                .then(self.refreshDatasets);
         };
 
         /**
@@ -113,6 +102,32 @@
          * @returns {promise} The pending GET promise
          */
         self.getContent = DatasetRestService.getContent;
+
+        /**
+         * @ngdoc method
+         * @name refreshDefaultPreparation
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @param {object[]} preparations The preparations to use
+         * @description [PRIVATE] Set the default preparation to each dataset
+         * @returns {promise} The process promise
+         */
+        self.refreshDefaultPreparation = function(preparations) {
+            return self.getDatasetsPromise()
+                .then(function(datasets) {
+                    // group preparation per dataset
+                    var datasetPreps = _.groupBy(preparations, function(preparation){
+                        return preparation.dataSetId;
+                    });
+
+                    // reset default preparation for all datasets
+                    _.forEach(datasets, function(dataset){
+                        var preparations = datasetPreps[dataset.id];
+                        dataset.defaultPreparation = preparations && preparations.length === 1 ?  preparations[0] : null;
+                    });
+
+                    return datasets;
+                });
+        };
     }
 
     angular.module('data-prep.services.dataset')

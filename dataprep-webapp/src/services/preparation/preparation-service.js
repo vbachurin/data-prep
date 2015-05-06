@@ -7,8 +7,9 @@
      * @description Preparation list service. his service manage the operations that touches the preparations
      * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.preparation.service:PreparationRestService
+     * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function PreparationService($q, PreparationListService, PreparationRestService) {
+    function PreparationService($q, PreparationListService, PreparationRestService, DatasetListService) {
         var self = this;
 
         /**
@@ -28,6 +29,42 @@
          */
         self.preparationsList = function() {
             return PreparationListService.preparations;
+        };
+
+        /**
+         * @ngdoc method
+         * @name refreshPreparationsMetadata
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description [PRIVATE] Refresh the default preparation within each dataset
+         */
+        var consolidatePreparationsAndDatasets = function(response) {
+            DatasetListService.refreshDefaultPreparation(self.preparationsList())
+                .then(PreparationListService.refreshMetadataInfos);
+            return response;
+        };
+
+        /**
+         * @ngdoc method
+         * @name refreshPreparations
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description Refresh the preparations list
+         * @returns {promise} The process promise
+         */
+        self.refreshPreparations = function() {
+            return PreparationListService.refreshPreparations()
+                .then(consolidatePreparationsAndDatasets);
+        };
+
+        /**
+         * @ngdoc method
+         * @name getPreparations
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description Return preparation promise that resolve current preparation list if not empty, or call GET service
+         * @returns {promise} The process promise
+         */
+        self.getPreparations = function() {
+            return PreparationListService.getPreparationsPromise()
+                .then(consolidatePreparationsAndDatasets);
         };
 
         /**
@@ -64,6 +101,7 @@
          */
         self.create = function(metadata, name) {
             return PreparationListService.create(metadata.id, name)
+                .then(consolidatePreparationsAndDatasets)
                 .then(function(resp) {
                     self.currentPreparationId = resp.data;
                 });
@@ -80,7 +118,8 @@
          */
         self.setName = function(metadata, name) {
             if(self.currentPreparationId) {
-                return PreparationListService.update(self.currentPreparationId, name);
+                return PreparationListService.update(self.currentPreparationId, name)
+                    .then(consolidatePreparationsAndDatasets);
             }
             else {
                 return self.create(metadata, name);
@@ -95,7 +134,10 @@
          * @description Delete a preparation
          * @returns {promise} The DELETE promise
          */
-        self.delete = PreparationListService.delete;
+        self.delete = function(preparation) {
+            return PreparationListService.delete(preparation)
+                .then(consolidatePreparationsAndDatasets);
+        };
 
         /**
          * @ngdoc method

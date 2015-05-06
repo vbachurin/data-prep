@@ -16,7 +16,7 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function DatasetListCtrl($scope, $stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, PreparationListService) {
+    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetService = DatasetService;
 
@@ -75,17 +75,6 @@
         DatasetService
             .getDatasets()
             .then(loadUrlSelectedDataset);
-
-        $scope.$watch(
-            function() {
-                return vm.datasets;
-            },
-            function() {
-                // refresh the preparations so that default preparation is set by the dataset
-                PreparationListService.refreshPreparations();
-            }
-        );
-
     }
 
     /**

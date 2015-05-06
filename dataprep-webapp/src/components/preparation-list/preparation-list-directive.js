@@ -5,7 +5,7 @@
      * @ngdoc directive
      * @name data-prep.preparation-list.directive:PreparationList
      * @description This directive display the preparations list.
-     * It consumes the preparations list from {@link data-prep.services.preparation.service:PreparationListService PreparationListService}
+     * It consumes the preparations list from {@link data-prep.services.preparation.service:PreparationService PreparationService}.preparationsList()
      * @restrict E
      */
     function PreparationList() {
