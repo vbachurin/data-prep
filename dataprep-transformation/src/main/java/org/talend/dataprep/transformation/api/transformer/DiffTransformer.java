@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
-import org.talend.dataprep.transformation.exception.TransformationMessages;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -31,7 +31,9 @@ class DiffTransformer implements Transformer {
     private TypeTransformerSelector typeStateSelector;
 
     private final Consumer<DataSetRow> oldAction;
+
     private final Consumer<DataSetRow> newAction;
+
     private final List<Integer> indexes;
 
     DiffTransformer(final List<Integer> indexes, final Consumer<DataSetRow> oldAction, final Consumer<DataSetRow> newAction) {
@@ -58,7 +60,7 @@ class DiffTransformer implements Transformer {
             typeStateSelector.process(parser, generator, indexes, true, oldAction, newAction);
             output.flush();
         } catch (IOException e) {
-            throw Exceptions.User(TransformationMessages.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
     }
 }

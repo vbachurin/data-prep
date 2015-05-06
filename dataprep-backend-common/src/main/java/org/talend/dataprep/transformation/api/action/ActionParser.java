@@ -17,8 +17,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 
 @Component
@@ -71,7 +71,7 @@ public class ActionParser implements BeanFactoryAware {
                 }; // Should not happen, but no action means no op.
             }
         } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_ACTIONS, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_ACTIONS, e);
         }
     }
 

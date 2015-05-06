@@ -1,7 +1,5 @@
 package org.talend.dataprep.schema;
 
-import java.beans.Transient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.schema.io.CSVSchemaParser;
@@ -35,14 +33,12 @@ public class CSVFormatGuess implements FormatGuess {
     }
 
     @Override
-    public SchemaParser getSchemaParser()
-    {
+    public SchemaParser getSchemaParser() {
         return this.schemaParser;
     }
 
     @Override
-    public Serializer getSerializer()
-    {
+    public Serializer getSerializer() {
         return this.serializer;
     }
 

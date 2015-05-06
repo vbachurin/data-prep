@@ -23,12 +23,16 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.*;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.JsonErrorCode;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.api.AppendStep;
-import org.talend.dataprep.preparation.exception.PreparationMessages;
+import org.talend.dataprep.preparation.exception.PreparationErrorCodes;
 import org.talend.dataprep.preparation.store.ContentCache;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -178,7 +182,8 @@ public class PreparationService {
             }
             stream.flush();
         } catch (IOException e) {
-            throw Exceptions.User(PreparationMessages.UNABLE_TO_SERVE_PREPARATION_CONTENT, version, id, e);
+            throw new TDPException(PreparationErrorCodes.UNABLE_TO_SERVE_PREPARATION_CONTENT, e, TDPExceptionContext.build()
+                    .put("id", id).put("version", version));
         }
     }
 
@@ -192,7 +197,7 @@ public class PreparationService {
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            throw Exceptions.User(PreparationMessages.PREPARATION_DOES_NOT_EXIST, id);
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
         }
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
@@ -221,7 +226,7 @@ public class PreparationService {
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
-            throw Exceptions.User(PreparationMessages.PREPARATION_DOES_NOT_EXIST, id);
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
         }
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
@@ -269,7 +274,28 @@ public class PreparationService {
             final Step step = preparationRepository.get(stepId, Step.class);
             return preparationRepository.get(step.getContent(), PreparationActions.class);
         } else {
-            throw Exceptions.User(PreparationMessages.PREPARATION_DOES_NOT_EXIST, id);
+            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
+        }
+    }
+
+    /**
+     * List all preparation related error codes.
+     */
+    @RequestMapping(value = "/preparations/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all preparation related error codes.", notes = "Returns the list of all preparation related error codes.")
+    @Timed
+    public String listErrors() {
+        try {
+            // need to cast the typed dataset errors into mock ones to use json parsing
+            List<JsonErrorCode> errors = new ArrayList<>(PreparationErrorCodes.values().length);
+            for (PreparationErrorCodes code : PreparationErrorCodes.values()) {
+                errors.add(new JsonErrorCode(code));
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(errors);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 }

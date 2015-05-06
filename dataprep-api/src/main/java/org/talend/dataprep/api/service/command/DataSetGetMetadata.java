@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.service.command;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -7,13 +9,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -22,7 +25,11 @@ import com.netflix.hystrix.HystrixCommand;
 @Scope("request")
 public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
 
-    private static final int MAX_RETRY = 5;
+    @Value("${http.retry.pause}")
+    public int PAUSE;
+
+    @Value("${http.retry.max_retry}")
+    private int MAX_RETRY;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetGetMetadata.class);
 
@@ -61,23 +68,25 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
                     // Data set exists, but content isn't yet analyzed, retry request
                     retryCount++;
                     if (retryCount > MAX_RETRY) {
-                        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_METADATA);
+                        LOGGER.error("Failed to retrieve data set metadata after {} tries.", retryCount);
+                        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA);
                     }
                     // Pause before retry
-                    final int pauseTime = 100 * retryCount;
-                    LOGGER.info("Data set #{} metadata is not ready, pausing for {} ms.", dataSetId, pauseTime);
+                    final int pauseTime = PAUSE * retryCount;
+                    LOGGER.debug("Data set #{} metadata is not ready, pausing for {} ms.", dataSetId, pauseTime);
                     try {
-                        Thread.sleep(pauseTime);
+                        TimeUnit.MILLISECONDS.sleep(pauseTime);
                     } catch (InterruptedException e) {
-                        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_METADATA, e);
+                        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA, e);
                     }
                     return handleResponse(client.execute(metadataRetrieval));
                 } else if (statusCode == HttpStatus.SC_OK) {
+                    retryCount = 0;
                     ObjectMapper mapper = builder.build();
                     return mapper.reader(DataSetMetadata.class).readValue(response.getEntity().getContent());
                 }
             }
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_METADATA);
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA);
         } finally {
             metadataRetrieval.releaseConnection();
         }

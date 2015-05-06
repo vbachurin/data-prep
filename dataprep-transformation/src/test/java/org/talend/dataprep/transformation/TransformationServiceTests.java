@@ -1,14 +1,15 @@
 package org.talend.dataprep.transformation;
 
-import static com.jayway.restassured.RestAssured.*;
-import static org.hamcrest.core.Is.*;
-import static org.skyscreamer.jsonassert.JSONAssert.*;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.core.Is.is;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 import org.apache.commons.io.IOUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
@@ -210,9 +213,29 @@ public class TransformationServiceTests {
         assertEquals("[]", response, false);
     }
 
+    /**
+     * Check that the error listing service returns a list parsable of error codes. The content is not checked
+     * 
+     * @throws Exception if an error occurs.
+     */
+    @Test
+    public void shouldListErrors() throws Exception {
+        String errors = when().get("/transform/errors").asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode actualErrors = mapper.readTree(errors);
+
+        assertTrue(actualErrors.isArray());
+        assertTrue(actualErrors.size() > 0);
+        for (final JsonNode errorCode : actualErrors) {
+            assertTrue(errorCode.has("code"));
+            assertTrue(errorCode.has("http-status-code"));
+        }
+    }
+
     @Test
     public void previewDiff() throws Exception {
-        //given
+        // given
         final String datasetContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("preview.json"));
         final String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("preview_result.json"));
@@ -221,52 +244,29 @@ public class TransformationServiceTests {
         final String newActions = getMultipleTransformation();
         final String indexes = "WzEsMyw1XQ=="; // [1,3,5] Base64 encoded
 
-        //when
-        final Response post = given().contentType(ContentType.JSON).body(datasetContent).when().post("/transform/preview?oldActions=" + oldActions + "&newActions=" + newActions + "&indexes=" + indexes);
+        // when
+        final Response post = given().contentType(ContentType.JSON).body(datasetContent).when()
+                .post("/transform/preview?oldActions=" + oldActions + "&newActions=" + newActions + "&indexes=" + indexes);
         final String response = post.asString();
 
-        //then
+        // then
         assertEquals(expectedSuggestions, response, false);
     }
 
     private String getSingleTransformation() {
         /**
-         * {"actions": [
-         *    {
-         *        "action": "uppercase",
-         *        "parameters":{
-         *          "column_name": "lastname"
-         *        }
-         *    }
-         * ]}
+         * {"actions": [ { "action": "uppercase", "parameters":{ "column_name": "lastname" } } ]}
          */
         return "eyJhY3Rpb25zIjogWw0KICAgIHsNCiAgICAgICJhY3Rpb24iOiAidXBwZXJjYXNlIiwNCiAgICAgICJwYXJhbWV0ZXJzIjp7DQogICAgICAgICAgICAiY29sdW1uX25hbWUiOiAibGFzdG5hbWUiDQogICAgICB9DQogICAgfQ0KICBdDQp9";
     }
 
     private String getMultipleTransformation() {
         /**
-         * {"actions": [
-         *    {
-         *        "action": "uppercase",
-         *        "parameters":{
-         *          "column_name": "lastname"
-         *        }
-         *    },
-         *    {
-         *        "action": "uppercase",
-         *        "parameters":{
-         *          "column_name": "firstname"
-         *        }
-         *    },
-         *    {
-         *        "action": "delete_on_value",
-         *        "parameters":{
-         *          "column_name": "city",
-         *          "value": "Columbia"
-         *         }
-         *    }
-         *]}
+         * {"actions": [ { "action": "uppercase", "parameters":{ "column_name": "lastname" } }, { "action": "uppercase",
+         * "parameters":{ "column_name": "firstname" } }, { "action": "delete_on_value", "parameters":{ "column_name":
+         * "city", "value": "Columbia" } } ]}
          */
         return "eyJhY3Rpb25zIjogWw0KICAgIHsNCiAgICAgICJhY3Rpb24iOiAidXBwZXJjYXNlIiwNCiAgICAgICJwYXJhbWV0ZXJzIjp7DQogICAgICAgICAgICAiY29sdW1uX25hbWUiOiAibGFzdG5hbWUiDQogICAgICB9DQogICAgfSwNCiAgICB7DQogICAgICAiYWN0aW9uIjogInVwcGVyY2FzZSIsDQogICAgICAicGFyYW1ldGVycyI6ew0KICAgICAgICAiY29sdW1uX25hbWUiOiAiZmlyc3RuYW1lIg0KICAgICAgfQ0KICAgIH0sDQogICAgew0KICAgICAgImFjdGlvbiI6ICJkZWxldGVfb25fdmFsdWUiLA0KICAgICAgInBhcmFtZXRlcnMiOnsNCiAgICAgICAgImNvbHVtbl9uYW1lIjogImNpdHkiLA0KICAgICAgICAidmFsdWUiOiAiQ29sdW1iaWEiDQogICAgICB9DQogICAgfQ0KICBdDQp9";
     }
+
 }

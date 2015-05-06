@@ -9,8 +9,8 @@ import org.codehaus.jackson.JsonGenerator;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
@@ -45,7 +45,7 @@ public class CSVSerializer implements Serializer {
             generator.flush();
             return new ByteArrayInputStream(writer.toString().getBytes("UTF-8")); //$NON-NLS-1$
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
     }
 }

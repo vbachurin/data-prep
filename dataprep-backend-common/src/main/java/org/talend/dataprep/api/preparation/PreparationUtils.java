@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
 public class PreparationUtils {
 
@@ -83,7 +83,7 @@ public class PreparationUtils {
             prettyPrint(blob, out);
             prettyPrint(repository, repository.get(step.getParent(), Step.class), out);
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PRINT_PREPARATION, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PRINT_PREPARATION, e);
         }
     }
 
@@ -99,7 +99,7 @@ public class PreparationUtils {
             writer.append("======").append("\n");
             writer.flush();
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PRINT_PREPARATION, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PRINT_PREPARATION, e);
         }
     }
 
@@ -114,7 +114,7 @@ public class PreparationUtils {
             writer.flush();
             prettyPrint(repository, preparation.getStep(), out);
         } catch (IOException e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PRINT_PREPARATION, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PRINT_PREPARATION, e);
         }
     }
 }

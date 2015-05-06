@@ -7,6 +7,7 @@ import java.util.Iterator;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,11 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.dataset.exception.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.datascience.statistics.StatisticsClientJson;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,24 +46,26 @@ public class SchemaAnalysis {
     JmsTemplate jmsTemplate;
 
     @Autowired
-    StatisticsClientJson statisticsClient;
-
-    @Autowired
     ApplicationContext applicationContext;
 
+    @Autowired
+    SparkContext sparkContext;
+
     @JmsListener(destination = Destinations.SCHEMA_ANALYSIS)
-    public void indexDataSet(Message message) {
+    public void analyzeSchema(Message message) {
         try {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
             DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
             datasetLock.lock();
             try {
+                StatisticsClientJson statisticsClient = new StatisticsClientJson(true, sparkContext);
+                statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
                 DataSetMetadata metadata = repository.get(dataSetId);
                 if (metadata != null) {
                     try {
                         LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                         // Create a content with the expected format for the StatisticsClientJson class
-                        final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata),applicationContext);
+                        final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.registerModule(module);
                         final StringWriter content = new StringWriter();
@@ -102,7 +105,7 @@ public class SchemaAnalysis {
                             return schemaAnalysisMessage;
                         });
                     } catch (IOException e) {
-                        throw Exceptions.Internal(DataSetMessages.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
+                        throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
                     }
                 } else {
                     LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
@@ -112,7 +115,7 @@ public class SchemaAnalysis {
                 message.acknowledge();
             }
         } catch (JMSException e) {
-            throw Exceptions.Internal(DataSetMessages.UNEXPECTED_JMS_EXCEPTION, e);
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
         }
     }
 }

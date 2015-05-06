@@ -44,7 +44,7 @@ public class MetadataRepositoryLockTest {
 
     @Test
     public void test() throws InterruptedException {
-        // I am not usre of the validity of this test as it tests the DistributedLock that is already provided by a
+        // I am not sure of the validity of this test as it tests the DistributedLock that is already provided by a
         // third party lib.
         DataSetMetadataRepository metadataRepository = appContext.getBean(InMemoryDataSetMetadataRepository.class);
         DataSetMetadata dsm1 = new DataSetMetadata("1", "one", "jim", 12, null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
