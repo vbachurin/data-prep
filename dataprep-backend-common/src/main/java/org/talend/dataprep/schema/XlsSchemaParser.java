@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -149,12 +150,16 @@ public class XlsSchemaParser implements SchemaParser {
                 .stream() //
                 .collect(Collectors.groupingBy(w -> w, Collectors.counting()));
 
-        long maxOccurence = perTypeNumber.values().stream().mapToLong(Long::longValue).max().getAsLong();
+        OptionalLong maxOccurrence = perTypeNumber.values().stream().mapToLong(Long::longValue).max();
+
+        if (!maxOccurrence.isPresent()) {
+            return Type.ANY;
+        }
 
         List<Type> duplicatedMax = new ArrayList<>();
 
         perTypeNumber.forEach((type1, aLong) -> {
-            if (aLong >= maxOccurence) {
+            if (aLong >= maxOccurrence.getAsLong()) {
                 duplicatedMax.add(type1);
             }
         });
