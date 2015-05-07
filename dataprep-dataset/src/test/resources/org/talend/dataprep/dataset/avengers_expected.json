@@ -1,0 +1,86 @@
+{
+  "columns": [
+    {
+      "id": "nickname",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 5
+      },
+      "type": "string"
+    },
+    {
+      "id": "secret firstname",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 5
+      },
+      "type": "string"
+    },
+    {
+      "id": "secret lastname",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 5
+      },
+      "type": "string"
+    },
+    {
+      "id": "date of birth",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 5
+      },
+      "type": "date"
+    },
+    {
+      "id": "city",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 5
+      },
+      "type": "string"
+    }
+  ],
+  "records": [
+    {
+      "nickname": "Spiderman",
+      "secret firstname": "Peter",
+      "secret lastname": "Parker",
+      "date of birth": "05/15/1962",
+      "city": "New York City"
+    },
+    {
+      "nickname": "Superman",
+      "secret firstname": "Clark",
+      "secret lastname": "Kent",
+      "date of birth": "02/28/1938",
+      "city": "New York City"
+    },
+    {
+      "nickname": "Batman",
+      "secret firstname": "Bruce",
+      "secret lastname": "Wayne",
+      "date of birth": "05/01/1939",
+      "city": "NYC"
+    },
+    {
+      "nickname": "Captain America",
+      "secret firstname": "Stevens",
+      "secret lastname": "Rogers",
+      "date of birth": "04/04/1918",
+      "city": "New York City"
+    },
+    {
+      "nickname": "Iron Man",
+      "secret firstname": "Tony",
+      "secret lastname": "Stark",
+      "date of birth": "03/05/1963",
+      "city": "New York City"
+    }
+  ]
+}

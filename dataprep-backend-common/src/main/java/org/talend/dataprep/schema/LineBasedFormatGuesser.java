@@ -1,15 +1,7 @@
 package org.talend.dataprep.schema;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +13,10 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
     @Autowired
     private CSVFormatGuess csvFormatGuess;
+
+    /** The fallback guess if the input is not CSV compliant. */
+    @Autowired
+    private NoOpFormatGuess fallbackGuess;
 
     private static Separator guessSeparator(InputStream is, String encoding) {
         try {
@@ -64,6 +60,14 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                         }
                     }
                 }
+
+                // if there's only one separator, let's use it
+                if (separators.size() == 1) {
+                    return separators.get(0);
+                }
+
+                // if there are separators, let's see compute their coefficient of variation to see which one is the
+                // most likely to use
                 if (separators.size() > 0) {
                     for (Separator separator : separators) {
                         separator.averagePerLine = separator.totalCount / (double) lineCount;
@@ -77,6 +81,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                     if (separator.stddev / separator.averagePerLine < 0.1) {
                         return separator;
                     }
+                    // TODO shouldn't a fallback separator be returned ?
                 }
             }
         } catch (IOException e) {
@@ -92,7 +97,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
             return new FormatGuesser.Result(csvFormatGuess, //
                     Collections.singletonMap(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.separator)));
         }
-        return new FormatGuesser.Result(new NoOpFormatGuess(), Collections.emptyMap()); // Fallback
+        return new FormatGuesser.Result(fallbackGuess, Collections.emptyMap()); // Fallback
     }
 
 }

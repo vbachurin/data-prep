@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -42,14 +40,12 @@ public class CSVSchemaParser implements SchemaParser {
             String[] columns = reader.readNext();
             if (columns == null) { // Empty content?
                 return SchemaParserResult.Builder.parserResult() //
-                        .columnMetadatas( columnMetadata ).build();
+                        .columnMetadatas(columnMetadata).build();
             }
             // By default, consider all columns as Strings (to be refined by deeper analysis).
             for (String column : columns) {
-                columnMetadata.get( META_KEY ).add( column().name(column).type(Type.STRING).build() );
+                columnMetadata.get(META_KEY).add(column().name(column).type(Type.STRING).build());
             }
-
-
 
             // Best guess (and naive) on data types
             String[] line;
@@ -58,19 +54,20 @@ public class CSVSchemaParser implements SchemaParser {
                     String columnValue = line[i];
                     try {
                         Integer.parseInt(columnValue);
-                        columnMetadata.get( META_KEY ).get( i ).setType(Type.INTEGER.getName());
+                        columnMetadata.get(META_KEY).get(i).setType(Type.INTEGER.getName());
                     } catch (NumberFormatException e) {
                         // Not an number
                     }
                     if ("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim())) {
-                        columnMetadata.get( META_KEY ).get( i ).setType(Type.BOOLEAN.getName());
+                        columnMetadata.get(META_KEY).get(i).setType(Type.BOOLEAN.getName());
                     }
                 }
             }
+
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
         }
         return SchemaParserResult.Builder.parserResult() //
-                .columnMetadatas( columnMetadata ).build();
+                .columnMetadatas(columnMetadata).build();
     }
 }

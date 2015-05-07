@@ -67,7 +67,7 @@ public class DataSetServiceTests {
 
     @Autowired
     SparkContext sparkContext;
-    
+
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
         while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
@@ -92,8 +92,10 @@ public class DataSetServiceTests {
             int valid = column.getQuality().getValid();
             int invalid = column.getQuality().getInvalid();
             int empty = column.getQuality().getEmpty();
-            assertTrue(empty <= invalid);
-            assertTrue(invalid < valid);
+            assertTrue("in dataset #" + dataSetId + ", column '" + column.getId() + "' has more empty rows (" + empty
+                    + ") than invalid ones (" + invalid + ")", empty <= invalid);
+            assertTrue("in dataset #" + dataSetId + ", column '" + column.getId() + "' has more invalid rows (" + empty
+                    + ") than valid ones (" + invalid + ")", invalid < valid);
         }
     }
 
@@ -261,6 +263,25 @@ public class DataSetServiceTests {
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw?name=" + expectedName);
         assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is(expectedName));
+    }
+
+    /**
+     * Test the import of a csv file with a really low separator coefficient variation.
+     * 
+     * @see org.talend.dataprep.schema.LineBasedFormatGuesser
+     */
+    @Test
+    public void testLowSeparatorOccurencesInCSV() throws Exception {
+
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("avengers.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+
+        assertQueueMessages(dataSetId);
+
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("avengers_expected.json");
+        String datasetContent = given().when().get("/datasets/{id}/content?metadata=false&columns=true", dataSetId).asString();
+
+        assertThat(datasetContent, sameJSONAsFile(expected));
     }
 
     @Test
