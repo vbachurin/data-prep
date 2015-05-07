@@ -1,10 +1,11 @@
 package org.talend.dataprep.dataset.exception;
 
-import org.talend.dataprep.exception.ErrorCode;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import org.talend.dataprep.api.dataset.DataSetLifecycle;
+import org.talend.dataprep.exception.ErrorCode;
 
 /**
  * Dataset error codes.
@@ -18,7 +19,14 @@ public enum DataSetErrorCodes implements ErrorCode {
     UNABLE_TO_CONNECT_TO_HDFS(500, "location"),
     UNABLE_TO_STORE_DATASET_CONTENT(500, "id"),
     UNABLE_TO_ANALYZE_COLUMN_TYPES(500),
-    UNABLE_TO_ANALYZE_DATASET_QUALITY(500);
+    UNABLE_TO_ANALYZE_DATASET_QUALITY(500),
+    /**
+     * Error returned in case the data set is in "error" state, meaning an internal error (schema analysis, quality
+     * analysis) error prevents service to correctly serve data set's content.
+     * 
+     * @see DataSetLifecycle#error()
+     */
+    UNABLE_TO_SERVE_DATASET_CONTENT(500, "id");
 
     /** The http status to use. */
     private int httpStatus;

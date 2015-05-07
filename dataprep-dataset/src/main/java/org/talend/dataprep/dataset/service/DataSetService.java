@@ -32,6 +32,7 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.JsonErrorCode;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
@@ -172,6 +173,11 @@ public class DataSetService {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return; // No data set, returns empty content.
         }
+        if (dataSetMetadata.getLifecycle().error()) {
+            // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
+                    dataSetId));
+        }
         if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
             // Schema is not yet ready (but eventually will, returns 202 to indicate this).
             LOG.debug("Data set #{} not yet ready for service.", dataSetId);
@@ -180,7 +186,7 @@ public class DataSetService {
         }
         if (columns && !dataSetMetadata.getLifecycle().qualityAnalyzed()) {
             // Quality is not yet ready (but eventually will, returns 202 to indicate this).
-            LOG.debug("Column information #{} not yet ready for service (missing quelity information).", dataSetId);
+            LOG.debug("Column information #{} not yet ready for service (missing quality information).", dataSetId);
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return;
         }
