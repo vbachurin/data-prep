@@ -138,16 +138,14 @@ public class TransformationService {
     @RequestMapping(value = "/transform/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all transformation related error codes.", notes = "Returns the list of all transformation related error codes.")
     @Timed
-    public String listErrors(HttpServletResponse response) {
+    public void listErrors(HttpServletResponse response) {
         try {
             // need to cast the typed dataset errors into mock ones to use json parsing
             List<JsonErrorCodeDescription> errors = new ArrayList<>(TransformationErrorCodes.values().length);
             for (TransformationErrorCodes code : TransformationErrorCodes.values()) {
                 errors.add(new JsonErrorCodeDescription(code));
             }
-
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsString(errors);
+            builder.build().writer().writeValue(response.getOutputStream(), errors);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

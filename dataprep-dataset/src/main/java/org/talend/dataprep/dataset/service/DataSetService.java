@@ -302,15 +302,14 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all dataset related error codes.", notes = "Returns the list of all dataset related error codes.")
     @Timed
-    // TODO Stream content to output stream
-    public String listErrors() {
+    public void listErrors(HttpServletResponse response) {
         try {
             // need to cast the typed dataset errors into mock ones to use json parsing
             List<JsonErrorCodeDescription> errors = new ArrayList<>(DataSetErrorCodes.values().length);
             for (DataSetErrorCodes code : DataSetErrorCodes.values()) {
                 errors.add(new JsonErrorCodeDescription(code));
             }
-            return builder.build().writer().writeValueAsString(errors);
+            builder.build().writer().writeValue(response.getOutputStream(), errors);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

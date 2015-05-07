@@ -51,7 +51,6 @@ public class CommonAPI extends APIService {
         LOG.debug("Listing supported error codes");
 
         OutputStream output = response.getOutputStream();
-
         JsonFactory factory = new JsonFactory();
         JsonGenerator generator = factory.createGenerator(output);
         generator.setCodec(builder.build());
@@ -82,8 +81,6 @@ public class CommonAPI extends APIService {
         // close the errors array
         generator.writeEndArray();
         generator.flush();
-
-        output.flush();
     }
 
     /**
