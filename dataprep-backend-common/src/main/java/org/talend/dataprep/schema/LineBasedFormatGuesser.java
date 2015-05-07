@@ -66,7 +66,8 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                     return separators.get(0);
                 }
 
-                // if there are more separator, let's see which one is the most likely to be used
+                // if there are separators, let's see compute their coefficient of variation to see which one is the
+                // most likely to use
                 if (separators.size() > 0) {
                     for (Separator separator : separators) {
                         separator.averagePerLine = separator.totalCount / (double) lineCount;
@@ -80,6 +81,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                     if (separator.stddev / separator.averagePerLine < 0.1) {
                         return separator;
                     }
+                    // TODO shouldn't a fallback separator be returned ?
                 }
             }
         } catch (IOException e) {
