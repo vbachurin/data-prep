@@ -12,20 +12,23 @@ describe('Dataset list directive', function() {
             'name': 'US States',
             'author': 'anonymousUser',
             'created': '02-03-2015 14:52',
-            'type': 'text/csv'
+            'type': 'text/csv',
+            'certification': 'NONE'
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead2b',
             'name': 'Customers',
             'author': 'anonymousUser',
             'created': '02-03-2015 14:53',
-            'type': 'application/vnd.ms-excel'
+            'type': 'application/vnd.ms-excel',
+            'certification': 'PENDING'
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead3a',
             'name': 'Customers 2',
             'author': 'anonymousUser',
-            'created': '02-03-2015 14:54'
+            'created': '02-03-2015 14:54',
+            'certification': 'CERTIFIED'
         }
     ];
 
@@ -72,6 +75,8 @@ describe('Dataset list directive', function() {
 
         iconSrc = element.find('td.inventory-icon > img')[2].src;
         expect(strEndsWith(iconSrc, '/assets/images/inventory/generic_file.png')).toBe(true);
+        iconSrc = element.find('td.inventory-icon > img')[3].src;
+        expect(strEndsWith(iconSrc, '/assets/images/certified.png')).toBe(true);
         expect(element.find('td.inventory-title').eq(2).text()).toBe('Customers 2');
         expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created on 02-03-2015 14:54, contains  lines');
     });
