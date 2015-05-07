@@ -54,6 +54,21 @@
 
         /**
          * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Ask certification for a dataset
+         * @param {Object[]} datasets - the dataset to ask certifiction for
+         */
+        vm.processCertification = function (dataset) {
+            DatasetService.processCertification(dataset)
+                .then(function () {
+                    DatasetListService.refreshDatasets();
+                }
+            );
+        };
+
+        /**
+         * @ngdoc method
          * @name loadUrlSelectedDataset
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description [PRIVATE] Load playground with provided dataset id, if present in route param

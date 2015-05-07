@@ -80,6 +80,17 @@
         };
 
         /**
+         * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description Ask certification for a dataset
+         * @param {dataset} dataset - the dataset to ask certifiction for
+         */
+        self.processCertification = function(dataset) {
+            return $http.put(RestURLs.datasetUrl + '/' + dataset.id + '/processcertification');
+        };
+
+        /**
          * Get the dataset content
          * @param datasetId - dataset id
          * @param metadata - if false, the metadata will not be returned
