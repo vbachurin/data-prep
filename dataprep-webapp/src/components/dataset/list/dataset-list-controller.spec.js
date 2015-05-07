@@ -127,7 +127,7 @@ describe('Dataset list controller', function () {
             ctrl.processCertification(datasets[0]);
 
             //then
-            expect(DatasetService.processCertification).toHaveBeenCalledWith(datasets[0])
+            expect(DatasetService.processCertification).toHaveBeenCalledWith(datasets[0]);
         }));
     });
 });
