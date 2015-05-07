@@ -6,9 +6,10 @@
      * @name data-prep.services.dataset.service:DatasetService
      * @description Dataset general service. This service manage the operations that touches the datasets
      * @requires data-prep.services.dataset.service:DatasetListService
+     * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetService($q, DatasetListService, PreparationListService) {
+    function DatasetService($q, DatasetListService, DatasetRestService, PreparationListService) {
         var self = this;
 
         /**
@@ -50,7 +51,7 @@
         /**
          * @ngdoc method
          * @name delete
-         * @name data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {object} dataset The dataset to delete
          * @description Delete a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} delete function
          * @returns {promise} The pending DELETE promise
@@ -63,7 +64,7 @@
         /**
          * @ngdoc method
          * @name create
-         * @name data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {object} dataset The dataset to create
          * @description Create a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} create function
          * @returns {promise} The pending DELETE promise
@@ -77,7 +78,7 @@
         /**
          * @ngdoc method
          * @name update
-         * @name data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {object} dataset The dataset to update
          * @description Update a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} update function
          * @returns {promise} The pending PUT promise
@@ -91,13 +92,13 @@
         /**
          * @ngdoc method
          * @name getContent
-         * @name data-prep.services.dataset.service:DatasetService
+         * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {string} datasetId The dataset id
          * @param {boolean} metadata If false, the metadata will not be returned
-         * @description Get a dataset content. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} getContent function
+         * @description Get a dataset content. It just call {@link data-prep.services.dataset.service:DatasetRestService DatasetRestService} getContent function
          * @returns {promise} The pending GET promise
          */
-        self.getContent = DatasetListService.getContent;
+        self.getContent = DatasetRestService.getContent;
 
         /**
          * @ngdoc method

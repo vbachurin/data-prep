@@ -4,7 +4,9 @@
     /**
      * @ngdoc service
      * @name data-prep.services.dataset.service:DatasetListService
-     * @description Dataset grid service. This service holds the dataset list like a cache and consume DatasetRestService to access to the REST api
+     * @description Dataset grid service. This service holds the dataset list like a cache and consume DatasetRestService to access to the REST api<br/>
+     * <b style="color: red;">WARNING : do NOT use this service directly.
+     * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      * @requires data-prep.services.dataset.service:DatasetRestService
      */
     function DatasetListService($q, DatasetRestService) {
@@ -37,17 +39,6 @@
             }
 
             return datasetsPromise;
-        };
-
-        /**
-         * @ngdoc method
-         * @name getDatasetsPromise
-         * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @description Return a promise that resolves the datasets list
-         * @returns {promise} - the pending GET or resolved promise
-         */
-        self.getDatasetsPromise = function() {
-            return self.datasets === null ? self.refreshDatasets() : $q.when(self.datasets);
         };
 
         /**
@@ -96,17 +87,6 @@
 
         /**
          * @ngdoc method
-         * @name getContent
-         * @name data-prep.services.dataset.service:DatasetListService
-         * @param {string} datasetId The dataset id
-         * @param {boolean} metadata If false, the metadata will not be returned
-         * @description Get a dataset content
-         * @returns {promise} The pending GET promise
-         */
-        self.getContent = DatasetRestService.getContent;
-
-        /**
-         * @ngdoc method
          * @name refreshDefaultPreparation
          * @methodOf data-prep.services.dataset.service:DatasetListService
          * @param {object[]} preparations The preparations to use
@@ -114,7 +94,7 @@
          * @returns {promise} The process promise
          */
         self.refreshDefaultPreparation = function(preparations) {
-            return self.getDatasetsPromise()
+            return getDatasetsPromise()
                 .then(function(datasets) {
                     // group preparation per dataset
                     var datasetPreps = _.groupBy(preparations, function(preparation){
@@ -129,6 +109,17 @@
 
                     return datasets;
                 });
+        };
+
+        /**
+         * @ngdoc method
+         * @name getDatasetsPromise
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @description [PRIVATE] Return a promise that resolves the datasets list
+         * @returns {promise} The pending GET or resolved promise
+         */
+        var getDatasetsPromise = function() {
+            return self.datasets === null ? self.refreshDatasets() : $q.when(self.datasets);
         };
     }
 

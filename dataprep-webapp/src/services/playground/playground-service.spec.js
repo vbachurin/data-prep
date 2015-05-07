@@ -1,14 +1,12 @@
 describe('Playground Service', function () {
     'use strict';
 
-    var $httpBackend;
+    var content = {column: [], records: []};
 
     beforeEach(module('data-prep.services.playground'));
 
     beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatasetGridService, PreparationService) {
-        $httpBackend = $injector.get('$httpBackend');
-
-        spyOn(DatasetService, 'getContent').and.callThrough();
+        spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
         spyOn(FilterService, 'removeAllFilters').and.callFake(function() {});
         spyOn(RecipeService, 'reset').and.callFake(function() {});
         spyOn(DatasetGridService, 'setDataset').and.callFake(function() {});
@@ -45,21 +43,16 @@ describe('Playground Service', function () {
 
     describe('init new preparation', function() {
         var dataset = {id: 'e85afAa78556d5425bc2'};
-        var data = {column: [], records: []};
         var assertNewPreparationInitialization;
 
         beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatasetGridService, RestURLs) {
             assertNewPreparationInitialization = function() {
                 expect(PlaygroundService.currentMetadata).toEqual(dataset);
-                expect(PlaygroundService.currentData).toEqual(data);
+                expect(PlaygroundService.currentData).toEqual(content);
                 expect(FilterService.removeAllFilters).toHaveBeenCalled();
                 expect(RecipeService.reset).toHaveBeenCalled();
-                expect(DatasetGridService.setDataset).toHaveBeenCalledWith(dataset, data);
+                expect(DatasetGridService.setDataset).toHaveBeenCalledWith(dataset, content);
             };
-
-            $httpBackend
-                .expectGET(RestURLs.datasetUrl + '/e85afAa78556d5425bc2?metadata=false')
-                .respond(200, data);
         }));
 
         it('should init a new preparation and show playground when there is no loaded data yet', inject(function($rootScope, PlaygroundService, PreparationService) {
@@ -73,7 +66,6 @@ describe('Playground Service', function () {
 
             //when
             PlaygroundService.initPlayground(dataset);
-            $httpBackend.flush();
             $rootScope.$digest();
 
             //then
@@ -92,7 +84,6 @@ describe('Playground Service', function () {
 
             //when
             PlaygroundService.initPlayground(dataset);
-            $httpBackend.flush();
             $rootScope.$digest();
 
             //then
@@ -110,7 +101,6 @@ describe('Playground Service', function () {
 
             //when
             PlaygroundService.initPlayground(dataset);
-            $httpBackend.flush();
             $rootScope.$digest();
 
             //then
@@ -124,7 +114,6 @@ describe('Playground Service', function () {
 
             //when
             PlaygroundService.initPlayground(dataset);
-            $httpBackend.flush();
             $rootScope.$digest();
 
             //then

@@ -8,7 +8,7 @@ describe('Dataset Service', function () {
 
     beforeEach(module('data-prep.services.dataset'));
 
-    beforeEach(inject(function($q, DatasetListService, PreparationListService) {
+    beforeEach(inject(function($q, DatasetListService, DatasetRestService, PreparationListService) {
         preparationConsolidation = $q.when(preparations);
         datasetConsolidation = $q.when(true);
         promiseWithProgress = $q.when(true);
@@ -19,6 +19,7 @@ describe('Dataset Service', function () {
         spyOn(DatasetListService, 'delete').and.returnValue($q.when(true));
         spyOn(DatasetListService, 'create').and.returnValue(promiseWithProgress);
         spyOn(DatasetListService, 'update').and.returnValue(promiseWithProgress);
+        spyOn(DatasetRestService, 'getContent').and.returnValue($q.when({}));
 
         spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(datasets));
         spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue(preparationConsolidation);
@@ -82,6 +83,22 @@ describe('Dataset Service', function () {
 
         //then
         expect(results).toBe(datasets);
+    }));
+
+    it('should not consolidate preparations and datasets if datasets are already fetched', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
+        //given
+        var results = null;
+
+        //when
+        DatasetService.getDatasets()
+            .then(function(response) {
+                results = response;
+            });
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationListService.refreshMetadataInfos).not.toHaveBeenCalled();
+        expect(DatasetListService.refreshDefaultPreparation).not.toHaveBeenCalled();
     }));
 
     it('should get a promise that fetch datasets', inject(function ($rootScope, DatasetService, DatasetListService) {
@@ -190,5 +207,18 @@ describe('Dataset Service', function () {
         //then
         expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
         expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
+    }));
+
+    it('should get content from rest service', inject(function ($rootScope, DatasetService, DatasetRestService) {
+        //given
+        var datasetId = '34a5dc948967b5';
+        var withMetadata = true;
+
+        //when
+        DatasetService.getContent(datasetId, withMetadata);
+        $rootScope.$digest();
+
+        //then
+        expect(DatasetRestService.getContent).toHaveBeenCalledWith(datasetId, withMetadata);
     }));
 });

@@ -4,7 +4,9 @@
     /**
      * @ngdoc service
      * @name data-prep.services.dataset.service:DatasetRestService
-     * @description Dataset service. This service provide the entry point to the backend dataset REST api.
+     * @description Dataset service. This service provide the entry point to the backend dataset REST api.<br/>
+     * <b style="color: red;">WARNING : do NOT use this service directly.
+     * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      */
     function DatasetRestService($rootScope, $upload, $http, RestURLs) {
         var self = this;
