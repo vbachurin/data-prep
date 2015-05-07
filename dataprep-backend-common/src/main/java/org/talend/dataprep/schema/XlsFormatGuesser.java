@@ -19,6 +19,10 @@ public class XlsFormatGuesser implements FormatGuesser {
     @Autowired
     private XlsFormatGuess xlsFormatGuess;
 
+    /** The fallback guess if the input is not CSV compliant. */
+    @Autowired
+    private NoOpFormatGuess fallbackGuess;
+
     @Override
     public FormatGuesser.Result guess(InputStream stream) {
         try {
@@ -31,6 +35,6 @@ public class XlsFormatGuesser implements FormatGuesser {
         } catch (IOException e) {
             LOGGER.debug("fail to read content: " + e.getMessage(), e);
         }
-        return new FormatGuesser.Result( new NoOpFormatGuess(), Collections.emptyMap());
+        return new FormatGuesser.Result(fallbackGuess, Collections.emptyMap());
     }
 }

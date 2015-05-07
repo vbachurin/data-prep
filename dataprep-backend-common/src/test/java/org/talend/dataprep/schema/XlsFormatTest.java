@@ -95,6 +95,29 @@ public class XlsFormatTest {
 
 
     @Test
+    public void read_xls_TDP_143() throws Exception {
+
+        String fileName = "state_table.xls";
+
+        FormatGuess formatGuess;
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
+            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream, null);
+            logger.debug("columnMetadatas: {}", columnMetadatas);
+            Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(17);
+        }
+
+    }
+
+    @Test
     public void read_xls_file_then_serialize() throws Exception {
 
         String fileName = "test.xls";
