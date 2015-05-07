@@ -1,13 +1,17 @@
+$datagrid-tooltip-font-size: .80em;
+
 .datagrid-tooltip {
 
   .datagrid-tooltip-content {
     white-space: pre-wrap;
     cursor: pointer;
+    font-family: $monospace;
+    font-size: $datagrid-tooltip-font-size;
   }
   
   textarea {
     color: $black;
-    font-family: $sourcesanspro;
-    font-size: 14px;
+    font-family: $monospace;
+    font-size: $datagrid-tooltip-font-size;
   }
 }
