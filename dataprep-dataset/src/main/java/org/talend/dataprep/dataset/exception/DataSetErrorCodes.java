@@ -1,6 +1,7 @@
 package org.talend.dataprep.dataset.exception;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public enum DataSetErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
-    public List<String> getExpectedContextEntries() {
+    public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }
 }
