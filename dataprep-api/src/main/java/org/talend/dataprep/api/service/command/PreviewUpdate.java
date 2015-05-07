@@ -110,7 +110,7 @@ public class PreviewUpdate extends HystrixCommand<InputStream> {
      */
     private InputStream getDatasetContent(final JsonNode preparationDetails) {
         final String dataSetId = preparationDetails.get("dataSetId").textValue();
-        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true);
+        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true, false);
         return retrieveDataSet.execute();
     }
 

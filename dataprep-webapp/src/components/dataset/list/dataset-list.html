@@ -18,9 +18,7 @@
                 <table class="inventory-actions-table">
                     <tbody ng-switch="dataset.draft">
                     <tr ng-switch-when="true">
-                        draft: {{dataset.draft}} :
-                        sheetNumber: {{dataset.sheetNumber}} :
-                        formatGuessId: {{dataset.type}}
+                        <td><button ng-click="datasetListCtrl.openDraft(dataset)"></button></td>
                     </tr>
                     <tr ng-switch-when="false">
                         <td ng-switch="!!dataset.defaultPreparation.id">

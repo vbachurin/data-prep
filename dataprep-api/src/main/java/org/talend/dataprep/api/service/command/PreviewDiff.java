@@ -111,7 +111,7 @@ public class PreviewDiff extends HystrixCommand<InputStream> {
      * @return the resulting input stream records
      */
     private InputStream getDatasetContent(final String dataSetId) {
-        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true);
+        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true, false);
         return retrieveDataSet.execute();
     }
 

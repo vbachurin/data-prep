@@ -68,8 +68,8 @@ public class SimpleDataSetMetadataJsonSerializer {
 
             // data we need for extra dataset validation (i.e sheetNumber for excell sheet)
             if (dataSetMetadata.getSchemaParserResult() != null) {
-                generator.writeNumberField("sheetNumber", dataSetMetadata.getSchemaParserResult()
-                        .getSheetNumber());
+                generator.writeStringField("sheetName", dataSetMetadata.getSchemaParserResult()
+                        .getSheetName());
             }
 
             synchronized (DATE_FORMAT) {

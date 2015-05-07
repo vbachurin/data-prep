@@ -23,6 +23,8 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.Serializer;
 import org.talend.datascience.statistics.StatisticsClientJson;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,6 +63,8 @@ public class QualityAnalysis {
                         LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
                         return; // no acknowledge to allow re-poll.
                     }
+
+
                     // Create a content with the expected format for the StatisticsClientJson class
                     final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
                     ObjectMapper mapper = new ObjectMapper();

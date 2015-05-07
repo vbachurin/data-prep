@@ -42,11 +42,15 @@ public class DataSetGet extends HystrixCommand<InputStream> {
     private int retryCount = 0;
 
     private DataSetGet(HttpClient client, String contentServiceUrl, String dataSetId, boolean metadata, boolean columns) {
+        this(client, contentServiceUrl, dataSetId, metadata, columns, false);
+    }
+
+    private DataSetGet(HttpClient client, String contentServiceUrl, String dataSetId, boolean metadata, boolean columns, boolean preview) {
         super(PreparationAPI.TRANSFORM_GROUP);
         this.client = client;
         this.dataSetId = dataSetId;
         contentRetrieval = new HttpGet(contentServiceUrl + "/" + dataSetId + "/content/?metadata=" + metadata + "&columns="
-                + columns);
+                + columns + "&preview=" + preview);
     }
 
     @Override

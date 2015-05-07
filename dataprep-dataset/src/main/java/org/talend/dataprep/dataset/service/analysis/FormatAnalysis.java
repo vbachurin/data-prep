@@ -93,13 +93,13 @@ public class FormatAnalysis {
 
                         SchemaParserResult schemaParserResult = parser.parse(content, metadata);
                         if (schemaParserResult.draft()) {
-                            metadata.setSheetNumber(-1);
+                            metadata.setSheetName( schemaParserResult.getColumnMetadatas().firstKey() );
                             metadata.setDraft(true);
                             metadata.setSchemaParserResult(schemaParserResult);
                             return;
                         }
                         metadata.setDraft(false);
-                        metadata.getRow().setColumns(schemaParserResult.getColumnMetadatas());
+                        metadata.getRow().setColumns(schemaParserResult.getColumnMetadatas().entrySet().iterator().next().getValue());
 
                     } catch (IOException e) {
                         throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);

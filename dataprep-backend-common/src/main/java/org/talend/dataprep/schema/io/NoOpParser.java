@@ -14,6 +14,6 @@ public class NoOpParser implements SchemaParser {
     @Override
     public SchemaParserResult parse(InputStream content, DataSetMetadata metadata) {
         return SchemaParserResult.Builder.parserResult() //
-                .columnMetadatas(Collections.emptyList()).build();
+                .columnMetadatas(Collections.emptySortedMap()).build();
     }
 }

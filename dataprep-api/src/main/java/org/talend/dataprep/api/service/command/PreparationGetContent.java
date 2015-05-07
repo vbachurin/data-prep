@@ -76,7 +76,7 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
                 }
                 // Get the data set
                 String dataSetId = tree.get("dataSetId").textValue();
-                DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true);
+                DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true, false);
                 // ... transform it ...
                 HttpGet actionsRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/actions/" + version); //$NON-NLS-1$
                 String actions;

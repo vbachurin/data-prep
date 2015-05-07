@@ -25,6 +25,8 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.Serializer;
 import org.talend.datascience.statistics.StatisticsClientJson;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -65,6 +67,8 @@ public class SchemaAnalysis {
                     try {
                         LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                         // Create a content with the expected format for the StatisticsClientJson class
+                        Serializer serializer = applicationContext.getBean( metadata.getContent().getFormatGuessId(),
+                                                                            FormatGuess.class ).getSerializer();
                         final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.registerModule(module);

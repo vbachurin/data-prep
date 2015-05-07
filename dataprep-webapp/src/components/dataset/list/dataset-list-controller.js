@@ -30,8 +30,17 @@
          * @param {Object} dataset - the dataset to open
          */
         vm.open = function(dataset) {
-            PlaygroundService.initPlayground(dataset)
+            PlaygroundService.initPlayground(dataset,false)
                 .then(PlaygroundService.show);
+        };
+
+        vm.openDraft = function(dataset){
+            console.log("openDraft:"+dataset.id+",type:"+dataset.type);
+            if (!dataset.id.indexOf("excel")<0){
+                return;
+            }
+            console.log("manage this dataset draft type");
+            PlaygroundService.initPlayground(dataset,true);
         };
 
         /**

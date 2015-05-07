@@ -41,40 +41,40 @@ public class XlsSchemaParser implements SchemaParser {
         // maybe return List<List<ColumnMetadata>> ??
         // so we could return all sheets
 
-        Map<String, List<ColumnMetadata>> schema = parseAllSheets(content);
+        SortedMap<String, List<ColumnMetadata>> schema = parseAllSheets(content);
 
         if (!schema.isEmpty()) {
             return schema.size() == 1 ? //
             SchemaParserResult.Builder.parserResult() //
-                    .columnMetadatas(schema.values().iterator().next()) //
+                    .columnMetadatas(schema) //
                     .draft(false) //
                     .build() //
                     : //
                     SchemaParserResult.Builder.parserResult() //
-                            .columnMetadatas(new ArrayList(schema.values())) //
+                            .columnMetadatas(schema) //
                             .draft(true) //
-                            .sheetNumber(schema.size()) //
+                            .sheetName( schema.firstKey() ) //
                             .build();
         }
 
         return SchemaParserResult.Builder.parserResult() //
-                .columnMetadatas(Collections.emptyList()) //
+                .columnMetadatas(Collections.emptySortedMap()) //
                 .draft(false) //
                 .build();
 
     }
 
-    public Map<String, List<ColumnMetadata>> parseAllSheets(InputStream content) {
+    public SortedMap<String, List<ColumnMetadata>> parseAllSheets(InputStream content) {
         try {
             Workbook hssfWorkbook = XlsUtils.getWorkbook(content);
 
             int sheetNumber = hssfWorkbook.getNumberOfSheets();
 
             if (sheetNumber < 1) {
-                return Collections.emptyMap();
+                return Collections.emptySortedMap();
             }
 
-            Map<String, List<ColumnMetadata>> schema = new LinkedHashMap<>(sheetNumber);
+            SortedMap<String, List<ColumnMetadata>> schema = new TreeMap<>();
 
             for (int i = 0; i < sheetNumber; i++) {
                 Sheet sheet = hssfWorkbook.getSheetAt(i);
@@ -88,6 +88,7 @@ public class XlsSchemaParser implements SchemaParser {
 
                 String sheetName = sheet.getSheetName();
 
+                // update XlsSerializer if this default sheet naming change!!!
                 schema.put(sheetName == null ? "sheet-" + i : sheetName, columnMetadatas);
 
             }

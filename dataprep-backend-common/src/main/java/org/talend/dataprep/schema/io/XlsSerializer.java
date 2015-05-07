@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -33,8 +34,18 @@ public class XlsSerializer implements Serializer {
             StringWriter writer = new StringWriter();
             JsonGenerator generator = new JsonFactory().createJsonGenerator(writer);
 
-            // FIXME: ATM we work with only one sheet
-            Sheet sheet = workbook.getSheetAt(metadata.getSheetNumber());
+            // if no sheet name just get the first one (take it easy mate :-) )
+            Sheet sheet = StringUtils.isEmpty(metadata.getSheetName()) ? workbook.getSheetAt(0) : //
+                    workbook.getSheet(metadata.getSheetName());
+
+            if (sheet == null) {
+                // auto generated sheet name so take care!! "sheet-" + i
+                if (StringUtils.startsWith(metadata.getSheetName(), "sheet-")) {
+                    String sheetNumberStr = StringUtils.removeStart(metadata.getSheetName(), "sheet-");
+
+                    sheet = workbook.getSheetAt(Integer.valueOf(sheetNumberStr));
+                }
+            }
 
             generator.writeStartArray();
 
@@ -56,7 +67,7 @@ public class XlsSerializer implements Serializer {
                     // do not write the values if this has been detected as an header
                     if (i >= columnMetadata.getHeaderSize()) {
                         String cellValue = XlsUtils.getCellValueAsString(row.getCell(j));
-                        LOGGER.trace( "cellValue for {}/{}: {}", i, j, cellValue );
+                        LOGGER.trace("cellValue for {}/{}: {}", i, j, cellValue);
                         generator.writeStringField(columnMetadata.getId(), cellValue);
                     }
                 }

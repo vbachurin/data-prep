@@ -38,7 +38,7 @@ public class DataSetMetadata {
 
     private final long creationDate;
 
-    private int sheetNumber = 0;
+    private String sheetName;
 
     /**
      * if <code>true</code> this dataset is still a draft as we need more informations from the user
@@ -82,12 +82,12 @@ public class DataSetMetadata {
         return author;
     }
 
-    public int getSheetNumber() {
-        return sheetNumber;
+    public String getSheetName() {
+        return sheetName;
     }
 
-    public void setSheetNumber(int sheetNumber) {
-        this.sheetNumber = sheetNumber;
+    public void setSheetName( String sheetName ) {
+        this.sheetName = sheetName;
     }
 
     public Date getCreationDate() {
@@ -136,7 +136,7 @@ public class DataSetMetadata {
 
         private boolean qualityAnalyzed;
 
-        private int sheetNumber;
+        private String sheetName;
 
         private boolean draft = true;
 
@@ -203,8 +203,8 @@ public class DataSetMetadata {
             return this;
         }
 
-        public Builder sheetNumber(int sheetNumber) {
-            this.sheetNumber = sheetNumber;
+        public Builder sheetName(String sheetName) {
+            this.sheetName = sheetName;
             return this;
         }
 
@@ -233,7 +233,7 @@ public class DataSetMetadata {
             }
             RowMetadata row = new RowMetadata(columns);
             DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row);
-            metadata.sheetNumber = this.sheetNumber;
+            metadata.sheetName = this.sheetName;
             metadata.draft = this.draft;
             // Content information
             DataSetContent content = metadata.getContent();

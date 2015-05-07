@@ -43,7 +43,7 @@ public class TransformAPI extends APIService {
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
             HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, contentServiceUrl, dataSetId,
-                    false, false);
+                    false, false, false);
             HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, transformServiceUrl,
                     contentRetrieval, encodedActions);
 

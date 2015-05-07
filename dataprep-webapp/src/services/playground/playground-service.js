@@ -86,14 +86,15 @@
          * @name initPlayground
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {object} dataset - the dataset to load
+         * @param {boolean} preview - is the dataset still a draft so ask a preview rendering
          * @description Initiate a new preparation from dataset.
          - If there is no preparation yet and the dataset to load is still the last loaded, the playground is not changed.
          - Otherwise, the playground is reset with the wanted dataset
          * @returns {promise} - the process promise
          */
-        self.initPlayground = function(dataset) {
+        self.initPlayground = function(dataset,preview) {
             if(!self.currentMetadata || PreparationService.currentPreparation || dataset.id !== self.currentMetadata.id) {
-                return DatasetService.getDataFromId(dataset.id, false)
+                return DatasetService.getDataFromId(dataset.id, false, preview?preview:false)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,

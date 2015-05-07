@@ -21,8 +21,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.DistributedLock;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
@@ -38,7 +43,11 @@ import org.talend.dataprep.metrics.VolumeMetered;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -127,7 +136,7 @@ public class DataSetService {
      * @param dataSetContent The raw content of the data set (might be a CSV, XLS...).
      * @param response The HTTP response to interact with caller.
      * @return The new data id.
-     * @see #get(boolean, boolean, String, HttpServletResponse)
+     * @see #get(boolean, boolean, boolean, String, HttpServletResponse)
      */
     @RequestMapping(value = "/datasets", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
@@ -155,6 +164,7 @@ public class DataSetService {
      * 
      * @param metadata If <code>true</code>, includes data set metadata information.
      * @param columns If <code>true</code>, includes column metadata information (column types...).
+     * @param preview if <code>true</code> a preview request
      * @param dataSetId A data set id.
      * @param response The HTTP response to interact with caller.
      */
@@ -164,6 +174,7 @@ public class DataSetService {
     public void get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
+            @RequestParam(defaultValue = "false") @ApiParam(name = "preview", value = "preview of the data set") boolean preview,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
@@ -172,24 +183,44 @@ public class DataSetService {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return; // No data set, returns empty content.
         }
-        if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
-            // Schema is not yet ready (but eventually will, returns 202 to indicate this).
-            LOG.debug("Data set #{} not yet ready for service.", dataSetId);
-            response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
+
+        // if it's a draft and draft parameter set to true we don't mind and return it
+        // as we need more details
+        if (!dataSetMetadata.isDraft() && !preview) {
+
+            if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
+                // Schema is not yet ready (but eventually will, returns 202 to indicate this).
+                LOG.debug("Data set #{} not yet ready for service.", dataSetId);
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                return;
+            }
+            if (columns && !dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+                // Quality is not yet ready (but eventually will, returns 202 to indicate this).
+                LOG.debug("Column information #{} not yet ready for service (missing quality information).", dataSetId);
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                return;
+            }
         }
-        if (columns && !dataSetMetadata.getLifecycle().qualityAnalyzed()) {
-            // Quality is not yet ready (but eventually will, returns 202 to indicate this).
-            LOG.debug("Column information #{} not yet ready for service (missing quelity information).", dataSetId);
-            response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
+
+        // it's the first preview and sheet not yet set correctly
+        // so use the first one
+        if (preview && dataSetMetadata.getSheetName() == null) {
+            String sheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
+            LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, sheetName);
+            dataSetMetadata.setSheetName(sheetName);
+        }
+
+        if (preview) {
+            String sheetName = dataSetMetadata.getSheetName();
+            List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(sheetName);
+            dataSetMetadata.getRow().setColumns(columnMetadatas);
         }
 
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
             ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata),
-                    applicationContext));
+            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, //
+                    contentStore.get(dataSetMetadata), applicationContext));
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
