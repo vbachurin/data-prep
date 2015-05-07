@@ -54,4 +54,8 @@ public class TDPExceptionContext {
         return context.containsKey(key);
     }
 
+    public TDPExceptionContext from(Map<String, Object> context) {
+        this.context.putAll(context);
+        return this;
+    }
 }

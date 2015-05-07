@@ -17,8 +17,8 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.Quality;
-import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -51,11 +51,11 @@ public class QualityAnalysis {
         try {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
             DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
-            datasetLock.lock();
+            DataSetMetadata metadata = repository.get(dataSetId);
             try {
+                datasetLock.lock();
                 StatisticsClientJson statisticsClient = new StatisticsClientJson(true, context);
                 statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
-                DataSetMetadata metadata = repository.get(dataSetId);
                 if (metadata != null) {
                     if (!metadata.getLifecycle().schemaAnalyzed()) {
                         LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
@@ -103,6 +103,10 @@ public class QualityAnalysis {
                     LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 }
             } catch (Exception e) {
+                if (metadata != null) {
+                    metadata.getLifecycle().error(true);
+                    repository.add(metadata);
+                }
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
             } finally {
                 datasetLock.unlock();

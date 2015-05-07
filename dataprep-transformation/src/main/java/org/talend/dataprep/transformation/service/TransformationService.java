@@ -15,8 +15,8 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.JsonErrorCode;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
@@ -138,16 +138,14 @@ public class TransformationService {
     @RequestMapping(value = "/transform/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all transformation related error codes.", notes = "Returns the list of all transformation related error codes.")
     @Timed
-    public String listErrors(HttpServletResponse response) {
+    public void listErrors(HttpServletResponse response) {
         try {
             // need to cast the typed dataset errors into mock ones to use json parsing
-            List<JsonErrorCode> errors = new ArrayList<>(TransformationErrorCodes.values().length);
+            List<JsonErrorCodeDescription> errors = new ArrayList<>(TransformationErrorCodes.values().length);
             for (TransformationErrorCodes code : TransformationErrorCodes.values()) {
-                errors.add(new JsonErrorCode(code));
+                errors.add(new JsonErrorCodeDescription(code));
             }
-
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsString(errors);
+            builder.build().writer().writeValue(response.getOutputStream(), errors);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
