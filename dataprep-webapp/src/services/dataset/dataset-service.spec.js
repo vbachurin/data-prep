@@ -19,6 +19,8 @@ describe('Dataset Service', function () {
         spyOn(DatasetListService, 'delete').and.returnValue($q.when(true));
         spyOn(DatasetListService, 'create').and.returnValue(promiseWithProgress);
         spyOn(DatasetListService, 'update').and.returnValue(promiseWithProgress);
+        spyOn(DatasetListService, 'processCertification').and.returnValue($q.when(true));
+
         spyOn(DatasetRestService, 'getContent').and.returnValue($q.when({}));
 
         spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(datasets));
@@ -218,6 +220,31 @@ describe('Dataset Service', function () {
         //then
         expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
         expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
+    }));
+
+    it('should consolidate preparations and datasets on dataset certification', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
+        //given
+        var dataset = DatasetListService.datasets[0];
+
+        //when
+        DatasetService.processCertification(dataset);
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
+        expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
+    }));
+
+    it('should process certification on dataset', inject(function ($rootScope, DatasetService, DatasetListService) {
+        //given
+        var dataset = DatasetListService.datasets[0];
+
+        //when
+        DatasetService.processCertification(dataset);
+        $rootScope.$digest();
+
+        //then
+        expect(DatasetListService.processCertification).toHaveBeenCalledWith(dataset);
     }));
 
     it('should get content from rest service', inject(function ($rootScope, DatasetService, DatasetRestService) {

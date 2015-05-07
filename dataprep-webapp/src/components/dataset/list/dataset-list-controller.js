@@ -25,7 +25,7 @@
          * @name open
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Initiate a new preparation from dataset
-         * @param {Object} dataset - the dataset to open
+         * @param {object} dataset - the dataset to open
          */
         vm.open = function(dataset) {
             PlaygroundService.initPlayground(dataset)
@@ -37,7 +37,7 @@
          * @name delete
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Delete a dataset
-         * @param {Object} dataset - the dataset to delete
+         * @param {object} dataset - the dataset to delete
          */
         vm.delete = function(dataset) {
             TalendConfirmService.confirm({disableEnter: true}, ['DELETE_PERMANENTLY', 'NO_UNDONE_CONFIRM'], {type: 'dataset', name: dataset.name})
@@ -51,10 +51,19 @@
 
         /**
          * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Ask certification for a dataset
+         * @param {object} dataset - the dataset to ask certifiction for
+         */
+        vm.processCertification = DatasetService.processCertification;
+
+        /**
+         * @ngdoc method
          * @name loadUrlSelectedDataset
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description [PRIVATE] Load playground with provided dataset id, if present in route param
-         * @param {Object[]} datasets - list of all user's datasets
+         * @param {object[]} datasets - list of all user's datasets
          */
         var loadUrlSelectedDataset = function(datasets) {
             if($stateParams.datasetid) {

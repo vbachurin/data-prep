@@ -71,6 +71,19 @@
 
         /**
          * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} dataset The target dataset for certification
+         * @description Ask certification for a dataset and refresh its internal list
+         * @returns {promise} The pending PUT promise
+         */
+        self.processCertification = function(dataset) {
+            return DatasetRestService.processCertification(dataset.id)
+                .then(self.refreshDatasets);
+        };
+
+        /**
+         * @ngdoc method
          * @name delete
          * @methodOf data-prep.services.dataset.service:DatasetListService
          * @param {object} dataset The dataset to delete

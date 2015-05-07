@@ -25,6 +25,8 @@ public class DataSetMetadata {
 
     private final DataSetContent content = new DataSetContent();
 
+    private final DataSetGovernance gov = new DataSetGovernance();
+
     private final String name;
 
     private final String author;
@@ -55,6 +57,10 @@ public class DataSetMetadata {
 
     public DataSetContent getContent() {
         return content;
+    }
+
+    public DataSetGovernance getGovernance() {
+        return this.gov;
     }
 
     public String getName() {

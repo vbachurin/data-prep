@@ -25,6 +25,7 @@ describe('Dataset list controller', function () {
             return ctrl;
         };
 
+        spyOn(DatasetService, 'processCertification').and.returnValue($q.when(true));
         spyOn(DatasetService, 'getDatasets').and.callFake(function () {
             return $q.when(datasetsValues.shift());
         });
@@ -119,6 +120,14 @@ describe('Dataset list controller', function () {
 
             //then
             expect(ctrl.datasets).toBe(refreshedDatasets);
+        }));
+
+        it('should process certification on dataset', inject(function (DatasetService) {
+            //when
+            ctrl.processCertification(datasets[0]);
+
+            //then
+            expect(DatasetService.processCertification).toHaveBeenCalledWith(datasets[0])
         }));
     });
 });

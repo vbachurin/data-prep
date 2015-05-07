@@ -86,6 +86,17 @@
                     $rootScope.$emit('talend.loading.stop');
                 });
         };
+
+        /**
+         * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Ask certification for a dataset
+         * @param {string} datasetId The dataset id
+         */
+        self.processCertification = function(datasetId) {
+            return $http.put(RestURLs.datasetUrl + '/' + datasetId + '/processcertification');
+        };
     }
 
     angular.module('data-prep.services.dataset')

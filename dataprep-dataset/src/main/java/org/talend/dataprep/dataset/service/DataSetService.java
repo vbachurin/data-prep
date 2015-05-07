@@ -23,6 +23,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.DistributedLock;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
@@ -97,11 +98,6 @@ public class DataSetService {
         return author;
     }
 
-    /**
-     * Lists all data set ids handled by service.
-     * 
-     * @param response The HTTP response to interact with caller.
-     */
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
@@ -216,6 +212,38 @@ public class DataSetService {
             }
         } finally {
             lock.unlock();
+        }
+    }
+
+    @RequestMapping(value = "/datasets/{id}/processcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Ask certification for a dataset", notes = "Advance certification step of this dataset.")
+    @Timed
+    public void processCertification(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Ask certification for dataset #{}", dataSetId);
+        }
+
+        DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        datasetLock.lock();
+        try {
+            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+            LOG.trace("Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+
+            if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.CERTIFIED) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.NONE);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            }
+
+            LOG.debug("New certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+        } finally {
+            datasetLock.unlock();
         }
     }
 

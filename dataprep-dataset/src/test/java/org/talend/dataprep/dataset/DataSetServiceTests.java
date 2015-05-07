@@ -6,8 +6,7 @@ import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
@@ -36,6 +35,7 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -405,4 +405,44 @@ public class DataSetServiceTests {
             assertTrue(errorCode.has("http-status-code"));
         }
     }
+
+    @Test
+    public void testAskCertification() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId);
+
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
+        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
+
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+    }
+
+    @Test
+    public void testCertify() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId);
+
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
+        assertEquals(Certification. NONE, dataSetMetadata.getGovernance().getCertificationStep());
+
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+    }
+
 }

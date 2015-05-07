@@ -91,6 +91,19 @@
 
         /**
          * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} dataset The target dataset for certification
+         * @description Ask certification for a dataset
+         * @returns {promise} The pending PUT promise
+         */
+        self.processCertification = function(dataset) {
+            return DatasetListService.processCertification(dataset)
+                .then(consolidatePreparationsAndDatasets);
+        };
+
+        /**
+         * @ngdoc method
          * @name getContent
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {string} datasetId The dataset id

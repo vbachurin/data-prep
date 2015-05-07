@@ -106,4 +106,21 @@ describe('Dataset Rest Service', function () {
         //then
         expect(result).toEqual(data);
     }));
+
+    it('should call dataset certification rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var datasetId = 'e85afAa78556d5425bc2';
+
+        $httpBackend
+            .expectPUT(RestURLs.datasetUrl + '/e85afAa78556d5425bc2/processcertification')
+            .respond(200);
+
+        //when
+        DatasetRestService.processCertification(datasetId);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        //expect PUT not to throw any exception
+    }));
 });

@@ -162,6 +162,7 @@ describe('Dataset List Service', function () {
         spyOn(DatasetRestService, 'create').and.returnValue($q.when(true));
         spyOn(DatasetRestService, 'update').and.returnValue($q.when(true));
         spyOn(DatasetRestService, 'delete').and.returnValue($q.when(true));
+        spyOn(DatasetRestService, 'processCertification').and.returnValue($q.when(true));
     }));
 
     it('should refresh dataset list', inject(function ($rootScope, DatasetListService) {
@@ -234,6 +235,30 @@ describe('Dataset List Service', function () {
 
         //when
         DatasetListService.update(dataset);
+        $rootScope.$apply();
+
+        //then
+        expect(DatasetRestService.getDatasets).toHaveBeenCalled();
+    }));
+
+    it('should process certification on dataset', inject(function ($rootScope, DatasetListService, DatasetRestService) {
+        //given
+        var dataset = {id: '6a543545de46512bf8651c'};
+
+        //when
+        DatasetListService.processCertification(dataset);
+        $rootScope.$apply();
+
+        //then
+        expect(DatasetRestService.processCertification).toHaveBeenCalledWith('6a543545de46512bf8651c');
+    }));
+
+    it('should refresh datasets list on dataset certification', inject(function ($rootScope, DatasetListService, DatasetRestService) {
+        //given
+        var dataset = {id: '6a543545de46512bf8651c'};
+
+        //when
+        DatasetListService.processCertification(dataset);
         $rootScope.$apply();
 
         //then
