@@ -4,7 +4,9 @@
     /**
      * @ngdoc service
      * @name data-prep.services.playground.service:DatagridService
-     * @description Datagrid service. This service holds the datagrid (SlickGrid) view and the (SlickGrid) filters
+     * @description Datagrid service. This service holds the datagrid (SlickGrid) view and the (SlickGrid) filters<br/>
+     * <b style="color: red;">WARNING : do NOT use this service directly for FILTERS.
+     * {@link data-prep.services.filter.service:FilterService FilterService} must be the only entry point for datagrid filters</b>
      */
     function DatagridService() {
         var self = this;
