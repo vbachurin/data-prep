@@ -278,6 +278,22 @@ describe('Recipe service', function () {
             }]);
     }));
 
+    it('should save steps actions parameters', inject(function($rootScope, RecipeService) {
+        //given
+
+        //when
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //then
+        var recipe = RecipeService.getRecipe();
+        expect(recipe[0].actionParameters).toEqual({ action: 'uppercase', parameters: Object({ column_name: 'country' }) });
+        expect(recipe[1].actionParameters).toEqual({ action: 'fillemptywithdefault', parameters: Object({ default_value: 'M', column_name: 'gender' }) });
+        expect(recipe[2].actionParameters).toEqual({ action: 'negate', parameters: Object({ column_name: 'campain' }) });
+        expect(recipe[3].actionParameters).toEqual({ action: 'cut', parameters: Object({ pattern: '.', column_name: 'first_item' }) });
+        expect(recipe[4].actionParameters).toEqual({ action: 'fillemptywithdefaultboolean', parameters: Object({ default_value: 'True', column_name: 'campain' }) });
+    }));
+
     it('should reset current values to initial saved values in param', inject(function(RecipeService) {
         //given
         var column = {id: 'colId'};
@@ -383,5 +399,107 @@ describe('Recipe service', function () {
 
         //then
         expect(previous.transformation.stepId).toBe('f6e172c33bdacbc69bca9d32b2bd78174712a171');
+    }));
+
+    it('should return the wanted step', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        var expectedStep = RecipeService.getRecipe()[1];
+
+        //when
+        var result = RecipeService.getStep(1, false);
+
+        //then
+        expect(result).toBe(expectedStep);
+    }));
+
+    it('should return null when the index is superior to the recipe length', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var result = RecipeService.getStep(25, false);
+
+        //then
+        expect(result).toBe(null);
+    }));
+
+    it('should return the last step when the index is superior to the recipe length', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        var expectedStep = RecipeService.getRecipe()[4];
+
+        //when
+        var result = RecipeService.getStep(25, true);
+
+        //then
+        expect(result).toBe(expectedStep);
+    }));
+
+    it('should return the last active step index', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        RecipeService.disableStepsAfter(RecipeService.getRecipe()[2]);
+
+        //when
+        var index = RecipeService.getActiveThresholdStepIndex();
+
+        //then
+        expect(index).toBe(2);
+    }));
+
+    it('should return -1 when no specific active step has been set', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var index = RecipeService.getActiveThresholdStepIndex();
+
+        //then
+        expect(index).toBe(-1);
+    }));
+
+    it('should return the initial state if the index is 0', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var step = RecipeService.getStepBefore(0);
+
+        //then
+        expect(step).toEqual({ transformation: {stepId: 'f6e172c33bdacbc69bca9d32b2bd78174712a171' }});
+    }));
+
+    it('should return the last step if the index is bigger than the recipe size', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var step = RecipeService.getStepBefore(1000);
+
+        //then
+        expect(step).toEqual(RecipeService.getRecipe()[4]);
+    }));
+
+    it('should return the step before the one identified by the index', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var step = RecipeService.getStepBefore(2);
+
+        //then
+        expect(step).toEqual(RecipeService.getRecipe()[1]);
     }));
 });

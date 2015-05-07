@@ -6,23 +6,29 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m3-SNAPSHOT</version>
+        <version>1.0.m4-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <artifactId>dataprep-backend-common</artifactId>
-    <version>1.0.m3-SNAPSHOT</version>
+    <version>1.0.m4-SNAPSHOT</version>
     <name>dataprep-backend-common</name>
     <dependencies>
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
-            <version>3.4.2</version>
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-spring</artifactId>
-            <version>3.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-core</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

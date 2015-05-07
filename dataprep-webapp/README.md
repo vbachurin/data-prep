@@ -105,6 +105,11 @@ All the structure is inspired by yeoman project called [generator-gulp-angular](
 The build of the web app is required because we use pre-compiler tools in order to use Jade and scss templating.
 use `gulp --tasks-simple` to find out which build tasks are available.
 
+### Code style
+Interesting style guides to follow : 
+* Todd Motto : https://github.com/toddmotto/angularjs-styleguide
+* John Papa : https://github.com/johnpapa/angular-styleguide
+
 ### Run
 when in folder _checkouts/data-prep/dataprep-webapp_ type the command
 
@@ -112,6 +117,13 @@ when in folder _checkouts/data-prep/dataprep-webapp_ type the command
 
 This will precompile jade and scss templates, update the index.html with all the css, and javascript available. 
 Then it will start a web server usually on port 3000 and watch any code change to refresh the browser. 
+
+### Run on your local machine
+By default, the webapp is setup to access the api hosted on `10.42.10.99`. This setting can be changed in the following file :
+
+* _src/services/utils/constants/utils-constants.js_.
+
+As long as we don't come up with a better solution, this file must not be commited...
 
 ### Run tests
 when in folder _checkouts/data-prep/dataprep-webapp_ type the command

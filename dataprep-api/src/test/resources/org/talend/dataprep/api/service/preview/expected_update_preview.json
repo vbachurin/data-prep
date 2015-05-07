@@ -1,0 +1,66 @@
+{
+  "columns": [
+    {
+      "id": "id",
+      "type": "integer"
+    },
+    {
+      "id": "firstname",
+      "type": "string"
+    },
+    {
+      "id": "lastname",
+      "type": "string"
+    },
+    {
+      "id": "age",
+      "type": "integer"
+    },
+    {
+      "id": "date-of-birth",
+      "type": "date"
+    },
+    {
+      "id": "alive",
+      "type": "boolean"
+    },
+    {
+      "id": "city",
+      "type": "string"
+    }
+  ],
+  "records": [
+    {
+      "__tdpRowDiff": "new",
+      "firstname": "BRUCE",
+      "alive": "true",
+      "city": "Gotham city",
+      "date-of-birth": "01/01/1947",
+      "id": "2",
+      "age": "50",
+      "lastname": "WAYNE"
+    },
+    {
+      "firstname": "BARRY",
+      "alive": "true",
+      "city": "Central city",
+      "date-of-birth": "01/02/1948",
+      "id": "3",
+      "age": "67",
+      "lastname": "ALLEN",
+      "__tdpDiff": {
+      }
+    },
+    {
+      "firstname": "OLIVER",
+      "alive": "true",
+      "city": "Star city",
+      "date-of-birth": "01/04/1950",
+      "id": "5",
+      "age": "81",
+      "lastname": "QUEEN",
+      "__tdpDiff": {
+      }
+    }
+  ]
+}

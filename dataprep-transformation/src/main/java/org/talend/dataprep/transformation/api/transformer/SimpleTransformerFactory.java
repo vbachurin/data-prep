@@ -14,10 +14,27 @@ public class SimpleTransformerFactory implements TransformerFactory {
     @Autowired
     private WebApplicationContext context;
 
+    final ActionParser parser = new ActionParser();
+
+    private Consumer<DataSetRow> action;
+
     @Override
-    public Transformer get(String actions) {
-        ActionParser parser = new ActionParser();
-        Consumer<DataSetRow> action = parser.parse(actions);
+    public Transformer get() {
         return context.getBean(SimpleTransformer.class, action);
+    }
+
+    @Override
+    public TransformerFactory withActions(final String... actions) {
+        if(actions.length != 1) {
+            throw new IllegalArgumentException("SimpleTransformerFactory only take 1 action to perform");
+        }
+
+        action = parser.parse(actions[0]);
+        return this;
+    }
+
+    @Override
+    public TransformerFactory withIndexes(String indexes) {
+        throw new UnsupportedOperationException("Indexes are not supported in SimpleTransformerFactory");
     }
 }

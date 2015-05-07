@@ -11,14 +11,15 @@
         <div class="step-trigger"
            ng-class="{downlight: step.downlight, highlight: step.highlight}"
            ng-click="recipeCtrl.toggleStep(step)"
-           active="&#9679;"
-           inactive="&#9675;"
            ng-mouseleave="recipeCtrl.stepHoverEnd()"
-           ng-mouseover="recipeCtrl.stepHoverStart($index)"></div>
+           ng-mouseenter="recipeCtrl.stepHoverStart($index)"></div>
 
         <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>
-                <transform-params transformation="step.transformation"></transform-params>
+                <transform-params transformation="step.transformation"
+                                  on-submit="recipeCtrl.stepUpdateClosure(step)(params)"
+                                  on-submit-hover-on="recipeCtrl.previewUpdateClosure(step)(params)"
+                                  on-submit-hover-off="recipeCtrl.stepHoverEnd()"></transform-params>
             </li>
         </ul>
     </li>

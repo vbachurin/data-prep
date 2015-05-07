@@ -43,13 +43,19 @@
     cursor: pointer;
     position: absolute;
     right: 10px;
-    top: 0;
-    line-height: 28px;
-    font-size: 2.8em;
+    top: 4px;
+    height: 100%;
 
     &::after {
-      content: attr(active);
-      color: $dark-green;
+      display: inline-block;
+      vertical-align: middle;
+
+      height: 20px;
+      width: 20px;
+      border-radius: 10px;
+
+      background-color: $dark-green;
+      content: '';
     }
 
     &.highlight {
@@ -63,15 +69,13 @@
 
     .step-trigger {
       &::after {
-        color: $color-not-active;
-        content: attr(inactive);
-        font-style: normal;
-
+        background-color: $white;
+        border: 3px solid $color-not-active;
       }
 
       &.highlight::after {
-        content: attr(active);
-        color: $dark-blue;
+        background-color: $dark-blue;
+        border: none;
       }
     }
 

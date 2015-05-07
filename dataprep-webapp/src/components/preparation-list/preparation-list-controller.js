@@ -7,14 +7,13 @@
      * @description Preparation list controller.
      * On creation, it fetch the user's preparations and load the requested one if a `prepid` is present as query param
      * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function PreparationListCtrl($stateParams, PreparationListService, PlaygroundService, PreparationService, TalendConfirmService, MessageService) {
+    function PreparationListCtrl($stateParams, PlaygroundService, PreparationService, TalendConfirmService, MessageService) {
         var vm = this;
-        vm.preparationListService = PreparationListService;
+        vm.preparationService = PreparationService;
 
         /**
          * @ngdoc method
@@ -43,7 +42,6 @@
                 })
                 .then(function() {
                     MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type:'preparation', name: preparation.name});
-                    PreparationListService.refreshPreparations();
                 });
         };
 
@@ -72,7 +70,7 @@
         /**
          * Load preparations list if needed, and load playground if route has preparation id
          */
-        PreparationListService.getPreparationsPromise()
+        PreparationService.getPreparations()
             .then(loadUrlSelectedPreparation);
     }
 
@@ -81,14 +79,14 @@
      * @name preparations
      * @propertyOf data-prep.preparation-list.controller:PreparationListCtrl
      * @description The preparations list.
-     * It is bound to {@link data-prep.services.preparation.service:PreparationListService PreparationListService} property
+     * It is bound to {@link data-prep.services.preparation.service:PreparationService PreparationService}.preparationsList()
      */
     Object.defineProperty(PreparationListCtrl.prototype,
         'preparations', {
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.preparationListService.preparations;
+                return this.preparationService.preparationsList();
             }
         });
 

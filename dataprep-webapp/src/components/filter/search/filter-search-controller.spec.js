@@ -102,9 +102,9 @@ describe('filter search controller', function() {
         };
     }));
 
-    it('should create sorted suggestions based on case insensitive typed word and current data from service', inject(function(DatasetGridService) {
+    it('should create sorted suggestions based on case insensitive typed word and current data from service', inject(function(DatagridService) {
         //given
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         var ctrl = createController();
 
         //when
@@ -124,9 +124,9 @@ describe('filter search controller', function() {
         });
     }));
 
-    it('should create sorted suggestions based on typed word with wildcard', inject(function(DatasetGridService) {
+    it('should create sorted suggestions based on typed word with wildcard', inject(function(DatagridService) {
         //given
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         var ctrl = createController();
 
         //when
@@ -146,9 +146,9 @@ describe('filter search controller', function() {
         });
     }));
 
-    it('should return empty array if typed string is empty', inject(function(DatasetGridService) {
+    it('should return empty array if typed string is empty', inject(function(DatagridService) {
         //given
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         var ctrl = createController();
 
         //when
@@ -158,9 +158,9 @@ describe('filter search controller', function() {
         expect(suggestions.length).toBe(0);
     }));
 
-    it('should reset input search on item select', inject(function(DatasetGridService) {
+    it('should reset input search on item select', inject(function(DatagridService) {
         //given
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         var ctrl = createController();
         ctrl.filterSearch = 'ala';
 

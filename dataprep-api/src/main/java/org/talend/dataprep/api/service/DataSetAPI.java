@@ -10,10 +10,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.talend.dataprep.api.APIMessages;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.*;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -50,7 +50,8 @@ public class DataSetAPI extends APIService {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, contentServiceUrl, id, name, dataSetContent);
+        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, contentServiceUrl, id, name,
+                dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;
@@ -64,11 +65,12 @@ public class DataSetAPI extends APIService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Requesting dataset #{} (pool: {})...",id,getConnectionManager().getTotalStats());
+            LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, contentServiceUrl, id, metadata, columns);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, contentServiceUrl, id, metadata,
+                columns);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
@@ -76,8 +78,8 @@ public class DataSetAPI extends APIService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
             }
-        } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_DATASET_CONTENT, id, e);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -97,8 +99,8 @@ public class DataSetAPI extends APIService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
             }
-        } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -110,15 +112,27 @@ public class DataSetAPI extends APIService {
             LOG.debug("Delete dataset #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, contentServiceUrl, dataSetId);
-        try {
-            deleteCommand.execute();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
-            }
-        } catch (Exception e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_LIST_DATASETS, e);
+        HystrixCommand<Void> deleteCommand = getCommand(DataSetDelete.class, client, contentServiceUrl, preparationServiceURL,
+                dataSetId);
+
+        deleteCommand.execute();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
         }
+    }
+
+    @RequestMapping(value = "/api/datasets/{id}/processcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Ask certification for a dataset", notes = "Advance certification step of this dataset.")
+    @Timed
+    public void processCertification(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Ask certification for dataset #{}", dataSetId);
+        }
+        HttpClient client = getClient();
+        HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, contentServiceUrl, dataSetId);
+        command.execute();
     }
 
     @RequestMapping(value = "/api/datasets/{id}/{column}/actions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -141,7 +155,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, columnName, dataSetId, e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -164,7 +178,7 @@ public class DataSetAPI extends APIService {
             IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
             outputStream.flush();
         } catch (IOException e) {
-            throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS, dataSetId, e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 

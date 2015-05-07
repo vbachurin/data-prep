@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
@@ -59,6 +59,6 @@ public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMe
                 return new ReleasableInputStream(response.getEntity().getContent(), post::releaseConnection);
             }
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_SUGGESTED_ACTIONS);
     }
 }

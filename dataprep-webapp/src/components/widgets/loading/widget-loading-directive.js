@@ -20,15 +20,17 @@
             templateUrl: 'components/widgets/loading/loading.html',
             link: function() {
                 var loadingPromise;
+                var body = angular.element('body');
 
                 $rootScope.$on('talend.loading.start', function() {
+                    $timeout.cancel(loadingPromise);
                     loadingPromise = $timeout(function() {
-                        angular.element('body').addClass('loading-open');
+                        body.addClass('loading-open');
                     }, 120);
                 });
                 $rootScope.$on('talend.loading.stop', function() {
                     $timeout.cancel(loadingPromise);
-                    angular.element('body').removeClass('loading-open');
+                    body.removeClass('loading-open');
                 });
             }
         };

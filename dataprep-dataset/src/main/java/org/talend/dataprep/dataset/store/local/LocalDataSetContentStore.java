@@ -3,26 +3,43 @@ package org.talend.dataprep.dataset.store.local;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Base64;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.exception.DataSetMessages;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
+@Configuration
+@ConditionalOnExpression()
+@ConditionalOnProperty(name = "dataset.content.store", havingValue = "local", matchIfMissing = false)
 public class LocalDataSetContentStore implements DataSetContentStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSetContentStore.class);
 
-    private final String storeLocation;
+    @Autowired
+    private ApplicationContext context;
 
-    public LocalDataSetContentStore(String storeLocation) {
+    @Value("${dataset.content.store.local.location}")
+    private String storeLocation;
+
+    @PostConstruct
+    public void init() {
         if (storeLocation == null) {
             throw new IllegalArgumentException("Store location cannot be null.");
         }
@@ -30,7 +47,6 @@ public class LocalDataSetContentStore implements DataSetContentStore {
             storeLocation += "/"; //$NON-NLS-1$
         }
         LOGGER.info("Content store location: {}", storeLocation);
-        this.storeLocation = storeLocation;
     }
 
     private File getFile(DataSetMetadata dataSetMetadata) {
@@ -38,34 +54,27 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     }
 
     @Override
-    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent, String actions) {
-        try {
-            LOGGER.info("Actions: {}", new String(Base64.getDecoder().decode(actions)));
-            LOGGER.info("Content: {}", IOUtils.toString(dataSetJsonContent));
-        } catch (IOException e) {
-            LOGGER.error("Unable to dump content & actions.", e);
-        }
-    }
-
-    @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try {
-            File dataSetFile = getFile(dataSetMetadata);
-            FileUtils.touch(dataSetFile);
-            FileOutputStream fos = new FileOutputStream(dataSetFile);
-            IOUtils.copy(dataSetContent, fos);
-
-            LOGGER.debug("Data set #{} stored to '{}'.", dataSetMetadata.getId(), dataSetFile);
-
+            if (dataSetContent.available() > 0) {
+                File dataSetFile = getFile(dataSetMetadata);
+                FileUtils.touch(dataSetFile);
+                FileOutputStream fos = new FileOutputStream(dataSetFile);
+                IOUtils.copy(dataSetContent, fos);
+                LOGGER.debug("Data set #{} stored to '{}'.", dataSetMetadata.getId(), dataSetFile);
+            } else {
+                LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
+            }
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_STORE_DATASET_CONTENT, dataSetMetadata.getId(), e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id",
+                    dataSetMetadata.getId()));
         }
     }
 
     @Override
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
-        Serializer serializer = content.getContentType().getSerializer();
+        Serializer serializer = context.getBean(content.getFormatGuessId(), FormatGuess.class).getSerializer();
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
     }
 
@@ -83,7 +92,8 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw Exceptions.Internal(DataSetMessages.UNABLE_TO_DELETE_DATASET, dataSetMetadata.getId());
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build().put("dataSetId",
+                        dataSetMetadata.getId()));
             }
         } else {
             LOGGER.warn("Data set #{} has no content.", dataSetMetadata.getId());
@@ -119,7 +129,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 }
             });
         } catch (IOException e) {
-            throw Exceptions.Internal(DataSetMessages.UNABLE_TO_CLEAR_DATASETS, e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CLEAR_DATASETS, e);
         }
     }
 }

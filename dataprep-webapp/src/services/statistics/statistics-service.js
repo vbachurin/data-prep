@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function StatisticsService(DatasetGridService) {
+    function StatisticsService(DatagridService) {
         var self = this;
 
         //------------------------------------------------------------------------------------------------------
@@ -19,7 +19,7 @@
             keyName = keyName || 'colValue';
             valueName = valueName || 'frequency';
 
-            var records = DatasetGridService.data.records;
+            var records = DatagridService.data.records;
 
             var result = _.chain(records)
                 .groupBy(function(item) {
@@ -45,7 +45,7 @@
          */
         self.getRangeDistribution = function (column) {
             //Get all values, casted in number
-            var records = DatasetGridService.data.records;
+            var records = DatagridService.data.records;
             var values = _.chain(records)
                 .map(function(item) {
                     return parseFloat(item[column.id]);

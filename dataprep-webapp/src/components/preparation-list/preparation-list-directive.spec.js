@@ -45,6 +45,7 @@ describe('Preparation list directive', function() {
         {
             'id': 'ab136cbf0923a7f11bea713adb74ecf919e05cfa',
             'dataSetId': 'de3cc32a-b624-484e-b8e7-dab9061a009c',
+            'dataset': allDatasets[0],
             'author': 'anonymousUser',
             'creationDate': 1427447300000,
             'lastModificationDate': 1427447300300,
@@ -79,6 +80,7 @@ describe('Preparation list directive', function() {
         {
             'id': 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
             'dataSetId': '4d0a2718-bec6-4614-ad6c-8b3b326ff6c7',
+            'dataset': allDatasets[2],
             'author': 'anonymousUser',
             'creationDate': 1427447330000,
             'lastModificationDate': 1427447330693,
@@ -116,7 +118,7 @@ describe('Preparation list directive', function() {
     beforeEach(module('data-prep.preparation-list'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $q, PreparationService, DatasetListService) {
+    beforeEach(inject(function($rootScope, $compile, $q, PreparationService) {
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<preparation-list></preparation-list>');
@@ -124,8 +126,10 @@ describe('Preparation list directive', function() {
             scope.$digest();
         };
 
-        spyOn(PreparationService, 'getPreparations').and.returnValue($q.when({data: allPreparations}));
-        spyOn(DatasetListService, 'getDatasetsPromise').and.returnValue($q.when(allDatasets));
+        spyOn(PreparationService, 'getPreparations').and.callFake(function() {
+            return $q.when(allPreparations);
+        });
+        spyOn(PreparationService, 'preparationsList').and.returnValue(allPreparations);
     }));
 
     afterEach(function() {

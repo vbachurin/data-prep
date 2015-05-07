@@ -119,16 +119,53 @@
 
         /**
          * @ngdoc method
+         * @name gatherParams
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description [PRIVATE] Gather params into one unique object
+         * @returns {object} The entire parameter values
+         */
+        var gatherParams = function() {
+            var params = getParams();
+            var choiceParams = getChoiceParams();
+
+            return _.merge(params, choiceParams);
+        };
+
+        /**
+         * @ngdoc method
          * @name transformWithParam
          * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
          * @description Gather params and perform a transformation on the column
          */
         vm.transformWithParam = function () {
-            var params = getParams();
-            var choiceParams = getChoiceParams();
-
-            var transformationParams = _.merge(params, choiceParams);
+            var transformationParams = gatherParams();
             vm.onSubmit({params: transformationParams});
+        };
+
+        /**
+         * @ngdoc method
+         * @name submitHoverOn
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description Gather params and perform the submit mouseenter action
+         */
+        vm.submitHoverOn = function() {
+            if(vm.onSubmitHoverOn) {
+                var params = gatherParams();
+                vm.onSubmitHoverOn({params: params});
+            }
+        };
+
+        /**
+         * @ngdoc method
+         * @name submitHoverOff
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description Gather params and perform the submit mouseleave action
+         */
+        vm.submitHoverOff = function() {
+            if(vm.onSubmitHoverOff) {
+                var params = gatherParams();
+                vm.onSubmitHoverOff({params: params});
+            }
         };
 
         initParamsValues();

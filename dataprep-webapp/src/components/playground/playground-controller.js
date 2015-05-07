@@ -6,11 +6,13 @@
      * @name data-prep.playground.controller:PlaygroundCtrl
      * @description Playground controller.
      * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires data-prep.services.preparation.service:PreparationListService
+     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.playground.service:PreviewService
      */
-    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationListService) {
+    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
+        vm.previewService = PreviewService;
 
         /**
          * @ngdoc method
@@ -32,8 +34,8 @@
          * @description Playground close callback. It change the location and refresh the preparations if needed
          */
         vm.close = function() {
+            PreparationService.refreshPreparations();
             if($stateParams.prepid) {
-                PreparationListService.refreshPreparations();
                 $state.go('nav.home.preparations', {prepid: null});
             }
             else if($stateParams.datasetid) {
@@ -93,6 +95,22 @@
             },
             set: function(value) {
                 this.playgroundService.preparationName = value;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name previewInProgress
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description Flag that defines if a preview is in progress
+     * It is bound to {@link data-prep.services.dataset.service:PreviewService PreviewService} property
+     */
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'previewInProgress', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.previewService.previewInProgress();
             }
         });
 

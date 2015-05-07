@@ -151,6 +151,126 @@ describe('Datagrid directive', function() {
             }
         ]
     };
+
+    var newData = {
+        'columns': [
+            {
+                'id': 'id',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'number'
+            },
+            {
+                'id': 'Postal',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'State',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                '__tdpRowDiff': 'new',
+                'id': '1',
+                'Postal': '',
+                'State': 'My Alabama'
+            }
+        ]
+    };
+
+    var deleteData = {
+        'columns': [
+            {
+                'id': 'id',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'number'
+            },
+            {
+                'id': 'Postal',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'State',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                '__tdpRowDiff': 'delete',
+                'id': '1',
+                'Postal': '',
+                'State': 'My Alabama'
+            }
+        ]
+    };
+
+    var updateData = {
+        'columns': [
+            {
+                'id': 'id',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'number'
+            },
+            {
+                'id': 'Postal',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'State',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                '__tdpDiff': {State: 'update'},
+                'id': '1',
+                'Postal': 'AL',
+                'State': 'My Alabama'
+            }
+        ]
+    };
     function GridGetter(element) {
         this.row = function(index) {
             return new GridGetter(element.find('.slick-row').eq(index));
@@ -173,7 +293,7 @@ describe('Datagrid directive', function() {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, $timeout, DatasetGridService) {
+    beforeEach(inject(function($rootScope, $compile, $timeout, DatagridService) {
         scope = $rootScope.$new();
         element = angular.element('<datagrid></datagrid>');
         $compile(element)(scope);
@@ -181,16 +301,16 @@ describe('Datagrid directive', function() {
         scope.$digest();
 
         angular.element('body').append(element);
-        spyOn(DatasetGridService, 'setSelectedColumn').and.returnValue(null);
+        spyOn(DatagridService, 'setSelectedColumn').and.returnValue(null);
     }));
 
     afterEach(function() {
         element.remove();
     });
 
-    it('should render dataset values', inject(function(DatasetGridService) {
+    it('should render dataset values', inject(function(DatagridService) {
         //when
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         //then
@@ -211,11 +331,11 @@ describe('Datagrid directive', function() {
         expect(secondRow.cell(3).text()).toBe('Juneau');
     }));
 
-    it('should highlight cells containing clicked value', inject(function(DatasetGridService) {
+    it('should highlight cells containing clicked value', inject(function(DatagridService) {
         //given
         var colIndex = 2;
 
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         //when
@@ -229,12 +349,12 @@ describe('Datagrid directive', function() {
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
     }));
 
-    it('should set column background on cell clicked', inject(function(DatasetGridService) {
+    it('should set column background on cell clicked', inject(function(DatagridService) {
         //given
         var colIndex = 2;
         var grid = new GridGetter(element);
 
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         //when
@@ -246,12 +366,12 @@ describe('Datagrid directive', function() {
         expect(grid.row(1).cell(colIndex).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should not change column background on click on a selected column cell', inject(function(DatasetGridService) {
+    it('should not change column background on click on a selected column cell', inject(function(DatagridService) {
         //given
         var colIndex = 2;
         var grid = new GridGetter(element);
 
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         grid.row(0).cell(colIndex).element().click();
@@ -269,11 +389,11 @@ describe('Datagrid directive', function() {
         expect(grid.row(1).cell(colIndex).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should set selected column on cell clicked', inject(function($timeout, DatasetGridService) {
+    it('should set selected column on cell clicked', inject(function($timeout, DatagridService) {
         //given
         var colIndex = 2;
 
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         //when
@@ -283,14 +403,14 @@ describe('Datagrid directive', function() {
         $timeout.flush();
 
         //then
-        expect(DatasetGridService.setSelectedColumn).toHaveBeenCalledWith('State');
+        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('State');
     }));
 
-    it('should highlight empty cells only', inject(function(DatasetGridService) {
+    it('should highlight empty cells only', inject(function(DatagridService) {
         //given
         var colIndex = 2;
 
-        DatasetGridService.setDataset(metadata, dataWithEmptyCell);
+        DatagridService.setDataset(metadata, dataWithEmptyCell);
         scope.$digest();
 
         //when
@@ -304,9 +424,9 @@ describe('Datagrid directive', function() {
         expect(grid.row(2).cell(colIndex).element().hasClass('highlight')).toBe(true);
     }));
 
-    it('should change col cells background on column header click', inject(function(DatasetGridService) {
+    it('should change col cells background on column header click', inject(function(DatagridService) {
         //given
-        DatasetGridService.setDataset(metadata, dataWithEmptyCell);
+        DatagridService.setDataset(metadata, dataWithEmptyCell);
         scope.$digest();
 
         //when
@@ -318,9 +438,9 @@ describe('Datagrid directive', function() {
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should change selected column on column header click', inject(function($timeout, DatasetGridService) {
+    it('should change selected column on column header click', inject(function($timeout, DatagridService) {
         //given
-        DatasetGridService.setDataset(metadata, dataWithEmptyCell);
+        DatagridService.setDataset(metadata, dataWithEmptyCell);
         scope.$digest();
 
         //when
@@ -328,18 +448,18 @@ describe('Datagrid directive', function() {
         $timeout.flush();
 
         //then
-        expect(DatasetGridService.setSelectedColumn).toHaveBeenCalledWith('Postal');
+        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('Postal');
     }));
 
-    it('should do nothing on already selected column header click', inject(function($timeout, DatasetGridService) {
+    it('should do nothing on already selected column header click', inject(function($timeout, DatagridService) {
         //given
         var grid = new GridGetter(element);
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         element.find('#datagrid-header-1').eq(0).click();
         $timeout.flush();
-        expect(DatasetGridService.setSelectedColumn.calls.count()).toBe(1);
+        expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
         expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
 
@@ -351,7 +471,7 @@ describe('Datagrid directive', function() {
 
         //then
         catch (e) {
-            expect(DatasetGridService.setSelectedColumn.calls.count()).toBe(1);
+            expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
             expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
             expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
             return;
@@ -360,9 +480,9 @@ describe('Datagrid directive', function() {
         throw Error('should have thrown exception because no deferred task to flush');
     }));
 
-    it('should reset line style and reset active cell, but keep column selection when filter change', inject(function(FilterService, DatasetGridService) {
+    it('should reset line style and reset active cell, but keep column selection when filter change', inject(function(FilterService, DatagridService) {
         //given
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         var grid = new GridGetter(element);
@@ -383,5 +503,43 @@ describe('Datagrid directive', function() {
         expect(grid.row(0).element().hasClass('active')).toBe(false);
         expect(grid.row(0).cell(0).element().hasClass('selected')).toBe(true);
         expect(grid.row(1).cell(0).element().hasClass('selected')).toBe(true);
+    }));
+
+    it('should add a "new cell" class and fill content with a space if empty', inject(function(FilterService, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, newData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).text()).toBe(' ');
+        expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(true);
+    }));
+
+    it('should add a "delete cell" class and fill content with a space if empty', inject(function(FilterService, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, deleteData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).text()).toBe(' ');
+        expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
+    }));
+
+    it('should add an "update cell" class', inject(function(FilterService, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, updateData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(false);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(false);
+        expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(true);
     }));
 });

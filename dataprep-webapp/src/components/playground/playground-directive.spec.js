@@ -20,7 +20,7 @@ describe('Playground directive', function() {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($state, $rootScope, $compile, PreparationListService) {
+    beforeEach(inject(function($state, $rootScope, $compile, PreparationService) {
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<playground></playground>');
@@ -30,7 +30,7 @@ describe('Playground directive', function() {
             scope.$digest();
         };
 
-        spyOn(PreparationListService, 'refreshPreparations').and.callFake(function() {});
+        spyOn(PreparationService, 'refreshPreparations').and.callFake(function() {});
         spyOn($state, 'go').and.callFake(function() {});
     }));
 
@@ -76,16 +76,16 @@ describe('Playground directive', function() {
     }));
 
     describe('hide playground', function() {
-        beforeEach(inject(function(PlaygroundService, PreparationListService) {
+        beforeEach(inject(function(PlaygroundService, PreparationService) {
             PlaygroundService.currentMetadata = metadata;
             createElement();
 
             PlaygroundService.show();
             scope.$apply();
-            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
+            expect(PreparationService.refreshPreparations).not.toHaveBeenCalled();
         }));
 
-        it('should refresh preparation list and change route to preparations list on preparation playground hide', inject(function($state, $stateParams, PlaygroundService, PreparationListService) {
+        it('should change route to preparations list on preparation playground hide', inject(function($state, $stateParams, PlaygroundService) {
             //given: simulate playground route with preparation id
             $stateParams.prepid = '1234';
 
@@ -94,7 +94,6 @@ describe('Playground directive', function() {
             scope.$apply();
 
             //then
-            expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
             expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid: null});
         }));
 
@@ -110,7 +109,7 @@ describe('Playground directive', function() {
             expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: null});
         }));
 
-        it('should do nothing if playground is not routed', inject(function($state, $stateParams, PlaygroundService, PreparationListService) {
+        it('should do nothing if playground is not routed', inject(function($state, $stateParams, PlaygroundService, PreparationService) {
             //given: simulate no preparation id in route
             $stateParams.prepid = null;
             $stateParams.datasetid = null;
@@ -120,8 +119,17 @@ describe('Playground directive', function() {
             scope.$apply();
 
             //then
-            expect(PreparationListService.refreshPreparations).not.toHaveBeenCalled();
+            expect(PreparationService.refreshPreparations).toHaveBeenCalled();
             expect($state.go).not.toHaveBeenCalled();
+        }));
+
+        it('should refresh preparations on playground hide', inject(function(PlaygroundService, PreparationService) {
+            //when
+            PlaygroundService.hide();
+            scope.$apply();
+
+            //then
+            expect(PreparationService.refreshPreparations).toHaveBeenCalled();
         }));
     });
 

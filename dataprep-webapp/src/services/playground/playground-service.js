@@ -6,13 +6,13 @@
      * @name data-prep.services.playground.service:PlaygroundService
      * @description Playground service. This service provides the entry point to load properly the playground
      * @requires data-prep.services.dataset.service:DatasetService
-     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:MessageService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService, MessageService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService, PreparationService, MessageService) {
         var self = this;
 
         /**
@@ -92,8 +92,8 @@
          * @returns {promise} - the process promise
          */
         self.initPlayground = function(dataset) {
-            if(!self.currentMetadata || PreparationService.currentPreparation || dataset.id !== self.currentMetadata.id) {
-                return DatasetService.getDataFromId(dataset.id, false)
+            if(!self.currentMetadata || PreparationService.currentPreparationId || dataset.id !== self.currentMetadata.id) {
+                return DatasetService.getContent(dataset.id, false)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,
@@ -107,11 +107,11 @@
                         self.currentData = data;
                         self.preparationName = '';
                         self.originalPreparationName = '';
-                        PreparationService.currentPreparation = null;
+                        PreparationService.currentPreparationId = null;
 
                         FilterService.removeAllFilters();
                         RecipeService.reset();
-                        DatasetGridService.setDataset(dataset, data);
+                        DatagridService.setDataset(dataset, data);
                     });
             }
             else {
@@ -136,7 +136,7 @@
             self.originalPreparationName = preparation.name;
 
             // Update current preparation id before preparation operations
-            PreparationService.currentPreparation = preparation.id;
+            PreparationService.currentPreparationId = preparation.id;
 
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent('head')
@@ -146,7 +146,7 @@
 
                     FilterService.removeAllFilters();
                     RecipeService.refresh();
-                    DatasetGridService.setDataset(preparation.dataset, response.data);
+                    DatagridService.setDataset(preparation.dataset, response.data);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
@@ -171,7 +171,7 @@
             return PreparationService.getContent(step.transformation.stepId)
                 .then(function(response) {
                     self.currentData = response.data;
-                    DatasetGridService.setDataset(self.currentMetadata, response.data);
+                    DatagridService.setDataset(self.currentMetadata, response.data);
                     RecipeService.disableStepsAfter(step);
                 })
                 .finally(function() {
@@ -192,20 +192,11 @@
          */
         self.createOrUpdatePreparation = function(name) {
             if(self.originalPreparationName !== name) {
-                if(PreparationService.currentPreparation) {
-                    PreparationService.update(name)
-                        .then(function() {
-                            self.originalPreparationName = name;
-                            self.preparationName = name;
-                        });
-                }
-                else {
-                    PreparationService.create(self.currentMetadata.id, name)
-                        .then(function() {
-                            self.originalPreparationName = name;
-                            self.preparationName = name;
-                        });
-                }
+                PreparationService.setName(self.currentMetadata, name)
+                    .then(function() {
+                        self.originalPreparationName = name;
+                        self.preparationName = name;
+                    });
             }
         };
     }

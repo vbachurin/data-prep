@@ -4,20 +4,127 @@
     /**
      * @ngdoc service
      * @name data-prep.services.dataset.service:DatasetService
-     * @description Dataset service. This service provide the entry point to the backend dataset REST api.
+     * @description Dataset general service. This service manage the operations that touches the datasets
+     * @requires data-prep.services.dataset.service:DatasetListService
+     * @requires data-prep.services.dataset.service:DatasetRestService
+     * @requires data-prep.services.preparation.service:PreparationListService
      */
-    function DatasetService($rootScope, $upload, $http, RestURLs) {
+    function DatasetService($q, DatasetListService, DatasetRestService, PreparationListService) {
         var self = this;
+
+        /**
+         * @ngdoc method
+         * @name datasetsList
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description Return the datasets list. See {@link data-prep.services.dataset.service:DatasetListService DatasetListService}.datasets
+         * @returns {object[]} The datasets list
+         */
+        self.datasetsList = function() {
+            return DatasetListService.datasets;
+        };
+
+        /**
+         * @ngdoc method
+         * @name consolidatePreparationsAndDatasets
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description [PRIVATE] Refresh the metadata within the preparations
+         */
+        var consolidatePreparationsAndDatasets = function(response) {
+            PreparationListService.refreshMetadataInfos(self.datasetsList())
+                .then(DatasetListService.refreshDefaultPreparation);
+            return response;
+        };
 
         /**
          * @ngdoc method
          * @name getDatasets
          * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Get the dataset list
-         * @returns {Promise} - the GET call promise
+         * @description Return a promise that resolves the datasets list.
+         * @returns {promise} The pending GET or resolved promise
          */
         self.getDatasets = function() {
-            return $http.get(RestURLs.datasetUrl);
+            return self.datasetsList() ?
+                $q.when(self.datasetsList()) :
+                DatasetListService.refreshDatasets().then(consolidatePreparationsAndDatasets);
+        };
+
+        /**
+         * @ngdoc method
+         * @name delete
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} dataset The dataset to delete
+         * @description Delete a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} delete function
+         * @returns {promise} The pending DELETE promise
+         */
+        self.delete = function(dataset) {
+            return DatasetListService.delete(dataset)
+                .then(consolidatePreparationsAndDatasets);
+        };
+
+        /**
+         * @ngdoc method
+         * @name create
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} dataset The dataset to create
+         * @description Create a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} create function
+         * @returns {promise} The pending DELETE promise
+         */
+        self.create = function(dataset) {
+            var promise = DatasetListService.create(dataset);
+            promise.then(consolidatePreparationsAndDatasets);
+            return promise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name update
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} dataset The dataset to update
+         * @description Update a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} update function
+         * @returns {promise} The pending PUT promise
+         */
+        self.update = function(dataset) {
+            var promise = DatasetListService.update(dataset);
+            promise.then(consolidatePreparationsAndDatasets);
+            return promise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} dataset The target dataset for certification
+         * @description Ask certification for a dataset
+         * @returns {promise} The pending PUT promise
+         */
+        self.processCertification = function(dataset) {
+            return DatasetListService.processCertification(dataset)
+                .then(consolidatePreparationsAndDatasets);
+        };
+
+        /**
+         * @ngdoc method
+         * @name getContent
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {string} datasetId The dataset id
+         * @param {boolean} metadata If false, the metadata will not be returned
+         * @description Get a dataset content. It just call {@link data-prep.services.dataset.service:DatasetRestService DatasetRestService} getContent function
+         * @returns {promise} The pending GET promise
+         */
+        self.getContent = DatasetRestService.getContent;
+
+        /**
+         * @ngdoc method
+         * @name getDatasetByName
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {string} name The dataset name
+         * @description Get the dataset that has the wanted name
+         * @returns {object} The dataset
+         */
+        self.getDatasetByName = function(name) {
+            return _.find(self.datasetsList(), function(dataset) {
+                return dataset.name === name;
+            });
         };
 
         /**
@@ -36,72 +143,23 @@
 
         /**
          * @ngdoc method
-         * @name createDataset
+         * @name getUniqueName
          * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Create the dataset
-         * @param {dataset} dataset - the dataset infos to create
-         * @returns {Promise} - the $upload promise
+         * @param {string} name - the base name
+         * @description Get a unique name from a base name. The existence check is done on the local dataset list. It transform the base name, adding "(number)"
+         * @returns {string} - the unique name
          */
-        self.createDataset = function(dataset) {
-            return $upload.http({
-                url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(dataset.name),
-                headers: {'Content-Type': 'text/plain'},
-                data: dataset.file
-            });
-        };
+        self.getUniqueName = function(name) {
+            var cleanedName = name.replace(/\([0-9]+\)$/, '').trim();
+            var result = cleanedName;
 
-        /**
-         * @ngdoc method
-         * @name updateDataset
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Update the dataset
-         * @param {dataset} dataset - the dataset infos to update
-         * @returns {Promise} - the $upload promise
-         */
-        self.updateDataset = function(dataset) {
-            return $upload.http({
-                url: RestURLs.datasetUrl + '/' + dataset.id + '?name=' + encodeURIComponent(dataset.name),
-                method: 'PUT',
-                headers: {'Content-Type': 'text/plain'},
-                data: dataset.file
-            });
-        };
+            var index = 1;
+            while(self.getDatasetByName(result)) {
+                result = cleanedName + ' (' + index + ')';
+                index ++;
+            }
 
-        /**
-         * @ngdoc method
-         * @name deleteDataset
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Delete the dataset
-         * @param {dataset} dataset - the dataset infos to update
-         * @returns {Promise} - the DELETE promise
-         */
-        self.deleteDataset = function(dataset) {
-            return $http.delete(RestURLs.datasetUrl + '/' + dataset.id);
-        };
-
-        /**
-         * Get the dataset content
-         * @param datasetId - dataset id
-         * @param metadata - if false, the metadata will not be returned
-         */
-        /**
-         * @ngdoc method
-         * @name getDataFromId
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Get the dataset content
-         * @param {string} datasetId - the dataset id
-         * @param {boolean} metadata - if false, the metadata will not be returned
-         * @returns {Promise} - the GET promise
-         */
-        self.getDataFromId = function(datasetId, metadata) {
-            $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata)
-                .then(function(res) {
-                    return res.data;
-                })
-                .finally(function() {
-                    $rootScope.$emit('talend.loading.stop');
-                });
+            return result;
         };
     }
 

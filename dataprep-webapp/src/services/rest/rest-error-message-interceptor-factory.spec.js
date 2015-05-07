@@ -20,6 +20,26 @@ describe('Rest message interceptor factory', function () {
         expect(httpProvider.interceptors).toContain('RestErrorMessageHandler');
     });
 
+    it('should not show message on user cancel', inject(function ($rootScope, $q, $http, MessageService) {
+        //given
+        var canceler = $q.defer();
+        var request = {
+            method: 'POST',
+            url: 'testService',
+            timeout: canceler.promise
+        };
+        $httpBackend.expectPOST('testService').respond(500);
+
+        //when
+        $http(request);
+        canceler.resolve('user cancel');
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).not.toHaveBeenCalled();
+    }));
+
+
     it('should not show alert when status code is not mapped', inject(function ($rootScope, $http, MessageService) {
         //given
         $httpBackend.expectGET('testService').respond(300);
@@ -58,4 +78,18 @@ describe('Rest message interceptor factory', function () {
         //then
         expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
     }));
+
+    it('should show expected error message when dataset deletion cannot be processed', inject(function ($rootScope, $http, MessageService) {
+        //given
+        $httpBackend.expectGET('testService').respond(400, {code:'TDP_API_UNABLE_TO_DELETE_DATASET'});
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'DELETE_DATASET_ERROR');
+    }));
+
 });

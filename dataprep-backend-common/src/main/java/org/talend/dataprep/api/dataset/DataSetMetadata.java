@@ -1,16 +1,8 @@
 package org.talend.dataprep.api.dataset;
 
-import java.io.InputStream;
-import java.io.Writer;
 import java.util.*;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.data.annotation.Id;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.exception.CommonMessages;
-import org.talend.dataprep.exception.Exceptions;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -33,6 +25,8 @@ public class DataSetMetadata {
 
     private final DataSetContent content = new DataSetContent();
 
+    private final DataSetGovernance gov = new DataSetGovernance();
+
     private final String name;
 
     private final String author;
@@ -47,28 +41,6 @@ public class DataSetMetadata {
         this.author = author;
         this.creationDate = creationDate;
         this.rowMetadata = rowMetadata;
-    }
-
-    /**
-     * @param json A valid JSON stream, may be <code>null</code>.
-     * @return The {@link DataSetMetadata} instance parsed from stream or <code>null</code> if parameter is null. If
-     * stream is empty, also returns <code>null</code>.
-     */
-    public static DataSetMetadata from(InputStream json) {
-        if (json == null) {
-            return null;
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.DEFAULT);
-            String jsonString = IOUtils.toString(json).trim();
-            if (jsonString.isEmpty()) {
-                return null; // Empty stream
-            }
-            return mapper.reader(DataSetMetadata.class).readValue(jsonString);
-        } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_PARSE_JSON, e);
-        }
     }
 
     public String getId() {
@@ -87,6 +59,10 @@ public class DataSetMetadata {
         return content;
     }
 
+    public DataSetGovernance getGovernance() {
+        return this.gov;
+    }
+
     public String getName() {
         return name;
     }
@@ -95,8 +71,7 @@ public class DataSetMetadata {
         return author;
     }
 
-    public int getSheetNumber()
-    {
+    public int getSheetNumber() {
         return sheetNumber;
     }
 
@@ -104,25 +79,6 @@ public class DataSetMetadata {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
         calendar.setTimeInMillis(creationDate);
         return calendar.getTime();
-    }
-
-    /**
-     * Writes the current {@link DataSetMetadata} to <code>writer</code> as JSON format.
-     *
-     * @param writer A non-null writer.
-     */
-    public void to(Writer writer) {
-        if (writer == null) {
-            throw new IllegalArgumentException("Writer cannot be null.");
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.DEFAULT);
-            mapper.writer().writeValue(writer, this);
-            writer.flush();
-        } catch (Exception e) {
-            throw Exceptions.User(CommonMessages.UNABLE_TO_SERIALIZE_TO_JSON, e);
-        }
     }
 
     public static class Builder {
@@ -150,6 +106,8 @@ public class DataSetMetadata {
         private boolean qualityAnalyzed;
 
         private int sheetNumber;
+
+        private String formatGuessId;
 
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
@@ -215,6 +173,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder formatGuessId(String formatGuessId) {
+            this.formatGuessId = formatGuessId;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -236,6 +199,9 @@ public class DataSetMetadata {
             content.setNbRecords(size);
             content.setNbLinesInHeader(headerSize);
             content.setNbLinesInFooter(footerSize);
+            if (formatGuessId != null) {
+                content.setFormatGuessId(formatGuessId);
+            }
             // Lifecycle information
             DataSetLifecycle lifecycle = metadata.getLifecycle();
             lifecycle.contentIndexed(contentAnalyzed);
