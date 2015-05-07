@@ -5,9 +5,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIMessages;
+import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
-import org.talend.dataprep.exception.Exceptions;
+import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -42,6 +42,6 @@ public class DatasetCertification extends HystrixCommand<Void> {
         if (statusCode >= 200) {
             return null;
         }
-        throw Exceptions.User(APIMessages.UNABLE_TO_DELETE_DATASET, dataSetId);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_CERTIFY_DATASET);
     }
 }

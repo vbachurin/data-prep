@@ -53,8 +53,11 @@
         };
 
         /**
-         * Ask certification for a dataset
-         * @param dataset - the dataset to ask certifiction for
+         * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Ask certification for a dataset
+         * @param {Object[]} datasets - the dataset to ask certifiction for
          */
         vm.processCertification = function (dataset) {
             DatasetService.processCertification(dataset)

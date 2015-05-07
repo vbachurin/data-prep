@@ -98,24 +98,6 @@ public class DataSetService {
         return author;
     }
 
-    /**
-     * Lists all data set ids handled by service.
-     * 
-     * @param response The HTTP response to interact with caller.
-     */
-    private static void writeDataSetInformation(JsonGenerator generator, DataSetMetadata dataSetMetadata) throws IOException {
-        generator.writeStringField("id", dataSetMetadata.getId()); //$NON-NLS-1
-        generator.writeStringField("name", dataSetMetadata.getName()); //$NON-NLS-1
-        generator.writeStringField("author", dataSetMetadata.getAuthor()); //$NON-NLS-1
-        generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
-        generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
-        generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
-        generator.writeStringField("certification", dataSetMetadata.getGovernance().getCertificationStep().toString()); //$NON-NLS-1
-        synchronized (DATE_FORMAT) {
-            generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1
-        }
-    }
-
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
@@ -253,6 +235,9 @@ public class DataSetService {
                 dataSetMetadataRepository.add(dataSetMetadata);
             } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
                 dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.CERTIFIED) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.NONE);
                 dataSetMetadataRepository.add(dataSetMetadata);
             }
 

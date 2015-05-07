@@ -31,12 +31,11 @@ $border-color: #CECECE;
   }
 
   .inventory-icon>img {
-    position: absolute;
     z-index: 0;
-    top: 5px;
   }
 
   .inventory-icon>img.pin {
+    position: absolute;
     z-index: 1;
     top: 3px;
     left: 9px;
