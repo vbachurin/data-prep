@@ -20,19 +20,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.*;
 import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.JsonErrorCode;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.api.AppendStep;
 import org.talend.dataprep.preparation.exception.PreparationErrorCodes;
 import org.talend.dataprep.preparation.store.ContentCache;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -48,6 +48,9 @@ public class PreparationService {
 
     @Autowired
     private PreparationRepository preparationRepository = null;
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     /**
      * Get user name from Spring Security context
@@ -284,16 +287,14 @@ public class PreparationService {
     @RequestMapping(value = "/preparations/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all preparation related error codes.", notes = "Returns the list of all preparation related error codes.")
     @Timed
-    public String listErrors() {
+    public void listErrors(HttpServletResponse response) {
         try {
             // need to cast the typed dataset errors into mock ones to use json parsing
-            List<JsonErrorCode> errors = new ArrayList<>(PreparationErrorCodes.values().length);
+            List<JsonErrorCodeDescription> errors = new ArrayList<>(PreparationErrorCodes.values().length);
             for (PreparationErrorCodes code : PreparationErrorCodes.values()) {
-                errors.add(new JsonErrorCode(code));
+                errors.add(new JsonErrorCodeDescription(code));
             }
-
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsString(errors);
+            builder.build().writer().writeValue(response.getOutputStream(), errors);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

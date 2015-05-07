@@ -27,6 +27,11 @@
             link: function (scope, iElement, iAttrs, ctrl) {
                 var options, grid, colHeaderElements = [];
 
+                // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
+                // To do so, the text is put into an invisible span so that the span can be measured.
+                var tooltipRuler = angular.element('<span id="tooltip-ruler" style="display:none"></span>');
+                iElement.append(tooltipRuler);
+
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------------COL UTILES--------------------------------------------
                 //------------------------------------------------------------------------------------------------------
@@ -202,13 +207,28 @@
                  * @description [PRIVATE] Attach cell hover for tooltips listeners
                  */
                 var attachTooltipListener = function() {
+                    //show tooltips only if not empty and width is bigger than cell
+                    function shouldShowTooltip(item, column) {
+                        var toolTipText = item[column.id];
+                        if(toolTipText === '') {
+                            return false;
+                        }
+
+                        tooltipRuler.text(toolTipText);
+                        return column.width <= tooltipRuler.width();
+                    }
+
                     //show tooltip on hover
                     grid.onMouseEnter.subscribe(function(e) {
                         var cell = grid.getCellFromEvent(e);
                         var row = cell.row;
                         var column = grid.getColumns()[cell.cell];
-
                         var item = DatagridService.dataView.getItem(row);
+
+                        if (!shouldShowTooltip(item, column)) {
+                            return;
+                        }
+                        
                         var position = {
                             x: e.clientX,
                             y: e.clientY

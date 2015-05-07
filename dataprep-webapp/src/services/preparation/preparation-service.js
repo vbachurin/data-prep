@@ -146,7 +146,7 @@
         self.setName = function(metadata, name) {
             if(self.currentPreparationId) {
                 return PreparationListService.update(self.currentPreparationId, name)
-                    .then(self.refreshPreparations);
+                    .then(consolidatePreparationsAndDatasets);
             }
             else {
                 return self.create(metadata, name);

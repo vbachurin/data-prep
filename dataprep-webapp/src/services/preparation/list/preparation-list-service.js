@@ -61,7 +61,10 @@
          * @description Create a new preparation
          * @returns {promise} The POST promise
          */
-        this.create = PreparationRestService.create;
+        this.create = function(datasetId, name) {
+            return PreparationRestService.create(datasetId, name)
+                .then(self.refreshPreparations);
+        };
 
         /**
          * @ngdoc method
@@ -72,7 +75,10 @@
          * @description Update the current preparation name
          * @returns {promise} The PUT promise
          */
-        this.update = PreparationRestService.update;
+        this.update = function(preparationId, name) {
+            return PreparationRestService.update(preparationId, name)
+                .then(self.refreshPreparations);
+        };
 
         /**
          * @ngdoc method

@@ -240,6 +240,18 @@ describe('Preparation list service controller', function() {
         expect(PreparationRestService.create).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
     }));
 
+    it('should refresh preparations list on creation', inject(function($rootScope, PreparationListService, PreparationRestService) {
+        //given
+        PreparationListService.preparations = preparations;
+
+        //when
+        PreparationListService.create('84ab54cd867f4645a', 'my preparation');
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationRestService.getPreparations).toHaveBeenCalled();
+    }));
+
     it('should update a preparation name', inject(function(PreparationListService, PreparationRestService) {
         //given
         PreparationListService.preparations = preparations;
@@ -249,6 +261,18 @@ describe('Preparation list service controller', function() {
 
         //then
         expect(PreparationRestService.update).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
+    }));
+
+    it('should refresh preparations list on creation', inject(function($rootScope, PreparationListService, PreparationRestService) {
+        //given
+        PreparationListService.preparations = preparations;
+
+        //when
+        PreparationListService.update('84ab54cd867f4645a', 'my preparation');
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationRestService.getPreparations).toHaveBeenCalled();
     }));
 
     it('should delete a preparation', inject(function($rootScope, PreparationListService, PreparationRestService) {
