@@ -5,9 +5,9 @@
      * @ngdoc service
      * @name data-prep.services.export.service:ExportService
      * @description Export service. This service export a loaded dataset to CSV
-     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.playground.service:DatagridService
      */
-    function ExportService(DatasetGridService) {
+    function ExportService(DatagridService) {
         var rowSeparator = '\r\n';
 
         /**
@@ -18,7 +18,7 @@
          * @returns {string[]} - the columns id
          */
         var getColumns = function() {
-            return _.map(DatasetGridService.data.columns, function(col) {
+            return _.map(DatagridService.data.columns, function(col) {
                 return col.id;
             });
         };
@@ -66,7 +66,7 @@
             var serializeLine = serializeLineFn(separator);
 
             var serializedCols = _.map(getColumns(), serializeValue).join(separator);
-            var serializedLines = _.map(DatasetGridService.data.records, serializeLine).join(rowSeparator);
+            var serializedLines = _.map(DatagridService.data.records, serializeLine).join(rowSeparator);
 
             return serializedCols + rowSeparator + serializedLines;
         };
@@ -87,7 +87,7 @@
          */
         this.exportToCSV = function(separator) {
             var csv = serializeToCSV(separator);
-            var name = DatasetGridService.metadata.name + '.csv';
+            var name = DatagridService.metadata.name + '.csv';
 
             return {
                 name: name,

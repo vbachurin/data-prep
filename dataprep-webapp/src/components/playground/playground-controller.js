@@ -7,7 +7,7 @@
      * @description Playground controller.
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.preparation.service:PreviewService
+     * @requires data-prep.services.playground.service:PreviewService
      */
     function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;

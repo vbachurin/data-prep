@@ -67,18 +67,18 @@ describe('Preparation Service', function () {
         ]
     };
 
-    beforeEach(module('data-prep.services.preparation'));
+    beforeEach(module('data-prep.services.playground'));
 
-    beforeEach(inject(function ($q, PreviewService, DatasetGridService, PreparationService) {
-        DatasetGridService.data = data;
+    beforeEach(inject(function ($q, PreviewService, DatagridService, PreparationService) {
+        DatagridService.data = data;
         PreviewService.gridRangeIndex = gridRangeIndex;
         
         spyOn(PreparationService, 'getPreviewDiff').and.returnValue($q.when(diff));
         spyOn(PreparationService, 'getPreviewUpdate').and.returnValue($q.when(diff));
-        spyOn(DatasetGridService, 'updateRecords').and.returnValue(null);
+        spyOn(DatagridService, 'updateRecords').and.returnValue(null);
 
         //simulate datagrid get item to have displayedTdpIds = [0,1,2,6,7,10]
-        spyOn(DatasetGridService.dataView, 'getItem').and.callFake(function(id) {
+        spyOn(DatagridService.dataView, 'getItem').and.callFake(function(id) {
             switch(id) {
                 case 0:
                     return data.records[0];
@@ -97,7 +97,7 @@ describe('Preparation Service', function () {
         });
     }));
 
-    it('should call and display a diff preview', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
+    it('should call and display a diff preview', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
@@ -115,15 +115,15 @@ describe('Preparation Service', function () {
         expect(previewArgs[1]).toBe(previewStep);
         expect(previewArgs[2]).toEqual(displayedTdpIds);
 
-        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
+        expect(DatagridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
     }));
 
-    it('should filter preview records according to active filters', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
+    it('should filter preview records according to active filters', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
 
-        DatasetGridService.addFilter(function(item) {
+        DatagridService.addFilter(function(item) {
             return item.firstname !== 'Tata Bis';
         });
 
@@ -132,13 +132,13 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(filteredModifiedData.records);
+        expect(DatagridService.updateRecords).toHaveBeenCalledWith(filteredModifiedData.records);
 
         //finally
-        DatasetGridService.resetFilters();
+        DatagridService.resetFilters();
     }));
 
-    it('should call and display a update preview', inject(function($rootScope, PreviewService, PreparationService, DatasetGridService) {
+    it('should call and display a update preview', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
@@ -158,7 +158,7 @@ describe('Preparation Service', function () {
         expect(previewArgs[2]).toBe(newParams);
         expect(previewArgs[3]).toEqual(displayedTdpIds);
 
-        expect(DatasetGridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
+        expect(DatagridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
     }));
 
     it('should resolve preview canceler to cancel the pending request', inject(function(PreviewService, PreparationService) {
@@ -177,20 +177,20 @@ describe('Preparation Service', function () {
         expect(previewArgs[3].promise.$$state.value).toBe('user cancel');
     }));
 
-    it('should reinit datagrid with original values', inject(function($rootScope, PreviewService, DatasetGridService) {
+    it('should reinit datagrid with original values', inject(function($rootScope, PreviewService, DatagridService) {
         //given
         var currentStep = {transformation: { stepId: '1'}};
         var previewStep = {transformation: { stepId: '2'}};
 
         PreviewService.getPreviewDiffRecords(currentStep, previewStep);
         $rootScope.$digest();
-        expect(DatasetGridService.updateRecords.calls.count()).toBe(1);
+        expect(DatagridService.updateRecords.calls.count()).toBe(1);
 
         //when
         PreviewService.cancelPreview();
 
         //then
-        expect(DatasetGridService.updateRecords.calls.count()).toBe(2);
-        expect(DatasetGridService.updateRecords.calls.argsFor(1)[0]).toBe(data.records);
+        expect(DatagridService.updateRecords.calls.count()).toBe(2);
+        expect(DatagridService.updateRecords.calls.argsFor(1)[0]).toBe(data.records);
     }));
 });

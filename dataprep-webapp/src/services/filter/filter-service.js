@@ -37,9 +37,9 @@
      * @ngdoc service
      * @name data-prep.services.filter.service:FilterService
      * @description Filter service. This service holds the filters list and provide the entry point to datagrid filters
-     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.playground.service:DatagridService
      */
-    function FilterService(DatasetGridService) {
+    function FilterService(DatagridService) {
         var self = this;
 
         /**
@@ -67,7 +67,7 @@
             var canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
             var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
 
-            return DatasetGridService.getColumnsContaining(regexp, canBeNumeric, canBeBoolean);
+            return DatagridService.getColumnsContaining(regexp, canBeNumeric, canBeBoolean);
         };
 
         /**
@@ -77,7 +77,7 @@
          * @description Remove all the filters and update datagrid filters
          */
         self.removeAllFilters = function() {
-            DatasetGridService.resetFilters();
+            DatagridService.resetFilters();
             self.filters = [];
         };
 
@@ -116,7 +116,7 @@
             }
 
             var filterInfos = new Filter(type, colId, args, filterFn);
-            DatasetGridService.addFilter(filterFn);
+            DatagridService.addFilter(filterFn);
             self.filters.push(filterInfos);
         };
 
@@ -130,7 +130,7 @@
         self.removeFilter = function(filter) {
             var filterIndex = self.filters.indexOf(filter);
             if(filterIndex > -1) {
-                DatasetGridService.removeFilter(filter.filterFn);
+                DatagridService.removeFilter(filter.filterFn);
                 self.filters.splice(filterIndex, 1);
             }
         };
@@ -157,7 +157,7 @@
             }
             var newFilter = new Filter(oldFilter.type, oldFilter.colId, newArgs, newFilterFn);
 
-            DatasetGridService.updateFilter(oldFn, newFilter.filterFn);
+            DatagridService.updateFilter(oldFn, newFilter.filterFn);
             self.filters.splice(index, 1, newFilter);
         };
     }

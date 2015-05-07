@@ -5,11 +5,11 @@
      * @ngdoc controller
      * @name data-prep.transformation-menu.controller:TransformMenuCtrl
      * @description Transformation menu item controller.
-     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.recipe.service:RecipeService
      */
-    function TransformMenuCtrl($rootScope, DatasetGridService, PreparationService, RecipeService) {
+    function TransformMenuCtrl($rootScope, DatagridService, PreparationService, RecipeService) {
         var vm = this;
 
         /**
@@ -51,7 +51,7 @@
                     return PreparationService.getContent('head');
                 })
                 .then(function(response) {
-                    DatasetGridService.updateRecords(response.data.records);
+                    DatagridService.updateRecords(response.data.records);
                     RecipeService.refresh();
                     vm.showModal = false;
                 })

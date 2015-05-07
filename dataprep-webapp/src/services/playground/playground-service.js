@@ -6,13 +6,13 @@
      * @name data-prep.services.playground.service:PlaygroundService
      * @description Playground service. This service provides the entry point to load properly the playground
      * @requires data-prep.services.dataset.service:DatasetService
-     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:MessageService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatasetGridService, FilterService, RecipeService, PreparationService, MessageService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService, PreparationService, MessageService) {
         var self = this;
 
         /**
@@ -111,7 +111,7 @@
 
                         FilterService.removeAllFilters();
                         RecipeService.reset();
-                        DatasetGridService.setDataset(dataset, data);
+                        DatagridService.setDataset(dataset, data);
                     });
             }
             else {
@@ -146,7 +146,7 @@
 
                     FilterService.removeAllFilters();
                     RecipeService.refresh();
-                    DatasetGridService.setDataset(preparation.dataset, response.data);
+                    DatagridService.setDataset(preparation.dataset, response.data);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
@@ -171,7 +171,7 @@
             return PreparationService.getContent(step.transformation.stepId)
                 .then(function(response) {
                     self.currentData = response.data;
-                    DatasetGridService.setDataset(self.currentMetadata, response.data);
+                    DatagridService.setDataset(self.currentMetadata, response.data);
                     RecipeService.disableStepsAfter(step);
                 })
                 .finally(function() {

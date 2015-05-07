@@ -7,8 +7,8 @@
      * @description Recipe controller.
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.preparation.service:PreviewService
      */
     function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;

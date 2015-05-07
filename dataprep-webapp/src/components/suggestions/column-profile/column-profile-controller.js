@@ -1,9 +1,9 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, $timeout, DatasetGridService, StatisticsService, FilterService) {
+    function ColumnProfileCtrl($scope, $timeout, DatagridService, StatisticsService, FilterService) {
         var vm = this;
-        vm.datasetGridService = DatasetGridService;
+        vm.datasetGridService = DatagridService;
         vm.chartConfig = {};
 
         /**
@@ -338,7 +338,7 @@
          */
         $scope.$watch(
             function() {
-                return DatasetGridService.selectedColumn;
+                return DatagridService.selectedColumn;
             },
             function(column) {
                 vm.distribution = null;

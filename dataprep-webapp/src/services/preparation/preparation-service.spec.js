@@ -218,7 +218,7 @@ describe('Preparation Service', function () {
         expect(PreparationListService.update).toHaveBeenCalledWith('6cd546546548a745', 'my preparation');
     }));
 
-    it('should consolidate preparations and datasets on name update', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
+    it('should refresh list and consolidate preparations and datasets on name update', inject(function ($rootScope, PreparationService, PreparationListService, DatasetListService) {
         //given
         PreparationListService.preparations = preparations;
         PreparationService.currentPreparationId = '6cd546546548a745';
@@ -229,6 +229,7 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
+        expect(PreparationListService.refreshPreparations).toHaveBeenCalled();
         expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
         expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
     }));

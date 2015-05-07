@@ -2,14 +2,14 @@ describe('Filter service', function() {
     'use strict';
 
     beforeEach(module('data-prep.services.filter'));
-    beforeEach(inject(function(DatasetGridService) {
-        spyOn(DatasetGridService, 'resetFilters').and.callFake(function() {});
-        spyOn(DatasetGridService, 'addFilter').and.callFake(function() {});
-        spyOn(DatasetGridService, 'removeFilter').and.callFake(function() {});
-        spyOn(DatasetGridService, 'updateFilter').and.callFake(function() {});
+    beforeEach(inject(function(DatagridService) {
+        spyOn(DatagridService, 'resetFilters').and.callFake(function() {});
+        spyOn(DatagridService, 'addFilter').and.callFake(function() {});
+        spyOn(DatagridService, 'removeFilter').and.callFake(function() {});
+        spyOn(DatagridService, 'updateFilter').and.callFake(function() {});
     }));
 
-    it('should remove all filter and remove all datagrid filters', inject(function(FilterService, DatasetGridService) {
+    it('should remove all filter and remove all datagrid filters', inject(function(FilterService, DatagridService) {
         //given
         FilterService.filters.push({});
 
@@ -17,11 +17,11 @@ describe('Filter service', function() {
         FilterService.removeAllFilters();
 
         //then
-        expect(DatasetGridService.resetFilters).toHaveBeenCalled();
+        expect(DatagridService.resetFilters).toHaveBeenCalled();
         expect(FilterService.filters.length).toBe(0);
     }));
 
-    it('should add "contains" filter and add datagrid filter', inject(function(FilterService, DatasetGridService) {
+    it('should add "contains" filter and add datagrid filter', inject(function(FilterService, DatagridService) {
         //given
         expect(FilterService.filters.length).toBe(0);
 
@@ -38,7 +38,7 @@ describe('Filter service', function() {
         expect(filterInfos.filterFn({col1: ' toto est ici'})).toBeTruthy();
         expect(filterInfos.filterFn({col1: ' tata est ici'})).toBeFalsy();
 
-        expect(DatasetGridService.addFilter).toHaveBeenCalledWith(filterInfos.filterFn);
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfos.filterFn);
     }));
 
     it('should add "contains" filter with wildcard', inject(function(FilterService) {
@@ -56,7 +56,7 @@ describe('Filter service', function() {
         expect(filterInfos.filterFn({col1: ' tata est ici'})).toBeFalsy();
     }));
 
-    it('should remove filter and remove datagrid filter', inject(function(FilterService, DatasetGridService) {
+    it('should remove filter and remove datagrid filter', inject(function(FilterService, DatagridService) {
         //given
         FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
         FilterService.addFilter('contains', 'col2', {phrase: 'Toto'});
@@ -69,10 +69,10 @@ describe('Filter service', function() {
         //then
         expect(FilterService.filters.length).toBe(1);
         expect(FilterService.filters[0]).toBe(filter2);
-        expect(DatasetGridService.removeFilter).toHaveBeenCalledWith(filter1.filterFn);
+        expect(DatagridService.removeFilter).toHaveBeenCalledWith(filter1.filterFn);
     }));
 
-    it('should do nothing on remove if filter is unknown', inject(function(FilterService, DatasetGridService) {
+    it('should do nothing on remove if filter is unknown', inject(function(FilterService, DatagridService) {
         //given
         FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
         FilterService.addFilter('contains', 'col2', {phrase: 'Toto'});
@@ -80,14 +80,14 @@ describe('Filter service', function() {
         var filter1 = FilterService.filters[0];
         FilterService.removeFilter(filter1);
         expect(FilterService.filters.length).toBe(1);
-        expect(DatasetGridService.removeFilter.calls.count()).toBe(1);
+        expect(DatagridService.removeFilter.calls.count()).toBe(1);
 
         //when
         FilterService.removeFilter(filter1);
 
         //then
         expect(FilterService.filters.length).toBe(1);
-        expect(DatasetGridService.removeFilter.calls.count()).toBe(1);
+        expect(DatagridService.removeFilter.calls.count()).toBe(1);
     }));
 
     it('should return filter value info for "contains" filter', inject(function(FilterService) {
@@ -102,7 +102,7 @@ describe('Filter service', function() {
         expect(value).toBe('Toto');
     }));
 
-    it('should update filter and update datagrid filter', inject(function(FilterService, DatasetGridService) {
+    it('should update filter and update datagrid filter', inject(function(FilterService, DatagridService) {
         //given
         FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
         FilterService.addFilter('contains', 'col2', {phrase: 'Toto'});
@@ -121,6 +121,6 @@ describe('Filter service', function() {
         expect(newFilter2.colId).toBe('col2');
         expect(newFilter2.args.phrase).toBe('Tata');
         expect(newFilter2.value).toBe('Tata');
-        expect(DatasetGridService.updateFilter).toHaveBeenCalledWith(filter2.filterFn, newFilter2.filterFn);
+        expect(DatagridService.updateFilter).toHaveBeenCalledWith(filter2.filterFn, newFilter2.filterFn);
     }));
 });
