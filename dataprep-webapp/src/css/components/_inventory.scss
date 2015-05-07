@@ -23,9 +23,8 @@ $border-color: #CECECE;
   }
 
   .inventory-icon {
-    width: 64px;
-    height: 77px;
-    padding: 5px;
+    width: 60px;
+    padding: 10px 5px 10px 15px;
     border-bottom: 1px solid $border-color;
     position: relative;
   }
@@ -37,8 +36,8 @@ $border-color: #CECECE;
   .inventory-icon>img.pin {
     position: absolute;
     z-index: 1;
-    top: 3px;
-    left: 9px;
+    top: 5px;
+    left: 11px;
   }
 
   .inventory-title {
