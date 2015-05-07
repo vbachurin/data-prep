@@ -40,7 +40,7 @@
                 return;
             }
             console.log("manage this dataset draft type");
-            PlaygroundService.initPlayground(dataset,true);
+            PlaygroundService.initPlayground(dataset,true ).then(PlaygroundService.show);
         };
 
         /**
