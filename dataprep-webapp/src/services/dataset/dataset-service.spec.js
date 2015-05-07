@@ -29,6 +29,17 @@ describe('Dataset Service', function () {
         DatasetListService.datasets = null;
     }));
 
+    it('should return dataset list from ListService', inject(function (DatasetService, DatasetListService) {
+        //given
+        DatasetListService.datasets = datasets;
+
+        //when
+        var result = DatasetService.datasetsList();
+
+        //then
+        expect(result).toBe(datasets);
+    }));
+
     it('should adapt infos to dataset object for upload', inject(function (DatasetService) {
         //given
         var file = {

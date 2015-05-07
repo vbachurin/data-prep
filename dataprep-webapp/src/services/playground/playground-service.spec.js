@@ -45,7 +45,7 @@ describe('Playground Service', function () {
         var dataset = {id: 'e85afAa78556d5425bc2'};
         var assertNewPreparationInitialization;
 
-        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatasetGridService, RestURLs) {
+        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatasetGridService) {
             assertNewPreparationInitialization = function() {
                 expect(PlaygroundService.currentMetadata).toEqual(dataset);
                 expect(PlaygroundService.currentData).toEqual(content);

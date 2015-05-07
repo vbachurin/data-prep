@@ -4,7 +4,9 @@
     /**
      * @ngdoc service
      * @name data-prep.services.preparation.service:PreparationListService
-     * @description Preparation list service. This service holds the preparations list and adapt them for the application.
+     * @description Preparation list service. This service holds the preparations list and adapt them for the application.<br/>
+     * <b style="color: red;">WARNING : do NOT use this service directly.
+     * {@link data-prep.services.preparation.service:PreparationService PreparationService} must be the only entry point for preparations</b>
      * @requires data-prep.services.preparation.service:PreparationRestService
      */
     function PreparationListService($q, PreparationRestService) {
@@ -49,27 +51,6 @@
         self.getPreparationsPromise = function() {
             return self.preparations === null ? self.refreshPreparations() : $q.when(self.preparations);
         };
-
-        /**
-         * @ngdoc method
-         * @name getContent
-         * @methodOf data-prep.services.preparation.service:PreparationListService
-         * @param {string} preparationId The preparation id to load
-         * @param {string} version The version (step id) to load
-         * @description Get preparation records at the specific 'version' step
-         * @returns {promise} The GET promise
-         */
-        this.getContent = PreparationRestService.getContent;
-
-        /**
-         * @ngdoc method
-         * @name getDetails
-         * @methodOf data-prep.services.preparation.service:PreparationListService
-         * @param {string} preparationId The preparation id to load
-         * @description Get current preparation details
-         * @returns {promise} The GET promise
-         */
-        this.getDetails = PreparationRestService.getDetails;
 
         /**
          * @ngdoc method

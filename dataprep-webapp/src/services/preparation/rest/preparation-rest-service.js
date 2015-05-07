@@ -4,7 +4,9 @@
     /**
      * @ngdoc service
      * @name data-prep.services.preparation.service:PreparationRestService
-     * @description Preparation service. This service provides the entry point to preparation REST api. It holds the loaded preparation.
+     * @description Preparation service. This service provides the entry point to preparation REST api. It holds the loaded preparation.<br/>
+     * <b style="color: red;">WARNING : do NOT use this service directly.
+     * {@link data-prep.services.preparation.service:PreparationService PreparationService} must be the only entry point for preparations</b>
      */
     function PreparationRestService($http, RestURLs) {
 

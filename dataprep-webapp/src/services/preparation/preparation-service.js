@@ -20,6 +20,9 @@
          */
         self.currentPreparationId = null;
 
+        //---------------------------------------------------------------------------------
+        //------------------------------------GET/REFRESH----------------------------------
+        //---------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name preparationsList
@@ -68,6 +71,9 @@
                 PreparationListService.refreshPreparations().then(consolidatePreparationsAndDatasets);
         };
 
+        //---------------------------------------------------------------------------------
+        //----------------------------------DETAILS/CONTENT--------------------------------
+        //---------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name getContent
@@ -77,7 +83,7 @@
          * @returns {promise} The GET promise
          */
         self.getContent = function(version) {
-            return PreparationListService.getContent(self.currentPreparationId, version);
+            return PreparationRestService.getContent(self.currentPreparationId, version);
         };
 
         /**
@@ -88,9 +94,12 @@
          * @returns {promise} The GET promise
          */
         self.getDetails = function() {
-            return PreparationListService.getDetails(self.currentPreparationId);
+            return PreparationRestService.getDetails(self.currentPreparationId);
         };
 
+        //---------------------------------------------------------------------------------
+        //-----------------------------------------LIFE------------------------------------
+        //---------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name create
@@ -110,6 +119,23 @@
 
         /**
          * @ngdoc method
+         * @name delete
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} preparation The preparation to delete
+         * @description Delete a preparation
+         * @returns {promise} The DELETE promise
+         */
+        self.delete = function(preparation) {
+            return PreparationListService.delete(preparation)
+                .then(consolidatePreparationsAndDatasets);
+        };
+
+        //---------------------------------------------------------------------------------
+        //----------------------------------------UPDATE-----------------------------------
+        //---------------------------------------------------------------------------------
+
+        /**
+         * @ngdoc method
          * @name setName
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {object} metadata The dataset metadata
@@ -125,19 +151,6 @@
             else {
                 return self.create(metadata, name);
             }
-        };
-
-        /**
-         * @ngdoc method
-         * @name delete
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {object} preparation The preparation to delete
-         * @description Delete a preparation
-         * @returns {promise} The DELETE promise
-         */
-        self.delete = function(preparation) {
-            return PreparationListService.delete(preparation)
-                .then(consolidatePreparationsAndDatasets);
         };
 
         /**
