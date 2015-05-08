@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
@@ -35,8 +36,9 @@ import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.JsonErrorCode;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
@@ -106,11 +108,6 @@ public class DataSetService {
         return author;
     }
 
-    /**
-     * Lists all data set ids handled by service.
-     * 
-     * @param response The HTTP response to interact with caller.
-     */
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
@@ -184,6 +181,7 @@ public class DataSetService {
             return; // No data set, returns empty content.
         }
 
+
         // if it's a draft and draft parameter set to true we don't mind and return it
         // as we need more details
         if (!dataSetMetadata.isDraft() && !preview) {
@@ -200,6 +198,11 @@ public class DataSetService {
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
                 return;
             }
+            if (dataSetMetadata.getLifecycle().error()) {
+                // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
+                                                                                                                          dataSetId));
+            }
         }
 
         // it's the first preview and sheet not yet set correctly
@@ -210,11 +213,14 @@ public class DataSetService {
             dataSetMetadata.setSheetName(sheetName);
         }
 
-        if (preview) {
+        if (preview)
+        {
             String sheetName = dataSetMetadata.getSheetName();
-            List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(sheetName);
-            dataSetMetadata.getRow().setColumns(columnMetadatas);
+            List<ColumnMetadata> columnMetadatas =
+                dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get( sheetName );
+            dataSetMetadata.getRow().setColumns( columnMetadatas );
         }
+
 
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
@@ -247,6 +253,38 @@ public class DataSetService {
             }
         } finally {
             lock.unlock();
+        }
+    }
+
+    @RequestMapping(value = "/datasets/{id}/processcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Ask certification for a dataset", notes = "Advance certification step of this dataset.")
+    @Timed
+    public void processCertification(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Ask certification for dataset #{}", dataSetId);
+        }
+
+        DistributedLock datasetLock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        datasetLock.lock();
+        try {
+            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+            LOG.trace("Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+
+            if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.CERTIFIED) {
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.NONE);
+                dataSetMetadataRepository.add(dataSetMetadata);
+            }
+
+            LOG.debug("New certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+        } finally {
+            datasetLock.unlock();
         }
     }
 
@@ -327,18 +365,14 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all dataset related error codes.", notes = "Returns the list of all dataset related error codes.")
     @Timed
-    public String listErrors() {
+    public void listErrors(HttpServletResponse response) {
         try {
-
             // need to cast the typed dataset errors into mock ones to use json parsing
-            List<JsonErrorCode> errors = new ArrayList<>(DataSetErrorCodes.values().length);
+            List<JsonErrorCodeDescription> errors = new ArrayList<>(DataSetErrorCodes.values().length);
             for (DataSetErrorCodes code : DataSetErrorCodes.values()) {
-                errors.add(new JsonErrorCode(code));
+                errors.add(new JsonErrorCodeDescription(code));
             }
-
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsString(errors);
-
+            builder.build().writer().writeValue(response.getOutputStream(), errors);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

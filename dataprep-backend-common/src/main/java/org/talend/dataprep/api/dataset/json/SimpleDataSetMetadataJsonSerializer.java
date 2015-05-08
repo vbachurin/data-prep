@@ -55,9 +55,8 @@ public class SimpleDataSetMetadataJsonSerializer {
             generator.writeNumberField("records", dataSetMetadata.getContent().getNbRecords()); //$NON-NLS-1
             generator.writeNumberField("nbLinesHeader", dataSetMetadata.getContent().getNbLinesInHeader()); //$NON-NLS-1
             generator.writeNumberField("nbLinesFooter", dataSetMetadata.getContent().getNbLinesInFooter()); //$NON-NLS-1
-
             generator.writeBooleanField("draft", dataSetMetadata.isDraft()); //$NON-NLS-1
-
+            generator.writeStringField("certification", dataSetMetadata.getGovernance().getCertificationStep().toString()); //$NON-NLS-1
             if (dataSetMetadata.getContent().getFormatGuessId() != null) {
                 FormatGuess formatGuess = applicationContext.getBean(dataSetMetadata.getContent().getFormatGuessId(), //
                         FormatGuess.class);

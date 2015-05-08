@@ -4,170 +4,86 @@
     /**
      * @ngdoc service
      * @name data-prep.services.preparation.service:PreparationService
-     * @description Preparation service. This service provides the entry point to preparation REST api. It holds the loaded preparation.
+     * @description Preparation list service. his service manage the operations that touches the preparations
+     * @requires data-prep.services.preparation.service:PreparationListService
+     * @requires data-prep.services.preparation.service:PreparationRestService
+     * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function PreparationService($http, RestURLs) {
+    function PreparationService($q, PreparationListService, PreparationRestService, DatasetListService) {
         var self = this;
 
         /**
          * @ngdoc property
-         * @name currentPreparation
+         * @name currentPreparationId
          * @propertyOf data-prep.services.preparation.service:PreparationService
-         * @description the currently loaded preparation
+         * @description The currently loaded preparation
          */
-        this.currentPreparation = null;
+        self.currentPreparationId = null;
+
+        //---------------------------------------------------------------------------------
+        //------------------------------------GET/REFRESH----------------------------------
+        //---------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name preparationsList
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description Return the preparations list. See {@link data-prep.services.preparation.service:PreparationListService PreparationListService}.preparations
+         * @returns {object[]} The preparations list
+         */
+        self.preparationsList = function() {
+            return PreparationListService.preparations;
+        };
 
         /**
          * @ngdoc method
-         * @name adaptTransformAction
+         * @name refreshPreparationsMetadata
          * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} action - the action to adapt
-         * @param {object} parameters - the action parameters
-         * @description [PRIVATE] Adapt transformation action to api
-         * @returns {object} - the adapted action
+         * @description [PRIVATE] Refresh the default preparation within each dataset
          */
-        var adaptTransformAction = function(action, parameters) {
-            return {
-                actions: [{
-                    action: action,
-                    parameters: parameters
-                }]
-            };
+        var consolidatePreparationsAndDatasets = function(response) {
+            DatasetListService.refreshDefaultPreparation(self.preparationsList())
+                .then(PreparationListService.refreshMetadataInfos);
+            return response;
+        };
+
+        /**
+         * @ngdoc method
+         * @name refreshPreparations
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description Refresh the preparations list
+         * @returns {promise} The process promise
+         */
+        self.refreshPreparations = function() {
+            return PreparationListService.refreshPreparations()
+                .then(consolidatePreparationsAndDatasets);
         };
 
         /**
          * @ngdoc method
          * @name getPreparations
          * @methodOf data-prep.services.preparation.service:PreparationService
-         * @description Get All the user's preparations
-         * @returns {promise} - the GET promise
+         * @description Return preparation promise that resolve current preparation list if not empty, or call GET service
+         * @returns {promise} The process promise
          */
-        this.getPreparations = function() {
-            return $http.get(RestURLs.preparationUrl);
+        self.getPreparations = function() {
+            return self.preparationsList() !== null ?
+                $q.when(self.preparationsList()) :
+                PreparationListService.refreshPreparations().then(consolidatePreparationsAndDatasets);
         };
 
-        /**
-         * @ngdoc method
-         * @name create
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} datasetId - the dataset id
-         * @param {string} name - the preparation name
-         * @description Create a new preparation
-         * @returns {promise} - the POST promise
-         */
-        this.create = function(datasetId, name) {
-            var request = {
-                method: 'POST',
-                url: RestURLs.preparationUrl,
-                data: {
-                    name: name,
-                    dataSetId: datasetId
-                }
-            };
-
-            return $http(request).then(function(resp) {
-                self.currentPreparation = resp.data;
-            });
-        };
-
-        /**
-         * @ngdoc method
-         * @name update
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} name - the new preparation name
-         * @description Update the current preparation name
-         * @returns {promise} - the PUT promise
-         */
-        this.update = function(name) {
-            var request = {
-                method: 'PUT',
-                url: RestURLs.preparationUrl + '/' + self.currentPreparation,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {name: name}
-            };
-
-            return $http(request);
-        };
-
-        /**
-         * @ngdoc method
-         * @name delete
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {object} preparation - the preparation to delete
-         * @description Delete a preparation
-         * @returns {promise} - the DELETE promise
-         */
-        this.delete = function(preparation) {
-            return $http.delete(RestURLs.preparationUrl + '/' + preparation.id);
-        };
-
-        /**
-         * @ngdoc method
-         * @name appendStep
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} datasetId - the dataset id for creation
-         * @param {string} action - the action to append
-         * @param {object} parameters - the action parameters
-         * @description Append a new transformation in the current preparation. If the preparation does not exists yet, it is created
-         * @returns {promise} - the POST promise
-         */
-        this.appendStep = function(datasetId, action, parameters) {
-            var appendOperation = function() {
-                var actionParam = adaptTransformAction(action, parameters);
-                var request = {
-                    method: 'POST',
-                    url: RestURLs.preparationUrl + '/' + self.currentPreparation + '/actions',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    data: actionParam
-                };
-
-                return $http(request);
-            };
-
-            if(!self.currentPreparation) {
-                return self.create(datasetId, 'New preparation').then(appendOperation);
-            }
-            return appendOperation();
-        };
-
-        /**
-         * @ngdoc method
-         * @name updateStep
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} stepId The step to update
-         * @param {string} action The action name
-         * @param {object} parameters The new action parameters
-         * @description Update a step with new parameters
-         * @returns {promise} - the PUT promise
-         */
-        this.updateStep = function(stepId, action, parameters) {
-            var actionParam = adaptTransformAction(action, parameters);
-            var request = {
-                method: 'PUT',
-                url: RestURLs.preparationUrl + '/' + self.currentPreparation + '/actions/' + stepId,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: actionParam
-            };
-
-            return $http(request);
-        };
-
+        //---------------------------------------------------------------------------------
+        //----------------------------------DETAILS/CONTENT--------------------------------
+        //---------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name getContent
          * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {string} version - the version (step id) to load
+         * @param {string} version The version (step id) to load
          * @description Get preparation records at the specific 'version' step
-         * @returns {promise} - the GET promise
+         * @returns {promise} The GET promise
          */
-        this.getContent = function(version) {
-            return $http.get(RestURLs.preparationUrl + '/' + self.currentPreparation + '/content?version=' + version);
+        self.getContent = function(version) {
+            return PreparationRestService.getContent(self.currentPreparationId, version);
         };
 
         /**
@@ -175,10 +91,123 @@
          * @name getDetails
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @description Get current preparation details
-         * @returns {promise} - the GET promise
+         * @returns {promise} The GET promise
          */
-        this.getDetails = function() {
-            return $http.get(RestURLs.preparationUrl + '/' + self.currentPreparation + '/details');
+        self.getDetails = function() {
+            return PreparationRestService.getDetails(self.currentPreparationId);
+        };
+
+        //---------------------------------------------------------------------------------
+        //-----------------------------------------LIFE------------------------------------
+        //---------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name create
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} metadata The dataset metadata
+         * @param {string} name The preparation name
+         * @description Create a new preparation, and keep the current preparation id
+         * @returns {promise} The POST promise
+         */
+        self.create = function(metadata, name) {
+            return PreparationListService.create(metadata.id, name)
+                .then(consolidatePreparationsAndDatasets)
+                .then(function(resp) {
+                    self.currentPreparationId = resp.data;
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name delete
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} preparation The preparation to delete
+         * @description Delete a preparation
+         * @returns {promise} The DELETE promise
+         */
+        self.delete = function(preparation) {
+            return PreparationListService.delete(preparation)
+                .then(consolidatePreparationsAndDatasets);
+        };
+
+        //---------------------------------------------------------------------------------
+        //----------------------------------------UPDATE-----------------------------------
+        //---------------------------------------------------------------------------------
+
+        /**
+         * @ngdoc method
+         * @name setName
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} metadata The dataset metadata
+         * @param {string} name The preparation name
+         * @description Create a new preparation if no preparation is loaded, update the name otherwise
+         * @returns {promise} The POST promise
+         */
+        self.setName = function(metadata, name) {
+            if(self.currentPreparationId) {
+                return PreparationListService.update(self.currentPreparationId, name)
+                    .then(consolidatePreparationsAndDatasets);
+            }
+            else {
+                return self.create(metadata, name);
+            }
+        };
+
+        /**
+         * @ngdoc method
+         * @name updateStep
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} step The step to update
+         * @param {object} parameters The new action parameters
+         * @description Update a step with new parameters
+         * @returns {promise} The PUT promise
+         */
+        self.updateStep = function(step, parameters) {
+            parameters = parameters || {};
+            /*jshint camelcase: false */
+            parameters.column_name = step.column.id;
+
+            return PreparationListService.updateStep(self.currentPreparationId, step, parameters);
+        };
+
+        /**
+         * @ngdoc method
+         * @name appendStep
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} metadata The target metadata
+         * @param {object} action The action name
+         * @param {object} column The target column
+         * @param {object} parameters The new action parameters
+         * @description Append a step. If the preparation does not exists, it is created
+         * @returns {promise} The PUT promise
+         */
+        self.appendStep = function(metadata, action, column, parameters) {
+            parameters = parameters || {};
+            /*jshint camelcase: false */
+            parameters.column_name = column.id;
+
+            var promise = self.currentPreparationId ? $q.when(self.currentPreparationId) : self.create(metadata, 'New preparation');
+
+            return promise.then(function() {
+                return PreparationListService.appendStep(self.currentPreparationId, action, parameters);
+            });
+        };
+
+        /**
+         * @ngdoc method
+         * @name paramsHasChanged
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} step The step to update
+         * @param {object} newParams The new action parameters
+         * @description Check if the parameters has changed
+         * @returns {boolean} true if parameters has changed, false otherwise
+         */
+        self.paramsHasChanged = function(step, newParams) {
+            newParams = newParams || {};
+            /*jshint camelcase: false */
+            newParams.column_name = step.column.id;
+
+            return JSON.stringify(newParams) !== JSON.stringify(step.actionParameters.parameters);
         };
 
         //---------------------------------------------------------------------------------
@@ -188,60 +217,31 @@
          * @ngdoc method
          * @name getPreviewDiff
          * @methodOf data-prep.services.preparation.service:PreparationService
-         * @description POST preview diff between 2 unchanged steps of a recipe
+         * @param {string} currentStep The current loaded step
+         * @param {string} previewStep The target preview step
+         * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {string} canceler The canceler promise
+         * @description POST Preview diff between 2 unchanged steps of a recipe
          * @returns {promise} The POST promise
          */
-        this.getPreviewDiff = function(currentStep, previewStep, recordsTdpId, canceler) {
-            var params = {
-                tdpIds: recordsTdpId,
-                currentStepId: currentStep.transformation.stepId,
-                previewStepId: previewStep.transformation.stepId,
-                preparationId: self.currentPreparation
-            };
-
-            var request = {
-                method: 'POST',
-                url: RestURLs.previewUrl + '/diff',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: params,
-                timeout: canceler.promise
-            };
-
-            return $http(request);
+        self.getPreviewDiff = function(currentStep, previewStep, recordsTdpId, canceler) {
+            return PreparationRestService.getPreviewDiff(self.currentPreparationId, currentStep, previewStep, recordsTdpId, canceler);
         };
 
         /**
          * @ngdoc method
          * @name getPreviewUpdate
          * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {string} currentStep The current loaded step
+         * @param {string} updateStep The target step to update
+         * @param {string} newParams The new parameters
+         * @param {string} recordsTdpId The records TDP ids to preview
+         * @param {string} canceler The canceler promise
          * @description POST preview diff between 2 same actions but with 1 updated step
          * @returns {promise} The POST promise
          */
         this.getPreviewUpdate = function(currentStep, updateStep, newParams, recordsTdpId, canceler) {
-            var actionParam = {
-                action : {
-                    action: updateStep.actionParameters.action,
-                    parameters: newParams
-                },
-                tdpIds: recordsTdpId,
-                currentStepId: currentStep.transformation.stepId,
-                updateStepId: updateStep.transformation.stepId,
-                preparationId: self.currentPreparation
-            };
-
-            var request = {
-                method: 'POST',
-                url: RestURLs.previewUrl + '/update',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: actionParam,
-                timeout: canceler.promise
-            };
-
-            return $http(request);
+            return PreparationRestService.getPreviewUpdate(self.currentPreparationId, currentStep, updateStep, newParams, recordsTdpId, canceler);
         };
     }
 

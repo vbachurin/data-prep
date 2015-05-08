@@ -10,12 +10,14 @@
      * @requires data-prep.services.dataset
      * @requires data-prep.services.preparation
      * @requires data-prep.services.filter
+     * @requires data-prep.services.playground
      */
     angular.module('data-prep.datagrid', [
         'data-prep.datagrid-tooltip',
         'data-prep.datagrid-header',
         'data-prep.services.dataset',
         'data-prep.services.preparation',
-        'data-prep.services.filter'
+        'data-prep.services.filter',
+        'data-prep.services.playground'
     ]);
 })();

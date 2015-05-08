@@ -1,13 +1,16 @@
-package org.talend.dataprep.exception;
+package org.talend.dataprep.exception.json;
 
+import java.util.Collection;
 import java.util.List;
+
+import org.talend.dataprep.exception.ErrorCode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Class used to ease ErrorCode json manipulation.
+ * Class used to ease an ErrorCode description json manipulation.
  */
-public class JsonErrorCode implements ErrorCode {
+public class JsonErrorCodeDescription implements ErrorCode {
 
     /** The error code product. */
     private String product;
@@ -24,20 +27,20 @@ public class JsonErrorCode implements ErrorCode {
 
     /** The error code context. */
     @JsonProperty("context")
-    private List<String> expectedContextEntries;
+    private Collection<String> expectedContextEntries;
 
     /**
      * Default empty constructor needed for json parsing.
      */
-    public JsonErrorCode() {
+    public JsonErrorCodeDescription() {
     }
 
     /**
-     * Copy contstructor.
+     * Copy constructor.
      * 
      * @param copy the error code to copy.
      */
-    public JsonErrorCode(ErrorCode copy) {
+    public JsonErrorCodeDescription(ErrorCode copy) {
         this.product = copy.getProduct();
         this.group = copy.getGroup();
         this.code = copy.getCode();
@@ -106,10 +109,10 @@ public class JsonErrorCode implements ErrorCode {
     }
 
     /**
-     * @return the error code expected contexte entries.
+     * @return the error code expected context entries.
      */
     @Override
-    public List<String> getExpectedContextEntries() {
+    public Collection<String> getExpectedContextEntries() {
         return this.expectedContextEntries;
     }
 

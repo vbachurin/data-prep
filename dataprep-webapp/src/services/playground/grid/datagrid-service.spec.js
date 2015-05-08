@@ -1,4 +1,4 @@
-describe('Dataset grid service', function() {
+describe('Datagrid service', function() {
     'use strict';
 
     function DataViewMock(){
@@ -20,38 +20,38 @@ describe('Dataset grid service', function() {
         };
     }
 
-    beforeEach(module('data-prep.services.dataset'));
+    beforeEach(module('data-prep.services.playground'));
 
-    it('should set metadata and data', inject(function(DatasetGridService) {
+    it('should set metadata and data', inject(function(DatagridService) {
         //given
         var metadata = {name: 'my dataset'};
         var data = {columns: [], records: []};
 
         //when
-        DatasetGridService.setDataset(metadata, data);
+        DatagridService.setDataset(metadata, data);
 
         //then
-        expect(DatasetGridService.metadata).toBe(metadata);
-        expect(DatasetGridService.data).toBe(data);
+        expect(DatagridService.metadata).toBe(metadata);
+        expect(DatagridService.data).toBe(data);
     }));
 
-    it('should update data records', inject(function(DatasetGridService) {
+    it('should update data records', inject(function(DatagridService) {
         //given
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {columns: [], records: []};
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {columns: [], records: []};
 
         var records = [{col: 'value'}];
 
         //when
-        DatasetGridService.updateRecords(records);
+        DatagridService.updateRecords(records);
 
         //then
-        expect(DatasetGridService.data.records).toBe(records);
+        expect(DatagridService.data.records).toBe(records);
     }));
 
-    it('should return every column id', inject(function(DatasetGridService) {
+    it('should return every column id', inject(function(DatagridService) {
         //given
-        DatasetGridService.data = {columns: [
+        DatagridService.data = {columns: [
             {id: 'col1', type: 'string'},
             {id: 'col2', type: 'numeric'},
             {id: 'col3', type: 'integer'},
@@ -62,15 +62,15 @@ describe('Dataset grid service', function() {
         ], records: []};
 
         //when
-        var allCols = DatasetGridService.getColumns(false, false);
+        var allCols = DatagridService.getColumns(false, false);
 
         //then
         expect(allCols).toEqual(['col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7']);
     }));
 
-    it('should return non numeric col ids', inject(function(DatasetGridService) {
+    it('should return non numeric col ids', inject(function(DatagridService) {
         //given
-        DatasetGridService.data = {columns: [
+        DatagridService.data = {columns: [
             {id: 'col1', type: 'string'},
             {id: 'col2', type: 'numeric'},
             {id: 'col3', type: 'integer'},
@@ -81,15 +81,15 @@ describe('Dataset grid service', function() {
         ], records: []};
 
         //when
-        var allCols = DatasetGridService.getColumns(true, false);
+        var allCols = DatagridService.getColumns(true, false);
 
         //then
         expect(allCols).toEqual(['col1', 'col6', 'col7']);
     }));
 
-    it('should return non boolean col ids', inject(function(DatasetGridService) {
+    it('should return non boolean col ids', inject(function(DatagridService) {
         //given
-        DatasetGridService.data = {columns: [
+        DatagridService.data = {columns: [
             {id: 'col1', type: 'string'},
             {id: 'col2', type: 'numeric'},
             {id: 'col3', type: 'integer'},
@@ -100,15 +100,15 @@ describe('Dataset grid service', function() {
         ], records: []};
 
         //when
-        var allCols = DatasetGridService.getColumns(false, true);
+        var allCols = DatagridService.getColumns(false, true);
 
         //then
         expect(allCols).toEqual(['col1', 'col2', 'col3', 'col4', 'col5', 'col7']);
     }));
 
-    it('should return non boolean and non numeric col ids', inject(function(DatasetGridService) {
+    it('should return non boolean and non numeric col ids', inject(function(DatagridService) {
         //given
-        DatasetGridService.data = {columns: [
+        DatagridService.data = {columns: [
             {id: 'col1', type: 'string'},
             {id: 'col2', type: 'numeric'},
             {id: 'col3', type: 'integer'},
@@ -119,33 +119,33 @@ describe('Dataset grid service', function() {
         ], records: []};
 
         //when
-        var allCols = DatasetGridService.getColumns(true, true);
+        var allCols = DatagridService.getColumns(true, true);
 
         //then
         expect(allCols).toEqual(['col1', 'col7']);
     }));
 
-    it('should add filter', inject(function(DatasetGridService) {
+    it('should add filter', inject(function(DatagridService) {
         //given
-        expect(DatasetGridService.filters.length).toBe(0);
+        expect(DatagridService.filters.length).toBe(0);
         var filterFn = function(item) {
             return item.col1.indexOf('toto') > -1;
         };
 
         //when
-        DatasetGridService.addFilter(filterFn);
+        DatagridService.addFilter(filterFn);
 
         //then
-        expect(DatasetGridService.filters.length).toBe(1);
-        var predicate = DatasetGridService.filters[0];
+        expect(DatagridService.filters.length).toBe(1);
+        var predicate = DatagridService.filters[0];
         expect(predicate({col1: 'mon toto'})).toBe(true);
         expect(predicate({col1: 'ma tata'})).toBe(false);
     }));
 
-    it('should set successive filters to DataView', inject(function(DatasetGridService) {
+    it('should set successive filters to DataView', inject(function(DatagridService) {
         //given
         var dataViewMock = new DataViewMock();
-        DatasetGridService.dataView = dataViewMock;
+        DatagridService.dataView = dataViewMock;
         var filterFnCol1 = function(item) {
             return item.col1.indexOf('toto') > -1;
         };
@@ -154,8 +154,8 @@ describe('Dataset grid service', function() {
         };
 
         //when
-        DatasetGridService.addFilter(filterFnCol1);
-        DatasetGridService.addFilter(filterFnCol2);
+        DatagridService.addFilter(filterFnCol1);
+        DatagridService.addFilter(filterFnCol2);
 
         //then
         expect(dataViewMock.filter({
@@ -169,18 +169,18 @@ describe('Dataset grid service', function() {
         })).toBe(false);
     }));
 
-    it('should reset filters', inject(function(DatasetGridService) {
+    it('should reset filters', inject(function(DatagridService) {
         //given
-        DatasetGridService.filters = [{}, {}];
+        DatagridService.filters = [{}, {}];
 
         //when
-        DatasetGridService.resetFilters();
+        DatagridService.resetFilters();
 
         //then
-        expect(DatasetGridService.filters.length).toBe(0);
+        expect(DatagridService.filters.length).toBe(0);
     }));
 
-    it('should remove filter', inject(function(DatasetGridService) {
+    it('should remove filter', inject(function(DatagridService) {
         //given
         var filterFnCol1 = function(item) {
             return item.col1.indexOf('toto') > -1;
@@ -188,19 +188,19 @@ describe('Dataset grid service', function() {
         var filterFnCol2 = function(item) {
             return item.col2.indexOf('toto') > -1;
         };
-        DatasetGridService.addFilter(filterFnCol1);
-        DatasetGridService.addFilter(filterFnCol2);
-        expect(DatasetGridService.filters.length).toBe(2);
+        DatagridService.addFilter(filterFnCol1);
+        DatagridService.addFilter(filterFnCol2);
+        expect(DatagridService.filters.length).toBe(2);
 
         //when
-        DatasetGridService.removeFilter(filterFnCol1);
+        DatagridService.removeFilter(filterFnCol1);
 
         //then
-        expect(DatasetGridService.filters.length).toBe(1);
-        expect(DatasetGridService.filters[0]).toBe(filterFnCol2);
+        expect(DatagridService.filters.length).toBe(1);
+        expect(DatagridService.filters[0]).toBe(filterFnCol2);
     }));
 
-    it('should do nothing on remove if filter is unknown', inject(function(DatasetGridService) {
+    it('should do nothing on remove if filter is unknown', inject(function(DatagridService) {
         //given
         var filterFnCol1 = function(item) {
             return item.col1.indexOf('toto') > -1;
@@ -208,21 +208,21 @@ describe('Dataset grid service', function() {
         var filterFnCol2 = function(item) {
             return item.col2.indexOf('toto') > -1;
         };
-        DatasetGridService.addFilter(filterFnCol1);
+        DatagridService.addFilter(filterFnCol1);
 
-        expect(DatasetGridService.filters.length).toBe(1);
+        expect(DatagridService.filters.length).toBe(1);
 
         //when
-        DatasetGridService.removeFilter(filterFnCol2);
+        DatagridService.removeFilter(filterFnCol2);
 
         //then
-        expect(DatasetGridService.filters.length).toBe(1);
-        expect(DatasetGridService.filters[0]).toBe(filterFnCol1);
+        expect(DatagridService.filters.length).toBe(1);
+        expect(DatagridService.filters[0]).toBe(filterFnCol1);
     }));
 
-    it('should return the rows containing searched value', inject(function(DatasetGridService) {
+    it('should return the rows containing searched value', inject(function(DatagridService) {
         //given
-        DatasetGridService.setDataset({}, {columns: [], records: [
+        DatagridService.setDataset({}, {columns: [], records: [
             {text: 'mon toto est ici'},
             {text: 'ma tata est la'},
             {text: 'la tata est ici'},
@@ -232,13 +232,13 @@ describe('Dataset grid service', function() {
         ]});
 
         //when
-        var rowsId = DatasetGridService.getRowsContaining('text', 'la');
+        var rowsId = DatagridService.getRowsContaining('text', 'la');
 
         //then
         expect(rowsId).toEqual([1, 2, 3, 5]);
     }));
 
-    it('should update filter', inject(function(DatasetGridService) {
+    it('should update filter', inject(function(DatagridService) {
         //given
         var filterFnCol1 = function(item) {
             return item.col1.indexOf('toto') > -1;
@@ -249,31 +249,31 @@ describe('Dataset grid service', function() {
         var newFilterFnCol2 = function(item) {
             return item.col2.indexOf('tata') > -1;
         };
-        DatasetGridService.addFilter(filterFnCol1);
-        DatasetGridService.addFilter(filterFnCol2);
-        expect(DatasetGridService.filters.length).toBe(2);
+        DatagridService.addFilter(filterFnCol1);
+        DatagridService.addFilter(filterFnCol2);
+        expect(DatagridService.filters.length).toBe(2);
 
         //when
-        DatasetGridService.updateFilter(filterFnCol2, newFilterFnCol2);
+        DatagridService.updateFilter(filterFnCol2, newFilterFnCol2);
 
         //then
-        expect(DatasetGridService.filters.length).toBe(2);
-        expect(DatasetGridService.filters[0]).toBe(filterFnCol1);
-        expect(DatasetGridService.filters[1]).toBe(newFilterFnCol2);
+        expect(DatagridService.filters.length).toBe(2);
+        expect(DatagridService.filters[0]).toBe(filterFnCol1);
+        expect(DatagridService.filters[1]).toBe(newFilterFnCol2);
     }));
 
-    it('should set selected column from column id', inject(function(DatasetGridService) {
+    it('should set selected column from column id', inject(function(DatagridService) {
         //given
         var colId = 'state';
         var data = {
             columns : [{id: 'firstname'}, {id: 'state'}]
         };
-        DatasetGridService.data = data;
+        DatagridService.data = data;
 
         //when
-        DatasetGridService.setSelectedColumn(colId);
+        DatagridService.setSelectedColumn(colId);
 
         //then
-        expect(DatasetGridService.selectedColumn).toBe(data.columns[1]);
+        expect(DatagridService.selectedColumn).toBe(data.columns[1]);
     }));
 });

@@ -3,11 +3,11 @@ describe('Export Service', function () {
 
     beforeEach(module('data-prep.services.export'));
 
-    it('should create CSV string from simple data with provided separator', inject(function (DatasetGridService, ExportService) {
+    it('should create CSV string from simple data with provided separator', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'col1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -40,11 +40,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should escape double-quotes in column name and surround it with double-quotes', inject(function (DatasetGridService, ExportService) {
+    it('should escape double-quotes in column name and surround it with double-quotes', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'co"l1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -77,11 +77,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should escape double-quotes in row value and surround it with double-quotes', inject(function (DatasetGridService, ExportService) {
+    it('should escape double-quotes in row value and surround it with double-quotes', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'col1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -115,11 +115,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should surround column name with double-quotes if it contains a comma', inject(function (DatasetGridService, ExportService) {
+    it('should surround column name with double-quotes if it contains a comma', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'co,l1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -152,11 +152,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should surround value with double-quotes if it contains a comma', inject(function (DatasetGridService, ExportService) {
+    it('should surround value with double-quotes if it contains a comma', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'col1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -189,11 +189,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should surround column name with double-quotes if it contains a tab', inject(function (DatasetGridService, ExportService) {
+    it('should surround column name with double-quotes if it contains a tab', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'co\tl1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -226,11 +226,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should surround value with double-quotes if it contains a tab', inject(function (DatasetGridService, ExportService) {
+    it('should surround value with double-quotes if it contains a tab', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'col1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -263,11 +263,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should surround column name with double-quotes if it contains a semi-colon', inject(function (DatasetGridService, ExportService) {
+    it('should surround column name with double-quotes if it contains a semi-colon', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'co;l1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -300,11 +300,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should surround value with double-quotes if it contains a semi-colon', inject(function (DatasetGridService, ExportService) {
+    it('should surround value with double-quotes if it contains a semi-colon', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'col1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -337,11 +337,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should surround column name with double-quotes if it contains a line break', inject(function (DatasetGridService, ExportService) {
+    it('should surround column name with double-quotes if it contains a line break', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'co\nl1', type: 'string'},
                 {id: 'col2', type: 'string'},
@@ -374,11 +374,11 @@ describe('Export Service', function () {
         );
     }));
 
-    it('should surround value with double-quotes if it contains a line break', inject(function (DatasetGridService, ExportService) {
+    it('should surround value with double-quotes if it contains a line break', inject(function (DatagridService, ExportService) {
         //given
         var separator = ';';
-        DatasetGridService.metadata = {name: 'my dataset'};
-        DatasetGridService.data = {
+        DatagridService.metadata = {name: 'my dataset'};
+        DatagridService.data = {
             columns: [
                 {id: 'col1', type: 'string'},
                 {id: 'col2', type: 'string'},

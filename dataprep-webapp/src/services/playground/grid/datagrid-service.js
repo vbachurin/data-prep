@@ -3,16 +3,18 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.services.dataset.service:DatasetGridService
-     * @description Dataset grid service. This service holds the datagrid (SliickGrid) view and the (SlickGrid) filters
+     * @name data-prep.services.playground.service:DatagridService
+     * @description Datagrid service. This service holds the datagrid (SlickGrid) view and the (SlickGrid) filters<br/>
+     * <b style="color: red;">WARNING : do NOT use this service directly for FILTERS.
+     * {@link data-prep.services.filter.service:FilterService FilterService} must be the only entry point for datagrid filters</b>
      */
-    function DatasetGridService() {
+    function DatagridService() {
         var self = this;
 
         /**
          * @ngdoc property
          * @name metadata
-         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @propertyOf data-prep.services.playground.service:DatagridService
          * @description the loaded metadata
          * @type {Object}
          */
@@ -20,7 +22,7 @@
         /**
          * @ngdoc property
          * @name data
-         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @propertyOf data-prep.services.playground.service:DatagridService
          * @description the loaded data
          * @type {Object}
          */
@@ -29,7 +31,7 @@
         /**
          * @ngdoc property
          * @name dataView
-         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @propertyOf data-prep.services.playground.service:DatagridService
          * @description the SlickGrid dataView
          * @type {Object}
          */
@@ -38,7 +40,7 @@
         /**
          * @ngdoc property
          * @name filters
-         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @propertyOf data-prep.services.playground.service:DatagridService
          * @description the filters applied to the dataview
          * @type {function[]}
          */
@@ -47,7 +49,7 @@
         /**
          * @ngdoc property
          * @name selectedColumn
-         * @propertyOf data-prep.services.dataset.service:DatasetGridService
+         * @propertyOf data-prep.services.playground.service:DatagridService
          * @description the selected grid column
          * @type {object}
          */
@@ -60,7 +62,7 @@
         /**
          * @ngdoc method
          * @name insertUniqueIds
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object[]} records - the records to adapt
          * @description [PRIVATE] Insert unique id for each record (needed for DataView)
          */
@@ -73,7 +75,7 @@
         /**
          * @ngdoc method
          * @name updateDataviewRecords
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object[]} records - the records to insert
          * @description [PRIVATE] Set dataview records
          */
@@ -89,7 +91,7 @@
         /**
          * @ngdoc method
          * @name setDataset
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object} metadata - the new metadata to load
          * @param {Object} data - the new data to load
          * @description Set dataview records and metadata to the datagrid
@@ -104,7 +106,7 @@
         /**
          * @ngdoc method
          * @name updateRecords
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object[]} records - the new records
          * @description Update the data records in the datagrid
          */
@@ -119,7 +121,7 @@
         /**
          * @ngdoc method
          * @name getColumns
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {boolean} excludeNumeric - filter the numeric columns
          * @param {boolean} excludeBoolean - filter the boolean columns
          * @description Filter the column ids
@@ -148,7 +150,7 @@
         /**
          * @ngdoc method
          * @name getColumnsContaining
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {string} regexp - the regexp
          * @param {boolean} canBeNumeric - filter the numeric columns
          * @param {boolean} canBeBoolean - filter the boolean columns
@@ -184,7 +186,7 @@
         /**
          * @ngdoc method
          * @name getRowsContaining
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {string} colId - the column id
          * @param {string} term - the term the cell must contain
          * @description Return displayed rows index where data[rowId][colId] contains the searched term
@@ -205,7 +207,7 @@
         /**
          * @ngdoc method
          * @name setSelectedColumn
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {string} colId - the column id
          * @description Set the selected column
          */
@@ -221,7 +223,7 @@
         /**
          * @ngdoc method
          * @name filterFn
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @param {object} item - the item to test
          * @param {object} args - object containing the filters predicates
          * @description [PRIVATE] Filter function. It iterates over all filters and return if the provided item fit the predicates
@@ -240,7 +242,7 @@
         /**
          * @ngdoc method
          * @name getAllFiltersFn
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @description [PRIVATE] Create a closure that contains the active filters to execute
          * @returns {function} The filters closure
          */
@@ -253,7 +255,7 @@
         /**
          * @ngdoc method
          * @name updateDataViewFilters
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @description [PRIVATE] Update filters in dataview
          */
         var updateDataViewFilters = function() {
@@ -268,7 +270,7 @@
         /**
          * @ngdoc method
          * @name addFilter
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @description Add a filter in dataview
          * @param {object} filter - the filter function to add
          */
@@ -280,7 +282,7 @@
         /**
          * @ngdoc method
          * @name updateFilter
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @description Update a filter in dataview
          * @param {object} oldFilter - the filter function to replace
          * @param {object} newFilter - the new filter function
@@ -294,7 +296,7 @@
         /**
          * @ngdoc method
          * @name removeFilter
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @description Remove a filter in dataview
          * @param {object} filter - the filter function to remove
          */
@@ -309,7 +311,7 @@
         /**
          * @ngdoc method
          * @name resetFilters
-         * @methodOf data-prep.services.dataset.service:DatasetGridService
+         * @methodOf data-prep.services.playground.service:DatagridService
          * @description Remove all filters from dataview
          */
         self.resetFilters = function() {
@@ -318,7 +320,7 @@
         };
     }
 
-    angular.module('data-prep.services.dataset')
-        .service('DatasetGridService', DatasetGridService);
+    angular.module('data-prep.services.playground')
+        .service('DatagridService', DatagridService);
 
 })();

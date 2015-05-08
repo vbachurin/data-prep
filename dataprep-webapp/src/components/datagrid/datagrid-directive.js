@@ -13,11 +13,11 @@
      *         <li>When filter change, displayed values change, so we reset active cell and cell styles</li>
      * </ul>
      *
-     * @requires data-prep.services.dataset.service:DatasetGridService
+     * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatasetGridService, FilterService, PreviewService) {
+    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -26,6 +26,11 @@
             controller: 'DatagridCtrl',
             link: function (scope, iElement, iAttrs, ctrl) {
                 var options, grid, colHeaderElements = [];
+
+                // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
+                // To do so, the text is put into an invisible span so that the span can be measured.
+                var tooltipRuler = angular.element('<span id="tooltip-ruler" style="display:none"></span>');
+                iElement.append(tooltipRuler);
 
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------------COL UTILES--------------------------------------------
@@ -103,13 +108,13 @@
                  * @name insertDatasetHeaders
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Insert the dataset column headers (dropdown actions and quality bars).
-                 The columns are from {@link data-prep.services.dataset.service:DatasetGridService DatasetGridService}
+                 The columns are from {@link data-prep.services.playground.service:DatagridService DatagridService}
                  */
                 var insertDatasetHeaders = function () {
-                    _.forEach(DatasetGridService.data.columns, function (col, index) {
+                    _.forEach(DatagridService.data.columns, function (col, index) {
                         var headerScope = scope.$new(true);
                         headerScope.columns = col;
-                        headerScope.metadata = DatasetGridService.metadata;
+                        headerScope.metadata = DatagridService.metadata;
                         var headerElement = angular.element('<datagrid-header column="columns" metadata="metadata"></datagrid-header>');
                         $compile(headerElement)(headerScope);
 
@@ -140,7 +145,7 @@
                  */
                 var updateColSelection = function (column) {
                     $timeout(function() {
-                        DatasetGridService.setSelectedColumn(column.id);
+                        DatagridService.setSelectedColumn(column.id);
                     });
                 };
 
@@ -154,11 +159,11 @@
                  * @description [PRIVATE] Attach listeners for big table row management
                  */
                 var attachLongTableListeners = function() {
-                    DatasetGridService.dataView.onRowCountChanged.subscribe(function () {
+                    DatagridService.dataView.onRowCountChanged.subscribe(function () {
                         grid.updateRowCount();
                         grid.render();
                     });
-                    DatasetGridService.dataView.onRowsChanged.subscribe(function (e, args) {
+                    DatagridService.dataView.onRowsChanged.subscribe(function (e, args) {
                         grid.invalidateRows(args.rows);
                         grid.render();
                     });
@@ -202,13 +207,28 @@
                  * @description [PRIVATE] Attach cell hover for tooltips listeners
                  */
                 var attachTooltipListener = function() {
+                    //show tooltips only if not empty and width is bigger than cell
+                    function shouldShowTooltip(item, column) {
+                        var toolTipText = item[column.id];
+                        if(toolTipText === '') {
+                            return false;
+                        }
+
+                        tooltipRuler.text(toolTipText);
+                        return column.width <= tooltipRuler.width();
+                    }
+
                     //show tooltip on hover
                     grid.onMouseEnter.subscribe(function(e) {
                         var cell = grid.getCellFromEvent(e);
                         var row = cell.row;
                         var column = grid.getColumns()[cell.cell];
+                        var item = DatagridService.dataView.getItem(row);
 
-                        var item = DatasetGridService.dataView.getItem(row);
+                        if (!shouldShowTooltip(item, column)) {
+                            return;
+                        }
+                        
                         var position = {
                             x: e.clientX,
                             y: e.clientY
@@ -233,9 +253,9 @@
                     grid.onClick.subscribe(function (e,args) {
                         var config = {};
                         var column = grid.getColumns()[args.cell];
-                        var content = DatasetGridService.dataView.getItem(args.row)[column.id];
+                        var content = DatagridService.dataView.getItem(args.row)[column.id];
 
-                        var rowsContainingWord = DatasetGridService.getRowsContaining(column.id, content);
+                        var rowsContainingWord = DatagridService.getRowsContaining(column.id, content);
                         _.forEach(rowsContainingWord, function(rowId) {
                             config[rowId] = {};
                             config[rowId][column.id] = 'highlight';
@@ -281,7 +301,7 @@
                  * @name initGridIfNeeded
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Init Slick grid and attach listeners on dataview and grid.
-                 The dataview is initiated and held by {@link data-prep.services.dataset.service:DatasetGridService DatasetGridService}
+                 The dataview is initiated and held by {@link data-prep.services.playground.service:DatagridService DatagridService}
                  */
                 var initGridIfNeeded = function () {
                     if(grid) {
@@ -294,7 +314,7 @@
                         enableCellNavigation: true,
                         enableTextSelectionOnCells: true
                     };
-                    grid = new Slick.Grid('#datagrid', DatasetGridService.dataView, [], options);
+                    grid = new Slick.Grid('#datagrid', DatagridService.dataView, [], options);
 
                     //listeners
                     attachLongTableListeners();
@@ -348,7 +368,7 @@
                  */
                 scope.$watch(
                     function () {
-                        return DatasetGridService.data ? DatasetGridService.data.columns : null;
+                        return DatagridService.data ? DatagridService.data.columns : null;
                     },
                     function (cols) {
                         if (cols) {
@@ -364,7 +384,7 @@
                  */
                 scope.$watch(
                     function () {
-                        return DatasetGridService.data ? DatasetGridService.data.records : null;
+                        return DatagridService.data ? DatagridService.data.records : null;
                     },
                     function (records) {
                         if(records) {
@@ -379,7 +399,7 @@
                  */
                 scope.$watch(
                     function () {
-                        return DatasetGridService.metadata;
+                        return DatagridService.metadata;
                     },
                     function (metadata) {
                         if(metadata) {

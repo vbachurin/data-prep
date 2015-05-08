@@ -5,10 +5,10 @@
      * @ngdoc controller
      * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
      * @description Dataset Column Header controller.
-     * @requires data-prep.services.transformation.service:TransformationService
+     * @requires data-prep.services.transformation.service:TransformationRestService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function DatagridHeaderCtrl(TransformationService, ConverterService) {
+    function DatagridHeaderCtrl(TransformationRestService, ConverterService) {
         var vm = this;
 
         /**
@@ -140,7 +140,7 @@
                 vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
 
-                TransformationService.getTransformations(vm.metadata.id, vm.column.id)
+                TransformationRestService.getTransformations(vm.metadata.id, vm.column.id)
                     .then(function(response) {
                         var menus = cleanParamsAndItems(response.data);
                         menus = adaptInputTypes(menus);

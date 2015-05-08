@@ -2,6 +2,6 @@
     'use strict';
 
     angular.module('data-prep.services.statistics', [
-        'data-prep.services.dataset'
+        'data-prep.services.playground'
     ]);
 })();

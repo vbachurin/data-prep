@@ -1,10 +1,11 @@
 package org.talend.dataprep.transformation.exception;
 
-import org.talend.dataprep.exception.ErrorCode;
-
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import org.talend.dataprep.exception.ErrorCode;
 
 /**
  * Transformation error codes.
@@ -70,7 +71,7 @@ public enum TransformationErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
-    public List<String> getExpectedContextEntries() {
+    public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }
 }

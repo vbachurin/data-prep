@@ -11,14 +11,18 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.exception.json.JsonErrorCode;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
 
 @Component
@@ -30,6 +34,9 @@ public class DataSetGet extends HystrixCommand<InputStream> {
 
     @Value("${http.retry.max_retry}")
     private int MAX_RETRY;
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetGet.class);
 
@@ -61,7 +68,7 @@ public class DataSetGet extends HystrixCommand<InputStream> {
 
     private InputStream handleResponse(HttpResponse response) throws IOException {
         int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= 200) {
+        if (statusCode >= 200 && statusCode < 400) {
             if (statusCode == HttpStatus.SC_NO_CONTENT) {
                 // Immediately release connection
                 contentRetrieval.releaseConnection();
@@ -87,6 +94,11 @@ public class DataSetGet extends HystrixCommand<InputStream> {
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
+        } else if(statusCode >= 400 ){ // Error (4xx & 5xx codes)
+            final ObjectMapper build = builder.build();
+            final JsonErrorCode errorCode = build.reader(JsonErrorCode.class).readValue(response.getEntity().getContent());
+            errorCode.setHttpStatus(statusCode);
+            throw new TDPException(errorCode);
         }
         Exception cause = new Exception(response.getStatusLine().getStatusCode() + response.getStatusLine().getReasonPhrase());
         throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, cause, TDPExceptionContext.build().put("id",

@@ -9,7 +9,7 @@ describe('Transformation Service', function() {
         $httpBackend = $injector.get('$httpBackend');
     }));
 
-    it('should call GET transform rest service', inject(function ($rootScope, TransformationService, RestURLs) {
+    it('should call GET transform rest service', inject(function ($rootScope, TransformationRestService, RestURLs) {
         //given
         var datasetId = '44f5e4ef-96e9-4041-b86a-0bee3d50b18b';
         var columnId = 'firstname';
@@ -21,7 +21,7 @@ describe('Transformation Service', function() {
             .respond(200, result);
 
         //when
-        TransformationService.getTransformations(datasetId, columnId).then(function (resp) {
+        TransformationRestService.getTransformations(datasetId, columnId).then(function (resp) {
             response = resp.data;
         });
         $httpBackend.flush();

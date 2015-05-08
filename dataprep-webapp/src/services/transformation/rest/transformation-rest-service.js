@@ -3,15 +3,15 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.services.transformation.service:TransformationService
+     * @name data-prep.services.transformation.service:TransformationRestService
      * @description Transformation service. This service provide the entry point to get transformation menu from REST api
      */
-    function TransformationService($http, RestURLs) {
+    function TransformationRestService($http, RestURLs) {
 
         /**
          * @ngdoc method
          * @name getTransformations
-         * @methodOf data-prep.services.transformation.service:TransformationService
+         * @methodOf data-prep.services.transformation.service:TransformationRestService
          * @param {string} datasetId - the dataset id
          * @param {string} column - the column id
          * @description Fetch the transformations suggestions on a column of the dataset
@@ -25,5 +25,5 @@
     }
 
     angular.module('data-prep.services.transformation')
-        .service('TransformationService', TransformationService);
+        .service('TransformationRestService', TransformationRestService);
 })();

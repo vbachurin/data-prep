@@ -7,8 +7,8 @@
      * @description Recipe controller.
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.preparation.service:PreviewService
      */
     function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;
@@ -115,22 +115,17 @@
         vm.updateStep = function(step, newParams) {
             PreviewService.cancelPreview();
 
-            newParams = newParams || {};
-            /*jshint camelcase: false */
-            newParams.column_name = step.column.id;
-
-            //Parameters has not changed
-            if(JSON.stringify(newParams) === JSON.stringify(step.actionParameters.parameters)) {
+            if(! PreparationService.paramsHasChanged(step, newParams)) {
                 return;
             }
 
             $rootScope.$emit('talend.loading.start');
             var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
-            PreparationService.updateStep(step.transformation.stepId, step.transformation.name, newParams)
+            PreparationService.updateStep(step, newParams)
                 .then(RecipeService.refresh)
                 .then(function() {
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
-                    PlaygroundService.loadStep(activeStep);
+                    return PlaygroundService.loadStep(activeStep);
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');

@@ -3,12 +3,12 @@ package org.talend.dataprep.exception;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -71,14 +71,22 @@ public class TDPException extends RuntimeException {
     }
 
     /**
-     * Basic contstructor with the bare error code.
+     * Basic constructor from a JSON error code.
+     *
+     * @param code an error code serialized to JSON.
+     */
+    public TDPException(JsonErrorCode code) {
+        this(code, TDPExceptionContext.build().from(code.getContext()));
+    }
+
+    /**
+     * Basic constructor with the bare error code.
      *
      * @param code the error code that holds all the .
      */
     public TDPException(ErrorCode code) {
         this(code, null, null);
     }
-
 
     /**
      * Make sure that the context is filled with the expected context entries from the error code. If an entry is

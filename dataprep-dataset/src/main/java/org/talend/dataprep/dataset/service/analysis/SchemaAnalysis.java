@@ -58,18 +58,20 @@ public class SchemaAnalysis {
         try {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
             DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
-            datasetLock.lock();
+            DataSetMetadata metadata = repository.get(dataSetId);
             try {
+                datasetLock.lock();
                 StatisticsClientJson statisticsClient = new StatisticsClientJson(true, sparkContext);
                 statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
-                DataSetMetadata metadata = repository.get(dataSetId);
                 if (metadata != null) {
+
                     try {
                         LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                         // Create a content with the expected format for the StatisticsClientJson class
-                        Serializer serializer = applicationContext.getBean( metadata.getContent().getFormatGuessId(),
-                                                                            FormatGuess.class ).getSerializer();
-                        final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
+                        Serializer serializer = applicationContext.getBean(metadata.getContent().getFormatGuessId(),
+                                FormatGuess.class).getSerializer();
+                        final SimpleModule module = DataSetMetadataModule
+                                .get(true, true, store.get(metadata), applicationContext);
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.registerModule(module);
                         final StringWriter content = new StringWriter();
@@ -80,7 +82,7 @@ public class SchemaAnalysis {
                         // Set column types back in data set metadata
                         final Iterator<JsonNode> columns = mapper.readTree(elasticDataSchema).get("column").elements(); //$NON-NLS-1$
                         final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
-                        for (; columns.hasNext() && schemaColumns.hasNext(); ) {
+                        for (; columns.hasNext() && schemaColumns.hasNext();) {
                             final JsonNode column = columns.next();
                             final ColumnMetadata schemaColumn = schemaColumns.next();
                             final String typeName = column.get("suggested type").asText(); //$NON-NLS-1$
@@ -94,10 +96,11 @@ public class SchemaAnalysis {
                             }
                         }
                         if (columns.hasNext() || schemaColumns.hasNext()) {
-                            // Awkward situation: analysis code and parsed content information did not find same number of columns
+                            // Awkward situation: analysis code and parsed content information did not find same number
+                            // of columns
                             LOGGER.warn(
-                                "Column type analysis and parsed columns for #{} do not yield same number of columns (content parsed: {} / analysis: {}).",
-                                dataSetId, schemaColumns.hasNext(), columns.hasNext());
+                                    "Column type analysis and parsed columns for #{} do not yield same number of columns (content parsed: {} / analysis: {}).",
+                                    dataSetId, schemaColumns.hasNext(), columns.hasNext());
                         }
                         LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                         metadata.getLifecycle().schemaAnalyzed(true);
@@ -106,14 +109,63 @@ public class SchemaAnalysis {
                         jmsTemplate.send(Destinations.QUALITY_ANALYSIS, session -> {
                             Message schemaAnalysisMessage = session.createMessage();
                             schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                            return schemaAnalysisMessage;
-                        });
+                                return schemaAnalysisMessage;
+                            });
                     } catch (IOException e) {
                         throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
                     }
+                    LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
+                    // Create a content with the expected format for the StatisticsClientJson class
+                    final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.registerModule(module);
+                    final StringWriter content = new StringWriter();
+                    mapper.writer().writeValue(content, metadata);
+                    // Determine schema for the content
+                    String elasticDataSchema = statisticsClient.inferSchemaInMemory(content.toString());
+                    LOGGER.debug("Analysis result: {}" + elasticDataSchema);
+                    // Set column types back in data set metadata
+                    final Iterator<JsonNode> columns = mapper.readTree(elasticDataSchema).get("column").elements(); //$NON-NLS-1$
+                    final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
+                    for (; columns.hasNext() && schemaColumns.hasNext();) {
+                        final JsonNode column = columns.next();
+                        final ColumnMetadata schemaColumn = schemaColumns.next();
+                        final String typeName = column.get("suggested type").asText(); //$NON-NLS-1$
+                        if (Type.BOOLEAN.getName().equals(schemaColumn.getType()) && Type.STRING.getName().equals(typeName)) {
+                            LOGGER.info("Ignore incorrect detection (boolean -> string) for column {}.", schemaColumn.getId());
+                        } else if (Type.has(typeName)) {
+                            // Go through Type to ensure normalized type names.
+                            schemaColumn.setType(Type.get(typeName).getName());
+                        } else {
+                            LOGGER.error("Type '{}' does not exist.", typeName);
+                        }
+
+                    }
+                    if (columns.hasNext() || schemaColumns.hasNext()) {
+                        // Awkward situation: analysis code and parsed content information did not find same number of
+                        // columns
+                        LOGGER.warn(
+                                "Column type analysis and parsed columns for #{} do not yield same number of columns (content parsed: {} / analysis: {}).",
+                                dataSetId, schemaColumns.hasNext(), columns.hasNext());
+                    }
+                    LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
+                    metadata.getLifecycle().schemaAnalyzed(true);
+                    repository.add(metadata);
+                    // Asks for a in depth schema analysis (for column type information).
+                    jmsTemplate.send(Destinations.QUALITY_ANALYSIS, session -> {
+                        Message schemaAnalysisMessage = session.createMessage();
+                        schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
+                            return schemaAnalysisMessage;
+                        });
                 } else {
                     LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                 }
+            } catch (Exception e) {
+                if (metadata != null) {
+                    metadata.getLifecycle().error(true);
+                    repository.add(metadata);
+                }
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
             } finally {
                 datasetLock.unlock();
                 message.acknowledge();
