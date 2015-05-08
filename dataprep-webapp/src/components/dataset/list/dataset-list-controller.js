@@ -34,10 +34,11 @@
 
         vm.openDraft = function(dataset){
             console.log('openDraft:'+dataset.id+',type:'+dataset.type);
-            if (dataset.id.indexOf('excel')<0){
+            if (dataset.type.indexOf('excel')<0){
+                console.log('not excel');
                 return;
             }
-            console.log('manage this dataset draft type');
+            console.log('manage this dataset draft type:'+dataset.type);
             PlaygroundService.initPlayground(dataset,true ).then(PlaygroundService.show);
         };
 

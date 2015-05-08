@@ -79,7 +79,7 @@
          */
         self.getContent = function(datasetId, metadata,preview) {
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata + '&preview='+preview)
+            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata + (preview? '&preview='+preview : ''))
                 .then(function(res) {
                     return res.data;
                 })

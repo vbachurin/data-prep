@@ -49,6 +49,14 @@
                         }
                     }
                 })
+                .state('nav.home.datasets.preview', {
+                    url: '/datasets/preview?datasetid',
+                    views: {
+                        'home-content': {
+                            template: '<dataset-preview></dataset-preview>'
+                        }
+                    }
+                })
                 .state('nav.home.datasets', {
                     url: '/datasets?datasetid',
                     views: {
