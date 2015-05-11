@@ -168,10 +168,11 @@ public class PreparationAPI extends APIService {
     // ---------------------------------------------------------------------------------
 
     @RequestMapping(value = "/api/preparations/preview/diff", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a preview diff between 2 steps of the same preparation.")
+    @Timed
     public void previewDiff(@RequestBody PreviewDiffInput input, HttpServletResponse response) {
         try {
-            HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), contentServiceUrl,
-                    transformServiceUrl, preparationServiceURL, input);
+            HystrixCommand<InputStream> transformation = getCommand(PreviewDiff.class, getClient(), input);
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
@@ -181,10 +182,10 @@ public class PreparationAPI extends APIService {
     }
 
     @RequestMapping(value = "/api/preparations/preview/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a preview diff between the same step of the same preparation but with one step update.")
     public void previewUpdate(@RequestBody PreviewUpdateInput input, HttpServletResponse response) {
         try {
-            HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), contentServiceUrl,
-                    transformServiceUrl, preparationServiceURL, input);
+            HystrixCommand<InputStream> transformation = getCommand(PreviewUpdate.class, getClient(), input);
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(transformation.execute(), outputStream);
             outputStream.flush();
