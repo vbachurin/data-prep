@@ -1,10 +1,10 @@
 package org.talend.dataprep.api.dataset;
 
-import org.springframework.util.StringUtils;
-import org.talend.dataprep.api.type.Type;
-
 import java.util.Objects;
 import java.util.Optional;
+
+import org.springframework.util.StringUtils;
+import org.talend.dataprep.api.type.Type;
 
 /**
  * Represents information about a column in a data set. It includes:
@@ -26,6 +26,8 @@ public class ColumnMetadata {
     // number of first lines with a text header
     // non per default
     private int headerSize = 0;
+
+    private String statistics;
 
     // Needed when objects are read back from the db.
     public ColumnMetadata() {
@@ -89,6 +91,21 @@ public class ColumnMetadata {
     public String toString() {
         return "ColumnMetadata{" + "quality=" + quality + ", name='" + name + '\'' + ", typeName='" + typeName + '\''
                 + ", headerSize=" + headerSize + '}';
+    }
+
+    /**
+     * Sets the statistics as returned by data quality library.
+     * @param statistics The statistics as returned by the data quality library.
+     */
+    public void setStatistics(String statistics) {
+        this.statistics = statistics;
+    }
+
+    /**
+     * @return The statistics (as raw JSON content) returned by data quality library.
+     */
+    public String getStatistics() {
+        return statistics;
     }
 
     public static class Builder {

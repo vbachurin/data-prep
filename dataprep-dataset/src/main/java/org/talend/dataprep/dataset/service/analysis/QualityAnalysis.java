@@ -25,6 +25,8 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.datascience.statistics.StatisticsClientJson;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -67,13 +69,30 @@ public class QualityAnalysis {
                     mapper.registerModule(module);
                     final StringWriter content = new StringWriter();
                     mapper.writer().writeValue(content, metadata);
-                    // Determine schema for the content
-                    String elasticDataSchema = statisticsClient.inferSchemaInMemory(content.toString());
+                    // Build schema for the content (JSON format expected by statistics library).
+                    StringWriter schema = new StringWriter();
+                    JsonGenerator generator = new JsonFactory().createGenerator(schema);
+                    generator.writeStartObject();
+                    {
+                        generator.writeFieldName("column"); //$NON-NLS-1$
+                        generator.writeStartArray();
+                        {
+                            for (ColumnMetadata column : metadata.getRow().getColumns()) {
+                                generator.writeStartObject();
+                                generator.writeStringField("type", column.getType()); //$NON-NLS-1$
+                                generator.writeEndObject();
+                            }
+                        }
+                        generator.writeEndArray();
+                    }
+                    generator.writeEndObject();
+                    generator.flush();
+                    // Compute statistics
                     int topKfreqTable = 5;
-                    String binsOrBuckets = "2";
-                    statisticsClient.setSchema(elasticDataSchema);
+                    String binsOrBuckets = "2"; //$NON-NLS-1$
+                    statisticsClient.setSchema(schema.toString());
                     String jsonResult = statisticsClient.doStatisticsInMemory(content.toString(), topKfreqTable, binsOrBuckets);
-                    LOGGER.debug("Quality results: " + jsonResult);
+                    LOGGER.debug("Quality results: {}", jsonResult);
                     // Use result from quality analysis
                     final Iterator<JsonNode> columns = mapper.readTree(jsonResult).get("column").elements(); //$NON-NLS-1$
                     final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
@@ -90,6 +109,8 @@ public class QualityAnalysis {
                         quality.setValid(valid);
                         quality.setInvalid(invalid);
                         quality.setEmpty(empty);
+                        // Keeps the statistics as returned by statistics library.
+                        schemaColumn.setStatistics(statistics.toString());
                     }
                     if (columns.hasNext() || schemaColumns.hasNext()) {
                         // Awkward situation: analysis code and parsed content information did not find same number of columns
