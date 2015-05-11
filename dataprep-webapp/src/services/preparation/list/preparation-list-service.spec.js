@@ -2,6 +2,7 @@ describe('Preparation list service controller', function() {
     'use strict';
 
     var preparations, datasets;
+    var createdPreparationId = '54d85af494e1518bec54546';
 
     function initDatasets() {
         datasets = [
@@ -159,7 +160,7 @@ describe('Preparation list service controller', function() {
         initPreparations();
 
         spyOn(PreparationRestService, 'getPreparations').and.returnValue($q.when({data: preparations}));
-        spyOn(PreparationRestService, 'create').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'create').and.returnValue($q.when(createdPreparationId));
         spyOn(PreparationRestService, 'update').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'delete').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
@@ -238,6 +239,22 @@ describe('Preparation list service controller', function() {
 
         //then
         expect(PreparationRestService.create).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
+    }));
+
+    it('should return created preparation id', inject(function($rootScope, PreparationListService, PreparationRestService) {
+        //given
+        PreparationListService.preparations = preparations;
+        var result = null;
+
+        //when
+        PreparationListService.create('84ab54cd867f4645a', 'my preparation')
+            .then(function(prepId) {
+                result = prepId;
+            });
+        $rootScope.$digest();
+
+        //then
+        expect(result).toBe(createdPreparationId);
     }));
 
     it('should refresh preparations list on creation', inject(function($rootScope, PreparationListService, PreparationRestService) {
