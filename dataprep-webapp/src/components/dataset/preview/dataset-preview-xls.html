@@ -1,35 +1,16 @@
 <talend-modal class="playground"
               fullscreen="true"
-              state="playgroundCtrl.showPlayground"
-              close-button="true"
-              on-close="playgroundCtrl.close()">
-    <div class="modal-header">
-        <ul>
-            <li>
-                <export></export>
-            </li>
-            <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
-            <li>
-                <span class="title">{{::'PREPARATION' | translate}} :</span>
-                <input type="text"
-                       class="discret-input"
-                       placeholder="{{::'ENTER_PREPARATION_NAME' | translate}}"
-                       ng-model="playgroundCtrl.preparationName"
-                       ng-model-options="{updateOn: 'default blur'}"
-                       ng-blur="playgroundCtrl.changeName()"/>
-            </li>
-        </ul>
+              close-button="true">
 
-        <div class="previewBadge" ng-show="playgroundCtrl.previewInProgress">
-            <img src="assets/images/eye.svg" alt="Blue Square" height="24px" class="previewBadgeElement"/>
-            <span class="previewBadgeElement">Preview</span>
-        </div>
+    <div class="modal-header">
+      header
     </div>
 
     <div class="modal-body flex">
          <div class="flex-center">
             <div class="datagrid-container">
-                <datagrid></datagrid>
+                grid
+                <!-- <datagrid></datagrid> -->
             </div>
         </div>
     </div>

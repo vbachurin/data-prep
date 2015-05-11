@@ -67,9 +67,22 @@ public class SimpleDataSetMetadataJsonSerializer {
 
             // data we need for extra dataset validation (i.e sheetNumber for excell sheet)
             if (dataSetMetadata.getSchemaParserResult() != null) {
-                generator.writeStringField("sheetName", dataSetMetadata.getSchemaParserResult()
-                        .getSheetName());
+                generator.writeStringField( "sheetName", dataSetMetadata.getSchemaParserResult().getSheetName() );
+                if (dataSetMetadata.isDraft()) {
+
+                    if (dataSetMetadata.getSchemaParserResult().getColumnMetadatas() != null)
+                    {
+                        generator.writeFieldName( "sheetNames" );
+                        generator.writeStartArray();
+                        for ( String schemaName : dataSetMetadata.getSchemaParserResult().getColumnMetadatas().keySet() )
+                        {
+                            generator.writeString(schemaName );
+                        }
+                        generator.writeEndArray();
+                    }
+                }
             }
+
 
             synchronized (DATE_FORMAT) {
                 generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1

@@ -19,7 +19,7 @@
                 <table class="inventory-actions-table">
                     <tbody ng-switch="dataset.draft">
                     <tr ng-switch-when="true">
-                        <td><a class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets.preview({datasetid: dataset.id})"></a></td>
+                        <td><a class="t-btn t-btn-transparent t-btn-shaker" ng-click="datasetListCtrl.openDraft(dataset)"></a></td>
                     </tr>
                     <tr ng-switch-when="false">
                         <td ng-switch="!!dataset.defaultPreparation.id">
