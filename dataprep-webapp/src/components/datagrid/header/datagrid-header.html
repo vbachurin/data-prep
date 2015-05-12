@@ -36,7 +36,7 @@
     <div talend-dropdown
          class="record-empty"
          style="width: {{ datagridHeaderCtrl.column.quality.emptyPercentWidth }}%;"
-         ng-if="{{ datagridHeaderCtrl.column.quality.empty }} > 0"
+         ng-if="datagridHeaderCtrl.column.quality.empty > 0"
          title="{{ datagridHeaderCtrl.column.quality.empty }} empty records ({{ datagridHeaderCtrl.column.quality.emptyPercent }}%)">
 
         <div class="dropdown-container">
@@ -52,7 +52,7 @@
 
     <div class="record-nok" talend-dropdown
          style="width: {{ datagridHeaderCtrl.column.quality.invalidPercentWidth }}%;"
-         ng-if="{{ datagridHeaderCtrl.column.quality.invalid }} > 0"
+         ng-if="datagridHeaderCtrl.column.quality.invalid > 0"
          title="{{ datagridHeaderCtrl.column.quality.invalid }} invalid records ({{ datagridHeaderCtrl.column.quality.invalidPercent }}%)">
 
         <div class="dropdown-container">
