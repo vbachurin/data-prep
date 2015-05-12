@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.http.HttpResponse;
@@ -18,6 +19,10 @@ import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
+import static org.apache.http.HttpStatus.SC_ACCEPTED;
+import static org.apache.http.HttpStatus.SC_NO_CONTENT;
+import static org.apache.http.HttpStatus.SC_OK;
+
 @Component
 @Scope("request")
 public class PreparationList extends DataPrepCommand<InputStream> {
@@ -31,31 +36,34 @@ public class PreparationList extends DataPrepCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval;
-        switch (format) {
-        case SHORT:
-            contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations"); //$NON-NLS-1$
-            break;
-        case LONG:
-            contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/all"); //$NON-NLS-1$
-            break;
-        default:
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_REQUEST, new IllegalArgumentException("Unsupported format: " + format));
-        }
-        HttpResponse response = client.execute(contentRetrieval);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= 200) {
-            if (statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_ACCEPTED) {
-                // Immediately release connection
+        final HttpGet contentRetrieval = getContentRetrieval(this.format);
+        final HttpResponse response = client.execute(contentRetrieval);
+        final int statusCode = response.getStatusLine().getStatusCode();
+
+        switch(statusCode) {
+            case SC_NO_CONTENT:
+            case SC_ACCEPTED:
                 contentRetrieval.releaseConnection();
                 return new ByteArrayInputStream(new byte[0]);
-            } else if (statusCode == HttpStatus.SC_OK) {
+
+            case SC_OK:
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
-            }
-        } else {
-            contentRetrieval.releaseConnection();
+
+            default:
+                contentRetrieval.releaseConnection();
+                throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
+    }
+
+    private HttpGet getContentRetrieval(final Format format) throws IOException {
+        switch (format) {
+            case SHORT:
+                return new HttpGet(preparationServiceUrl + "/preparations"); //$NON-NLS-1$
+            case LONG:
+                return new HttpGet(preparationServiceUrl + "/preparations/all"); //$NON-NLS-1$
+            default:
+                throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_REQUEST, new IllegalArgumentException("Unsupported format: " + format));
+        }
     }
 
     public enum Format {

@@ -17,6 +17,10 @@ import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
+import static org.apache.http.HttpStatus.SC_ACCEPTED;
+import static org.apache.http.HttpStatus.SC_NO_CONTENT;
+import static org.apache.http.HttpStatus.SC_OK;
+
 @Component
 @Scope("request")
 public class PreparationGet extends DataPrepCommand<InputStream> {
@@ -30,20 +34,22 @@ public class PreparationGet extends DataPrepCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id);
-        HttpResponse response = client.execute(contentRetrieval);
+        final HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id);
+        final HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= 200) {
-            if (statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_ACCEPTED) {
-                // Immediately release connection
+
+        switch(statusCode) {
+            case SC_NO_CONTENT:
+            case SC_ACCEPTED:
                 contentRetrieval.releaseConnection();
                 return new ByteArrayInputStream(new byte[0]);
-            } else if (statusCode == HttpStatus.SC_OK) {
+
+            case SC_OK:
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
-            }
-        } else {
-            contentRetrieval.releaseConnection();
+
+            default:
+                contentRetrieval.releaseConnection();
+                throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
     }
 }

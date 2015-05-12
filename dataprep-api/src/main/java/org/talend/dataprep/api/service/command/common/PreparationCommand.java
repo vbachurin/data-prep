@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.talend.dataprep.api.preparation.Action;
@@ -53,7 +54,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     protected String serializeAndEncode(final Map<String, Action> stepActions) throws JsonProcessingException {
         final String serialized = "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions.values()) + "}";
 
-        return Base64.getEncoder().encodeToString(serialized.getBytes());
+        return encode(serialized);
     }
 
     /**
@@ -64,7 +65,16 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     protected String serializeAndEncode(final List<Integer> listToEncode) throws JsonProcessingException {
         final String serialized = getJsonWriter().writeValueAsString(listToEncode);
 
-        return Base64.getEncoder().encodeToString(serialized.getBytes());
+        return encode(serialized);
+    }
+
+    /**
+     * Encode the string to base 64
+     * @param toEncode The string to encode
+     * @return the encoded string
+     */
+    protected String encode(String toEncode) {
+        return Base64.getEncoder().encodeToString(toEncode.getBytes());
     }
 
     /**
@@ -78,7 +88,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         final List<String> result = new ArrayList<>(preparationDetails.size() - 1);
         final JsonNode stepsNode = preparationDetails.get("steps");
 
-        if(lastActiveStep != null && !lastActiveStep.equals(stepsNode.get(stepsNode.size() - 1).textValue())) {
+        if(lastActiveStep != null && !lastActiveStep.equals("origin") && !lastActiveStep.equals(stepsNode.get(stepsNode.size() - 1).textValue())) {
             //steps are in reverse order and the last is the initial step (no actions). So we skip the last and we get them in reverse order
             for(int i = stepsNode.size() - 2; i >= 0; --i) {
                 final String stepId = stepsNode.get(i).textValue();

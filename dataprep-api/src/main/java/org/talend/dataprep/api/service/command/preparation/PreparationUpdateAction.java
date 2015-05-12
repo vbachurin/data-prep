@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
@@ -19,6 +20,9 @@ import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 import org.talend.dataprep.exception.TDPExceptionContext;
+
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
 @Scope("request")
@@ -41,10 +45,11 @@ public class PreparationUpdateAction extends DataPrepCommand<Void> {
     protected Void run() throws Exception {
         HttpPut actionAppend = new HttpPut(preparationServiceUrl + "/preparations/" + id + "/actions/" + stepId); //$NON-NLS-1$ //$NON-NLS-2$
         try {
-            actionAppend.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)); //$NON-NLS-1$
+            actionAppend.setHeader(new BasicHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE));
             actionAppend.setEntity(new InputStreamEntity(actions));
-            HttpResponse response = client.execute(actionAppend);
-            int statusCode = response.getStatusLine().getStatusCode();
+
+            final HttpResponse response = client.execute(actionAppend);
+            final int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode >= 200) {
                 return null;
             }

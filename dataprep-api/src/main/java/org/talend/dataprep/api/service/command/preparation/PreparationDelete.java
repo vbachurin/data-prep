@@ -25,9 +25,9 @@ public class PreparationDelete extends DataPrepCommand<String> {
 
     @Override
     protected String run() throws Exception {
-        HttpDelete deletePreparation = new HttpDelete(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
+        final HttpDelete deletePreparation = new HttpDelete(preparationServiceUrl + "/preparations/" + id); //$NON-NLS-1$
         try {
-            HttpResponse response = client.execute(deletePreparation);
+            final HttpResponse response = client.execute(deletePreparation);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode >= 200) {
                 return null;
