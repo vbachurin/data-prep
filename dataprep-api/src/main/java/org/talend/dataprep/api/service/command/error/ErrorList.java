@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.error;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,6 +11,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
+import org.talend.dataprep.api.service.command.ReleasableInputStream;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
@@ -21,24 +23,24 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
  */
 @Component
 @Scope("prototype")
-public class ErrorList extends HystrixCommand<InputStream> {
-
-    /** The api url. */
-    private final String serviceUrl;
+public class ErrorList extends DataPrepCommand<InputStream> {
+    public enum ServiceType {DATASET, TRANSFORMATION, PREPARATION}
 
     /** http client to use to reach the api. */
     private final HttpClient client;
+
+    private final ServiceType type;
 
     /**
      * Private constructor.
      *
      * @param client the http client to use to reach the api.
-     * @param contentServiceUrl the api url.
+     * @param type the api type.
      * @param groupKey the command group key.
      */
-    private ErrorList(HttpClient client, String contentServiceUrl, HystrixCommandGroupKey groupKey) {
-        super(groupKey);
-        this.serviceUrl = contentServiceUrl + "/errors";
+    private ErrorList(HttpClient client, HystrixCommandGroupKey groupKey, ServiceType type) {
+        super(groupKey, client);
+        this.type = type;
         this.client = client;
     }
 
@@ -48,7 +50,7 @@ public class ErrorList extends HystrixCommand<InputStream> {
      */
     @Override
     protected InputStream run() throws Exception {
-
+        final String serviceUrl = getServiceUrl();
         HttpGet contentRetrieval = new HttpGet(serviceUrl);
         HttpResponse response = client.execute(contentRetrieval);
 
@@ -68,4 +70,15 @@ public class ErrorList extends HystrixCommand<InputStream> {
         Exception cause = new Exception(message);
         throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_ERRORS, cause);
     }
+
+    private String getServiceUrl() {
+        switch (type) {
+            case DATASET: return datasetServiceUrl + "/datasets/errors";
+            case TRANSFORMATION: return transformationServiceUrl + "/transform/errors";
+            case PREPARATION: return preparationServiceUrl + "/preparations/errors";
+            default: return null;
+        }
+    }
+
+
 }

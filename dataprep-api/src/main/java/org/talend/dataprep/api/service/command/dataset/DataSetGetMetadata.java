@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.dataset;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,22 +8,20 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
+public class DataSetGetMetadata extends DataPrepCommand<DataSetMetadata> {
 
     @Value("${http.retry.pause}")
     public int PAUSE;
@@ -33,31 +31,23 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetGetMetadata.class);
 
-    private final HttpClient client;
-
     private final String dataSetId;
-
-    private final HttpGet metadataRetrieval;
-
-    @Autowired(required = true)
-    private Jackson2ObjectMapperBuilder builder;
 
     private int retryCount = 0;
 
-    private DataSetGetMetadata(HttpClient client, String contentServiceUrl, String dataSetId) {
-        super(PreparationAPI.DATASET_GROUP);
-        this.client = client;
+    private DataSetGetMetadata(HttpClient client, String dataSetId) {
+        super(PreparationAPI.DATASET_GROUP, client);
         this.dataSetId = dataSetId;
-        metadataRetrieval = new HttpGet(contentServiceUrl + "/" + dataSetId + "/metadata");
     }
 
     @Override
     protected DataSetMetadata run() throws Exception {
-        HttpResponse response = client.execute(metadataRetrieval);
-        return handleResponse(response);
+        final HttpGet metadataRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/metadata");
+        final HttpResponse response = client.execute(metadataRetrieval);
+        return handleResponse(response, metadataRetrieval);
     }
 
-    private DataSetMetadata handleResponse(HttpResponse response) throws java.io.IOException {
+    private DataSetMetadata handleResponse(final HttpResponse response, final HttpGet metadataRetrieval) throws java.io.IOException {
         int statusCode = response.getStatusLine().getStatusCode();
         try {
             if (statusCode >= HttpStatus.SC_OK) {
@@ -79,7 +69,7 @@ public class DataSetGetMetadata extends HystrixCommand<DataSetMetadata> {
                     } catch (InterruptedException e) {
                         throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_METADATA, e);
                     }
-                    return handleResponse(client.execute(metadataRetrieval));
+                    return handleResponse(client.execute(metadataRetrieval), metadataRetrieval);
                 } else if (statusCode == HttpStatus.SC_OK) {
                     retryCount = 0;
                     ObjectMapper mapper = builder.build();

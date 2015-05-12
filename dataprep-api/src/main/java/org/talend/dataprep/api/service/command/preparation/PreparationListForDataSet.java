@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,41 +11,41 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.api.service.command.ReleasableInputStream;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
+/**
+ * Command used to retreive the preparations used by a given dataset.
+ */
 @Component
 @Scope("request")
-public class PreparationList extends HystrixCommand<InputStream> {
+public class PreparationListForDataSet extends DataPrepCommand<InputStream> {
 
-    private final HttpClient client;
+    /** The wanted DataSet id. */
+    private final String dataSetId;
 
-    private final String preparationServiceUrl;
-
-    private final Format format;
-
-    private PreparationList(HttpClient client, String preparationServiceUrl, Format format) {
-        super(APIService.PREPARATION_GROUP);
-        this.client = client;
-        this.preparationServiceUrl = preparationServiceUrl;
-        this.format = format;
+    /**
+     * Private constructor.
+     *
+     * @param client the http client to use to access the preparation service.
+     * @param dataSetId the wanted dataset id.
+     */
+    private PreparationListForDataSet(HttpClient client, String dataSetId) {
+        super(APIService.PREPARATION_GROUP, client);
+        this.dataSetId = dataSetId;
     }
 
+    /**
+     * @see HystrixCommand#run()
+     */
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval;
-        switch (format) {
-        case SHORT:
-            contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations"); //$NON-NLS-1$
-            break;
-        case LONG:
-            contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/all"); //$NON-NLS-1$
-            break;
-        default:
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_REQUEST, new IllegalArgumentException("Unsupported format: " + format));
-        }
+
+        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations?dataSetId=" + dataSetId); //$NON-NLS-1$
+
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
@@ -62,8 +62,4 @@ public class PreparationList extends HystrixCommand<InputStream> {
         throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
     }
 
-    public enum Format {
-        SHORT,
-        LONG
-    }
 }

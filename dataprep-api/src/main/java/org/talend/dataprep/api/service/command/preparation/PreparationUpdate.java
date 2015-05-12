@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,11 +26,7 @@ import org.talend.dataprep.exception.TDPExceptionContext;
 
 @Component
 @Scope("request")
-public class PreparationUpdate extends HystrixCommand<String> {
-
-    private final HttpClient client;
-
-    private final String preparationServiceUrl;
+public class PreparationUpdate extends DataPrepCommand<String> {
 
     private final String id;
 
@@ -38,10 +35,8 @@ public class PreparationUpdate extends HystrixCommand<String> {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
-    private PreparationUpdate(HttpClient client, String preparationServiceURL, String id, Preparation preparation) {
-        super(APIService.PREPARATION_GROUP);
-        this.client = client;
-        this.preparationServiceUrl = preparationServiceURL;
+    private PreparationUpdate(HttpClient client, String id, Preparation preparation) {
+        super(APIService.PREPARATION_GROUP, client);
         this.id = id;
         this.preparation = preparation;
     }

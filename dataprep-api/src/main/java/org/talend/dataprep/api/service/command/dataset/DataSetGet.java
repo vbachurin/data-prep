@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.dataset;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,23 +11,22 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.api.service.command.ReleasableInputStream;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class DataSetGet extends HystrixCommand<InputStream> {
+public class DataSetGet extends DataPrepCommand<InputStream> {
 
     @Value("${http.retry.pause}")
     public int PAUSE;
@@ -35,34 +34,31 @@ public class DataSetGet extends HystrixCommand<InputStream> {
     @Value("${http.retry.max_retry}")
     private int MAX_RETRY;
 
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetGet.class);
-
-    private final HttpClient client;
 
     private final String dataSetId;
 
-    private final HttpGet contentRetrieval;
+    private final boolean metadata;
+
+    private final boolean columns;
 
     private int retryCount = 0;
 
-    private DataSetGet(HttpClient client, String contentServiceUrl, String dataSetId, boolean metadata, boolean columns) {
-        super(PreparationAPI.TRANSFORM_GROUP);
-        this.client = client;
+    private DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns) {
+        super(PreparationAPI.TRANSFORM_GROUP, client);
         this.dataSetId = dataSetId;
-        contentRetrieval = new HttpGet(contentServiceUrl + "/" + dataSetId + "/content/?metadata=" + metadata + "&columns="
-                + columns);
+        this.metadata = metadata;
+        this.columns = columns;
     }
 
     @Override
     protected InputStream run() throws Exception {
-        HttpResponse response = client.execute(contentRetrieval);
-        return handleResponse(response);
+        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata=" + metadata + "&columns=" + columns);
+        final HttpResponse response = client.execute(contentRetrieval);
+        return handleResponse(response, contentRetrieval);
     }
 
-    private InputStream handleResponse(HttpResponse response) throws IOException {
+    private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval) throws IOException {
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200 && statusCode < 400) {
             if (statusCode == HttpStatus.SC_NO_CONTENT) {
@@ -86,7 +82,7 @@ public class DataSetGet extends HystrixCommand<InputStream> {
                     throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, e, TDPExceptionContext.build().put(
                             "id", dataSetId));
                 }
-                return handleResponse(client.execute(contentRetrieval));
+                return handleResponse(client.execute(contentRetrieval), contentRetrieval);
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }

@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.dataset;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -10,44 +10,36 @@ import org.apache.http.client.methods.HttpGet;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
-import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.api.service.command.ReleasableInputStream;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class PreparationGet extends HystrixCommand<InputStream> {
+public class DataSetList extends DataPrepCommand<InputStream> {
 
     private final HttpClient client;
 
-    private final String preparationServiceUrl;
-
-    private final String id;
-
-    private PreparationGet(HttpClient client, String preparationServiceUrl, String id) {
-        super(APIService.PREPARATION_GROUP);
+    private DataSetList(HttpClient client) {
+        super(PreparationAPI.TRANSFORM_GROUP, client);
         this.client = client;
-        this.preparationServiceUrl = preparationServiceUrl;
-        this.id = id;
     }
 
     @Override
     protected InputStream run() throws Exception {
-        HttpGet contentRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id);
+        HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets");
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {
             if (statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_ACCEPTED) {
-                // Immediately release connection
-                contentRetrieval.releaseConnection();
                 return new ByteArrayInputStream(new byte[0]);
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
-        } else {
-            contentRetrieval.releaseConnection();
         }
-        throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_LIST);
+        throw new TDPException(APIErrorCodes.UNABLE_TO_LIST_DATASETS);
     }
 }

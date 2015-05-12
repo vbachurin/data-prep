@@ -60,24 +60,15 @@ public class DataPreparationAPITest {
     @Autowired
     ConfigurableEnvironment environment;
 
-    @Autowired
-    List<APIService> apiServices;
-
     @Before
     public void setUp() {
         RestAssured.port = port;
 
-        for (APIService apiService : apiServices) {
-            apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
-            apiService.setTransformationServiceURL("http://localhost:" + port);
-            apiService.setPreparationServiceURL("http://localhost:" + port);
-        }
-
         // Overrides connection information with random port value
         MockPropertySource connectionInformation = new MockPropertySource()
-                .withProperty("dataset.service.url", "http://localhost:" + port + "/datasets")
-                .withProperty("transformation.service.url", "http://localhost:" + port + "/")
-                .withProperty("preparation.service.url", "http://localhost:" + port + "/");
+                .withProperty("dataset.service.url", "http://localhost:" + port)
+                .withProperty("transformation.service.url", "http://localhost:" + port)
+                .withProperty("preparation.service.url", "http://localhost:" + port);
         environment.getPropertySources().addFirst(connectionInformation);
     }
 

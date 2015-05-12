@@ -15,7 +15,7 @@ import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.PreviewDiffInput;
 import org.talend.dataprep.api.service.api.PreviewUpdateInput;
-import org.talend.dataprep.api.service.command.*;
+import org.talend.dataprep.api.service.command.preparation.*;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
@@ -38,7 +38,7 @@ public class PreparationAPI extends APIService {
         LOG.debug("Listing preparations (pool: {} )...", getConnectionManager().getTotalStats());
         PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, preparationServiceURL, listFormat);
+        HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, listFormat);
         try {
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
@@ -58,7 +58,7 @@ public class PreparationAPI extends APIService {
             HttpServletResponse response) {
         LOG.debug("Creating preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        PreparationCreate preparationCreate = getCommand(PreparationCreate.class, client, preparationServiceURL, preparation);
+        PreparationCreate preparationCreate = getCommand(PreparationCreate.class, client, preparation);
         final String preparationId = preparationCreate.execute();
         LOG.debug("Created preparation (pool: {} )...", getConnectionManager().getTotalStats());
         return preparationId;
@@ -73,7 +73,7 @@ public class PreparationAPI extends APIService {
             HttpServletResponse response) {
         LOG.debug("Updating preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        PreparationUpdate preparationUpdate = getCommand(PreparationUpdate.class, client, preparationServiceURL, id, preparation);
+        PreparationUpdate preparationUpdate = getCommand(PreparationUpdate.class, client, id, preparation);
         final String preparationId = preparationUpdate.execute();
         LOG.debug("Updated preparation (pool: {} )...", getConnectionManager().getTotalStats());
         return preparationId;
@@ -86,7 +86,7 @@ public class PreparationAPI extends APIService {
             @ApiParam(name = "id", value = "The id of the preparation to delete.") @PathVariable("id") String id) {
         LOG.debug("Deleting preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        PreparationDelete preparationDelete = getCommand(PreparationDelete.class, client, preparationServiceURL, id);
+        PreparationDelete preparationDelete = getCommand(PreparationDelete.class, client, id);
         final String preparationId = preparationDelete.execute();
         LOG.debug("Deleted preparation (pool: {} )...", getConnectionManager().getTotalStats());
         return preparationId;
@@ -100,7 +100,7 @@ public class PreparationAPI extends APIService {
             HttpServletResponse response) {
         LOG.debug("Retrieving preparation details (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = getCommand(PreparationGet.class, client, preparationServiceURL, preparationId);
+        HystrixCommand<InputStream> command = getCommand(PreparationGet.class, client, preparationId);
         try {
             // You cannot use Preparation object mapper here: to serialize steps & actions, you'd need a version
             // repository not available at API level. Code below copies command result direct to response.
@@ -123,8 +123,7 @@ public class PreparationAPI extends APIService {
             HttpServletResponse response) {
         LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationServiceURL,
-                contentServiceUrl, transformServiceUrl, preparationId, version);
+        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version);
         try {
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
@@ -143,7 +142,7 @@ public class PreparationAPI extends APIService {
             @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
         LOG.debug("Adding action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationServiceURL, preparationId, body);
+        HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationId, body);
         command.execute();
         LOG.debug("Added action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
     }
@@ -157,7 +156,7 @@ public class PreparationAPI extends APIService {
             @ApiParam("New content for the action.") InputStream body, HttpServletResponse response) {
         LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationServiceURL, preparationId,
+        HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId,
                 stepId, body);
         command.execute();
         LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());

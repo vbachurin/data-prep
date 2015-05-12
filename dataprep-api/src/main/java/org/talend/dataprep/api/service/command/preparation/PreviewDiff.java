@@ -1,8 +1,7 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,18 +12,20 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.api.service.api.PreviewUpdateInput;
+import org.talend.dataprep.api.service.api.PreviewDiffInput;
+import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.talend.dataprep.api.service.command.common.PreparationCommand;
 
 @Component
 @Scope("request")
-public class PreviewUpdate extends DataPrepCommand {
+public class PreviewDiff extends PreparationCommand<InputStream> {
 
-    private final PreviewUpdateInput input;
+    private final PreviewDiffInput input;
 
-    public PreviewUpdate(final HttpClient client, final PreviewUpdateInput input) {
+    public PreviewDiff(final HttpClient client, final PreviewDiffInput input) {
         super(APIService.PREPARATION_GROUP, client);
         this.input = input;
     }
@@ -37,18 +38,16 @@ public class PreviewUpdate extends DataPrepCommand {
         final String dataSetId = preparationDetails.get("dataSetId").textValue();
 
         //extract actions by steps in chronological order, until defined last active step (from input)
-        final List<String> stepsIds = getActionsStepIds(preparationDetails, input.getCurrentStepId());
-        final Map<String, Action> originalActions = getActions(preparationDetails, stepsIds);
+        final List<String> currentStepsIds = getActionsStepIds(preparationDetails, input.getCurrentStepId());
+        final Map<String, Action> currentActions = getActions(preparationDetails, currentStepsIds);
 
-        //modify actions to include the update
-        final Map<String, Action> modifiedActions = new LinkedHashMap<>(originalActions);
-        if(modifiedActions.get(input.getUpdateStepId()) != null) {
-            modifiedActions.put(input.getUpdateStepId(), input.getAction());
-        }
+        //extract actions without disabled steps
+        final List<String> previewStepsIds = getActionsStepIds(preparationDetails, input.getPreviewStepId());
+        final Map<String, Action> previewActions = getActions(preparationDetails, previewStepsIds);
 
         //serialize and base 64 encode the 2 actions list
-        final String oldEncodedActions = serializeAndEncode(originalActions);
-        final String newEncodedActions = serializeAndEncode(modifiedActions);
+        final String currentEncodedActions = serializeAndEncode(currentActions);
+        final String previewEncodedActions = serializeAndEncode(previewActions);
 
         //get dataset content
         final InputStream content = getDatasetContent(dataSetId);
@@ -56,9 +55,8 @@ public class PreviewUpdate extends DataPrepCommand {
         //get usable tdpIds
         final String encodedTdpIds = serializeAndEncode(input.getTdpIds());
 
-
         //call transformation preview with content and the 2 transformations
-        return previewTransformation(content, oldEncodedActions, newEncodedActions, encodedTdpIds);
+        return previewTransformation(content, currentEncodedActions, previewEncodedActions, encodedTdpIds);
     }
 
     /**
@@ -67,7 +65,7 @@ public class PreviewUpdate extends DataPrepCommand {
      * @param oldEncodedActions - the old actions
      * @param newEncodedActions - the preview actions
      * @param encodedTdpIds - the TDP ids
-     * @throws IOException
+     * @throws java.io.IOException
      */
     private InputStream previewTransformation(final InputStream content, final String oldEncodedActions, final String newEncodedActions,final String encodedTdpIds) throws IOException {
         final String uri = this.transformationServiceUrl + "/transform/preview?oldActions=" + oldEncodedActions + "&newActions=" + newEncodedActions + "&indexes=" + encodedTdpIds;

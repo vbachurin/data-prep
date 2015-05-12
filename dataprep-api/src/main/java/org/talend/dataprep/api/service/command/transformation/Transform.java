@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.transformation;
 
 import java.io.InputStream;
 
@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.netflix.hystrix.HystrixCommand;
+import org.talend.dataprep.api.service.command.ReleasableInputStream;
+import org.talend.dataprep.api.service.command.common.ChainedCommand;
 
 @Component
 @Scope("request")
@@ -20,24 +22,18 @@ public class Transform extends ChainedCommand<InputStream, InputStream> {
     /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(Transform.class);
 
-    private final String transformServiceUrl;
-
     private final String actions;
 
-    private final HttpClient client;
-
-    private Transform(HttpClient client, String transformServiceUrl, HystrixCommand<InputStream> content, String actions) {
-        super(content);
-        this.transformServiceUrl = transformServiceUrl;
+    private Transform(HttpClient client, HystrixCommand<InputStream> content, String actions) {
+        super(client, content);
         this.actions = actions;
-        this.client = client;
     }
 
     @Override
     protected InputStream run() throws Exception {
 
 
-        String uri = transformServiceUrl + "/transform/?actions=" + actions; //$NON-NLS-1$
+        String uri = transformationServiceUrl + "/transform/?actions=" + actions; //$NON-NLS-1$
         HttpPost transformationCall = new HttpPost(uri);
 
         InputStreamEntity datasetContent = new InputStreamEntity(getInput());

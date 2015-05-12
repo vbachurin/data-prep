@@ -1,9 +1,7 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.dataset;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,6 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
+import org.talend.dataprep.api.service.command.preparation.PreparationListForDataSet;
 import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,44 +30,20 @@ import org.talend.dataprep.exception.TDPExceptionContext;
  */
 @Component
 @Scope("request")
-public class DataSetDelete extends HystrixCommand<Void> {
+public class DataSetDelete extends DataPrepCommand<Void> {
 
-    /** This class' logger. */
     private static final Logger LOG = LoggerFactory.getLogger(DataSetDelete.class);
 
-    /** Base url for the dataset service api. */
-    private final String dataSetServiceBaseUrl;
-
-    /** Base url for the preparation service api. */
-    private final String preparationServiceBaseUrl;
-
-    /** Http client for rest api calls. */
-    private final HttpClient client;
-
-    /** The dataset id to delete. */
     private final String dataSetId;
-
-    /** The spring web context. */
-    @Autowired
-    private WebApplicationContext context;
-
-    /** Jackson object parser needed to read the */
-    @Autowired(required = true)
-    private Jackson2ObjectMapperBuilder builder;
 
     /**
      * Default constructor.
      *
      * @param client Http client for rest api calls.
-     * @param dataSetServiceBaseUrl Base url for the dataset service api.
-     * @param preparationServiceBaseUrl Base url for the preparation service api.
      * @param dataSetId The dataset id to delete.
      */
-    private DataSetDelete(HttpClient client, String dataSetServiceBaseUrl, String preparationServiceBaseUrl, String dataSetId) {
-        super(PreparationAPI.DATASET_GROUP);
-        this.client = client;
-        this.dataSetServiceBaseUrl = dataSetServiceBaseUrl;
-        this.preparationServiceBaseUrl = preparationServiceBaseUrl;
+    private DataSetDelete(HttpClient client, String dataSetId) {
+        super(PreparationAPI.DATASET_GROUP, client);
         this.dataSetId = dataSetId;
 
     }
@@ -96,8 +72,7 @@ public class DataSetDelete extends HystrixCommand<Void> {
     private List<Preparation> getPreparationsForDataSet() throws Exception {
 
         // call preparation api
-        PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, client,
-                preparationServiceBaseUrl, dataSetId);
+        PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, client, dataSetId);
         InputStream jsonInput = preparationsForDataSet.execute();
 
         // parse and return the response
@@ -112,7 +87,7 @@ public class DataSetDelete extends HystrixCommand<Void> {
      * @throws Exception if an error occurs.
      */
     private Void doDeleteDataSet() throws Exception {
-        HttpDelete contentRetrieval = new HttpDelete(dataSetServiceBaseUrl + "/" + dataSetId);
+        HttpDelete contentRetrieval = new HttpDelete(datasetServiceUrl + "/datasets/" + dataSetId);
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {

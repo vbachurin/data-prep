@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -16,6 +16,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.api.service.command.ReleasableInputStream;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
+import org.talend.dataprep.api.service.command.transformation.Transform;
+import org.talend.dataprep.api.service.command.dataset.DataSetGet;
 import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,33 +28,14 @@ import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class PreparationGetContent extends HystrixCommand<InputStream> {
-
-    private final HttpClient client;
-
-    private final String preparationServiceUrl;
+public class PreparationGetContent extends DataPrepCommand<InputStream> {
 
     private final String id;
 
     private final String version;
 
-    private final String contentServiceUrl;
-
-    private final String transformServiceUrl;
-
-    @Autowired
-    private WebApplicationContext context;
-
-    @Autowired(required = true)
-    private Jackson2ObjectMapperBuilder builder;
-
-    private PreparationGetContent(HttpClient client, String preparationServiceUrl, String contentServiceUrl,
-            String transformServiceUrl, String id, String version) {
-        super(APIService.PREPARATION_GROUP);
-        this.client = client;
-        this.preparationServiceUrl = preparationServiceUrl;
-        this.contentServiceUrl = contentServiceUrl;
-        this.transformServiceUrl = transformServiceUrl;
+    private PreparationGetContent(HttpClient client, String id, String version) {
+        super(APIService.PREPARATION_GROUP, client);
         this.id = id;
         this.version = version;
     }
@@ -76,7 +61,7 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
                 }
                 // Get the data set
                 String dataSetId = tree.get("dataSetId").textValue();
-                DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, contentServiceUrl, dataSetId, false, true);
+                DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
                 // ... transform it ...
                 HttpGet actionsRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + id + "/actions/" + version); //$NON-NLS-1$
                 String actions;
@@ -85,7 +70,7 @@ public class PreparationGetContent extends HystrixCommand<InputStream> {
                 } finally {
                     actionsRetrieval.releaseConnection();
                 }
-                Transform transformCommand = context.getBean(Transform.class, client, transformServiceUrl, retrieveDataSet,
+                Transform transformCommand = context.getBean(Transform.class, client, retrieveDataSet,
                         Base64.getEncoder().encodeToString(actions.getBytes()));
                 // ... and send it back to user (but saves it back in preparation service as cache).
                 return new ReleasableInputStream(transformCommand.execute(), contentRetrieval::releaseConnection); // TODO saves it back in preparation service as cache

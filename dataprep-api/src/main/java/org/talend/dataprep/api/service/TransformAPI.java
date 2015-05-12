@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.APIErrorCodes;
-import org.talend.dataprep.api.service.command.DataSetGet;
-import org.talend.dataprep.api.service.command.Transform;
+import org.talend.dataprep.api.service.command.dataset.DataSetGet;
+import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 
@@ -42,10 +42,9 @@ public class TransformAPI extends APIService {
             String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
             response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
-            HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, contentServiceUrl, dataSetId,
+            HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, dataSetId,
                     false, false);
-            HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, transformServiceUrl,
-                    contentRetrieval, encodedActions);
+            HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, contentRetrieval, encodedActions);
 
             // Perform transformation
             ServletOutputStream outputStream = response.getOutputStream();

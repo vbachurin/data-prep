@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.export;
 
 import java.io.InputStream;
 import java.util.List;
@@ -12,13 +12,15 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.ExportInput;
+import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.talend.dataprep.api.service.command.common.PreparationCommand;
 
 @Component
 @Scope("request")
-public class Export extends DataPrepCommand {
+public class Export extends PreparationCommand<InputStream> {
 
     private final ExportInput input;
 

@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.preparation;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -7,24 +7,19 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class PreparationDelete extends HystrixCommand<String> {
-
-    private final HttpClient client;
-
-    private final String preparationServiceUrl;
+public class PreparationDelete extends DataPrepCommand<String> {
 
     private final String id;
 
-    private PreparationDelete(HttpClient client, String preparationServiceURL, String id) {
-        super(APIService.PREPARATION_GROUP);
-        this.client = client;
-        this.preparationServiceUrl = preparationServiceURL;
+    private PreparationDelete(HttpClient client, String id) {
+        super(APIService.PREPARATION_GROUP, client);
         this.id = id;
     }
 

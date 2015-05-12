@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.dataset;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -7,25 +7,20 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
-public class DatasetCertification extends HystrixCommand<Void> {
-
-    private final String contentServiceUrl;
-
-    private final HttpClient client;
+public class DatasetCertification extends DataPrepCommand<Void> {
 
     private final String dataSetId;
 
 
-    private DatasetCertification(HttpClient client, String contentServiceUrl, String dataSetId) {
-        super(PreparationAPI.TRANSFORM_GROUP);
-        this.contentServiceUrl = contentServiceUrl;
-        this.client = client;
+    private DatasetCertification(HttpClient client, String dataSetId) {
+        super(PreparationAPI.TRANSFORM_GROUP, client);
         this.dataSetId = dataSetId;
     }
 
@@ -36,7 +31,7 @@ public class DatasetCertification extends HystrixCommand<Void> {
 
     @Override
     protected Void run() throws Exception {
-        HttpPut contentRetrieval = new HttpPut(contentServiceUrl + "/" + dataSetId + "/processcertification");
+        HttpPut contentRetrieval = new HttpPut(datasetServiceUrl + "/datasets/" + dataSetId + "/processcertification");
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {

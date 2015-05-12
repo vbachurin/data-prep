@@ -1,4 +1,4 @@
-package org.talend.dataprep.api.service.command;
+package org.talend.dataprep.api.service.command.dataset;
 
 import java.io.InputStream;
 import java.net.URLEncoder;
@@ -16,31 +16,26 @@ import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
 
 import com.netflix.hystrix.HystrixCommand;
+import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 @Component
 @Scope("request")
-public class CreateDataSet extends HystrixCommand<String> {
-
-    private final String contentServiceUrl;
+public class CreateDataSet extends DataPrepCommand<String> {
 
     private final String name;
 
     private final InputStream dataSetContent;
 
-    private final HttpClient client;
-
-    private CreateDataSet(HttpClient client, String contentServiceUrl, String name, InputStream dataSetContent) {
-        super(PreparationAPI.DATASET_GROUP);
-        this.contentServiceUrl = contentServiceUrl;
+    private CreateDataSet(HttpClient client, String name, InputStream dataSetContent) {
+        super(PreparationAPI.DATASET_GROUP, client);
         this.name = name;
         this.dataSetContent = dataSetContent;
-        this.client = client;
     }
 
     @Override
     protected String run() throws Exception {
-        HttpPost contentCreation = new HttpPost(contentServiceUrl + "/?name=" + URLEncoder.encode(name, "UTF-8")); //$NON-NLS-1$
+        HttpPost contentCreation = new HttpPost(datasetServiceUrl + "/datasets/?name=" + URLEncoder.encode(name, "UTF-8")); //$NON-NLS-1$
         try {
             contentCreation.setEntity(new InputStreamEntity(dataSetContent));
             HttpResponse response = client.execute(contentCreation);
