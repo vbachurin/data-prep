@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -21,8 +21,8 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.Application;
+import org.talend.dataprep.transformation.api.action.ParsedActions;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -43,18 +43,21 @@ public class TypeTransformerSelectorTest {
 
     private StringWriter writer;
 
-    private final Consumer<DataSetRow> identityAction = (row) -> {};
-    private final Consumer<DataSetRow> changeLastnameAction = (row) -> {
+    private final ParsedActions identityAction = new ParsedActions((row) -> {
+    }, Collections.emptyList());
+
+    private final ParsedActions changeLastnameAction = new ParsedActions((row) -> {
         final String transformedLastname = row.get("lastname").toUpperCase();
         row.set("lastname", transformedLastname);
-    };
-    private final Consumer<DataSetRow> getChangeNameAndDeleteAction = (row) -> {
+    }, Collections.emptyList());
+
+    private final ParsedActions getChangeNameAndDeleteAction = new ParsedActions((row) -> {
         final String transformedLastname = row.get("lastname").toUpperCase();
         final String transformedFirstname = row.get("firstname").toUpperCase();
         row.set("lastname", transformedLastname);
         row.set("firstname", transformedFirstname);
         row.setDeleted(row.get("city").equals("Columbia"));
-    };
+    }, Collections.emptyList());
 
     @Before
     public void init() throws IOException {

@@ -2,13 +2,11 @@ package org.talend.dataprep.transformation.api.transformer.type;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -16,41 +14,46 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 /**
- * TypeTransformer selector. This class create the transformation content structure and delegate the value
- * transformation/serialization to other specific TypeTransformers.
+ * Delegate to the correct transformer depending on the input content : {@link ColumnsTypeTransformer} for the columns
+ * header. {@link RecordsTypeTransformer} for the records header.
  */
 @Component
-public class TypeTransformerSelector implements TypeTransformer<DataSetRow> {
+public class TypeTransformerSelector implements TypeTransformer {
 
+    /** The columns transformer that transforms RowMetadata. */
     @Autowired
     private ColumnsTypeTransformer columnsTransformer;
 
+    /** The records transformer that works on dataset rows. */
     @Autowired
     private RecordsTypeTransformer recordsTransformer;
 
-    @Override
-    public void process(final JsonParser parser, final JsonGenerator generator, final List<Integer> indexes, boolean preview, final Consumer<DataSetRow>... actions) {
+    /**
+     * @see TypeTransformer#process(JsonParser, JsonGenerator, List, boolean, ParsedActions...)
+     */
+    public void process(final JsonParser input, final JsonGenerator output, final List<Integer> indexes, boolean preview,
+            final ParsedActions... actions) {
 
         try {
             JsonToken nextToken;
 
-            generator.writeStartObject();
-            while ((nextToken = parser.nextToken()) != null) {
+            output.writeStartObject();
+            while ((nextToken = input.nextToken()) != null) {
                 if (nextToken == JsonToken.FIELD_NAME) {
-                    switch (parser.getText()) {
+                    switch (input.getText()) {
                     case "columns":
-                        generator.writeFieldName("columns");
-                        columnsTransformer.process(parser, generator, null, preview);
+                        output.writeFieldName("columns");
+                        columnsTransformer.process(input, output, null, preview, actions);
                         break;
                     case "records":
-                        generator.writeFieldName("records");
-                        recordsTransformer.process(parser, generator, indexes, preview, actions);
+                        output.writeFieldName("records");
+                        recordsTransformer.process(input, output, indexes, preview, actions);
                         break;
                     }
                 }
             }
-            generator.writeEndObject();
-            generator.flush();
+            output.writeEndObject();
+            output.flush();
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }

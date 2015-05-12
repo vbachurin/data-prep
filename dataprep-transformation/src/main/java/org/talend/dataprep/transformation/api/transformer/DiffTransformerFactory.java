@@ -2,16 +2,16 @@ package org.talend.dataprep.transformation.api.transformer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.action.ParsedActions;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,17 +20,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class DiffTransformerFactory implements TransformerFactory {
 
-    private static final Consumer<DataSetRow> IDLE_CONSUMER = (row) -> {
-    };
+    /** No op parsed actions. */
+    private static final ParsedActions IDLE_CONSUMER = new ParsedActions(row -> {
+    }, Collections.emptyList());
 
     @Autowired
     private WebApplicationContext context;
 
     final ActionParser parser = new ActionParser();
 
-    private Consumer<DataSetRow> oldActions;
+    private ParsedActions oldActions;
 
-    private Consumer<DataSetRow> newActions;
+    private ParsedActions newActions;
 
     private List<Integer> indexes;
 

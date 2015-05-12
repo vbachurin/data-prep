@@ -3,6 +3,7 @@ package org.talend.dataprep.api.dataset;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.exception.CommonErrorCodes;
@@ -26,13 +27,24 @@ public class DataSetRow implements Cloneable {
 
     private final Map<String, String> values = new HashMap<>();
 
+    /**
+     * Default empty constructor.
+     */
     public DataSetRow() {
     }
 
+    /**
+     * Constructor with values.
+     * 
+     * @param values the row value.
+     */
     public DataSetRow(Map<String, String> values) {
         this.values.putAll(values);
     }
 
+    /**
+     * @return the cloned values.
+     */
     public Map<String, String> cloneValues() {
         return new HashMap<>(values);
     }
@@ -176,10 +188,55 @@ public class DataSetRow implements Cloneable {
         values.clear();
     }
 
+    /**
+     * @see Cloneable#clone()
+     */
     @Override
     public DataSetRow clone() {
         final DataSetRow clone = new DataSetRow(this.cloneValues());
         clone.setDeleted(this.isDeleted());
         return clone;
     }
+
+    /**
+     * Rename the column.
+     *
+     * @param columnName the name of the column to rename.
+     * @param newColumnName the new column name.
+     */
+    public void renameColumn(String columnName, String newColumnName) {
+
+        // defensive programming against
+        if (values.containsKey(columnName) == false) {
+            return;
+        }
+
+        synchronized (values) {
+            String savedValue = values.get(columnName);
+            values.remove(columnName);
+            values.put(newColumnName, savedValue);
+        }
+    }
+
+    /**
+     * @see Objects#equals(Object, Object)
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        DataSetRow that = (DataSetRow) o;
+        return Objects.equals(deleted, that.deleted) && Objects.equals(values, that.values);
+    }
+
+    /**
+     * @see Objects#hash(Object...)
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(deleted, values);
+    }
+
 }

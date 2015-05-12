@@ -25,8 +25,8 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.Application;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -419,76 +419,93 @@ public class DataPreparationAPITest {
 
     @Test
     public void testPreparationDiffPreview() throws Exception {
-        //given
-        final String datasetContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("preview/preview_dataset.csv"));
-        final String dataSetId = given().contentType(ContentType.JSON).body(datasetContent).queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "testPreview").asString();
+        // given
+        final String datasetContent = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("preview/preview_dataset.csv"));
+        final String dataSetId = given().contentType(ContentType.JSON).body(datasetContent)
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "testPreview").asString();
 
-        final String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"" + dataSetId + "\"}").when().post("/api/preparations").asString();
-        final String action1 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("preview/upper_case_lastname.json"));
-        final String action2 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("preview/upper_case_firstname.json"));
+        final String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"" + dataSetId + "\"}").when()
+                .post("/api/preparations").asString();
+        final String action1 = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("preview/upper_case_lastname.json"));
+        final String action2 = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("preview/upper_case_firstname.json"));
         final String action3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("preview/delete_city.json"));
 
-        given().contentType(ContentType.JSON).body(action1).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
-        given().contentType(ContentType.JSON).body(action2).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
-        given().contentType(ContentType.JSON).body(action3).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        given().contentType(ContentType.JSON).body(action1).when().post("/api/preparations/{id}/actions", preparationId).then()
+                .statusCode(is(200));
+        given().contentType(ContentType.JSON).body(action2).when().post("/api/preparations/{id}/actions", preparationId).then()
+                .statusCode(is(200));
+        given().contentType(ContentType.JSON).body(action3).when().post("/api/preparations/{id}/actions", preparationId).then()
+                .statusCode(is(200));
 
         given().get("/api/preparations/{preparation}/details", preparationId);
-        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
+                .getList("steps");
 
-        final String input = "{" +
-                "   \"preparationId\": \"" + preparationId + "\",\n" +
-                "   \"currentStepId\": \"" + steps.get(2) + "\",\n" + //action 1
-                "   \"previewStepId\": \"" + steps.get(0) + "\",\n" + //action 1 + 2 + 3
-                "   \"tdpIds\": [1, 3, 5]" +
-                "}";
+        final String input = "{" + "   \"preparationId\": \"" + preparationId + "\",\n" + "   \"currentStepId\": \""
+                + steps.get(2) + "\",\n" + // action 1
+                "   \"previewStepId\": \"" + steps.get(0) + "\",\n" + // action 1 + 2 + 3
+                "   \"tdpIds\": [1, 3, 5]" + "}";
 
-        final InputStream expectedDiffStream = DataPreparationAPITest.class.getResourceAsStream("preview/expected_diff_preview.json");
+        final InputStream expectedDiffStream = DataPreparationAPITest.class
+                .getResourceAsStream("preview/expected_diff_preview.json");
 
-        //when
-        final String diff = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/diff").asString();
+        // when
+        final String diff = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/diff")
+                .asString();
 
-        //then
+        // then
         assertThat(diff, sameJSONAsFile(expectedDiffStream));
     }
 
     @Test
     public void testPreparationUpdatePreview() throws Exception {
-        //given
-        final String datasetContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("preview/preview_dataset.csv"));
-        final String dataSetId = given().contentType(ContentType.JSON).body(datasetContent).queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "testPreview").asString();
+        // given
+        final String datasetContent = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("preview/preview_dataset.csv"));
+        final String dataSetId = given().contentType(ContentType.JSON).body(datasetContent)
+                .queryParam("Content-Type", "text/csv").when().post("/api/datasets?name={name}", "testPreview").asString();
 
-        final String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"" + dataSetId + "\"}").when().post("/api/preparations").asString();
-        final String action1 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("preview/upper_case_lastname.json"));
-        final String action2 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("preview/upper_case_firstname.json"));
+        final String preparationId = given().contentType(ContentType.JSON).body("{ \"dataSetId\": \"" + dataSetId + "\"}").when()
+                .post("/api/preparations").asString();
+        final String action1 = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("preview/upper_case_lastname.json"));
+        final String action2 = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("preview/upper_case_firstname.json"));
         final String action3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("preview/delete_city.json"));
 
-        given().contentType(ContentType.JSON).body(action1).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
-        given().contentType(ContentType.JSON).body(action2).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
-        given().contentType(ContentType.JSON).body(action3).when().post("/api/preparations/{id}/actions", preparationId).then().statusCode(is(200));
+        given().contentType(ContentType.JSON).body(action1).when().post("/api/preparations/{id}/actions", preparationId).then()
+                .statusCode(is(200));
+        given().contentType(ContentType.JSON).body(action2).when().post("/api/preparations/{id}/actions", preparationId).then()
+                .statusCode(is(200));
+        given().contentType(ContentType.JSON).body(action3).when().post("/api/preparations/{id}/actions", preparationId).then()
+                .statusCode(is(200));
 
         given().get("/api/preparations/{preparation}/details", preparationId);
-        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
+                .getList("steps");
 
-        final String input = "{" +
-                "   \"preparationId\": \"" + preparationId + "\",\n" +
-                "   \"currentStepId\": \"" + steps.get(0) + "\",\n" + //action 1 + 2 + 3
-                "   \"updateStepId\": \"" + steps.get(0) + "\",\n" + //action 3
-                "   \"tdpIds\": [1, 3, 5]," +
-                "   \"action\": {" +
-                "       \"action\": \"delete_on_value\",\n" +
-                "       \"parameters\": {" +
-                "           \"column_name\": \"city\"," +
-                "           \"value\": \"Coast city\"" +
-                "       }" +
-                "   }" +
-                "}";
+        final String input = "{" + "   \"preparationId\": \"" + preparationId + "\",\n" + "   \"currentStepId\": \""
+                + steps.get(0)
+                + "\",\n"
+                + // action 1 + 2 + 3
+                "   \"updateStepId\": \"" + steps.get(0)
+                + "\",\n"
+                + // action 3
+                "   \"tdpIds\": [1, 3, 5]," + "   \"action\": {" + "       \"action\": \"delete_on_value\",\n"
+                + "       \"parameters\": {" + "           \"column_name\": \"city\"," + "           \"value\": \"Coast city\""
+                + "       }" + "   }" + "}";
 
-        final InputStream expectedDiffStream = DataPreparationAPITest.class.getResourceAsStream("preview/expected_update_preview.json");
+        final InputStream expectedDiffStream = DataPreparationAPITest.class
+                .getResourceAsStream("preview/expected_update_preview.json");
 
-        //when
-        final String diff = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/update").asString();
+        // when
+        final String diff = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/update")
+                .asString();
 
-        //then
+        // then
         assertThat(diff, sameJSONAsFile(expectedDiffStream));
     }
 }

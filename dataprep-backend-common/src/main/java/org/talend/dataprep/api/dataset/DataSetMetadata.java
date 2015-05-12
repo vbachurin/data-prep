@@ -16,25 +16,43 @@ import org.springframework.data.annotation.Id;
  */
 public class DataSetMetadata {
 
+    /** The dataset id. */
     @Id
     private final String id;
 
+    /** Row description. */
     private final RowMetadata rowMetadata;
 
+    /** Dataset life cycle status. */
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
+    /** Dataset content summary. */
     private final DataSetContent content = new DataSetContent();
 
+    /** Dataset governance. */
     private final DataSetGovernance gov = new DataSetGovernance();
 
+    /** Dataset name. */
     private final String name;
 
+    /** Dataset author. */
     private final String author;
 
+    /** Dataset creation date. */
     private final long creationDate;
 
+    /** Sheet number in case of excel source. */
     private int sheetNumber;
 
+    /**
+     * Constructor.
+     * 
+     * @param id dataset id.
+     * @param name dataset name.
+     * @param author dataset author.
+     * @param creationDate dataset creation date.
+     * @param rowMetadata row metadata.
+     */
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;
         this.name = name;
@@ -43,44 +61,74 @@ public class DataSetMetadata {
         this.rowMetadata = rowMetadata;
     }
 
+    /**
+     * @return the dataset id.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * @return the dataset row description.
+     */
     public RowMetadata getRow() {
         return rowMetadata;
     }
 
+    /**
+     * @return the dataset lifecycle.
+     */
     public DataSetLifecycle getLifecycle() {
         return lifecycle;
     }
 
+    /**
+     * @return the dataset content summary.
+     */
     public DataSetContent getContent() {
         return content;
     }
 
+    /**
+     * @return the dataset governance.
+     */
     public DataSetGovernance getGovernance() {
         return this.gov;
     }
 
+    /**
+     * @return the dataset name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return the dataset author.
+     */
     public String getAuthor() {
         return author;
     }
 
+    /**
+     * @return the dataset sheet number in case of excel source.
+     */
     public int getSheetNumber() {
         return sheetNumber;
     }
 
+    /**
+     * @return the dataset creation date.
+     */
     public Date getCreationDate() {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
         calendar.setTimeInMillis(creationDate);
         return calendar.getTime();
     }
 
+    /**
+     * Dataset builder.
+     */
     public static class Builder {
 
         private String id;

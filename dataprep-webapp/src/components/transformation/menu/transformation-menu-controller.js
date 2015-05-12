@@ -51,7 +51,7 @@
                     return PreparationService.getContent('head');
                 })
                 .then(function(response) {
-                    DatagridService.updateRecords(response.data.records);
+                    DatagridService.updateData(response.data);
                     RecipeService.refresh();
                     vm.showModal = false;
                 })

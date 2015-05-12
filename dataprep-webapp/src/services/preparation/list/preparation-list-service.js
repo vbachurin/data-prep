@@ -63,7 +63,10 @@
          */
         this.create = function(datasetId, name) {
             return PreparationRestService.create(datasetId, name)
-                .then(self.refreshPreparations);
+                .then(function(response) {
+                                    self.refreshPreparations();
+                                    return response;
+                                });
         };
 
         /**

@@ -1,10 +1,10 @@
 package org.talend.dataprep.api.dataset;
 
-import org.springframework.util.StringUtils;
-import org.talend.dataprep.api.type.Type;
-
 import java.util.Objects;
 import java.util.Optional;
+
+import org.springframework.util.StringUtils;
+import org.talend.dataprep.api.type.Type;
 
 /**
  * Represents information about a column in a data set. It includes:
@@ -70,12 +70,12 @@ public class ColumnMetadata {
 
     @Override
     public boolean equals(Object obj) {
-        return Optional.ofNullable( obj ) //
-            .filter(that -> that instanceof ColumnMetadata) //
-            .map(that -> (ColumnMetadata) that) //
-            .filter(that -> Objects.equals( this.name, that.name )) //
-            .filter(that -> Objects.equals(this.typeName, that.typeName)) //
-            .isPresent();
+        return Optional.ofNullable(obj) //
+                .filter(that -> that instanceof ColumnMetadata) //
+                .map(that -> (ColumnMetadata) that) //
+                .filter(that -> Objects.equals(this.name, that.name)) //
+                .filter(that -> Objects.equals(this.typeName, that.typeName)) //
+                .isPresent();
     }
 
     @Override
@@ -142,6 +142,17 @@ public class ColumnMetadata {
 
         public ColumnMetadata.Builder headerSize(int headerSize) {
             this.headerSize = headerSize;
+            return this;
+        }
+
+        public ColumnMetadata.Builder copy(ColumnMetadata original) {
+            this.name = original.getId();
+            Quality originalQuality = original.getQuality();
+            this.empty = originalQuality.getEmpty();
+            this.invalid = originalQuality.getInvalid();
+            this.valid = originalQuality.getValid();
+            this.headerSize = original.getHeaderSize();
+            this.type = Type.get(original.getType());
             return this;
         }
 
