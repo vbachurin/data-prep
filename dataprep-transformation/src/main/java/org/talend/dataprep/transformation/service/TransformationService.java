@@ -20,10 +20,11 @@ import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.transformer.DiffTransformerFactory;
-import org.talend.dataprep.transformation.api.transformer.SimpleTransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.json.DiffTransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.exporter.ExportFactory;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +50,9 @@ public class TransformationService {
     private TransformerFactory getDiffTransformerFactory() {
         return context.getBean(DiffTransformerFactory.class);
     }
+
+    @Autowired
+    private ExportFactory exportFactory;
 
     @RequestMapping(value = "/transform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
@@ -84,6 +88,21 @@ public class TransformationService {
             final Transformer transformer = getDiffTransformerFactory().withIndexes(decodedIndexes)
                     .withActions(decodedOldActions, decodedNewActions).get();
             transformer.transform(content, response.getOutputStream());
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        }
+    }
+
+    @RequestMapping(value = "/transform/export", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Export content", notes = "This operation returns the export of the (optionally modified) content of a dataset")
+    @VolumeMetered
+    public void transformExport(@ApiParam(value = "Actions to perform on content (encoded in Base64).")
+    @RequestParam(value = "actions", required = false)
+    final String actions, final InputStream content, final HttpServletResponse response) {
+        try {
+            final String decodedActions = actions == null ? null : new String(Base64.getDecoder().decode(actions));
+            final Transformer exporter = exportFactory.getExporter("CSV", actions);
+            exporter.transform(content, response.getOutputStream());
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }

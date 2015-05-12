@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer;
+package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +13,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
@@ -52,12 +54,14 @@ class DiffTransformer implements Transformer {
                 throw new IllegalArgumentException("Output cannot be null.");
             }
 
-            final JsonFactory factory = new JsonFactory();
-            final JsonParser parser = factory.createParser(input);
-            final JsonGenerator generator = factory.createGenerator(output);
-            generator.setCodec(builder.build());
+            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
+                    .indexes(indexes)
+                    .preview(true)
+                    .actions(DataSetRow.class, oldAction)
+                    .actions(DataSetRow.class, newAction)
+                    .build();
 
-            typeStateSelector.process(parser, generator, indexes, true, oldAction, newAction);
+            typeStateSelector.process(configuration);
             output.flush();
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);

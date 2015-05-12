@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer;
+package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.util.function.Consumer;
 
@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 
 @Component
 public class SimpleTransformerFactory implements TransformerFactory {

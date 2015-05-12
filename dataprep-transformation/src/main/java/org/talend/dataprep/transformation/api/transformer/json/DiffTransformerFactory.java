@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer;
+package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +16,8 @@ import org.talend.dataprep.transformation.api.action.ActionParser;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 
 @Component
 public class DiffTransformerFactory implements TransformerFactory {
