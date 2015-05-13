@@ -29,17 +29,17 @@ import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction
  * This will compute the absolute value for numerical columns
  *
  */
-@Component(AbsoluteFloat.ACTION_BEAN_PREFIX + AbsoluteFloat.ABSOLUTE_FLOAT_ACTION_NAME)
-public class AbsoluteFloat extends SingleColumnAction {
+@Component(Round.ACTION_BEAN_PREFIX + Round.ROUND_ACTION_NAME)
+public class Round extends SingleColumnAction {
 
-    public static final String ABSOLUTE_FLOAT_ACTION_NAME = "absolute_float"; //$NON-NLS-1$
+    public static final String ROUND_ACTION_NAME = "round"; //$NON-NLS-1$
 
-    private AbsoluteFloat() {
+    private Round() {
     }
 
     @Override
     public String getName() {
-        return ABSOLUTE_FLOAT_ACTION_NAME;
+        return ROUND_ACTION_NAME;
     }
 
     @Override
@@ -60,36 +60,24 @@ public class AbsoluteFloat extends SingleColumnAction {
             String value = row.get(columnName);
             String absValueStr = null;
             if (value != null) {
-                // try float first
                 try {
                     double doubleValue = Double.parseDouble(value);
-                    double absValue = Math.abs(doubleValue);
-                    if (absValue == (long) absValue) {// this will prevent having .0 for longs.
-                        absValueStr = String.format("%d", (long) absValue); //$NON-NLS-1$
-                    } else {
-                        absValueStr = String.format("%s", absValue); //$NON-NLS-1$
-                    }
+                    long roundedValue = Math.round(doubleValue);
+                    absValueStr = String.format("%s", roundedValue); //$NON-NLS-1$
                 } catch (NumberFormatException nfe2) {
-                    // try long
-                    try {
-                        long longValue = Long.parseLong(value);
-                        absValueStr = Long.toString(Math.abs(longValue));
-                    } catch (NumberFormatException nfe1) {
-                        // the value is not a long nor a float so ignores it
-                        // and let absValue to be null.
-                    }
+                    // Nan: nothing to do, but fail silently (no change in value)
                 }
                 if (absValueStr != null) {
                     row.set(columnName, absValueStr);
-                }// else not a int or a float to do nothing.
-            }// else no value set for this column so do nothing
+                }
+            }
 
         };
     }
 
     @Override
     public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.FLOAT);
+        return Collections.singleton(Type.NUMERIC);
     }
 
 }

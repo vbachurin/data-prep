@@ -1,6 +1,6 @@
 id;firstname;lastname;state;registration;city;birth;nbCommands;avgAmount
 1;Grover;Quincy;AR;17-02-2008;;01-09-1973;41;82.4
-2;Warren;Johnson;WA;18-08-2007;Nashville;11-02-1960;17;87.6
+2;Warren;Johnson;WA;18-08-2007;Nashville;11-02-1960;17.5;87.6
 3;Andrew;Ford;WA;13-09-2008;Richmond;13-11-1971;91;18.3
 4;Gerald;Pierce;ID;05-08-2007;Pierre;30-10-1963;-34;6.0
 5;Millard;Reagan;TX;09-01-2007;Montpelier;12-09-1954;Unknown;15.1
