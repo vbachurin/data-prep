@@ -26,11 +26,22 @@
             // *_percent is the real % of empty/valid/invalid records, while *_percent_width is the width % of the bar.
             // They can be differents if less than MIN_PERCENT are valid/invalid/empty, to assure a min width of each bar. To be usable by the user.
             // TODO remove completely one bar if absolute zero records match (ie: if 0 invalid records, do not display invalid bar)
-            column.quality.emptyPercent = Math.ceil(column.quality.empty * 100 / column.total);
-            column.quality.emptyPercentWidth = Math.max(column.quality.emptyPercent, MIN_PERCENT);
 
-            column.quality.invalidPercent = Math.ceil(column.quality.invalid * 100 / column.total);
-            column.quality.invalidPercentWidth = Math.max(column.quality.invalidPercent, MIN_PERCENT);
+            if (column.quality.empty > 0) {
+                column.quality.emptyPercent = Math.ceil(column.quality.empty * 100 / column.total);
+                column.quality.emptyPercentWidth = Math.max(column.quality.emptyPercent, MIN_PERCENT);
+            } else {
+                column.quality.emptyPercent = 0;
+                column.quality.emptyPercentWidth = 0;
+            }
+
+            if (column.quality.invalid > 0) {
+                column.quality.invalidPercent = Math.ceil(column.quality.invalid * 100 / column.total);
+                column.quality.invalidPercentWidth = Math.max(column.quality.invalidPercent, MIN_PERCENT);
+            } else {
+                column.quality.invalidPercent = 0;
+                column.quality.invalidPercentWidth = 0;
+            }
 
             column.quality.validPercent = 100 - column.quality.emptyPercent - column.quality.invalidPercent;
             column.quality.validPercentWidth = 100 - column.quality.emptyPercentWidth - column.quality.invalidPercentWidth;

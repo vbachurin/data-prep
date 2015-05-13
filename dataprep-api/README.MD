@@ -147,7 +147,7 @@ Docker image comes with the following environment properties:
 * TDP_API_TRANSFORMATION_SERVICE_URL: URL for the Transformation Service.
 Note: value supports environment property placeholders, this means a environment property such as:
 ```
-TDP_API_DATASET_SERVICE_URL: http://${DATASET_PORT_8080_TCP_ADDR}:${DATASET_PORT_8080_TCP_PORT}/datasets
+TDP_API_DATASET_SERVICE_URL: http://${DATASET_PORT_8080_TCP_ADDR}:${DATASET_PORT_8080_TCP_PORT}
 ```
 ...uses values from environment properties DATASET_PORT_8080_TCP_ADDR and DATASET_PORT_8080_TCP_PORT. Unresolved properties are kept as is.
 
