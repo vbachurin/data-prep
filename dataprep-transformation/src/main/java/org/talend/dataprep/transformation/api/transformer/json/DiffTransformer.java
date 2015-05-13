@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -50,10 +51,15 @@ class DiffTransformer implements Transformer {
                 throw new IllegalArgumentException("Output cannot be null.");
             }
 
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder).indexes(indexes)
-                    .preview(true).actions(DataSetRow.class, oldActions.getRowTransformer())
+            //@formatter:off
+            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
+                    .indexes(indexes)
+                    .preview(true)
+                    .actions(DataSetRow.class, oldActions.getRowTransformer())
                     .actions(DataSetRow.class, newActions.getRowTransformer())
-                    .columnActions(newActions.getMetadataTransformers()).build();
+                    .actions(RowMetadata.class, newActions.getMetadataTransformers())
+                    .build();
+            //@formatter:on
 
             typeStateSelector.process(configuration);
             output.flush();

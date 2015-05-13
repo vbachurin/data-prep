@@ -173,6 +173,11 @@ public class DataSetRow implements Cloneable {
             return;
         }
 
+        // columns cannot have the same name
+        if (values.containsKey(newColumnName)) {
+            throw new IllegalArgumentException("column '" + newColumnName + "' already exists");
+        }
+
         synchronized (values) {
             String savedValue = values.get(columnName);
             values.remove(columnName);

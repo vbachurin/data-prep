@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -56,9 +57,13 @@ class SimpleTransformer implements Transformer {
                 throw new IllegalArgumentException("Output cannot be null.");
             }
 
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder).preview(false)
-                    .actions(DataSetRow.class, actions.getRowTransformer()).columnActions(actions.getMetadataTransformers())
+            //@formatter:off
+            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
+                    .preview(false)
+                    .actions(DataSetRow.class, actions.getRowTransformer())
+                    .actions(RowMetadata.class, actions.getMetadataTransformers())
                     .build();
+            //@formatter:on
 
             typeStateSelector.process(configuration);
             output.flush();

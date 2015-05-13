@@ -34,6 +34,6 @@ public interface Transformer {
         generator.setCodec(builder.build());
         final JsonWriter writer = new JsonWriter(generator);
 
-        return TransformerConfiguration.builder().parser(parser).writer(writer);
+        return TransformerConfiguration.builder().input(parser).output(writer);
     }
 }

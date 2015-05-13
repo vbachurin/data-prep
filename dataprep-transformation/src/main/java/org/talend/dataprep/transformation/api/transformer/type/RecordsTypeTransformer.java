@@ -22,8 +22,8 @@ public class RecordsTypeTransformer implements TypeTransformer {
 
     @Override
     public void process(final TransformerConfiguration configuration) {
-        final TransformerWriter writer = configuration.getWriter();
-        final JsonParser parser = configuration.getParser();
+        final TransformerWriter writer = configuration.getOutput();
+        final JsonParser parser = configuration.getInput();
 
         final List<Consumer<DataSetRow>> actions = configuration.getActions(DataSetRow.class);
         final List<Integer> indexes = configuration.getIndexes();

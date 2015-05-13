@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -36,6 +35,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
@@ -53,7 +53,7 @@ public class SplitTest {
     private Consumer<DataSetRow> rowClosure;
 
     /** The metadata consumer to test. */
-    private Function<List<ColumnMetadata>, List<ColumnMetadata>> metadataClosure;
+    private Consumer<RowMetadata> metadataClosure;
 
     /** The action to test. */
     @Autowired
@@ -125,8 +125,10 @@ public class SplitTest {
         input.add(createMetadata("recipe"));
         input.add(createMetadata("steps"));
         input.add(createMetadata("last update"));
+        RowMetadata rowMetadata = new RowMetadata(input);
 
-        List<ColumnMetadata> actual = metadataClosure.apply(input);
+        metadataClosure.accept(rowMetadata);
+        List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe"));

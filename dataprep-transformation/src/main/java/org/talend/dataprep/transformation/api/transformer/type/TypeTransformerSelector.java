@@ -29,8 +29,8 @@ public class TypeTransformerSelector implements TypeTransformer {
 
     @Override
     public void process(final TransformerConfiguration configuration) {
-        final TransformerWriter writer = configuration.getWriter();
-        final JsonParser parser = configuration.getParser();
+        final TransformerWriter writer = configuration.getOutput();
+        final JsonParser parser = configuration.getInput();
         try {
             JsonToken nextToken;
 

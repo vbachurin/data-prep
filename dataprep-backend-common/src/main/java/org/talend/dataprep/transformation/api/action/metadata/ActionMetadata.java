@@ -2,11 +2,10 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.codehaus.jackson.JsonNode;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.ActionParser;
@@ -65,6 +64,13 @@ public interface ActionMetadata {
     Parameter[] getParameters();
 
     /**
+     * Return the list of column type that this action can applied to.
+     *
+     * @return A set of the column {@link Type types} this Action can handle.
+     */
+    Set<Type> getCompatibleColumnTypes();
+
+    /**
      * @param input Action parameters as json input.
      * @return the closure that transforms the row.
      */
@@ -82,15 +88,6 @@ public interface ActionMetadata {
     Consumer<DataSetRow> create(Map<String, String> parameters);
 
     /**
-     * @param input Action parameters as json input.
-     * @return the closure that transforms the row metadata.
-     */
-    default Function<List<ColumnMetadata>, List<ColumnMetadata>> createMetadataClosure(Iterator<Map.Entry<String, JsonNode>> input) {
-        Map<String, String> parsedParameters = parseParameters(input);
-        return createMetadataClosure(parsedParameters);
-    }
-
-    /**
      * Create a closure to perform the transformation at row metadata given the parameters.
      *
      * By default, the original row metadata is returned.
@@ -98,10 +95,17 @@ public interface ActionMetadata {
      * @param parameters the parameters needed to perform the action.
      * @return A closure that accepts the dataset row metadata, closures are expected to execute safely.
      */
-    default Function<List<ColumnMetadata>, List<ColumnMetadata>> createMetadataClosure(Map<String, String> parameters) {
-        return rowMetadata -> rowMetadata;
+    default Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+        return rowMetadata -> {
+        };
     }
 
+    /**
+     * Parse the given json parameter into a map<key, value>.
+     *
+     * @param parameters the json parameters.
+     * @return the action parameters as a map<key, value>.
+     */
     default Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters) {
         List<String> paramIds = new ArrayList<>();
         for (Parameter current : getParameters()) {
@@ -131,10 +135,4 @@ public interface ActionMetadata {
         return parsedParameters;
     }
 
-    /**
-     * Return the list of column type that this action can applied to.
-     * 
-     * @return A set of the column {@link Type types} this Action can handle.
-     */
-    Set<Type> getCompatibleColumnTypes();
 }

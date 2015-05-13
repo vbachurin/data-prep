@@ -33,8 +33,14 @@ public class CsvExporter implements Transformer {
     @Override
     public void transform(InputStream input, OutputStream output) {
         try {
+
+            //@formatter:off
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
-                    .writer(new CsvWriter(output, DEFAULT_SEPARATOR)).actions(DataSetRow.class, actions).build();
+                    .output(new CsvWriter(output, DEFAULT_SEPARATOR))
+                    .actions(DataSetRow.class, actions)
+                    .build();
+            //@formatter:on
+
             typeStateSelector.process(configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);

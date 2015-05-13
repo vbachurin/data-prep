@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -37,6 +36,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
@@ -54,7 +54,7 @@ public class RenameTest {
     private Consumer<DataSetRow> rowClosure;
 
     /** The metadata consumer to test. */
-    private Function<List<ColumnMetadata>, List<ColumnMetadata>> metadataClosure;
+    private Consumer<RowMetadata> metadataClosure;
 
     /** The action to test. */
     @Autowired
@@ -95,15 +95,27 @@ public class RenameTest {
     public void should_update_metadata() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        ColumnMetadata metadata = ColumnMetadata.Builder.column().name("first name").type(Type.STRING).headerSize(102).empty(0)
-                .invalid(2).valid(5).build();
+        //@formatter:off
+        ColumnMetadata metadata = ColumnMetadata.Builder
+                .column()
+                .name("first name")
+                .type(Type.STRING)
+                .headerSize(102)
+                .empty(0)
+                .invalid(2)
+                .valid(5)
+                .build();
+        //@formatter:on
         input.add(metadata);
+        RowMetadata rowMetadata = new RowMetadata(input);
 
         Map<String, String> values = new HashMap<>();
         values.put("first name", "Peter");
         DataSetRow row = new DataSetRow(values);
 
-        List<ColumnMetadata> actual = metadataClosure.apply(input);
+        metadataClosure.accept(rowMetadata);
+
+        List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
         ColumnMetadata renamedMetadata = ColumnMetadata.Builder.column().name("NAME_FIRST").type(Type.STRING).headerSize(102)

@@ -67,6 +67,9 @@ public class TransformationService {
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
+ catch (Exception e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+        }
     }
 
     @RequestMapping(value = "/transform/preview", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)

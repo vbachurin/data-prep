@@ -1,7 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +47,30 @@ public class DataSetRowTest {
         assertEquals(row, createRow(defaultValues(), false));
     }
 
+    /**
+     * When rename overwrite an existing column.
+     *
+     * @see DataSetRow#renameColumn(String, String)
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void rename_to_an_existing_column() {
+        // given
+        String oldName = "firstName";
+        String newName = "lastName";
+        final DataSetRow row = createRow(defaultValues(), false);
+
+        // when
+        row.renameColumn(oldName, newName);
+
+        // then
+        fail("two columns cannot have the same name.");
+    }
+
+    /**
+     * @param values the values of the row to return.
+     * @param isDeleted true if the row is deleted.
+     * @return a new dataset row with the given values.
+     */
     private DataSetRow createRow(final Map<String, String> values, final boolean isDeleted) {
         final DataSetRow row = new DataSetRow(values);
         row.setDeleted(isDeleted);
@@ -55,6 +78,9 @@ public class DataSetRowTest {
         return row;
     }
 
+    /**
+     * @return some default values.
+     */
     private Map<String, String> defaultValues() {
         final Map<String, String> values = new HashMap<>(4);
         values.put("id", "1");

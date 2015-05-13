@@ -1,8 +1,10 @@
 package org.talend.dataprep.transformation.api.action;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.codehaus.jackson.JsonFactory;
@@ -14,8 +16,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
@@ -48,7 +50,8 @@ public class ActionParser implements BeanFactoryAware {
             // no op
             if (content.isEmpty()) {
                 return new ParsedActions(row -> {
-                }, Collections.emptyList());
+                }, rowMetadata -> {
+                });
             }
             JsonNode node = mapper.readTree(content);
             Iterator<JsonNode> elements = node.getElements();
@@ -58,7 +61,7 @@ public class ActionParser implements BeanFactoryAware {
                     throw new IllegalArgumentException("'actions' element should contain an array of 'action' elements.");
                 }
                 List<Consumer<DataSetRow>> parsedRowActions = new ArrayList<>();
-                List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> parsedMetadataActions = new ArrayList<>();
+                List<Consumer<RowMetadata>> parsedMetadataActions = new ArrayList<>();
 
                 Iterator<JsonNode> actionNodes = root.getElements();
                 while (actionNodes.hasNext()) {
@@ -85,12 +88,20 @@ public class ActionParser implements BeanFactoryAware {
                     }
                 };
 
-                return new ParsedActions(rowConsumer, parsedMetadataActions);
+                // as well as the metadata consumers
+                Consumer<RowMetadata> metadataConsumer = rowMetadata -> {
+                    for (Consumer<RowMetadata> metadataAction : parsedMetadataActions) {
+                        metadataAction.accept(rowMetadata);
+                    }
+                };
+
+                return new ParsedActions(rowConsumer, metadataConsumer);
 
             } else {
                 // Should not happen, but no action means no op.
                 return new ParsedActions(row -> {
-                }, Collections.emptyList());
+                }, rowMetadata -> {
+                });
             }
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_ACTIONS, e);
