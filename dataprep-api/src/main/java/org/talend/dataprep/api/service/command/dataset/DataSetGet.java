@@ -46,8 +46,12 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
 
     private int retryCount = 0;
 
+    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns) {
+        this(client, dataSetId, metadata, columns, false);
+    }
 
-    private DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns, boolean preview) {
+
+    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns, boolean preview) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
 
         this.dataSetId = dataSetId;
