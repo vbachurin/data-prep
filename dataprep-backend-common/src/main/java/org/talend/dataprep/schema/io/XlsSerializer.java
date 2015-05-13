@@ -64,26 +64,26 @@ public class XlsSerializer implements Serializer {
                     {
                         continue;
                     }
-                }
-                Row row = sheet.getRow(i);
-                if (row != null)
-                {
-                    generator.writeStartObject();
-                    for ( int j = 0; j < columns.size(); j++ )
+
+                    Row row = sheet.getRow( i );
+                    if ( row != null )
                     {
-                        ColumnMetadata columnMetadata = columns.get( j );
-
-                        // do not write the values if this has been detected as an header
-                        if ( i >= columnMetadata.getHeaderSize() )
+                        generator.writeStartObject();
+                        for ( int j = 0; j < columns.size(); j++ )
                         {
-                            String cellValue = XlsUtils.getCellValueAsString( row.getCell( j ) );
-                            LOGGER.trace( "cellValue for {}/{}: {}", i, j, cellValue );
-                            generator.writeStringField( columnMetadata.getId(), cellValue );
-                        }
-                    }
-                    generator.writeEndObject();
-                }
+                            ColumnMetadata columnMetadata = columns.get( j );
 
+                            // do not write the values if this has been detected as an header
+                            if ( i >= columnMetadata.getHeaderSize() )
+                            {
+                                String cellValue = XlsUtils.getCellValueAsString( row.getCell( j ) );
+                                LOGGER.trace( "cellValue for {}/{}: {}", i, j, cellValue );
+                                generator.writeStringField( columnMetadata.getId(), cellValue );
+                            }
+                        }
+                        generator.writeEndObject();
+                    }
+                }
             }
 
             generator.writeEndArray();
