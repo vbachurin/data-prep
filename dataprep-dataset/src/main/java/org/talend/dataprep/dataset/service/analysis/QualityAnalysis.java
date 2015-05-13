@@ -6,6 +6,7 @@ import java.util.Iterator;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,21 @@ public class QualityAnalysis {
                         {
                             for (ColumnMetadata column : metadata.getRow().getColumns()) {
                                 generator.writeStartObject();
-                                generator.writeStringField("type", column.getType()); //$NON-NLS-1$
+                                {
+                                    generator.writeStringField("name", StringUtils.EMPTY); //$NON-NLS-1$
+                                    generator.writeStringField("id", StringUtils.EMPTY); //$NON-NLS-1$
+                                    generator.writeStringField("type", column.getType()); //$NON-NLS-1$
+                                    generator.writeStringField("suggested type", column.getType()); //$NON-NLS-1$
+                                    // Types
+                                    generator.writeArrayFieldStart("types"); //$NON-NLS-1$
+                                    generator.writeStartObject();
+                                    {
+                                        generator.writeStringField("name", column.getType()); //$NON-NLS-1$
+                                        generator.writeNumberField("occurrences", metadata.getContent().getNbRecords());
+                                    }
+                                    generator.writeEndObject();
+                                    generator.writeEndArray();
+                                }
                                 generator.writeEndObject();
                             }
                         }
