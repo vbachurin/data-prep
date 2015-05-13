@@ -11,6 +11,7 @@ import org.talend.dataprep.exception.ErrorCode;
  * Transformation error codes.
  */
 public enum TransformationErrorCodes implements ErrorCode {
+    OUTPUT_TYPE_NOT_SUPPORTED(415),
 
     UNABLE_TO_PARSE_JSON(400), // TODO what is the difference with CommonErrorCodes.UNABLE_TO_PARSE_JSON ?
     UNEXPECTED_EXCEPTION(500),

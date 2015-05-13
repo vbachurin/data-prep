@@ -27,12 +27,16 @@ public interface Transformer {
 
     default TransformerConfiguration.Builder getDefaultConfiguration(InputStream input, OutputStream output,
             Jackson2ObjectMapperBuilder builder) throws IOException {
+
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(input);
 
-        final JsonGenerator generator = factory.createGenerator(output);
-        generator.setCodec(builder.build());
-        final JsonWriter writer = new JsonWriter(generator);
+        JsonWriter writer = null;
+        if(builder != null) {
+            final JsonGenerator generator = factory.createGenerator(output);
+            generator.setCodec(builder.build());
+            writer = new JsonWriter(generator);
+        }
 
         return TransformerConfiguration.builder().parser(parser).writer(writer);
     }

@@ -1,23 +1,41 @@
 package org.talend.dataprep.api.service.api;
 
+import org.talend.dataprep.api.service.validation.OneNotNull;
+import org.talend.dataprep.api.type.ExportType;
+
 import javax.validation.constraints.NotNull;
 
+@OneNotNull({"preparationId", "datasetId"})
 public class ExportInput {
-
+    /**
+     * The export type
+     */
     @NotNull
-    private Type exportType;
+    private ExportType exportType;
+    /**
+     * CSV separator to use
+     */
+    private Character csvSeparator;
 
+    /**
+     * The preparation id to export. If this is null, datasetId must be set
+     */
     private String preparationId;
-
+    /**
+     * The step id to export at a specific state. If null, the preparation head version will be exported
+     */
     private String stepId;
 
+    /**
+     * The dataset id to export. If this is null, preparationId must be set
+     */
     private String datasetId;
 
-    public Type getExportType() {
+    public ExportType getExportType() {
         return exportType;
     }
 
-    public void setExportType(Type exportType) {
+    public void setExportType(ExportType exportType) {
         this.exportType = exportType;
     }
 
@@ -45,9 +63,11 @@ public class ExportInput {
         this.datasetId = datasetId;
     }
 
-    enum Type {
-        CSV,
-        XLS,
-        TABLEAU
+    public Character getCsvSeparator() {
+        return csvSeparator;
+    }
+
+    public void setCsvSeparator(char csvSeparator) {
+        this.csvSeparator = csvSeparator;
     }
 }
