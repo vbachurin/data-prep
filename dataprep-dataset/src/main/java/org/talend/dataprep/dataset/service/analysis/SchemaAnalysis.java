@@ -70,7 +70,7 @@ public class SchemaAnalysis {
                     mapper.writer().writeValue(content, metadata);
                     // Determine schema for the content
                     String elasticDataSchema = statisticsClient.inferSchemaInMemory(content.toString());
-                    LOGGER.debug("Analysis result: {}" + elasticDataSchema);
+                    LOGGER.debug("Analysis result: {}", elasticDataSchema);
                     // Set column types back in data set metadata
                     final Iterator<JsonNode> columns = mapper.readTree(elasticDataSchema).get("column").elements(); //$NON-NLS-1$
                     final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();

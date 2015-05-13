@@ -70,5 +70,15 @@
         "default": ""
       }
     ]
+  },
+  {
+    "name": "round",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
   }
 ]

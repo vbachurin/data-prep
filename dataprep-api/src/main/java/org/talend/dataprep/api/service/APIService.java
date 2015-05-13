@@ -1,8 +1,6 @@
 package org.talend.dataprep.api.service;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
@@ -14,14 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
-import org.talend.dataprep.exception.TDPExceptionContext;
 
 public class APIService {
 
@@ -34,15 +31,6 @@ public class APIService {
     private final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
     protected static final Logger LOG = LoggerFactory.getLogger(APIService.class);
-
-    @Value("${transformation.service.url}")
-    protected String transformServiceUrl;
-
-    @Value("${dataset.service.url}")
-    protected String contentServiceUrl;
-
-    @Value("${preparation.service.url}")
-    protected String preparationServiceURL;
 
     @Autowired
     private WebApplicationContext context;
@@ -75,18 +63,6 @@ public class APIService {
         } catch (BeansException e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e, TDPExceptionContext.build().put("class", clazz).put("args", args));
         }
-    }
-
-    void setDataSetServiceURL(String dataSetServiceURL) {
-        this.contentServiceUrl = dataSetServiceURL;
-    }
-
-    void setTransformationServiceURL(String transformationServiceURL) {
-        this.transformServiceUrl = transformationServiceURL;
-    }
-
-    void setPreparationServiceURL(String preparationServiceURL) {
-        this.preparationServiceURL = preparationServiceURL;
     }
 
     protected HttpClient getClient() {

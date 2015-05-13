@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -20,7 +22,7 @@ import com.fasterxml.jackson.core.JsonToken;
  * transformation/serialization to other specific TypeTransformers.
  */
 @Component
-public class TypeTransformerSelector implements TypeTransformer<DataSetRow> {
+public class TypeTransformerSelector implements TypeTransformer {
 
     @Autowired
     private ColumnsTypeTransformer columnsTransformer;
@@ -29,28 +31,30 @@ public class TypeTransformerSelector implements TypeTransformer<DataSetRow> {
     private RecordsTypeTransformer recordsTransformer;
 
     @Override
-    public void process(final JsonParser parser, final JsonGenerator generator, final List<Integer> indexes, boolean preview, final Consumer<DataSetRow>... actions) {
-
+    public void process(final TransformerConfiguration configuration) {
+        final TransformerWriter writer = configuration.getWriter();
+        final JsonParser parser = configuration.getParser();
         try {
             JsonToken nextToken;
 
-            generator.writeStartObject();
+            writer.startObject();
             while ((nextToken = parser.nextToken()) != null) {
                 if (nextToken == JsonToken.FIELD_NAME) {
                     switch (parser.getText()) {
                     case "columns":
-                        generator.writeFieldName("columns");
-                        columnsTransformer.process(parser, generator, null, preview);
+                        writer.fieldName("columns");
+                        columnsTransformer.process(configuration);
                         break;
                     case "records":
-                        generator.writeFieldName("records");
-                        recordsTransformer.process(parser, generator, indexes, preview, actions);
+                        writer.fieldName("records");
+                        recordsTransformer.process(configuration);
                         break;
                     }
                 }
             }
-            generator.writeEndObject();
-            generator.flush();
+            writer.endObject();
+            writer.flush();
+
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }

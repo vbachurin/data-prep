@@ -10,6 +10,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.*;
@@ -19,21 +20,31 @@ import com.fasterxml.jackson.databind.ObjectReader;
  * Columns array Serializer
  */
 @Component
-public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
+public class ColumnsTypeTransformer implements TypeTransformer {
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
     @Override
-    public void process(final JsonParser parser, final JsonGenerator generator, final List<Integer> indexes, final boolean preview, final Consumer<ColumnMetadata>... actions) {
+    public void process(final TransformerConfiguration configuration) {
+        final JsonParser parser = configuration.getParser();
+
+        final List<Consumer<ColumnMetadata>> columnActions = configuration.getActions(ColumnMetadata.class);
+        final Consumer<ColumnMetadata> actions = columnActions == null ? null : columnActions.get(0);
+
         try {
             final StringWriter content = new StringWriter();
             final JsonGenerator contentGenerator = new JsonFactory().createGenerator(content);
 
             JsonToken nextToken;
+            int level = 0;
             while ((nextToken = parser.nextToken()) != null) {
-                // TODO nextToken == JsonToken.VALUE_EMBEDDED_OBJECT
                 switch (nextToken) {
+                case VALUE_EMBEDDED_OBJECT:
+                    contentGenerator.writeRaw(parser.getText());
+                    break;
+                case NOT_AVAILABLE:
+                    break;
                 // Object delimiter
                 case START_OBJECT:
                     contentGenerator.writeStartObject();
@@ -41,7 +52,6 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
                 case END_OBJECT:
                     contentGenerator.writeEndObject();
                     break;
-
                 // Fields key/value
                 case FIELD_NAME:
                     contentGenerator.writeFieldName(parser.getText());
@@ -61,23 +71,25 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
                 case VALUE_STRING:
                     contentGenerator.writeString(parser.getText());
                     break;
-
                 // Array delimiter : on array end, we consider the column part ends
                 case START_ARRAY:
+                    level++;
                     contentGenerator.writeStartArray();
                     break;
                 case END_ARRAY:
                     contentGenerator.writeEndArray();
-                    contentGenerator.flush();
-
-                    final List<ColumnMetadata> columns = getColumnsMetadata(content);
-                    transform(columns, actions);
-                    write(generator, columns);
-
-                    return;
+                    level--;
+                    if (level == 0) {
+                        contentGenerator.flush();
+                        final List<ColumnMetadata> columns = getColumnsMetadata(content);
+                        transform(columns, actions);
+                        configuration.getWriter().write(columns);
+                        return;
+                    }
+                case VALUE_NULL:
+                    break;
                 }
             }
-
         } catch (JsonParseException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (IOException e) {
@@ -91,12 +103,12 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
      * @param action - transformation action
      */
     // TODO Temporary: actions may transform columns, for now just print them as is
-    private void transform(final List<ColumnMetadata> columns, final Consumer<ColumnMetadata>... action) {
+    private void transform(final List<ColumnMetadata> columns, final Consumer<ColumnMetadata> action) {
     }
 
     /**
      * Convert String to list of ColumnMetadataObject
-     * 
+     *
      * @param content - the String writer that contains JSON format array
      * @throws IOException
      */

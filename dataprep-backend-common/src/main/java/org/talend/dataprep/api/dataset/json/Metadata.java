@@ -17,10 +17,11 @@ class Metadata implements State {
     private String currentField;
 
     @Override
-    public void handle(Context context, DataSetMetadata.Builder builder, JsonToken token) throws Exception {
+    public void handle(Context context, JsonToken token) throws Exception {
         if (token == null) {
             return;
         }
+        final DataSetMetadata.Builder builder = context.getBuilder();
         switch (token) {
         case NOT_AVAILABLE:
         case START_ARRAY:

@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "action": "round",
+      "parameters": {
+        "column_name": "aNumber"
+      }
+    }
+  ]
+}

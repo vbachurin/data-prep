@@ -65,21 +65,34 @@
                  * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
                  */
                 var formatter = function(row, cell, value, columnDef, dataContext) {
+                    //hidden characters need to be shown
+                    var returnStr = value;
+                    if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
+                        var hiddenCharsRegExpMatch = value.match(/(^\s\s*)?(\S*)(\s\s*$)?/);
+                        if (hiddenCharsRegExpMatch[1]){
+                            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>' + hiddenCharsRegExpMatch[2];
+                        }else{
+                            returnStr = hiddenCharsRegExpMatch[2] ;
+                        }
+                        if (hiddenCharsRegExpMatch[3]){
+                            returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
+                        }
+                    }
                     //deleted row preview
                     if(dataContext.__tdpRowDiff === 'delete') {
-                        return '<div class="cellDeletedValue"><strike>' + (value ? value : ' ') + '</strike></div>';
+                        return '<div class="cellDeletedValue"><strike>' + (returnStr ? returnStr : ' ') + '</strike></div>';
                     }
                     //new row preview
                     else if(dataContext.__tdpRowDiff === 'new') {
-                        return '<div class="cellNewValue">' + (value ? value : ' ') + '</div>';
+                        return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
                     }
                     //updated cell preview
                     if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id] === 'update') {
-                        return '<div class="cellUpdateValue">' + value + '</div>';
+                        return '<div class="cellUpdateValue">' + returnStr + '</div>';
                     }
 
                     //no preview
-                    return value;
+                    return returnStr;
                 };
 
                 /**

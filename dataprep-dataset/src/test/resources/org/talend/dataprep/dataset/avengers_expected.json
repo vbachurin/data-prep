@@ -7,6 +7,75 @@
         "invalid": 0,
         "valid": 5
       },
+      "statistics": {
+        "count": 5,
+        "valid": 5,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": 0.0,
+        "min": 0.0,
+        "mean": 0.0,
+        "variance": 0.0,
+        "duplicate count": 0,
+        "distinct count": 5,
+        "frequency table": [
+          {
+            "data": "Captain America",
+            "occurrences": 1
+          },
+          {
+            "data": "Superman",
+            "occurrences": 1
+          },
+          {
+            "data": "Iron Man",
+            "occurrences": 1
+          },
+          {
+            "data": "Batman",
+            "occurrences": 1
+          },
+          {
+            "data": "Spiderman",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "Aaaaaaa Aaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaa Aaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": 0.0,
+          "lower quantile": 0.0,
+          "upper quantile": 0.0
+        },
+        "histogram": [],
+        "text length summary": {
+          "minimal length": 6.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 15.0,
+          "average length": 9.2,
+          "average length with blank": 9.2
+        }
+      },
       "type": "string"
     },
     {
@@ -15,6 +84,67 @@
         "empty": 0,
         "invalid": 0,
         "valid": 5
+      },
+      "statistics": {
+        "count": 5,
+        "valid": 5,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": 0.0,
+        "min": 0.0,
+        "mean": 0.0,
+        "variance": 0.0,
+        "duplicate count": 0,
+        "distinct count": 5,
+        "frequency table": [
+          {
+            "data": "Clark",
+            "occurrences": 1
+          },
+          {
+            "data": "Stevens",
+            "occurrences": 1
+          },
+          {
+            "data": "Tony",
+            "occurrences": 1
+          },
+          {
+            "data": "Bruce",
+            "occurrences": 1
+          },
+          {
+            "data": "Peter",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "Aaaaa",
+            "occurrences": 3
+          },
+          {
+            "pattern": "Aaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": 0.0,
+          "lower quantile": 0.0,
+          "upper quantile": 0.0
+        },
+        "histogram": [],
+        "text length summary": {
+          "minimal length": 4.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 7.0,
+          "average length": 5.2,
+          "average length with blank": 5.2
+        }
       },
       "type": "string"
     },
@@ -25,6 +155,67 @@
         "invalid": 0,
         "valid": 5
       },
+      "statistics": {
+        "count": 5,
+        "valid": 5,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": 0.0,
+        "min": 0.0,
+        "mean": 0.0,
+        "variance": 0.0,
+        "duplicate count": 0,
+        "distinct count": 5,
+        "frequency table": [
+          {
+            "data": "Parker",
+            "occurrences": 1
+          },
+          {
+            "data": "Rogers",
+            "occurrences": 1
+          },
+          {
+            "data": "Stark",
+            "occurrences": 1
+          },
+          {
+            "data": "Kent",
+            "occurrences": 1
+          },
+          {
+            "data": "Wayne",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "Aaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": 0.0,
+          "lower quantile": 0.0,
+          "upper quantile": 0.0
+        },
+        "histogram": [],
+        "text length summary": {
+          "minimal length": 4.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 6.0,
+          "average length": 5.2,
+          "average length with blank": 5.2
+        }
+      },
       "type": "string"
     },
     {
@@ -34,6 +225,59 @@
         "invalid": 0,
         "valid": 5
       },
+      "statistics": {
+        "count": 5,
+        "valid": 5,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": 0.0,
+        "min": 0.0,
+        "mean": 0.0,
+        "variance": 0.0,
+        "duplicate count": 0,
+        "distinct count": 5,
+        "frequency table": [
+          {
+            "data": "05/15/1962",
+            "occurrences": 1
+          },
+          {
+            "data": "03/05/1963",
+            "occurrences": 1
+          },
+          {
+            "data": "04/04/1918",
+            "occurrences": 1
+          },
+          {
+            "data": "02/28/1938",
+            "occurrences": 1
+          },
+          {
+            "data": "05/01/1939",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "MM/dd/yyyy",
+            "occurrences": 5
+          }
+        ],
+        "quantiles": {
+          "median": 0.0,
+          "lower quantile": 0.0,
+          "upper quantile": 0.0
+        },
+        "histogram": [],
+        "text length summary": {
+          "minimal length": 0.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 0.0,
+          "average length": 0.0,
+          "average length with blank": 0.0
+        }
+      },
       "type": "date"
     },
     {
@@ -42,6 +286,51 @@
         "empty": 0,
         "invalid": 0,
         "valid": 5
+      },
+      "statistics": {
+        "count": 5,
+        "valid": 5,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": 0.0,
+        "min": 0.0,
+        "mean": 0.0,
+        "variance": 0.0,
+        "duplicate count": 3,
+        "distinct count": 2,
+        "frequency table": [
+          {
+            "data": "New York City",
+            "occurrences": 4
+          },
+          {
+            "data": "NYC",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "Aaa Aaaa Aaaa",
+            "occurrences": 4
+          },
+          {
+            "pattern": "AAA",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": 0.0,
+          "lower quantile": 0.0,
+          "upper quantile": 0.0
+        },
+        "histogram": [],
+        "text length summary": {
+          "minimal length": 3.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 13.0,
+          "average length": 11.0,
+          "average length with blank": 11.0
+        }
       },
       "type": "string"
     }

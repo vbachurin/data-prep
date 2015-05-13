@@ -4,14 +4,11 @@ import java.util.*;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 
 import com.fasterxml.jackson.core.JsonToken;
 
 class Columns implements State {
-
-    public static final State INSTANCE = new Columns();
 
     private final List<ColumnMetadata.Builder> columns = new LinkedList<>();
 
@@ -24,7 +21,7 @@ class Columns implements State {
     private boolean parsingQuality;
 
     @Override
-    public void handle(Context context, DataSetMetadata.Builder builder, JsonToken token) throws Exception {
+    public void handle(Context context, JsonToken token) throws Exception {
         if (token == null) {
             return;
         }
@@ -39,7 +36,7 @@ class Columns implements State {
             }
             break;
         case END_ARRAY:
-            builder.row(columns.toArray(new ColumnMetadata.Builder[columns.size()]));
+            context.getBuilder().row(columns.toArray(new ColumnMetadata.Builder[columns.size()]));
             columns.clear();
             values.clear();
             context.setCurrent(Selector.INSTANCE);
@@ -68,6 +65,9 @@ class Columns implements State {
             currentField = context.getJsonParser().getCurrentName();
             if ("quality".equals(currentField)) {
                 parsingQuality = true;
+            } else if ("statistics".equals(currentField)) {
+                context.getJsonParser().nextToken();
+                context.getJsonParser().skipChildren();
             }
             break;
         case VALUE_EMBEDDED_OBJECT:
