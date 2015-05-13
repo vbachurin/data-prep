@@ -32,14 +32,6 @@
                 .then(PlaygroundService.show);
         };
 
-        vm.openDraft = function(dataset){
-            if (dataset.type.indexOf('excel')<0){
-                return;
-            }
-            console.log('openDraft');
-            return DatasetService.getContent(dataset.id, true,true);
-        };
-
         /**
          * @ngdoc method
          * @name delete
@@ -79,6 +71,7 @@
          */
         var loadUrlSelectedDataset = function(datasets) {
             if($stateParams.datasetid) {
+                console.log("loadUrlSelectedDataset:"+$stateParams.datasetid);
                 var selectedDataset = _.find(datasets, function(dataset) {
                     return dataset.id === $stateParams.datasetid;
                 });

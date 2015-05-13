@@ -49,7 +49,7 @@
                         }
                     }
                 })
-                .state('nav.home.datasets.preview', {
+                .state('nav.home.datasets-preview', {
                     url: '/datasets/preview?datasetid',
                     views: {
                         'home-content': {

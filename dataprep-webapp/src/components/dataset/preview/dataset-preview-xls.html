@@ -1,6 +1,7 @@
 <talend-modal class="playground"
               fullscreen="true"
-              close-button="true">
+              close-button="true"
+              state="datasetPreviewCtrl.showPreview">
 
     <div class="modal-header">
       header
@@ -9,9 +10,9 @@
     <div class="modal-body flex">
          <div class="flex-center">
             <div class="datagrid-container">
-                grid
-                <!-- <datagrid></datagrid> -->
+                <datagrid></datagrid>
             </div>
         </div>
     </div>
 </talend-modal>
+{{::metadata.id}}
