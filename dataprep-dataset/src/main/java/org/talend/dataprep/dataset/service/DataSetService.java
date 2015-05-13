@@ -163,7 +163,7 @@ public class DataSetService {
      * @param metadata If <code>true</code>, includes data set metadata information.
      * @param columns If <code>true</code>, includes column metadata information (column types...).
      * @param preview if <code>true</code> a preview request
-     * @param sheetNamePreview the sheet name to preview
+     * @param sheetName the sheet name to preview
      * @param dataSetId A data set id.
      * @param response The HTTP response to interact with caller.
      */
@@ -174,7 +174,7 @@ public class DataSetService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
             @RequestParam(defaultValue = "false") @ApiParam(name = "preview", value = "preview of the data set") boolean preview,
-            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetNamePreview,
+            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
@@ -208,21 +208,21 @@ public class DataSetService {
             }
         }
 
-        if (sheetNamePreview != null) {
-            dataSetMetadata.setSheetName(sheetNamePreview);
+        if (sheetName != null) {
+            dataSetMetadata.setSheetName(sheetName);
         }
 
         // it's the first preview and sheet not yet set correctly
         // so use the first one
         if (preview && StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
-            String sheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
-            LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, sheetName);
-            dataSetMetadata.setSheetName(sheetName);
+            String theSheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
+            LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName);
+            dataSetMetadata.setSheetName(theSheetName);
         }
 
         if (preview) {
-            String sheetName = dataSetMetadata.getSheetName();
-            List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(sheetName);
+            String theSheetName = dataSetMetadata.getSheetName();
+            List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(theSheetName);
             dataSetMetadata.getRow().setColumns(columnMetadatas);
         }
 

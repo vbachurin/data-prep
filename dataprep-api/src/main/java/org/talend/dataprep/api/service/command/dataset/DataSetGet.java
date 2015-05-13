@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -59,7 +60,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
         this.metadata = metadata;
         this.columns = columns;
         this.preview = preview;
-        this.sheetName = null;
+        this.sheetName = sheetName;
     }
 
     @Override
@@ -69,8 +70,8 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
                 + "&columns=" + columns);
         url.append("&preview=" + preview);
 
-        if (sheetName != null){
-            url.append( "&sheetName=" + sheetName );
+        if (StringUtils.isNotEmpty(sheetName)) {
+            url.append("&sheetName=" + sheetName);
         }
 
         final HttpGet contentRetrieval = new HttpGet(url.toString());

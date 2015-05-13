@@ -75,11 +75,12 @@
          * @param {string} datasetId The dataset id
          * @param {boolean} metadata If false, the metadata will not be returned
          * @param {boolean} preview if the expected dataset is a preview one
+         * @param {string} sheetName to preview
          * @returns {Promise} - the GET promise
          */
-        self.getContent = function(datasetId, metadata,preview) {
+        self.getContent = function(datasetId, metadata,preview,sheetName) {
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata + (preview? '&preview='+preview : ''))
+            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata + (preview? '&preview='+preview : '') + (sheetName?'&sheetName='+sheetName: ''))
                 .then(function(res) {
                     return res.data;
                 })
