@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -34,9 +35,9 @@ public class CsvExporter implements Transformer {
     public void transform(InputStream input, OutputStream output) {
         try {
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
-                    .writer(new CsvWriter(output, separator))
+                    .output(new CsvWriter(output, separator))
                     .actions(DataSetRow.class, actions.getRowTransformer())
-                    .columnActions(actions.getMetadataTransformers())
+                    .actions(RowMetadata.class, actions.getMetadataTransformers())
                     .build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {

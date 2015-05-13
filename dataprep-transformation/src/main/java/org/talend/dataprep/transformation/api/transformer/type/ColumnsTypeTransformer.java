@@ -3,12 +3,13 @@ package org.talend.dataprep.transformation.api.transformer.type;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -31,7 +32,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
      */
     @Override
     public void process(final TransformerConfiguration configuration) {
-        final JsonParser parser = configuration.getParser();
+        final JsonParser parser = configuration.getInput();
 
         try {
             final StringWriter content = new StringWriter();
@@ -82,7 +83,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
 
                     // transform them and write them
                     columns = transform(columns, configuration);
-                    configuration.getWriter().write(columns);
+                    configuration.getOutput().write(columns);
 
                     return;
                 }
@@ -104,13 +105,14 @@ public class ColumnsTypeTransformer implements TypeTransformer {
      */
     private List<ColumnMetadata> transform(final List<ColumnMetadata> columns, TransformerConfiguration configuration) {
 
-        List<ColumnMetadata> result = columns;
+        RowMetadata rowMetadata = new RowMetadata(columns);
 
-        List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> columnActions = configuration.getColumnActions();
-        for (Function<List<ColumnMetadata>, List<ColumnMetadata>> function : columnActions) {
-            result = function.apply(result);
+        List<Consumer<RowMetadata>> actions = configuration.getActions(RowMetadata.class);
+
+        for (Consumer<RowMetadata> action : actions) {
+            action.accept(rowMetadata);
         }
-        return result;
+        return rowMetadata.getColumns();
     }
 
     /**

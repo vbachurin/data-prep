@@ -38,6 +38,6 @@ public interface Transformer {
             writer = new JsonWriter(generator);
         }
 
-        return TransformerConfiguration.builder().parser(parser).writer(writer);
+        return TransformerConfiguration.builder().input(parser).output(writer);
     }
 }

@@ -16,7 +16,9 @@ public enum TransformationErrorCodes implements ErrorCode {
     UNABLE_TO_PARSE_JSON(400), // TODO what is the difference with CommonErrorCodes.UNABLE_TO_PARSE_JSON ?
     UNEXPECTED_EXCEPTION(500),
     UNABLE_TO_COMPUTE_DATASET_ACTIONS(500),
-    UNABLE_TO_WRITE_JSON(500);
+    UNABLE_TO_WRITE_JSON(500),
+    /** When an error occurs while transforming a dataset. */
+    UNABLE_TRANSFORM_DATASET(500);
 
     /** The http status to use. */
     private int httpStatus;

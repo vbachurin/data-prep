@@ -2,12 +2,12 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 
@@ -78,8 +78,8 @@ public class Split extends SingleColumnAction {
      * @return the searator to use according to the given parameters.
      */
     private String getSeparator(Map<String, String> parameters) {
-        return (parameters.get(SEPARATOR_PARAMETER).equals("other") ? parameters.get(MANUAL_SEPARATOR_PARAMETER)
-                : parameters.get(SEPARATOR_PARAMETER));
+        return (parameters.get(SEPARATOR_PARAMETER).equals("other") ? parameters.get(MANUAL_SEPARATOR_PARAMETER) : parameters
+                .get(SEPARATOR_PARAMETER));
     }
 
     /**
@@ -104,8 +104,7 @@ public class Split extends SingleColumnAction {
                     } else {
                         row.set(columnName + SPLIT_COLUMN_APPENDIX, "");
                     }
-                }
- else {
+                } else {
                     row.set(columnName, value);
                     row.set(columnName + SPLIT_COLUMN_APPENDIX, "");
                 }
@@ -119,27 +118,31 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public Function<List<ColumnMetadata>, List<ColumnMetadata>> createMetadataClosure(Map<String, String> parameters) {
+    public Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+
         return rowMetadata -> {
 
             String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
 
-            // a new row metadata must be returned, the given one cannot be altered nor reused
-            List<ColumnMetadata> newRowMetadata = new ArrayList<>(rowMetadata.size() + 1);
+            List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
 
-            for (ColumnMetadata column : rowMetadata) {
+            for (ColumnMetadata column : rowMetadata.getColumns()) {
                 ColumnMetadata newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
-                newRowMetadata.add(newColumnMetadata);
+                newColumns.add(newColumnMetadata);
+
                 // append the split column
                 if (StringUtils.equals(columnName, column.getId())) {
                     newColumnMetadata = ColumnMetadata.Builder.column().name(column.getId() + SPLIT_COLUMN_APPENDIX)
                             .type(Type.get(column.getType())).empty(column.getQuality().getEmpty())
                             .invalid(column.getQuality().getInvalid()).valid(column.getQuality().getValid())
                             .headerSize(column.getHeaderSize()).build();
-                    newRowMetadata.add(newColumnMetadata);
+                    newColumns.add(newColumnMetadata);
                 }
+
             }
-            return newRowMetadata;
+
+            // apply the new columns to the row metadata
+            rowMetadata.setColumns(newColumns);
         };
     }
 }

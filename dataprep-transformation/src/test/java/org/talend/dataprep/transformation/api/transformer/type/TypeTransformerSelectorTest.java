@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -47,13 +46,15 @@ public class TypeTransformerSelectorTest {
 
     private TransformerWriter transformerWriter;
 
-    private final ParsedActions identityAction = new ParsedActions((row) -> {
-    }, Collections.emptyList());
+    private final ParsedActions identityAction = new ParsedActions(row -> {
+    }, rowMetadata -> {
+    });
 
     private final ParsedActions changeLastnameAction = new ParsedActions((row) -> {
         final String transformedLastname = row.get("lastname").toUpperCase();
         row.set("lastname", transformedLastname);
-    }, Collections.emptyList());
+    }, rowMetadata -> {
+    });
 
     private final ParsedActions getChangeNameAndDeleteAction = new ParsedActions((row) -> {
         final String transformedLastname = row.get("lastname").toUpperCase();
@@ -61,7 +62,8 @@ public class TypeTransformerSelectorTest {
         row.set("lastname", transformedLastname);
         row.set("firstname", transformedFirstname);
         row.setDeleted(row.get("city").equals("Columbia"));
-    }, Collections.emptyList());
+    }, rowMetadata -> {
+    });
 
     @Before
     public void init() throws IOException {
@@ -81,9 +83,14 @@ public class TypeTransformerSelectorTest {
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(inputStream);
 
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().parser(parser)
-                .writer(transformerWriter).preview(false).actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
+        //@formatter:off
+        final TransformerConfiguration configuration = TransformerConfiguration.builder()
+                .input(parser)
+                .output(transformerWriter)
+                .preview(false)
+                .actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
                 .build();
+        //@formatter:on
 
         // when
         transformer.process(configuration);
@@ -99,9 +106,14 @@ public class TypeTransformerSelectorTest {
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(inputStream);
 
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().parser(parser)
-                .writer(transformerWriter).preview(false).actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
+        //@formatter:off
+        final TransformerConfiguration configuration = TransformerConfiguration.builder()
+                .input(parser)
+                .output(transformerWriter)
+                .preview(false)
+                .actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
                 .build();
+        //@formatter:on
 
         // when
         try {
@@ -122,9 +134,14 @@ public class TypeTransformerSelectorTest {
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(inputStream);
 
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().parser(parser)
-                .writer(transformerWriter).preview(false).actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
+        //@formatter:off
+        final TransformerConfiguration configuration = TransformerConfiguration.builder()
+                .input(parser)
+                .output(transformerWriter)
+                .preview(false)
+                .actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
                 .build();
+        //@formatter:on
 
         // when
         try {
@@ -145,9 +162,14 @@ public class TypeTransformerSelectorTest {
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(inputStream);
 
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().parser(parser)
-                .writer(transformerWriter).preview(false).actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
+        //@formatter:off
+        final TransformerConfiguration configuration = TransformerConfiguration.builder()
+                .input(parser)
+                .output(transformerWriter)
+                .preview(false)
+                .actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
                 .build();
+        //@formatter:on
 
         // when
         try {
@@ -176,10 +198,15 @@ public class TypeTransformerSelectorTest {
         indexes.add(3);
         indexes.add(5);
 
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().parser(parser)
-                .writer(transformerWriter).indexes(indexes).preview(true)
+        //@formatter:off
+        final TransformerConfiguration configuration = TransformerConfiguration.builder().input(parser)
+                .output(transformerWriter)
+                .indexes(indexes)
+                .preview(true)
                 .actions(DataSetRow.class, identityAction.getRowTransformer())
-                .actions(DataSetRow.class, getChangeNameAndDeleteAction.getRowTransformer()).build();
+                .actions(DataSetRow.class, getChangeNameAndDeleteAction.getRowTransformer())
+                .build();
+        //@formatter:on
 
         // when
         transformer.process(configuration);

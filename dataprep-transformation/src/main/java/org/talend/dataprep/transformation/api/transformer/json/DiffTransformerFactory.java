@@ -2,7 +2,6 @@ package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class DiffTransformerFactory implements TransformerFactory {
 
+    //@formatter:off
     /** No op parsed actions. */
-    private static final ParsedActions IDLE_CONSUMER = new ParsedActions(row -> {
-    }, Collections.emptyList());
+    private static final ParsedActions IDLE_CONSUMER = new ParsedActions(row -> {}, rowMetadata -> {});
+    //@formatter:on
 
     @Autowired
     private WebApplicationContext context;

@@ -1,11 +1,9 @@
 package org.talend.dataprep.transformation.api.action;
 
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 
 /**
  * JavaBean that holds all the transformers.
@@ -16,7 +14,7 @@ public class ParsedActions {
     private Consumer<DataSetRow> rowTransformer;
 
     /** The list of metadata transformers. */
-    private List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> metadataTransformers;
+    private Consumer<RowMetadata> metadataTransformers;
 
     /**
      * Default constructor.
@@ -24,8 +22,7 @@ public class ParsedActions {
      * @param rowTransformer The row transformers united into a single consumer.
      * @param metadataTransformers The list of metadata transformers.
      */
-    public ParsedActions(Consumer<DataSetRow> rowTransformer,
-            List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> metadataTransformers) {
+    public ParsedActions(Consumer<DataSetRow> rowTransformer, Consumer<RowMetadata> metadataTransformers) {
         this.rowTransformer = rowTransformer;
         this.metadataTransformers = metadataTransformers;
     }
@@ -40,7 +37,7 @@ public class ParsedActions {
     /**
      * @return The list of metadata transformers.
      */
-    public List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> getMetadataTransformers() {
+    public Consumer<RowMetadata> getMetadataTransformers() {
         return metadataTransformers;
     }
 }

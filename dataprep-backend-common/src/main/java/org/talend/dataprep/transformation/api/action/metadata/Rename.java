@@ -2,7 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -10,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 
 /**
@@ -94,15 +94,17 @@ public class Rename extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public Function<List<ColumnMetadata>, List<ColumnMetadata>> createMetadataClosure(Map<String, String> parameters) {
+    public Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+
         return rowMetadata -> {
+
             String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
 
             // a new row metadata must be returned, the given one cannot be altered nor reused
-            List<ColumnMetadata> newRowMetadata = new ArrayList<>(rowMetadata.size());
+            List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size());
 
-            for (ColumnMetadata column : rowMetadata) {
+            for (ColumnMetadata column : rowMetadata.getColumns()) {
                 ColumnMetadata newColumnMetadata;
                 // rename the column
                 if (StringUtils.equals(columnName, column.getId())) {
@@ -117,9 +119,11 @@ public class Rename extends SingleColumnAction {
                 else {
                     newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
                 }
-                newRowMetadata.add(newColumnMetadata);
+                newColumns.add(newColumnMetadata);
             }
-            return newRowMetadata;
+
+            rowMetadata.setColumns(newColumns);
+
         };
     }
 

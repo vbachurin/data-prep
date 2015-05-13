@@ -78,6 +78,10 @@ public class TransformationService {
             transformer.transform(content, response.getOutputStream());
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        } catch (TDPException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         }
     }
 
