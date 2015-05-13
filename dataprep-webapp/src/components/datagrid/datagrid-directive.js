@@ -70,9 +70,10 @@
                     if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
                         var hiddenCharsRegExpMatch = value.match(/(^\s\s*)?(\S*)(\s\s*$)?/);
                         if (hiddenCharsRegExpMatch[1]){
-                            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>';
+                            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>' + hiddenCharsRegExpMatch[2];
+                        }else{
+                            returnStr = hiddenCharsRegExpMatch[2] ;
                         }
-                        returnStr +=  hiddenCharsRegExpMatch[2];
                         if (hiddenCharsRegExpMatch[3]){
                             returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
                         }

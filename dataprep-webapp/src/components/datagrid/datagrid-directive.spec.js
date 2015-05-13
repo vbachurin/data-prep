@@ -347,6 +347,10 @@ describe('Datagrid directive', function() {
             return element;
         };
     }
+    //return the text of the element without the included node text
+    function getDirectText(element){
+        return element.contents().filter(function(){return this.nodeType == 3;})[0].nodeValue;
+    }
 
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
@@ -610,39 +614,48 @@ describe('Datagrid directive', function() {
         var grid = new GridGetter(element);
         //'AL'
         expect(grid.row(0).cell(0).element().find('> span').length).toBe(0);
+        expect(grid.row(0).cell(0).text()).toBe('AL');
         //' AL'
         expect(grid.row(0).cell(1).element().find('> span').length).toBe(1);
         expect(grid.row(0).cell(1).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(0).cell(1).element().find('> span').eq(0).text()).toBe(' ');
+        expect(getDirectText(grid.row(0).cell(1).element())).toBe('AL');
         //'AL '
         expect(grid.row(0).cell(2).element().find('> span').length).toBe(1);
         expect(grid.row(0).cell(2).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(0).cell(2).element().find('> span').eq(0).text()).toBe(' ');
+        expect(getDirectText(grid.row(0).cell(2).element())).toBe('AL');
         //' AL '
         expect(grid.row(0).cell(3).element().find('> span').length).toBe(2);
         expect(grid.row(0).cell(3).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(0).cell(3).element().find('> span').eq(0).text()).toBe(' ');
         expect(grid.row(0).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(0).cell(3).element().find('> span').eq(1).text()).toBe(' ');
+        expect(getDirectText(grid.row(0).cell(3).element())).toBe('AL');
         //'  AL'
         expect(grid.row(1).cell(0).element().find('> span').length).toBe(1);
         expect(grid.row(1).cell(0).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(0).element().find('> span').eq(0).text()).toBe('  ');
+        expect(getDirectText(grid.row(1).cell(0).element())).toBe('AL');
         //'AL  '
         expect(grid.row(1).cell(1).element().find('> span').length).toBe(1);
         expect(grid.row(1).cell(1).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(1).element().find('> span').eq(0).text()).toBe('  ');
+        expect(getDirectText(grid.row(1).cell(1).element())).toBe('AL');
         //'  AL  '
         expect(grid.row(1).cell(2).element().find('> span').length).toBe(2);
         expect(grid.row(1).cell(2).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(2).element().find('> span').eq(0).text()).toBe('  ');
         expect(grid.row(1).cell(2).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(2).element().find('> span').eq(1).text()).toBe('  ');
+        expect(getDirectText(grid.row(1).cell(2).element())).toBe('AL');
         //'\tAL\n'
         expect(grid.row(1).cell(3).element().find('> span').length).toBe(2);
         expect(grid.row(1).cell(3).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(3).element().find('> span').eq(0).text()).toBe('\t');
         expect(grid.row(1).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(3).element().find('> span').eq(1).text()).toBe('\n');
+        expect(getDirectText(grid.row(1).cell(3).element())).toBe('AL');
     }));
 });
