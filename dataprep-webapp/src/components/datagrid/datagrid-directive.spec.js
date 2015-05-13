@@ -271,6 +271,64 @@ describe('Datagrid directive', function() {
             }
         ]
     };
+
+    var hiddenCharsData = {
+        'columns': [
+            {
+                'id': 'col1',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'col2',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'col3',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            },
+            {
+                'id': 'col4',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                'col1': 'AL',
+                'col2': ' AL',
+                'col3': 'AL ',
+                'col4': ' AL '
+            },
+            {
+                'col1': '  AL',
+                'col2': 'AL  ',
+                'col3': '  AL  ',
+                'col4': '\tAL\n'
+            }
+        ]
+    };
+
+
+
     function GridGetter(element) {
         this.row = function(index) {
             return new GridGetter(element.find('.slick-row').eq(index));
@@ -541,5 +599,50 @@ describe('Datagrid directive', function() {
         expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(false);
         expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(false);
         expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(true);
+    }));
+
+    it('should add "hiddenChars class when leading or trailing invisible characters are encountered"', inject(function (FilterService, DatagridService){
+        //when
+        DatagridService.setDataset(metadata, hiddenCharsData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        //'AL'
+        expect(grid.row(0).cell(0).element().find('> span').length).toBe(0);
+        //' AL'
+        expect(grid.row(0).cell(1).element().find('> span').length).toBe(1);
+        expect(grid.row(0).cell(1).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> span').eq(0).text()).toBe(' ');
+        //'AL '
+        expect(grid.row(0).cell(2).element().find('> span').length).toBe(1);
+        expect(grid.row(0).cell(2).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(0).cell(2).element().find('> span').eq(0).text()).toBe(' ');
+        //' AL '
+        expect(grid.row(0).cell(3).element().find('> span').length).toBe(2);
+        expect(grid.row(0).cell(3).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(0).cell(3).element().find('> span').eq(0).text()).toBe(' ');
+        expect(grid.row(0).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(0).cell(3).element().find('> span').eq(1).text()).toBe(' ');
+        //'  AL'
+        expect(grid.row(1).cell(0).element().find('> span').length).toBe(1);
+        expect(grid.row(1).cell(0).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(1).cell(0).element().find('> span').eq(0).text()).toBe('  ');
+        //'AL  '
+        expect(grid.row(1).cell(1).element().find('> span').length).toBe(1);
+        expect(grid.row(1).cell(1).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(1).cell(1).element().find('> span').eq(0).text()).toBe('  ');
+        //'  AL  '
+        expect(grid.row(1).cell(2).element().find('> span').length).toBe(2);
+        expect(grid.row(1).cell(2).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(1).cell(2).element().find('> span').eq(0).text()).toBe('  ');
+        expect(grid.row(1).cell(2).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(1).cell(2).element().find('> span').eq(1).text()).toBe('  ');
+        //'\tAL\n'
+        expect(grid.row(1).cell(3).element().find('> span').length).toBe(2);
+        expect(grid.row(1).cell(3).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(1).cell(3).element().find('> span').eq(0).text()).toBe('\t');
+        expect(grid.row(1).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
+        expect(grid.row(1).cell(3).element().find('> span').eq(1).text()).toBe('\n');
     }));
 });

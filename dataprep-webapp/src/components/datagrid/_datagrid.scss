@@ -99,5 +99,9 @@
       @include cellImitation();
       background-color: rgba(255, 0, 0, 0.5);
     }
+
+    .hiddenChars {
+      background-color: red;
+    }
   }
 }
