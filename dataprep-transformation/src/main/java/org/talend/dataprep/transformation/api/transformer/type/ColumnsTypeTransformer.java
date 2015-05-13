@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.*;
@@ -30,19 +33,20 @@ public class ColumnsTypeTransformer implements TypeTransformer {
      * @see TypeTransformer#process(JsonParser, JsonGenerator, List, boolean, ParsedActions...)
      */
     @Override
-    public void process(final JsonParser input, final JsonGenerator output, final List<Integer> indexes, final boolean preview,
-            final ParsedActions... actions) {
+    public void process(final TransformerConfiguration configuration) {
+        final JsonParser parser = configuration.getParser();
+
+        final List<Consumer<ColumnMetadata>> columnActions = configuration.getActions(ColumnMetadata.class);
+        final Consumer<ColumnMetadata> actions = columnActions == null ? null : columnActions.get(0);
+
         try {
-            // TODO should the content be written directly to the output instead of a buffer as in RecordTypeTransformer
-            // ?
             final StringWriter content = new StringWriter();
             final JsonGenerator contentGenerator = new JsonFactory().createGenerator(content);
 
             JsonToken nextToken;
-            while ((nextToken = input.nextToken()) != null) {
+            while ((nextToken = parser.nextToken()) != null) {
                 // TODO nextToken == JsonToken.VALUE_EMBEDDED_OBJECT
                 switch (nextToken) {
-
                 // Object delimiter
                 case START_OBJECT:
                     contentGenerator.writeStartObject();
@@ -53,7 +57,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
 
                 // Fields key/value
                 case FIELD_NAME:
-                    contentGenerator.writeFieldName(input.getText());
+                    contentGenerator.writeFieldName(parser.getText());
                     break;
                 case VALUE_FALSE:
                     contentGenerator.writeBoolean(false);
@@ -62,13 +66,13 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                     contentGenerator.writeBoolean(true);
                     break;
                 case VALUE_NUMBER_FLOAT:
-                    contentGenerator.writeNumber(input.getNumberValue().floatValue());
+                    contentGenerator.writeNumber(parser.getNumberValue().floatValue());
                     break;
                 case VALUE_NUMBER_INT:
-                    contentGenerator.writeNumber(input.getNumberValue().intValue());
+                    contentGenerator.writeNumber(parser.getNumberValue().intValue());
                     break;
                 case VALUE_STRING:
-                    contentGenerator.writeString(input.getText());
+                    contentGenerator.writeString(parser.getText());
                     break;
 
                 // Array delimiter : on array end, we consider the column part ends
@@ -83,8 +87,8 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                     List<ColumnMetadata> columns = getColumnsMetadata(content);
 
                     // transform them and write them
-                    columns = transform(columns, preview, actions);
-                    write(output, columns);
+                    columns = transform(columns, configuration.isPreview(), actions);
+                    configuration.getWriter().write(columns);
 
                     return;
                 }
@@ -126,5 +130,4 @@ public class ColumnsTypeTransformer implements TypeTransformer {
         final ObjectReader columnReader = builder.build().reader(ColumnMetadata.class);
         return columnReader.<ColumnMetadata> readValues(content.toString()).readAll();
     }
-
 }

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -28,32 +30,31 @@ public class TypeTransformerSelector implements TypeTransformer {
     @Autowired
     private RecordsTypeTransformer recordsTransformer;
 
-    /**
-     * @see TypeTransformer#process(JsonParser, JsonGenerator, List, boolean, ParsedActions...)
-     */
-    public void process(final JsonParser input, final JsonGenerator output, final List<Integer> indexes, boolean preview,
-            final ParsedActions... actions) {
-
+    @Override
+    public void process(final TransformerConfiguration configuration) {
+        final TransformerWriter writer = configuration.getWriter();
+        final JsonParser parser = configuration.getParser();
         try {
             JsonToken nextToken;
 
-            output.writeStartObject();
-            while ((nextToken = input.nextToken()) != null) {
+            writer.startObject();
+            while ((nextToken = parser.nextToken()) != null) {
                 if (nextToken == JsonToken.FIELD_NAME) {
-                    switch (input.getText()) {
+                    switch (parser.getText()) {
                     case "columns":
-                        output.writeFieldName("columns");
-                        columnsTransformer.process(input, output, null, preview, actions);
+                        writer.fieldName("columns");
+                        columnsTransformer.process(configuration);
                         break;
                     case "records":
-                        output.writeFieldName("records");
-                        recordsTransformer.process(input, output, indexes, preview, actions);
+                        writer.fieldName("records");
+                        recordsTransformer.process(configuration);
                         break;
                     }
                 }
             }
-            output.writeEndObject();
-            output.flush();
+            writer.endObject();
+            writer.flush();
+
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }

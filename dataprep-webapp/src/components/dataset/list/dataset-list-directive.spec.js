@@ -71,9 +71,9 @@ describe('Dataset list directive', function() {
 
         icon = element.find('td.inventory-icon').eq(1);
         iconSrc = icon.find('> img')[0].src;
-        certificationIcon = icon.find('.pin');
+        certificationIcon = icon.find('.pin')[0].src;
         expect(strEndsWith(iconSrc, '/assets/images/inventory/xls_file.png')).toBe(true);
-        expect(certificationIcon.length).toBe(0);
+        expect(strEndsWith(certificationIcon, '/assets/images/certification-pending.png')).toBe(true);
         expect(element.find('td.inventory-title').eq(1).text()).toBe('Customers');
         expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created on 02-03-2015 14:53, contains  lines');
 
@@ -81,7 +81,7 @@ describe('Dataset list directive', function() {
         iconSrc = icon.find('> img')[0].src;
         certificationIcon = icon.find('.pin')[0].src;
         expect(strEndsWith(iconSrc, '/assets/images/inventory/generic_file.png')).toBe(true);
-        expect(strEndsWith(certificationIcon, '/assets/images/certified.png')).toBe(true);
+        expect(strEndsWith(certificationIcon, '/assets/images/certification-certified.png')).toBe(true);
         expect(element.find('td.inventory-title').eq(2).text()).toBe('Customers 2');
         expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created on 02-03-2015 14:54, contains  lines');
     });

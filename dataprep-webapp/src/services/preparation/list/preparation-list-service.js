@@ -64,9 +64,9 @@
         this.create = function(datasetId, name) {
             return PreparationRestService.create(datasetId, name)
                 .then(function(response) {
-                                    self.refreshPreparations();
-                                    return response;
-                                });
+                    self.refreshPreparations();
+                    return response;
+                });
         };
 
         /**

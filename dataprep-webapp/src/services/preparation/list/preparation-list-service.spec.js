@@ -241,7 +241,6 @@ describe('Preparation list service controller', function() {
         expect(PreparationRestService.create).toHaveBeenCalledWith('84ab54cd867f4645a', 'my preparation');
     }));
 
-
     it('should return created preparation id', inject(function($rootScope, PreparationListService) {
         //given
         PreparationListService.preparations = preparations;
@@ -257,7 +256,6 @@ describe('Preparation list service controller', function() {
         //then
         expect(result).toBe(createdPreparationId);
     }));
-
 
     it('should refresh preparations list on creation', inject(function($rootScope, PreparationListService, PreparationRestService) {
         //given
