@@ -57,25 +57,32 @@ public class XlsSerializer implements Serializer {
 
             for (int i = 0, size = sheet.getLastRowNum(); i <= size; i++) {
 
-                // is header line?
-                if (isHeaderLine(i, columns)) {
-                    continue;
-                }
-
-                Row row = sheet.getRow(i);
-
-                generator.writeStartObject();
-                for (int j = 0; j < columns.size(); j++) {
-                    ColumnMetadata columnMetadata = columns.get(j);
-
-                    // do not write the values if this has been detected as an header
-                    if (i >= columnMetadata.getHeaderSize()) {
-                        String cellValue = XlsUtils.getCellValueAsString(row.getCell(j));
-                        LOGGER.trace("cellValue for {}/{}: {}", i, j, cellValue);
-                        generator.writeStringField(columnMetadata.getId(), cellValue);
+                if (columns != null)
+                {
+                    // is header line?
+                    if ( isHeaderLine( i, columns ) )
+                    {
+                        continue;
                     }
                 }
-                generator.writeEndObject();
+                Row row = sheet.getRow(i);
+                if (row != null)
+                {
+                    generator.writeStartObject();
+                    for ( int j = 0; j < columns.size(); j++ )
+                    {
+                        ColumnMetadata columnMetadata = columns.get( j );
+
+                        // do not write the values if this has been detected as an header
+                        if ( i >= columnMetadata.getHeaderSize() )
+                        {
+                            String cellValue = XlsUtils.getCellValueAsString( row.getCell( j ) );
+                            LOGGER.trace( "cellValue for {}/{}: {}", i, j, cellValue );
+                            generator.writeStringField( columnMetadata.getId(), cellValue );
+                        }
+                    }
+                    generator.writeEndObject();
+                }
 
             }
 
