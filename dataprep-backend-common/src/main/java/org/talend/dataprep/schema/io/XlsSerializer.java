@@ -45,6 +45,10 @@ public class XlsSerializer implements Serializer {
 
                     sheet = workbook.getSheetAt(Integer.valueOf(sheetNumberStr));
                 }
+                // still null so use the first one
+                if (sheet == null) {
+                    sheet = workbook.getSheetAt(0);
+                }
             }
 
             generator.writeStartArray();
