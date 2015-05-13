@@ -2,12 +2,11 @@ package org.talend.dataprep.transformation.api.transformer.input;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -24,21 +23,27 @@ public class TransformerConfiguration {
 
     private final Map<Class, List<Consumer>> actions;
 
+    private final List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> columnActions;
+
     /**
      * Constructor
-     * @param parser - the json parser
-     * @param writer - the writer plugged to the output stream to write into
-     * @param indexes - The records indexes to transform.
-     * @param preview - preview mode
-     * @param actions - the actions by type
+     * 
+     * @param parser the json parser
+     * @param writer the writer plugged to the output stream to write into
+     * @param indexes The records indexes to transform.
+     * @param preview preview mode
+     * @param actions the actions by type
+     * @param columnActions actions to perform on columns.
      */
-    public TransformerConfiguration(final JsonParser parser, final TransformerWriter writer, final List<Integer> indexes,
-            final boolean preview, final Map<Class, List<Consumer>> actions) {
+    private TransformerConfiguration(final JsonParser parser, final TransformerWriter writer, final List<Integer> indexes,
+            final boolean preview, final Map<Class, List<Consumer>> actions,
+            List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> columnActions) {
         this.parser = parser;
         this.writer = writer;
         this.indexes = indexes;
         this.preview = preview;
         this.actions = actions;
+        this.columnActions = columnActions;
     }
 
     public JsonParser getParser() {
@@ -59,11 +64,15 @@ public class TransformerConfiguration {
 
     public <T> List<Consumer<T>> getActions(final Class<T> targetClass) {
         final List<Consumer> genericActions = actions.get(targetClass);
-        if(genericActions == null) {
+        if (genericActions == null) {
             return null;
         }
 
         return genericActions.stream().map(consumer -> (Consumer<T>) consumer).collect(toList());
+    }
+
+    public List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> getColumnActions() {
+        return columnActions;
     }
 
     public static Builder builder() {
@@ -80,7 +89,9 @@ public class TransformerConfiguration {
 
         private boolean preview;
 
-        private Map<Class, List<Consumer>> actions = new HashMap<>();
+        private Map<Class, List<Consumer>> actions = new HashMap<>(2);
+
+        private List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> columnActions = Collections.emptyList();
 
         public Builder parser(final JsonParser parser) {
             this.parser = parser;
@@ -115,8 +126,13 @@ public class TransformerConfiguration {
             return this;
         }
 
+        public Builder columnActions(final List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> columnActions) {
+            this.columnActions = columnActions;
+            return this;
+        }
+
         public TransformerConfiguration build() {
-            return new TransformerConfiguration(parser, writer, indexes, preview, actions);
+            return new TransformerConfiguration(parser, writer, indexes, preview, actions, columnActions);
         }
 
     }

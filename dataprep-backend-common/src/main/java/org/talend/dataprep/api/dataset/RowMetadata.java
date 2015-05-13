@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represent metadata information for a row of a data set.
+ * Models metadata information for a row of a data set.
  */
 public class RowMetadata {
 
@@ -32,5 +32,12 @@ public class RowMetadata {
      */
     public void setColumns(List<ColumnMetadata> columnMetadata) {
         this.columnMetadata = columnMetadata;
+    }
+
+    /**
+     * @return the row size.
+     */
+    public int size() {
+        return columnMetadata.size();
     }
 }

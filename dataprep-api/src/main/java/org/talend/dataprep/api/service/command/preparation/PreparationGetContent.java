@@ -44,32 +44,32 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
         final HttpResponse response = client.execute(contentRetrieval);
         final int statusCode = response.getStatusLine().getStatusCode();
 
-        switch(statusCode) {
-            case SC_OK:
-                return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
+        switch (statusCode) {
+        case SC_OK:
+            return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
 
-            case SC_ACCEPTED:
-                contentRetrieval.releaseConnection();
+        case SC_ACCEPTED:
+            contentRetrieval.releaseConnection();
 
-                // retrieve preparation details
-                final JsonNode preparation = getPreparationDetails(id);
-                final String dataSetId = preparation.get("dataSetId").textValue();
+            // retrieve preparation details
+            final JsonNode preparation = getPreparationDetails(id);
+            final String dataSetId = preparation.get("dataSetId").textValue();
 
-                // get the actions to execute
-                final List<String> stepIds = getActionsStepIds(preparation, version);
-                final Map<String, Action> actions = getActions(preparation, stepIds);
-                final String encodedActions = serializeAndEncode(actions);
+            // get the actions to execute
+            final List<String> stepIds = getActionsStepIds(preparation, version);
+            final Map<String, Action> actions = getActions(preparation, stepIds);
+            final String encodedActions = serializeAndEncode(actions);
 
-                // Get the data set , and pass it to the transformation service as input
-                final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
-                final Transform transformCommand = context.getBean(Transform.class, client, retrieveDataSet, encodedActions);
+            // Get the data set , and pass it to the transformation service as input
+            final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
+            final Transform transformCommand = context.getBean(Transform.class, client, retrieveDataSet, encodedActions);
 
-                // ... and send it back to user (but saves it back in preparation service as cache).
-                return transformCommand.execute(); // TODO saves it back in preparation service as cache
+            // ... and send it back to user (but saves it back in preparation service as cache).
+            return transformCommand.execute(); // TODO saves it back in preparation service as cache
 
-            default:
-                contentRetrieval.releaseConnection();
-                throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_CONTENT);
+        default:
+            contentRetrieval.releaseConnection();
+            throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_PREPARATION_CONTENT);
         }
     }
 }

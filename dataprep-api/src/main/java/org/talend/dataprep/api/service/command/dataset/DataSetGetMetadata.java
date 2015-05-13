@@ -47,7 +47,8 @@ public class DataSetGetMetadata extends DataPrepCommand<DataSetMetadata> {
         return handleResponse(response, metadataRetrieval);
     }
 
-    private DataSetMetadata handleResponse(final HttpResponse response, final HttpGet metadataRetrieval) throws java.io.IOException {
+    private DataSetMetadata handleResponse(final HttpResponse response, final HttpGet metadataRetrieval)
+            throws java.io.IOException {
         int statusCode = response.getStatusLine().getStatusCode();
         try {
             if (statusCode >= HttpStatus.SC_OK) {

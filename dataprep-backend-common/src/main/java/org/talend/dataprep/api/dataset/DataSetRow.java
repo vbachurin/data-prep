@@ -76,6 +76,7 @@ public class DataSetRow implements Cloneable {
 
     /**
      * Set the old row for diff
+     * 
      * @param oldRow - the original row
      */
     public void diff(final DataSetRow oldRow) {
@@ -92,10 +93,9 @@ public class DataSetRow implements Cloneable {
      */
     public Map<String, Object> values() {
         final Map<String, Object> result = new HashMap<>(values.size() + 1);
-        if(this.oldRow == null) {
+        if (this.oldRow == null) {
             result.putAll(values);
-        }
-        else {
+        } else {
             // row is no more deleted : we write row values with the *NEW* flag
             if (oldRow.isDeleted() && !isDeleted()) {
                 result.put(ROW_DIFF_KEY, ROW_DIFF_NEW);
@@ -153,10 +153,9 @@ public class DataSetRow implements Cloneable {
      * Determine if the row should be written
      */
     public boolean shouldWrite() {
-        if(this.oldRow == null) {
+        if (this.oldRow == null) {
             return !isDeleted();
-        }
-        else {
+        } else {
             return !oldRow.isDeleted() || !isDeleted();
         }
     }

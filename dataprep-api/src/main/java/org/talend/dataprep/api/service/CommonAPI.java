@@ -1,6 +1,5 @@
 package org.talend.dataprep.api.service;
 
-import static org.talend.dataprep.api.service.APIService.PREPARATION_GROUP;
 import static org.talend.dataprep.api.service.command.error.ErrorList.ServiceType.*;
 
 import java.io.IOException;

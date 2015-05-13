@@ -1,8 +1,9 @@
 package org.talend.dataprep.api.service.command.preparation;
 
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -10,19 +11,12 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
-
-import com.netflix.hystrix.HystrixCommand;
 import org.talend.dataprep.exception.TDPExceptionContext;
-
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
 @Scope("request")

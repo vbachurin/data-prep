@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.talend.dataprep.api.preparation.Action;
@@ -22,6 +21,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Call Preparation Service to get preparation details
+     * 
      * @param preparationId - the preparation id
      * @return the resulting Json node object
      * @throws java.io.IOException
@@ -38,6 +38,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Get dataset records
+     * 
      * @param dataSetId - the dataset id
      * @return the resulting input stream records
      */
@@ -48,6 +49,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Serialize the actions to string and encode it to base 64
+     * 
      * @param stepActions - map of couple (stepId, action)
      * @return the serialized and encoded actions
      */
@@ -59,6 +61,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Serialize the list of integer to string and encode it to base 64
+     * 
      * @param listToEncode - list of integer to encode
      * @return the serialized and encoded list
      */
@@ -70,6 +73,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Encode the string to base 64
+     * 
      * @param toEncode The string to encode
      * @return the encoded string
      */
@@ -78,23 +82,27 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     /**
-     * Get the list of steps ids, corresponding to an action, in the chronological order
-     * If the last active step is provided, the method will only get the steps id from first to the last active step (included)
+     * Get the list of steps ids, corresponding to an action, in the chronological order If the last active step is
+     * provided, the method will only get the steps id from first to the last active step (included)
+     * 
      * @param preparationDetails - the Json node preparation details
      * @param lastActiveStep - the last active step id
      * @return the list of steps ids
      */
-    protected List<String> getActionsStepIds(final JsonNode preparationDetails, final String lastActiveStep) throws JsonProcessingException {
+    protected List<String> getActionsStepIds(final JsonNode preparationDetails, final String lastActiveStep)
+            throws JsonProcessingException {
         final List<String> result = new ArrayList<>(preparationDetails.size() - 1);
         final JsonNode stepsNode = preparationDetails.get("steps");
 
-        if(lastActiveStep != null && !lastActiveStep.equals("origin") && !lastActiveStep.equals(stepsNode.get(stepsNode.size() - 1).textValue())) {
-            //steps are in reverse order and the last is the initial step (no actions). So we skip the last and we get them in reverse order
-            for(int i = stepsNode.size() - 2; i >= 0; --i) {
+        if (lastActiveStep != null && !lastActiveStep.equals("origin")
+                && !lastActiveStep.equals(stepsNode.get(stepsNode.size() - 1).textValue())) {
+            // steps are in reverse order and the last is the initial step (no actions). So we skip the last and we get
+            // them in reverse order
+            for (int i = stepsNode.size() - 2; i >= 0; --i) {
                 final String stepId = stepsNode.get(i).textValue();
                 result.add(stepId);
 
-                if(stepId.equals(lastActiveStep)) {
+                if (stepId.equals(lastActiveStep)) {
                     break;
                 }
             }
@@ -105,6 +113,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Get a map of couples (step id, action)
+     * 
      * @param preparationDetails - the Json node preparation details
      * @param stepsIds - the step ids in the chronological order
      * @return The map of couples in the StepsIds order
@@ -114,7 +123,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         final Map<String, Action> result = new LinkedHashMap<>(stepsIds.size());
         final JsonNode actionsNode = preparationDetails.get("actions");
 
-        for(int i = 0; i < stepsIds.size(); ++i) {
+        for (int i = 0; i < stepsIds.size(); ++i) {
             result.put(stepsIds.get(i), getObjectMapper().readValue(actionsNode.get(i).toString(), Action.class));
         }
 

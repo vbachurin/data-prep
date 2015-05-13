@@ -8,22 +8,19 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.api.service.command.preparation.PreparationListForDataSet;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
-import org.talend.dataprep.exception.TDPExceptionContext;
 
 /**
  * Delete the dataset if it's not used by any preparation.

@@ -91,7 +91,7 @@ public class SplitTest {
         expectedValues.put("last update", "01/01/2015");
 
         rowClosure.accept(row);
-        assertEquals(expectedValues, row.cloneValues());
+        assertEquals(expectedValues, row.values());
     }
 
     /**
@@ -112,7 +112,7 @@ public class SplitTest {
         expectedValues.put("last update", "01/01/2015");
 
         rowClosure.accept(row);
-        assertEquals(expectedValues, row.cloneValues());
+        assertEquals(expectedValues, row.values());
     }
 
     /**

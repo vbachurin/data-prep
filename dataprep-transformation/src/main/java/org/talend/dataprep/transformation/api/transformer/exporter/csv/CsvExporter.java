@@ -17,6 +17,7 @@ import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSe
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 public class CsvExporter implements Transformer {
+
     @Autowired
     private TypeTransformerSelector typeStateSelector;
 
@@ -33,9 +34,7 @@ public class CsvExporter implements Transformer {
     public void transform(InputStream input, OutputStream output) {
         try {
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
-                    .writer(new CsvWriter(output, DEFAULT_SEPARATOR ))
-                    .actions(DataSetRow.class, actions)
-                    .build();
+                    .writer(new CsvWriter(output, DEFAULT_SEPARATOR)).actions(DataSetRow.class, actions).build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);

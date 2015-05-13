@@ -1,8 +1,6 @@
 package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -16,8 +14,6 @@ import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
-
-import com.netflix.hystrix.HystrixCommand;
 import org.talend.dataprep.exception.TDPExceptionContext;
 
 @Component

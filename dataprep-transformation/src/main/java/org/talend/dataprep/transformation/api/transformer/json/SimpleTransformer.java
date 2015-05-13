@@ -8,16 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 
 /**
  * Base implementation of the Transformer interface.
@@ -59,10 +56,8 @@ class SimpleTransformer implements Transformer {
                 throw new IllegalArgumentException("Output cannot be null.");
             }
 
-            //TODO merge : ajouter les parsedActions a la configuration
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
-                    .preview(false)
-                    .actions(DataSetRow.class, action)
+            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder).preview(false)
+                    .actions(DataSetRow.class, actions.getRowTransformer()).columnActions(actions.getMetadataTransformers())
                     .build();
 
             typeStateSelector.process(configuration);

@@ -13,10 +13,9 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.ExportInput;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
-import org.talend.dataprep.api.service.command.common.DataPrepCommand;
+import org.talend.dataprep.api.service.command.common.PreparationCommand;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.talend.dataprep.api.service.command.common.PreparationCommand;
 
 @Component
 @Scope("request")
@@ -34,8 +33,8 @@ public class Export extends PreparationCommand<InputStream> {
         String dataSetId;
         String encodedActions = null;
 
-        //Get dataset id and actions from preparation
-        if(input.getPreparationId() != null) {
+        // Get dataset id and actions from preparation
+        if (input.getPreparationId() != null) {
             final JsonNode preparationDetails = getPreparationDetails(input.getPreparationId());
 
             final List<String> currentStepsIds = getActionsStepIds(preparationDetails, input.getStepId());
@@ -44,13 +43,14 @@ public class Export extends PreparationCommand<InputStream> {
             dataSetId = preparationDetails.get("dataSetId").textValue();
             encodedActions = serializeAndEncode(actions);
         }
-        //Get provided dataset id
+        // Get provided dataset id
         else {
             dataSetId = input.getDatasetId();
         }
 
-        //Get dataset content and call export service
-        final String uri = this.transformationServiceUrl + "/transform/export" + (encodedActions != null ? "?actions=" + encodedActions : "");
+        // Get dataset content and call export service
+        final String uri = this.transformationServiceUrl + "/transform/export"
+                + (encodedActions != null ? "?actions=" + encodedActions : "");
         final HttpPost transformationCall = new HttpPost(uri);
         final InputStream content = getDatasetContent(dataSetId);
         transformationCall.setEntity(new InputStreamEntity(content));

@@ -1,16 +1,18 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
-import com.fasterxml.jackson.core.JsonGenerator;
+import java.io.IOException;
+import java.util.List;
+
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
-import java.io.IOException;
-import java.util.List;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 public class JsonWriter implements TransformerWriter {
+
     private final JsonGenerator generator;
 
     public JsonWriter(final JsonGenerator generator) {

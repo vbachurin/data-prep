@@ -38,8 +38,7 @@ public class SuggestColumnActions extends ChainedCommand<InputStream, DataSetMet
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
 
-    private SuggestColumnActions(HttpClient client, HystrixCommand<DataSetMetadata> retrieveMetadata,
-            String columnName) {
+    private SuggestColumnActions(HttpClient client, HystrixCommand<DataSetMetadata> retrieveMetadata, String columnName) {
         super(PreparationAPI.TRANSFORM_GROUP, client, retrieveMetadata);
         this.column = columnName;
     }

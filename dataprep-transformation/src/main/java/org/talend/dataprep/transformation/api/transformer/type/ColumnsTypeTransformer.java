@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.ParsedActions;
-import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
@@ -30,14 +27,11 @@ public class ColumnsTypeTransformer implements TypeTransformer {
     private Jackson2ObjectMapperBuilder builder;
 
     /**
-     * @see TypeTransformer#process(JsonParser, JsonGenerator, List, boolean, ParsedActions...)
+     * @see TypeTransformer#process(TransformerConfiguration)
      */
     @Override
     public void process(final TransformerConfiguration configuration) {
         final JsonParser parser = configuration.getParser();
-
-        final List<Consumer<ColumnMetadata>> columnActions = configuration.getActions(ColumnMetadata.class);
-        final Consumer<ColumnMetadata> actions = columnActions == null ? null : columnActions.get(0);
 
         try {
             final StringWriter content = new StringWriter();
@@ -87,7 +81,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                     List<ColumnMetadata> columns = getColumnsMetadata(content);
 
                     // transform them and write them
-                    columns = transform(columns, configuration.isPreview(), actions);
+                    columns = transform(columns, configuration);
                     configuration.getWriter().write(columns);
 
                     return;
@@ -105,17 +99,16 @@ public class ColumnsTypeTransformer implements TypeTransformer {
      * Apply columns transformations.
      *
      * @param columns the columns list to transform.
-     * @param preview true if the additional preview details should be written
-     * @param actions the actions to perform.
+     * @param configuration transformation configuration.
      * @return the transformed columns.
      */
-    private List<ColumnMetadata> transform(final List<ColumnMetadata> columns, boolean preview, final ParsedActions... actions) {
+    private List<ColumnMetadata> transform(final List<ColumnMetadata> columns, TransformerConfiguration configuration) {
+
         List<ColumnMetadata> result = columns;
-        for (ParsedActions action : actions) {
-            List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> functions = action.getMetadataTransformers();
-            for (Function<List<ColumnMetadata>, List<ColumnMetadata>> function : functions) {
-                result = function.apply(result);
-            }
+
+        List<Function<List<ColumnMetadata>, List<ColumnMetadata>>> columnActions = configuration.getColumnActions();
+        for (Function<List<ColumnMetadata>, List<ColumnMetadata>> function : columnActions) {
+            result = function.apply(result);
         }
         return result;
     }

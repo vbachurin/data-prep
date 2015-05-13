@@ -10,10 +10,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
@@ -22,7 +20,6 @@ import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")

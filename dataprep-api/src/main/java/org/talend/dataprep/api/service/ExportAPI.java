@@ -28,8 +28,7 @@ public class ExportAPI extends APIService {
 
     @RequestMapping(value = "/api/export", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Export a dataset", consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Export a dataset or a preparation to file. The file type is provided in the request body.")
-    public void create(
-            @ApiParam(value = "Export configuration") @RequestBody @Valid ExportInput input,
+    public void create(@ApiParam(value = "Export configuration") @RequestBody @Valid ExportInput input,
             HttpServletResponse response) {
         try {
             final HystrixCommand<InputStream> command = getCommand(Export.class, getClient(), input);

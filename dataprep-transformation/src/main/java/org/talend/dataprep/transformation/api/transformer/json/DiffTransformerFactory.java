@@ -12,12 +12,12 @@ import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
+import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 
 @Component
 public class DiffTransformerFactory implements TransformerFactory {

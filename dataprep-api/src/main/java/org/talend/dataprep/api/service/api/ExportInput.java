@@ -3,10 +3,12 @@ package org.talend.dataprep.api.service.api;
 import javax.validation.constraints.NotNull;
 
 public class ExportInput {
+
     @NotNull
     private Type exportType;
 
     private String preparationId;
+
     private String stepId;
 
     private String datasetId;
@@ -43,5 +45,9 @@ public class ExportInput {
         this.datasetId = datasetId;
     }
 
-    enum Type {CSV, XLS, TABLEAU}
+    enum Type {
+        CSV,
+        XLS,
+        TABLEAU
+    }
 }

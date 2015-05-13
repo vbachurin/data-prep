@@ -73,7 +73,7 @@ public class DataPreparationAPITest {
     }
 
     @BeforeClass
-    public static void startBootApp(){
+    public static void startBootApp() {
 
     }
 

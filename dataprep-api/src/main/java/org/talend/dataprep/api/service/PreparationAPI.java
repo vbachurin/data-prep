@@ -156,8 +156,7 @@ public class PreparationAPI extends APIService {
             @ApiParam("New content for the action.") InputStream body, HttpServletResponse response) {
         LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId,
-                stepId, body);
+        HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId, stepId, body);
         command.execute();
         LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
     }

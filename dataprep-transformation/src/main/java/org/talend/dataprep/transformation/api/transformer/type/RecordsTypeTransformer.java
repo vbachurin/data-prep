@@ -9,10 +9,8 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
-import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
@@ -50,45 +48,44 @@ public class RecordsTypeTransformer implements TypeTransformer {
                     row.clear();
                     break;
                 case END_OBJECT:
-                    if(configuration.isPreview()) {
-                        //apply old actions
+                    if (configuration.isPreview()) {
+                        // apply old actions
                         final DataSetRow oldRow = row.clone();
                         oldAction.accept(oldRow);
 
-                        if(isIndexLimited) {
-                            //we only start to process at the min index
-                            if(currentIndex >= minIndex) {
+                        if (isIndexLimited) {
+                            // we only start to process at the min index
+                            if (currentIndex >= minIndex) {
 
-                                //apply new actions
+                                // apply new actions
                                 action.accept(row);
 
-                                //we are between the min and the max index
-                                //1. the row has a wanted index : we write it no matter what
-                                //2. the row has NOT a wanted index : we write it only if it was originally deleted, but not anymore
-                                if(indexes.contains(currentIndex) || (oldRow.isDeleted() && !row.isDeleted())) {
+                                // we are between the min and the max index
+                                // 1. the row has a wanted index : we write it no matter what
+                                // 2. the row has NOT a wanted index : we write it only if it was originally deleted,
+                                // but not anymore
+                                if (indexes.contains(currentIndex) || (oldRow.isDeleted() && !row.isDeleted())) {
                                     writeRow(writer, row, oldRow);
                                 }
                             }
 
-                            //if the oldRow is not deleted, we move the current index
-                            //the index represents the originally not deleted rows
+                            // if the oldRow is not deleted, we move the current index
+                            // the index represents the originally not deleted rows
                             currentIndex = oldRow.isDeleted() ? currentIndex : currentIndex + 1;
 
-                            //we stop the process after the max index
-                            if(currentIndex > maxIndex) {
+                            // we stop the process after the max index
+                            if (currentIndex > maxIndex) {
                                 writer.endArray();
                                 return;
                             }
-                        }
-                        else {
-                            //apply new actions
+                        } else {
+                            // apply new actions
                             action.accept(row);
 
-                            //write preview. Rules are delegated to DataSetRow
+                            // write preview. Rules are delegated to DataSetRow
                             writeRow(writer, row, oldRow);
                         }
-                    }
-                    else {
+                    } else {
                         action.accept(row);
                         writeRow(writer, row, null);
                     }
@@ -119,11 +116,11 @@ public class RecordsTypeTransformer implements TypeTransformer {
     }
 
     private void writeRow(TransformerWriter writer, DataSetRow row, DataSetRow oldRow) throws IOException {
-        if(oldRow != null) {
+        if (oldRow != null) {
             row.diff(oldRow);
         }
 
-        if(row.shouldWrite()) {
+        if (row.shouldWrite()) {
             writer.write(row);
         }
     }
