@@ -173,7 +173,7 @@ public class DataSetService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
             @RequestParam(defaultValue = "false") @ApiParam(name = "preview", value = "preview of the data set") boolean preview,
-            @RequestParam(defaultValue = "sheetName") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetNamePreview,
+            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetNamePreview,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
