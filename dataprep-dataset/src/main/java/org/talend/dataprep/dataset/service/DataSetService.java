@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,7 +184,6 @@ public class DataSetService {
             return; // No data set, returns empty content.
         }
 
-
         // if it's a draft and draft parameter set to true we don't mind and return it
         // as we need more details
         if (!dataSetMetadata.isDraft() && !preview) {
@@ -201,32 +201,30 @@ public class DataSetService {
                 return;
             }
             if (dataSetMetadata.getLifecycle().error()) {
-                // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
+                // Data set is in error state, meaning content will never be delivered. Returns an error for this
+                // situation
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
-                                                                                                                          dataSetId));
+                        dataSetId));
             }
         }
 
-        if (sheetNamePreview != null){
-            dataSetMetadata.setSheetName( sheetNamePreview );
+        if (sheetNamePreview != null) {
+            dataSetMetadata.setSheetName(sheetNamePreview);
         }
 
         // it's the first preview and sheet not yet set correctly
         // so use the first one
-        if (preview && dataSetMetadata.getSheetName() == null) {
+        if (preview && StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
             String sheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
             LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, sheetName);
             dataSetMetadata.setSheetName(sheetName);
         }
 
-        if (preview)
-        {
+        if (preview) {
             String sheetName = dataSetMetadata.getSheetName();
-            List<ColumnMetadata> columnMetadatas =
-                dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get( sheetName );
-            dataSetMetadata.getRow().setColumns( columnMetadatas );
+            List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(sheetName);
+            dataSetMetadata.getRow().setColumns(columnMetadatas);
         }
-
 
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
