@@ -27,6 +27,9 @@ import org.talend.dataprep.transformation.Application;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
+import org.talend.dataprep.transformation.api.transformer.json.JsonWriter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -39,9 +42,9 @@ public class TypeTransformerSelectorTest {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
-    private JsonGenerator generator;
-
     private StringWriter writer;
+
+    private TransformerWriter transformerWriter;
 
     private final Consumer<DataSetRow> identityAction = (row) -> {};
     private final Consumer<DataSetRow> changeLastnameAction = (row) -> {
@@ -59,8 +62,9 @@ public class TypeTransformerSelectorTest {
     @Before
     public void init() throws IOException {
         writer = new StringWriter();
-        generator = new JsonFactory().createGenerator(writer);
+        final JsonGenerator generator = new JsonFactory().createGenerator(writer);
         generator.setCodec(builder.build());
+        transformerWriter = new JsonWriter(generator);
     }
 
     @Test
@@ -73,8 +77,16 @@ public class TypeTransformerSelectorTest {
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(inputStream);
 
+        final TransformerConfiguration configuration = TransformerConfiguration
+                .builder()
+                .parser(parser)
+                .writer(transformerWriter)
+                .preview(false)
+                .actions(DataSetRow.class, changeLastnameAction)
+                .build();
+
         // when
-        transformer.process(parser, generator, null, false, changeLastnameAction);
+        transformer.process(configuration);
 
         // then
         assertEquals(writer.toString(), expectedContent, false);
@@ -87,9 +99,17 @@ public class TypeTransformerSelectorTest {
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(inputStream);
 
+        final TransformerConfiguration configuration = TransformerConfiguration
+                .builder()
+                .parser(parser)
+                .writer(transformerWriter)
+                .preview(false)
+                .actions(DataSetRow.class, changeLastnameAction)
+                .build();
+
         // when
         try {
-            transformer.process(parser, generator, null, false, changeLastnameAction);
+            transformer.process(configuration);
             fail("should have thrown UserException because input json is not valid");
         }
 
@@ -106,9 +126,17 @@ public class TypeTransformerSelectorTest {
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(inputStream);
 
+        final TransformerConfiguration configuration = TransformerConfiguration
+                .builder()
+                .parser(parser)
+                .writer(transformerWriter)
+                .preview(false)
+                .actions(DataSetRow.class, changeLastnameAction)
+                .build();
+
         // when
         try {
-            transformer.process(parser, generator, null, false, changeLastnameAction);
+            transformer.process(configuration);
             fail("should have thrown UserException because column json is not valid");
         }
 
@@ -125,9 +153,17 @@ public class TypeTransformerSelectorTest {
         final JsonFactory factory = new JsonFactory();
         final JsonParser parser = factory.createParser(inputStream);
 
+        final TransformerConfiguration configuration = TransformerConfiguration
+                .builder()
+                .parser(parser)
+                .writer(transformerWriter)
+                .preview(false)
+                .actions(DataSetRow.class, changeLastnameAction)
+                .build();
+
         // when
         try {
-            transformer.process(parser, generator, null, false, changeLastnameAction);
+            transformer.process(configuration);
             fail("should have thrown UserException because record json is not valid");
         }
 
@@ -152,10 +188,20 @@ public class TypeTransformerSelectorTest {
         indexes.add(3);
         indexes.add(5);
 
+        final TransformerConfiguration configuration = TransformerConfiguration
+                .builder()
+                .parser(parser)
+                .writer(transformerWriter)
+                .indexes(indexes)
+                .preview(true)
+                .actions(DataSetRow.class, identityAction)
+                .actions(DataSetRow.class, getChangeNameAndDeleteAction)
+                .build();
+
         // when
-        transformer.process(parser, generator, indexes, true, identityAction, getChangeNameAndDeleteAction);
+        transformer.process(configuration);
 
         // then
-        assertEquals(writer.toString(), expectedContent, false);
+        assertEquals(expectedContent, writer.toString(), false);
     }
 }

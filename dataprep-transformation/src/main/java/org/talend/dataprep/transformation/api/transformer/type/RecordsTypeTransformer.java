@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -17,12 +19,18 @@ import com.fasterxml.jackson.core.JsonToken;
  * Records array serializer
  */
 @Component
-public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
+public class RecordsTypeTransformer implements TypeTransformer {
 
     @Override
-    public void process(final JsonParser parser, final JsonGenerator generator, final List<Integer> indexes, final boolean preview, final Consumer<DataSetRow>... actions) {
-        final Consumer<DataSetRow> oldAction = preview ? actions[0] : null;
-        final Consumer<DataSetRow> action = preview ? actions[1] : actions[0];
+    public void process(final TransformerConfiguration configuration) {
+        final TransformerWriter writer = configuration.getWriter();
+        final JsonParser parser = configuration.getParser();
+
+        final List<Consumer<DataSetRow>> actions = configuration.getActions(DataSetRow.class);
+        final List<Integer> indexes = configuration.getIndexes();
+
+        final Consumer<DataSetRow> oldAction = configuration.isPreview() ? actions.get(0) : null;
+        final Consumer<DataSetRow> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
 
         final boolean isIndexLimited = indexes != null && indexes.size() > 0;
         final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : null;
@@ -41,7 +49,7 @@ public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
                     row.clear();
                     break;
                 case END_OBJECT:
-                    if(preview) {
+                    if(configuration.isPreview()) {
                         //apply old actions
                         final DataSetRow oldRow = row.clone();
                         oldAction.accept(oldRow);
@@ -57,7 +65,7 @@ public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
                                 //1. the row has a wanted index : we write it no matter what
                                 //2. the row has NOT a wanted index : we write it only if it was originally deleted, but not anymore
                                 if(indexes.contains(currentIndex) || (oldRow.isDeleted() && !row.isDeleted())) {
-                                    row.writePreviewTo(generator, oldRow);
+                                    writeRow(writer, row, oldRow);
                                 }
                             }
 
@@ -67,8 +75,7 @@ public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
 
                             //we stop the process after the max index
                             if(currentIndex > maxIndex) {
-                                generator.writeEndArray();
-                                generator.flush();
+                                writer.endArray();
                                 return;
                             }
                         }
@@ -77,12 +84,12 @@ public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
                             action.accept(row);
 
                             //write preview. Rules are delegated to DataSetRow
-                            row.writePreviewTo(generator, oldRow);
+                            writeRow(writer, row, oldRow);
                         }
                     }
                     else {
                         action.accept(row);
-                        row.writeTo(generator);
+                        writeRow(writer, row, null);
                     }
 
                     break;
@@ -97,17 +104,26 @@ public class RecordsTypeTransformer implements TypeTransformer<DataSetRow> {
 
                 // Array delimiter : on array end, we consider the column part ends
                 case START_ARRAY:
-                    generator.writeStartArray();
+                    writer.startArray();
                     break;
                 case END_ARRAY:
-                    generator.writeEndArray();
-                    generator.flush();
+                    writer.endArray();
                     return;
 
                 }
             }
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        }
+    }
+
+    private void writeRow(TransformerWriter writer, DataSetRow row, DataSetRow oldRow) throws IOException {
+        if(oldRow != null) {
+            row.diff(oldRow);
+        }
+
+        if(row.shouldWrite()) {
+            writer.write(row);
         }
     }
 }

@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.*;
@@ -19,13 +22,18 @@ import com.fasterxml.jackson.databind.ObjectReader;
  * Columns array Serializer
  */
 @Component
-public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
+public class ColumnsTypeTransformer implements TypeTransformer {
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
     @Override
-    public void process(final JsonParser parser, final JsonGenerator generator, final List<Integer> indexes, final boolean preview, final Consumer<ColumnMetadata>... actions) {
+    public void process(final TransformerConfiguration configuration) {
+        final JsonParser parser = configuration.getParser();
+
+        final List<Consumer<ColumnMetadata>> columnActions = configuration.getActions(ColumnMetadata.class);
+        final Consumer<ColumnMetadata> actions = columnActions == null ? null : columnActions.get(0);
+
         try {
             final StringWriter content = new StringWriter();
             final JsonGenerator contentGenerator = new JsonFactory().createGenerator(content);
@@ -72,7 +80,7 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
 
                     final List<ColumnMetadata> columns = getColumnsMetadata(content);
                     transform(columns, actions);
-                    write(generator, columns);
+                    configuration.getWriter().write(columns);
 
                     return;
                 }
@@ -91,7 +99,7 @@ public class ColumnsTypeTransformer implements TypeTransformer<ColumnMetadata> {
      * @param action - transformation action
      */
     // TODO Temporary: actions may transform columns, for now just print them as is
-    private void transform(final List<ColumnMetadata> columns, final Consumer<ColumnMetadata>... action) {
+    private void transform(final List<ColumnMetadata> columns, final Consumer<ColumnMetadata> action) {
     }
 
     /**

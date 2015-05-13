@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ReleasableInputStream extends InputStream {
+public class ReleasableInputStream extends InputStream {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReleasableInputStream.class);
 

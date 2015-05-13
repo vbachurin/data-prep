@@ -16,17 +16,20 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.Application;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -55,16 +58,23 @@ public class DataPreparationAPITest {
     PreparationRepository preparationRepository;
 
     @Autowired
-    private List<APIService> apiServices;
+    ConfigurableEnvironment environment;
 
     @Before
     public void setUp() {
         RestAssured.port = port;
-        for (APIService apiService : apiServices) {
-            apiService.setDataSetServiceURL("http://localhost:" + port + "/datasets");
-            apiService.setTransformationServiceURL("http://localhost:" + port);
-            apiService.setPreparationServiceURL("http://localhost:" + port);
-        }
+
+        // Overrides connection information with random port value
+        MockPropertySource connectionInformation = new MockPropertySource()
+                .withProperty("dataset.service.url", "http://localhost:" + port)
+                .withProperty("transformation.service.url", "http://localhost:" + port)
+                .withProperty("preparation.service.url", "http://localhost:" + port);
+        environment.getPropertySources().addFirst(connectionInformation);
+    }
+
+    @BeforeClass
+    public static void startBootApp(){
+
     }
 
     @org.junit.After
