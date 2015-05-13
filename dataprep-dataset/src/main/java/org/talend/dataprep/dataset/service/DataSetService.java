@@ -133,7 +133,7 @@ public class DataSetService {
      * @param dataSetContent The raw content of the data set (might be a CSV, XLS...).
      * @param response The HTTP response to interact with caller.
      * @return The new data id.
-     * @see #get(boolean, boolean, boolean, String, HttpServletResponse)
+     * @see #get(boolean, boolean, boolean, String, String, HttpServletResponse)
      */
     @RequestMapping(value = "/datasets", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
@@ -162,6 +162,7 @@ public class DataSetService {
      * @param metadata If <code>true</code>, includes data set metadata information.
      * @param columns If <code>true</code>, includes column metadata information (column types...).
      * @param preview if <code>true</code> a preview request
+     * @param sheetNamePreview the sheet name to preview
      * @param dataSetId A data set id.
      * @param response The HTTP response to interact with caller.
      */
@@ -172,6 +173,7 @@ public class DataSetService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
             @RequestParam(defaultValue = "false") @ApiParam(name = "preview", value = "preview of the data set") boolean preview,
+            @RequestParam(defaultValue = "sheetName") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetNamePreview,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
@@ -203,6 +205,10 @@ public class DataSetService {
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
                                                                                                                           dataSetId));
             }
+        }
+
+        if (sheetNamePreview != null){
+            dataSetMetadata.setSheetName( sheetNamePreview );
         }
 
         // it's the first preview and sheet not yet set correctly

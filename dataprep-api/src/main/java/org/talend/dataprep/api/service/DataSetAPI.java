@@ -67,15 +67,15 @@ public class DataSetAPI extends APIService {
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
             @RequestParam(defaultValue = "false") @ApiParam(name = "preview", value = "Is it a preview of the data set") boolean preview,
+            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
             HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata,
-                columns, preview);
+        HystrixCommand<InputStream> retrievalCommand = getCommand( DataSetGet.class, client, id,
+                                                                   metadata, columns, preview, sheetName );
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);

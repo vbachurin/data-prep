@@ -44,25 +44,36 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
 
     private final boolean preview;
 
+    private final String sheetName;
+
     private int retryCount = 0;
 
     public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns) {
-        this(client, dataSetId, metadata, columns, false);
+        this(client, dataSetId, metadata, columns, false, null);
     }
 
-
-    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns, boolean preview) {
+    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns, boolean preview, String sheetName) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
 
         this.dataSetId = dataSetId;
         this.metadata = metadata;
         this.columns = columns;
         this.preview = preview;
+        this.sheetName = null;
     }
 
     @Override
     protected InputStream run() throws Exception {
-        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata=" + metadata + "&columns=" + columns);
+
+        StringBuilder url = new StringBuilder(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata=" + metadata
+                + "&columns=" + columns);
+        url.append("&preview=" + preview);
+
+        if (sheetName != null){
+            url.append( "&sheetName=" + sheetName );
+        }
+
+        final HttpGet contentRetrieval = new HttpGet(url.toString());
         final HttpResponse response = client.execute(contentRetrieval);
         return handleResponse(response, contentRetrieval);
     }
@@ -95,7 +106,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
-        } else if(statusCode >= 400 ){ // Error (4xx & 5xx codes)
+        } else if (statusCode >= 400) { // Error (4xx & 5xx codes)
             final ObjectMapper build = builder.build();
             final JsonErrorCode errorCode = build.reader(JsonErrorCode.class).readValue(response.getEntity().getContent());
             errorCode.setHttpStatus(statusCode);
