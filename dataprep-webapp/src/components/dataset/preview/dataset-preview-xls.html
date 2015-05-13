@@ -1,18 +1,14 @@
 <talend-modal class="playground"
               fullscreen="true"
               close-button="true"
-              state="datasetPreviewCtrl.showPreview">
+              state="datasetPreviewCtrl.showPreview"
+              on-close="datasetPreviewCtrl.close()">
 
     <div class="modal-header">
       header
     </div>
 
-    <div class="modal-body flex">
-         <div class="flex-center">
-            <div class="datagrid-container">
-                <datagrid></datagrid>
-            </div>
-        </div>
+    <div class="modal-body">
+      body<div id="datagrid" class="datagrid"></div>
     </div>
 </talend-modal>
-{{::metadata.id}}

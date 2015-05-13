@@ -7,11 +7,14 @@
      * @description Dataset preview grid controller.
      * @requires data-prep.services.dataset.service:DatasetRestService
      */
-    function DatasetPreviewCtrl($scope,$stateParams,DatasetRestService) {
+    function DatasetPreviewCtrl($scope,$state,$stateParams,DatasetRestService) {
 
         var self = this;
         self.visible = false;
 
+        self.close = function() {
+          $state.go('nav.home.datasets');
+        };
 
         var loadPreview = function(){
             if($stateParams.datasetid) {
@@ -22,6 +25,18 @@
                               $scope.metadata=data.metadata;
                               $scope.data=data;
                               self.visible=true;
+                              var options = {
+                                enableCellNavigation: true,
+                                enableColumnReorder: false
+                              };
+
+                              var columns = [];
+                              angular.forEach(data.columns, function(value, key) {
+                                this.push({id: value.id, name: value.id, field: value.id});
+                                console.log({id: value.id, name: value.id, field: value.id});
+                              }, columns);
+
+                              var grid = new Slick.Grid('#datagrid', data.records, columns, options);
                           });
             }
 
@@ -36,11 +51,9 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                console.log('showPreview call get:'+this.visible);
                 return this.visible;
             },
             set: function(value) {
-                console.log('showPreview call set:'+value);
                 this.visible = value;
             }
         });
