@@ -208,7 +208,7 @@ public class DataSetService {
             }
         }
 
-        if (sheetName != null) {
+        if ( StringUtils.isNotEmpty( sheetName )) {
             dataSetMetadata.setSheetName(sheetName);
         }
 

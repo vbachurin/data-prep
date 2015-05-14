@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -67,22 +68,23 @@ public class SimpleDataSetMetadataJsonSerializer {
 
             // data we need for extra dataset validation (i.e sheetNumber for excell sheet)
             if (dataSetMetadata.getSchemaParserResult() != null) {
-                generator.writeStringField( "sheetName", dataSetMetadata.getSchemaParserResult().getSheetName() );
+
+                String sheetName = StringUtils.isEmpty(dataSetMetadata.getSheetName()) ? dataSetMetadata.getSchemaParserResult()
+                        .getSheetName() : dataSetMetadata.getSheetName();
+
+                generator.writeStringField("sheetName", sheetName);
                 if (dataSetMetadata.isDraft()) {
 
-                    if (dataSetMetadata.getSchemaParserResult().getColumnMetadatas() != null)
-                    {
-                        generator.writeFieldName( "sheetNames" );
+                    if (dataSetMetadata.getSchemaParserResult().getColumnMetadatas() != null) {
+                        generator.writeFieldName("sheetNames");
                         generator.writeStartArray();
-                        for ( String schemaName : dataSetMetadata.getSchemaParserResult().getColumnMetadatas().keySet() )
-                        {
-                            generator.writeString(schemaName );
+                        for (String schemaName : dataSetMetadata.getSchemaParserResult().getColumnMetadatas().keySet()) {
+                            generator.writeString(schemaName);
                         }
                         generator.writeEndArray();
                     }
                 }
             }
-
 
             synchronized (DATE_FORMAT) {
                 generator.writeStringField("created", DATE_FORMAT.format(dataSetMetadata.getCreationDate())); //$NON-NLS-1

@@ -3,6 +3,7 @@ package org.talend.dataprep.api.service.command.dataset;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -71,7 +72,8 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
         url.append("&preview=" + preview);
 
         if (StringUtils.isNotEmpty(sheetName)) {
-            url.append("&sheetName=" + sheetName);
+            // yup this sheet name can contains weird characters space, great french accents or even chinese characters
+            url.append("&sheetName=" + URLEncoder.encode(  sheetName, "UTF-8"));
         }
 
         final HttpGet contentRetrieval = new HttpGet(url.toString());
