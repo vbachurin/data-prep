@@ -20,6 +20,9 @@
                     <tbody ng-switch="dataset.draft">
                     <tr ng-switch-when="true">
                         <td><a class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets-preview({datasetid: dataset.id})"></a></td>
+                        <td class="t-right-divider">
+                            <button class="t-btn t-btn-transparent t-btn-remove" ng-click="datasetListCtrl.delete(dataset)"></button>
+                        </td>
                     </tr>
                     <tr ng-switch-when="false">
                         <td ng-switch="!!dataset.defaultPreparation.id">

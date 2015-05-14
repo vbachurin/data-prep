@@ -381,8 +381,6 @@ public class DataSetService {
         } finally {
             lock.unlock();
         }
-        // Content was changed, so queue events (format analysis, content indexing for search...)
-        queueEvents(dataSetId, jmsTemplate);
     }
 
     /**
