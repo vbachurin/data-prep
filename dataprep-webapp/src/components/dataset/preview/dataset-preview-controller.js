@@ -49,7 +49,11 @@
          */
         self.updateDataset = function(){
           $log.debug('updateDataset');
-          DatasetRestService.update();
+          self.metadata.sheetName = self.selectedSheetName;
+          DatasetRestService.updateMetadata(self.metadata )
+              .then(function(data){
+                $state.go('nav.home.datasets');
+          });
         };
 
         /**

@@ -46,6 +46,7 @@ import org.talend.dataprep.metrics.VolumeMetered;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -208,7 +209,7 @@ public class DataSetService {
             }
         }
 
-        if ( StringUtils.isNotEmpty( sheetName )) {
+        if (StringUtils.isNotEmpty(sheetName)) {
             dataSetMetadata.setSheetName(sheetName);
         }
 
@@ -319,6 +320,64 @@ public class DataSetService {
             // Save data set content
             contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
             dataSetMetadataRepository.add(dataSetMetadata);
+        } finally {
+            lock.unlock();
+        }
+        // Content was changed, so queue events (format analysis, content indexing for search...)
+        queueEvents(dataSetId, jmsTemplate);
+    }
+
+    /**
+     * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
+     *
+     * @param dataSetId The id of data set to be updated.
+     * @param dataSetContent The new content for the data set. If empty, existing content will <b>not</b> be replaced.
+     * For delete operation, look at {@link #delete(String)}.
+     */
+    @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    @Timed
+    @VolumeMetered
+    public void updateDataSet(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
+            @ApiParam(value = "content") InputStream dataSetContent) {
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        try {
+            lock.lock();
+            final SimpleModule module = new DataSetMetadataModule(applicationContext);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(module);
+            DataSetMetadata dataSetMetadata = mapper.readValue( dataSetContent, DataSetMetadata.class );
+            LOG.debug("updateDataSet: {}", dataSetMetadata);
+
+            // we retry informations we do not update
+
+            DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
+
+            dataSetMetadata.getRow().setColumns(
+                    read.getSchemaParserResult().getColumnMetadatas().get(dataSetMetadata.getSheetName()));
+            dataSetMetadata.setContent(read.getContent());
+
+            dataSetMetadata.setSchemaParserResult(null);
+
+            // TODO add some validation (i.e is it still a draft????)
+            // using a new bean from FormatGuess
+
+            dataSetMetadata.setDraft( false );
+
+            // add do update if already exists
+            dataSetMetadataRepository.add(dataSetMetadata);
+
+            // all good mate send that to jms
+            // Asks for a in depth schema analysis (for column type information).
+            jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
+                Message schemaAnalysisMessage = session.createMessage();
+                schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
+                return schemaAnalysisMessage;
+            });
+
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } finally {
             lock.unlock();
         }

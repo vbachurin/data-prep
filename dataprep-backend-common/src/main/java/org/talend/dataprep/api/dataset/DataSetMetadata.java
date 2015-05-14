@@ -30,7 +30,7 @@ public class DataSetMetadata {
 
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
-    private final DataSetContent content = new DataSetContent();
+    private DataSetContent content = new DataSetContent();
 
     private final DataSetGovernance gov = new DataSetGovernance();
 
@@ -74,6 +74,11 @@ public class DataSetMetadata {
 
     public DataSetContent getContent() {
         return content;
+    }
+
+    public void setContent( DataSetContent content )
+    {
+        this.content = content;
     }
 
     public DataSetGovernance getGovernance() {

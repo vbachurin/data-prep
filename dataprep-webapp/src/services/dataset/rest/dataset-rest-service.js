@@ -57,10 +57,22 @@
 
         /**
          * @ngdoc method
+         * @name updateMetadata
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Update the dataset metadata
+         * @param {dataset} dataset - the dataset infos to update
+         * @returns {Promise} The POST promise
+         */
+        self.updateMetadata = function(dataset){
+            return $http.post(RestURLs.datasetUrl + '/' + dataset.id, dataset);
+        };
+
+        /**
+         * @ngdoc method
          * @name delete
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Delete the dataset
-         * @param {dataset} dataset - the dataset infos to update
+         * @param {dataset} dataset - the dataset infos to delete
          * @returns {Promise} The DELETE promise
          */
         self.delete = function(dataset) {

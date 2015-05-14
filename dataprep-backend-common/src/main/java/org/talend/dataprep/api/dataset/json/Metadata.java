@@ -26,13 +26,14 @@ class Metadata implements State {
         case NOT_AVAILABLE:
         case START_ARRAY:
         case END_ARRAY:
-            throw new IllegalStateException("Unexpected '" + token + "'.");
+            //throw new IllegalStateException("Unexpected '" + token + "'.");
         case START_OBJECT:
             break;
         case END_OBJECT:
             builder.id((String) values.get("id"));
-            builder.name((String) values.get("name"));
-            builder.author((String) values.get("author"));
+            builder.name( (String) values.get( "name" ) );
+            builder.author( (String) values.get( "author" ) );
+            builder.sheetName( (String) values.get("sheetName") );
             String created = (String) values.get("created");
             if (created != null) {
                 synchronized (SimpleDataSetMetadataJsonSerializer.DATE_FORMAT) {

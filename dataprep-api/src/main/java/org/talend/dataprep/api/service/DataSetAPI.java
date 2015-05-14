@@ -60,6 +60,23 @@ public class DataSetAPI extends APIService {
         return result;
     }
 
+
+    @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a dataset.", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, //
+        notes = "Update a data set based on content provided in PUT body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    public String update(
+        @ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
+        @ApiParam(value = "content") InputStream dataSetContent) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+        }
+        HttpClient client = getClient();
+        HystrixCommand<String> creation = getCommand(UpdateDataSet.class, client, id, dataSetContent);
+        String result = creation.execute();
+        LOG.debug("Dataset creation or update for #{} done.", id);
+        return result;
+    }
+
     @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id.", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Get a data set based on given id.")
     public void get(

@@ -18,15 +18,20 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.io.IOUtils;
 import org.apache.spark.SparkContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -36,7 +41,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.dataset.service.DataSetService;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -68,6 +75,12 @@ public class DataSetServiceTests {
     @Autowired
     SparkContext sparkContext;
 
+    @Autowired
+    ApplicationContext applicationContext;
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
         while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
@@ -89,7 +102,7 @@ public class DataSetServiceTests {
 
     private void waitForQueue(String queueName, String dataSetId) {
         // Wait for potential update still in progress
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
         lock.lock();
         lock.unlock();
         // Ensure queues are empty
@@ -124,7 +137,7 @@ public class DataSetServiceTests {
         when().get("/datasets").then().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
                 .header("Access-Control-Max-Age", "3600")
-                .header("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+                .header( "Access-Control-Allow-Headers", "x-requested-with, Content-Type" );
     }
 
     @Test
@@ -171,15 +184,16 @@ public class DataSetServiceTests {
     @Test
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        DataSetMetadata dataSetMetadata = metadata().id( expectedId ).formatGuessId(
+            new CSVFormatGuess().getBeanId() ).build();
         dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
                 Character.toString(new Separator().separator));
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
-        List<String> ids = from(when().get("/datasets").asString()).get("");
+        List<String> ids = from(when().get("/datasets").asString()).get( "" );
         assertThat(ids.size(), is(1));
         int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
-        assertTrue(statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
+        assertTrue( statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value() );
     }
 
     @Test
@@ -193,21 +207,21 @@ public class DataSetServiceTests {
         dataSetMetadataRepository.add(dataSetMetadata);
 
         List<String> ids = from(when().get("/datasets").asString()).get("");
-        assertThat(ids.size(), is(1));
+        assertThat( ids.size(), is( 1 ) );
         int before = dataSetMetadataRepository.size();
-        when().delete("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
+        when().delete("/datasets/{id}", expectedId).then().statusCode( HttpStatus.OK.value() );
         int after = dataSetMetadataRepository.size();
-        assertThat(before - after, is(1));
+        assertThat( before - after, is( 1 ) );
     }
 
     @Test
     public void update() throws Exception {
         String dataSetId = "123456";
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv"))).when()
-                .put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
-        List<String> ids = from(when().get("/datasets").asString()).get("id");
+                .put( "/datasets/{id}/raw", dataSetId ).then().statusCode(HttpStatus.OK.value());
+        List<String> ids = from(when().get("/datasets").asString()).get( "id" );
         assertThat(ids, hasItem(dataSetId));
-        assertQueueMessages(dataSetId);
+        assertQueueMessages( dataSetId );
     }
 
     @Test
@@ -218,8 +232,8 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test1.json");
-        assertThat(contentAsString, sameJSONAsFile(expected));
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream( "test1.json" );
+        assertThat( contentAsString, sameJSONAsFile( expected ) );
     }
 
     @Test
@@ -244,13 +258,13 @@ public class DataSetServiceTests {
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test2.json");
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream( "test2.json" );
         assertThat(contentAsString, sameJSONAsFile(expected));
         // Update name
         String expectedName = "testOfADataSetName";
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw?name=" + expectedName);
-        assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is(expectedName));
+        assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is( expectedName ));
     }
 
     /**
@@ -269,7 +283,7 @@ public class DataSetServiceTests {
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("avengers_expected.json");
         String datasetContent = given().when().get("/datasets/{id}/content?metadata=false&columns=true", dataSetId).asString();
 
-        assertThat(datasetContent, sameJSONAsFile(expected));
+        assertThat(datasetContent, sameJSONAsFile( expected ));
     }
 
     @Test
@@ -278,16 +292,17 @@ public class DataSetServiceTests {
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
-        String contentAsString = IOUtils.toString(content);
+        String contentAsString = IOUtils.toString( content );
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("test_quotes.json");
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream( "test_quotes.json" );
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void testQuotesAndCarriageReturn() throws Exception {
         String dataSetId = given()
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("bands_quotes_and_carriage_return.csv")))
+                .body( IOUtils.toString(
+                    DataSetServiceTests.class.getResourceAsStream( "bands_quotes_and_carriage_return.csv" ) ) )
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
@@ -300,10 +315,10 @@ public class DataSetServiceTests {
     @Test
     public void nbLines() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
-                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+                .queryParam("Content-Type", "text/csv").when().post( "/datasets" ).asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
-        String contentAsString = IOUtils.toString(content);
+        String contentAsString = IOUtils.toString( content );
 
         assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
                 .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
@@ -315,10 +330,10 @@ public class DataSetServiceTests {
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
-        String contentAsString = IOUtils.toString(content);
+        String contentAsString = IOUtils.toString( content );
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv.expected.json");
-        assertThat(contentAsString, sameJSONAsFile(expected));
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream( "t-shirt_100.csv.expected.json" );
+        assertThat(contentAsString, sameJSONAsFile( expected ));
     }
 
     @Test
@@ -346,7 +361,7 @@ public class DataSetServiceTests {
 
     @Test
     public void getMetadata() throws Exception {
-        DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id("1234");
+        DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id( "1234" );
         builder.row(ColumnMetadata.Builder.column().empty(0).invalid(0).valid(0).name("id").type(Type.STRING))//
                 .created(0)//
                 .name("name")//
@@ -355,7 +370,7 @@ public class DataSetServiceTests {
                 .headerSize(1) //
                 .qualityAnalyzed(true) //
                 .schemaAnalyzed(true) //
-                .formatGuessId(new CSVFormatGuess().getBeanId());
+                .formatGuessId( new CSVFormatGuess().getBeanId() );
 
         DataSetMetadata metadata = builder.build();
         metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
@@ -368,10 +383,10 @@ public class DataSetServiceTests {
 
     @Test
     public void getEmptyMetadata() throws Exception {
-        DataSetMetadata metadata = dataSetMetadataRepository.get("9876");
+        DataSetMetadata metadata = dataSetMetadataRepository.get( "9876" );
         assertNull(metadata);
         int statusCode = when().get("/datasets/{id}/metadata", "9876").statusCode();
-        assertThat(HttpServletResponse.SC_NO_CONTENT, is(statusCode));
+        assertThat(HttpServletResponse.SC_NO_CONTENT, is( statusCode ));
     }
 
     /**
@@ -384,10 +399,10 @@ public class DataSetServiceTests {
         String errors = when().get("/datasets/errors").asString();
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(errors);
+        JsonNode rootNode = mapper.readTree( errors );
 
         assertTrue(rootNode.isArray());
-        assertTrue(rootNode.size() > 0);
+        assertTrue( rootNode.size() > 0 );
         for (final JsonNode errorCode : rootNode) {
             assertTrue(errorCode.has("code"));
             assertTrue(errorCode.has("http-status-code"));
@@ -409,8 +424,8 @@ public class DataSetServiceTests {
 
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
-        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+        assertEquals( Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep() );
+        assertEquals( originalNbLines, dataSetMetadata.getContent().getNbRecords() );
     }
 
     @Test
@@ -426,11 +441,25 @@ public class DataSetServiceTests {
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification. NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
-        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode( HttpStatus.OK.value() );
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+    }
+
+    @Test
+    public void updateDatasetDeserializer() throws Exception {
+
+        try (InputStream dataSetContent = DataSetServiceTests.class.getResourceAsStream("metadata.json"))
+        {
+            final SimpleModule module = new DataSetMetadataModule( applicationContext );
+            ObjectMapper mapper = new ObjectMapper();
+
+            mapper.registerModule( module );
+            DataSetMetadata dataSetMetadata = mapper.readValue( dataSetContent, DataSetMetadata.class );
+            logger.debug( "dataSetMetadata: {}", dataSetMetadata );
+        }
     }
 
 }
