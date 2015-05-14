@@ -10,6 +10,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.talend.dataprep.schema.FormatGuess;
 
 import javax.annotation.PostConstruct;
 
@@ -18,22 +19,22 @@ public class DataSetMetadataModule extends SimpleModule {
 
 
 
-    public static SimpleModule get(boolean metadata, boolean columns, InputStream records, ApplicationContext applicationContext) {
-        return new DataSetMetadataModule(metadata, columns, records, applicationContext);
+    public static SimpleModule get(boolean metadata, boolean columns, InputStream records, FormatGuess.Factory factory) {
+        return new DataSetMetadataModule(metadata, columns, records, factory);
     }
 
     @Autowired
-    public DataSetMetadataModule(ApplicationContext applicationContext) {
+    public DataSetMetadataModule(FormatGuess.Factory factory) {
         super( DataSetMetadata.class.getName(), new Version( 1, 0, 0, null, null, null ) );
         addDeserializer( DataSetMetadata.class, new DataSetMetadataJsonDeserializer() );
         addSerializer( DataSetMetadata.class,
-                       new DataSetMetadataJsonSerializer( true, true, null, applicationContext ) );
+                       new DataSetMetadataJsonSerializer( true, true, null, factory ) );
     }
 
-    private DataSetMetadataModule(boolean metadata, boolean columns, InputStream records, ApplicationContext applicationContext) {
+    private DataSetMetadataModule(boolean metadata, boolean columns, InputStream records, FormatGuess.Factory factory) {
         super(DataSetMetadata.class.getName(), new Version(1, 0, 0, null, null, null));
         addDeserializer(DataSetMetadata.class, new DataSetMetadataJsonDeserializer());
-        addSerializer(DataSetMetadata.class, new DataSetMetadataJsonSerializer(metadata, columns, records, applicationContext));
+        addSerializer(DataSetMetadata.class, new DataSetMetadataJsonSerializer(metadata, columns, records, factory));
     }
 
 }

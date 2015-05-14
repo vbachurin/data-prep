@@ -52,6 +52,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import org.talend.dataprep.schema.FormatGuess;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -81,6 +82,9 @@ public class DataSetService {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private FormatGuess.Factory formatGuessFactory;
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
@@ -231,7 +235,7 @@ public class DataSetService {
             // Write general information about the dataset
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(DataSetMetadataModule.get(metadata, columns, //
-                    contentStore.get(dataSetMetadata), applicationContext));
+                    contentStore.get(dataSetMetadata), formatGuessFactory));
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {
@@ -344,28 +348,26 @@ public class DataSetService {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
             lock.lock();
-            final SimpleModule module = new DataSetMetadataModule(applicationContext);
+            final SimpleModule module = new DataSetMetadataModule(formatGuessFactory);
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(module);
             DataSetMetadata dataSetMetadata = mapper.readValue( dataSetContent, DataSetMetadata.class );
             LOG.debug("updateDataSet: {}", dataSetMetadata);
 
             // we retry informations we do not update
-
             DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
 
             dataSetMetadata.getRow().setColumns(
-                    read.getSchemaParserResult().getColumnMetadatas().get(dataSetMetadata.getSheetName()));
-            dataSetMetadata.setContent(read.getContent());
+                read.getSchemaParserResult().getColumnMetadatas().get( dataSetMetadata.getSheetName()));
+            dataSetMetadata.setContent( read.getContent() );
 
-            dataSetMetadata.setSchemaParserResult(null);
+            dataSetMetadata.setSchemaParserResult( null );
 
             // TODO add some validation (i.e is it still a draft????)
             // using a new bean from FormatGuess
 
             dataSetMetadata.setDraft( false );
 
-            // add do update if already exists
             dataSetMetadataRepository.add(dataSetMetadata);
 
             // all good mate send that to jms

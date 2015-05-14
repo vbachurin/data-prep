@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.schema.FormatGuess;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -23,16 +24,16 @@ public class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadat
     private final InputStream stream;
 
     public DataSetMetadataJsonSerializer(boolean metadata, boolean columns, InputStream stream,
-                                         ApplicationContext applicationContext) {
+                                         FormatGuess.Factory factory) {
         this.metadata = metadata;
         this.columns = columns;
         this.stream = stream;
-        this.metadataJsonSerializer = new SimpleDataSetMetadataJsonSerializer(applicationContext);
+        this.metadataJsonSerializer = new SimpleDataSetMetadataJsonSerializer(factory);
     }
 
     @Override
     public void serialize(DataSetMetadata dataSetMetadata, JsonGenerator generator, SerializerProvider serializerProvider)
-        throws IOException {
+            throws IOException {
         generator.writeStartObject();
         {
             // Write general information about the dataset

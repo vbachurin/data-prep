@@ -21,11 +21,11 @@ public class SimpleDataSetMetadataJsonSerializer {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    private ApplicationContext applicationContext;
+    private FormatGuess.Factory factory;
 
     @Autowired
-    public SimpleDataSetMetadataJsonSerializer(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public SimpleDataSetMetadataJsonSerializer(FormatGuess.Factory factory) {
+        this.factory = factory;
     }
 
     /**
@@ -59,8 +59,7 @@ public class SimpleDataSetMetadataJsonSerializer {
             generator.writeBooleanField("draft", dataSetMetadata.isDraft()); //$NON-NLS-1
             generator.writeStringField("certification", dataSetMetadata.getGovernance().getCertificationStep().toString()); //$NON-NLS-1
             if (dataSetMetadata.getContent().getFormatGuessId() != null) {
-                FormatGuess formatGuess = applicationContext.getBean(dataSetMetadata.getContent().getFormatGuessId(), //
-                        FormatGuess.class);
+                FormatGuess formatGuess = this.factory.getFormatGuess( dataSetMetadata.getContent().getFormatGuessId() );
 
                 generator.writeStringField("type", formatGuess.getMediaType()); //$NON-NLS-1
 

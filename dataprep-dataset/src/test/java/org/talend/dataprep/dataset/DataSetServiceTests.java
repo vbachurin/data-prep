@@ -48,6 +48,7 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Separator;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -76,7 +77,7 @@ public class DataSetServiceTests {
     SparkContext sparkContext;
 
     @Autowired
-    ApplicationContext applicationContext;
+    FormatGuess.Factory factory;
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
 
@@ -453,7 +454,7 @@ public class DataSetServiceTests {
 
         try (InputStream dataSetContent = DataSetServiceTests.class.getResourceAsStream("metadata.json"))
         {
-            final SimpleModule module = new DataSetMetadataModule( applicationContext );
+            final SimpleModule module = new DataSetMetadataModule( factory );
             ObjectMapper mapper = new ObjectMapper();
 
             mapper.registerModule( module );

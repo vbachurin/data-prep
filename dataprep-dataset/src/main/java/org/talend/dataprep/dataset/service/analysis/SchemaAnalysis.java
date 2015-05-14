@@ -49,7 +49,7 @@ public class SchemaAnalysis {
     JmsTemplate jmsTemplate;
 
     @Autowired
-    ApplicationContext applicationContext;
+    FormatGuess.Factory factory;
 
     @Autowired
     SparkContext sparkContext;
@@ -69,10 +69,8 @@ public class SchemaAnalysis {
                     try {
                         LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                         // Create a content with the expected format for the StatisticsClientJson class
-                        Serializer serializer = applicationContext.getBean(metadata.getContent().getFormatGuessId(),
-                                FormatGuess.class).getSerializer();
                         final SimpleModule module = DataSetMetadataModule
-                                .get(true, true, store.get(metadata), applicationContext);
+                                .get(true, true, store.get(metadata), factory);
                         ObjectMapper mapper = new ObjectMapper();
                         mapper.registerModule(module);
                         final StringWriter content = new StringWriter();
@@ -117,7 +115,7 @@ public class SchemaAnalysis {
                     }
                     LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                     // Create a content with the expected format for the StatisticsClientJson class
-                    final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
+                    final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), factory);
                     ObjectMapper mapper = new ObjectMapper();
                     mapper.registerModule(module);
                     final StringWriter content = new StringWriter();

@@ -151,8 +151,6 @@ public class DataSetMetadata {
 
         private boolean draft = true;
 
-        private FormatGuess contentType;
-
         private String formatGuessId;
 
         public static DataSetMetadata.Builder metadata() {

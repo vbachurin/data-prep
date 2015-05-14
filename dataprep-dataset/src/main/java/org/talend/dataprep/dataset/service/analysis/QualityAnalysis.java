@@ -46,7 +46,7 @@ public class QualityAnalysis {
     DataSetContentStore store;
 
     @Autowired
-    ApplicationContext applicationContext;
+    FormatGuess.Factory factory;
 
     @Autowired
     SparkContext context;
@@ -69,7 +69,7 @@ public class QualityAnalysis {
 
 
                     // Create a content with the expected format for the StatisticsClientJson class
-                    final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
+                    final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), factory);
                     ObjectMapper mapper = new ObjectMapper();
                     mapper.registerModule(module);
                     final StringWriter content = new StringWriter();
