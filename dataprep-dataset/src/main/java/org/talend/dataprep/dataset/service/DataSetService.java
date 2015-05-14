@@ -370,7 +370,7 @@ public class DataSetService {
 
             dataSetMetadataRepository.add(dataSetMetadata);
 
-            // all good mate send that to jms
+            // all good mate!! so  send that to jms
             // Asks for a in depth schema analysis (for column type information).
             jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
                 Message schemaAnalysisMessage = session.createMessage();
