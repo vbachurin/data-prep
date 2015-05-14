@@ -36,6 +36,10 @@ public interface FormatGuess {
      */
     Serializer getSerializer();
 
+    /**
+     *
+     * @return the Spring beanId to be used to get the bean from the used injection container
+     */
     String getBeanId();
 
     @Component
