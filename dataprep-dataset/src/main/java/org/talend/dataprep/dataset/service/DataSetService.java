@@ -42,6 +42,8 @@ import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
+import org.talend.dataprep.schema.DraftValidator;
+import org.talend.dataprep.schema.FormatGuess;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -52,7 +54,6 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
-import org.talend.dataprep.schema.FormatGuess;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -351,32 +352,41 @@ public class DataSetService {
             final SimpleModule module = new DataSetMetadataModule(formatGuessFactory);
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(module);
-            DataSetMetadata dataSetMetadata = mapper.readValue( dataSetContent, DataSetMetadata.class );
+            DataSetMetadata dataSetMetadata = mapper.readValue(dataSetContent, DataSetMetadata.class);
             LOG.debug("updateDataSet: {}", dataSetMetadata);
 
             // we retry informations we do not update
             DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
 
             dataSetMetadata.getRow().setColumns(
-                read.getSchemaParserResult().getColumnMetadatas().get( dataSetMetadata.getSheetName()));
-            dataSetMetadata.setContent( read.getContent() );
+                    read.getSchemaParserResult().getColumnMetadatas().get(dataSetMetadata.getSheetName()));
+            dataSetMetadata.setContent(read.getContent());
 
-            dataSetMetadata.setSchemaParserResult( null );
+            dataSetMetadata.setSchemaParserResult(null);
 
-            // TODO add some validation (i.e is it still a draft????)
-            // using a new bean from FormatGuess
+            FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
 
-            dataSetMetadata.setDraft( false );
+            DraftValidator draftValidator = formatGuess.getDraftValidator();
+
+            DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
+
+            if (result.draft) {
+                // FIXME what to do here?? exception?
+                LOG.warn("dataSetMetadata#{} still a draft", dataSetId);
+                return;
+            }
+
+            dataSetMetadata.setDraft(false);
 
             dataSetMetadataRepository.add(dataSetMetadata);
 
-            // all good mate!! so  send that to jms
+            // all good mate!! so send that to jms
             // Asks for a in depth schema analysis (for column type information).
             jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
                 Message schemaAnalysisMessage = session.createMessage();
                 schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                return schemaAnalysisMessage;
-            });
+                    return schemaAnalysisMessage;
+                });
 
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);

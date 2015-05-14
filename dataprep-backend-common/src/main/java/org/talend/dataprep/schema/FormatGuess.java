@@ -42,6 +42,12 @@ public interface FormatGuess {
      */
     String getBeanId();
 
+    /**
+     *
+     * @return {@link DraftValidator} that will validate if the metadata are still in draft status for this format type
+     */
+    DraftValidator getDraftValidator();
+
     @Component
     class Factory {
 

@@ -6,13 +6,15 @@
 
     <div class="modal-header">
       <p>Dataset: {{datasetPreviewCtrl.metadata.name}}</p>
-      <p>Sheet selected: {{datasetPreviewCtrl.selectedSheetName}}</p>
+
+      <p class="param-choice-name">Sheet selected: {{datasetPreviewCtrl.selectedSheetName}}</p>
 
       <select ng-options="sheetName for sheetName in datasetPreviewCtrl.metadata.sheetNames"
               ng-model="datasetPreviewCtrl.selectedSheetName"
-              ng-change="datasetPreviewCtrl.updateSheetName()"></select>
+              ng-change="datasetPreviewCtrl.updateSheetName()"
+              class="param-choice-select"></select>
 
-      <button ng-click="datasetPreviewCtrl.updateDataset()">Update</button>
+      <button class="t-btn-primary modal-primary-button" ng-click="datasetPreviewCtrl.updateDataset()">Update</button>
 
     </div>
 

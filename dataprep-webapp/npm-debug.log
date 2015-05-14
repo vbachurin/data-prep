@@ -1,0 +1,200 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install' ]
+2 info using npm@2.7.5
+3 info using node@v0.12.2
+4 verbose node symlink /usr/local/bin/node
+5 verbose install where, deps [ '/Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp',
+5 verbose install   [ 'time-require',
+5 verbose install     'ansi-regex',
+5 verbose install     'bower',
+5 verbose install     'browser-sync',
+5 verbose install     'chalk',
+5 verbose install     'clone',
+5 verbose install     'clone-stats',
+5 verbose install     'del',
+5 verbose install     'find-index',
+5 verbose install     'glob',
+5 verbose install     'gulp',
+5 verbose install     'gulp-angular-filesort',
+5 verbose install     'gulp-angular-templatecache',
+5 verbose install     'gulp-autoprefixer',
+5 verbose install     'gulp-consolidate',
+5 verbose install     'gulp-csso',
+5 verbose install     'gulp-debug',
+5 verbose install     'gulp-filter',
+5 verbose install     'gulp-flatten',
+5 verbose install     'gulp-imagemin',
+5 verbose install     'gulp-inject',
+5 verbose install     'gulp-jshint',
+5 verbose install     'gulp-karma',
+5 verbose install     'gulp-load-plugins',
+5 verbose install     'gulp-minify-html',
+5 verbose install     'gulp-natural-sort',
+5 verbose install     'gulp-ng-annotate',
+5 verbose install     'gulp-protractor',
+5 verbose install     'gulp-rename',
+5 verbose install     'gulp-replace',
+5 verbose install     'gulp-rev',
+5 verbose install     'gulp-rev-replace',
+5 verbose install     'gulp-ruby-sass',
+5 verbose install     'gulp-size',
+5 verbose install     'gulp-uglify',
+5 verbose install     'gulp-useref',
+5 verbose install     'gulp-util',
+5 verbose install     'http-proxy',
+5 verbose install     'jade',
+5 verbose install     'jshint-stylish',
+5 verbose install     'karma-coverage',
+5 verbose install     'karma-jasmine',
+5 verbose install     'karma-junit-reporter',
+5 verbose install     'karma-ng-html2js-preprocessor',
+5 verbose install     'karma-phantomjs-launcher',
+5 verbose install     'main-bower-files',
+5 verbose install     'minimatch',
+5 verbose install     'protractor',
+5 verbose install     'require-dir',
+5 verbose install     'through2',
+5 verbose install     'uglify-save-license',
+5 verbose install     'wiredep',
+5 verbose install     'gulp-ngdocs' ] ]
+6 verbose install where, peers [ '/Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp',
+6 verbose install   [] ]
+7 info preinstall data-prep@1.0.0
+8 verbose already installed skipping gulp-autoprefixer@~2.0.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+9 verbose already installed skipping gulp-consolidate@~0.1.2 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+10 verbose already installed skipping gulp-csso@~0.2.9 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+11 verbose already installed skipping gulp-debug@^2.0.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+12 verbose already installed skipping gulp-filter@~1.0.2 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+13 verbose already installed skipping gulp-flatten@~0.0.4 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+14 verbose already installed skipping gulp-imagemin@~2.0.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+15 verbose already installed skipping gulp-inject@~1.0.2 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+16 verbose already installed skipping gulp-jshint@~1.9.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+17 verbose already installed skipping gulp-karma@~0.0.4 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+18 verbose already installed skipping gulp-load-plugins@~0.7.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+19 verbose already installed skipping gulp-minify-html@~0.1.7 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+20 verbose already installed skipping gulp-natural-sort@^0.1.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+21 silly cache add args [ 'gulp-ng-annotate@~0.5.3', null ]
+22 verbose cache add spec gulp-ng-annotate@~0.5.3
+23 silly cache add parsed spec { raw: 'gulp-ng-annotate@~0.5.3',
+23 silly cache add   scope: null,
+23 silly cache add   name: 'gulp-ng-annotate',
+23 silly cache add   rawSpec: '~0.5.3',
+23 silly cache add   spec: '>=0.5.3 <0.6.0',
+23 silly cache add   type: 'range' }
+24 verbose addNamed gulp-ng-annotate@>=0.5.3 <0.6.0
+25 silly addNamed semver.valid null
+26 silly addNamed semver.validRange >=0.5.3 <0.6.0
+27 silly addNameRange { name: 'gulp-ng-annotate',
+27 silly addNameRange   range: '>=0.5.3 <0.6.0',
+27 silly addNameRange   hasData: false }
+28 silly mapToRegistry name gulp-ng-annotate
+29 silly mapToRegistry using default registry
+30 silly mapToRegistry registry http://registry.npmjs.org.au/
+31 silly mapToRegistry uri http://registry.npmjs.org.au/gulp-ng-annotate
+32 verbose addNameRange registry:http://registry.npmjs.org.au/gulp-ng-annotate not in flight; fetching
+33 verbose already installed skipping gulp-protractor@~0.0.11 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+34 verbose already installed skipping gulp-rename@~1.2.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+35 verbose already installed skipping gulp-replace@~0.5.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+36 verbose already installed skipping gulp-rev@~2.0.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+37 verbose already installed skipping gulp-rev-replace@~0.3.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+38 verbose already installed skipping gulp-ruby-sass@* /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+39 verbose already installed skipping gulp-size@~1.1.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+40 verbose already installed skipping gulp-uglify@~1.0.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+41 verbose already installed skipping gulp-useref@~1.0.2 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+42 verbose request uri http://registry.npmjs.org.au/gulp-ng-annotate
+43 verbose request no auth needed
+44 info attempt registry request try #1 at 22:24:40
+45 verbose request id 35035c5cdcfb2b7c
+46 verbose etag "553eb1e5-a4eb"
+47 verbose lastModified Mon, 27 Apr 2015 22:02:13 GMT
+48 http request GET http://registry.npmjs.org.au/gulp-ng-annotate
+49 verbose already installed skipping gulp-util@^3.0.3 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+50 verbose already installed skipping http-proxy@~1.7.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+51 verbose already installed skipping jade@~1.8.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+52 verbose already installed skipping jshint-stylish@~1.0.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+53 verbose already installed skipping karma-coverage@~0.2.7 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+54 verbose already installed skipping karma-jasmine@~0.3.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+55 verbose already installed skipping karma-junit-reporter@^0.2.2 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+56 verbose already installed skipping karma-ng-html2js-preprocessor@~0.1.2 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+57 verbose already installed skipping karma-phantomjs-launcher@~0.1.4 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+58 verbose already installed skipping main-bower-files@~2.4.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+59 verbose already installed skipping minimatch@^2.0.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+60 verbose already installed skipping protractor@~1.4.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+61 verbose already installed skipping require-dir@~0.1.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+62 verbose already installed skipping through2@^0.6.3 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+63 verbose already installed skipping uglify-save-license@~0.4.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+64 verbose already installed skipping wiredep@~2.2.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+65 verbose already installed skipping gulp-ngdocs@~0.2.10 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+66 verbose already installed skipping time-require@^0.1.2 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+67 verbose already installed skipping ansi-regex@^1.1.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+68 verbose already installed skipping bower@^1.3.12 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+69 verbose already installed skipping browser-sync@~1.7.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+70 verbose already installed skipping chalk@~0.5.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+71 verbose already installed skipping clone@^1.0.0 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+72 verbose already installed skipping clone-stats@0.0.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+73 verbose already installed skipping del@~0.1.3 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+74 verbose already installed skipping find-index@^0.1.1 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+75 verbose already installed skipping glob@^4.3.5 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+76 verbose already installed skipping gulp@~3.8.10 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+77 verbose already installed skipping gulp-angular-filesort@~1.0.4 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+78 verbose already installed skipping gulp-angular-templatecache@~1.4.2 /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+79 http 304 http://registry.npmjs.org.au/gulp-ng-annotate
+80 silly get cb [ 304,
+80 silly get   { server: 'nginx/1.4.6 (Ubuntu)',
+80 silly get     date: 'Thu, 14 May 2015 12:22:50 GMT',
+80 silly get     'last-modified': 'Mon, 27 Apr 2015 22:02:13 GMT',
+80 silly get     connection: 'keep-alive',
+80 silly get     etag: '"553eb1e5-a4eb"',
+80 silly get     expires: 'Mon, 27 Apr 2015 22:17:13 GMT',
+80 silly get     'cache-control': 'no-cache' } ]
+81 verbose etag http://registry.npmjs.org.au/gulp-ng-annotate from cache
+82 verbose get saving gulp-ng-annotate to /Users/olamy/.npm/registry.npmjs.org.au/gulp-ng-annotate/.cache.json
+83 silly addNameRange number 2 { name: 'gulp-ng-annotate',
+83 silly addNameRange   range: '>=0.5.3 <0.6.0',
+83 silly addNameRange   hasData: true }
+84 silly addNameRange versions [ 'gulp-ng-annotate',
+84 silly addNameRange   [ '0.1.0',
+84 silly addNameRange     '0.1.1',
+84 silly addNameRange     '0.2.0',
+84 silly addNameRange     '0.3.0',
+84 silly addNameRange     '0.3.1',
+84 silly addNameRange     '0.3.2',
+84 silly addNameRange     '0.3.3',
+84 silly addNameRange     '0.3.4',
+84 silly addNameRange     '0.3.5',
+84 silly addNameRange     '0.3.6',
+84 silly addNameRange     '0.4.0',
+84 silly addNameRange     '0.4.1',
+84 silly addNameRange     '0.4.2',
+84 silly addNameRange     '0.4.3',
+84 silly addNameRange     '0.4.4',
+84 silly addNameRange     '0.5.0',
+84 silly addNameRange     '0.5.1',
+84 silly addNameRange     '0.5.2' ] ]
+85 verbose stack Error: No compatible version found: gulp-ng-annotate@'>=0.5.3 <0.6.0'
+85 verbose stack Valid install targets:
+85 verbose stack ["0.1.0","0.1.1","0.2.0","0.3.0","0.3.1","0.3.2","0.3.3","0.3.4","0.3.5","0.3.6","0.4.0","0.4.1","0.4.2","0.4.3","0.4.4","0.5.0","0.5.1","0.5.2"]
+85 verbose stack
+85 verbose stack     at installTargetsError (/usr/local/lib/node_modules/npm/lib/cache/add-named.js:259:12)
+85 verbose stack     at next (/usr/local/lib/node_modules/npm/lib/cache/add-named.js:238:17)
+85 verbose stack     at setData (/usr/local/lib/node_modules/npm/lib/cache/add-named.js:215:5)
+85 verbose stack     at RES (/usr/local/lib/node_modules/npm/node_modules/inflight/inflight.js:23:14)
+85 verbose stack     at f (/usr/local/lib/node_modules/npm/node_modules/once/once.js:17:25)
+85 verbose stack     at saved (/usr/local/lib/node_modules/npm/lib/cache/caching-client.js:173:7)
+85 verbose stack     at FSReqWrap.oncomplete (fs.js:95:15)
+86 verbose cwd /Users/olamy/dev/sources/job/talend/data-prep/dataprep-webapp
+87 error Darwin 14.3.0
+88 error argv "node" "/usr/local/bin/npm" "install"
+89 error node v0.12.2
+90 error npm  v2.7.5
+91 error code ETARGET
+92 error notarget No compatible version found: gulp-ng-annotate@'>=0.5.3 <0.6.0'
+92 error notarget Valid install targets:
+92 error notarget ["0.1.0","0.1.1","0.2.0","0.3.0","0.3.1","0.3.2","0.3.3","0.3.4","0.3.5","0.3.6","0.4.0","0.4.1","0.4.2","0.4.3","0.4.4","0.5.0","0.5.1","0.5.2"]
+92 error notarget
+92 error notarget This is most likely not a problem with npm itself.
+92 error notarget In most cases you or one of your dependencies are requesting
+92 error notarget a package version that doesn't exist.
+92 error notarget
+92 error notarget It was specified as a dependency of 'data-prep'
+93 verbose exit [ 1, true ]
