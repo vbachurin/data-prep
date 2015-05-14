@@ -5,7 +5,12 @@
               on-close="datasetPreviewCtrl.close()">
 
     <div class="modal-header">
-      header
+      Sheet selection {{datasetPreviewCtrl.selectedSheetName}}
+
+      <select ng-options="sheetName for sheetName in datasetPreviewCtrl.metadata.sheetNames"
+              ng-model="datasetPreviewCtrl.selectedSheetName"
+              ng-change="datasetPreviewCtrl.updateSheetName()"></select>
+
     </div>
 
     <div class="modal-body">

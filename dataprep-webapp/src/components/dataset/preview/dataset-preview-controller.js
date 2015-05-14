@@ -10,41 +10,60 @@
     function DatasetPreviewCtrl($scope,$state,$stateParams,DatasetRestService) {
 
         var self = this;
+        self.datasetid=
         self.visible = false;
+        self.metadata;
+        self.selectedSheetName;
+        self.records;
+        self.columns;
 
         self.close = function() {
           $state.go('nav.home.datasets');
         };
 
+        self.updateSheetName = function(){
+          console.log('updateSheetName:'+self.selectedSheetName);
+          return DatasetRestService.getContent(self.datasetid, true,true,self.selectedSheetName)
+              .then(function(data) {
+                      drawGrid(data)
+                    });
+        };
+
+        var drawGrid = function(data){
+          self.metadata = data.metadata;
+          self.selectedSheetName=data.metadata.sheetName;
+
+          var options = {
+            enableColumnReorder: false,
+            editable: false,
+            enableAddRow: false,
+            enableCellNavigation: true,
+            enableTextSelectionOnCells: false
+          };
+
+          self.columns = [];
+          angular.forEach(data.columns, function(value, key) {
+            this.push({id: value.id, name: value.id, field: value.id});
+          }, self.columns);
+          self.records=data.records;
+          var grid = new Slick.Grid( $('#previewdatagrid'), self.records, self.columns, options);
+          self.visible=true;
+        };
+
         var loadPreview = function(){
             if($stateParams.datasetid) {
-                var datasetid = $stateParams.datasetid;
-                console.log('datasetid:' + datasetid);
-                return DatasetRestService.getContent(datasetid, true,true)
+                self.datasetid = $stateParams.datasetid;
+                return DatasetRestService.getContent(self.datasetid, true,true)
                     .then(function(data) {
-                              $scope.metadata=data.metadata;
-                              $scope.data=data;
-                              self.visible=true;
-                              var options = {
-                                enableColumnReorder: false,
-                                editable: false,
-                                enableAddRow: false,
-                                enableCellNavigation: true,
-                                enableTextSelectionOnCells: false
-                              };
-
-                              var columns = [];
-                              angular.forEach(data.columns, function(value, key) {
-                                this.push({id: value.id, name: value.id, field: value.id});
-                              }, columns);
-
-                              var grid = new Slick.Grid('#previewdatagrid', data.records, columns, options);
+                            drawGrid(data)
                           });
             }
 
         };
 
         loadPreview();
+
+
 
     }
 
