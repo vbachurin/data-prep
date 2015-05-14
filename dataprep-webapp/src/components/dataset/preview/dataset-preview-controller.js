@@ -26,17 +26,19 @@
                               $scope.data=data;
                               self.visible=true;
                               var options = {
+                                enableColumnReorder: false,
+                                editable: false,
+                                enableAddRow: false,
                                 enableCellNavigation: true,
-                                enableColumnReorder: false
+                                enableTextSelectionOnCells: false
                               };
 
                               var columns = [];
                               angular.forEach(data.columns, function(value, key) {
                                 this.push({id: value.id, name: value.id, field: value.id});
-                                console.log({id: value.id, name: value.id, field: value.id});
                               }, columns);
 
-                              var grid = new Slick.Grid('#datagrid', data.records, columns, options);
+                              var grid = new Slick.Grid('#previewdatagrid', data.records, columns, options);
                           });
             }
 
