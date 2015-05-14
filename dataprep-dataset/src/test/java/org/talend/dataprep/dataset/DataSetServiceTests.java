@@ -33,9 +33,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -85,18 +85,6 @@ public class DataSetServiceTests {
         assertThat(lifecycle.contentIndexed(), is(true));
         assertThat(lifecycle.schemaAnalyzed(), is(true));
         assertThat(lifecycle.qualityAnalyzed(), is(true));
-        // Quality number assertions (TODO: temporary, values to be provided by actual analysis)
-        // Test condition empty < invalid < valid
-        List<ColumnMetadata> columns = metadata.getRow().getColumns();
-        for (ColumnMetadata column : columns) {
-            int valid = column.getQuality().getValid();
-            int invalid = column.getQuality().getInvalid();
-            int empty = column.getQuality().getEmpty();
-            assertTrue("in dataset #" + dataSetId + ", column '" + column.getId() + "' has more empty rows (" + empty
-                    + ") than invalid ones (" + invalid + ")", empty <= invalid);
-            assertTrue("in dataset #" + dataSetId + ", column '" + column.getId() + "' has more invalid rows (" + empty
-                    + ") than valid ones (" + invalid + ")", invalid < valid);
-        }
     }
 
     private void waitForQueue(String queueName, String dataSetId) {

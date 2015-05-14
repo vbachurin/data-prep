@@ -1,7 +1,6 @@
 package org.talend.dataprep.api.dataset.json;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 
 import com.fasterxml.jackson.core.JsonToken;
 
@@ -12,7 +11,7 @@ class Selector implements State {
     private String currentField;
 
     @Override
-    public void handle(Context context, DataSetMetadata.Builder builder, JsonToken token) throws Exception {
+    public void handle(Context context, JsonToken token) throws Exception {
         if (token == null) {
             return;
         }
@@ -34,7 +33,7 @@ class Selector implements State {
     private void startArray(Context context) {
         switch (currentField) {
         case "columns": //$NON-NLS-1$
-            context.setCurrent(Columns.INSTANCE);
+            context.setCurrent(new Columns());
             break;
         default:
             throw new NotImplementedException();

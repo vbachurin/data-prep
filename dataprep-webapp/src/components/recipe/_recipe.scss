@@ -43,7 +43,8 @@
     cursor: pointer;
     position: absolute;
     right: 10px;
-    top: 4px;
+    top: -1px;
+    padding-top: 5px;
     height: 100%;
 
     &::after {

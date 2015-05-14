@@ -23,7 +23,7 @@ public class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadat
     private final InputStream stream;
 
     public DataSetMetadataJsonSerializer(boolean metadata, boolean columns, InputStream stream,
-            ApplicationContext applicationContext) {
+                                         ApplicationContext applicationContext) {
         this.metadata = metadata;
         this.columns = columns;
         this.stream = stream;
@@ -32,7 +32,7 @@ public class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadat
 
     @Override
     public void serialize(DataSetMetadata dataSetMetadata, JsonGenerator generator, SerializerProvider serializerProvider)
-            throws IOException {
+        throws IOException {
         generator.writeStartObject();
         {
             // Write general information about the dataset
@@ -44,33 +44,31 @@ public class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadat
             if (columns) {
                 generator.writeFieldName("columns"); //$NON-NLS-1
                 generator.writeStartArray();
-                if ( dataSetMetadata.getRow() != null && dataSetMetadata.getRow().getColumns() != null)
-                {
-                    for ( ColumnMetadata column : dataSetMetadata.getRow().getColumns() )
+                for (ColumnMetadata column : dataSetMetadata.getRow().getColumns()) {
+                    generator.writeStartObject();
                     {
-                        generator.writeStartObject();
-                        {
-                            // Column name
-                            generator.writeStringField( "id", column.getId() ); //$NON-NLS-1
-                            // Column quality
-                            if ( dataSetMetadata.getLifecycle().qualityAnalyzed() )
+                        // Column name
+                        generator.writeStringField("id", column.getId()); //$NON-NLS-1
+                        // Column quality
+                        if (dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+                            generator.writeFieldName("quality"); //$NON-NLS-1
+                            Quality quality = column.getQuality();
+                            generator.writeStartObject();
                             {
-                                generator.writeFieldName( "quality" ); //$NON-NLS-1
-                                Quality quality = column.getQuality();
-                                generator.writeStartObject();
-                                {
-                                    generator.writeNumberField( "empty", quality.getEmpty() ); //$NON-NLS-1
-                                    generator.writeNumberField( "invalid", quality.getInvalid() ); //$NON-NLS-1
-                                    generator.writeNumberField( "valid", quality.getValid() ); //$NON-NLS-1
-                                }
-                                generator.writeEndObject();
+                                generator.writeNumberField("empty", quality.getEmpty()); //$NON-NLS-1
+                                generator.writeNumberField("invalid", quality.getInvalid()); //$NON-NLS-1
+                                generator.writeNumberField("valid", quality.getValid()); //$NON-NLS-1
                             }
-                            // Column type
-                            String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getType() : "N/A"; //$NON-NLS-1
-                            generator.writeStringField( "type", typeName ); //$NON-NLS-1
+                            generator.writeEndObject();
+                            // Writes statistics as given by statistics library.
+                            generator.writeFieldName("statistics"); //$NON-NLS-1$
+                            generator.writeRawValue(column.getStatistics());
                         }
-                        generator.writeEndObject();
+                        // Column type
+                        String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getType() : "N/A"; //$NON-NLS-1
+                        generator.writeStringField("type", typeName); //$NON-NLS-1
                     }
+                    generator.writeEndObject();
                 }
                 generator.writeEndArray();
             }

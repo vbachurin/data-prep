@@ -1,6 +1,6 @@
 .filter-list {
   @include calc(width, "100% - 20px");
-  background-color: $light-gray;
+  background-color: $shadow-gray;
   color: $dark-gray;
   overflow-x: auto;
   margin: 10px;
