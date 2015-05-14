@@ -7,7 +7,7 @@
      * @description Dataset preview grid controller.
      * @requires data-prep.services.dataset.service:DatasetRestService
      */
-    function DatasetPreviewCtrl($scope,$state,$stateParams,DatasetRestService) {
+    function DatasetPreviewCtrl($scope,$state,$log,$stateParams,DatasetRestService) {
 
         var self = this;
         self.datasetid=
@@ -22,11 +22,15 @@
         };
 
         self.updateSheetName = function(){
-          console.log('updateSheetName:'+self.selectedSheetName);
           return DatasetRestService.getContent(self.datasetid, true,true,self.selectedSheetName)
               .then(function(data) {
                       drawGrid(data)
                     });
+        };
+
+        self.updateDataset = function(){
+          $log.debug('updateDataset');
+          DatasetRestService.update();
         };
 
         var drawGrid = function(data){
