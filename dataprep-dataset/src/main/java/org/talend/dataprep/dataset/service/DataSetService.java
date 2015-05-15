@@ -248,6 +248,8 @@ public class DataSetService {
             return; // No data set, returns empty content.
         }
 
+        // FIXME if it's not a draft anymore what do we do?
+
 
         if (StringUtils.isNotEmpty(sheetName)) {
             dataSetMetadata.setSheetName(sheetName);
