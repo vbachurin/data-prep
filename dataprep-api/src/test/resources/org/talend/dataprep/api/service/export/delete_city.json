@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "delete_on_value",
+      "parameters": {
+        "column_name": "city",
+        "value": "Gotham city"
+      }
+    }
+  ]
+}
