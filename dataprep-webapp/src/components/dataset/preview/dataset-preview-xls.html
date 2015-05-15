@@ -5,9 +5,7 @@
               on-close="datasetPreviewCtrl.close()">
 
     <div class="modal-header">
-      <p>Dataset: {{datasetPreviewCtrl.metadata.name}}</p>
-
-      <p class="param-choice-name">Sheet selected: {{datasetPreviewCtrl.selectedSheetName}}</p>
+      <span class="title"> Dataset: {{datasetPreviewCtrl.metadata.name}}</span>
 
       <select ng-options="sheetName for sheetName in datasetPreviewCtrl.metadata.sheetNames"
               ng-model="datasetPreviewCtrl.selectedSheetName"
