@@ -83,16 +83,40 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
-            @RequestParam(defaultValue = "false") @ApiParam(name = "preview", value = "Is it a preview of the data set") boolean preview,
-            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
             HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<InputStream> retrievalCommand = getCommand( DataSetGet.class, client, id,
-                                                                   metadata, columns, preview, sheetName );
+        HystrixCommand<InputStream> retrievalCommand = getCommand( DataSetGet.class, client, id, metadata, columns );
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
+            outputStream.flush();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
+            }
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
+    @RequestMapping(value = "/api/datasets/preview/{id}", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a data set by id.", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Get a data set based on given id.")
+    public void preview(
+        @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
+        @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
+        @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
+        @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
+        HttpServletResponse response) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+        }
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpClient client = getClient();
+        HystrixCommand<InputStream> retrievalCommand = getCommand( DataSetPreview.class, client, id,
+                                                                   metadata, columns, sheetName );
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);

@@ -168,8 +168,6 @@ public class DataSetService {
      * 
      * @param metadata If <code>true</code>, includes data set metadata information.
      * @param columns If <code>true</code>, includes column metadata information (column types...).
-     * @param preview if <code>true</code> a preview request
-     * @param sheetName the sheet name to preview
      * @param dataSetId A data set id.
      * @param response The HTTP response to interact with caller.
      */
@@ -179,12 +177,10 @@ public class DataSetService {
     public void get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
-            @RequestParam(defaultValue = "false") @ApiParam(name = "preview", value = "preview of the data set") boolean preview,
-            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get( dataSetId );
         if (dataSetMetadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return; // No data set, returns empty content.
@@ -192,7 +188,7 @@ public class DataSetService {
 
         // if it's a draft and draft parameter set to true we don't mind and return it
         // as we need more details
-        if (!dataSetMetadata.isDraft() && !preview) {
+        if (!dataSetMetadata.isDraft() ) {
 
             if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
                 // Schema is not yet ready (but eventually will, returns 202 to indicate this).
@@ -214,29 +210,67 @@ public class DataSetService {
             }
         }
 
-        if (StringUtils.isNotEmpty(sheetName)) {
-            dataSetMetadata.setSheetName(sheetName);
-        }
-
-        // it's the first preview and sheet not yet set correctly
-        // so use the first one
-        if (preview && StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
-            String theSheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
-            LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName);
-            dataSetMetadata.setSheetName(theSheetName);
-        }
-
-        if (preview) {
-            String theSheetName = dataSetMetadata.getSheetName();
-            List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(theSheetName);
-            dataSetMetadata.getRow().setColumns(columnMetadatas);
-        }
-
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(DataSetMetadataModule.get(metadata, columns, //
                     contentStore.get(dataSetMetadata), formatGuessFactory));
+            mapper.writer().writeValue(generator, dataSetMetadata);
+            generator.flush();
+        } catch (IOException e) {
+            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
+        }
+    }
+
+    /**
+     * Returns preview of the the data set content for given id. Service might return {@link HttpServletResponse#SC_ACCEPTED} if the
+     * data set exists but analysis is not yet fully completed so content is not yet ready to be served.
+     *
+     * @param metadata If <code>true</code>, includes data set metadata information.
+     * @param columns If <code>true</code>, includes column metadata information (column types...).
+     * @param sheetName the sheet name to preview
+     * @param dataSetId A data set id.
+     * @param response The HTTP response to interact with caller.
+     */
+    @RequestMapping(value = "/datasets/{id}/preview", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
+    @Timed
+    public void preview(
+        @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
+        @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
+        @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
+        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
+        HttpServletResponse response) {
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        if (dataSetMetadata == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return; // No data set, returns empty content.
+        }
+
+
+        if (StringUtils.isNotEmpty(sheetName)) {
+            dataSetMetadata.setSheetName(sheetName);
+        }
+
+        // sheet not yet set correctly so use the first one
+        if (StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
+            String theSheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
+            LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName);
+            dataSetMetadata.setSheetName(theSheetName);
+        }
+
+
+        String theSheetName = dataSetMetadata.getSheetName();
+        List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(theSheetName);
+        dataSetMetadata.getRow().setColumns(columnMetadatas);
+
+
+        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
+            // Write general information about the dataset
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, //
+                                                            contentStore.get(dataSetMetadata), formatGuessFactory));
             mapper.writer().writeValue(generator, dataSetMetadata);
             generator.flush();
         } catch (IOException e) {

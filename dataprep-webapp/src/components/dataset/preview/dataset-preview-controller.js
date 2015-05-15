@@ -35,7 +35,7 @@
          * @description triggered on sheet name change (trigger redisplaying preview grid)
          */
         self.updateSheetName = function(){
-          return DatasetRestService.getContent(self.datasetid, true,true,self.selectedSheetName)
+          return DatasetRestService.getPreview(self.datasetid,true,self.selectedSheetName)
               .then(function(data) {
                       drawGrid(data)
                     });
@@ -92,7 +92,7 @@
         var loadPreview = function(){
             if($stateParams.datasetid) {
                 self.datasetid = $stateParams.datasetid;
-                return DatasetRestService.getContent(self.datasetid, true,true)
+                return DatasetRestService.getPreview(self.datasetid,true)
                     .then(function(data) {
                             drawGrid(data)
                           });

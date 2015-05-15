@@ -86,13 +86,32 @@
          * @description Get the dataset content
          * @param {string} datasetId The dataset id
          * @param {boolean} metadata If false, the metadata will not be returned
-         * @param {boolean} preview if the expected dataset is a preview one
+         * @returns {Promise} - the GET promise
+         */
+        self.getContent = function(datasetId, metadata) {
+            $rootScope.$emit('talend.loading.start');
+            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata )
+                .then(function(res) {
+                    return res.data;
+                })
+                .finally(function() {
+                    $rootScope.$emit('talend.loading.stop');
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name getPreview
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Get the dataset content
+         * @param {string} datasetId The dataset id
+         * @param {boolean} metadata If false, the metadata will not be returned
          * @param {string} sheetName to preview
          * @returns {Promise} - the GET promise
          */
-        self.getContent = function(datasetId, metadata,preview,sheetName) {
+        self.getPreview = function(datasetId, metadata,sheetName) {
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata + (preview? '&preview='+preview : '') + (sheetName?'&sheetName='+encodeURIComponent(sheetName): ''))
+            return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=' + metadata + (sheetName?'&sheetName='+encodeURIComponent(sheetName): ''))
                 .then(function(res) {
                     return res.data;
                 })
