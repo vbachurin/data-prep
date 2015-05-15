@@ -91,15 +91,16 @@ public class FormatAnalysis {
                     try (InputStream content = store.getAsRaw(metadata)) {
                         SchemaParser parser = bestGuess.getSchemaParser();
 
-                        SchemaParserResult schemaParserResult = parser.parse(content, metadata);
+                        SchemaParserResult schemaParserResult = parser.parse(new SchemaParser.Request(content, metadata));
                         if (schemaParserResult.draft()) {
-                            metadata.setSheetName( schemaParserResult.getColumnMetadatas().firstKey() );
+                            metadata.setSheetName(schemaParserResult.getColumnMetadatas().firstKey());
                             metadata.setDraft(true);
                             metadata.setSchemaParserResult(schemaParserResult);
                             return;
                         }
                         metadata.setDraft(false);
-                        metadata.getRow().setColumns(schemaParserResult.getColumnMetadatas().entrySet().iterator().next().getValue());
+                        metadata.getRow().setColumns(
+                                schemaParserResult.getColumnMetadatas().entrySet().iterator().next().getValue());
 
                     } catch (IOException e) {
                         throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);

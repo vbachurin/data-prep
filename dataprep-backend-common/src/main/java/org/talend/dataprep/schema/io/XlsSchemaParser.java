@@ -36,13 +36,13 @@ public class XlsSchemaParser implements SchemaParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(XlsSchemaParser.class);
 
     @Override
-    public SchemaParserResult parse(InputStream content, DataSetMetadata metadata) {
+    public SchemaParserResult parse(Request request) {
 
         // FIXME ATM only first sheet but need to be discuss
         // maybe return List<List<ColumnMetadata>> ??
         // so we could return all sheets
 
-        SortedMap<String, List<ColumnMetadata>> schema = parseAllSheets(content);
+        SortedMap<String, List<ColumnMetadata>> schema = parseAllSheets(request.getContent());
 
         if (!schema.isEmpty()) {
             return schema.size() == 1 ? //

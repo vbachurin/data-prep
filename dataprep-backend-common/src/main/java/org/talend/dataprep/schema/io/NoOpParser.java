@@ -12,7 +12,7 @@ import org.talend.dataprep.schema.SchemaParserResult;
 public class NoOpParser implements SchemaParser {
 
     @Override
-    public SchemaParserResult parse(InputStream content, DataSetMetadata metadata) {
+    public SchemaParserResult parse(Request request) {
         return SchemaParserResult.Builder.parserResult() //
                 .columnMetadatas(Collections.emptySortedMap()).build();
     }

@@ -17,13 +17,39 @@ public interface SchemaParser {
      * parameter).
      * </p>
      * 
-     * @param content The data set content. It should never be <code>null</code>.
-     * @param metadata The data set metadata, to be used to retrieve parameters needed to understand format in
-     *                 <code>content</code>.
+     * @param request container with informations needed to parse the raw data
      * @return {@link SchemaParserResult} containing a list of {@link ColumnMetadata metadata}. When no column name/type
      * can be created, implementations are expected to generate names and select
      * {@link org.talend.dataprep.api.type.Type#STRING string} as type.
      */
-    SchemaParserResult parse(InputStream content, DataSetMetadata metadata);
+    SchemaParserResult parse(Request request);
+
+    class Request {
+
+        InputStream content;
+
+        DataSetMetadata metadata;
+
+        /*
+         * @param content The data set content. It should never be <code>null</code>.
+         * 
+         * @param metadata The data set metadata, to be used to retrieve parameters needed to understand format in
+         * <code>content</code>.
+         */
+        public Request(InputStream content, DataSetMetadata metadata) {
+            this.content = content;
+            this.metadata = metadata;
+        }
+
+        public InputStream getContent()
+        {
+            return content;
+        }
+
+        public DataSetMetadata getMetadata()
+        {
+            return metadata;
+        }
+    }
 
 }

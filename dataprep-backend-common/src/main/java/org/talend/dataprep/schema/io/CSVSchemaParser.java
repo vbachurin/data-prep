@@ -29,13 +29,13 @@ public class CSVSchemaParser implements SchemaParser {
     private static final String META_KEY = "key";
 
     @Override
-    public SchemaParserResult parse(InputStream content, DataSetMetadata metadata) {
+    public SchemaParserResult parse(Request request) {
         SortedMap<String, List<ColumnMetadata>> columnMetadata = new TreeMap<>();
         columnMetadata.put(META_KEY, new ArrayList<>());
         try {
-            final Map<String, String> parameters = metadata.getContent().getParameters();
+            final Map<String, String> parameters = request.getMetadata().getContent().getParameters();
             final char separator = parameters.get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
-            CSVReader reader = new CSVReader(new InputStreamReader(content), separator);
+            CSVReader reader = new CSVReader(new InputStreamReader(request.getContent()), separator);
             // First line has column names
             String[] columns = reader.readNext();
             if (columns == null) { // Empty content?

@@ -71,8 +71,9 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream, null).getColumnMetadatas()
-                    .entrySet().iterator().next().getValue();
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
+                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().entrySet().iterator().next()
+                    .getValue();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
 
@@ -110,7 +111,8 @@ public class XlsFormatTest {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream, null).getColumnMetadatas().values().iterator().next();
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
+                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().values().iterator().next();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(17);
         }
@@ -134,8 +136,9 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream, null).getColumnMetadatas()
-                    .entrySet().iterator().next().getValue();
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
+                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().entrySet().iterator().next()
+                    .getValue();
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
 
@@ -212,8 +215,9 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream, null).getColumnMetadatas()
-                    .entrySet().iterator().next().getValue();
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
+                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().entrySet().iterator().next()
+                    .getValue();
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
 
@@ -269,8 +273,9 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser().parse(inputStream, null).getColumnMetadatas()
-                    .entrySet().iterator().next().getValue();
+            List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
+                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().entrySet().iterator().next()
+                    .getValue();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
 
@@ -326,7 +331,7 @@ public class XlsFormatTest {
 
             Map<String, List<ColumnMetadata>> xlsSchema = xlsSchemaParser.parseAllSheets(inputStream);
 
-            List<ColumnMetadata> columnMetadatas = new ArrayList<>(xlsSchema.get( "Leads" ));
+            List<ColumnMetadata> columnMetadatas = new ArrayList<>(xlsSchema.get("Leads"));
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(14);
 
