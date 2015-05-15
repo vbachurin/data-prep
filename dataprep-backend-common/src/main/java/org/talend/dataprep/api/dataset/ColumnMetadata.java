@@ -1,10 +1,18 @@
 package org.talend.dataprep.api.dataset;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.util.StringUtils;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
+
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Represents information about a column in a data set. It includes:
@@ -19,21 +27,24 @@ public class ColumnMetadata {
 
     private final Quality quality = new Quality();
 
-    private String name;
+    private String id;
 
-    private String typeName;
+    private String typeName = "N/A"; //$NON-NLS-1$
 
     // number of first lines with a text header
     // non per default
     private int headerSize = 0;
+
+    @JsonRawValue
+    private String statistics = "{}"; //$NON-NLS-1$
 
     // Needed when objects are read back from the db.
     public ColumnMetadata() {
         // Do not remove!
     }
 
-    public ColumnMetadata(String name, String typeName) {
-        this.name = name;
+    public ColumnMetadata(String id, String typeName) {
+        this.id = id;
         this.typeName = typeName;
     }
 
@@ -41,7 +52,7 @@ public class ColumnMetadata {
      * @return The column name. It never returns <code>null</code> or empty string.
      */
     public String getId() {
-        return name;
+        return id;
     }
 
     /**
@@ -73,22 +84,56 @@ public class ColumnMetadata {
         return Optional.ofNullable(obj) //
                 .filter(that -> that instanceof ColumnMetadata) //
                 .map(that -> (ColumnMetadata) that) //
-                .filter(that -> Objects.equals(this.name, that.name)) //
+                .filter(that -> Objects.equals(this.id, that.id)) //
                 .filter(that -> Objects.equals(this.typeName, that.typeName)) //
                 .isPresent();
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
+        int result = id.hashCode();
         result = 31 * result + typeName.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "ColumnMetadata{" + "quality=" + quality + ", name='" + name + '\'' + ", typeName='" + typeName + '\''
+        return "ColumnMetadata{" + "quality=" + quality + ", name='" + id + '\'' + ", typeName='" + typeName + '\''
                 + ", headerSize=" + headerSize + '}';
+    }
+
+    /**
+     * @return The statistics (as raw JSON content) returned by data quality library.
+     */
+    @JsonRawValue
+    public String getStatistics() {
+        return statistics;
+    }
+
+    /**
+     * Sets the statistics as returned by data quality library.
+     *
+     * @param statistics The statistics as returned by the data quality library.
+     */
+    public void setStatistics(Object statistics) {
+        if (statistics == null) {
+            this.statistics = "{}"; //$NON-NLS-1$
+        } else {
+            if (statistics instanceof Map) {
+                try {
+                    final StringWriter writer = new StringWriter();
+                    new ObjectMapper().writer().writeValue(writer, statistics);
+                    this.statistics = writer.toString();
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
+                }
+            } else if (statistics instanceof String) {
+                this.statistics = String.valueOf(statistics);
+            } else {
+                throw new IllegalArgumentException("Received a '" + statistics.getClass().getName()
+                        + "' but don't know how to interpret it.");
+            }
+        }
     }
 
     public static class Builder {

@@ -43,7 +43,7 @@ public class JsonWriterTest {
         columns.add(column1);
         columns.add(column2);
 
-        final String expectedOutput = "[{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"headerSize\":0,\"type\":\"string\",\"id\":\"id\"},{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"headerSize\":0,\"type\":\"string\",\"id\":\"firstname\"}]";
+        final String expectedOutput = "[{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"id\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"},{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"firstname\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"}]";
 
         // when
         writer.write(columns);

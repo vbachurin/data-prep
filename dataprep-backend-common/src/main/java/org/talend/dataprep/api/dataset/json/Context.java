@@ -22,7 +22,7 @@ class Context {
 
     void handle(JsonToken token) {
         try {
-            current.handle(this, builder, token);
+            current.handle(this, token);
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }

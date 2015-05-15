@@ -31,6 +31,9 @@ class ColumnMetadataJsonSerializer extends JsonSerializer<ColumnMetadata> {
                     generator.writeNumberField("valid", quality.getValid()); //$NON-NLS-1
                 }
                 generator.writeEndObject();
+                // Writes statistics as given by statistics library.
+                generator.writeFieldName("statistics"); //$NON-NLS-1$
+                generator.writeRawValue(column.getStatistics());
             }
             // Column type
             String typeName = column.getType() != null ? column.getType() : "N/A"; //$NON-NLS-1
