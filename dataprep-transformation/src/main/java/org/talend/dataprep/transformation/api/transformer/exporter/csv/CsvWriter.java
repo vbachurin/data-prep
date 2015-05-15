@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
-import java.util.List;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -24,8 +24,8 @@ public class CsvWriter implements TransformerWriter {
     }
 
     @Override
-    public void write(final List<ColumnMetadata> columns) throws IOException {
-        columnIds = columns.stream().map(ColumnMetadata::getId).toArray(String[]::new);
+    public void write(final RowMetadata rowMetadata) throws IOException {
+        columnIds = rowMetadata.getColumns().stream().map(ColumnMetadata::getId).toArray(String[]::new);
         writer.writeNext(columnIds);
     }
 

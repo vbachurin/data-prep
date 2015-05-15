@@ -114,19 +114,6 @@
             updateDataviewRecords(data.records);
         };
 
-        /**
-         * @ngdoc method
-         * @name updateRecords
-         * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {Object[]} records - the new records
-         * @description Update the data records in the datagrid
-         */
-        self.updateRecords = function (records) {
-            updateDataviewRecords(records);
-            self.data.records = records;
-        };
-
-
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------DATA UTILS--------------------------------------------
         //------------------------------------------------------------------------------------------------------

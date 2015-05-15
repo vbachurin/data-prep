@@ -16,7 +16,8 @@ describe('Preparation Service', function () {
             {tdpId : 9, firstname: 'Popo'},
             {tdpId : 10, firstname: 'Pupu'},
             {tdpId : 11, firstname: 'Pypy'}
-        ]
+        ],
+        columns: ['firstname']
     };
     //diff result corresponding to gridRangeIndex
     var diff = {
@@ -29,7 +30,8 @@ describe('Preparation Service', function () {
                 {__tdpRowDiff: 'delete', firstname: 'Papa'}, //row is deleted in preview
                 {firstname: 'Pepe', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
                 {firstname: 'Pupu'}
-            ]
+            ],
+            columns: ['firstname']
         }
     };
     //diff inserted at ids [0,1,2,6,7,10]
@@ -47,7 +49,8 @@ describe('Preparation Service', function () {
             {tdpId : 9, firstname: 'Popo'},
             {firstname: 'Pepe', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
             {firstname: 'Pupu'}
-        ]
+        ],
+        columns: ['firstname']
     };
     //diff inserted at ids [0,1,2,6,7,10], with 'Tata Bis' filtered
     var filteredModifiedData = {
@@ -64,7 +67,8 @@ describe('Preparation Service', function () {
             {tdpId : 9, firstname: 'Popo'},
             {firstname: 'Pupu'},
             { tdpId: 11, firstname: 'Pypy' }
-        ]
+        ],
+        columns: ['firstname']
     };
 
     beforeEach(module('data-prep.services.playground'));
@@ -75,7 +79,7 @@ describe('Preparation Service', function () {
         
         spyOn(PreparationService, 'getPreviewDiff').and.returnValue($q.when(diff));
         spyOn(PreparationService, 'getPreviewUpdate').and.returnValue($q.when(diff));
-        spyOn(DatagridService, 'updateRecords').and.returnValue(null);
+        spyOn(DatagridService, 'updateData').and.returnValue(null);
 
         //simulate datagrid get item to have displayedTdpIds = [0,1,2,6,7,10]
         spyOn(DatagridService.dataView, 'getItem').and.callFake(function(id) {
@@ -115,7 +119,7 @@ describe('Preparation Service', function () {
         expect(previewArgs[1]).toBe(previewStep);
         expect(previewArgs[2]).toEqual(displayedTdpIds);
 
-        expect(DatagridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
+        expect(DatagridService.updateData).toHaveBeenCalledWith(modifiedData);
     }));
 
     it('should filter preview records according to active filters', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
@@ -132,7 +136,7 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(DatagridService.updateRecords).toHaveBeenCalledWith(filteredModifiedData.records);
+        expect(DatagridService.updateData).toHaveBeenCalledWith(filteredModifiedData);
 
         //finally
         DatagridService.resetFilters();
@@ -158,7 +162,7 @@ describe('Preparation Service', function () {
         expect(previewArgs[2]).toBe(newParams);
         expect(previewArgs[3]).toEqual(displayedTdpIds);
 
-        expect(DatagridService.updateRecords).toHaveBeenCalledWith(modifiedData.records);
+        expect(DatagridService.updateData).toHaveBeenCalledWith(modifiedData);
     }));
 
     it('should resolve preview canceler to cancel the pending request', inject(function(PreviewService, PreparationService) {
@@ -184,13 +188,13 @@ describe('Preparation Service', function () {
 
         PreviewService.getPreviewDiffRecords(currentStep, previewStep);
         $rootScope.$digest();
-        expect(DatagridService.updateRecords.calls.count()).toBe(1);
+        expect(DatagridService.updateData.calls.count()).toBe(1);
 
         //when
         PreviewService.cancelPreview();
 
         //then
-        expect(DatagridService.updateRecords.calls.count()).toBe(2);
-        expect(DatagridService.updateRecords.calls.argsFor(1)[0]).toBe(data.records);
+        expect(DatagridService.updateData.calls.count()).toBe(2);
+        expect(DatagridService.updateData.calls.argsFor(1)[0]).toEqual(data);
     }));
 });

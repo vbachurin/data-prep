@@ -40,13 +40,13 @@ describe('Datagrid service', function() {
         DatagridService.metadata = {name: 'my dataset'};
         DatagridService.data = {columns: [], records: []};
 
-        var records = [{col: 'value'}];
+        var data = {'records': [{col: 'value'}]};
 
         //when
-        DatagridService.updateRecords(records);
+        DatagridService.updateData(data);
 
         //then
-        expect(DatagridService.data.records).toBe(records);
+        expect(DatagridService.data.records).toBe(data.records);
     }));
 
     it('should return every column id', inject(function(DatagridService) {

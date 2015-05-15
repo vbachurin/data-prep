@@ -21,7 +21,6 @@ import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportFactory;
 import org.talend.dataprep.transformation.api.transformer.json.DiffTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformerFactory;
@@ -43,11 +42,11 @@ public class TransformationService {
     @Autowired
     private ActionMetadata[] allActions;
 
-    private TransformerFactory getTransformerFactory() {
+    private SimpleTransformerFactory getTransformerFactory() {
         return context.getBean(SimpleTransformerFactory.class);
     }
 
-    private TransformerFactory getDiffTransformerFactory() {
+    private DiffTransformerFactory getDiffTransformerFactory() {
         return context.getBean(DiffTransformerFactory.class);
     }
 

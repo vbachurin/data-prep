@@ -61,7 +61,7 @@ class SimpleTransformer implements Transformer {
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
                     .preview(false)
                     .actions(DataSetRow.class, actions.getRowTransformer())
-                    .actions(RowMetadata.class, actions.getMetadataTransformers())
+                    .actions(RowMetadata.class, actions.getMetadataTransformer())
                     .build();
             //@formatter:on
 

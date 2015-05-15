@@ -1,14 +1,13 @@
 package org.talend.dataprep.transformation.api.transformer;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 
 public interface TransformerWriter {
 
-    void write(List<ColumnMetadata> columns) throws IOException;
+    void write(RowMetadata columns) throws IOException;
 
     void write(DataSetRow row) throws IOException;
 

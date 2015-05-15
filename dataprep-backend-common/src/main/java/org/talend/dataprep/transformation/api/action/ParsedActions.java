@@ -37,7 +37,7 @@ public class ParsedActions {
     /**
      * @return The list of metadata transformers.
      */
-    public Consumer<RowMetadata> getMetadataTransformers() {
+    public Consumer<RowMetadata> getMetadataTransformer() {
         return metadataTransformers;
     }
 }
