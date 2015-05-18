@@ -29,6 +29,7 @@ import org.talend.datascience.statistics.StatisticsClientJson;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Component
 public class SchemaAnalysis {
@@ -70,22 +71,31 @@ public class SchemaAnalysis {
                     mapper.writer().writeValue(content, metadata);
                     // Determine schema for the content
                     String elasticDataSchema = statisticsClient.inferSchemaInMemory(content.toString());
-                    LOGGER.debug("Analysis result: {}" + elasticDataSchema);
+                    LOGGER.debug("Analysis result: {}", elasticDataSchema);
                     // Set column types back in data set metadata
+                    // Get record count at the same type as returned information contains occurrence count.
+                    int recordCount = 0;
                     final Iterator<JsonNode> columns = mapper.readTree(elasticDataSchema).get("column").elements(); //$NON-NLS-1$
                     final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
                     for (; columns.hasNext() && schemaColumns.hasNext(); ) {
                         final JsonNode column = columns.next();
                         final ColumnMetadata schemaColumn = schemaColumns.next();
+                        // Get best type for column
                         final String typeName = column.get("suggested type").asText(); //$NON-NLS-1$
-                        if (Type.BOOLEAN.getName().equals(schemaColumn.getType()) && Type.STRING.getName().equals(typeName)) {
-                            LOGGER.info("Ignore incorrect detection (boolean -> string) for column {}.", schemaColumn.getId());
-                        } else if (Type.has(typeName)) {
+                        if (Type.has(typeName)) {
                             // Go through Type to ensure normalized type names.
                             schemaColumn.setType(Type.get(typeName).getName());
                         } else {
                             LOGGER.error("Type '{}' does not exist.", typeName);
                         }
+                        // Compute record count
+                        final ArrayNode types = (ArrayNode) column.get("types"); //$NON-NLS-1$
+                        int columnOccurrenceCount = 0;
+                        for (JsonNode type : types) {
+                            columnOccurrenceCount += type.get("occurrences").asInt(); //$NON-NLS-1$
+                        }
+                        recordCount = Math.max(recordCount, columnOccurrenceCount);
+                        metadata.getContent().setNbRecords(recordCount);
                     }
                     if (columns.hasNext() || schemaColumns.hasNext()) {
                         // Awkward situation: analysis code and parsed content information did not find same number of columns

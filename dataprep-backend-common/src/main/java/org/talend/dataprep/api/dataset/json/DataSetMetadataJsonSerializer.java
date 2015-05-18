@@ -60,6 +60,9 @@ public class DataSetMetadataJsonSerializer extends JsonSerializer<DataSetMetadat
                                 generator.writeNumberField("valid", quality.getValid()); //$NON-NLS-1
                             }
                             generator.writeEndObject();
+                            // Writes statistics as given by statistics library.
+                            generator.writeFieldName("statistics"); //$NON-NLS-1$
+                            generator.writeRawValue(column.getStatistics());
                         }
                         // Column type
                         String typeName = dataSetMetadata.getLifecycle().schemaAnalyzed() ? column.getType() : "N/A"; //$NON-NLS-1
