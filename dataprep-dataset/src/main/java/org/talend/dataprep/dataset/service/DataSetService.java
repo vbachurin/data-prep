@@ -259,19 +259,24 @@ public class DataSetService {
             dataSetMetadata.setSheetName(sheetName);
         }
 
-        // sheet not yet set correctly so use the first one
-        if (StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
-            String theSheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
-            LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName);
-            dataSetMetadata.setSheetName(theSheetName);
+        // take care of previous datas without schema parser result
+        if ( dataSetMetadata.getSchemaParserResult() != null)
+        {
+
+            // sheet not yet set correctly so use the first one
+            if ( StringUtils.isEmpty( dataSetMetadata.getSheetName() ) )
+            {
+                String theSheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
+                LOG.debug( "preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName );
+                dataSetMetadata.setSheetName( theSheetName );
+            }
+
+            String theSheetName = dataSetMetadata.getSheetName();
+            List<ColumnMetadata> columnMetadatas =
+                dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get( theSheetName );
+
+            dataSetMetadata.getRow().setColumns( columnMetadatas );
         }
-
-
-        String theSheetName = dataSetMetadata.getSheetName();
-        List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(theSheetName);
-
-        dataSetMetadata.getRow().setColumns(columnMetadatas);
-
 
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
             // Write general information about the dataset
