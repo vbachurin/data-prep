@@ -7,7 +7,6 @@ import java.util.TreeMap;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
-// FIXME improve to store sheet name
 public class SchemaParserResult {
 
     private boolean draft;
