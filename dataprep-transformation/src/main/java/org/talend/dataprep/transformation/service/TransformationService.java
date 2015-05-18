@@ -1,14 +1,15 @@
 package org.talend.dataprep.transformation.service;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-import au.com.bytecode.opencsv.CSVWriter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
@@ -23,7 +24,6 @@ import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportFactory;
 import org.talend.dataprep.transformation.api.transformer.json.DiffTransformerFactory;
@@ -32,9 +32,6 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
@@ -48,14 +45,6 @@ public class TransformationService {
 
     @Autowired
     private ActionMetadata[] allActions;
-
-//    private TransformerFactory getTransformerFactory() {
-//        return context.getBean(SimpleTransformerFactory.class);
-//    }
-//
-//    private TransformerFactory getDiffTransformerFactory() {
-//        return context.getBean(DiffTransformerFactory.class);
-//    }
 
     @Autowired
     private SimpleTransformerFactory simpleFactory;
