@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
+import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
 import org.talend.dataprep.api.service.command.transformation.Transform;
+import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
@@ -26,7 +29,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
-@Api(value = "api", basePath = "/api", description = "Data Preparation API")
+@Api(value = "api", basePath = "/api", description = "Transformation API")
 public class TransformAPI extends APIService {
 
     @RequestMapping(value = "/api/transform/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -58,5 +61,28 @@ public class TransformAPI extends APIService {
         }
 
         LOG.debug("Transformation of dataset id #{} done.", dataSetId);
+    }
+
+    @RequestMapping(value = "/api/transform/suggest/column/{columnDescription}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get suggested actions for a data set column.", notes = "Returns the suggested actions for the given column in decreasing order of likeness.")
+    @Timed
+    public void suggestColumnActions(
+            @ApiParam(value = "Column Metadata content as JSON base64 encoded") @PathVariable(value = "columnDescription") String columnDescription,
+            HttpServletResponse response) {
+
+        String columnMetadata = new String(Base64.getDecoder().decode(columnDescription));
+
+        HttpClient client = getClient();
+
+        // Asks transformation service for suggested actions for column type and domain
+        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, columnMetadata);
+        // Returns actions
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 }
