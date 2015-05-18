@@ -233,7 +233,7 @@ public class DataSetService {
      * @param response The HTTP response to interact with caller.
      */
     @RequestMapping(value = "/datasets/{id}/preview", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
+    @ApiOperation(value = "Get a data preview set by id", notes = "Get a data set preview content based on provided id. Not valid or non existing data set id returns empty content. Data set not in drat status will return a redirect 301")
     @Timed
     public void preview(
         @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
@@ -248,7 +248,11 @@ public class DataSetService {
             return; // No data set, returns empty content.
         }
 
-        // FIXME if it's not a draft anymore what do we do?
+        if (!dataSetMetadata.isDraft()){
+            response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+            return; // dataset not anymore a draft so preview doesn't make sense.
+        }
+
 
 
         if (StringUtils.isNotEmpty(sheetName)) {
@@ -265,6 +269,7 @@ public class DataSetService {
 
         String theSheetName = dataSetMetadata.getSheetName();
         List<ColumnMetadata> columnMetadatas = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get(theSheetName);
+
         dataSetMetadata.getRow().setColumns(columnMetadatas);
 
 

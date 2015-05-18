@@ -84,10 +84,11 @@
         };
 
         /**
+         * FIXME handle 301 status return, write a message to user and go to /datasets ?
          * @ngdoc method
          * @name loadPreview
          * @methodOf data-prep.dataset-list.controller:DatasetPreviewCtrl
-         * @description [PRIVATE] find the dataset id in params then trigged grid draw
+         * @description [PRIVATE] find the dataset id in params then trigge grid draw
          */
         var loadPreview = function(){
             if($stateParams.datasetid) {
@@ -95,7 +96,7 @@
                 return DatasetRestService.getPreview(self.datasetid,true)
                     .then(function(data) {
                             drawGrid(data)
-                          });
+                          } );
             }
 
         };

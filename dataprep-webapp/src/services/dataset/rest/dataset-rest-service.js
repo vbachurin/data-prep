@@ -107,7 +107,7 @@
          * @param {string} datasetId The dataset id
          * @param {boolean} metadata If false, the metadata will not be returned
          * @param {string} sheetName to preview
-         * @returns {Promise} - the GET promise
+         * @returns {Promise} - the GET promise 301 status if not anymore a draft
          */
         self.getPreview = function(datasetId, metadata,sheetName) {
             $rootScope.$emit('talend.loading.start');
