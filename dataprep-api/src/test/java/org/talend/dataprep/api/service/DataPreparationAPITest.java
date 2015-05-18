@@ -6,6 +6,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +29,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.Application;
@@ -538,7 +541,10 @@ public class DataPreparationAPITest {
 
         // when
         Thread.sleep(200);// TODO remove this when a better solution is available
-        final String export = given().contentType(ContentType.JSON).body(configuration).when().post("/api/export")
+        final String export = given().contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                .formParam("exportType", CSV)
+                .formParam("datasetId", datasetId)
+                .when().post("/api/export")
                 .asString();
 
         // then
@@ -559,14 +565,13 @@ public class DataPreparationAPITest {
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
 
-        final String configuration = "{" //export configuration with no csvSeparator
-            + "\"exportType\" : \"" + CSV + "\"," //
-            + "\"preparationId\" : \"" + preparationId + "\"," //
-            + "\"stepId\" : \"" + steps.get(2) + "\"" //after action 1
-            + "}";
-
         // when
-        final String export = given().contentType(ContentType.JSON).body(configuration).when().post("/api/export")
+        final String export = given().contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                .formParam("exportType", CSV)
+                .formParam("preparationId", preparationId)
+                .formParam("stepId", steps.get(2))
+                .when()
+                .post("/api/export")
                 .asString();
 
         // then
@@ -581,14 +586,13 @@ public class DataPreparationAPITest {
         final String expectedExport = IOUtils.toString(DataPreparationAPITest.class
                 .getResourceAsStream("export/expected_export_default_separator.csv"));
 
-        final String configuration = "{" //export configuration with no csvSeparator
-            + "\"exportType\" : \"" + CSV + "\"," //
-            + "\"preparationId\" : \"" + preparationId + "\"," //
-            + "\"stepId\" : \"head\"" //
-            + "}";
-
         // when
-        final String export = given().contentType(ContentType.JSON).body(configuration).when().post("/api/export")
+        final String export = given().contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                .formParam("exportType", CSV)
+                .formParam("preparationId", preparationId)
+                .formParam("stepId", "head")
+                .when()
+                .post("/api/export")
                 .asString();
 
         // then
@@ -603,19 +607,47 @@ public class DataPreparationAPITest {
         final String expectedExport = IOUtils.toString(DataPreparationAPITest.class
                 .getResourceAsStream("export/expected_export_semicolon_separator.csv"));
 
-        final String configuration = "{" //export configuration with no csvSeparator
-            + "\"exportType\" : \"" + CSV + "\"," //
-            + "\"csvSeparator\" : \";\"," //
-            + "\"preparationId\" : \"" + preparationId + "\"," //
-            + "\"stepId\" : \"head\"" //
-            + "}";
-
         // when
-        final String export = given().contentType(ContentType.JSON).body(configuration).when().post("/api/export")
+        final String export = given().contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                .formParam("exportType", CSV)
+                .formParam("csvSeparator", ";")
+                .formParam("preparationId", preparationId)
+                .formParam("stepId", "head")
+                .when()
+                .post("/api/export")
                 .asString();
 
         // then
         Assert.assertEquals(expectedExport, export);
+    }
+
+    @Test
+    public void testExportCsvWithBadBodyInput_noExportType() throws Exception {
+        // when
+        final Response response = given().contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                .formParam("csvSeparator", ";")
+                .formParam("preparationId", "4552157454657")
+                .formParam("stepId", "head")
+                .when()
+                .post("/api/export");
+
+        // then
+        response.then().statusCode(400);
+    }
+
+
+    @Test
+    public void testExportCsvWithBadBodyInput_noPrepId_noDatasetId() throws Exception {
+        // when
+        final Response response = given().contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                .formParam("exportType", CSV)
+                .formParam("csvSeparator", ";")
+                .formParam("stepId", "head")
+                .when()
+                .post("/api/export");
+
+        // then
+        response.then().statusCode(400);
     }
 
     private String createDataset(final String file, final String name, final String type) throws IOException {

@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
@@ -41,7 +42,7 @@ public class Export extends PreparationCommand<InputStream> {
         String name;
 
         // Get dataset id and actions from preparation
-        if (input.getPreparationId() != null) {
+        if (StringUtils.isNotBlank(input.getPreparationId())) {
             final JsonNode preparationDetails = getPreparationDetails(input.getPreparationId());
 
             final List<String> currentStepsIds = getActionsStepIds(preparationDetails, input.getStepId());

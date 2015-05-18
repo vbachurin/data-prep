@@ -8,7 +8,9 @@ import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.api.ExportInput;
 import org.talend.dataprep.api.service.command.export.Export;
@@ -21,17 +23,19 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.talend.dataprep.api.type.ExportType.CSV;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Export data API")
 public class ExportAPI extends APIService {
 
-    @RequestMapping(value = "/api/export", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE)
-    @ApiOperation(value = "Export a dataset", consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Export a dataset or a preparation to file. The file type is provided in the request body.")
+    @RequestMapping(value = "/api/export", method = POST, consumes = APPLICATION_FORM_URLENCODED_VALUE)
+    @ApiOperation(value = "Export a dataset", consumes = APPLICATION_FORM_URLENCODED_VALUE, notes = "Export a dataset or a preparation to file. The file type is provided in the request body.")
     public void export(
             @ApiParam(value = "Export configuration")
-            @RequestBody
             @Valid
             final ExportInput input,
             final HttpServletResponse response) {
