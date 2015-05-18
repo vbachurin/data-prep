@@ -99,19 +99,9 @@ public class CommonAPI extends APIService {
         body.put("status", status);
         body.put("reason", message);
 
-        printNames(request);
-
         response.setStatus(status);
 
         return body;
-    }
-
-    private void printNames(HttpServletRequest request) {
-        Enumeration<String> names = request.getAttributeNames();
-        while(names.hasMoreElements()) {
-            String name = names.nextElement();
-            System.out.println(name + " -> " + request.getAttribute(name));
-        }
     }
 
     /**

@@ -82,9 +82,7 @@ public class SchemaAnalysis {
                         final ColumnMetadata schemaColumn = schemaColumns.next();
                         // Get best type for column
                         final String typeName = column.get("suggested type").asText(); //$NON-NLS-1$
-                        if (Type.BOOLEAN.getName().equals(schemaColumn.getType()) && Type.STRING.getName().equals(typeName)) {
-                            LOGGER.info("Ignore incorrect detection (boolean -> string) for column {}.", schemaColumn.getId());
-                        } else if (Type.has(typeName)) {
+                        if (Type.has(typeName)) {
                             // Go through Type to ensure normalized type names.
                             schemaColumn.setType(Type.get(typeName).getName());
                         } else {

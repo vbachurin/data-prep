@@ -57,7 +57,12 @@ public class XlsSerializer implements Serializer {
                     if (i >= columnMetadata.getHeaderSize()) {
                         String cellValue = XlsUtils.getCellValueAsString(row.getCell(j));
                         LOGGER.trace( "cellValue for {}/{}: {}", i, j, cellValue );
-                        generator.writeStringField(columnMetadata.getId(), cellValue);
+                        generator.writeFieldName(columnMetadata.getId());
+                        if (cellValue != null) {
+                            generator.writeString(cellValue);
+                        } else {
+                            generator.writeNull();
+                        }
                     }
                 }
                 generator.writeEndObject();
