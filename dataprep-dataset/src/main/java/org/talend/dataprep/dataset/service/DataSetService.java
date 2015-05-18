@@ -276,6 +276,8 @@ public class DataSetService {
                 dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get( theSheetName );
 
             dataSetMetadata.getRow().setColumns( columnMetadatas );
+        } else {
+            LOG.warn( "dataset#{} has draft status but any SchemaParserResult" );
         }
 
         try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
