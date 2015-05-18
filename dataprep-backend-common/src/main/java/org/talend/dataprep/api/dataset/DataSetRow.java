@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.dataset;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,7 +23,7 @@ public class DataSetRow implements Cloneable {
 
     private DataSetRow oldRow;
 
-    private final Map<String, String> values = new HashMap<>();
+    private final Map<String, String> values = new LinkedHashMap<>();
 
     /**
      * Default empty constructor.

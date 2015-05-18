@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -93,7 +94,7 @@ public class DataSetMetadataJSONTest {
         assertEquals(2, metadata.getContent().getNbRecords());
         assertEquals(1, metadata.getContent().getNbLinesInHeader());
         assertEquals(0, metadata.getContent().getNbLinesInFooter());
-        Date expectedDate = SimpleDataSetMetadataJsonSerializer.DATE_FORMAT.parse("02-17-2015 09:02");
+        Date expectedDate = new SimpleDateFormat("MM-dd-YYYY HH:mm").parse("02-17-2015 09:02");
         assertEquals(expectedDate, metadata.getCreationDate());
         List<ColumnMetadata> columns = metadata.getRow().getColumns();
         assertEquals(6, columns.size());

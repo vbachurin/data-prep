@@ -5,17 +5,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.FormatGuesser;
 
 /**
  * Dataset content summary.
  */
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DataSetContent {
 
+    @JsonProperty("records")
     private int nbRecords;
 
+    @JsonProperty("nbLinesHeader")
     private int nbLinesInHeader;
 
+    @JsonProperty("nbLinesFooter")
     private int nbLinesInFooter;
 
     private Map<String, String> parameters = new HashMap<>();

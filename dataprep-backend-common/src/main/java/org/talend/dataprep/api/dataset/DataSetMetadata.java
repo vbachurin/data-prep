@@ -4,6 +4,9 @@ import java.util.*;
 
 import org.springframework.data.annotation.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
  * set content:
@@ -18,31 +21,46 @@ public class DataSetMetadata {
 
     /** The dataset id. */
     @Id
-    private final String id;
+    private String id;
 
     /** Row description. */
-    private final RowMetadata rowMetadata;
+    @JsonIgnore(true)
+    private RowMetadata rowMetadata;
 
     /** Dataset life cycle status. */
+    @JsonProperty("lifecycle")
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
     /** Dataset content summary. */
+    @JsonProperty("content")
     private final DataSetContent content = new DataSetContent();
 
     /** Dataset governance. */
     private final DataSetGovernance gov = new DataSetGovernance();
+    @JsonProperty("governance")
+    private final DataSetGovernance governance = new DataSetGovernance();
 
     /** Dataset name. */
     private final String name;
+    @JsonProperty("name")
+    private String name;
 
     /** Dataset author. */
     private final String author;
+    @JsonProperty("author")
+    private String author;
 
     /** Dataset creation date. */
     private final long creationDate;
+    @JsonProperty("creationDate")
+    private long creationDate;
 
     /** Sheet number in case of excel source. */
+    @JsonProperty("sheetNumber")
     private int sheetNumber;
+
+    public DataSetMetadata() {
+    }
 
     /**
      * Constructor.
@@ -67,10 +85,11 @@ public class DataSetMetadata {
     public String getId() {
         return id;
     }
-
+    
     /**
      * @return the dataset row description.
      */
+    @JsonIgnore(true)
     public RowMetadata getRow() {
         return rowMetadata;
     }
@@ -93,7 +112,7 @@ public class DataSetMetadata {
      * @return the dataset governance.
      */
     public DataSetGovernance getGovernance() {
-        return this.gov;
+        return this.governance;
     }
 
     /**

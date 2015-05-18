@@ -2,6 +2,7 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -11,13 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
@@ -27,8 +30,6 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.datascience.statistics.StatisticsClientJson;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Component
@@ -51,31 +52,34 @@ public class SchemaAnalysis {
     @Autowired
     SparkContext sparkContext;
 
+    @Autowired
+    Jackson2ObjectMapperBuilder builder;
+
     @JmsListener(destination = Destinations.SCHEMA_ANALYSIS)
     public void analyzeSchema(Message message) {
         try {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
             DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
             DataSetMetadata metadata = repository.get(dataSetId);
-            try {
+            try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 datasetLock.lock();
                 StatisticsClientJson statisticsClient = new StatisticsClientJson(true, sparkContext);
                 statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
                 if (metadata != null) {
                     LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                     // Create a content with the expected format for the StatisticsClientJson class
-                    final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.registerModule(module);
+                    DataSet dataSet = new DataSet();
+                    dataSet.setMetadata(metadata);
+                    dataSet.setRecords(stream);
                     final StringWriter content = new StringWriter();
-                    mapper.writer().writeValue(content, metadata);
+                    builder.build().writer().writeValue(content, dataSet);
                     // Determine schema for the content
                     String elasticDataSchema = statisticsClient.inferSchemaInMemory(content.toString());
                     LOGGER.debug("Analysis result: {}", elasticDataSchema);
                     // Set column types back in data set metadata
                     // Get record count at the same type as returned information contains occurrence count.
                     int recordCount = 0;
-                    final Iterator<JsonNode> columns = mapper.readTree(elasticDataSchema).get("column").elements(); //$NON-NLS-1$
+                    final Iterator<JsonNode> columns = builder.build().readTree(elasticDataSchema).get("column").elements(); //$NON-NLS-1$
                     final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
                     for (; columns.hasNext() && schemaColumns.hasNext(); ) {
                         final JsonNode column = columns.next();

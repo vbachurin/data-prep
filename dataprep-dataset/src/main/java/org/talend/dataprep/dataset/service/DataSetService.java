@@ -23,10 +23,9 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.DistributedLock;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -39,7 +38,6 @@ import org.talend.dataprep.metrics.VolumeMetered;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
 
 @RestController
@@ -64,9 +62,6 @@ public class DataSetService {
 
     @Autowired
     private DataSetContentStore contentStore;
-
-    @Autowired
-    private SimpleDataSetMetadataJsonSerializer metadataJsonSerializer;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -102,19 +97,8 @@ public class DataSetService {
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
-    public void list(final HttpServletResponse response) {
-        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        final Iterable<DataSetMetadata> dataSets = dataSetMetadataRepository.list();
-        try (final JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
-            generator.writeStartArray();
-            for (DataSetMetadata dataSetMetadata : dataSets) {
-                metadataJsonSerializer.serialize(dataSetMetadata, generator);
-            }
-            generator.writeEndArray();
-            generator.flush();
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
-        }
+    public Iterable<DataSetMetadata> list(final HttpServletResponse response) {
+        return dataSetMetadataRepository.list();
     }
 
     /**
@@ -158,7 +142,7 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
-    public void get(
+    public @ResponseBody DataSet get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
@@ -167,7 +151,7 @@ public class DataSetService {
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         if (dataSetMetadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return; // No data set, returns empty content.
+            return DataSet.EMPTY; // No data set, returns empty content.
         }
         if (dataSetMetadata.getLifecycle().error()) {
             // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
@@ -178,25 +162,24 @@ public class DataSetService {
             // Schema is not yet ready (but eventually will, returns 202 to indicate this).
             LOG.debug("Data set #{} not yet ready for service.", dataSetId);
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
+            return DataSet.EMPTY;
         }
-        if (columns && !dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+        if (!dataSetMetadata.getLifecycle().qualityAnalyzed()) {
             // Quality is not yet ready (but eventually will, returns 202 to indicate this).
             LOG.debug("Column information #{} not yet ready for service (missing quality information).", dataSetId);
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
+            return DataSet.EMPTY;
         }
-
-        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
-            // Write general information about the dataset
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata),
-                    applicationContext));
-            mapper.writer().writeValue(generator, dataSetMetadata);
-            generator.flush();
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
+        // Build the result
+        DataSet dataSet = new DataSet();
+        if (metadata) {
+            dataSet.setMetadata(dataSetMetadata);
         }
+        if (columns) {
+            dataSet.setColumns(dataSetMetadata.getRow().getColumns());
+        }
+        dataSet.setRecords(contentStore.stream(dataSetMetadata));
+        return dataSet;
     }
 
     /**
