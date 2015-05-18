@@ -93,8 +93,8 @@ public class DataSetRow implements Cloneable {
      * </ul>
      */
     public Map<String, Object> values() {
-        final Map<String, Object> result = new HashMap<>(values.size() + 1);
-        if (this.oldRow == null) {
+        final Map<String, Object> result = new LinkedHashMap<>(values.size() + 1);
+        if(this.oldRow == null) {
             result.putAll(values);
         } else {
             // row is no more deleted : we write row values with the *NEW* flag
