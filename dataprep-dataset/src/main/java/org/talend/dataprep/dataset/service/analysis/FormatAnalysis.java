@@ -91,6 +91,8 @@ public class FormatAnalysis {
                     try (InputStream content = store.getAsRaw(metadata)) {
                         SchemaParser parser = bestGuess.getSchemaParser();
 
+                        // FIXME update datasetmetadata in store!!!
+
                         SchemaParserResult schemaParserResult = parser.parse(new SchemaParser.Request(content, metadata));
                         if (schemaParserResult.draft()) {
                             metadata.setSheetName(schemaParserResult.getColumnMetadatas().firstKey());
