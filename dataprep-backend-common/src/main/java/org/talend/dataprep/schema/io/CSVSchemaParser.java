@@ -3,7 +3,6 @@ package org.talend.dataprep.schema.io;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.TreeMap;
 
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
@@ -68,6 +66,7 @@ public class CSVSchemaParser implements SchemaParser {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
         }
         return SchemaParserResult.Builder.parserResult() //
-                .columnMetadatas(columnMetadata).build();
+                .columnMetadatas(columnMetadata) //
+                .draft(false).build();
     }
 }

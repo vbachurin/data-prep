@@ -45,7 +45,7 @@ public class DataSetMetadata {
     /**
      * if <code>true</code> this dataset is still a draft as we need more informations from the user
      */
-    private boolean draft = true;
+    private boolean draft = false;
 
     /**
      * available only when draft is <code>true</code> i.e until some informations has been confirmed by the user
