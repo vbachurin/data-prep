@@ -11,7 +11,6 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -205,11 +204,10 @@ public class DataPreparationAPITest {
     @Test
     public void testDataSetColumnActions() throws Exception {
 
-        String jsonColumnDescription = IOUtils.toString(DataPreparationAPITest.class
+        String columnDescription = IOUtils.toString(DataPreparationAPITest.class
                 .getResourceAsStream("first_name_metadata.json"));
-        String columnDescription = new String(Base64.getEncoder().encode(jsonColumnDescription.getBytes()));
 
-        String content = when().get("/api/transform/suggest/column/" + columnDescription).asString();
+        String content = given().body(columnDescription).when().post("/api/transform/suggest/column").asString();
         InputStream expected = DataPreparationAPITest.class.getResourceAsStream("suggest1.json");
         assertThat(content, sameJSONAsFile(expected));
     }

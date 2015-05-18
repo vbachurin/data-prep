@@ -17,8 +17,8 @@
          * @returns {HttpPromise} - the GET promise
          */
         this.getTransformations = function(column) {
-            var columnDescription = btoa(JSON.stringify(column));
-            return $http.get(RestURLs.transformUrl + '/suggest/column/'+ columnDescription);
+            var columnDescription = JSON.stringify(column);
+            return $http.post(RestURLs.transformUrl + '/suggest/column', columnDescription);
         };
     }
 

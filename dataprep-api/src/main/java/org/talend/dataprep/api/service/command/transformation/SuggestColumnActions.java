@@ -8,7 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
@@ -30,7 +30,7 @@ import com.netflix.hystrix.HystrixCommand;
 public class SuggestColumnActions extends DataPrepCommand<InputStream> {
 
     /** The column description to get the actions for (in json). */
-    private final String columnMetadata;
+    private final InputStream input;
 
     /** The data-prep ready jackson module. */
     @Autowired(required = true)
@@ -40,11 +40,11 @@ public class SuggestColumnActions extends DataPrepCommand<InputStream> {
      * Constructor.
      *
      * @param client the http client.
-     * @param columnMetadata the column metadata to get the actions for (in json).
+     * @param input the column metadata to get the actions for (in json).
      */
-    private SuggestColumnActions(HttpClient client, String columnMetadata) {
+    private SuggestColumnActions(HttpClient client, InputStream input) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
-        this.columnMetadata = columnMetadata;
+        this.input = input;
     }
 
     /**
@@ -54,7 +54,7 @@ public class SuggestColumnActions extends DataPrepCommand<InputStream> {
     protected InputStream run() throws Exception {
 
         // if there's no metadata, there's no actions to do...
-        if (columnMetadata == null) {
+        if (input == null) {
             // Column does not exist in data set metadata.
             return new ByteArrayInputStream(new byte[0]);
         }
@@ -62,7 +62,7 @@ public class SuggestColumnActions extends DataPrepCommand<InputStream> {
         HttpPost post = new HttpPost(transformationServiceUrl + "/suggest/column");
         post.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        post.setEntity(new StringEntity(columnMetadata));
+        post.setEntity(new InputStreamEntity(input));
 
         HttpResponse response = client.execute(post);
         int statusCode = response.getStatusLine().getStatusCode();

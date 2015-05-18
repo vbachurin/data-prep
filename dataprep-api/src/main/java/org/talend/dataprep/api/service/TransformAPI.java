@@ -63,19 +63,25 @@ public class TransformAPI extends APIService {
         LOG.debug("Transformation of dataset id #{} done.", dataSetId);
     }
 
-    @RequestMapping(value = "/api/transform/suggest/column/{columnDescription}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    /**
+     * Suggest the possible actions for a given column.
+     *
+     * Although not rest compliant, this is done via a post in order to pass all the column metadata in the request body
+     * without risking breaking the url size limit if GET would be used.
+     *
+     * @param body the column description (json encoded) in the request body.
+     * @param response the http response.
+     */
+    @RequestMapping(value = "/api/transform/suggest/column", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get suggested actions for a data set column.", notes = "Returns the suggested actions for the given column in decreasing order of likeness.")
     @Timed
-    public void suggestColumnActions(
-            @ApiParam(value = "Column Metadata content as JSON base64 encoded") @PathVariable(value = "columnDescription") String columnDescription,
+    public void suggestColumnActions(@ApiParam(value = "Column Metadata content as JSON") InputStream body,
             HttpServletResponse response) {
-
-        String columnMetadata = new String(Base64.getDecoder().decode(columnDescription));
 
         HttpClient client = getClient();
 
         // Asks transformation service for suggested actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, columnMetadata);
+        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, body);
         // Returns actions
         try {
             ServletOutputStream outputStream = response.getOutputStream();
