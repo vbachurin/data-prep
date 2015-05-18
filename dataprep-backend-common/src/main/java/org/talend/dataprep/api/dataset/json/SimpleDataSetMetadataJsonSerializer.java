@@ -6,10 +6,10 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -59,25 +59,29 @@ public class SimpleDataSetMetadataJsonSerializer {
             generator.writeBooleanField("draft", dataSetMetadata.isDraft()); //$NON-NLS-1
             generator.writeStringField("certification", dataSetMetadata.getGovernance().getCertificationStep().toString()); //$NON-NLS-1
             if (dataSetMetadata.getContent().getFormatGuessId() != null) {
-                FormatGuess formatGuess = this.factory.getFormatGuess( dataSetMetadata.getContent().getFormatGuessId() );
+                FormatGuess formatGuess = this.factory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
 
                 generator.writeStringField("type", formatGuess.getMediaType()); //$NON-NLS-1
 
             }
 
             // data we need for extra dataset validation (i.e sheetNumber for excell sheet)
-            if (dataSetMetadata.getSchemaParserResult() != null) {
 
-                String sheetName = StringUtils.isEmpty(dataSetMetadata.getSheetName()) ? dataSetMetadata.getSchemaParserResult()
-                        .getSheetName() : dataSetMetadata.getSheetName();
+            SchemaParserResult schemaParserResult = dataSetMetadata.getSchemaParserResult();
+
+            if (schemaParserResult != null) {
+
+                String sheetName = StringUtils.isEmpty(dataSetMetadata.getSheetName()) ? //
+                        schemaParserResult.getSheetName()
+                        : dataSetMetadata.getSheetName();
 
                 generator.writeStringField("sheetName", sheetName);
                 if (dataSetMetadata.isDraft()) {
 
-                    if (dataSetMetadata.getSchemaParserResult().getColumnMetadatas() != null) {
+                    if (schemaParserResult.getColumnMetadatas() != null) {
                         generator.writeFieldName("sheetNames");
                         generator.writeStartArray();
-                        for (String schemaName : dataSetMetadata.getSchemaParserResult().getColumnMetadatas().keySet()) {
+                        for (String schemaName : schemaParserResult.getColumnMetadatas().keySet()) {
                             generator.writeString(schemaName);
                         }
                         generator.writeEndArray();
