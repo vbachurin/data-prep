@@ -47,9 +47,7 @@
       "date-of-birth": "01/02/1948",
       "id": "3",
       "age": "67",
-      "lastname": "ALLEN",
-      "__tdpDiff": {
-      }
+      "lastname": "ALLEN"
     },
     {
       "firstname": "OLIVER",
@@ -58,9 +56,7 @@
       "date-of-birth": "01/04/1950",
       "id": "5",
       "age": "81",
-      "lastname": "QUEEN",
-      "__tdpDiff": {
-      }
+      "lastname": "QUEEN"
     }
   ]
 }

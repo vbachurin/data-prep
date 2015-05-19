@@ -71,15 +71,6 @@ public interface ActionMetadata {
     Set<Type> getCompatibleColumnTypes();
 
     /**
-     * @param input Action parameters as json input.
-     * @return the closure that transforms the row.
-     */
-    default Consumer<DataSetRow> create(Iterator<Map.Entry<String, JsonNode>> input) {
-        Map<String, String> parsedParameters = parseParameters(input);
-        return create(parsedParameters);
-    }
-
-    /**
      * Create a closure to perform the transformation on a DatasetRow according to the parameter.
      * 
      * @param parameters A key/value map holding all action dependent configuration.

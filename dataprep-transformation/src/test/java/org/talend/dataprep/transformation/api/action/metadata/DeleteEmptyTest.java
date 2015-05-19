@@ -55,7 +55,8 @@ public class DeleteEmptyTest {
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
-        consumer = deleteEmpty.create(node.get("actions").get(0).get("parameters").getFields());
+        Map<String, String> parameters = deleteEmpty.parseParameters(node.get("actions").get(0).get("parameters").getFields());
+        consumer = deleteEmpty.create(parameters);
     }
 
     @Test

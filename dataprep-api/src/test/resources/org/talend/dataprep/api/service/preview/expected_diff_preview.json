@@ -32,7 +32,7 @@
   "records": [
     {
       "__tdpRowDiff": "delete",
-      "firstname": "Bruce",
+      "firstname": "BRUCE",
       "alive": "true",
       "city": "Gotham city",
       "date-of-birth": "01/01/1947",

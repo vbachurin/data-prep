@@ -26,7 +26,7 @@ public abstract class SingleColumnAction implements ActionMetadata {
             StringUtils.EMPTY);
 
     /**
-     * @return the parameters needed tor the action to be performed.
+     * @see ActionMetadata#getParameters()
      */
     @Override
     public Parameter[] getParameters() {

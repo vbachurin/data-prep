@@ -77,7 +77,7 @@ public class Rename extends SingleColumnAction {
     /**
      * Rename the column for each row.
      *
-     * @see ActionMetadata#create(Iterator)
+     * @see ActionMetadata#create(Map)
      */
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
