@@ -36,8 +36,6 @@ import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.wordnik.swagger.annotations.*;
 
 @RestController
@@ -51,8 +49,6 @@ public class DataSetService {
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
     }
-
-    private final JsonFactory factory = new JsonFactory();
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -143,9 +139,9 @@ public class DataSetService {
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
     public @ResponseBody DataSet get(
-            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
+            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
+            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
@@ -249,8 +245,8 @@ public class DataSetService {
     @Timed
     @VolumeMetered
     public void updateRawDataSet(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId, //
+            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name, //
             @ApiParam(value = "content") InputStream dataSetContent) {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
@@ -282,29 +278,26 @@ public class DataSetService {
     @ApiResponses({ @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist."),
             @ApiResponse(code = HttpServletResponse.SC_ACCEPTED, message = "Data set metadata is not yet ready.") })
     @Timed
-    public void getMetadata(
+    public @ResponseBody DataSet getMetadata(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
             HttpServletResponse response) {
         if (dataSetId == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return;
+            return null;
         }
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return;
+            return null;
         }
         if (!metadata.getLifecycle().schemaAnalyzed()) {
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
+            return DataSet.EMPTY;
         }
-        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
-            // Write general information about the dataset
-            builder.build().writer().writeValue(generator, metadata);
-            generator.flush();
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
-        }
+        DataSet dataSet = new DataSet();
+        dataSet.setMetadata(metadata);
+        dataSet.setColumns(metadata.getRow().getColumns());
+        return dataSet;
     }
 
     /**

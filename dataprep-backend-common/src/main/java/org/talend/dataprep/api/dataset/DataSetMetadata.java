@@ -1,11 +1,16 @@
 package org.talend.dataprep.api.dataset;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -33,11 +38,13 @@ public class DataSetMetadata {
 
     /** Dataset content summary. */
     @JsonProperty("content")
+    @JsonUnwrapped
     private final DataSetContent content = new DataSetContent();
 
     /** Dataset governance. */
     private final DataSetGovernance gov = new DataSetGovernance();
     @JsonProperty("governance")
+    @JsonUnwrapped
     private final DataSetGovernance governance = new DataSetGovernance();
 
     /** Dataset name. */
@@ -50,10 +57,9 @@ public class DataSetMetadata {
     @JsonProperty("author")
     private String author;
 
-    /** Dataset creation date. */
-    private final long creationDate;
-    @JsonProperty("creationDate")
-    private long creationDate;
+    @JsonProperty("created")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM-dd-YYYY HH:mm", timezone="UTC")
+    private Date creationDate;
 
     /** Sheet number in case of excel source. */
     @JsonProperty("sheetNumber")
@@ -75,7 +81,7 @@ public class DataSetMetadata {
         this.id = id;
         this.name = name;
         this.author = author;
-        this.creationDate = creationDate;
+        this.creationDate = new Date(creationDate);
         this.rowMetadata = rowMetadata;
     }
 
@@ -140,9 +146,7 @@ public class DataSetMetadata {
      * @return the dataset creation date.
      */
     public Date getCreationDate() {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
-        calendar.setTimeInMillis(creationDate);
-        return calendar.getTime();
+        return creationDate;
     }
 
     /**

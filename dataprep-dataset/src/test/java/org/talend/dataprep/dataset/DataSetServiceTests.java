@@ -141,7 +141,7 @@ public class DataSetServiceTests {
 
         String expected = "[{\"id\":\""
                 + id1
-                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"type\":\"text/csv\",\"created\":\"01-01-1970 00:00\"}]";
+                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":\"01-01-1970 00:00\"}]";
 
         InputStream content = when().get("/datasets").asInputStream();
         String contentAsString = IOUtils.toString(content);
@@ -330,7 +330,7 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"content\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}}")
+        assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
                 .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("t-shirt_100.csv")))
@@ -372,7 +372,7 @@ public class DataSetServiceTests {
         DataSetMetadata metadata = dataSetMetadataRepository.get("9876");
         assertNull(metadata);
         int statusCode = when().get("/datasets/{id}/metadata", "9876").statusCode();
-        assertThat(HttpServletResponse.SC_NO_CONTENT, is(statusCode));
+        assertThat(statusCode, is(HttpServletResponse.SC_NO_CONTENT));
     }
 
     /**
