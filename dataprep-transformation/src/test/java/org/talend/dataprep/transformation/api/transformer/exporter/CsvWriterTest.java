@@ -2,27 +2,17 @@ package org.talend.dataprep.transformation.api.transformer.exporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.talend.dataprep.api.type.ExportType.CSV;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExporter;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvWriter;
 
 public class CsvWriterTest {
@@ -48,7 +38,7 @@ public class CsvWriterTest {
         columns.add(column2);
 
         // when
-        writer.write(columns);
+        writer.write(new RowMetadata(columns));
         writer.flush();
 
         // then
@@ -88,7 +78,7 @@ public class CsvWriterTest {
                 "\"64a5456ac148b64524ef165\";\"Superman\"\n";
 
         // when
-        writer.write(columns);
+        writer.write(new RowMetadata(columns));
         writer.write(row);
         writer.flush();
 

@@ -1,23 +1,21 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvWriter;
+import org.talend.dataprep.api.dataset.RowMetadata;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonWriterTest {
 
@@ -46,7 +44,7 @@ public class JsonWriterTest {
         final String expectedOutput = "[{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"id\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"},{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"firstname\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"}]";
 
         // when
-        writer.write(columns);
+        writer.write(new RowMetadata(columns));
         writer.flush();
 
         // then
