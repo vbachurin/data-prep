@@ -147,7 +147,7 @@ public class DataSetService {
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         if (dataSetMetadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return DataSet.EMPTY; // No data set, returns empty content.
+            return DataSet.empty(); // No data set, returns empty content.
         }
         if (dataSetMetadata.getLifecycle().error()) {
             // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
@@ -158,13 +158,13 @@ public class DataSetService {
             // Schema is not yet ready (but eventually will, returns 202 to indicate this).
             LOG.debug("Data set #{} not yet ready for service.", dataSetId);
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return DataSet.EMPTY;
+            return DataSet.empty();
         }
         if (!dataSetMetadata.getLifecycle().qualityAnalyzed()) {
             // Quality is not yet ready (but eventually will, returns 202 to indicate this).
             LOG.debug("Column information #{} not yet ready for service (missing quality information).", dataSetId);
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return DataSet.EMPTY;
+            return DataSet.empty();
         }
         // Build the result
         DataSet dataSet = new DataSet();
@@ -292,7 +292,7 @@ public class DataSetService {
         }
         if (!metadata.getLifecycle().schemaAnalyzed()) {
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return DataSet.EMPTY;
+            return DataSet.empty();
         }
         DataSet dataSet = new DataSet();
         dataSet.setMetadata(metadata);

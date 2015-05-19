@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.talend.dataprep.api.dataset.json.DataSetRowStreamDeserializer;
 import org.talend.dataprep.api.dataset.json.DataSetRowStreamSerializer;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -15,18 +16,23 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonRootName("dataset")
 public class DataSet {
 
-    public static DataSet EMPTY = new DataSet();
-
     @JsonProperty(value = "metadata", required = false)
     DataSetMetadata metadata;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty(value = "columns", required = false)
     List<ColumnMetadata> columns = new LinkedList<>();
 
     @JsonProperty(value = "records", required = false)
     @JsonSerialize(using = DataSetRowStreamSerializer.class)
     @JsonDeserialize(using = DataSetRowStreamDeserializer.class)
-    Stream<DataSetRow> records = Stream.of();
+    Stream<DataSetRow> records;
+
+    public static DataSet empty() {
+        DataSet dataSet = new DataSet();
+        dataSet.setRecords(Stream.of());
+        return dataSet;
+    }
 
     public DataSetMetadata getMetadata() {
         return metadata;
