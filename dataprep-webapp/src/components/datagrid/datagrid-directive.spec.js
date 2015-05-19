@@ -349,7 +349,7 @@ describe('Datagrid directive', function() {
     }
     //return the text of the element without the included node text
     function getDirectText(element){
-        return element.contents().filter(function(){return this.nodeType == 3;})[0].nodeValue;
+        return element.contents().filter(function(){return this.nodeType === 3;})[0].nodeValue;
     }
 
     beforeEach(module('data-prep.datagrid'));
