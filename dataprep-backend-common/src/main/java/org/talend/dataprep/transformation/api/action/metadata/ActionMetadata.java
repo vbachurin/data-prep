@@ -85,7 +85,10 @@ public interface ActionMetadata {
      * @param parameters A key/value map holding all action dependent configuration.
      * @return A closure that accepts a DatasetRow, closures are expected to execute safely.
      */
-    Consumer<DataSetRow> create(Map<String, String> parameters);
+    default Consumer<DataSetRow> create(Map<String, String> parameters) {
+        return row -> {
+        };
+    }
 
     /**
      * Create a closure to perform the transformation at row metadata given the parameters.

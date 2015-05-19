@@ -18,6 +18,15 @@
          * @description [PRIVATE] The original records before switching to preview
          */
         var originalRecords;
+
+        /**
+         * @ngdoc property
+         * @name originalColumns
+         * @propertyOf data-prep.services.playground.service:PreviewService
+         * @description [PRIVATE] The original columns before switching to preview
+         */
+        var originalColumns;
+
         /**
          * @ngdoc property
          * @name displayedTdpIds
@@ -119,9 +128,12 @@
          */
         var replaceRecords = function(recordsTdpId) {
             return function(response) {
-                //save the original records
+                //save the original data
                 originalRecords = originalRecords || DatagridService.data.records;
                 modifiedRecords = originalRecords.slice(0);
+
+                originalColumns = originalColumns || DatagridService.data.columns;
+
 
                 //filter if necessary
                 var viableRecords = filterViableRecord(response.data.records);
@@ -138,7 +150,8 @@
                 }
 
                 //update grid
-                DatagridService.updateRecords(modifiedRecords);
+                var data = {'columns': response.data.columns, 'records': modifiedRecords};
+                DatagridService.updateData(data);
             };
         };
 
@@ -196,8 +209,9 @@
             }
 
             if(originalRecords) {
-                DatagridService.updateRecords(originalRecords);
+                DatagridService.updateData({'records': originalRecords, 'columns': originalColumns});
                 originalRecords = null;
+                originalColumns = null;
                 modifiedRecords = null;
                 displayedTdpIds = null;
             }

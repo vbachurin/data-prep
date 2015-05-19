@@ -34,6 +34,8 @@ public class ColumnsTypeTransformer implements TypeTransformer {
     public void process(final TransformerConfiguration configuration) {
         final JsonParser parser = configuration.getInput();
 
+        final List<Consumer<RowMetadata>> actions = configuration.getActions(RowMetadata.class);
+
         try {
             final StringWriter content = new StringWriter();
             final JsonGenerator contentGenerator = new JsonFactory().createGenerator(content);
@@ -83,11 +85,27 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                     level--;
                     if (level == 0) {
                         contentGenerator.flush();
-                        final List<ColumnMetadata> columns = getColumnsMetadata(content);
-                        transform(columns, configuration);
-                        configuration.getOutput().write(columns);
+
+                        // get the original columns
+                        RowMetadata currentMetadata = getRowMetadata(content);
+
+                        // apply the actions
+                        final Consumer<RowMetadata> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
+                        action.accept(currentMetadata);
+
+                        // if preview is enabled, let's compute the previous row metadata
+                        if (configuration.isPreview()) {
+                            RowMetadata previousMetadata = getRowMetadata(content);
+                            final Consumer<RowMetadata> previousAction = actions.get(0);
+                            previousAction.accept(previousMetadata);
+                            currentMetadata.setPreviousMetadata(previousMetadata);
+                        }
+
+                        // write the result
+                        configuration.getOutput().write(currentMetadata);
                         return;
                     }
+
                 case VALUE_NULL:
                     break;
                 }
@@ -100,32 +118,14 @@ public class ColumnsTypeTransformer implements TypeTransformer {
     }
 
     /**
-     * Apply columns transformations.
-     *
-     * @param columns the columns list to transform.
-     * @param configuration transformation configuration.
-     * @return the transformed columns.
+     * Return the row metadata from the given json string.
+     * 
+     * @param content - the String writer that contains JSON columns metadata.
+     * @throws IOException if an error occurs.
      */
-    private List<ColumnMetadata> transform(final List<ColumnMetadata> columns, TransformerConfiguration configuration) {
-
-        RowMetadata rowMetadata = new RowMetadata(columns);
-
-        List<Consumer<RowMetadata>> actions = configuration.getActions(RowMetadata.class);
-
-        for (Consumer<RowMetadata> action : actions) {
-            action.accept(rowMetadata);
-        }
-        return rowMetadata.getColumns();
-    }
-
-    /**
-     * Convert String to list of ColumnMetadataObject
-     *
-     * @param content - the String writer that contains JSON format array
-     * @throws IOException
-     */
-    private List<ColumnMetadata> getColumnsMetadata(final StringWriter content) throws IOException {
+    private RowMetadata getRowMetadata(final StringWriter content) throws IOException {
         final ObjectReader columnReader = builder.build().reader(ColumnMetadata.class);
-        return columnReader.<ColumnMetadata> readValues(content.toString()).readAll();
+        List<ColumnMetadata> columns = columnReader.<ColumnMetadata> readValues(content.toString()).readAll();
+        return new RowMetadata(columns);
     }
 }
