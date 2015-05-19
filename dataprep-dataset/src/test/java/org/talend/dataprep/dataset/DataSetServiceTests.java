@@ -69,7 +69,6 @@ public class DataSetServiceTests {
     SparkContext sparkContext;
 
     private void assertQueueMessages(String dataSetId) throws Exception {
-        Thread.sleep(1000);
         // Wait for Spark jobs to finish
         while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
             // TODO Is there a better way to wait for all Spark jobs to complete?
