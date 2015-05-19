@@ -5,22 +5,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 
 @Component
 @Scope("request")
@@ -32,15 +29,15 @@ class DiffTransformer implements Transformer {
     @Autowired
     private TypeTransformerSelector typeStateSelector;
 
-    private final Consumer<DataSetRow> oldAction;
+    private final ParsedActions oldActions;
 
-    private final Consumer<DataSetRow> newAction;
+    private final ParsedActions newActions;
 
     private final List<Integer> indexes;
 
-    DiffTransformer(final List<Integer> indexes, final Consumer<DataSetRow> oldAction, final Consumer<DataSetRow> newAction) {
-        this.oldAction = oldAction;
-        this.newAction = newAction;
+    DiffTransformer(final List<Integer> indexes, final ParsedActions oldActions, final ParsedActions newActions) {
+        this.oldActions = oldActions;
+        this.newActions = newActions;
         this.indexes = indexes == null ? null : new ArrayList<>(indexes);
     }
 
@@ -54,12 +51,15 @@ class DiffTransformer implements Transformer {
                 throw new IllegalArgumentException("Output cannot be null.");
             }
 
+            //@formatter:off
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
                     .indexes(indexes)
                     .preview(true)
-                    .actions(DataSetRow.class, oldAction)
-                    .actions(DataSetRow.class, newAction)
+                    .actions(DataSetRow.class, oldActions.getRowTransformer())
+                    .actions(DataSetRow.class, newActions.getRowTransformer())
+                    .actions(RowMetadata.class, newActions.getMetadataTransformers())
                     .build();
+            //@formatter:on
 
             typeStateSelector.process(configuration);
             output.flush();

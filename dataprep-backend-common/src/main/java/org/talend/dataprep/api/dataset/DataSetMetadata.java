@@ -23,21 +23,29 @@ import org.talend.dataprep.schema.SchemaParserResult;
  */
 public class DataSetMetadata {
 
+    /** The dataset id. */
     @Id
     private final String id;
 
+    /** Row description. */
     private final RowMetadata rowMetadata;
 
+    /** Dataset life cycle status. */
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
+    /** Dataset content summary. */
     private DataSetContent content = new DataSetContent();
 
+    /** Dataset governance. */
     private final DataSetGovernance gov = new DataSetGovernance();
 
+    /** Dataset name. */
     private final String name;
 
+    /** Dataset author. */
     private final String author;
 
+    /** Dataset creation date. */
     private final long creationDate;
 
     private String sheetName;
@@ -52,6 +60,15 @@ public class DataSetMetadata {
      */
     private SchemaParserResult schemaParserResult;
 
+    /**
+     * Constructor.
+     * 
+     * @param id dataset id.
+     * @param name dataset name.
+     * @param author dataset author.
+     * @param creationDate dataset creation date.
+     * @param rowMetadata row metadata.
+     */
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;
         this.name = name;
@@ -60,35 +77,57 @@ public class DataSetMetadata {
         this.rowMetadata = rowMetadata;
     }
 
+    /**
+     * @return the dataset id.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * @return the dataset row description.
+     */
     public RowMetadata getRow() {
         return rowMetadata;
     }
 
+    /**
+     * @return the dataset lifecycle.
+     */
     public DataSetLifecycle getLifecycle() {
         return lifecycle;
     }
 
+    /**
+     * @return the dataset content summary.
+     */
     public DataSetContent getContent() {
         return content;
     }
+
 
     public void setContent( DataSetContent content )
     {
         this.content = content;
     }
 
+    /**
+     * @return the dataset governance.
+     */
     public DataSetGovernance getGovernance() {
         return this.gov;
     }
 
+    /**
+     * @return the dataset name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return the dataset author.
+     */
     public String getAuthor() {
         return author;
     }
@@ -101,6 +140,9 @@ public class DataSetMetadata {
         this.sheetName = sheetName;
     }
 
+    /**
+     * @return the dataset creation date.
+     */
     public Date getCreationDate() {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
         calendar.setTimeInMillis(creationDate);
@@ -123,6 +165,9 @@ public class DataSetMetadata {
         this.schemaParserResult = schemaParserResult;
     }
 
+    /**
+     * Dataset builder.
+     */
     public static class Builder {
 
         private String id;

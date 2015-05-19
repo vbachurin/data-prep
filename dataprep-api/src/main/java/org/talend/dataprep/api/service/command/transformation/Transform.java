@@ -10,10 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.netflix.hystrix.HystrixCommand;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.ChainedCommand;
+
+import com.netflix.hystrix.HystrixCommand;
 
 @Component
 @Scope("request")
@@ -31,7 +31,6 @@ public class Transform extends ChainedCommand<InputStream, InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-
 
         String uri = transformationServiceUrl + "/transform/?actions=" + actions; //$NON-NLS-1$
         HttpPost transformationCall = new HttpPost(uri);

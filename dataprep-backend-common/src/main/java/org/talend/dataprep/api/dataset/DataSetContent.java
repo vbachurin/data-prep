@@ -5,9 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.FormatGuesser;
 
+/**
+ * Dataset content summary.
+ */
 public class DataSetContent {
 
     private int nbRecords;
@@ -43,13 +45,11 @@ public class DataSetContent {
         this.parameters.put(key, value);
     }
 
-    public String getFormatGuessId()
-    {
+    public String getFormatGuessId() {
         return formatGuessId;
     }
 
-    public void setFormatGuessId( String formatGuessId )
-    {
+    public void setFormatGuessId(String formatGuessId) {
         this.formatGuessId = formatGuessId;
     }
 

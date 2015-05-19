@@ -24,7 +24,7 @@ class ColumnMetadataJsonDeserializer extends JsonDeserializer<ColumnMetadata> {
         builder.name(((TextNode) treeNode.get("id")).asText()); //$NON-NLS-1$
         builder.type(Type.valueOf(((TextNode) treeNode.get("type")).asText().toUpperCase())); //$NON-NLS-1$
         TreeNode quality = treeNode.path("quality"); //$NON-NLS-1$
-        if (quality != null) {
+        if (quality != null && !quality.isMissingNode()) {
             builder.empty(((NumericNode) quality.get("empty")).asInt()); //$NON-NLS-1$
             builder.valid(((NumericNode) quality.get("valid")).asInt()); //$NON-NLS-1$
             builder.invalid(((NumericNode) quality.get("invalid")).asInt()); //$NON-NLS-1$

@@ -1,0 +1,84 @@
+{
+  "columns": [
+    {
+      "id": "id",
+      "type": "string"
+    },
+    {
+      "id": "firstname",
+      "type": "string"
+    },
+    {
+      "id": "lastname",
+      "type": "string"
+    },
+    {
+      "id": "age",
+      "type": "integer"
+    },
+    {
+      "id": "date-of-birth",
+      "type": "date"
+    },
+    {
+      "id": "alive",
+      "type": "boolean"
+    },
+    {
+      "id": "city",
+      "type": "string"
+    }
+  ],
+  "records":[
+    {
+      "id" : "1",
+      "firstname" : "Clark",
+      "lastname" : "Kent",
+      "age" : "42",
+      "date-of-birth" : "10/09/1940",
+      "alive" : "false",
+      "city" : "Smallville"
+    },{
+      "id" : "2",
+      "firstname" : "Bruce",
+      "lastname" : "Wayne",
+      "age" : "50",
+      "date-of-birth" : "01/01/1947",
+      "alive" : "true",
+      "city" : "Gotham city"
+    },{
+      "id" : "3",
+      "firstname" : "Barry",
+      "lastname" : "Allen",
+      "age" : "67",
+      "date-of-birth" : "01/02/1948",
+      "alive" : "true",
+      "city" : "Central city"
+    },{
+      "id" : "4",
+      "firstname" : "Alan",
+      "lastname" : "Scott",
+      "age" : "72",
+      "date-of-birth" : "01/03/1949",
+      "alive" : "true",
+      "city" : "Coast city"
+    },{
+      "id" : "5",
+      "firstname" : "Oliver",
+      "lastname" : "Queen",
+      "age" : "81",
+      "date-of-birth" : "01/04/1950",
+      "alive" : "true",
+      "city" : "Star city"
+    },{
+      "id" : "6",
+      "firstname" : "Ray",
+      "lastname" : "Palmer",
+      "age" : "93",
+      "date-of-birth" : "01/05/1951",
+      "alive" : "true",
+      "city" : "Star city"
+    }
+  ]
+}
+

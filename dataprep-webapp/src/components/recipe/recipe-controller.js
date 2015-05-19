@@ -108,7 +108,7 @@
          * @ngdoc method
          * @name updateStep
          * @methodOf data-prep.recipe.controller:RecipeCtrl
-         * @param {string} stepId The step id to update
+         * @param {string} step The step id to update
          * @param {object} newParams the new step parameters
          * @description Update a step parameters in the loaded preparation
          */

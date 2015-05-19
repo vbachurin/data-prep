@@ -1,8 +1,9 @@
 package org.talend.dataprep.api.service.command.common;
 
+import org.apache.http.client.HttpClient;
+
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
-import org.apache.http.client.HttpClient;
 
 public abstract class ChainedCommand<O, I> extends DataPrepCommand<O> {
 

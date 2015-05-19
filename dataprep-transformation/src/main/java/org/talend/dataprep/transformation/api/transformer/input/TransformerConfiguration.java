@@ -2,96 +2,144 @@ package org.talend.dataprep.transformation.api.transformer.input;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 import com.fasterxml.jackson.core.JsonParser;
 
+/**
+ * Full configuration for a transformation.
+ */
 public class TransformerConfiguration {
 
-    private final JsonParser parser;
+    /** The dataset input to transform. */
+    private final JsonParser input;
 
-    private final TransformerWriter writer;
+    /** Where to write the transformed content. */
+    private final TransformerWriter output;
 
+    /** Indexes of rows (used in diff). */
     private final List<Integer> indexes;
 
+    /** True if in preview mode. */
     private final boolean preview;
 
+    /** The list of actions to perform ordered by type. */
     private final Map<Class, List<Consumer>> actions;
 
     /**
-     * Constructor
-     * @param parser - the json parser
-     * @param writer - the writer plugged to the output stream to write into
-     * @param indexes - The records indexes to transform.
-     * @param preview - preview mode
-     * @param actions - the actions by type
+     * Constructor for the transformer configuration.
+     * 
+     * @param input the json parser
+     * @param output the writer plugged to the output stream to write into
+     * @param indexes The records indexes to transform.
+     * @param preview preview mode
+     * @param actions the actions by type
      */
-    public TransformerConfiguration(final JsonParser parser, final TransformerWriter writer, final List<Integer> indexes,
+    private TransformerConfiguration(final JsonParser input, final TransformerWriter output, final List<Integer> indexes,
             final boolean preview, final Map<Class, List<Consumer>> actions) {
-        this.parser = parser;
-        this.writer = writer;
+        this.input = input;
+        this.output = output;
         this.indexes = indexes;
         this.preview = preview;
         this.actions = actions;
     }
 
-    public JsonParser getParser() {
-        return parser;
+    /**
+     * @return the dataset to transform as json parser.
+     */
+    public JsonParser getInput() {
+        return input;
     }
 
-    public TransformerWriter getWriter() {
-        return writer;
+    /**
+     * @return the writer where to write the transform dataset.
+     */
+    public TransformerWriter getOutput() {
+        return output;
     }
 
+    /**
+     * @return the row indexes.
+     */
     public List<Integer> getIndexes() {
         return indexes;
     }
 
+    /**
+     * @return true if in preview mode.
+     */
     public boolean isPreview() {
         return preview;
     }
 
+    /**
+     * Return the actions to perform for the given class.
+     *
+     * @param targetClass the class to look the actions for.
+     * @param <T> the class to look the actions for.
+     * @return the actions to perform for the given class.
+     */
     public <T> List<Consumer<T>> getActions(final Class<T> targetClass) {
         final List<Consumer> genericActions = actions.get(targetClass);
-        if(genericActions == null) {
-            return null;
+        if (genericActions == null) {
+            return Collections.emptyList();
         }
 
         return genericActions.stream().map(consumer -> (Consumer<T>) consumer).collect(toList());
     }
 
+    /**
+     * @return a TransformerConfiguration builder.
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder pattern used to simplify code writing.
+     */
     public static class Builder {
 
-        private JsonParser parser;
+        /** The dataset input to transform. */
+        private JsonParser input;
 
-        private TransformerWriter writer;
+        /** Where to write the transformed content. */
+        private TransformerWriter output;
 
+        /** Indexes of rows (used in diff). */
         private List<Integer> indexes;
 
+        /** True if in preview mode. */
         private boolean preview;
 
-        private Map<Class, List<Consumer>> actions = new HashMap<>();
+        /** The list of actions to perform ordered by type. */
+        private Map<Class, List<Consumer>> actions = new HashMap<>(2);
 
-        public Builder parser(final JsonParser parser) {
-            this.parser = parser;
+        /**
+         * @param input the dataset input to set.
+         * @return the builder to chain calls.
+         */
+        public Builder input(final JsonParser input) {
+            this.input = input;
             return this;
         }
 
-        public Builder writer(final TransformerWriter writer) {
-            this.writer = writer;
+        /**
+         * @param output where to write the transformed dataset.
+         * @return the builder to chain calls.
+         */
+        public Builder output(final TransformerWriter output) {
+            this.output = output;
             return this;
         }
 
+        /**
+         * @param indexes the indexes to set.
+         * @return the builder to chain calls.
+         */
         public Builder indexes(final List<Integer> indexes) {
             if (this.indexes == null) {
                 this.indexes = new ArrayList<>(indexes.size());
@@ -100,11 +148,23 @@ public class TransformerConfiguration {
             return this;
         }
 
+        /**
+         * @param preview the preview flag to set.
+         * @return the builder to chain calls.
+         */
         public Builder preview(final boolean preview) {
             this.preview = preview;
             return this;
         }
 
+        /**
+         * Set the actions to perform for a given class.
+         *
+         * @param targetClass the class for the given actions.
+         * @param actionsToAdd the actions to perform for the given class.
+         * @param <T> the class for the given actions.
+         * @return the builder to chain calls.
+         */
         public <T> Builder actions(final Class<T> targetClass, final Consumer<T> actionsToAdd) {
             List<Consumer> existingActions = this.actions.get(targetClass);
             if (existingActions == null) {
@@ -115,8 +175,11 @@ public class TransformerConfiguration {
             return this;
         }
 
+        /**
+         * @return a new TransformerConfiguration from the builder setup.
+         */
         public TransformerConfiguration build() {
-            return new TransformerConfiguration(parser, writer, indexes, preview, actions);
+            return new TransformerConfiguration(input, output, indexes, preview, actions);
         }
 
     }

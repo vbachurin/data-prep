@@ -4,12 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represent metadata information for a row of a data set.
+ * Models metadata information for a row of a data set.
  */
 public class RowMetadata {
 
+    /** List of row metadata. */
     private List<ColumnMetadata> columnMetadata = new ArrayList<>();
 
+    /**
+     * Default constructor.
+     * 
+     * @param columnMetadata the list of column metadata.
+     */
     public RowMetadata(List<ColumnMetadata> columnMetadata) {
         this.columnMetadata = columnMetadata;
     }
@@ -21,7 +27,17 @@ public class RowMetadata {
         return columnMetadata;
     }
 
+    /**
+     * @param columnMetadata the metadata to set.
+     */
     public void setColumns(List<ColumnMetadata> columnMetadata) {
         this.columnMetadata = columnMetadata;
+    }
+
+    /**
+     * @return the row size.
+     */
+    public int size() {
+        return columnMetadata.size();
     }
 }

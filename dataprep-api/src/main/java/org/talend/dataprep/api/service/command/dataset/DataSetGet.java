@@ -54,10 +54,8 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
     @Override
     protected InputStream run() throws Exception {
 
-        StringBuilder url = new StringBuilder(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata=" + metadata
-                + "&columns=" + columns);
-
-        final HttpGet contentRetrieval = new HttpGet(url.toString());
+        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata="
+                + metadata + "&columns=" + columns);
         final HttpResponse response = client.execute(contentRetrieval);
         return handleResponse(response, contentRetrieval);
     }

@@ -10,7 +10,7 @@ public interface TypeTransformer {
     /**
      * Serialize and write the json parser content into the output stream
      *
-
+     * @param configuration TODO write javadoc
      */
     void process(final TransformerConfiguration configuration);
 }

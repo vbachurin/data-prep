@@ -2,6 +2,7 @@ package org.talend.dataprep.api.dataset;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -23,9 +24,17 @@ public class DataSetRow implements Cloneable {
 
     private final Map<String, String> values = new HashMap<>();
 
+    /**
+     * Default empty constructor.
+     */
     public DataSetRow() {
     }
 
+    /**
+     * Constructor with values.
+     * 
+     * @param values the row value.
+     */
     public DataSetRow(Map<String, String> values) {
         this.values.putAll(values);
     }
@@ -67,6 +76,7 @@ public class DataSetRow implements Cloneable {
 
     /**
      * Set the old row for diff
+     * 
      * @param oldRow - the original row
      */
     public void diff(final DataSetRow oldRow) {
@@ -83,10 +93,9 @@ public class DataSetRow implements Cloneable {
      */
     public Map<String, Object> values() {
         final Map<String, Object> result = new HashMap<>(values.size() + 1);
-        if(this.oldRow == null) {
+        if (this.oldRow == null) {
             result.putAll(values);
-        }
-        else {
+        } else {
             // row is no more deleted : we write row values with the *NEW* flag
             if (oldRow.isDeleted() && !isDeleted()) {
                 result.put(ROW_DIFF_KEY, ROW_DIFF_NEW);
@@ -127,8 +136,12 @@ public class DataSetRow implements Cloneable {
     public void clear() {
         deleted = false;
         values.clear();
+        oldRow = null;
     }
 
+    /**
+     * @see Cloneable#clone()
+     */
     @Override
     public DataSetRow clone() {
         final DataSetRow clone = new DataSetRow(values);
@@ -140,11 +153,57 @@ public class DataSetRow implements Cloneable {
      * Determine if the row should be written
      */
     public boolean shouldWrite() {
-        if(this.oldRow == null) {
+        if (this.oldRow == null) {
             return !isDeleted();
-        }
-        else {
+        } else {
             return !oldRow.isDeleted() || !isDeleted();
         }
     }
+
+    /**
+     * Rename the column.
+     *
+     * @param columnName the name of the column to rename.
+     * @param newColumnName the new column name.
+     */
+    public void renameColumn(String columnName, String newColumnName) {
+
+        // defensive programming against
+        if (values.containsKey(columnName) == false) {
+            return;
+        }
+
+        // columns cannot have the same name
+        if (values.containsKey(newColumnName)) {
+            throw new IllegalArgumentException("column '" + newColumnName + "' already exists");
+        }
+
+        synchronized (values) {
+            String savedValue = values.get(columnName);
+            values.remove(columnName);
+            values.put(newColumnName, savedValue);
+        }
+    }
+
+    /**
+     * @see Objects#equals(Object, Object)
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        DataSetRow that = (DataSetRow) o;
+        return Objects.equals(deleted, that.deleted) && Objects.equals(values, that.values);
+    }
+
+    /**
+     * @see Objects#hash(Object...)
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(deleted, values);
+    }
+
 }

@@ -15,7 +15,6 @@ import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
-import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
 /**
@@ -24,7 +23,12 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 @Component
 @Scope("prototype")
 public class ErrorList extends DataPrepCommand<InputStream> {
-    public enum ServiceType {DATASET, TRANSFORMATION, PREPARATION}
+
+    public enum ServiceType {
+        DATASET,
+        TRANSFORMATION,
+        PREPARATION
+    }
 
     /** http client to use to reach the api. */
     private final HttpClient client;
@@ -73,12 +77,15 @@ public class ErrorList extends DataPrepCommand<InputStream> {
 
     private String getServiceUrl() {
         switch (type) {
-            case DATASET: return datasetServiceUrl + "/datasets/errors";
-            case TRANSFORMATION: return transformationServiceUrl + "/transform/errors";
-            case PREPARATION: return preparationServiceUrl + "/preparations/errors";
-            default: return null;
+        case DATASET:
+            return datasetServiceUrl + "/datasets/errors";
+        case TRANSFORMATION:
+            return transformationServiceUrl + "/transform/errors";
+        case PREPARATION:
+            return preparationServiceUrl + "/preparations/errors";
+        default:
+            return null;
         }
     }
-
 
 }

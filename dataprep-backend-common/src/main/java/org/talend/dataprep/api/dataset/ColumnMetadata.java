@@ -190,6 +190,17 @@ public class ColumnMetadata {
             return this;
         }
 
+        public ColumnMetadata.Builder copy(ColumnMetadata original) {
+            this.name = original.getId();
+            Quality originalQuality = original.getQuality();
+            this.empty = originalQuality.getEmpty();
+            this.invalid = originalQuality.getInvalid();
+            this.valid = originalQuality.getValid();
+            this.headerSize = original.getHeaderSize();
+            this.type = Type.get(original.getType());
+            return this;
+        }
+
         public ColumnMetadata build() {
             ColumnMetadata columnMetadata = new ColumnMetadata(name, type.getName());
             columnMetadata.getQuality().setEmpty(empty);

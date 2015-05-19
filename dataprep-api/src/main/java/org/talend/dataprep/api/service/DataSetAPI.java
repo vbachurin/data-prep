@@ -53,8 +53,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name,
-                dataSetContent);
+        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name, dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;
@@ -89,6 +88,7 @@ public class DataSetAPI extends APIService {
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
+
         HystrixCommand<InputStream> retrievalCommand = getCommand( DataSetGet.class, client, id, metadata, columns );
         try {
             ServletOutputStream outputStream = response.getOutputStream();
@@ -192,7 +192,8 @@ public class DataSetAPI extends APIService {
         HttpClient client = getClient();
         HystrixCommand<DataSetMetadata> retrieveMetadata = getCommand(DataSetGetMetadata.class, client, dataSetId);
         // Asks transformation service for suggested actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, retrieveMetadata, columnName);
+        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, retrieveMetadata,
+                columnName);
         // Returns actions
         try {
             ServletOutputStream outputStream = response.getOutputStream();

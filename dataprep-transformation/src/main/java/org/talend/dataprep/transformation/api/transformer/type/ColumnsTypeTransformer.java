@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -17,20 +18,21 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 /**
- * Columns array Serializer
+ * Transformer that works on RowMetadata.
  */
 @Component
 public class ColumnsTypeTransformer implements TypeTransformer {
 
+    /** The data-prep ready json module. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
+    /**
+     * @see TypeTransformer#process(TransformerConfiguration)
+     */
     @Override
     public void process(final TransformerConfiguration configuration) {
-        final JsonParser parser = configuration.getParser();
-
-        final List<Consumer<ColumnMetadata>> columnActions = configuration.getActions(ColumnMetadata.class);
-        final Consumer<ColumnMetadata> actions = columnActions == null ? null : columnActions.get(0);
+        final JsonParser parser = configuration.getInput();
 
         try {
             final StringWriter content = new StringWriter();
@@ -82,8 +84,8 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                     if (level == 0) {
                         contentGenerator.flush();
                         final List<ColumnMetadata> columns = getColumnsMetadata(content);
-                        transform(columns, actions);
-                        configuration.getWriter().write(columns);
+                        transform(columns, configuration);
+                        configuration.getOutput().write(columns);
                         return;
                     }
                 case VALUE_NULL:
@@ -98,12 +100,22 @@ public class ColumnsTypeTransformer implements TypeTransformer {
     }
 
     /**
-     * Apply columns transformations
-     *  @param columns - the columns list
-     * @param action - transformation action
+     * Apply columns transformations.
+     *
+     * @param columns the columns list to transform.
+     * @param configuration transformation configuration.
+     * @return the transformed columns.
      */
-    // TODO Temporary: actions may transform columns, for now just print them as is
-    private void transform(final List<ColumnMetadata> columns, final Consumer<ColumnMetadata> action) {
+    private List<ColumnMetadata> transform(final List<ColumnMetadata> columns, TransformerConfiguration configuration) {
+
+        RowMetadata rowMetadata = new RowMetadata(columns);
+
+        List<Consumer<RowMetadata>> actions = configuration.getActions(RowMetadata.class);
+
+        for (Consumer<RowMetadata> action : actions) {
+            action.accept(rowMetadata);
+        }
+        return rowMetadata.getColumns();
     }
 
     /**

@@ -80,5 +80,31 @@
         "default": ""
       }
     ]
+  },
+  {
+    "category": "columns",
+    "compatibleColumnTypes": [
+      "ANY"
+    ],
+    "items": [],
+    "name": "rename_column",
+    "parameters": [
+      {
+        "name": "column_name",
+        "type": "string",
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "new_column_name",
+        "type": "string",
+        "description": "The new column name",
+        "label": "New name",
+        "default": ""
+      }
+    ],
+    "description": "Rename this column",
+    "label": "Rename"
   }
 ]

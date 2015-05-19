@@ -62,10 +62,14 @@
          * @returns {promise} The POST promise
          */
         this.create = function(datasetId, name) {
+            var createdResult;
             return PreparationRestService.create(datasetId, name)
                 .then(function(response) {
-                    self.refreshPreparations();
-                    return response;
+                    createdResult = response;
+                    return self.refreshPreparations();
+                })
+                .then(function() {
+                    return createdResult;
                 });
         };
 
@@ -79,8 +83,15 @@
          * @returns {promise} The PUT promise
          */
         this.update = function(preparationId, name) {
+            var updateResult;
             return PreparationRestService.update(preparationId, name)
-                .then(self.refreshPreparations);
+                .then(function(result) {
+                    updateResult = result;
+                    return self.refreshPreparations();
+                })
+                .then(function() {
+                    return updateResult;
+                });
         };
 
         /**

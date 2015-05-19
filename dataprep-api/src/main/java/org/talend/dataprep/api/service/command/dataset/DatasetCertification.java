@@ -10,14 +10,11 @@ import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
-import com.netflix.hystrix.HystrixCommand;
-
 @Component
 @Scope("request")
 public class DatasetCertification extends DataPrepCommand<Void> {
 
     private final String dataSetId;
-
 
     private DatasetCertification(HttpClient client, String dataSetId) {
         super(PreparationAPI.TRANSFORM_GROUP, client);

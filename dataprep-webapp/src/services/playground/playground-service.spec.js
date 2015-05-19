@@ -178,11 +178,13 @@ describe('Playground Service', function () {
             spyOn(RecipeService, 'disableStepsAfter').and.callFake(function() {});
         }));
 
-        it('should load existing dataset', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
+        it('should load existing preparation when it is not already loaded', inject(function($rootScope, PlaygroundService, PreparationService, FilterService, RecipeService, DatagridService) {
             //given
             var preparation = {
+                id: '6845521254541',
                 dataset: {id: '1', name: 'my dataset'}
             };
+            PreparationService.currentPreparationId = '5746518486846';
 
             //when
             PlaygroundService.load(preparation);
@@ -198,7 +200,33 @@ describe('Playground Service', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
 
-        it('should load preparation content at a specific spec', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
+        it('should not change playground if the preparation to load is already loaded', inject(function($rootScope, PlaygroundService, PreparationService, FilterService, RecipeService, DatagridService) {
+            //given
+            var preparation = {
+                id: '6845521254541',
+                dataset: {id: '1', name: 'my dataset'}
+            };
+            var data = {};
+            var metadata = {};
+
+            PreparationService.currentPreparationId = '6845521254541';
+            PlaygroundService.currentMetadata = metadata;
+            PlaygroundService.currentData = data;
+
+            //when
+            PlaygroundService.load(preparation);
+            $rootScope.$apply();
+
+            //then
+            expect(PlaygroundService.currentMetadata).toBe(metadata);
+            expect(PlaygroundService.currentData).toBe(data);
+            expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
+            expect(RecipeService.refresh).not.toHaveBeenCalled();
+            expect(DatagridService.setDataset).not.toHaveBeenCalled();
+            expect($rootScope.$emit).not.toHaveBeenCalled();
+        }));
+
+        it('should load preparation content at a specific step', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
             //given
             var step = {
                 transformation: {stepId: 'a4353089cb0e039ac2'}
