@@ -273,7 +273,7 @@ public class DataSetService {
      * returns {@link HttpServletResponse#SC_NO_CONTENT}
      * @param response The HTTP response to interact with caller.
      */
-    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
     @ApiResponses({ @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist."),
             @ApiResponse(code = HttpServletResponse.SC_ACCEPTED, message = "Data set metadata is not yet ready.") })

@@ -26,7 +26,7 @@ public class DataSet {
     @JsonProperty(value = "records", required = false)
     @JsonSerialize(using = DataSetRowStreamSerializer.class)
     @JsonDeserialize(using = DataSetRowStreamDeserializer.class)
-    Stream<DataSetRow> records;
+    Stream<DataSetRow> records = Stream.of();
 
     public DataSetMetadata getMetadata() {
         return metadata;

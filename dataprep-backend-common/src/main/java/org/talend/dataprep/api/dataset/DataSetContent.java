@@ -1,17 +1,13 @@
 package org.talend.dataprep.api.dataset;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.schema.FormatGuesser;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Dataset content summary.
  */
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DataSetContent {
 
@@ -24,17 +20,14 @@ public class DataSetContent {
     @JsonProperty("nbLinesFooter")
     private int nbLinesInFooter;
 
+    @JsonProperty("type")
+    private String mediaType;
+
+    @JsonProperty("parameters")
     private Map<String, String> parameters = new HashMap<>();
 
-    // FIXME is it really used???
-    private final List<FormatGuesser.Result> contentTypes = new LinkedList<>();
-
+    @JsonProperty("formatGuess")
     private String formatGuessId;
-
-    public void setContentTypeCandidates(List<FormatGuesser.Result> guessList) {
-        contentTypes.clear();
-        contentTypes.addAll(guessList);
-    }
 
     /**
      * @return A map that contains additional information about the format (e.g. a separator for a CSV format).
@@ -49,6 +42,14 @@ public class DataSetContent {
 
     public void addParameter(String key, String value) {
         this.parameters.put(key, value);
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 
     public String getFormatGuessId() {

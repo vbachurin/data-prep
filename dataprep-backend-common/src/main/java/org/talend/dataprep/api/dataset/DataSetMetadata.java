@@ -42,18 +42,15 @@ public class DataSetMetadata {
     private final DataSetContent content = new DataSetContent();
 
     /** Dataset governance. */
-    private final DataSetGovernance gov = new DataSetGovernance();
     @JsonProperty("governance")
     @JsonUnwrapped
     private final DataSetGovernance governance = new DataSetGovernance();
 
     /** Dataset name. */
-    private final String name;
     @JsonProperty("name")
     private String name;
 
     /** Dataset author. */
-    private final String author;
     @JsonProperty("author")
     private String author;
 
@@ -180,6 +177,8 @@ public class DataSetMetadata {
 
         private String formatGuessId;
 
+        private String mediaType;
+
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
         }
@@ -249,6 +248,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder mediaType(String mediaType) {
+            this.mediaType = mediaType;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -273,6 +277,7 @@ public class DataSetMetadata {
             if (formatGuessId != null) {
                 content.setFormatGuessId(formatGuessId);
             }
+            content.setMediaType(mediaType);
             // Lifecycle information
             DataSetLifecycle lifecycle = metadata.getLifecycle();
             lifecycle.contentIndexed(contentAnalyzed);

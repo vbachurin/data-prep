@@ -78,9 +78,9 @@ public class FormatAnalysis {
                     FormatGuesser.Result bestGuessResult = orderedGuess.get(0);
                     FormatGuess bestGuess = bestGuessResult.getFormatGuess();
                     DataSetContent dataSetContent = metadata.getContent();
-                    dataSetContent.setParameters( bestGuessResult.getParameters() );
-                    dataSetContent.setFormatGuessId( bestGuess.getBeanId() );
-                    dataSetContent.setContentTypeCandidates( orderedGuess ); // Remember format guesses
+                    dataSetContent.setParameters(bestGuessResult.getParameters());
+                    dataSetContent.setFormatGuessId(bestGuess.getBeanId());
+                    dataSetContent.setMediaType(bestGuess.getMediaType());
                     // Parse column name information
                     try (InputStream content = store.getAsRaw(metadata)) {
                         SchemaParser parser = bestGuess.getSchemaParser();
