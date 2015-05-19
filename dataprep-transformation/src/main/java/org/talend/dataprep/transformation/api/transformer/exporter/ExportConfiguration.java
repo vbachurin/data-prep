@@ -1,20 +1,35 @@
 package org.talend.dataprep.transformation.api.transformer.exporter;
 
-import static au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
-
 import org.talend.dataprep.api.type.ExportType;
 
+/**
+ * Export configuration. It holds the parameters that configures the wanted export
+ */
 public class ExportConfiguration {
+    /**
+     * The export format {@link org.talend.dataprep.api.type.ExportType}
+     */
     private final ExportType format;
-    private final Character csvSeparator;
+
+    /**
+     * The actions in JSON string format
+     */
     private final String actions;
 
-    private ExportConfiguration(final ExportType format, final Character csvSeparator, String actions) {
+    /**
+     * The constructor
+     * @param format The export type.
+     * @param actions The actions in JSON string format.
+     */
+    protected ExportConfiguration(final ExportType format, final String actions) {
         this.format = format;
         this.actions = actions;
-        this.csvSeparator = csvSeparator == null ? DEFAULT_SEPARATOR : csvSeparator;
     }
 
+    /**
+     * Create an ExportConfiguration builder
+     * @return The builder
+     */
     public static Builder builder() {
         return new Builder();
     }
@@ -23,36 +38,50 @@ public class ExportConfiguration {
         return format;
     }
 
-    public Character getCsvSeparator() {
-        return csvSeparator;
-    }
-
     public String getActions() {
         return actions;
     }
 
+    /**
+     * Export configuration builder
+     */
     public static class Builder {
-        private ExportType format;
-        private Character csvSeparator;
-        private String actions;
+        /**
+         * The export format {@link org.talend.dataprep.api.type.ExportType}
+         */
+        protected ExportType format;
 
+        /**
+         * The actions in JSON string format
+         */
+        protected String actions;
+
+        /**
+         * Builder DSL for format setter
+         * @param format The export type.
+         * @return The builder
+         */
         public Builder format(final ExportType format) {
             this.format = format;
             return this;
         }
 
-        public Builder csvSeparator(final Character csvSeparator) {
-            this.csvSeparator = csvSeparator;
-            return this;
-        }
-
+        /**
+         * Builder DSL for actions setter
+         * @param actions The actions in JSON string format.
+         * @return The builder
+         */
         public Builder actions(final String actions) {
             this.actions = actions;
             return this;
         }
 
+        /**
+         * Create an Export Configuration
+         * @return The configuration
+         */
         public ExportConfiguration build() {
-            return new ExportConfiguration(format, csvSeparator, actions);
+            return new ExportConfiguration(format, actions);
         }
     }
 }

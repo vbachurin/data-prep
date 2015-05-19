@@ -26,6 +26,7 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportFactory;
+import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.json.DiffTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -85,9 +86,9 @@ public class TransformationService {
         try {
             final String decodedActions = new String(Base64.getDecoder().decode(actions));
             final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator)).charAt(0) : null;
-            final ExportConfiguration configuration = ExportConfiguration.builder()
-                    .format(format)
+            final ExportConfiguration configuration = CsvExportConfiguration.builder()
                     .csvSeparator(decodedCsvSeparator)
+                    .format(format)
                     .actions(decodedActions)
                     .build();
 

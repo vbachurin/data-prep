@@ -12,6 +12,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -23,19 +24,19 @@ public class CsvExporter implements Transformer {
     @Autowired
     private TypeTransformerSelector typeStateSelector;
 
-    private ParsedActions actions;
-    private Character separator;
+    private final ParsedActions actions;
+    private final ExportConfiguration exportConfiguration;
 
-    public CsvExporter(final ParsedActions actions, final Character separator) {
+    public CsvExporter(final ParsedActions actions, final ExportConfiguration configuration) {
         this.actions = actions;
-        this.separator = separator;
+        this.exportConfiguration = configuration;
     }
 
     @Override
     public void transform(InputStream input, OutputStream output) {
         try {
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
-                    .output(new CsvWriter(output, separator))
+                    .output(new CsvWriter(output, ((CsvExportConfiguration) exportConfiguration).getCsvSeparator()))
                     .actions(DataSetRow.class, actions.getRowTransformer())
                     .actions(RowMetadata.class, actions.getMetadataTransformers())
                     .build();

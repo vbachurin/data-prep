@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.service.APIService;
-import org.talend.dataprep.api.service.api.ExportInput;
+import org.talend.dataprep.api.service.api.ExportParameters;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
 
@@ -25,11 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 @Scope("request")
 public class Export extends PreparationCommand<InputStream> {
 
-    private final ExportInput input;
+    private final ExportParameters input;
 
     private final HttpServletResponse response;
 
-    private Export(final HttpClient client, final ExportInput input, final HttpServletResponse response) {
+    private Export(final HttpClient client, final ExportParameters input, final HttpServletResponse response) {
         super(APIService.PREPARATION_GROUP, client);
         this.input = input;
         this.response = response;

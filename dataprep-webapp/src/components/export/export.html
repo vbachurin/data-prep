@@ -19,7 +19,7 @@
         <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.export()">{{ ::'EXPORT' | translate }}</button>
     </div>
 
-    <form id="csvExport"  method="POST" target="_blank">
+    <form id="csvExport" target="_blank">
         <input type="hidden" name="csvSeparator" value="{{ exportCtrl.csvSeparator }}" />
         <input type="hidden" name="preparationId" value="{{ exportCtrl.preparationId }}" />
         <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />

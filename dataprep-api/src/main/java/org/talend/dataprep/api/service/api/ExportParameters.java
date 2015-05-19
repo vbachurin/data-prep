@@ -5,8 +5,11 @@ import org.talend.dataprep.api.type.ExportType;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Parameters for dataset/preparation export
+ */
 @OneNotNull({"preparationId", "datasetId"})
-public class ExportInput {
+public class ExportParameters {
     /**
      * The export type
      */
