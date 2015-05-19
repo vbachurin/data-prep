@@ -8,9 +8,9 @@ import org.talend.dataprep.transformation.api.transformer.input.TransformerConfi
 public interface TypeTransformer {
 
     /**
-     * Serialize and write the json parser content into the output stream
+     * Apply the transformation.
      *
-     * @param configuration TODO write javadoc
+     * @param configuration The transformer configuration that holds all the needed information for the transformation.
      */
     void process(final TransformerConfiguration configuration);
 }

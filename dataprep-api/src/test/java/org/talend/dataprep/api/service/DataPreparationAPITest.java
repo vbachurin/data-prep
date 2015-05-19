@@ -221,14 +221,15 @@ public class DataPreparationAPITest {
     @Test
     public void testDataSetColumnActions() throws Exception {
         //given
-        final String dataSetId = createDataset("testCreate.csv", "testDataset", "text/csv");
-        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("suggest1.json");
+        String columnDescription = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("first_name_metadata.json"));
 
-        //when
-        final String contentAsString = when().get("/api/datasets/{id}/{column}/actions", dataSetId, "firstname").asString();
+        // when
+        String content = given().body(columnDescription).when().post("/api/transform/suggest/column").asString();
 
-        //then
-        assertThat(contentAsString, sameJSONAsFile(expected));
+        // then
+        InputStream expected = DataPreparationAPITest.class.getResourceAsStream("suggest1.json");
+        assertThat(content, sameJSONAsFile(expected));
     }
 
     @Test

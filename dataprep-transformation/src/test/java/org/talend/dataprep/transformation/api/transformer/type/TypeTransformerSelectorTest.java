@@ -23,6 +23,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
@@ -48,24 +49,32 @@ public class TypeTransformerSelectorTest {
 
     private TransformerWriter transformerWriter;
 
-    private final ParsedActions identityAction = new ParsedActions(row -> {
-    }, rowMetadata -> {
-    });
+    //@formatter:off
+    private final ParsedActions identityAction = new ParsedActions(row -> {}, rowMetadata -> {});
+    //@formatter:on
 
-    private final ParsedActions changeLastnameAction = new ParsedActions((row) -> {
-        final String transformedLastname = row.get("lastname").toUpperCase();
-        row.set("lastname", transformedLastname);
-    }, rowMetadata -> {
-    });
+    //@formatter:off
+    private final ParsedActions changeLastnameAction = new ParsedActions(
+            row -> {
+                final String transformedLastname = row.get("lastname").toUpperCase();
+                row.set("lastname", transformedLastname);
+            },
+            rowMetadata -> {}
+    );
+    //@Formatter:on
 
-    private final ParsedActions getChangeNameAndDeleteAction = new ParsedActions((row) -> {
-        final String transformedLastname = row.get("lastname").toUpperCase();
-        final String transformedFirstname = row.get("firstname").toUpperCase();
-        row.set("lastname", transformedLastname);
-        row.set("firstname", transformedFirstname);
-        row.setDeleted(row.get("city").equals("Columbia"));
-    }, rowMetadata -> {
-    });
+    //@formatter:off
+    private final ParsedActions getChangeNameAndDeleteAction = new ParsedActions(
+            row -> {
+                final String transformedLastname = row.get("lastname").toUpperCase();
+                final String transformedFirstname = row.get("firstname").toUpperCase();
+                row.set("lastname", transformedLastname);
+                row.set("firstname", transformedFirstname);
+                row.setDeleted(row.get("city").equals("Columbia"));
+            },
+            rowMetadata -> {}
+    );
+    //@formatter:on
 
     @Before
     public void init() throws IOException {
@@ -91,6 +100,7 @@ public class TypeTransformerSelectorTest {
                 .output(transformerWriter)
                 .preview(false)
                 .actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
+                .actions(RowMetadata.class, changeLastnameAction.getMetadataTransformer())
                 .build();
         //@formatter:on
 
@@ -114,6 +124,7 @@ public class TypeTransformerSelectorTest {
                 .output(transformerWriter)
                 .preview(false)
                 .actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
+                .actions(RowMetadata.class, changeLastnameAction.getMetadataTransformer())
                 .build();
         //@formatter:on
 
@@ -142,6 +153,7 @@ public class TypeTransformerSelectorTest {
                 .output(transformerWriter)
                 .preview(false)
                 .actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
+                .actions(RowMetadata.class, changeLastnameAction.getMetadataTransformer())
                 .build();
         //@formatter:on
 
@@ -170,6 +182,7 @@ public class TypeTransformerSelectorTest {
                 .output(transformerWriter)
                 .preview(false)
                 .actions(DataSetRow.class, changeLastnameAction.getRowTransformer())
+                .actions(RowMetadata.class, changeLastnameAction.getMetadataTransformer())
                 .build();
         //@formatter:on
 

@@ -27,6 +27,9 @@ public class TypeTransformerSelector implements TypeTransformer {
     @Autowired
     private RecordsTypeTransformer recordsTransformer;
 
+    /**
+     * @see TypeTransformer#process(TransformerConfiguration)
+     */
     @Override
     public void process(final TransformerConfiguration configuration) {
         final TransformerWriter writer = configuration.getOutput();

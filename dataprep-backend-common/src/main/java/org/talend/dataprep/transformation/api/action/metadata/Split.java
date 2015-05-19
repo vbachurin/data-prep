@@ -59,10 +59,12 @@ public class Split extends SingleColumnAction {
      */
     @Override
     public Item[] getItems() {
-        Value[] values = new Value[] { new Value(":", true), new Value("@"), new Value(" "),
+        Value[] values = new Value[] { //
+        new Value(":", true), //
+                new Value("@"), //
+                new Value(" "), //
                 new Value("other", new Parameter(MANUAL_SEPARATOR_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY)) };
         return new Item[] { new Item(SEPARATOR_PARAMETER, "categ", values) };
-        // , new Item(MANUAL_SEPARATOR_PARAMETER,"categ", new Value[1])
     }
 
     /**
@@ -102,11 +104,11 @@ public class Split extends SingleColumnAction {
                     if (index < value.length()) {
                         row.set(columnName + SPLIT_COLUMN_APPENDIX, value.substring(index + 1));
                     } else {
-                        row.set(columnName + SPLIT_COLUMN_APPENDIX, "");
+                        row.set(columnName + SPLIT_COLUMN_APPENDIX, StringUtils.EMPTY);
                     }
                 } else {
                     row.set(columnName, value);
-                    row.set(columnName + SPLIT_COLUMN_APPENDIX, "");
+                    row.set(columnName + SPLIT_COLUMN_APPENDIX, StringUtils.EMPTY);
                 }
             }
         };
@@ -132,10 +134,15 @@ public class Split extends SingleColumnAction {
 
                 // append the split column
                 if (StringUtils.equals(columnName, column.getId())) {
-                    newColumnMetadata = ColumnMetadata.Builder.column().name(column.getId() + SPLIT_COLUMN_APPENDIX)
-                            .type(Type.get(column.getType())).empty(column.getQuality().getEmpty())
-                            .invalid(column.getQuality().getInvalid()).valid(column.getQuality().getValid())
-                            .headerSize(column.getHeaderSize()).build();
+                    newColumnMetadata = ColumnMetadata.Builder //
+                            .column() //
+                            .name(column.getId() + SPLIT_COLUMN_APPENDIX) //
+                            .type(Type.get(column.getType())) //
+                            .empty(column.getQuality().getEmpty()) //
+                            .invalid(column.getQuality().getInvalid()) //
+                            .valid(column.getQuality().getValid()) //
+                            .headerSize(column.getHeaderSize()) //
+                            .build();
                     newColumns.add(newColumnMetadata);
                 }
 

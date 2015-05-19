@@ -46,12 +46,13 @@ public class TransformationService {
 
     @Autowired
     private ActionMetadata[] allActions;
-
+    
     @Autowired
     private SimpleTransformerFactory simpleFactory;
 
     @Autowired
     private DiffTransformerFactory diffFactory;
+
 
     @Autowired
     private ExportFactory exportFactory;

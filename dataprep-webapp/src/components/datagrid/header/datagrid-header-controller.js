@@ -151,7 +151,7 @@
                 vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
 
-                TransformationRestService.getTransformations(vm.metadata.id, vm.column.id)
+                TransformationRestService.getTransformations(vm.column)
                     .then(function(response) {
                         var menus = cleanParamsAndItems(response.data);
                         menus = adaptInputTypes(menus);

@@ -15,11 +15,14 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 /**
- * Records array transformer.
+ * Transforms dataset rows.
  */
 @Component
 public class RecordsTypeTransformer implements TypeTransformer {
 
+    /**
+     * @see TypeTransformer#process(TransformerConfiguration)
+     */
     @Override
     public void process(final TransformerConfiguration configuration) {
         final TransformerWriter writer = configuration.getOutput();
