@@ -1,4 +1,4 @@
-describe('Transformation menu directive', function () {
+describe('Transformation params directive', function () {
     'use strict';
     var scope, createElement, extractedParams;
 
