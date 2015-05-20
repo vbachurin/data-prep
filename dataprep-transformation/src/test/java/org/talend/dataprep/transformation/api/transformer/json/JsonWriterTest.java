@@ -1,6 +1,8 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -48,7 +50,7 @@ public class JsonWriterTest {
         writer.flush();
 
         // then
-        assertThat(output.toString()).isEqualTo(expectedOutput);
+        assertThat(output.toString(), sameJSONAs(expectedOutput));
     }
 
     @Test
@@ -58,14 +60,14 @@ public class JsonWriterTest {
         row.set("id", "64a5456ac148b64524ef165");
         row.set("firstname", "Superman");
 
-        final String expectedCsv = "{\"firstname\":\"Superman\",\"id\":\"64a5456ac148b64524ef165\"}";
+        final String expectedCsv = "{\"id\":\"64a5456ac148b64524ef165\",\"firstname\":\"Superman\"}";
 
         // when
         writer.write(row);
         writer.flush();
 
-        //then
-        assertThat(output.toString()).isEqualTo(expectedCsv);
+        // then
+        assertThat(output.toString(), is(expectedCsv));
     }
 
     @Test
@@ -74,8 +76,8 @@ public class JsonWriterTest {
         writer.startArray();
         writer.flush();
 
-        //then
-        assertThat(output.toString()).isEqualTo("[");
+        // then
+        assertThat(output.toString(), is("["));
     }
 
     @Test
@@ -85,8 +87,8 @@ public class JsonWriterTest {
         writer.endArray();
         writer.flush();
 
-        //then
-        assertThat(output.toString()).isEqualTo("[]");
+        // then
+        assertThat(output.toString(), sameJSONAs("[]"));
     }
 
     @Test
@@ -95,8 +97,8 @@ public class JsonWriterTest {
         writer.startObject();
         writer.flush();
 
-        //then
-        assertThat(output.toString()).isEqualTo("{");
+        // then
+        assertThat(output.toString(), is("{"));
     }
 
     @Test
@@ -106,8 +108,8 @@ public class JsonWriterTest {
         writer.endObject();
         writer.flush();
 
-        //then
-        assertThat(output.toString()).isEqualTo("{}");
+        // then
+        assertThat(output.toString(), sameJSONAs("{}"));
     }
 
 }
