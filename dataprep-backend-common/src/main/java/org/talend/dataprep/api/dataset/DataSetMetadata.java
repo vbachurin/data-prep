@@ -2,15 +2,17 @@ package org.talend.dataprep.api.dataset;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.talend.dataprep.api.dataset.json.EpochTimeDeserializer;
+import org.talend.dataprep.api.dataset.json.EpochTimeSerializer;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -55,8 +57,9 @@ public class DataSetMetadata {
     private String author;
 
     @JsonProperty("created")
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="MM-dd-YYYY HH:mm", timezone="UTC")
-    private Date creationDate;
+    @JsonSerialize(using = EpochTimeSerializer.class)
+    @JsonDeserialize(using = EpochTimeDeserializer.class)
+    private long creationDate;
 
     /** Sheet number in case of excel source. */
     @JsonProperty("sheetNumber")
@@ -78,7 +81,7 @@ public class DataSetMetadata {
         this.id = id;
         this.name = name;
         this.author = author;
-        this.creationDate = new Date(creationDate);
+        this.creationDate = creationDate;
         this.rowMetadata = rowMetadata;
     }
 
@@ -142,7 +145,7 @@ public class DataSetMetadata {
     /**
      * @return the dataset creation date.
      */
-    public Date getCreationDate() {
+    public long getCreationDate() {
         return creationDate;
     }
 
