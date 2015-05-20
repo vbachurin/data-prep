@@ -6,8 +6,9 @@
      * @name data-prep.datagrid.preview:DatasetPreviewCtrl
      * @description Dataset preview grid controller.
      * @requires data-prep.services.dataset.service:DatasetRestService
+     * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function DatasetPreviewCtrl($scope,$state,$log,$stateParams,DatasetRestService) {
+    function DatasetPreviewCtrl($scope,$state,$log,$stateParams,DatasetRestService,DatasetListService) {
 
         var self = this;
         self.datasetid;
@@ -52,7 +53,11 @@
           self.metadata.sheetName = self.selectedSheetName;
           DatasetRestService.updateMetadata(self.metadata )
               .then(function(data){
-                $state.go('nav.home.datasets');
+                DatasetListService
+                    .refreshDatasets()
+                    .then(function(data){
+                      $state.go('nav.home.datasets');
+                    });
           });
         };
 
