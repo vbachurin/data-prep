@@ -201,17 +201,19 @@ public class DataSetServiceTests {
     public void delete() throws Exception {
         String expectedId = UUID.randomUUID().toString();
 
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(
+            new CSVFormatGuess().getBeanId() ).build();
 
         dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
                 Character.toString(new Separator().separator));
-        dataSetMetadataRepository.add(dataSetMetadata);
+        dataSetMetadataRepository.add( dataSetMetadata );
 
-        List<String> ids = from(when().get("/datasets").asString()).get("");
+        List<String> ids = from(when().get("/datasets").asString()).get( "" );
         assertThat( ids.size(), is( 1 ) );
         int before = dataSetMetadataRepository.size();
         when().delete("/datasets/{id}", expectedId).then().statusCode( HttpStatus.OK.value() );
         int after = dataSetMetadataRepository.size();
+        logger.debug( "delete before {} after {}", before, after );
         assertThat( before - after, is( 1 ) );
     }
 
