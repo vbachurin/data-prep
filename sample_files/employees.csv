@@ -1,4 +1,7 @@
-id	firstname	lastname	dept
-1	Blanc	Jaques	Sales
-2	Gandon	Sébastien	R&D
-3	Toum	Christophe	Marketing
+id	firstname	lastname	dept	mail
+1	Blanc	Jaques	Sales	jblanc@talend.com
+2	Gandon	Sébastien	R&D	sgandon@talend.com
+3	Toum	Christophe	Marketing	 ctoum@talend.com 
+4	Mallet	Stéphane	r&d	"smallet@talend.com	"
+5	Dubois	Rémy	r&d	"rdubois@talend.com,
+remy.dubois@gmail.com"
