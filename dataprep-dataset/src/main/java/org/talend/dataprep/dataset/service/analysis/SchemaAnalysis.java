@@ -29,7 +29,8 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.datascience.common.inference.type.TypeInferExecutor;
+import org.talend.datascience.common.inference.type.ColumnTypeBean;
+import org.talend.datascience.common.inference.type.DataTypeInferExecutor;
 
 @Component
 public class SchemaAnalysis {
@@ -67,7 +68,7 @@ public class SchemaAnalysis {
                     try (Stream<DataSetRow> stream = store.stream(metadata)) {
                         LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                         // Determine schema for the content (on the 20 first rows).
-                        TypeInferExecutor executor = new TypeInferExecutor();
+                        DataTypeInferExecutor executor = new DataTypeInferExecutor();
                         stream.limit(20).forEach(row -> {
                             final Map<String, Object> rowValues = row.values();
                             final List<String> strings = stream(rowValues.values().spliterator(), false) //
@@ -76,12 +77,13 @@ public class SchemaAnalysis {
                             executor.handle(strings.toArray(new String[strings.size()]));
                         });
                         // Find the best suitable type
-                        final List<Map<String, Long>> results = executor.getResults();
+                        final List<ColumnTypeBean> results = executor.getResults();
                         final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
                         results.forEach(columnResult -> {
                             long max = 0;
                             String electedType = "N/A"; //$NON-NLS-1$
-                            for (Map.Entry<String, Long> entry : columnResult.entrySet()) {
+                            final Map<String, Long> countMap = columnResult.getTypeToCountMap();
+                            for (Map.Entry<String, Long> entry : countMap.entrySet()) {
                                 if (entry.getValue() > max) {
                                     max = entry.getValue();
                                     electedType = entry.getKey();
