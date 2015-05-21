@@ -16,7 +16,7 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($log,$stateParams,$state,DatasetService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetService = DatasetService;
 
@@ -47,6 +47,20 @@
                 .then(function() {
                     MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: dataset.name});
                 });
+        };
+
+        vm.openDraft = function(dataset){
+            $log.debug("openDraf type: " + dataset.type);
+            if (dataset.type){
+                if (dataset.type == 'application/vnd.ms-excel'){
+                    $state.go( 'nav.home.datasets-previewxls', {datasetid:dataset.id} );
+                    return;
+                }else{
+                    MessageService.error('PREVIEW_NOT_READY_FOR_TYPE_TITLE', 'PREVIEW_NOT_READY_FOR_TYPE_TITLE', {type: 'dataset'});
+                }
+            } else{
+                MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
+            }
         };
 
         vm.update = function(dataset){

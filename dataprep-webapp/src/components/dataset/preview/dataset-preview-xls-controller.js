@@ -3,12 +3,12 @@
 
     /**
      * @ngdoc controller
-     * @name data-prep.datagrid.preview:DatasetPreviewCtrl
+     * @name data-prep.datagrid.preview:DatasetPreviewXlsCtrl
      * @description Dataset preview grid controller.
      * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function DatasetPreviewCtrl($rootScope,$scope,$state,$log,$stateParams,DatasetRestService,DatasetListService) {
+    function DatasetPreviewXlsCtrl($rootScope,$scope,$state,$log,$stateParams,DatasetRestService,DatasetListService) {
 
         var self = this;
         self.datasetid;
@@ -22,19 +22,24 @@
         /**
          * @ngdoc method
          * @name close
-         * @methodOf data-prep.dataset-list.controller:DatasetPreviewCtrl
+         * @methodOf data-prep.dataset-list.controller:DatasetPreviewXlsCtrl
          * @description triggered on closing dataset preview modal to to /datasets view
          */
         self.close = function() {
           $state.go('nav.home.datasets');
         };
 
-      /**
-       * @methodOf data-prep.dataset-list.controller:DatasetPreviewCtrl
-       * @description triggered on non 200 http response. Can happen when dataset has been modified in the backend so
-       * we redirect to all datasets view and updating list
-       * @param res rest call response
-       */
+
+        self.openDraft = function(dataset){
+          $log.debug("openDraf type: " + dataset.type);
+        };
+
+        /**
+         * @methodOf data-prep.dataset-list.controller:DatasetPreviewXlsCtrl
+         * @description triggered on non 200 http response. Can happen when dataset has been modified in the backend so
+         * we redirect to all datasets view and updating list
+         * @param res rest call response
+         */
         var previewPremiseError = function(res){
           $log.debug("previewPremiseError status:"+res.status);
           if (res.status = 301){
@@ -52,7 +57,7 @@
         /**
          * @ngdoc method
          * @name updateSheetName
-         * @methodOf data-prep.dataset-list.controller:DatasetPreviewCtrl
+         * @methodOf data-prep.dataset-list.controller:DatasetPreviewXlsCtrl
          * @description triggered on sheet name change (trigger redisplaying preview grid)
          */
         self.updateSheetName = function(){
@@ -65,7 +70,7 @@
         /**
          * @ngdoc method
          * @name updateDataset
-         * @methodOf data-prep.dataset-list.controller:DatasetPreviewCtrl
+         * @methodOf data-prep.dataset-list.controller:DatasetPreviewXlsCtrl
          * @description responsible for sending update dataset rest call to the backend
          */
         self.updateDataset = function(){
@@ -84,7 +89,7 @@
         /**
          * @ngdoc method
          * @name drawGrid
-         * @methodOf data-prep.dataset-list.controller:DatasetPreviewCtrl
+         * @methodOf data-prep.dataset-list.controller:DatasetPreviewXlsCtrl
          * @description [PRIVATE] draw the slick grid for data preview
          */
         var drawGrid = function(data){
@@ -112,30 +117,29 @@
          * FIXME handle 301 status return, write a message to user and go to /datasets ?
          * @ngdoc method
          * @name loadPreview
-         * @methodOf data-prep.dataset-list.controller:DatasetPreviewCtrl
+         * @methodOf data-prep.dataset-list.controller:DatasetPreviewXlsCtrl
          * @description [PRIVATE] find the dataset id in params then trigge grid draw
          */
         var loadPreview = function(){
-            if($stateParams.datasetid) {
-                self.datasetid = $stateParams.datasetid;
-                $log.debug("type:"+$stateParams.type);
-                return DatasetRestService.getPreview(self.datasetid,true)
-                    .then(function(data) {
-                            $log.debug("before drawGrid");
-                            drawGrid(data)
-                          },previewPremiseError);
-            }
+          $log.debug("loadPreview");
+          if($stateParams.datasetid) {
+              self.datasetid = $stateParams.datasetid;
+              $log.debug("type:"+$stateParams.type);
+              return DatasetRestService.getPreview(self.datasetid,true)
+                  .then(function(data) {
+                          $log.debug("before drawGrid");
+                          drawGrid(data)
+                        },previewPremiseError);
+          }
 
         };
 
         // load the preview
         loadPreview();
 
-
-
     }
 
-    Object.defineProperty(DatasetPreviewCtrl.prototype,
+    Object.defineProperty(DatasetPreviewXlsCtrl.prototype,
                           'showPreview', {
             enumerable: true,
             configurable: false,
@@ -147,7 +151,7 @@
             }
         });
 
-    angular.module('data-prep.dataset-preview')
-        .controller('DatasetPreviewCtrl', DatasetPreviewCtrl);
+    angular.module('data-prep.dataset-preview-xls')
+        .controller('DatasetPreviewXlsCtrl', DatasetPreviewXlsCtrl);
 
 })();

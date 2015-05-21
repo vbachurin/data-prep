@@ -1,18 +1,18 @@
 <talend-modal class="playground"
               fullscreen="true"
               close-button="true"
-              state="datasetPreviewCtrl.showPreview"
-              on-close="datasetPreviewCtrl.close()">
+              state="datasetPreviewXlsCtrl.showPreview"
+              on-close="datasetPreviewXlsCtrl.close()">
 
     <div class="modal-header">
-      <span class="title"> Dataset: {{datasetPreviewCtrl.metadata.name}}</span>
+      <span class="title"> Dataset: {{datasetPreviewXlsCtrl.metadata.name}}</span>
 
-      <select ng-options="sheetName for sheetName in datasetPreviewCtrl.metadata.sheetNames"
-              ng-model="datasetPreviewCtrl.selectedSheetName"
-              ng-change="datasetPreviewCtrl.updateSheetName()"
+      <select ng-options="sheetName for sheetName in datasetPreviewXlsCtrl.metadata.sheetNames"
+              ng-model="datasetPreviewXlsCtrl.selectedSheetName"
+              ng-change="datasetPreviewXlsCtrl.updateSheetName()"
               class="param-choice-select"></select>
 
-      <button class="t-btn-primary modal-primary-button" ng-click="datasetPreviewCtrl.updateDataset()">Update</button>
+      <button class="t-btn-primary modal-primary-button" ng-click="datasetPreviewXlsCtrl.updateDataset()">Update</button>
 
     </div>
 
