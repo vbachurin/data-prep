@@ -8,11 +8,9 @@
      * @restrict E
      * @usage
      <transform-menu
-         metadata="metadata"
          column="column"
          menu="menu">
      </transform-menu>
-     * @param {object} metadata The loaded metadata
      * @param {object} column The target column of this transformation menu item
      * @param {object} menu The menu item to display
      */
@@ -22,7 +20,6 @@
             templateUrl: 'components/transformation/menu/transformation-menu.html',
             replace: true,
             scope: {
-                metadata: '=',
                 column: '=',
                 menu: '='
             },

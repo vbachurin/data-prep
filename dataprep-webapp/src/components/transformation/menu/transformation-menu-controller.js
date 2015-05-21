@@ -5,11 +5,9 @@
      * @ngdoc controller
      * @name data-prep.transformation-menu.controller:TransformMenuCtrl
      * @description Transformation menu item controller.
-     * @requires data-prep.services.playground.service:DatagridService
-     * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function TransformMenuCtrl($rootScope, DatagridService, PreparationService, RecipeService) {
+    function TransformMenuCtrl(PlaygroundService) {
         var vm = this;
 
         /**
@@ -40,23 +38,13 @@
          * @ngdoc method
          * @name transform
          * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
-         * @param {object} params - the transformation params
-         * @description Perform a transformation on the column and refresh the recipe
+         * @param {object} params The transformation params
+         * @description Perform a transformation on the column
          */
         vm.transform = function (params) {
-            $rootScope.$emit('talend.loading.start');
-
-            PreparationService.appendStep(vm.metadata, vm.menu.name, vm.column, params)
+            PlaygroundService.appendStep(vm.menu.name, vm.column, params)
                 .then(function() {
-                    return PreparationService.getContent('head');
-                })
-                .then(function(response) {
-                    DatagridService.updateData(response.data);
-                    RecipeService.refresh();
                     vm.showModal = false;
-                })
-                .finally(function () {
-                    $rootScope.$emit('talend.loading.stop');
                 });
         };
     }

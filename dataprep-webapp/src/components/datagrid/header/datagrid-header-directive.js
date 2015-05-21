@@ -15,18 +15,15 @@
      * @restrict E
      * @usage
      <datagrid-header
-            metadata="metadata"
             column="column">
      </datagrid-header>
-     * @param {object} metadata The loaded metadata
-     * @param {object} metadcolumnata The column metadata
+     * @param {object} column The column metadata
      */
     function DatagridHeader() {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/header/datagrid-header.html',
             scope: {
-                metadata: '=',
                 column: '='
             },
             bindToController: true,

@@ -4,29 +4,6 @@ describe('Transform menu controller', function () {
     'use strict';
 
     var createController, scope;
-    var result = {
-        'records': [{
-            'firstname': 'Grover',
-            'avgAmount': '82.4',
-            'city': 'BOSTON',
-            'birth': '01-09-1973',
-            'registration': '17-02-2008',
-            'id': '1',
-            'state': 'AR',
-            'nbCommands': '41',
-            'lastname': 'Quincy'
-        }, {
-            'firstname': 'Warren',
-            'avgAmount': '87.6',
-            'city': 'NASHVILLE',
-            'birth': '11-02-1960',
-            'registration': '18-08-2007',
-            'id': '2',
-            'state': 'WA',
-            'nbCommands': '17',
-            'lastname': 'Johnson'
-        }]
-    };
 
     var metadata = {
         'id': '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
@@ -49,7 +26,7 @@ describe('Transform menu controller', function () {
 
     beforeEach(module('data-prep.transformation-menu'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PreparationService, DatagridService, RecipeService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -61,15 +38,10 @@ describe('Transform menu controller', function () {
             return ctrl;
         };
 
-        spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
-        spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: result}));
-        spyOn($rootScope, '$emit').and.callThrough();
-        spyOn(DatagridService, 'updateData').and.callFake(function() {});
-        //spyOn(DatagridService, 'updateRecords').and.callFake(function() {});
-        spyOn(RecipeService, 'refresh').and.callFake(function() {});
+        spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
     }));
 
-    it('should do nothing on select if the menu is a divider', inject(function (PreparationService) {
+    it('should do nothing on select if the menu is a divider', inject(function (PlaygroundService) {
         //given
         var ctrl = createController();
         ctrl.menu = {isDivider: true};
@@ -79,11 +51,10 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(PreparationService.appendStep).not.toHaveBeenCalled();
-        expect(PreparationService.getContent).not.toHaveBeenCalled();
+        expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
     }));
 
-    it('should open modal on select if item has parameters', inject(function (PreparationService) {
+    it('should open modal on select if item has parameters', inject(function (PlaygroundService) {
         //given
         var ctrl = createController();
         ctrl.menu = {parameters: [{name: 'param1', type: 'text', default: '.'}]};
@@ -93,11 +64,10 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeTruthy();
-        expect(PreparationService.appendStep).not.toHaveBeenCalled();
-        expect(PreparationService.getContent).not.toHaveBeenCalled();
+        expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
     }));
 
-    it('should open modal on select if item has choice', inject(function (PreparationService) {
+    it('should open modal on select if item has choice', inject(function (PlaygroundService) {
         //given
         var ctrl = createController();
         ctrl.menu = {items: [{name: 'choice', values: [{name: 'choice1'}, {name: 'choice2'}]}]};
@@ -107,32 +77,27 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeTruthy();
-        expect(PreparationService.appendStep).not.toHaveBeenCalled();
-        expect(PreparationService.getContent).not.toHaveBeenCalled();
+        expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
     }));
 
-    it('should call transform on simple menu select', inject(function ($rootScope, PreparationService, DatagridService, RecipeService) {
+    it('should call transform on simple menu select', inject(function ($rootScope, PlaygroundService) {
         //given
         var ctrl = createController();
         ctrl.menu = {name: 'uppercase', category: 'case'};
 
         //when
         ctrl.select();
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
         $rootScope.$digest();
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(PreparationService.appendStep).toHaveBeenCalledWith(metadata, 'uppercase', column, undefined);
-        expect(PreparationService.getContent).toHaveBeenCalledWith('head');
-        expect(DatagridService.updateData).toHaveBeenCalledWith(result);
-        expect(RecipeService.refresh).toHaveBeenCalled();
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', column, undefined);
     }));
 
-    it('should call transform on parameterized menu select', inject(function ($rootScope, PreparationService, DatagridService, RecipeService) {
+    it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService) {
         //given
         var ctrl = createController();
+        ctrl.showModal = true;
         ctrl.menu = {
             name: 'uppercase',
             category: 'case',
@@ -144,19 +109,14 @@ describe('Transform menu controller', function () {
 
         //when
         ctrl.transform({param1: 'param1Value', param2: 4 });
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+        expect(ctrl.showModal).toBeTruthy();
         $rootScope.$digest();
 
         //then
-        expect(ctrl.showModal).toBeFalsy();
-        expect(PreparationService.appendStep).toHaveBeenCalledWith(
-            metadata,
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith(
             'uppercase',
             column,
             {param1: 'param1Value', param2: 4});
-        expect(PreparationService.getContent).toHaveBeenCalledWith('head');
-        expect(DatagridService.updateData).toHaveBeenCalledWith(result);
-        expect(RecipeService.refresh).toHaveBeenCalled();
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        expect(ctrl.showModal).toBeFalsy();
     }));
 });
