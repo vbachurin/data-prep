@@ -56,6 +56,10 @@
                             template: '<dataset-preview></dataset-preview>'
                         }
                     }
+                    ,
+                    params: {
+                        type: null
+                    }
                 })
                 .state('nav.home.datasets', {
                     url: '/datasets?datasetid',

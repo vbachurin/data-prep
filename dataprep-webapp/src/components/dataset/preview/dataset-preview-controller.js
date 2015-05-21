@@ -98,6 +98,7 @@
         var loadPreview = function(){
             if($stateParams.datasetid) {
                 self.datasetid = $stateParams.datasetid;
+                $log.debug("type:"+$stateParams.type);
                 return DatasetRestService.getPreview(self.datasetid,true)
                     .then(function(data) {
                             drawGrid(data)
