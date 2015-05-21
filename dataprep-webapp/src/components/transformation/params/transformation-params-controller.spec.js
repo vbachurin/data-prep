@@ -3,7 +3,7 @@
 describe('Transform params controller', function () {
     'use strict';
 
-    var createController, scope, extractedParams;
+    var createController, scope, extractedParams, transformation;
 
     beforeEach(module('data-prep.transformation-params'));
 
@@ -11,7 +11,7 @@ describe('Transform params controller', function () {
         extractedParams = null;
         scope = $rootScope.$new();
 
-        createController = function (transformation) {
+        createController = function () {
             var ctrlFn = $controller('TransformParamsCtrl', {
                 $scope: scope
             }, true);
@@ -23,100 +23,9 @@ describe('Transform params controller', function () {
         };
     }));
 
-    it('should set numeric default value', function () {
-        //given
-        var transformation = {parameters: [{name: 'param1', type: 'numeric', default: '5'}]};
-        var ctrl = createController(transformation);
-
-        //when
-        ctrl.transformWithParam();
-
-        //then
-        expect(ctrl.transformation.parameters[0].value).toBe(5);
-    });
-
-    it('should set integer default value', function () {
-        //given
-        var transformation = {parameters: [{name: 'param1', type: 'integer', default: '5'}]};
-        var ctrl = createController(transformation);
-
-        //when
-        ctrl.transformWithParam();
-
-        //then
-        expect(ctrl.transformation.parameters[0].value).toBe(5);
-    });
-
-    it('should set double default value', function () {
-        //given
-        var transformation = {parameters: [{name: 'param1', type: 'double', default: '5.1'}]};
-        var ctrl = createController(transformation);
-
-        //when
-        ctrl.transformWithParam();
-
-        //then
-        expect(ctrl.transformation.parameters[0].value).toBe(5.1);
-    });
-
-    it('should set float default value', function () {
-        //given
-        var transformation = {parameters: [{name: 'param1', type: 'float', default: '5.1'}]};
-        var ctrl = createController(transformation);
-
-        //when
-        ctrl.transformWithParam();
-
-        //then
-        expect(ctrl.transformation.parameters[0].value).toBe(5.1);
-    });
-
-    it('should set 0 value if default value is not numeric with numeric type', function () {
-        //given
-        var transformation = {parameters: [{name: 'param1', type: 'numeric', default: 'a'}]};
-        var ctrl = createController(transformation);
-
-        //when
-        ctrl.transformWithParam();
-
-        //then
-        expect(ctrl.transformation.parameters[0].value).toBe(0);
-    });
-
-    it('should not set default value if no default value is provided', function () {
-        //given
-        var transformation = {parameters: [{name: 'param1', type: 'text', default: null}]};
-        var ctrl = createController(transformation);
-
-        //when
-        ctrl.transformWithParam();
-
-        //then
-        expect(ctrl.transformation.parameters[0].value).toBeUndefined();
-    });
-
-    it('should init params default values', function() {
-        //given
-        var transformation = {
-            name: 'uppercase',
-            category: 'case',
-            parameters: [
-                {name: 'param1', type: 'text', default: 'param1Value'},
-                {name: 'param2', type: 'integer', default: '5'}
-            ]
-        };
-        var ctrl = createController(transformation);
-
-        //when
-        ctrl.transformWithParam();
-
-        //then
-        expect(extractedParams).toEqual({ param1: 'param1Value', param2: 5 });
-    });
-
     it('should extract param', function() {
         //given
-        var transformation = {
+        transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
@@ -135,31 +44,9 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ param1: 'param1Value', param2: 4 });
     });
 
-    it('should init choice default value', function() {
-        //given
-        var transformation = {
-            name: 'split',
-            category: 'split',
-            items: [{
-                name: 'mode',
-                values: [
-                    {name: 'regex'},
-                    {name: 'index', default: true}
-                ]
-            }]
-        };
-        var ctrl = createController(transformation);
-
-        //when
-        ctrl.transformWithParam();
-
-        //then
-        expect(extractedParams).toEqual({ mode: 'index'});
-    });
-
     it('should extract simple choice param', function() {
         //given
-        var transformation = {
+        transformation = {
             name: 'split',
             category: 'split',
             items: [{
@@ -170,7 +57,7 @@ describe('Transform params controller', function () {
                 ]
             }]
         };
-        var ctrl = createController(transformation);
+        var ctrl = createController();
         ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[1];
 
         //when
@@ -182,7 +69,7 @@ describe('Transform params controller', function () {
 
     it('should extract parameterized choice params', function() {
         //given
-        var transformation = {
+        transformation = {
             name: 'split',
             category: 'split',
             items: [{
@@ -199,7 +86,7 @@ describe('Transform params controller', function () {
                 ]
             }]
         };
-        var ctrl = createController(transformation);
+        var ctrl = createController();
         ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[0];
 
         //when
@@ -211,7 +98,7 @@ describe('Transform params controller', function () {
 
     it('should extract parameters and parameterized choice transformation select', function() {
         //given
-        var transformation = {
+        transformation = {
             name: 'split',
             category: 'split',
             parameters: [
@@ -232,7 +119,7 @@ describe('Transform params controller', function () {
                 ]
             }]
         };
-        var ctrl = createController(transformation);
+        var ctrl = createController();
         ctrl.transformation.items[0].selectedValue = ctrl.transformation.items[0].values[0];
         ctrl.transformation.parameters[0].value = 'param1Value';
         ctrl.transformation.parameters[1].value = 4;
@@ -246,7 +133,7 @@ describe('Transform params controller', function () {
 
     it('should extract param and call ctrl onSubmitHoverOn function', function() {
         //given
-        var transformation = {
+        transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
@@ -254,7 +141,7 @@ describe('Transform params controller', function () {
                 {name: 'param2', type: 'integer', default: '5'}
             ]
         };
-        var ctrl = createController(transformation);
+        var ctrl = createController();
         ctrl.transformation.parameters[0].value = 'param1Value';
         ctrl.transformation.parameters[1].value = 4;
 
@@ -272,7 +159,7 @@ describe('Transform params controller', function () {
 
     it('should extract param and call ctrl onSubmitHoverOff function', function() {
         //given
-        var transformation = {
+        transformation = {
             name: 'uppercase',
             category: 'case',
             parameters: [
@@ -280,7 +167,7 @@ describe('Transform params controller', function () {
                 {name: 'param2', type: 'integer', default: '5'}
             ]
         };
-        var ctrl = createController(transformation);
+        var ctrl = createController();
         ctrl.transformation.parameters[0].value = 'param1Value';
         ctrl.transformation.parameters[1].value = 4;
 
