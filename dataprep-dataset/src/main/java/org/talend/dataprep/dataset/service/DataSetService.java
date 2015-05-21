@@ -150,6 +150,7 @@ public class DataSetService {
             return DataSet.empty(); // No data set, returns empty content.
         }
         if (dataSetMetadata.getLifecycle().error()) {
+            LOG.error("Unable to serve {}, data set met unrecoverable error.", dataSetId);
             // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
                     dataSetId));
