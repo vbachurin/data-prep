@@ -6,12 +6,8 @@ import static org.talend.dataprep.api.service.command.error.ErrorList.ServiceTyp
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.client.HttpClient;
@@ -19,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.error.ErrorList;
@@ -87,21 +82,6 @@ public class CommonAPI extends APIService {
         // close the errors array
         generator.writeEndArray();
         generator.flush();
-    }
-
-    @RequestMapping(value="/error", produces= APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Map<String, Object> handle(final HttpServletRequest request, final HttpServletResponse response) {
-        final int status = Integer.parseInt(request.getAttribute("javax.servlet.error.status_code").toString());
-        final Object message = request.getAttribute("javax.servlet.error.message");
-
-        final Map<String, Object> body = new HashMap<>();
-        body.put("status", status);
-        body.put("reason", message);
-
-        response.setStatus(status);
-
-        return body;
     }
 
     /**
