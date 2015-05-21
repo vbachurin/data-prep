@@ -119,6 +119,7 @@ public class SchemaAnalysis {
                     metadata.getLifecycle().error(true);
                     repository.add(metadata);
                 }
+                LOGGER.error("Unable to analyse schema for dataset {}.", dataSetId, e);
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
             } finally {
                 datasetLock.unlock();
