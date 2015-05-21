@@ -10,9 +10,11 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, PreviewService) {
+    function RecipeCtrl($rootScope, $timeout, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;
         vm.recipeService = RecipeService;
+
+        var previewTimeout;
 
         /**
          * @ngdoc method
@@ -66,11 +68,12 @@
                 element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });
 
+            $timeout.cancel(previewTimeout);
             if(vm.recipe[index].inactive) {
-                previewAppend(index);
+                previewTimeout = $timeout(previewAppend.bind(vm, index), 100);
             }
             else {
-                previewDisable(index);
+                previewTimeout = $timeout(previewDisable.bind(vm, index), 100);
             }
         };
 
@@ -84,7 +87,9 @@
             _.forEach(vm.recipe, function(element) {
                 element.highlight = false;
             });
-            PreviewService.cancelPreview();
+
+            $timeout.cancel(previewTimeout);
+            previewTimeout = $timeout(PreviewService.cancelPreview, 100);
         };
 
         //---------------------------------------------------------------------------------------------
@@ -139,7 +144,7 @@
          * @ngdoc method
          * @name previewAppend
          * @methodOf data-prep.recipe.controller:RecipeCtrl
-         * @param {string} step Position The step position index to preview
+         * @param {string} stepPosition The step position index to preview
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the disabled targeted step
          */
         var previewAppend = function(stepPosition) {
