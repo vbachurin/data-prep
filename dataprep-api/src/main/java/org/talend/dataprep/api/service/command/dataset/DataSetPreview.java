@@ -100,6 +100,10 @@ public class DataSetPreview extends DataPrepCommand<InputStream> {
                 return handleResponse(client.execute(contentRetrieval), contentRetrieval);
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
+            } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+                Exception cause = new Exception(response.getStatusLine().getStatusCode() + ":" //
+                        + response.getStatusLine().getReasonPhrase());
+                throw new TDPException(APIErrorCodes.DATASET_REDIRECT, cause, TDPExceptionContext.build().put("id", dataSetId));
             }
         } else if (statusCode >= 400) { // Error (4xx & 5xx codes)
             final ObjectMapper build = builder.build();
@@ -107,7 +111,8 @@ public class DataSetPreview extends DataPrepCommand<InputStream> {
             errorCode.setHttpStatus(statusCode);
             throw new TDPException(errorCode);
         }
-        Exception cause = new Exception(response.getStatusLine().getStatusCode() + response.getStatusLine().getReasonPhrase());
+        Exception cause = new Exception(response.getStatusLine().getStatusCode() + ":"
+                + response.getStatusLine().getReasonPhrase());
         throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, cause, TDPExceptionContext.build().put("id",
                 dataSetId));
     }

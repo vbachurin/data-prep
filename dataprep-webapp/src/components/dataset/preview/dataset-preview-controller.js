@@ -8,7 +8,7 @@
      * @requires data-prep.services.dataset.service:DatasetRestService
      * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function DatasetPreviewCtrl($scope,$state,$log,$stateParams,DatasetRestService,DatasetListService) {
+    function DatasetPreviewCtrl($rootScope,$scope,$state,$log,$stateParams,DatasetRestService,DatasetListService) {
 
         var self = this;
         self.datasetid;
@@ -29,6 +29,26 @@
           $state.go('nav.home.datasets');
         };
 
+      /**
+       * @methodOf data-prep.dataset-list.controller:DatasetPreviewCtrl
+       * @description triggered on non 200 http response. Can happen when dataset has been modified in the backend so
+       * we redirect to all datasets view and updating list
+       * @param res rest call response
+       */
+        var previewPremiseError = function(res){
+          $log.debug("status:"+res.status);
+          if (res.status = 301){
+            $rootScope.$emit('talend.preview.draft.validated');
+            DatasetListService
+                .refreshDatasets()
+                .then(function(data){
+                        $state.go('nav.home.datasets');
+                      });
+            return;
+          }
+          $rootScope.$emit('talend.preview.error');
+        };
+
         /**
          * @ngdoc method
          * @name updateSheetName
@@ -39,7 +59,7 @@
           return DatasetRestService.getPreview(self.datasetid,true,self.selectedSheetName)
               .then(function(data) {
                       drawGrid(data)
-                    });
+                    },previewPremiseError);
         };
 
         /**
@@ -102,7 +122,7 @@
                 return DatasetRestService.getPreview(self.datasetid,true)
                     .then(function(data) {
                             drawGrid(data)
-                          } );
+                          },previewPremiseError);
             }
 
         };

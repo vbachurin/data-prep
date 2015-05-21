@@ -8,7 +8,7 @@
      * <b style="color: red;">WARNING : do NOT use this service directly.
      * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      */
-    function DatasetRestService($rootScope, $upload, $http, RestURLs) {
+    function DatasetRestService($rootScope, $upload, $http, RestURLs,$log) {
         var self = this;
 
         /**
@@ -113,6 +113,7 @@
             $rootScope.$emit('talend.loading.start');
             return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=' + metadata + (sheetName?'&sheetName='+encodeURIComponent(sheetName): ''))
                 .then(function(res) {
+                    $log.debug("status:"+res.status);
                     return res.data;
                 })
                 .finally(function() {
