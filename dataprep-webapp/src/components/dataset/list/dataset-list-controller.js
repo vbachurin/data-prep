@@ -60,6 +60,7 @@
                 }
             } else{
                 MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
+                // TODO force list refresh??
             }
         };
 
