@@ -36,7 +36,7 @@
        * @param res rest call response
        */
         var previewPremiseError = function(res){
-          $log.debug("status:"+res.status);
+          $log.debug("previewPremiseError status:"+res.status);
           if (res.status = 301){
             $rootScope.$emit('talend.preview.draft.validated');
             DatasetListService
@@ -121,6 +121,7 @@
                 $log.debug("type:"+$stateParams.type);
                 return DatasetRestService.getPreview(self.datasetid,true)
                     .then(function(data) {
+                            $log.debug("before drawGrid");
                             drawGrid(data)
                           },previewPremiseError);
             }

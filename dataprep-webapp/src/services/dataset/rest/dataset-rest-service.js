@@ -113,7 +113,6 @@
             $rootScope.$emit('talend.loading.start');
             return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=' + metadata + (sheetName?'&sheetName='+encodeURIComponent(sheetName): ''))
                 .then(function(res) {
-                    $log.debug("status:"+res.status);
                     return res.data;
                 })
                 .finally(function() {
