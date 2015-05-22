@@ -255,14 +255,16 @@ public class DataSetService {
             // sheet not yet set correctly so use the first one
             if ( StringUtils.isEmpty( dataSetMetadata.getSheetName() ) )
             {
-                String theSheetName = dataSetMetadata.getSchemaParserResult().getColumnMetadatas().firstKey();
+                String theSheetName = dataSetMetadata.getSchemaParserResult().getSheetContents().get( 0 ).getName();
                 LOG.debug( "preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName );
                 dataSetMetadata.setSheetName( theSheetName );
             }
 
             String theSheetName = dataSetMetadata.getSheetName();
             List<ColumnMetadata> columnMetadatas =
-                dataSetMetadata.getSchemaParserResult().getColumnMetadatas().get( theSheetName );
+                dataSetMetadata.getSchemaParserResult().getSheetContents().stream().filter(sheetContent -> {
+                    return theSheetName.equals(sheetContent.getName());
+                }).findFirst().get().getColumnMetadatas();
 
             dataSetMetadata.getRow().setColumns( columnMetadatas );
         } else {
@@ -396,8 +398,11 @@ public class DataSetService {
             // we retry informations we do not update
             DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
 
-            dataSetMetadata.getRow().setColumns(
-                    read.getSchemaParserResult().getColumnMetadatas().get(dataSetMetadata.getSheetName()));
+            List<ColumnMetadata> columnMetadatas = read.getSchemaParserResult().getSheetContents().stream().filter(sheetContent -> {
+                return dataSetMetadata.getSheetName().equals( sheetContent.getName() );
+            }).findFirst().get().getColumnMetadatas();
+
+            dataSetMetadata.getRow().setColumns(columnMetadatas);
             dataSetMetadata.setContent(read.getContent());
 
             dataSetMetadata.setSchemaParserResult(null);

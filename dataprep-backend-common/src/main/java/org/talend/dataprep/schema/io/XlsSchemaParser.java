@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
-
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -22,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.SchemaParserResult;
@@ -42,40 +40,40 @@ public class XlsSchemaParser implements SchemaParser {
         // maybe return List<List<ColumnMetadata>> ??
         // so we could return all sheets
 
-        SortedMap<String, List<ColumnMetadata>> schema = parseAllSheets(request.getContent());
+        List<SchemaParserResult.SheetContent> sheetContents = parseAllSheets(request.getContent());
 
-        if (!schema.isEmpty()) {
-            return schema.size() == 1 ? //
+        if (!sheetContents.isEmpty()) {
+            return sheetContents.size() == 1 ? //
             SchemaParserResult.Builder.parserResult() //
-                    .columnMetadatas(schema) //
+                    .sheetContents( sheetContents ) //
                     .draft(false) //
                     .build() //
                     : //
                     SchemaParserResult.Builder.parserResult() //
-                            .columnMetadatas(schema) //
+                            .sheetContents( sheetContents ) //
                             .draft(true) //
-                            .sheetName( schema.firstKey() ) //
+                            .sheetName(sheetContents.get( 0 ).getName()) //
                             .build();
         }
 
         return SchemaParserResult.Builder.parserResult() //
-                .columnMetadatas(Collections.emptySortedMap()) //
+                .sheetContents(Collections.emptyList()) //
                 .draft(false) //
                 .build();
 
     }
 
-    public SortedMap<String, List<ColumnMetadata>> parseAllSheets(InputStream content) {
+    public List<SchemaParserResult.SheetContent> parseAllSheets(InputStream content) {
         try {
             Workbook hssfWorkbook = XlsUtils.getWorkbook(content);
 
             int sheetNumber = hssfWorkbook.getNumberOfSheets();
 
             if (sheetNumber < 1) {
-                return Collections.emptySortedMap();
+                return Collections.emptyList();
             }
 
-            SortedMap<String, List<ColumnMetadata>> schema = new TreeMap<>();
+            List<SchemaParserResult.SheetContent> schemas = new ArrayList<>();
 
             for (int i = 0; i < sheetNumber; i++) {
                 Sheet sheet = hssfWorkbook.getSheetAt(i);
@@ -90,11 +88,11 @@ public class XlsSchemaParser implements SchemaParser {
                 String sheetName = sheet.getSheetName();
 
                 // update XlsSerializer if this default sheet naming change!!!
-                schema.put(sheetName == null ? "sheet-" + i : sheetName, columnMetadatas);
+                schemas.add(new SchemaParserResult.SheetContent(sheetName == null ? "sheet-" + i : sheetName, columnMetadatas));
 
             }
 
-            return schema;
+            return schemas;
 
         } catch (IOException e) {
             LOGGER.debug("IOEXception during parsing xls content :" + e.getMessage(), e);

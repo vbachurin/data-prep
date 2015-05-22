@@ -12,7 +12,7 @@ public class NoOpParser implements SchemaParser {
     @Override
     public SchemaParserResult parse(Request request) {
         return SchemaParserResult.Builder.parserResult() //
-                .columnMetadatas(Collections.emptySortedMap()) //
+                .sheetContents(Collections.emptyList()) //
                 .draft(false).build();
     }
 }

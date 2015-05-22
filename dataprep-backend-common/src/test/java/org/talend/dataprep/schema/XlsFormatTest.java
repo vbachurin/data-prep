@@ -72,8 +72,8 @@ public class XlsFormatTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().entrySet().iterator().next()
-                    .getValue();
+                    .parse(new SchemaParser.Request(inputStream, null)).getSheetContents().get(0).getColumnMetadatas();
+
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
 
@@ -112,7 +112,7 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().values().iterator().next();
+                    .parse(new SchemaParser.Request(inputStream, null)).getSheetContents().get(0).getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(17);
         }
@@ -137,8 +137,7 @@ public class XlsFormatTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().entrySet().iterator().next()
-                    .getValue();
+                    .parse(new SchemaParser.Request(inputStream, null)).getSheetContents().get(0).getColumnMetadatas();
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
 
@@ -216,8 +215,7 @@ public class XlsFormatTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().entrySet().iterator().next()
-                    .getValue();
+                    .parse(new SchemaParser.Request(inputStream, null)).getSheetContents().get(0).getColumnMetadatas();
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
 
@@ -274,8 +272,7 @@ public class XlsFormatTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
-                    .parse(new SchemaParser.Request(inputStream, null)).getColumnMetadatas().entrySet().iterator().next()
-                    .getValue();
+                    .parse(new SchemaParser.Request(inputStream, null)).getSheetContents().get(0).getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
 
@@ -329,9 +326,11 @@ public class XlsFormatTest {
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
-            Map<String, List<ColumnMetadata>> xlsSchema = xlsSchemaParser.parseAllSheets(inputStream);
+            List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(inputStream);
 
-            List<ColumnMetadata> columnMetadatas = new ArrayList<>(xlsSchema.get("Leads"));
+            List<ColumnMetadata> columnMetadatas = sheetContents.stream().filter(sheetContent -> {
+                return "Leads".equals(sheetContent.getName());
+            }).findFirst().get().getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(14);
 

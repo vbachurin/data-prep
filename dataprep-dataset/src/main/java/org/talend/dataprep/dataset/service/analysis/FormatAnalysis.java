@@ -93,7 +93,7 @@ public class FormatAnalysis {
 
                         SchemaParserResult schemaParserResult = parser.parse(new SchemaParser.Request(content, metadata));
                         if (schemaParserResult.draft()) {
-                            metadata.setSheetName(schemaParserResult.getColumnMetadatas().firstKey());
+                            metadata.setSheetName(schemaParserResult.getSheetContents().get( 0 ).getName());
                             metadata.setDraft(true);
                             metadata.setSchemaParserResult(schemaParserResult);
                             repository.add(metadata);
@@ -101,7 +101,7 @@ public class FormatAnalysis {
                         }
                         metadata.setDraft(false);
                         metadata.getRow().setColumns(
-                                schemaParserResult.getColumnMetadatas().entrySet().iterator().next().getValue());
+                                schemaParserResult.getSheetContents().get( 0 ).getColumnMetadatas());
 
                     } catch (IOException e) {
                         throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);

@@ -14,7 +14,7 @@
         self.datasetid;
         self.visible = false;
         self.metadata;
-        self.selectedSheetName;
+        self.selectedSheetContent={};
         self.records;
         self.columns;
         self.grid;
@@ -61,7 +61,7 @@
          * @description triggered on sheet name change (trigger redisplaying preview grid)
          */
         self.updateSheetName = function(){
-          return DatasetRestService.getPreview(self.datasetid,true,self.selectedSheetName)
+          return DatasetRestService.getPreview(self.datasetid,true,self.selectedSheetContent.name)
               .then(function(data) {
                       drawGrid(data)
                     },previewPremiseError);
@@ -75,7 +75,7 @@
          */
         self.updateDataset = function(){
           $log.debug('updateDataset');
-          self.metadata.sheetName = self.selectedSheetName;
+          self.metadata.sheetName = self.selectedSheetContent.name;
           DatasetRestService.updateMetadata(self.metadata )
               .then(function(data){
                 DatasetListService
@@ -94,7 +94,7 @@
          */
         var drawGrid = function(data){
           self.metadata = data.metadata;
-          self.selectedSheetName=data.metadata.sheetName;
+          self.selectedSheetContent.sheetName=data.metadata.sheetName;
 
           var options = {
             enableColumnReorder: false,

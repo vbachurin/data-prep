@@ -1,28 +1,26 @@
 package org.talend.dataprep.schema;
 
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
+
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 public class SchemaParserResult {
 
     @JsonProperty("draft")
     private boolean draft;
 
-    @JsonProperty("columnMetadatas")
-    private SortedMap<String, List<ColumnMetadata>> columnMetadatas;
+    @JsonProperty("sheetContents")
+    private List<SheetContent> sheetContents;
 
     @JsonProperty("sheetName")
     private String sheetName;
 
-
-    private SchemaParserResult(boolean draft, SortedMap<String, List<ColumnMetadata>> columnMetadatas, String sheetName) {
+    private SchemaParserResult(boolean draft, List<SheetContent> sheetContents, String sheetName) {
         this.draft = draft;
-        this.columnMetadatas = columnMetadatas;
+        this.sheetContents = sheetContents;
         this.sheetName = sheetName;
     }
 
@@ -34,20 +32,42 @@ public class SchemaParserResult {
         return draft;
     }
 
-    public SortedMap<String, List<ColumnMetadata>> getColumnMetadatas() {
-        return columnMetadatas;
+    public List<SheetContent> getSheetContents()
+    {
+        return sheetContents;
     }
 
-    public String getSheetName()
-    {
+    public String getSheetName() {
         return sheetName;
+    }
+
+    public static class SheetContent {
+
+        @JsonProperty("name")
+        private String name;
+
+        @JsonProperty("columnMetadatas")
+        private List<ColumnMetadata> columnMetadatas;
+
+        public SheetContent(String name, List<ColumnMetadata> columnMetadatas) {
+            this.name = name;
+            this.columnMetadatas = columnMetadatas;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public List<ColumnMetadata> getColumnMetadatas() {
+            return columnMetadatas;
+        }
     }
 
     public static class Builder {
 
         private boolean draft;
 
-        private SortedMap<String, List<ColumnMetadata>> columnMetadatas;
+        private List<SheetContent> sheetContents;
 
         private String sheetName;
 
@@ -60,8 +80,8 @@ public class SchemaParserResult {
             return this;
         }
 
-        public Builder columnMetadatas(SortedMap<String, List<ColumnMetadata>> columnMetadatas) {
-            this.columnMetadatas = columnMetadatas;
+        public Builder sheetContents(List<SheetContent> sheetContents) {
+            this.sheetContents = sheetContents;
             return this;
         }
 
@@ -71,7 +91,7 @@ public class SchemaParserResult {
         }
 
         public SchemaParserResult build() {
-            return new SchemaParserResult(this.draft, this.columnMetadatas,this.sheetName);
+            return new SchemaParserResult(this.draft, this.sheetContents, this.sheetName);
         }
     }
 }

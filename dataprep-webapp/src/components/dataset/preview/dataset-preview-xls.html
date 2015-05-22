@@ -5,10 +5,10 @@
               on-close="datasetPreviewXlsCtrl.close()">
 
     <div class="modal-header">
-      <span class="title"> Dataset: {{datasetPreviewXlsCtrl.metadata.name}}</span>
+      <span class="title"> Dataset: {{datasetPreviewXlsCtrl.metadata.sheetName}}</span>
 
-      <select ng-options="sheetName for sheetName in datasetPreviewXlsCtrl.metadata.sheetNames"
-              ng-model="datasetPreviewXlsCtrl.selectedSheetName"
+      <select ng-options="sheetContent.name for sheetContent in datasetPreviewXlsCtrl.metadata.schemaParserResult.sheetContents"
+              ng-model="datasetPreviewXlsCtrl.selectedSheetContent"
               ng-change="datasetPreviewXlsCtrl.updateSheetName()"
               class="param-choice-select"></select>
 
