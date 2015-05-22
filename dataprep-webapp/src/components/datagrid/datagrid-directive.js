@@ -31,7 +31,7 @@
 
                 // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
                 // To do so, the text is put into an invisible span so that the span can be measured.
-                var tooltipRuler = angular.element('<span id="tooltip-ruler" style="display:none"></span>');
+                var tooltipRuler = angular.element('<span id="tooltip-ruler" style="display:none;white-space:pre;"></span>');
                 iElement.append(tooltipRuler);
 
                 //------------------------------------------------------------------------------------------------------
@@ -63,6 +63,29 @@
                 //------------------------------------------------------------------------------------------------------
                 //------------------------------------------------COL UTILES--------------------------------------------
                 //------------------------------------------------------------------------------------------------------
+
+                /**
+                 * @ngdoc method
+                 * @name computeHTMLForLeadingOrTrailingHiddenChars
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] split the string value into leadin chars, text and trailing char and create html element using the class hiddenChars
+                 * to specify the hiddenChars.
+                 */
+                function computeHTMLForLeadingOrTrailingHiddenChars(value){
+                    var returnStr = value;
+                    var hiddenCharsRegExpMatch = value.match(/(^\s\s*)?(\S*)(\s\s*$)?/);
+                    if (hiddenCharsRegExpMatch[1]){//leading hidden chars found
+                        returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>' + hiddenCharsRegExpMatch[2];
+                    }else{//no leading hiddend chars
+                        returnStr = hiddenCharsRegExpMatch[2] ;
+                    }
+                    if (hiddenCharsRegExpMatch[3]){//trailing hidden chars
+                        returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
+                    }//else no trailing char so leave returnStr as is.
+
+                    return returnStr;
+                }
+
                 /**
                  * @ngdoc method
                  * @name formatter
@@ -75,15 +98,7 @@
 
                     //hidden characters need to be shown
                     if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
-                        var hiddenCharsRegExpMatch = value.match(/(^\s\s*)?(\S*)(\s\s*$)?/);
-                        if (hiddenCharsRegExpMatch[1]){
-                            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>' + hiddenCharsRegExpMatch[2];
-                        }else{
-                            returnStr = hiddenCharsRegExpMatch[2] ;
-                        }
-                        if (hiddenCharsRegExpMatch[3]){
-                            returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
-                        }
+                        returnStr = computeHTMLForLeadingOrTrailingHiddenChars(value);
                     }
                     //deleted row preview
                     if(dataContext.__tdpRowDiff === 'delete') {
@@ -329,14 +344,14 @@
                  */
                 var attachTooltipListener = function attachTooltipListener() {
                     //show tooltips only if not empty and width is bigger than cell
-                    function shouldShowTooltip(item, column) {
-                        var toolTipText = item[column.id];
-                        if(toolTipText === '') {
+                    function shouldShowTooltip(text, cell) {
+                        if(text === '') {
                             return false;
                         }
 
-                        tooltipRuler.text(toolTipText);
-                        return column.width <= tooltipRuler.width();
+                        tooltipRuler.text(text);
+                        var box = grid.getCellNodeBox(cell.cell, cell.row);
+                        return (box.right - box.left) <= tooltipRuler.width() || (box.bottom - box.top) < tooltipRuler.height();
                     }
 
                     //show tooltip on hover
@@ -346,7 +361,7 @@
                         var column = grid.getColumns()[cell.cell];
                         var item = DatagridService.dataView.getItem(row);
 
-                        if (!shouldShowTooltip(item, column)) {
+                        if (!shouldShowTooltip(item[column.id], cell)) {
                             return;
                         }
                         

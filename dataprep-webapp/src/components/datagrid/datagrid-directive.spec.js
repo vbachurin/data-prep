@@ -418,6 +418,15 @@ describe('Datagrid directive', function () {
                     'valid': 72
                 },
                 'type': 'string'
+            },
+            {
+                'id': 'col5',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
             }
         ],
         'records': [
@@ -773,12 +782,14 @@ describe('Datagrid directive', function () {
         expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(true);
     }));
 
+
     it('should add "hiddenChars class when leading or trailing invisible characters are encountered"', inject(function (FilterService, DatagridService) {
         //when
         DatagridService.setDataset(metadata, hiddenCharsData);
         scope.$digest();
 
         //then
+        //ROW 0
         var grid = new GridGetter(element);
         //'AL'
         expect(grid.row(0).cell(0).element().find('> span').length).toBe(0);
@@ -801,6 +812,9 @@ describe('Datagrid directive', function () {
         expect(grid.row(0).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(0).cell(3).element().find('> span').eq(1).text()).toBe(' ');
         expect(getDirectText(grid.row(0).cell(3).element())).toBe('AL');
+
+
+        //ROW 1
         //'  AL'
         expect(grid.row(1).cell(0).element().find('> span').length).toBe(1);
         expect(grid.row(1).cell(0).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
