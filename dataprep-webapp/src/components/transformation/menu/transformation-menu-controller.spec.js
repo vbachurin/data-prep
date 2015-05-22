@@ -64,7 +64,8 @@ describe('Transform menu controller', function () {
         spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
         spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: result}));
         spyOn($rootScope, '$emit').and.callThrough();
-        spyOn(DatagridService, 'updateRecords').and.callFake(function() {});
+        spyOn(DatagridService, 'updateData').and.callFake(function() {});
+        //spyOn(DatagridService, 'updateRecords').and.callFake(function() {});
         spyOn(RecipeService, 'refresh').and.callFake(function() {});
     }));
 
@@ -124,7 +125,7 @@ describe('Transform menu controller', function () {
         expect(ctrl.showModal).toBeFalsy();
         expect(PreparationService.appendStep).toHaveBeenCalledWith(metadata, 'uppercase', column, undefined);
         expect(PreparationService.getContent).toHaveBeenCalledWith('head');
-        expect(DatagridService.updateRecords).toHaveBeenCalledWith(result.records);
+        expect(DatagridService.updateData).toHaveBeenCalledWith(result);
         expect(RecipeService.refresh).toHaveBeenCalled();
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
@@ -154,7 +155,7 @@ describe('Transform menu controller', function () {
             column,
             {param1: 'param1Value', param2: 4});
         expect(PreparationService.getContent).toHaveBeenCalledWith('head');
-        expect(DatagridService.updateRecords).toHaveBeenCalledWith(result.records);
+        expect(DatagridService.updateData).toHaveBeenCalledWith(result);
         expect(RecipeService.refresh).toHaveBeenCalled();
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));

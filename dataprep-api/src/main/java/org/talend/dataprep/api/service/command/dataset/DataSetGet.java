@@ -53,7 +53,8 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata=" + metadata + "&columns=" + columns);
+        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata="
+                + metadata + "&columns=" + columns);
         final HttpResponse response = client.execute(contentRetrieval);
         return handleResponse(response, contentRetrieval);
     }
@@ -86,7 +87,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
             }
-        } else if(statusCode >= 400 ){ // Error (4xx & 5xx codes)
+        } else if (statusCode >= 400) { // Error (4xx & 5xx codes)
             final ObjectMapper build = builder.build();
             final JsonErrorCode errorCode = build.reader(JsonErrorCode.class).readValue(response.getEntity().getContent());
             errorCode.setHttpStatus(statusCode);

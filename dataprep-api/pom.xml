@@ -55,6 +55,11 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+
         <!-- SWAGGER DEPENDENCIES -->
         <dependency>
             <groupId>com.mangofactory</groupId>

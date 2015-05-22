@@ -9,7 +9,7 @@ describe('Recipe controller', function() {
 
     beforeEach(module('data-prep.recipe'));
 
-    beforeEach(inject(function($rootScope, $controller, $q, RecipeService, PlaygroundService, PreparationService, PreviewService) {
+    beforeEach(inject(function($rootScope, $controller, $q, $timeout, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -31,6 +31,7 @@ describe('Recipe controller', function() {
         spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
+        spyOn($timeout, 'cancel').and.callThrough();
     }));
 
     afterEach(inject(function(RecipeService) {
@@ -108,7 +109,7 @@ describe('Recipe controller', function() {
         expect(recipe[3].highlight).toBeFalsy();
     }));
 
-    it('should trigger append preview on inactive step hover', inject(function(RecipeService, PreviewService) {
+    it('should trigger append preview on inactive step hover after a delay of 100ms', inject(function($timeout, RecipeService, PreviewService) {
         //given
         var ctrl = createController();
 
@@ -123,12 +124,15 @@ describe('Recipe controller', function() {
 
         //when
         ctrl.stepHoverStart(2);
+        $timeout.flush(99);
+        expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
+        $timeout.flush(1);
 
         //then
         expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[0], recipe[2]);
     }));
 
-    it('should trigger disable preview on active step hover', inject(function(RecipeService, PreviewService) {
+    it('should cancel pending preview action on step hover', inject(function($timeout, RecipeService) {
         //given
         var ctrl = createController();
 
@@ -142,6 +146,29 @@ describe('Recipe controller', function() {
 
         //when
         ctrl.stepHoverStart(2);
+
+        //then
+        expect($timeout.cancel).toHaveBeenCalled();
+    }));
+
+
+    it('should trigger disable preview on active step hover', inject(function($timeout, RecipeService, PreviewService) {
+        //given
+        var ctrl = createController();
+
+        var recipe = RecipeService.getRecipe();
+        recipe.push(
+            {id: '1'},
+            {id: '2'},
+            {id: '3'},
+            {id: '4'}
+        );
+
+        //when
+        ctrl.stepHoverStart(2);
+        $timeout.flush(99);
+        expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
+        $timeout.flush(1);
 
         //then
         expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], recipe[1]);
@@ -169,7 +196,21 @@ describe('Recipe controller', function() {
         expect(recipe[3].highlight).toBeFalsy();
     }));
 
-    it('should cancel current preview on mouse hover end', inject(function(PreviewService) {
+    it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function($timeout, PreviewService) {
+        //given
+        var ctrl = createController();
+
+        //when
+        ctrl.stepHoverEnd();
+        $timeout.flush(99);
+        expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
+        $timeout.flush(1);
+
+        //then
+        expect(PreviewService.cancelPreview).toHaveBeenCalled();
+    }));
+
+    it('should cancel pending preview action on mouse hover end', inject(function($timeout) {
         //given
         var ctrl = createController();
 
@@ -177,7 +218,7 @@ describe('Recipe controller', function() {
         ctrl.stepHoverEnd();
 
         //then
-        expect(PreviewService.cancelPreview).toHaveBeenCalled();
+        expect($timeout.cancel).toHaveBeenCalled();
     }));
 
     it('should load current step content if the step is first inactive', inject(function(PlaygroundService) {

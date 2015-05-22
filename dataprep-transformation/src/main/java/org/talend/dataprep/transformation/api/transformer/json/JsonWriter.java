@@ -1,16 +1,17 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
+import java.io.IOException;
+
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
-import java.io.IOException;
-import java.util.List;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 public class JsonWriter implements TransformerWriter {
+
     private final JsonGenerator generator;
 
     public JsonWriter(final JsonGenerator generator) {
@@ -18,9 +19,9 @@ public class JsonWriter implements TransformerWriter {
     }
 
     @Override
-    public void write(final List<ColumnMetadata> columns) throws IOException {
+    public void write(final RowMetadata rowMetadata) throws IOException {
         startArray();
-        columns.stream().forEach((col) -> {
+        rowMetadata.getColumns().stream().forEach((col) -> {
             try {
                 generator.writeObject(col);
             } catch (IOException e) {

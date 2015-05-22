@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.dataset;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
@@ -11,6 +13,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,12 +32,14 @@ public class ColumnMetadata {
 
     private String id;
 
+    @JsonProperty("type")
     private String typeName = "N/A"; //$NON-NLS-1$
 
     // number of first lines with a text header
     // non per default
     private int headerSize = 0;
 
+    @JsonProperty("statistics")
     @JsonRawValue
     private String statistics = "{}"; //$NON-NLS-1$
 
@@ -187,6 +192,17 @@ public class ColumnMetadata {
 
         public ColumnMetadata.Builder headerSize(int headerSize) {
             this.headerSize = headerSize;
+            return this;
+        }
+
+        public ColumnMetadata.Builder copy(ColumnMetadata original) {
+            this.name = original.getId();
+            Quality originalQuality = original.getQuality();
+            this.empty = originalQuality.getEmpty();
+            this.invalid = originalQuality.getInvalid();
+            this.valid = originalQuality.getValid();
+            this.headerSize = original.getHeaderSize();
+            this.type = Type.get(original.getType());
             return this;
         }
 

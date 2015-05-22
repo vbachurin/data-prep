@@ -1,9 +1,5 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 
@@ -45,22 +41,11 @@ public class ContentAnalysis {
             try {
                 DataSetMetadata metadata = repository.get(dataSetId);
                 if (metadata != null) {
-                    try (BufferedReader content = new BufferedReader(new InputStreamReader(store.getAsRaw(metadata)))) {
-                        int lineCount = 0;
-                        while (content.readLine() != null) {
-                            lineCount++;
-                        }
-                        DataSetContent datasetContent = metadata.getContent();
-                        datasetContent.setNbLinesInHeader(1);
-                        datasetContent.setNbLinesInFooter(0);
-                        datasetContent.setNbRecords(lineCount - datasetContent.getNbLinesInHeader()
-                                - datasetContent.getNbLinesInFooter());
-
-                        metadata.getLifecycle().contentIndexed(true);
-                        repository.add(metadata);
-                    } catch (IOException e) {
-                        throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
-                    }
+                    DataSetContent datasetContent = metadata.getContent();
+                    datasetContent.setNbLinesInHeader(1);
+                    datasetContent.setNbLinesInFooter(0);
+                    metadata.getLifecycle().contentIndexed(true);
+                    repository.add(metadata);
                 } else {
                     LOG.info("Data set #{} no longer exists.", dataSetId); //$NON-NLS-1$
                 }

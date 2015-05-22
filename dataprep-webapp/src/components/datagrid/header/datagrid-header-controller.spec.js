@@ -125,7 +125,7 @@ describe('DatasetColumnHeader controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationRestService.getTransformations).toHaveBeenCalledWith(metadata.id, column.id);
+            expect(TransformationRestService.getTransformations).toHaveBeenCalledWith(column);
             expect(ctrl.transformations.length).toBe(5);
             expect(ctrl.transformations[0].name).toBe('uppercase');
             expect(ctrl.transformations[1].name).toBe('lowercase');

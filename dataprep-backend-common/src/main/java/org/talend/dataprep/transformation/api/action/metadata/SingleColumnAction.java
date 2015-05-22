@@ -15,6 +15,9 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Type;
 
+/**
+ * Base class for all single column action.
+ */
 public abstract class SingleColumnAction implements ActionMetadata {
 
     public static final String COLUMN_NAME_PARAMETER_NAME = "column_name"; //$NON-NLS-1$
@@ -22,6 +25,9 @@ public abstract class SingleColumnAction implements ActionMetadata {
     public static final Parameter COLUMN_NAME_PARAMETER = new Parameter(COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(),
             StringUtils.EMPTY);
 
+    /**
+     * @return the parameters needed tor the action to be performed.
+     */
     @Override
     public Parameter[] getParameters() {
         return new Parameter[] { COLUMN_NAME_PARAMETER };

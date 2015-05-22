@@ -13,11 +13,12 @@
 
         /**
          * @ngdoc property
-         * @name originalRecords
+         * @name originalData
          * @propertyOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] The original records before switching to preview
+         * @description [PRIVATE] The original data (columns and records) before switching to preview
          */
-        var originalRecords;
+        var originalData;
+
         /**
          * @ngdoc property
          * @name displayedTdpIds
@@ -119,9 +120,9 @@
          */
         var replaceRecords = function(recordsTdpId) {
             return function(response) {
-                //save the original records
-                originalRecords = originalRecords || DatagridService.data.records;
-                modifiedRecords = originalRecords.slice(0);
+                //save the original data
+                originalData = originalData || DatagridService.data;
+                modifiedRecords = originalData.records.slice(0);
 
                 //filter if necessary
                 var viableRecords = filterViableRecord(response.data.records);
@@ -138,7 +139,8 @@
                 }
 
                 //update grid
-                DatagridService.updateRecords(modifiedRecords);
+                var data = {columns: response.data.columns, records: modifiedRecords, preview: true};
+                DatagridService.updateData(data);
             };
         };
 
@@ -150,7 +152,7 @@
          * It cancel the previous preview first
          */
         self.getPreviewDiffRecords = function(currentStep, previewStep) {
-            self.cancelPreview();
+            self.cancelPreview(true);
 
             previewCanceler = $q.defer();
             displayedTdpIds = getDisplayedTdpIds();
@@ -170,7 +172,7 @@
          * It cancel the previous preview first
          */
         self.getPreviewUpdateRecords = function(currentStep, updateStep, newParams) {
-            self.cancelPreview();
+            self.cancelPreview(true);
 
             previewCanceler = $q.defer();
             displayedTdpIds = getDisplayedTdpIds();
@@ -185,19 +187,21 @@
         /**
          * @ngdoc method
          * @name cancelPreview
+         * @param partial If true, we cancel pending preview but we do NOT restore the original data
          * @methodOf data-prep.services.playground.service:PreviewService
          * @description Cancel the current preview or the pending preview (resolving the cancel promise).
          * The original records is set back into the datagrid
          */
-        self.cancelPreview = function() {
+        self.cancelPreview = function(partial) {
+
             if(previewCanceler) {
                 previewCanceler.resolve('user cancel');
                 previewCanceler = null;
             }
 
-            if(originalRecords) {
-                DatagridService.updateRecords(originalRecords);
-                originalRecords = null;
+            if(!partial && originalData) {
+                DatagridService.updateData(originalData);
+                originalData = null;
                 modifiedRecords = null;
                 displayedTdpIds = null;
             }
@@ -210,7 +214,7 @@
          * @description Test if a preview is currently displayed
          */
         self.previewInProgress = function() {
-            return !!originalRecords;
+            return !!originalData;
         };
     }
 

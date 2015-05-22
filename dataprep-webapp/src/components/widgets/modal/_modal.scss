@@ -21,8 +21,6 @@
   $navigation-height: 51px;
   $navigation-item-space: 15px;
 
-  $body-margin: 0px;
-
   p {
     color: $base-font-color;
     line-height: $base-line-height;
@@ -244,7 +242,6 @@
         display: table;
         height: $navigation-height;
         min-height: $navigation-height;
-        margin-bottom: 0px;  //$body-margin;
         width: 100%;
 
         @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
@@ -289,7 +286,7 @@
       }
 
       .modal-body {
-        @include calc(height, "100% - #{$navigation-height} - #{$body-margin}");
+        @include calc(height, "100% - #{$navigation-height}");
         width: 100%;
 
         background: white;

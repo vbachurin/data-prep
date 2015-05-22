@@ -23,10 +23,9 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.DistributedLock;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.api.dataset.json.SimpleDataSetMetadataJsonSerializer;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -37,9 +36,6 @@ import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
 
 @RestController
@@ -54,8 +50,6 @@ public class DataSetService {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
     }
 
-    private final JsonFactory factory = new JsonFactory();
-
     @Autowired
     JmsTemplate jmsTemplate;
 
@@ -64,9 +58,6 @@ public class DataSetService {
 
     @Autowired
     private DataSetContentStore contentStore;
-
-    @Autowired
-    private SimpleDataSetMetadataJsonSerializer metadataJsonSerializer;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -102,19 +93,8 @@ public class DataSetService {
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
-    public void list(final HttpServletResponse response) {
-        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        final Iterable<DataSetMetadata> dataSets = dataSetMetadataRepository.list();
-        try (final JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
-            generator.writeStartArray();
-            for (DataSetMetadata dataSetMetadata : dataSets) {
-                metadataJsonSerializer.serialize(dataSetMetadata, generator);
-            }
-            generator.writeEndArray();
-            generator.flush();
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
-        }
+    public Iterable<DataSetMetadata> list(final HttpServletResponse response) {
+        return dataSetMetadataRepository.list();
     }
 
     /**
@@ -158,18 +138,19 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
-    public void get(
-            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
+    public @ResponseBody DataSet get(
+            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
+            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         if (dataSetMetadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return; // No data set, returns empty content.
+            return DataSet.empty(); // No data set, returns empty content.
         }
         if (dataSetMetadata.getLifecycle().error()) {
+            LOG.error("Unable to serve {}, data set met unrecoverable error.", dataSetId);
             // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
                     dataSetId));
@@ -178,25 +159,24 @@ public class DataSetService {
             // Schema is not yet ready (but eventually will, returns 202 to indicate this).
             LOG.debug("Data set #{} not yet ready for service.", dataSetId);
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
+            return DataSet.empty();
         }
-        if (columns && !dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+        if (!dataSetMetadata.getLifecycle().qualityAnalyzed()) {
             // Quality is not yet ready (but eventually will, returns 202 to indicate this).
             LOG.debug("Column information #{} not yet ready for service (missing quality information).", dataSetId);
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
+            return DataSet.empty();
         }
-
-        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
-            // Write general information about the dataset
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.get(metadata, columns, contentStore.get(dataSetMetadata),
-                    applicationContext));
-            mapper.writer().writeValue(generator, dataSetMetadata);
-            generator.flush();
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
+        // Build the result
+        DataSet dataSet = new DataSet();
+        if (metadata) {
+            dataSet.setMetadata(dataSetMetadata);
         }
+        if (columns) {
+            dataSet.setColumns(dataSetMetadata.getRow().getColumns());
+        }
+        dataSet.setRecords(contentStore.stream(dataSetMetadata));
+        return dataSet;
     }
 
     /**
@@ -266,8 +246,8 @@ public class DataSetService {
     @Timed
     @VolumeMetered
     public void updateRawDataSet(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name,
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId, //
+            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name, //
             @ApiParam(value = "content") InputStream dataSetContent) {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
@@ -294,34 +274,31 @@ public class DataSetService {
      * returns {@link HttpServletResponse#SC_NO_CONTENT}
      * @param response The HTTP response to interact with caller.
      */
-    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
     @ApiResponses({ @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist."),
             @ApiResponse(code = HttpServletResponse.SC_ACCEPTED, message = "Data set metadata is not yet ready.") })
     @Timed
-    public void getMetadata(
+    public @ResponseBody DataSet getMetadata(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
             HttpServletResponse response) {
         if (dataSetId == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return;
+            return null;
         }
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         if (metadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return;
+            return null;
         }
         if (!metadata.getLifecycle().schemaAnalyzed()) {
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return;
+            return DataSet.empty();
         }
-        try (JsonGenerator generator = factory.createGenerator(response.getOutputStream())) {
-            // Write general information about the dataset
-            builder.build().writer().writeValue(generator, metadata);
-            generator.flush();
-        } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_IO_EXCEPTION, e);
-        }
+        DataSet dataSet = new DataSet();
+        dataSet.setMetadata(metadata);
+        dataSet.setColumns(metadata.getRow().getColumns());
+        return dataSet;
     }
 
     /**

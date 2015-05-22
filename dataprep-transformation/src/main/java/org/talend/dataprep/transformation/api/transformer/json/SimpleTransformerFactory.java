@@ -1,42 +1,45 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
-import java.util.function.Consumer;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 
+/**
+ * Default implementation of the Transformer Factory.
+ */
 @Component
 public class SimpleTransformerFactory implements TransformerFactory {
 
+    /** The Spring web application context. */
     @Autowired
     private WebApplicationContext context;
 
-    final ActionParser parser = new ActionParser();
+    /** The component that parses actions out of json string. */
+    @Autowired
+    private ActionParser parser;
 
-    private Consumer<DataSetRow> action;
+    /** The action to perform by the transformer. */
+    private ParsedActions actions;
 
+    /**
+     * @see TransformerFactory#get()
+     */
     @Override
     public Transformer get() {
-        return context.getBean(SimpleTransformer.class, action);
+        return context.getBean(SimpleTransformer.class, actions);
     }
 
-    @Override
-    public TransformerFactory withActions(final String... actions) {
-        if(actions.length != 1) {
-            throw new IllegalArgumentException("SimpleTransformerFactory only take 1 action to perform");
-        }
-
-        action = parser.parse(actions[0]);
+    /**
+     * @param actions
+     * @return the tranformer factory for the given json encoded actions.
+     */
+    public TransformerFactory withActions(final String actions) {
+        this.actions = parser.parse(actions);
         return this;
     }
 
-    @Override
-    public TransformerFactory withIndexes(String indexes) {
-        throw new UnsupportedOperationException("Indexes are not supported in SimpleTransformerFactory");
-    }
 }

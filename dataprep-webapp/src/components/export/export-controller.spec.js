@@ -1,51 +1,76 @@
-describe('Dataset playground controller', function() {
+describe('Export controller', function() {
     'use strict';
 
-    var createController, scope, downloaded;
-    var csv = {
-        name: 'my dataset.csv',
-        charset: 'utf-8',
-        content: ''
-    };
+    var scope, createController;
 
-    beforeEach(module('data-prep.playground'));
+    beforeEach(module('data-prep.export'));
 
-    beforeEach(inject(function($rootScope, $controller, ExportService) {
-        //mock
-        downloaded = false;
-        var initExportLink = function(computedCsv) {
-            return {
-                click : function() {
-                    if(computedCsv === csv) {
-                        downloaded = true;
-                    }
-                }
-            };
-        };
-
+    beforeEach(inject(function($rootScope, $controller) {
         scope = $rootScope.$new();
 
-        createController = function() {
-            var ctrl =  $controller('ExportCtrl', {
+        createController = function () {
+            var ctrl = $controller('ExportCtrl', {
                 $scope: scope
             });
-            ctrl.initExportLink = initExportLink;
             return ctrl;
         };
-
-        spyOn(ExportService, 'exportToCSV').and.returnValue(csv);
     }));
 
-    it('should call ExportService, create the download link, and click it to download', inject(function(ExportService) {
-        //given
-        var ctrl = createController();
-        ctrl.separator = '\t';
-
+    it('should init csv separator to semicolon', function() {
         //when
-        ctrl.export();
+        var ctrl = createController();
 
         //then
-        expect(ExportService.exportToCSV).toHaveBeenCalledWith('\t');
-        expect(downloaded).toBe(true);
+        expect(ctrl.csvSeparator).toBe(';');
+    });
+
+    it('should init exportUrl', inject(function(RestURLs) {
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.exportUrl).toBe(RestURLs.exportUrl);
+    }));
+
+    it('should bind preparationId getter to PreparationService', inject(function(PreparationService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.preparationId).toBeFalsy();
+
+        //when
+        PreparationService.currentPreparationId = '48da64513c43a548e678bc99';
+
+        //then
+        expect(ctrl.preparationId).toBe('48da64513c43a548e678bc99');
+    }));
+
+    it('should bind stepId getter to RecipeService', inject(function(RecipeService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.stepId).toBeFalsy();
+
+        //when
+        RecipeService.getRecipe().push({
+            transformation : {
+                stepId: '48da64513c43a548e678bc99'
+            }
+        });
+
+        //then
+        expect(ctrl.stepId).toBe('48da64513c43a548e678bc99');
+    }));
+
+    it('should bind datasetId getter to PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.datasetId).toBeFalsy();
+
+        //when
+        PlaygroundService.currentMetadata = {
+            id: '48da64513c43a548e678bc99'
+        };
+
+        //then
+        expect(ctrl.datasetId).toBe('48da64513c43a548e678bc99');
     }));
 });

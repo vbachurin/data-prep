@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.dataset.*;
-import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
 import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActions;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
@@ -52,8 +51,7 @@ public class DataSetAPI extends APIService {
             LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name,
-                dataSetContent);
+        HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name, dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;
@@ -71,8 +69,7 @@ public class DataSetAPI extends APIService {
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata,
-                columns);
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
@@ -134,28 +131,6 @@ public class DataSetAPI extends APIService {
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(DatasetCertification.class, client, dataSetId);
         command.execute();
-    }
-
-    @RequestMapping(value = "/api/datasets/{id}/{column}/actions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get suggested actions for a data set columns.", notes = "Returns the suggested actions for the given column in the dataset in decreasing order of likeness.")
-    @Timed
-    public void suggestColumnActions(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Data set id to get suggestions from.") String dataSetId,
-            @PathVariable(value = "column") @ApiParam(name = "column", value = "Column name in the dataset. If column doesn't exist, operation returns no content.") String columnName,
-            HttpServletResponse response) {
-        // Get dataset metadata
-        HttpClient client = getClient();
-        HystrixCommand<DataSetMetadata> retrieveMetadata = getCommand(DataSetGetMetadata.class, client, dataSetId);
-        // Asks transformation service for suggested actions for column type and domain
-        HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestColumnActions.class, client, retrieveMetadata, columnName);
-        // Returns actions
-        try {
-            ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
-            outputStream.flush();
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
-        }
     }
 
     @RequestMapping(value = "/api/datasets/{id}/actions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

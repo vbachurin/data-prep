@@ -85,7 +85,6 @@
             self.dataView.beginUpdate();
             self.dataView.setItems(records, 'tdpId');
             self.dataView.endUpdate();
-
         };
 
         /**
@@ -105,14 +104,14 @@
 
         /**
          * @ngdoc method
-         * @name updateRecords
+         * @name updateData
          * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {Object[]} records - the new records
-         * @description Update the data records in the datagrid
+         * @param {Object} data - the new data (columns and records)
+         * @description Update the data in the datagrid
          */
-        self.updateRecords = function (records) {
-            updateDataviewRecords(records);
-            self.data.records = records;
+        self.updateData = function (data) {
+            self.data = data;
+            updateDataviewRecords(data.records);
         };
 
         //------------------------------------------------------------------------------------------------------

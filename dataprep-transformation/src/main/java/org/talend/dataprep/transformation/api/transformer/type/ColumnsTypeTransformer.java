@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -17,20 +18,23 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 /**
- * Columns array Serializer
+ * Transformer that works on RowMetadata.
  */
 @Component
 public class ColumnsTypeTransformer implements TypeTransformer {
 
+    /** The data-prep ready json module. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
+    /**
+     * @see TypeTransformer#process(TransformerConfiguration)
+     */
     @Override
     public void process(final TransformerConfiguration configuration) {
-        final JsonParser parser = configuration.getParser();
+        final JsonParser parser = configuration.getInput();
 
-        final List<Consumer<ColumnMetadata>> columnActions = configuration.getActions(ColumnMetadata.class);
-        final Consumer<ColumnMetadata> actions = columnActions == null ? null : columnActions.get(0);
+        final List<Consumer<RowMetadata>> actions = configuration.getActions(RowMetadata.class);
 
         try {
             final StringWriter content = new StringWriter();
@@ -81,11 +85,27 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                     level--;
                     if (level == 0) {
                         contentGenerator.flush();
-                        final List<ColumnMetadata> columns = getColumnsMetadata(content);
-                        transform(columns, actions);
-                        configuration.getWriter().write(columns);
+
+                        // get the original columns
+                        RowMetadata currentMetadata = getRowMetadata(content);
+
+                        // apply the actions
+                        final Consumer<RowMetadata> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
+                        action.accept(currentMetadata);
+
+                        // if preview is enabled, let's compute the previous row metadata
+                        if (configuration.isPreview()) {
+                            RowMetadata previousMetadata = getRowMetadata(content);
+                            final Consumer<RowMetadata> previousAction = actions.get(0);
+                            previousAction.accept(previousMetadata);
+                            currentMetadata.setPreviousMetadata(previousMetadata);
+                        }
+
+                        // write the result
+                        configuration.getOutput().write(currentMetadata);
                         return;
                     }
+
                 case VALUE_NULL:
                     break;
                 }
@@ -98,22 +118,14 @@ public class ColumnsTypeTransformer implements TypeTransformer {
     }
 
     /**
-     * Apply columns transformations
-     *  @param columns - the columns list
-     * @param action - transformation action
+     * Return the row metadata from the given json string.
+     * 
+     * @param content - the String writer that contains JSON columns metadata.
+     * @throws IOException if an error occurs.
      */
-    // TODO Temporary: actions may transform columns, for now just print them as is
-    private void transform(final List<ColumnMetadata> columns, final Consumer<ColumnMetadata> action) {
-    }
-
-    /**
-     * Convert String to list of ColumnMetadataObject
-     *
-     * @param content - the String writer that contains JSON format array
-     * @throws IOException
-     */
-    private List<ColumnMetadata> getColumnsMetadata(final StringWriter content) throws IOException {
+    private RowMetadata getRowMetadata(final StringWriter content) throws IOException {
         final ObjectReader columnReader = builder.build().reader(ColumnMetadata.class);
-        return columnReader.<ColumnMetadata> readValues(content.toString()).readAll();
+        List<ColumnMetadata> columns = columnReader.<ColumnMetadata> readValues(content.toString()).readAll();
+        return new RowMetadata(columns);
     }
 }

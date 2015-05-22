@@ -61,7 +61,8 @@ public class APIService {
         try {
             return context.getBean(clazz, args);
         } catch (BeansException e) {
-            throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e, TDPExceptionContext.build().put("class", clazz).put("args", args));
+            throw new TDPException(APIErrorCodes.UNABLE_TO_FIND_COMMAND, e, TDPExceptionContext.build().put("class", clazz)
+                    .put("args", args));
         }
     }
 

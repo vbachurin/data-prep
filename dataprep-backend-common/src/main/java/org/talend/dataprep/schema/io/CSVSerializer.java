@@ -36,7 +36,12 @@ public class CSVSerializer implements Serializer {
                     generator.writeStartObject();
                     for (int i = 0; i < columns.size(); i++) {
                         ColumnMetadata columnMetadata = columns.get(i);
-                        generator.writeStringField(columnMetadata.getId(), line[i]);
+                        generator.writeFieldName(columnMetadata.getId());
+                        if (line[i] != null) {
+                            generator.writeString(line[i]);
+                        } else {
+                            generator.writeNull();
+                        }
                     }
                     generator.writeEndObject();
                 }

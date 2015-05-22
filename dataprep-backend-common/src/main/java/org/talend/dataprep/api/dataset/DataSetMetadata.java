@@ -1,8 +1,18 @@
 package org.talend.dataprep.api.dataset;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.talend.dataprep.api.dataset.json.EpochTimeDeserializer;
+import org.talend.dataprep.api.dataset.json.EpochTimeSerializer;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -16,25 +26,57 @@ import org.springframework.data.annotation.Id;
  */
 public class DataSetMetadata {
 
+    /** The dataset id. */
     @Id
-    private final String id;
+    private String id;
 
-    private final RowMetadata rowMetadata;
+    /** Row description. */
+    @JsonIgnore(true)
+    private RowMetadata rowMetadata;
 
+    /** Dataset life cycle status. */
+    @JsonProperty("lifecycle")
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
+    /** Dataset content summary. */
+    @JsonProperty("content")
+    @JsonUnwrapped
     private final DataSetContent content = new DataSetContent();
 
-    private final DataSetGovernance gov = new DataSetGovernance();
+    /** Dataset governance. */
+    @JsonProperty("governance")
+    @JsonUnwrapped
+    private final DataSetGovernance governance = new DataSetGovernance();
 
-    private final String name;
+    /** Dataset name. */
+    @JsonProperty("name")
+    private String name;
 
-    private final String author;
+    /** Dataset author. */
+    @JsonProperty("author")
+    private String author;
 
-    private final long creationDate;
+    @JsonProperty("created")
+    @JsonSerialize(using = EpochTimeSerializer.class)
+    @JsonDeserialize(using = EpochTimeDeserializer.class)
+    private long creationDate;
 
+    /** Sheet number in case of excel source. */
+    @JsonProperty("sheetNumber")
     private int sheetNumber;
 
+    public DataSetMetadata() {
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param id dataset id.
+     * @param name dataset name.
+     * @param author dataset author.
+     * @param creationDate dataset creation date.
+     * @param rowMetadata row metadata.
+     */
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;
         this.name = name;
@@ -43,44 +85,73 @@ public class DataSetMetadata {
         this.rowMetadata = rowMetadata;
     }
 
+    /**
+     * @return the dataset id.
+     */
     public String getId() {
         return id;
     }
-
+    
+    /**
+     * @return the dataset row description.
+     */
+    @JsonIgnore(true)
     public RowMetadata getRow() {
         return rowMetadata;
     }
 
+    /**
+     * @return the dataset lifecycle.
+     */
     public DataSetLifecycle getLifecycle() {
         return lifecycle;
     }
 
+    /**
+     * @return the dataset content summary.
+     */
     public DataSetContent getContent() {
         return content;
     }
 
+    /**
+     * @return the dataset governance.
+     */
     public DataSetGovernance getGovernance() {
-        return this.gov;
+        return this.governance;
     }
 
+    /**
+     * @return the dataset name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return the dataset author.
+     */
     public String getAuthor() {
         return author;
     }
 
+    /**
+     * @return the dataset sheet number in case of excel source.
+     */
     public int getSheetNumber() {
         return sheetNumber;
     }
 
-    public Date getCreationDate() {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
-        calendar.setTimeInMillis(creationDate);
-        return calendar.getTime();
+    /**
+     * @return the dataset creation date.
+     */
+    public long getCreationDate() {
+        return creationDate;
     }
 
+    /**
+     * Dataset builder.
+     */
     public static class Builder {
 
         private String id;
@@ -108,6 +179,8 @@ public class DataSetMetadata {
         private int sheetNumber;
 
         private String formatGuessId;
+
+        private String mediaType;
 
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
@@ -178,6 +251,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder mediaType(String mediaType) {
+            this.mediaType = mediaType;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -202,6 +280,7 @@ public class DataSetMetadata {
             if (formatGuessId != null) {
                 content.setFormatGuessId(formatGuessId);
             }
+            content.setMediaType(mediaType);
             // Lifecycle information
             DataSetLifecycle lifecycle = metadata.getLifecycle();
             lifecycle.contentIndexed(contentAnalyzed);

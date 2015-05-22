@@ -1,6 +1,6 @@
 package org.talend.dataprep.api.service;
 
-import static org.talend.dataprep.api.service.APIService.PREPARATION_GROUP;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.talend.dataprep.api.service.command.error.ErrorList.ServiceType.*;
 
 import java.io.IOException;
@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,7 +45,7 @@ public class CommonAPI extends APIService {
      * 
      * @param response the http response.
      */
-    @RequestMapping(value = "/api/errors", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/errors", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all supported errors.", notes = "Returns the list of all supported errors.")
     @Timed
     public void listErrors(HttpServletResponse response) throws IOException {

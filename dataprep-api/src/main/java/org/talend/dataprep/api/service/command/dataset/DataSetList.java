@@ -15,8 +15,6 @@ import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
-import com.netflix.hystrix.HystrixCommand;
-
 @Component
 @Scope("request")
 public class DataSetList extends DataPrepCommand<InputStream> {

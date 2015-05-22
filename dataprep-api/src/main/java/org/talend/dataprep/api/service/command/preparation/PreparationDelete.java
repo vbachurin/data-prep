@@ -10,8 +10,6 @@ import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 
-import com.netflix.hystrix.HystrixCommand;
-
 @Component
 @Scope("request")
 public class PreparationDelete extends DataPrepCommand<String> {

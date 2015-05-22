@@ -99,17 +99,32 @@
                  * @ngdoc method
                  * @name columnItem
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @param {object} col - the backend column to adapt
-                 * @param {number} index - column index
-                 * @description [PRIVATE] Adapt backend column to slick column. The name with div id depending on index is important. It is used to insert column header dropdown and quality bar
+                 * @param {object} col The backend column to adapt
+                 * @param {number} index Column index
+                 * @param {boolean} preview Preview flag
+                 * @description [PRIVATE] Adapt backend column to slick column. The name with div id depending on index
+                 * is important. It is used to insert column header dropdown and quality bar.
+                 * For preview, we inject directly a fake header
                  * @returns {object} - the adapted column item
                  */
-                var columnItem = function (col, index) {
-                    var divId = 'datagrid-header-' + index;
+                var columnItem = function (col, index, preview) {
+                    var template;
+                    if(preview) {
+                        template = '<div class="grid-header">' +
+                            '<div class="grid-header-title dropdown-button ng-binding">' + col.id + '</div>' +
+                            '<div class="grid-header-type ng-binding">' + col.type + '</div>' +
+                            '</div>' +
+                            '<div class="quality-bar"><div  class="record-ok" style="width: 100%;"></div></div>';
+                    }
+                    else {
+                        var divId = 'datagrid-header-' + index;
+                        template = '<div id="' + divId + '"></div>';
+                    }
+
                     var colItem = {
                         id: col.id,
                         field: col.id,
-                        name: '<div id="' + divId + '"></div>',
+                        name: template,
                         formatter: formatter
                     };
 
@@ -120,20 +135,36 @@
                  * @ngdoc method
                  * @name insertDatasetHeaders
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Insert the dataset column headers (dropdown actions and quality bars).
+                 * @description [PRIVATE] Create and insert the dataset column headers (dropdown actions and quality bars).
                  The columns are from {@link data-prep.services.playground.service:DatagridService DatagridService}
                  */
                 var insertDatasetHeaders = function () {
                     _.forEach(DatagridService.data.columns, function (col, index) {
-                        var headerScope = scope.$new(true);
-                        headerScope.columns = col;
-                        headerScope.metadata = DatagridService.metadata;
-                        var headerElement = angular.element('<datagrid-header column="columns" metadata="metadata"></datagrid-header>');
-                        $compile(headerElement)(headerScope);
+                        var header = createHeader(col);
+                        iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
 
-                        colHeaderElements.push(headerElement);
-                        angular.element('#datagrid-header-' + index).append(headerElement);
+                        colHeaderElements.push(header);
                     });
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name createHeader
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Create a column header object containing element, scope and column
+                 */
+                var createHeader = function(col) {
+                    var headerScope = scope.$new(true);
+                    headerScope.columns = col;
+                    headerScope.metadata = DatagridService.metadata;
+                    var headerElement = angular.element('<datagrid-header column="columns" metadata="metadata"></datagrid-header>');
+                    $compile(headerElement)(headerScope);
+
+                    return {
+                        element : headerElement,
+                        scope : headerScope,
+                        column: col
+                    };
                 };
 
                 /**
@@ -143,8 +174,9 @@
                  * @description [PRIVATE] Remove header elements.
                  */
                 var clearHeaders = function () {
-                    _.forEach(colHeaderElements, function (element) {
-                        element.remove();
+                    _.forEach(colHeaderElements, function (header) {
+                        header.scope.$destroy();
+                        header.element.remove();
                     });
                     colHeaderElements = [];
                 };
@@ -344,21 +376,51 @@
                  * @ngdoc method
                  * @name updateColumns
                  * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @param {object[]} dataCols - columns details
-                 * @description [PRIVATE] Clear and update columns headers
-                 This is needed when user reorder columns, because the divs are removed and added in the DOM. So the
-                 nested elements are not in the angular context anymore. By adding them in the angular context correct
-                 this behavior.
+                 * @param {object[]} dataCols Columns details
+                 * @param {boolean} preview Preview flag
+                 * @description [PRIVATE] Two modes :
+                 * - Preview : we save actual headers and simulate fake headers with the new preview columns
+                 * - Classic : we map each column to a header. This header can be a reused header if the column was
+                 * the same as before, or a new created one otherwise.
                  */
-                var updateColumns = function (dataCols) {
-                    clearHeaders();
+                var updateColumns = function (dataCols, preview) {
+                    //save current headers elements
+                    _.forEach(colHeaderElements, function(header) {
+                        header.element.detach();
+                    });
 
+                    //create and set new SlickGrid columns
                     var columns = _.map(dataCols, function (col, index) {
-                        return columnItem(col, index);
+                        return columnItem(col, index, preview);
                     });
                     grid.setColumns(columns);
 
-                    insertDatasetHeaders();
+                    //insert reused or created datagrid headers
+                    if(!preview) {
+                        //map every column to a header
+                        var finalColHeaderElements = _.map(dataCols, function (col, index) {
+                            //find saved header corresponding to column
+                            var header = _.find(colHeaderElements, function (colHeader) {
+                                return colHeader.column === col;
+                            });
+                            //or create a new one if no corresponding one
+                            if (!header) {
+                                header = createHeader(col);
+                            }
+
+                            //attach header element to SlickGrid column
+                            iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
+                            return header;
+                        });
+
+                        //destroy the unused headers
+                        var diff = _.difference(colHeaderElements, finalColHeaderElements);
+                        _.forEach(diff, function (header) {
+                            header.scope.$destroy();
+                            header.element.remove();
+                        });
+                        colHeaderElements = finalColHeaderElements;
+                    }
                 };
 
                 /**
