@@ -38,7 +38,8 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
     @Override
     public boolean hasNext() {
         try {
-            return !parser.isClosed() && parser.nextToken() != JsonToken.END_ARRAY;
+            final JsonToken nextToken = parser.nextToken();
+            return !parser.isClosed() && nextToken != JsonToken.END_ARRAY;
         } catch (IOException e) {
             LOGGER.debug("Unable to check if a next record exists.", e);
             return false;
@@ -51,17 +52,22 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
             String currentFieldName = StringUtils.EMPTY;
             JsonToken nextToken;
             while ((nextToken = parser.nextToken()) != JsonToken.END_OBJECT) {
+                if (nextToken == null) {
+                    // End of input, return the current row.
+                    LOGGER.warn("Unexpected end of input for row {}.", row.values());
+                    return row;
+                }
                 switch (nextToken) {
-                case START_OBJECT:
-                    row.clear();
-                    break;
-                // DataSetRow fields
-                case FIELD_NAME:
-                    currentFieldName = parser.getText();
-                    break;
-                case VALUE_STRING:
-                    row.set(currentFieldName, parser.getText());
-                    break;
+                    case START_OBJECT:
+                        row.clear();
+                        break;
+                    // DataSetRow fields
+                    case FIELD_NAME:
+                        currentFieldName = parser.getText();
+                        break;
+                    case VALUE_STRING:
+                        row.set(currentFieldName, parser.getText());
+                        break;
                 }
             }
             return row;
