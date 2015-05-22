@@ -10,6 +10,18 @@ import java.util.TimeZone;
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.talend.dataprep.api.dataset.json.EpochTimeDeserializer;
+import org.talend.dataprep.api.dataset.json.EpochTimeSerializer;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -25,40 +37,57 @@ public class DataSetMetadata {
 
     /** The dataset id. */
     @Id
-    private final String id;
+    private String id;
 
     /** Row description. */
-    private final RowMetadata rowMetadata;
+    @JsonIgnore(true)
+    private RowMetadata rowMetadata;
 
     /** Dataset life cycle status. */
+    @JsonProperty("lifecycle")
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
-    /** Dataset content summary. */
+    @JsonProperty("content")
+    @JsonUnwrapped
     private DataSetContent content = new DataSetContent();
 
     /** Dataset governance. */
-    private final DataSetGovernance gov = new DataSetGovernance();
+    @JsonProperty("governance")
+    @JsonUnwrapped
+    private final DataSetGovernance governance = new DataSetGovernance();
 
     /** Dataset name. */
-    private final String name;
+    @JsonProperty("name")
+    private String name;
 
     /** Dataset author. */
-    private final String author;
+    @JsonProperty("author")
+    private String author;
 
-    /** Dataset creation date. */
-    private final long creationDate;
+    @JsonProperty("created")
+    @JsonSerialize(using = EpochTimeSerializer.class)
+    @JsonDeserialize(using = EpochTimeDeserializer.class)
+    private long creationDate;
 
+    /** Sheet number in case of excel source. */
+    @JsonProperty("sheetName")
     private String sheetName;
 
     /**
      * if <code>true</code> this dataset is still a draft as we need more informations from the user
      */
+    @JsonProperty("draft")
     private boolean draft = false;
 
     /**
      * available only when draft is <code>true</code> i.e until some informations has been confirmed by the user
      */
+    @JsonProperty("schemaParserResult")
     private SchemaParserResult schemaParserResult;
+
+    public DataSetMetadata() {
+        // no op
+    }
 
     /**
      * Constructor.
@@ -83,10 +112,11 @@ public class DataSetMetadata {
     public String getId() {
         return id;
     }
-
+    
     /**
      * @return the dataset row description.
      */
+    @JsonIgnore(true)
     public RowMetadata getRow() {
         return rowMetadata;
     }
@@ -115,7 +145,7 @@ public class DataSetMetadata {
      * @return the dataset governance.
      */
     public DataSetGovernance getGovernance() {
-        return this.gov;
+        return this.governance;
     }
 
     /**
@@ -143,10 +173,8 @@ public class DataSetMetadata {
     /**
      * @return the dataset creation date.
      */
-    public Date getCreationDate() {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
-        calendar.setTimeInMillis(creationDate);
-        return calendar.getTime();
+    public long getCreationDate() {
+        return creationDate;
     }
 
     public boolean isDraft() {
@@ -197,6 +225,8 @@ public class DataSetMetadata {
         private boolean draft = true;
 
         private String formatGuessId;
+
+        private String mediaType;
 
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
@@ -272,6 +302,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder mediaType(String mediaType) {
+            this.mediaType = mediaType;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -298,6 +333,7 @@ public class DataSetMetadata {
             if (formatGuessId != null) {
                 content.setFormatGuessId(formatGuessId);
             }
+            content.setMediaType(mediaType);
             // Lifecycle information
             DataSetLifecycle lifecycle = metadata.getLifecycle();
             lifecycle.contentIndexed(contentAnalyzed);

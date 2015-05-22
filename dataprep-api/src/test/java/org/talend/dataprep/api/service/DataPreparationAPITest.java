@@ -7,7 +7,6 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -115,7 +114,7 @@ public class DataPreparationAPITest {
         final String transformed = given().contentType(ContentType.JSON).body("").when().post("/api/transform/" + dataSetId).asString();
 
         //then
-        assertEquals(expectedContent, transformed);
+        assertThat(expectedContent, sameJSONAs(transformed));
     }
 
     @Test

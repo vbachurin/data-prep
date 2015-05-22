@@ -5,14 +5,18 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 public class SchemaParserResult {
 
+    @JsonProperty("draft")
     private boolean draft;
 
+    @JsonProperty("columnMetadatas")
     private SortedMap<String, List<ColumnMetadata>> columnMetadatas;
 
+    @JsonProperty("sheetName")
     private String sheetName;
 
 

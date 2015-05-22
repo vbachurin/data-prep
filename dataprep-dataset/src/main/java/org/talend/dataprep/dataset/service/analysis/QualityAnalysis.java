@@ -2,6 +2,7 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -11,28 +12,26 @@ import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.Quality;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.schema.Serializer;
 import org.talend.datascience.statistics.StatisticsClientJson;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Component
 public class QualityAnalysis {
@@ -51,13 +50,16 @@ public class QualityAnalysis {
     @Autowired
     SparkContext context;
 
+    @Autowired
+    Jackson2ObjectMapperBuilder builder;
+
     @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
     public void analyzeQuality(Message message) {
         try {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
             DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
             DataSetMetadata metadata = repository.get(dataSetId);
-            try {
+            try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 datasetLock.lock();
                 StatisticsClientJson statisticsClient = new StatisticsClientJson(true, context);
                 statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
@@ -68,12 +70,12 @@ public class QualityAnalysis {
                     }
 
 
-                    // Create a content with the expected format for the StatisticsClientJson class
-                    final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), factory);
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.registerModule(module);
+                    DataSet dataSet = new DataSet();
+                    dataSet.setMetadata(metadata);
+                    dataSet.setRecords(stream);
+
                     final StringWriter content = new StringWriter();
-                    mapper.writer().writeValue(content, metadata);
+                    builder.build().writer().writeValue(content, dataSet);
                     // Build schema for the content (JSON format expected by statistics library).
                     StringWriter schema = new StringWriter();
                     JsonGenerator generator = new JsonFactory().createGenerator(schema);
@@ -113,7 +115,7 @@ public class QualityAnalysis {
                     String jsonResult = statisticsClient.doStatisticsInMemory(content.toString(), topKfreqTable, binsOrBuckets);
                     LOGGER.debug("Quality results: {}", jsonResult);
                     // Use result from quality analysis
-                    final Iterator<JsonNode> columns = mapper.readTree(jsonResult).get("column").elements(); //$NON-NLS-1$
+                    final Iterator<JsonNode> columns = builder.build().readTree(jsonResult).get("column").elements(); //$NON-NLS-1$
                     final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
                     for (; columns.hasNext() && schemaColumns.hasNext(); ) {
                         final JsonNode column = columns.next();

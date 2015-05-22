@@ -1,0 +1,41 @@
+package org.talend.dataprep.exception;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ErrorService {
+
+    /**
+     * This operation is called by Spring when unexpected (and Spring level) exceptions occur. This operation
+     * ensure enough is passed to caller for diagnostic.
+     *
+     * @param request Current request from user.
+     * @param response Current response written to user.
+     * @return A map containing more detailed information about the error (in JSON format).
+     */
+    @RequestMapping(value="/error", produces= APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> handle(final HttpServletRequest request, final HttpServletResponse response) {
+        final int status = Integer.parseInt(request.getAttribute("javax.servlet.error.status_code").toString());
+        final Object message = request.getAttribute("javax.servlet.error.message");
+
+        final Map<String, Object> body = new HashMap<>();
+        body.put("status", status);
+        body.put("reason", message);
+
+        response.setStatus(status);
+
+        return body;
+    }
+
+}
