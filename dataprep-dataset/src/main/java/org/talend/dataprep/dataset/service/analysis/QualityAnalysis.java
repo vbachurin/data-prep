@@ -1,14 +1,16 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import java.io.StringWriter;
+import static java.util.stream.StreamSupport.stream;
+
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +19,20 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.datascience.statistics.StatisticsClientJson;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.quality.ValueQuality;
+import org.talend.datascience.common.inference.quality.ValueQualityAnalyzer;
+import org.talend.datascience.common.inference.type.DataType;
 
 @Component
 public class QualityAnalysis {
@@ -44,9 +49,6 @@ public class QualityAnalysis {
     ApplicationContext applicationContext;
 
     @Autowired
-    SparkContext context;
-
-    @Autowired
     Jackson2ObjectMapperBuilder builder;
 
     @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
@@ -58,84 +60,67 @@ public class QualityAnalysis {
             try {
                 DataSetMetadata metadata = repository.get(dataSetId);
                 try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                    StatisticsClientJson statisticsClient = new StatisticsClientJson(true, context);
-                    statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
                     if (metadata != null) {
                         if (!metadata.getLifecycle().schemaAnalyzed()) {
                             LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
                             return; // no acknowledge to allow re-poll.
                         }
-                        // Create a content with the expected format for the StatisticsClientJson class
-                        DataSet dataSet = new DataSet();
-                        dataSet.setMetadata(metadata);
-                        dataSet.setRecords(stream);
-                        final StringWriter content = new StringWriter();
-                        builder.build().writer().writeValue(content, dataSet);
-                        // Build schema for the content (JSON format expected by statistics library).
-                        StringWriter schema = new StringWriter();
-                        JsonGenerator generator = new JsonFactory().createGenerator(schema);
-                        generator.writeStartObject();
-                        {
-                            generator.writeFieldName("column"); //$NON-NLS-1$
-                            generator.writeStartArray();
-                            {
-                                for (ColumnMetadata column : metadata.getRow().getColumns()) {
-                                    generator.writeStartObject();
-                                    {
-                                        generator.writeStringField("name", StringUtils.EMPTY); //$NON-NLS-1$
-                                        generator.writeStringField("id", StringUtils.EMPTY); //$NON-NLS-1$
-                                        generator.writeStringField("type", column.getType()); //$NON-NLS-1$
-                                        generator.writeStringField("suggested type", column.getType()); //$NON-NLS-1$
-                                        // Types
-                                        generator.writeArrayFieldStart("types"); //$NON-NLS-1$
-                                        generator.writeStartObject();
-                                        {
-                                            generator.writeStringField("name", column.getType()); //$NON-NLS-1$
-                                            generator.writeNumberField("occurrences", metadata.getContent().getNbRecords());
-                                        }
-                                        generator.writeEndObject();
-                                        generator.writeEndArray();
-                                    }
-                                    generator.writeEndObject();
-                                }
+                        // Compute valid / invalid / empty count, need data types for analyzer first
+                        final List<ColumnMetadata> columns = metadata.getRow().getColumns();
+                        DataType.Type[] types = new DataType.Type[columns.size()];
+                        for (int i = 0; i < columns.size(); i++) {
+                            switch (Type.get(columns.get(i).getType())) {
+                                case ANY:
+                                case STRING:
+                                    types[i] = DataType.Type.STRING;
+                                    break;
+                                case NUMERIC:
+                                    types[i] = DataType.Type.INTEGER;
+                                    break;
+                                case INTEGER:
+                                    types[i] = DataType.Type.INTEGER;
+                                    break;
+                                case DOUBLE:
+                                case FLOAT:
+                                    types[i] = DataType.Type.DOUBLE;
+                                    break;
+                                case BOOLEAN:
+                                    types[i] = DataType.Type.BOOLEAN;
+                                    break;
+                                case DATE:
+                                    types[i] = DataType.Type.DATE;
+                                    break;
                             }
-                            generator.writeEndArray();
                         }
-                        generator.writeEndObject();
-                        generator.flush();
-                        // Compute statistics
-                        int topKfreqTable = 5;
-                        String binsOrBuckets = "2"; //$NON-NLS-1$
-                        statisticsClient.setSchema(schema.toString());
-                        String jsonResult = statisticsClient.doStatisticsInMemory(content.toString(), topKfreqTable,
-                                binsOrBuckets);
-                        LOGGER.debug("Quality results: {}", jsonResult);
-                        // Use result from quality analysis
-                        final Iterator<JsonNode> columns = builder.build().readTree(jsonResult).get("column").elements(); //$NON-NLS-1$
-                        final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
-                        for (; columns.hasNext() && schemaColumns.hasNext();) {
-                            final JsonNode column = columns.next();
-                            final ColumnMetadata schemaColumn = schemaColumns.next();
-                            // Get the statistics from the returned JSON
-                            final JsonNode statistics = column.get("statistics"); //$NON-NLS-1$
-                            final int valid = statistics.get("valid").asInt();
-                            final int invalid = statistics.get("invalid").asInt();
-                            final int empty = statistics.get("empty").asInt();
-                            // Set it back to the data prep beans
-                            final Quality quality = schemaColumn.getQuality();
-                            quality.setValid(valid);
-                            quality.setInvalid(invalid);
-                            quality.setEmpty(empty);
-                            // Keeps the statistics as returned by statistics library.
-                            schemaColumn.setStatistics(statistics.toString());
+                        // Run analysis
+                        Analyzer<ValueQuality> analyzer = new ValueQualityAnalyzer(types);
+                        stream.forEach(row -> {
+                            final Map<String, Object> rowValues = row.values();
+                            final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                                    .map(String::valueOf) //
+                                    .collect(Collectors.<String>toList());
+                            analyzer.analyze(strings.toArray(new String[strings.size()]));
+                        });
+                        LOGGER.info("Analyzing quality of dataset #{}...", dataSetId);
+                        // Determine content size
+                        final List<ValueQuality> analyzerResult = analyzer.getResult();
+                        final Iterator<ColumnMetadata> iterator = metadata.getRow().getColumns().iterator();
+                        for (ValueQuality valueQuality : analyzerResult) {
+                            if (!iterator.hasNext()) {
+                                LOGGER.warn("More quality information than number of columns in data set #{}.", dataSetId);
+                                break;
+                            }
+                            final Quality quality = iterator.next().getQuality();
+                            quality.setEmpty((int) valueQuality.getEmptyCount());
+                            quality.setValid((int) valueQuality.getValidCount());
+                            quality.setInvalid((int) valueQuality.getInvalidCount());
+                            metadata.getContent().setNbRecords((int) valueQuality.getCount());
                         }
-                        if (columns.hasNext() || schemaColumns.hasNext()) {
-                            // Awkward situation: analysis code and parsed content information did not find same number
-                            // of columns
-                            LOGGER.warn(
-                                    "Quality analysis and parsed columns for #{} do not yield same number of columns (content parsed: {} / analysis: {}).",
-                                    dataSetId, schemaColumns.hasNext(), columns.hasNext());
+                        // If there are columns remaining, warn for missing information
+                        while (iterator.hasNext()) {
+                            LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(), dataSetId);
                         }
+                        // ... all quality is now analyzed, mark it so.
                         metadata.getLifecycle().qualityAnalyzed(true);
                         repository.add(metadata);
                     } else {
