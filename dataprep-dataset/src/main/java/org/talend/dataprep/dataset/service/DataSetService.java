@@ -7,9 +7,11 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,7 +25,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +35,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -45,7 +47,10 @@ import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.schema.DraftValidator;
 import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.SchemaParserResult;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -82,6 +87,14 @@ public class DataSetService {
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
+
+    private ObjectMapper objectMapper;
+
+    @PostConstruct
+    public void initialize(){
+        // to ease our life simply ignore unknown properties
+        this.objectMapper = builder.build().disable( DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES );
+    }
 
     private static void queueEvents(String id, JmsTemplate template) {
         String[] destinations = { Destinations.FORMAT_ANALYSIS, Destinations.CONTENT_ANALYSIS };
@@ -261,11 +274,22 @@ public class DataSetService {
             }
 
             String theSheetName = dataSetMetadata.getSheetName();
-            List<ColumnMetadata> columnMetadatas =
-                dataSetMetadata.getSchemaParserResult().getSheetContents().stream().filter(sheetContent -> {
-                    return theSheetName.equals(sheetContent.getName());
-                }).findFirst().get().getColumnMetadatas();
 
+            Optional<SchemaParserResult.SheetContent> sheetContentFound = dataSetMetadata.getSchemaParserResult().getSheetContents().stream().filter(sheetContent -> {
+                return theSheetName.equals(sheetContent.getName());
+            }).findFirst();
+
+            if (!sheetContentFound.isPresent()){
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                return DataSet.empty(); // No sheet found, returns empty content.                
+            }
+
+            List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
+
+            if (dataSetMetadata.getRow()==null){
+                dataSetMetadata.setRowMetadata( new RowMetadata(  ) );
+            }
+            
             dataSetMetadata.getRow().setColumns( columnMetadatas );
         } else {
             LOG.warn( "dataset#{} has draft status but any SchemaParserResult" );
@@ -375,7 +399,7 @@ public class DataSetService {
      * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
      *
      * @param dataSetId The id of data set to be updated.
-     * @param dataSet The new content for the data set. If empty, existing content will <b>not</b> be replaced.
+     * @param dataSetContent The new content for the data set. If empty, existing content will <b>not</b> be replaced.
      * For delete operation, look at {@link #delete(String)}.
      */
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -384,12 +408,12 @@ public class DataSetService {
     @VolumeMetered
     public void updateDataSet(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @ApiParam(value = "content") @RequestBody DataSet dataSet) {
+            @ApiParam(value = "content") InputStream dataSetContent ) {
 
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
 
-            DataSetMetadata dataSetMetadata = dataSet.getMetadata();
+            DataSetMetadata dataSetMetadata = objectMapper.readValue( dataSetContent, DataSetMetadata.class );
 
             lock.lock();
 
@@ -398,14 +422,23 @@ public class DataSetService {
             // we retry informations we do not update
             DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
 
-            List<ColumnMetadata> columnMetadatas = read.getSchemaParserResult().getSheetContents().stream().filter(sheetContent -> {
-                return dataSetMetadata.getSheetName().equals( sheetContent.getName() );
-            }).findFirst().get().getColumnMetadatas();
+            Optional<SchemaParserResult.SheetContent> sheetContentFound = read.getSchemaParserResult().getSheetContents()
+                    .stream().filter(sheetContent -> {
+                        return dataSetMetadata.getSheetName().equals(sheetContent.getName());
+                    }).findFirst();
 
-            dataSetMetadata.getRow().setColumns(columnMetadatas);
-            dataSetMetadata.setContent(read.getContent());
+            if (sheetContentFound.isPresent()) {
+                List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
 
-            dataSetMetadata.setSchemaParserResult(null);
+                if (read.getRow() == null) {
+                    read.setRowMetadata(new RowMetadata());
+                }
+                read.getRow().setColumns(columnMetadatas);
+            }
+
+            read.setSheetName(dataSetMetadata.getSheetName());
+
+            read.setSchemaParserResult(null);
 
             FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
 
@@ -419,9 +452,9 @@ public class DataSetService {
                 return;
             }
 
-            dataSetMetadata.setDraft(false);
+            read.setDraft(false);
 
-            dataSetMetadataRepository.add(dataSetMetadata);
+            dataSetMetadataRepository.add(read);
 
             // all good mate!! so send that to jms
             // Asks for a in depth schema analysis (for column type information).

@@ -49,6 +49,11 @@ public class SchemaParserResult {
         @JsonProperty("columnMetadatas")
         private List<ColumnMetadata> columnMetadatas;
 
+        public SheetContent()
+        {
+            // no op
+        }
+
         public SheetContent(String name, List<ColumnMetadata> columnMetadatas) {
             this.name = name;
             this.columnMetadatas = columnMetadatas;
@@ -60,6 +65,16 @@ public class SchemaParserResult {
 
         public List<ColumnMetadata> getColumnMetadatas() {
             return columnMetadatas;
+        }
+
+        public void setName( String name )
+        {
+            this.name = name;
+        }
+
+        public void setColumnMetadatas( List<ColumnMetadata> columnMetadatas )
+        {
+            this.columnMetadatas = columnMetadatas;
         }
     }
 

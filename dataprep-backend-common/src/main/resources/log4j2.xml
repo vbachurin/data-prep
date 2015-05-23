@@ -20,9 +20,9 @@
     <loggers>
         <!-- http client logging -->
         <!-- enable headers etc... logging -->
-        <!-- logger name="org.apache.http" level="debug"/ -->
+        <!--logger name="org.apache.http" level="debug"/-->
         <!-- disable raw content logging which is verbose for binary upload -->
-        <!-- logger name="org.apache.http.wire" level="error"/ -->
+        <!--logger name="org.apache.http.wire" level="error"/-->
         <logger name="org.springframework" level="info"/>
         <root level="info" includeLocation="true">
             <appender-ref ref="console"/>

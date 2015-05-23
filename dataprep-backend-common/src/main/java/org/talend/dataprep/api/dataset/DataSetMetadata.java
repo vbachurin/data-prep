@@ -1,21 +1,13 @@
 package org.talend.dataprep.api.dataset;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-
-import org.springframework.data.annotation.Id;
-import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.schema.SchemaParserResult;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.json.EpochTimeDeserializer;
 import org.talend.dataprep.api.dataset.json.EpochTimeSerializer;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -119,6 +111,10 @@ public class DataSetMetadata {
     @JsonIgnore(true)
     public RowMetadata getRow() {
         return rowMetadata;
+    }
+
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
     }
 
     /**
