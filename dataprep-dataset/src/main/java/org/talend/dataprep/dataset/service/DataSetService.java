@@ -144,39 +144,45 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        if (dataSetMetadata == null) {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            return DataSet.empty(); // No data set, returns empty content.
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        lock.lock();
+        try {
+            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+            if (dataSetMetadata == null) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                return DataSet.empty(); // No data set, returns empty content.
+            }
+            if (dataSetMetadata.getLifecycle().error()) {
+                LOG.error("Unable to serve {}, data set met unrecoverable error.", dataSetId);
+                // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
+                        dataSetId));
+            }
+            if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
+                // Schema is not yet ready (but eventually will, returns 202 to indicate this).
+                LOG.debug("Data set #{} not yet ready for service.", dataSetId);
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                return DataSet.empty();
+            }
+            if (!dataSetMetadata.getLifecycle().qualityAnalyzed()) {
+                // Quality is not yet ready (but eventually will, returns 202 to indicate this).
+                LOG.debug("Column information #{} not yet ready for service (missing quality information).", dataSetId);
+                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+                return DataSet.empty();
+            }
+            // Build the result
+            DataSet dataSet = new DataSet();
+            if (metadata) {
+                dataSet.setMetadata(dataSetMetadata);
+            }
+            if (columns) {
+                dataSet.setColumns(dataSetMetadata.getRow().getColumns());
+            }
+            dataSet.setRecords(contentStore.stream(dataSetMetadata));
+            return dataSet;
+        } finally {
+            lock.unlock();
         }
-        if (dataSetMetadata.getLifecycle().error()) {
-            LOG.error("Unable to serve {}, data set met unrecoverable error.", dataSetId);
-            // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
-                    dataSetId));
-        }
-        if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
-            // Schema is not yet ready (but eventually will, returns 202 to indicate this).
-            LOG.debug("Data set #{} not yet ready for service.", dataSetId);
-            response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return DataSet.empty();
-        }
-        if (!dataSetMetadata.getLifecycle().qualityAnalyzed()) {
-            // Quality is not yet ready (but eventually will, returns 202 to indicate this).
-            LOG.debug("Column information #{} not yet ready for service (missing quality information).", dataSetId);
-            response.setStatus(HttpServletResponse.SC_ACCEPTED);
-            return DataSet.empty();
-        }
-        // Build the result
-        DataSet dataSet = new DataSet();
-        if (metadata) {
-            dataSet.setMetadata(dataSetMetadata);
-        }
-        if (columns) {
-            dataSet.setColumns(dataSetMetadata.getRow().getColumns());
-        }
-        dataSet.setRecords(contentStore.stream(dataSetMetadata));
-        return dataSet;
     }
 
     /**
