@@ -93,6 +93,7 @@ public class QualityAnalysis {
                             }
                         }
                         // Run analysis
+                        LOGGER.info("Analyzing quality of dataset #{}...", dataSetId);
                         Analyzer<ValueQuality> analyzer = new ValueQualityAnalyzer(types);
                         stream.forEach(row -> {
                             final Map<String, Object> rowValues = row.values();
@@ -101,7 +102,6 @@ public class QualityAnalysis {
                                     .collect(Collectors.<String>toList());
                             analyzer.analyze(strings.toArray(new String[strings.size()]));
                         });
-                        LOGGER.info("Analyzing quality of dataset #{}...", dataSetId);
                         // Determine content size
                         final List<ValueQuality> analyzerResult = analyzer.getResult();
                         final Iterator<ColumnMetadata> iterator = metadata.getRow().getColumns().iterator();
@@ -123,6 +123,7 @@ public class QualityAnalysis {
                         // ... all quality is now analyzed, mark it so.
                         metadata.getLifecycle().qualityAnalyzed(true);
                         repository.add(metadata);
+                        LOGGER.info("Analyzed quality of dataset #{}.", dataSetId);
                     } else {
                         LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                     }

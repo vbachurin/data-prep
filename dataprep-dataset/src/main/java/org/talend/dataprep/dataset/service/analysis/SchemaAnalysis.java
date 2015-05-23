@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +51,6 @@ public class SchemaAnalysis {
     ApplicationContext applicationContext;
 
     @Autowired
-    SparkContext sparkContext;
-
-    @Autowired
     Jackson2ObjectMapperBuilder builder;
 
     @JmsListener(destination = Destinations.SCHEMA_ANALYSIS)
@@ -86,7 +82,9 @@ public class SchemaAnalysis {
                             columnTypes.forEach(columnResult -> {
                                 final Type type = Type.get(columnResult.getSuggestedType().name());
                                 if (columns.hasNext()) {
-                                    columns.next().setType(type.getName());
+                                    final ColumnMetadata nextColumn = columns.next();
+                                    LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
+                                    nextColumn.setType(type.getName());
                                 } else {
                                     LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
                                 }
