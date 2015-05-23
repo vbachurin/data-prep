@@ -24,13 +24,15 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.datascience.common.inference.type.ColumnTypeBean;
-import org.talend.datascience.common.inference.type.DataTypeInferExecutor;
+import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.type.DataType;
+import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
 
 @Component
 public class SchemaAnalysis {
@@ -66,42 +68,29 @@ public class SchemaAnalysis {
                 try {
                     if (metadata != null) {
                         // Schema analysis
+                        final List<DataType> columnTypes;
                         try (Stream<DataSetRow> stream = store.stream(metadata)) {
                             LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                             // Determine schema for the content (on the 20 first rows).
-                            DataTypeInferExecutor executor = new DataTypeInferExecutor();
+                            Analyzer<DataType> analyzer = new DataTypeAnalyzer();
                             stream.limit(20).forEach(row -> {
                                 final Map<String, Object> rowValues = row.values();
                                 final List<String> strings = stream(rowValues.values().spliterator(), false) //
                                         .map(String::valueOf) //
                                         .collect(Collectors.<String>toList());
-                                executor.handle(strings.toArray(new String[strings.size()]));
+                                analyzer.analyze(strings.toArray(new String[strings.size()]));
                             });
                             // Find the best suitable type
-                            final List<ColumnTypeBean> results = executor.getResults();
+                            columnTypes = analyzer.getResult();
                             final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
-                            results.forEach(columnResult -> {
-                                long max = 0;
-                                String electedType = "N/A"; //$NON-NLS-1$
-                                final Map<String, Long> countMap = columnResult.getTypeToCountMap();
-                                for (Map.Entry<String, Long> entry : countMap.entrySet()) {
-                                    if (entry.getValue() > max) {
-                                        max = entry.getValue();
-                                        electedType = entry.getKey();
-                                    }
-                                }
+                            columnTypes.forEach(columnResult -> {
+                                final Type type = Type.get(columnResult.getSuggestedType().name());
                                 if (columns.hasNext()) {
-                                    columns.next().setType(electedType);
+                                    columns.next().setType(type.getName());
                                 } else {
-                                    LOGGER.error("Unable to set type '" + electedType + "' to next column (no more column in dataset).");
+                                    LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
                                 }
                             });
-                        }
-                        // Count lines
-                        try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                            LOGGER.info("Analyzing content size in dataset #{}...", dataSetId);
-                            // Determine content size
-                            metadata.getContent().setNbRecords((int) stream.count());
                         }
                         LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                         metadata.getLifecycle().schemaAnalyzed(true);
