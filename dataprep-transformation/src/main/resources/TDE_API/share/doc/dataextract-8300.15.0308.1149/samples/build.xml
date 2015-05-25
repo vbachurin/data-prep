@@ -1,0 +1,66 @@
+<!--
+  Build and Run the Data Extract API Java sample.
+ -->
+<project name="DataExtract Sample Code" default="run">
+
+  <property name="local_lib_dir" value="../../../../lib64/dataextract" />
+  <property name="local_jar_dir" value="${local_lib_dir}/Java" />
+  
+  <!-- Clean build, run artifacts -->
+  <target name="clean">
+    <delete dir="build" />
+    <delete file="order-java.tde" />
+    <delete file="DataExtract.log" />
+  </target>
+
+  <!-- Build the sample -->
+  <target name="compile">
+    <mkdir dir="build/classes" />
+    <javac 
+        srcdir="."
+        destdir="build/classes"
+        classpath="${local_jar_dir}/dataextract.jar:${local_jar_dir}/jna.jar"
+        source="1.7" target="1.7"
+        includeantruntime="false" />
+  </target>
+
+  <!-- Run the sample program -->
+  <target name="run" depends="compile,setRunProps">
+    <sequential>
+      <java
+          classname="com.tableausoftware.demos.MakeOrder"
+          classpath="build/classes:${local_jar_dir}/dataextract.jar:${local_jar_dir}/jna.jar"
+          fork="true">
+        <env key="${libPathKey}" path="${libPathValue}" />
+      </java>
+      <java
+          classname="com.tableausoftware.demos.MakeOrder"
+          classpath="build/classes:${local_jar_dir}/dataextract.jar:${local_jar_dir}/jna.jar"
+          fork="true">
+        <env key="${libPathKey}" path="${libPathValue}" />
+      </java>
+    </sequential>
+  </target>
+
+  <!-- Make sure the JVM can find the Data Extract library. -->
+  <target name="setRunProps" depends="setRunPropsLinux,setRunPropsWindows" />
+
+  <condition property="onLinux">
+    <os family="unix" />
+  </condition>
+
+  <condition property="onWindows">
+    <os family="windows" />
+  </condition>
+
+  <target name="setRunPropsLinux" if="onLinux">
+    <property name="libPathKey" value="LD_LIBRARY_PATH" />
+    <property name="libPathValue" value="${env.LD_LIBRARY_PATH}:${local_lib_dir}" />
+  </target>
+
+  <target name="setRunPropsWindows" if="onWindows">
+    <property name="libPathKey" value="PATH" />
+    <property name="libPathValue" value="${env.PATH}:../bin" />
+  </target>
+
+</project>
