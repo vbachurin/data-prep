@@ -93,10 +93,11 @@ public class FormatAnalysis {
 
                         SchemaParserResult schemaParserResult = parser.parse(new SchemaParser.Request(content, metadata));
                         if (schemaParserResult.draft()) {
-                            metadata.setSheetName(schemaParserResult.getSheetContents().get( 0 ).getName());
+                            metadata.setSheetName(schemaParserResult.getSheetContents().get(0).getName());
                             metadata.setDraft(true);
                             metadata.setSchemaParserResult(schemaParserResult);
                             repository.add(metadata);
+                            LOG.info("format analysed for dataset: '{}'", dataSetId);
                             return;
                         }
                         metadata.setDraft(false);
@@ -107,6 +108,7 @@ public class FormatAnalysis {
                         throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
                     }
                     repository.add(metadata);
+                    LOG.info("format analysed for dataset: '{}'", dataSetId);
                     // Asks for a in depth schema analysis (for column type information).
                     jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
                         Message schemaAnalysisMessage = session.createMessage();
