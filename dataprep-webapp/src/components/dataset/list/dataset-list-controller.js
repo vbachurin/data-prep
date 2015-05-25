@@ -15,10 +15,12 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
+     * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function DatasetListCtrl($log,$stateParams,$state,DatasetService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($log,$stateParams,$state,DatasetService, PlaygroundService, TalendConfirmService, MessageService,DatasetListService) {
         var vm = this;
         vm.datasetService = DatasetService;
+        vm.datasetListService = DatasetListService;
 
         /**
          * @ngdoc method
@@ -56,11 +58,11 @@
                     $state.go( 'nav.home.datasets-previewxls', {datasetid:dataset.id} );
                     return;
                 }else{
-                    MessageService.error('PREVIEW_NOT_READY_FOR_TYPE_TITLE', 'PREVIEW_NOT_READY_FOR_TYPE_TITLE', {type: 'dataset'});
+                    MessageService.error('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', {type: 'dataset'});
                 }
             } else{
                 MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
-                // TODO force list refresh??
+                DatasetListService.refreshDatasets();
             }
         };
 
