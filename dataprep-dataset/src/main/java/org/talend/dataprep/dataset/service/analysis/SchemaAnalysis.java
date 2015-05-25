@@ -1,7 +1,12 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import java.io.StringWriter;
+import static java.util.stream.StreamSupport.stream;
+
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -11,25 +16,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
-import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.datascience.statistics.StatisticsClientJson;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.talend.datascience.common.inference.type.ColumnTypeBean;
+import org.talend.datascience.common.inference.type.DataTypeInferExecutor;
 
 @Component
 public class SchemaAnalysis {
@@ -51,6 +52,9 @@ public class SchemaAnalysis {
     @Autowired
     SparkContext sparkContext;
 
+    @Autowired
+    Jackson2ObjectMapperBuilder builder;
+
     @JmsListener(destination = Destinations.SCHEMA_ANALYSIS)
     public void analyzeSchema(Message message) {
         try {
@@ -59,49 +63,44 @@ public class SchemaAnalysis {
             DataSetMetadata metadata = repository.get(dataSetId);
             try {
                 datasetLock.lock();
-                StatisticsClientJson statisticsClient = new StatisticsClientJson(true, sparkContext);
-                statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
                 if (metadata != null) {
-                    LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
-                    // Create a content with the expected format for the StatisticsClientJson class
-                    final SimpleModule module = DataSetMetadataModule.get(true, true, store.get(metadata), applicationContext);
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.registerModule(module);
-                    final StringWriter content = new StringWriter();
-                    mapper.writer().writeValue(content, metadata);
-                    // Determine schema for the content
-                    String elasticDataSchema = statisticsClient.inferSchemaInMemory(content.toString());
-                    LOGGER.debug("Analysis result: {}", elasticDataSchema);
-                    // Set column types back in data set metadata
-                    // Get record count at the same type as returned information contains occurrence count.
-                    int recordCount = 0;
-                    final Iterator<JsonNode> columns = mapper.readTree(elasticDataSchema).get("column").elements(); //$NON-NLS-1$
-                    final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
-                    for (; columns.hasNext() && schemaColumns.hasNext(); ) {
-                        final JsonNode column = columns.next();
-                        final ColumnMetadata schemaColumn = schemaColumns.next();
-                        // Get best type for column
-                        final String typeName = column.get("suggested type").asText(); //$NON-NLS-1$
-                        if (Type.has(typeName)) {
-                            // Go through Type to ensure normalized type names.
-                            schemaColumn.setType(Type.get(typeName).getName());
-                        } else {
-                            LOGGER.error("Type '{}' does not exist.", typeName);
-                        }
-                        // Compute record count
-                        final ArrayNode types = (ArrayNode) column.get("types"); //$NON-NLS-1$
-                        int columnOccurrenceCount = 0;
-                        for (JsonNode type : types) {
-                            columnOccurrenceCount += type.get("occurrences").asInt(); //$NON-NLS-1$
-                        }
-                        recordCount = Math.max(recordCount, columnOccurrenceCount);
-                        metadata.getContent().setNbRecords(recordCount);
+                    // Schema analysis
+                    try (Stream<DataSetRow> stream = store.stream(metadata)) {
+                        LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
+                        // Determine schema for the content (on the 20 first rows).
+                        DataTypeInferExecutor executor = new DataTypeInferExecutor();
+                        stream.limit(20).forEach(row -> {
+                            final Map<String, Object> rowValues = row.values();
+                            final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                                    .map(String::valueOf) //
+                                    .collect(Collectors.<String>toList());
+                            executor.handle(strings.toArray(new String[strings.size()]));
+                        });
+                        // Find the best suitable type
+                        final List<ColumnTypeBean> results = executor.getResults();
+                        final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
+                        results.forEach(columnResult -> {
+                            long max = 0;
+                            String electedType = "N/A"; //$NON-NLS-1$
+                            final Map<String, Long> countMap = columnResult.getTypeToCountMap();
+                            for (Map.Entry<String, Long> entry : countMap.entrySet()) {
+                                if (entry.getValue() > max) {
+                                    max = entry.getValue();
+                                    electedType = entry.getKey();
+                                }
+                            }
+                            if (columns.hasNext()) {
+                                columns.next().setType(electedType);
+                            } else {
+                                LOGGER.error("Unable to set type '" + electedType + "' to next column (no more column in dataset).");
+                            }
+                        });
                     }
-                    if (columns.hasNext() || schemaColumns.hasNext()) {
-                        // Awkward situation: analysis code and parsed content information did not find same number of columns
-                        LOGGER.warn(
-                                "Column type analysis and parsed columns for #{} do not yield same number of columns (content parsed: {} / analysis: {}).",
-                                dataSetId, schemaColumns.hasNext(), columns.hasNext());
+                    // Count lines
+                    try (Stream<DataSetRow> stream = store.stream(metadata)) {
+                        LOGGER.info("Analyzing content size in dataset #{}...", dataSetId);
+                        // Determine content size
+                        metadata.getContent().setNbRecords((int) stream.count());
                     }
                     LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                     metadata.getLifecycle().schemaAnalyzed(true);
@@ -120,6 +119,7 @@ public class SchemaAnalysis {
                     metadata.getLifecycle().error(true);
                     repository.add(metadata);
                 }
+                LOGGER.error("Unable to analyse schema for dataset {}.", dataSetId, e);
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
             } finally {
                 datasetLock.unlock();

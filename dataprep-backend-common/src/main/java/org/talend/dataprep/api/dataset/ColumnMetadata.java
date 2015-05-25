@@ -13,6 +13,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -31,12 +32,14 @@ public class ColumnMetadata {
 
     private String id;
 
+    @JsonProperty("type")
     private String typeName = "N/A"; //$NON-NLS-1$
 
     // number of first lines with a text header
     // non per default
     private int headerSize = 0;
 
+    @JsonProperty("statistics")
     @JsonRawValue
     private String statistics = "{}"; //$NON-NLS-1$
 

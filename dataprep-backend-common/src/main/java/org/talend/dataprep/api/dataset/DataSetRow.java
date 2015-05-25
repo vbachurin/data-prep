@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.dataset;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,7 +23,7 @@ public class DataSetRow implements Cloneable {
 
     private DataSetRow oldRow;
 
-    private final Map<String, String> values = new HashMap<>();
+    private final Map<String, String> values = new LinkedHashMap<>();
 
     /**
      * Default empty constructor.
@@ -92,8 +93,8 @@ public class DataSetRow implements Cloneable {
      * </ul>
      */
     public Map<String, Object> values() {
-        final Map<String, Object> result = new HashMap<>(values.size() + 1);
-        if (this.oldRow == null) {
+        final Map<String, Object> result = new LinkedHashMap<>(values.size() + 1);
+        if(this.oldRow == null) {
             result.putAll(values);
         } else {
             // row is no more deleted : we write row values with the *NEW* flag

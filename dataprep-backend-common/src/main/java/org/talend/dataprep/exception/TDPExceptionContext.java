@@ -55,7 +55,9 @@ public class TDPExceptionContext {
     }
 
     public TDPExceptionContext from(Map<String, Object> context) {
-        this.context.putAll(context);
+        if (context != null) {
+            this.context.putAll(context);
+        }
         return this;
     }
 }

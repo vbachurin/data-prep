@@ -11,7 +11,7 @@ if [ -z "$version"  ]; then
   exit 1
 fi
 
-images='talend/dataprep-api talend/dataprep-dataset talend/dataprep-transformation talend/dataprep-preparation talend/dataprep-webapp'
+images='talend/dataprep-api talend/dataprep-dataset talend/dataprep-transformation talend/dataprep-preparation talend/dataprep-webapp talend/dataprep-data'
 
 for image in $images;
 do

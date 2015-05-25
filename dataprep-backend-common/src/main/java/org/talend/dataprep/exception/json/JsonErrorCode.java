@@ -1,9 +1,11 @@
 package org.talend.dataprep.exception.json;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.ErrorCode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,7 +20,7 @@ public class JsonErrorCode implements ErrorCode {
 
     /** The error code context. */
     @JsonProperty("context")
-    private Map<String, Object> context;
+    private Map<String, Object> context = Collections.emptyMap();
 
     private int httpStatus;
 
@@ -63,6 +65,9 @@ public class JsonErrorCode implements ErrorCode {
      */
     @Override
     public String getCode() {
+        if (code == null) {
+            return CommonErrorCodes.UNEXPECTED_EXCEPTION.getCode();
+        }
         return code.substring((getProduct() + '_' + getGroup()).length() + 1);
     }
 
