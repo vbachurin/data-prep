@@ -7,6 +7,8 @@ import javax.annotation.Nonnull;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(value = FillWithDefaultIfEmptyInteger.ACTION_BEAN_PREFIX + FillWithDefaultIfEmptyInteger.FILL_EMPTY_ACTION_NAME)
 public class FillWithDefaultIfEmptyInteger extends AbstractDefaultIfEmpty {

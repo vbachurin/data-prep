@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 public abstract class AbstractDelete implements ActionMetadata {
 

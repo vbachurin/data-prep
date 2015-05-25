@@ -1,6 +1,7 @@
-package org.talend.dataprep.transformation.api.action.metadata;
+package org.talend.dataprep.transformation.api.action.parameters;
 
 import org.talend.dataprep.i18n.MessagesBundle;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 public class Item {
 
