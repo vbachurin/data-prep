@@ -6,6 +6,7 @@ import static org.talend.dataprep.api.type.Type.STRING;
 import java.io.InputStream;
 
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicParameters;
 import org.talend.dataprep.transformation.api.action.parameters.ClusterItem;
 import org.talend.dataprep.transformation.api.action.parameters.Clusters;
@@ -47,8 +48,8 @@ public class ClusterParameters implements DynamicParameters {
         */
         
         final Clusters clusters = Clusters.builder()
-                .title("We found these values") //TODO JSO : externalize with internationalization
-                .title("And we'll keep this value")
+                .title(MessagesBundle.getString("parameter.textclustering.title.1"))
+                .title(MessagesBundle.getString("parameter.textclustering.title.2"))
                 .cluster(ClusterItem.builder() //TODO JSO : convert DQ result to those builders
                                 .parameter(new Parameter("Texa", BOOLEAN.getName(), "true"))
                                 .parameter(new Parameter("Tixass", BOOLEAN.getName(), "true"))
