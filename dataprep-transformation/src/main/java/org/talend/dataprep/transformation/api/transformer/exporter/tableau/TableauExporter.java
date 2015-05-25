@@ -1,8 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer.exporter.csv;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+package org.talend.dataprep.transformation.api.transformer.exporter.tableau;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -17,9 +13,13 @@ import org.talend.dataprep.transformation.api.transformer.input.TransformerConfi
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 @Component
 @Scope("request")
-public class CsvExporter implements Transformer {
+public class TableauExporter implements Transformer {
 
     @Autowired
     private TypeTransformerSelector typeStateSelector;
@@ -27,7 +27,7 @@ public class CsvExporter implements Transformer {
     private final ParsedActions actions;
     private final ExportConfiguration exportConfiguration;
 
-    public CsvExporter(final ParsedActions actions, final ExportConfiguration configuration) {
+    public TableauExporter(final ParsedActions actions, final ExportConfiguration configuration) {
         this.actions = actions;
         this.exportConfiguration = configuration;
     }
@@ -35,9 +35,8 @@ public class CsvExporter implements Transformer {
     @Override
     public void transform(InputStream input, OutputStream output) {
         try {
-
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
-                    .output(new CsvWriter(output, (char)exportConfiguration.getArguments().get("csvSeparator")))
+                    .output(new TableauWriter(output))
                     .actions(DataSetRow.class, actions.getRowTransformer())
                     .actions(RowMetadata.class, actions.getMetadataTransformer())
                     .build();

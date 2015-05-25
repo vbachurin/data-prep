@@ -60,6 +60,21 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+        <!-- Tableau Software Desktop Dependencies-->
+        <dependency>
+            <groupId>tableau-software</groupId>
+            <artifactId>dataExtract</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/TDE_API/lib64/dataextract/Java/dataextract.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>tableau-software</groupId>
+            <artifactId>jna</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/TDE_API/lib64/dataextract/Java/jna.jar</systemPath>
+        </dependency>
         <!-- SWAGGER DEPENDENCIES -->
         <dependency>
             <groupId>com.mangofactory</groupId>
@@ -99,6 +114,7 @@
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
     <profiles>
         <profile>

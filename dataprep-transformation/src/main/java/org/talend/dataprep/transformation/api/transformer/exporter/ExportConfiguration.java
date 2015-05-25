@@ -2,6 +2,8 @@ package org.talend.dataprep.transformation.api.transformer.exporter;
 
 import org.talend.dataprep.api.type.ExportType;
 
+import java.util.HashMap;
+
 /**
  * Export configuration. It holds the parameters that configures the wanted export
  */
@@ -17,13 +19,22 @@ public class ExportConfiguration {
     private final String actions;
 
     /**
+     * The arguments in HashMap
+     */
+    private final HashMap<String,Object> arguments ;
+
+
+
+    /**
      * The constructor
      * @param format The export type.
      * @param actions The actions in JSON string format.
+     * @param arguments Arguments for the Exporter
      */
-    protected ExportConfiguration(final ExportType format, final String actions) {
+    protected ExportConfiguration(final ExportType format, final String actions, final HashMap<String, Object> arguments) {
         this.format = format;
         this.actions = actions;
+        this.arguments = arguments;
     }
 
     /**
@@ -38,9 +49,9 @@ public class ExportConfiguration {
         return format;
     }
 
-    public String getActions() {
-        return actions;
-    }
+    public String getActions() { return actions; }
+
+    public HashMap<String,Object> getArguments() { return arguments; }
 
     /**
      * Export configuration builder
@@ -55,6 +66,11 @@ public class ExportConfiguration {
          * The actions in JSON string format
          */
         protected String actions;
+
+        /**
+         * The actions in HashMap
+         */
+        protected HashMap<String,Object> arguments;
 
         /**
          * Builder DSL for format setter
@@ -77,11 +93,23 @@ public class ExportConfiguration {
         }
 
         /**
+         * Builder DSL for arguments setter
+         * @param arguments The arguments in HashMap
+         * @return The builder
+         */
+        public Builder args(final HashMap<String, Object> arguments) {
+            this.arguments = arguments;
+            return this;
+        }
+
+        /**
          * Create an Export Configuration
          * @return The configuration
          */
         public ExportConfiguration build() {
-            return new ExportConfiguration(format, actions);
+            return new ExportConfiguration(format, actions, arguments);
         }
+
+
     }
 }

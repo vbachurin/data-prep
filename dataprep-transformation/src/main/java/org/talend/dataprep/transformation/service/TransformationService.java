@@ -26,7 +26,6 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportFactory;
-import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.json.DiffTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -86,9 +85,12 @@ public class TransformationService {
             @ApiParam(value = "Data set content as JSON") final InputStream content, HttpServletResponse response) {
         try {
             final String decodedActions = new String(Base64.getDecoder().decode(actions));
-            final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator)).charAt(0) : null;
-            final ExportConfiguration configuration = CsvExportConfiguration.builder()
-                    .csvSeparator(decodedCsvSeparator)
+            final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator)).charAt(0) : au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
+            HashMap<String,Object> arguments = new HashMap<>();
+            arguments.put("csvSeparator",decodedCsvSeparator);
+
+            final ExportConfiguration configuration = ExportConfiguration.builder()
+                    .args(arguments)
                     .format(format)
                     .actions(decodedActions)
                     .build();
