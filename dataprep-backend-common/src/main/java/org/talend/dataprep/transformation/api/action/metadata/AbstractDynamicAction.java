@@ -9,6 +9,7 @@ import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 public abstract class AbstractDynamicAction extends SingleColumnAction {
+
     @Override
     public Item[] getItems() {
         return new Item[0];
@@ -21,6 +22,7 @@ public abstract class AbstractDynamicAction extends SingleColumnAction {
 
     /**
      * Get all the parameters without skiping any. The parameters are dynamics.
+     * 
      * @param parameters the json parameters.
      */
     @Override
@@ -33,4 +35,3 @@ public abstract class AbstractDynamicAction extends SingleColumnAction {
         return parsedParameters;
     }
 }
-

@@ -1,5 +1,9 @@
 package org.talend.dataprep.api.service;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
@@ -9,10 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.api.DynamicParamsInput;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
@@ -29,10 +34,6 @@ import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Transformation API")
@@ -99,8 +100,8 @@ public class TransformAPI extends APIService {
     }
 
     /**
-     * Get the suggested action dynamic params.
-     * Dynamic params depends on the context (dataset / preparation / actual transformations)
+     * Get the suggested action dynamic params. Dynamic params depends on the context (dataset / preparation / actual
+     * transformations)
      *
      * @param response the http response.
      */
@@ -108,26 +109,28 @@ public class TransformAPI extends APIService {
     @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
     @Timed
     public void suggestActionParams(
-            @ApiParam(value = "Transformation name.") @PathVariable("action") final String action,
+            @ApiParam(value = "Transformation name.")
+            @PathVariable("action")
+            final String action,
             @ApiParam(value = "Suggested dynamic transformation input (preparation id or dataset id")
             @Valid
             final DynamicParamsInput dynamicParamsInput,
             final HttpServletResponse response) {
 
         try {
-            //get preparation/dataset content
+            // get preparation/dataset content
             HystrixCommand<InputStream> inputData;
-            if(isNotBlank(dynamicParamsInput.getPreparationId())) {
+            if (isNotBlank(dynamicParamsInput.getPreparationId())) {
                 inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), "head");
-            }
-            else {
+            } else {
                 inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), false, true);
             }
 
-            //get params, passing content in the body
-            final HystrixCommand<InputStream> getActionDynamicParams = getCommand(SuggestActionParams.class, getClient(), inputData, action, dynamicParamsInput.getColumnId());
+            // get params, passing content in the body
+            final HystrixCommand<InputStream> getActionDynamicParams = getCommand(SuggestActionParams.class, getClient(),
+                    inputData, action, dynamicParamsInput.getColumnId());
 
-            //trigger calls and return last call content
+            // trigger calls and return last call content
             final ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(getActionDynamicParams.execute(), outputStream);
             outputStream.flush();

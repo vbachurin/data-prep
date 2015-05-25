@@ -42,4 +42,3 @@ public class TextClustering extends AbstractDynamicAction {
         return Collections.singleton(Type.STRING);
     }
 }
-

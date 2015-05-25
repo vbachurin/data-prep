@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.exception;
 
+import static org.springframework.http.HttpStatus.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,22 +10,20 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.talend.dataprep.exception.ErrorCode;
 
-import static org.springframework.http.HttpStatus.*;
-
 /**
  * Transformation error codes.
  */
 public enum TransformationErrorCodes implements ErrorCode {
-    //400
+    // 400
     UNABLE_TO_PARSE_JSON(BAD_REQUEST), // TODO what is the difference with CommonErrorCodes.UNABLE_TO_PARSE_JSON ?
 
-    //404
+    // 404
     UNKNOWN_DYNAMIC_ACTION(NOT_FOUND, "value"),
 
-    //415
+    // 415
     OUTPUT_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE),
 
-    //500
+    // 500
     UNABLE_TO_COMPUTE_DATASET_ACTIONS(INTERNAL_SERVER_ERROR),
     UNABLE_TO_WRITE_JSON(INTERNAL_SERVER_ERROR),
     UNABLE_TRANSFORM_DATASET(INTERNAL_SERVER_ERROR),

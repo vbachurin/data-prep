@@ -654,7 +654,7 @@ public class DataPreparationAPITest {
 
         // when
         final String actualClusterParameters = given()
-                .formParam("dataSetId", dataSetId)
+                .formParam("datasetId", dataSetId)
                 .formParam("columnId", "uglystate")
                 .when()
                 .get("/api/transform/suggest/textclustering/params")

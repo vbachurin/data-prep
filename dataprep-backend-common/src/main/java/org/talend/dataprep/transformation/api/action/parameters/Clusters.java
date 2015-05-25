@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Clusters {
+
     private final List<String> titles = new ArrayList<>(2);
+
     private final List<ClusterItem> clusters = new ArrayList<>();
 
     Clusters(List<String> titles, final List<ClusterItem> clusters) {
@@ -27,7 +29,9 @@ public class Clusters {
     }
 
     public static class Builder {
+
         private final List<String> titles = new ArrayList<>(2);
+
         private final List<ClusterItem.Builder> clusters = new ArrayList<>();
 
         public Builder title(final String title) {
@@ -41,10 +45,7 @@ public class Clusters {
         }
 
         public Clusters build() {
-            final List<ClusterItem> clusterItems = this.clusters
-                    .stream()
-                    .map(ClusterItem.Builder::build)
-                    .collect(toList());
+            final List<ClusterItem> clusterItems = this.clusters.stream().map(ClusterItem.Builder::build).collect(toList());
             return new Clusters(titles, clusterItems);
         }
     }

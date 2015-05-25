@@ -27,9 +27,11 @@ public class SuggestActionParams extends ChainedCommand<InputStream, InputStream
      * The target action for this parameters getter operation
      */
     private final String action;
+
     private String columnId;
 
-    private SuggestActionParams(final HttpClient client, final HystrixCommand<InputStream> content, final String action, final String columnId) {
+    private SuggestActionParams(final HttpClient client, final HystrixCommand<InputStream> content, final String action,
+            final String columnId) {
         super(client, content);
         this.action = action;
         this.columnId = columnId;

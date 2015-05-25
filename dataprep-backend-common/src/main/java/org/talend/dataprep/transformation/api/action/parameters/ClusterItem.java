@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClusterItem {
+
     private final List<Parameter> parameters = new ArrayList<>();
+
     private final Parameter replace;
 
     public ClusterItem(final List<Parameter> parameters, final Parameter replace) {
@@ -25,7 +27,9 @@ public class ClusterItem {
     }
 
     public static class Builder {
+
         private List<Parameter> parameters = new ArrayList<>();
+
         private Parameter replace;
 
         public Builder parameter(final Parameter parameter) {
