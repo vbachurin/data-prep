@@ -1,17 +1,20 @@
 package org.talend.dataprep.api.service.validation;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.lang.reflect.InvocationTargetException;
 
-public class OneNotNullValidator implements ConstraintValidator<OneNotNull, Object> {
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
+public class OneNotBlankValidator implements ConstraintValidator<OneNotBlank, Object> {
 
     private String[] fieldsName;
 
     @Override
-    public void initialize(final OneNotNull annotation) {
+    public void initialize(final OneNotBlank annotation) {
         fieldsName = annotation.value();
     }
 
@@ -20,7 +23,7 @@ public class OneNotNullValidator implements ConstraintValidator<OneNotNull, Obje
         try {
             for (final String name : fieldsName) {
                 final String prop = BeanUtils.getProperty(value, name);
-                if(prop != null) {
+                if(isNotBlank(prop)) {
                     return true;
                 }
             }
