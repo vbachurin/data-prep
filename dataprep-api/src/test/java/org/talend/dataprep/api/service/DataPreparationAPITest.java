@@ -646,6 +646,54 @@ public class DataPreparationAPITest {
         response.then().statusCode(400);
     }
 
+    @Test
+    public void testSuggestActionParams_should_return_dynamic_params_with_dataset() throws Exception {
+        // given
+        final String dataSetId = createDataset("transformation/cluster_dataset.csv", "testClustering", "text/csv");
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+
+        // when
+        final String actualClusterParameters = given()
+                .formParam("dataSetId", dataSetId)
+                .formParam("columnId", "uglystate")
+                .when()
+                .get("/api/transform/suggest/textclustering/params")
+                .asString();
+
+        // then
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+    }
+
+    @Test
+    public void testSuggestActionParams_should_return_dynamic_params_with_preparation() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("transformation/cluster_dataset.csv", "testClustering", "text/csv");
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+
+        // when
+        final String actualClusterParameters = given()
+                .formParam("preparationId", preparationId)
+                .formParam("columnId", "uglystate")
+                .when()
+                .get("/api/transform/suggest/textclustering/params")
+                .asString();
+
+        // then
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+    }
+
+    @Test
+    public void testSuggestActionParams_should_return_400_with_no_preparationId_and_no_datasetId() throws Exception {
+        // when
+        final Response response = given()
+                .formParam("columnId", "uglystate")
+                .when()
+                .get("/api/transform/suggest/textclustering/params");
+
+        // then
+        response.then().statusCode(400);
+    }
+
     private String createDataset(final String file, final String name, final String type) throws IOException {
         final String datasetContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream(file));
         final String dataSetId = given()
