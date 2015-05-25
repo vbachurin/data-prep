@@ -275,9 +275,8 @@ public class DataSetService {
 
             String theSheetName = dataSetMetadata.getSheetName();
 
-            Optional<SchemaParserResult.SheetContent> sheetContentFound = dataSetMetadata.getSchemaParserResult().getSheetContents().stream().filter(sheetContent -> {
-                return theSheetName.equals(sheetContent.getName());
-            }).findFirst();
+            Optional<SchemaParserResult.SheetContent> sheetContentFound = dataSetMetadata.getSchemaParserResult()
+                    .getSheetContents().stream().filter(sheetContent -> theSheetName.equals(sheetContent.getName())).findFirst();
 
             if (!sheetContentFound.isPresent()){
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -423,9 +422,8 @@ public class DataSetService {
             DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
 
             Optional<SchemaParserResult.SheetContent> sheetContentFound = read.getSchemaParserResult().getSheetContents()
-                    .stream().filter(sheetContent -> {
-                        return dataSetMetadata.getSheetName().equals(sheetContent.getName());
-                    }).findFirst();
+                    .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())
+                    ).findFirst();
 
             if (sheetContentFound.isPresent()) {
                 List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();

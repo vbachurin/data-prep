@@ -328,9 +328,8 @@ public class XlsFormatTest {
 
             List<SchemaParserResult.SheetContent> sheetContents = xlsSchemaParser.parseAllSheets(inputStream);
 
-            List<ColumnMetadata> columnMetadatas = sheetContents.stream().filter(sheetContent -> {
-                return "Leads".equals(sheetContent.getName());
-            }).findFirst().get().getColumnMetadatas();
+            List<ColumnMetadata> columnMetadatas = sheetContents.stream()
+                    .filter(sheetContent -> "Leads".equals(sheetContent.getName())).findFirst().get().getColumnMetadatas();
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(14);
 

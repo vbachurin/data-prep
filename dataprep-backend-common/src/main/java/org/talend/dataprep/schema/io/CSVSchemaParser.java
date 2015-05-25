@@ -39,7 +39,7 @@ public class CSVSchemaParser implements SchemaParser {
             }
             // By default, consider all columns as Strings (to be refined by deeper analysis).
             for (String column : columns) {
-                sheetContents.stream().filter( sheetContent -> { return META_KEY.equals( sheetContent.getName()); } )
+                sheetContents.stream().filter( sheetContent -> META_KEY.equals( sheetContent.getName()) )
                     .findFirst() //
                     .get().getColumnMetadatas() //
                     .add( column().name( column ).type( Type.STRING ).build() );
@@ -52,14 +52,14 @@ public class CSVSchemaParser implements SchemaParser {
                     String columnValue = line[i];
                     try {
                         Integer.parseInt(columnValue);
-                        sheetContents.stream().filter( sheetContent -> { return META_KEY.equals( sheetContent.getName()); } )
+                        sheetContents.stream().filter( sheetContent -> META_KEY.equals( sheetContent.getName()) )
                             .findFirst() //
                             .get().getColumnMetadatas().get(i).setType(Type.INTEGER.getName());
                     } catch (NumberFormatException e) {
                         // Not an number
                     }
                     if ("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim())) {
-                        sheetContents.stream().filter( sheetContent -> { return META_KEY.equals( sheetContent.getName()); } )
+                        sheetContents.stream().filter( sheetContent -> META_KEY.equals( sheetContent.getName()) )
                             .findFirst() //
                             .get().getColumnMetadatas().get(i).setType(Type.BOOLEAN.getName());
                     }
