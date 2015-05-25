@@ -19,10 +19,14 @@ import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
+import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportFactory;
@@ -52,7 +56,6 @@ public class TransformationService {
 
     @Autowired
     private DiffTransformerFactory diffFactory;
-
 
     @Autowired
     private ExportFactory exportFactory;
@@ -191,5 +194,24 @@ public class TransformationService {
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
+    }
+
+    /**
+     * Get the transformation dynamic params
+     */
+    @RequestMapping(value = "/transform/suggest/{action}/params", method = POST)
+    @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
+    @Timed
+    public GenericParameter dynamicParams(
+            @ApiParam(value = "Transformation name.") @PathVariable("action") final String action,
+            @ApiParam(value = "The column id.") @RequestParam(value = "columnId", required = true) final String columnId,
+            @ApiParam(value = "Data set content as JSON") final InputStream content) {
+
+        final DynamicType actionType = DynamicType.fromAction(action);
+        if(actionType == null) {
+            throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, TDPExceptionContext.build().put("name", action));
+        }
+
+        return actionType.getGenerator(context).getParameters(columnId, content);
     }
 }
