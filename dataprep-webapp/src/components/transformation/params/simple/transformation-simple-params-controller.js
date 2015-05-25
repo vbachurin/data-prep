@@ -5,8 +5,9 @@
      * @ngdoc controller
      * @name data-prep.transformation-params.controller:TransformSimpleParamsCtrl
      * @description Transformation parameters controller.
+     * @requires data-prep.services.utils.service:ConverterService
      */
-    function TransformSimpleParamsCtrl() {
+    function TransformSimpleParamsCtrl(ConverterService) {
         var vm = this;
 
         /**
@@ -23,6 +24,8 @@
                 case 'double':
                 case 'float':
                     return parseFloat(param.default) || 0;
+                case 'boolean':
+                    return param.default === 'true';
                 default :
                     return param.default;
             }
@@ -43,7 +46,14 @@
             });
         };
 
+        var initInputTypes = function() {
+            _.forEach(vm.parameters, function(param) {
+                param.inputType = ConverterService.toInputType(param.type);
+            });
+        };
+
         initParamsValues();
+        initInputTypes();
     }
 
     angular.module('data-prep.transformation-params')

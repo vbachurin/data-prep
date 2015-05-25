@@ -1,0 +1,51 @@
+(function () {
+    'use strict';
+
+    /**
+     * @ngdoc controller
+     * @name data-prep.transformation-params.controller:TransformClusterParamsCtrl
+     * @description Transformation cluster parameters controller.
+     */
+    function TransformClusterParamsCtrl() {
+        var vm = this;
+
+        /**
+         * @ngdoc property
+         * @name allCheckboxState
+         * @propertyOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
+         * @description The global checkbox state
+         */
+        vm.allCheckboxState = true;
+
+        /**
+         * @ngdoc method
+         * @name refreshClusterState
+         * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
+         * @description Refresh all cluster "active" flag to the state of the global activation checkbox
+         */
+        vm.refreshClusterState = function() {
+            _.forEach(vm.details.clusters, function(cluster) {
+                cluster.active = vm.allCheckboxState;
+            });
+        };
+
+        /**
+         * @ngdoc method
+         * @name getParams
+         * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
+         * @description Refresh the global activation checkbox
+         */
+        vm.refreshToggleCheckbox = function() {
+            var inactiveCluster = _.find(vm.details.clusters, function(cluster) {
+                return !cluster.active;
+            });
+            vm.allCheckboxState = !inactiveCluster;
+        };
+
+        //init active flag on each cluster to true
+        vm.refreshClusterState();
+    }
+
+    angular.module('data-prep.transformation-params')
+        .controller('TransformClusterParamsCtrl', TransformClusterParamsCtrl);
+})();

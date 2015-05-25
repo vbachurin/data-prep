@@ -52,6 +52,32 @@
 
         /**
          * @ngdoc method
+         * @name getClusterParams
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description [PRIVATE] Get cluster choice and choice parameters into one object for REST call
+         * @returns {object} - the parameters
+         */
+        var getClusterParams = function() {
+            var params = {};
+            if (vm.transformation.cluster) {
+                _.chain(vm.transformation.cluster.clusters)
+                    .filter('active')
+                    .forEach(function (cluster) {
+                        var replaceValue = cluster.replace.value;
+                        _.forEach(cluster.parameters, function(param) {
+                            if(param.value) {
+                                params[param.name] = replaceValue;
+                            }
+                        });
+                    })
+                    .value();
+            }
+
+            return params;
+        };
+
+        /**
+         * @ngdoc method
          * @name gatherParams
          * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
          * @description [PRIVATE] Gather params into one unique object
@@ -60,8 +86,9 @@
         var gatherParams = function() {
             var params = getParams();
             var choiceParams = getChoiceParams();
+            var clusterParams = getClusterParams();
 
-            return _.merge(params, choiceParams);
+            return _.merge(_.merge(params, choiceParams), clusterParams);
         };
 
         /**

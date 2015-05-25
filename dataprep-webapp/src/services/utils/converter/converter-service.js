@@ -23,6 +23,8 @@
                 case 'double':
                 case 'float':
                     return 'number';
+                case 'boolean':
+                    return 'checkbox';
                 default:
                     return 'text';
             }
