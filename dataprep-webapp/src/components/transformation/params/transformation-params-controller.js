@@ -109,10 +109,8 @@
          * @description Gather params and perform the submit mouseenter action
          */
         vm.submitHoverOn = function() {
-            if(vm.onSubmitHoverOn) {
-                var params = gatherParams();
-                vm.onSubmitHoverOn({params: params});
-            }
+            var params = gatherParams();
+            vm.onSubmitHoverOn({params: params});
         };
 
         /**
@@ -122,10 +120,8 @@
          * @description Gather params and perform the submit mouseleave action
          */
         vm.submitHoverOff = function() {
-            if(vm.onSubmitHoverOff) {
-                var params = gatherParams();
-                vm.onSubmitHoverOff({params: params});
-            }
+            var params = gatherParams();
+            vm.onSubmitHoverOff({params: params});
         };
     }
 

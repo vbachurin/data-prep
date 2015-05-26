@@ -15,8 +15,10 @@
             <div class="modal-title">{{ menuCtrl.menu.label }}</div>
             <div class="modal-subtitle">{{::menuCtrl.menu.description | translate }}</div>
 
-            <div ng-if="::menuCtrl.menu.dynamic">
-                <span ng-if="menuCtrl.dynamicFetchInProgress">{{ ::'FETCHING' || translate}} --> replace with a loader ?</span>
+            <div ng-if="menuCtrl.menu.dynamic && menuCtrl.dynamicFetchInProgress">
+                <img class="continuous-rotate"
+                     style="background-color: grey"
+                     src="/components/widgets/loading/loading.png" />
             </div>
             <transform-params transformation="menuCtrl.menu"
                               on-submit="menuCtrl.transform(params)"></transform-params>

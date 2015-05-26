@@ -2,11 +2,11 @@
     <thead>
         <tr>
             <th><input type="checkbox" ng-model="clusterParamsCtrl.allCheckboxState" ng-click="clusterParamsCtrl.refreshClusterState()"/></th>
-            <th ng-repeat="title in clusterParamsCtrl.details.titles track by $index">{{::title}}</th>
+            <th ng-repeat="title in ::clusterParamsCtrl.details.titles track by $index">{{::title}}</th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="cluster in clusterParamsCtrl.details.clusters track by $index">
+        <tr ng-repeat="cluster in ::clusterParamsCtrl.details.clusters track by $index">
             <td>
                 <input ng-model="cluster.active" type="checkbox" ng-click="clusterParamsCtrl.refreshToggleCheckbox()"/>
             </td>
