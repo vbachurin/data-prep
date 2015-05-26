@@ -1,0 +1,24 @@
+<table class="cluster param">
+    <thead>
+    <tr>
+        <th><input type="checkbox" ng-model="clusterParamsCtrl.allCheckboxState"
+                   ng-click="clusterParamsCtrl.refreshClusterState()"/></th>
+        <th ng-repeat="title in ::clusterParamsCtrl.details.titles track by $index">{{::title}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="cluster in ::clusterParamsCtrl.details.clusters track by $index">
+        <td>
+            <input ng-model="cluster.active" type="checkbox" ng-click="clusterParamsCtrl.refreshToggleCheckbox()"/>
+        </td>
+        <td>
+            <transform-simple-params label="false" tooltip="false"
+                                     parameters="cluster.parameters"></transform-simple-params>
+        </td>
+        <td>
+            <transform-simple-params label="false" tooltip="false"
+                                     parameters="[cluster.replace]"></transform-simple-params>
+        </td>
+    </tr>
+    </tbody>
+</table>

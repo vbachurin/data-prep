@@ -11,73 +11,6 @@
 
         /**
          * @ngdoc method
-         * @name adaptParamDefaultValue
-         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
-         * @param {object} param - the targeted param
-         * @description [PRIVATE] Adapt params default value to the requested type
-         */
-        var adaptParamDefaultValue = function (param) {
-            switch (param.type) {
-                case 'numeric':
-                case 'integer':
-                case 'double':
-                case 'float':
-                    return parseFloat(param.default) || 0;
-                default :
-                    return param.default;
-            }
-        };
-
-        /**
-         * @ngdoc method
-         * @name initParamItemValues
-         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
-         * @param {object} param - the targeted param
-         * @description [PRIVATE] Init params values to default
-         */
-        var initParamItemValues = function (params) {
-            _.forEach(params, function (param) {
-                if (param.default) {
-                    param.default = adaptParamDefaultValue(param);
-                    param.value = param.default;
-                }
-            });
-        };
-
-        /**
-         * @ngdoc method
-         * @name initChoiceItemDefaultValue
-         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
-         * @param {object} choice - the choice item
-         * @description [PRIVATE] Save a choice item selected value. The value defines the default value. If no default defined, select the first element
-         */
-        var initChoiceItemDefaultValue = function (choice) {
-            var defaultValue = _.find(choice.values, function (value) {
-                return value.default;
-            });
-
-            choice.selectedValue = defaultValue || choice.values[0];
-        };
-
-        /**
-         * @ngdoc method
-         * @name initParamsValues
-         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
-         * @description [PRIVATE] Init all param values to default for menu params and choice item params
-         */
-        var initParamsValues = function () {
-            initParamItemValues(vm.transformation.parameters);
-
-            _.forEach(vm.transformation.items, function (choice) {
-                initChoiceItemDefaultValue(choice);
-                _.forEach(choice.values, function (choiceItem) {
-                    initParamItemValues(choiceItem.parameters);
-                });
-            });
-        };
-
-        /**
-         * @ngdoc method
          * @name getParams
          * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
          * @description [PRIVATE] Get item parameters into one object for REST call
@@ -119,6 +52,32 @@
 
         /**
          * @ngdoc method
+         * @name getClusterParams
+         * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
+         * @description [PRIVATE] Get cluster choice and choice parameters into one object for REST call
+         * @returns {object} - the parameters
+         */
+        var getClusterParams = function() {
+            var params = {};
+            if (vm.transformation.cluster) {
+                _.chain(vm.transformation.cluster.clusters)
+                    .filter('active')
+                    .forEach(function (cluster) {
+                        var replaceValue = cluster.replace.value;
+                        _.forEach(cluster.parameters, function(param) {
+                            if(param.value) {
+                                params[param.name] = replaceValue;
+                            }
+                        });
+                    })
+                    .value();
+            }
+
+            return params;
+        };
+
+        /**
+         * @ngdoc method
          * @name gatherParams
          * @methodOf data-prep.transformation-params.controller:TransformParamsCtrl
          * @description [PRIVATE] Gather params into one unique object
@@ -127,8 +86,9 @@
         var gatherParams = function() {
             var params = getParams();
             var choiceParams = getChoiceParams();
+            var clusterParams = getClusterParams();
 
-            return _.merge(params, choiceParams);
+            return _.merge(_.merge(params, choiceParams), clusterParams);
         };
 
         /**
@@ -149,10 +109,8 @@
          * @description Gather params and perform the submit mouseenter action
          */
         vm.submitHoverOn = function() {
-            if(vm.onSubmitHoverOn) {
-                var params = gatherParams();
-                vm.onSubmitHoverOn({params: params});
-            }
+            var params = gatherParams();
+            vm.onSubmitHoverOn({params: params});
         };
 
         /**
@@ -162,13 +120,9 @@
          * @description Gather params and perform the submit mouseleave action
          */
         vm.submitHoverOff = function() {
-            if(vm.onSubmitHoverOff) {
-                var params = gatherParams();
-                vm.onSubmitHoverOff({params: params});
-            }
+            var params = gatherParams();
+            vm.onSubmitHoverOff({params: params});
         };
-
-        initParamsValues();
     }
 
     angular.module('data-prep.transformation-params')

@@ -1,46 +1,45 @@
 package org.talend.dataprep.transformation.api.transformer.exporter.csv;
 
-import static au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
+@Component
+@Scope("request")
 public class CsvExporter implements Transformer {
 
     @Autowired
     private TypeTransformerSelector typeStateSelector;
 
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+    private final ParsedActions actions;
 
-    private Consumer<DataSetRow> actions;
+    private final ExportConfiguration exportConfiguration;
 
-    public CsvExporter(final Consumer<DataSetRow> actions) {
+    public CsvExporter(final ParsedActions actions, final ExportConfiguration configuration) {
         this.actions = actions;
+        this.exportConfiguration = configuration;
     }
 
     @Override
     public void transform(InputStream input, OutputStream output) {
         try {
-
-            //@formatter:off
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
-                    .output(new CsvWriter(output, DEFAULT_SEPARATOR))
-                    .actions(DataSetRow.class, actions)
-                    .build();
-            //@formatter:on
-
+            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
+                    .output(new CsvWriter(output, ((CsvExportConfiguration) exportConfiguration).getCsvSeparator()))
+                    .actions(DataSetRow.class, actions.getRowTransformer())
+                    .actions(RowMetadata.class, actions.getMetadataTransformer()).build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);

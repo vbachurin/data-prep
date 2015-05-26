@@ -9,6 +9,8 @@ mongodb:
         - data
     expose:
         - 27017
+    ports:
+        - "27017:27017"
 api:
     image: talend/dataprep-api:1.0.m4-SNAPSHOT
     expose:

@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.DataSetRowWithDiff;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
@@ -58,22 +57,20 @@ public class RecordsTypeTransformer implements TypeTransformer {
                         final DataSetRow referenceRow = row.clone();
                         referenceAction.accept(referenceRow);
 
-                        // switch to a dataset row with diff
-                        final DataSetRowWithDiff rowWithDiff = new DataSetRowWithDiff(row, referenceRow);
-
                         if (isIndexLimited) {
                             // we only start to process at the min index
                             if (currentIndex >= minIndex) {
 
                                 // apply new actions
-                                action.accept(rowWithDiff);
+                                action.accept(row);
 
                                 // we are between the min and the max index
                                 // 1. the row has a wanted index : we write it no matter what
                                 // 2. the row has NOT a wanted index : we write it only if it was originally deleted,
                                 // but not anymore
-                                if (indexes.contains(currentIndex) || (referenceRow.isDeleted() && !rowWithDiff.isDeleted())) {
-                                    writeRow(writer, rowWithDiff);
+                                if (indexes.contains(currentIndex) || (referenceRow.isDeleted() && !row.isDeleted())) {
+                                    row.diff(referenceRow);
+                                    writeRow(writer, row);
                                 }
                             }
 
@@ -89,6 +86,7 @@ public class RecordsTypeTransformer implements TypeTransformer {
                         } else {
                             // apply new actions
                             action.accept(row);
+                            row.diff(referenceRow);
 
                             // write preview. Rules are delegated to DataSetRow
                             writeRow(writer, row);
@@ -123,9 +121,17 @@ public class RecordsTypeTransformer implements TypeTransformer {
         }
     }
 
+    /**
+     * Write the given row using the given writer.
+     *
+     * @param writer the writer to use.
+     * @param row the row to write.
+     * @throws IOException if an error occurs.
+     */
     private void writeRow(TransformerWriter writer, DataSetRow row) throws IOException {
         if (row.shouldWrite()) {
             writer.write(row);
         }
     }
+
 }

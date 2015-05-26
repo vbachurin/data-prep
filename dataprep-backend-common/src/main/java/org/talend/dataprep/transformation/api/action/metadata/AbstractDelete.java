@@ -1,15 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.talend.dataprep.api.dataset.DataSetRowWithDiff.FLAG.DELETE;
-import static org.talend.dataprep.api.dataset.DataSetRowWithDiff.FLAG.NEW;
-
 import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.DataSetRowWithDiff;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Abstract class used as base class for delete actions.
@@ -54,28 +52,6 @@ public abstract class AbstractDelete implements ActionMetadata {
             if (toDelete(parameters, value)) {
                 row.setDeleted(true);
             }
-
-            // compute diff flags if needed
-            if (!(row instanceof DataSetRowWithDiff)) {
-                return;
-            }
-
-            DataSetRowWithDiff rowWithDiff = (DataSetRowWithDiff) row;
-            DataSetRow reference = rowWithDiff.getReference();
-
-            // row is no more deleted : we write row values with the *NEW* flag
-            if (reference.isDeleted() && !rowWithDiff.isDeleted()) {
-                rowWithDiff.setRowFlag(NEW);
-            }
-            // row has been deleted : we write row values with the *DELETED* flag
-            else if (!reference.isDeleted() && rowWithDiff.isDeleted()) {
-                rowWithDiff.setRowFlag(DELETE);
-            }
-            // row is in the same state as the reference one, let's clear the flag
-            else {
-                rowWithDiff.clearRowFlag();
-            }
-
         };
     }
 

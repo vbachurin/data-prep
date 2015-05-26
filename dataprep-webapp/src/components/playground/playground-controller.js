@@ -23,7 +23,10 @@
         vm.changeName = function() {
             var cleanName = vm.preparationName.trim();
             if(cleanName) {
-                PlaygroundService.createOrUpdatePreparation(cleanName);
+                PlaygroundService.createOrUpdatePreparation(cleanName)
+                    .then(function() {
+                        $state.go('nav.home.preparations', {prepid : PreparationService.currentPreparationId}, {location:'replace', inherit:false} );
+                    });
             }
         };
 

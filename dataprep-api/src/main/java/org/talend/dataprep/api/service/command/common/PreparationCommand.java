@@ -37,6 +37,23 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     /**
+     * Call Dataset Service to get dataset metadata details
+     *
+     * @param datasetId - the preparation id
+     * @return the resulting Json node object
+     * @throws java.io.IOException
+     */
+    protected JsonNode getDatasetDetails(final String datasetId) throws IOException {
+        final HttpGet datasetRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + datasetId + "/metadata");
+        try {
+            InputStream content = client.execute(datasetRetrieval).getEntity().getContent();
+            return getJsonReader().readTree(content);
+        } finally {
+            datasetRetrieval.releaseConnection();
+        }
+    }
+
+    /**
      * Get dataset records
      * 
      * @param dataSetId - the dataset id
@@ -94,8 +111,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         final List<String> result = new ArrayList<>(preparationDetails.size() - 1);
         final JsonNode stepsNode = preparationDetails.get("steps");
 
-        if (lastActiveStep != null && !lastActiveStep.equals("origin")
-                && !lastActiveStep.equals(stepsNode.get(stepsNode.size() - 1).textValue())) {
+        if (!"origin".equals(lastActiveStep) && !stepsNode.get(stepsNode.size() - 1).textValue().equals(lastActiveStep)) {
             // steps are in reverse order and the last is the initial step (no actions). So we skip the last and we get
             // them in reverse order
             for (int i = stepsNode.size() - 2; i >= 0; --i) {

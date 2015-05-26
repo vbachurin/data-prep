@@ -86,28 +86,26 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                     if (level == 0) {
                         contentGenerator.flush();
 
-                        // get the original columns
-                        RowMetadata currentMetadata = getRowMetadata(content);
+                        RowMetadata rowMetadata = getRowMetadata(content);
 
-                        // apply the actions
-                        final Consumer<RowMetadata> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
-                        action.accept(currentMetadata);
+                        Consumer<RowMetadata> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
+                        action.accept(rowMetadata);
 
-                        // if preview is enabled, let's compute the previous row metadata
+                        // setup the diff in case of preview
                         if (configuration.isPreview()) {
-                            RowMetadata previousMetadata = getRowMetadata(content);
-                            final Consumer<RowMetadata> previousAction = actions.get(0);
-                            previousAction.accept(previousMetadata);
-                            currentMetadata.setPreviousMetadata(previousMetadata);
+                            RowMetadata reference = new RowMetadata(rowMetadata.getColumns());
+                            Consumer<RowMetadata> referenceAction = actions.get(0);
+                            referenceAction.accept(reference);
+                            // TODO do the diff rowMetadata.diff(reference);
                         }
 
                         // write the result
-                        configuration.getOutput().write(currentMetadata);
+                        configuration.getOutput().write(rowMetadata);
                         return;
 
                     }
-                    case VALUE_NULL:
-                        break;
+                case VALUE_NULL:
+                    break;
                 }
             }
         } catch (JsonParseException e) {

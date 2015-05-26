@@ -1,11 +1,14 @@
 package org.talend.dataprep.api.dataset;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.talend.dataprep.api.dataset.diff.FlagNames;
 
 public class DataSetRowTest {
 
@@ -52,7 +55,7 @@ public class DataSetRowTest {
      *
      * @see DataSetRow#renameColumn(String, String)
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rename_to_an_existing_column() {
         // given
         String oldName = "firstName";
@@ -63,7 +66,53 @@ public class DataSetRowTest {
         row.renameColumn(oldName, newName);
 
         // then
-        fail("two columns cannot have the same name.");
+        assertEquals(row, createRow(defaultValues(), false));
+    }
+
+    /**
+     * Test the new flag.
+     */
+    @Test
+    public void diff_with_new_flag() {
+        DataSetRow row = createRow(defaultValues(), false);
+        DataSetRow oldRow = createRow(defaultValues(), true);
+
+        row.diff(oldRow);
+        Map<String, Object> actual = row.values();
+        assertEquals(actual.get(FlagNames.ROW_DIFF_KEY), NEW.getValue());
+    }
+
+    /**
+     * Test the delete flag.
+     */
+    @Test
+    public void diff_with_delete_flag() {
+        DataSetRow row = createRow(defaultValues(), true);
+        DataSetRow oldRow = createRow(defaultValues(), false);
+
+        row.diff(oldRow);
+        Map<String, Object> actual = row.values();
+        assertEquals(actual.get(FlagNames.ROW_DIFF_KEY), DELETE.getValue());
+    }
+
+    /**
+     * test the update flag.
+     */
+    @Test
+    public void diff_with_update_flag() {
+        DataSetRow row = createRow(defaultValues(), false);
+
+        final Map<String, String> oldValues = new HashMap<>(4);
+        oldValues.put("id", "2");
+        oldValues.put("firstName", "otoT");
+        oldValues.put("lastName", "ataT");
+        oldValues.put("age", "81");
+        DataSetRow oldRow = createRow(oldValues, false);
+
+        row.diff(oldRow);
+        Map<String, Object> actual = row.values();
+        Map<String, Object> diff = (Map<String, Object>) actual.get(FlagNames.DIFF_KEY);
+        diff.values().forEach(value -> assertEquals(value, UPDATE.getValue()));
     }
 
     /**

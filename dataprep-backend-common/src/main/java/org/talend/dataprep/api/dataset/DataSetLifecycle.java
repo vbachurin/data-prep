@@ -1,16 +1,22 @@
 package org.talend.dataprep.api.dataset;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Represents the lifecycle of the data set (information that can change over time).
  */
 public class DataSetLifecycle {
 
+    @JsonProperty("contentAnalyzed")
     private boolean contentAnalyzed;
 
+    @JsonProperty("schemaAnalyzed")
     private boolean schemaAnalyzed;
 
+    @JsonProperty("qualityAnalyzed")
     private boolean qualityAnalyzed;
-    
+
+    @JsonProperty("inError")
     private boolean inError;
 
     /**

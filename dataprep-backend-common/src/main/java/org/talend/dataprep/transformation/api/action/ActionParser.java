@@ -99,9 +99,9 @@ public class ActionParser implements BeanFactoryAware {
 
             } else {
                 // Should not happen, but no action means no op.
-                return new ParsedActions(row -> {
-                }, rowMetadata -> {
-                });
+                //@formatter:off
+                return new ParsedActions(row -> {}, rowMetadata -> {});
+                //@formatter:on
             }
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_ACTIONS, e);

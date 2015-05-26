@@ -14,6 +14,7 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Base class for all single column action.

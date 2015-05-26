@@ -1,15 +1,3 @@
-// ============================================================================
-//
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
-//
-// This source code is available under agreement available at
-// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
-//
-// You should have received a copy of the agreement
-// along with this program; if not, write to Talend SA
-// 9 rue Pages 92150 Suresnes, France
-//
-// ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.*;
@@ -37,6 +25,8 @@ import org.talend.dataprep.transformation.TransformationServiceTests;
 
 /**
  * Test class for DeleteEmpty action. Creates one consumer, and test it.
+ *
+ * @see DeleteEmpty
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -46,6 +36,7 @@ public class DeleteEmptyTest {
 
     private Consumer<DataSetRow> consumer;
 
+    /** The action to test. */
     @Autowired
     private DeleteEmpty deleteEmpty;
 
@@ -60,7 +51,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testDelete1() {
+    public void should_delete_because_value_not_set() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         DataSetRow dsr = new DataSetRow(values);
@@ -73,7 +64,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testDelete2() {
+    public void should_delete_because_null() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", null);
@@ -84,7 +75,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testDelete3() {
+    public void should_delete_because_empty() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "");
@@ -95,7 +86,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testDelete4() {
+    public void should_delete_because_value_is_made_of_spaces() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", " ");
@@ -106,7 +97,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testNotDelete1() {
+    public void should_not_delete_because_value_set() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "-");
@@ -121,7 +112,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testNotDelete2() {
+    public void should_not_delete_because_value_set_2() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", " a value ");
@@ -132,7 +123,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testNotDelete3() {
+    public void should_not_delete_because_value_set_of_boolean() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "true");
@@ -143,7 +134,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testNotDelete4() {
+    public void should_not_delete_because_value_set_of_number() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "45");
@@ -154,7 +145,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testNotDelete5() {
+    public void should_not_delete_because_value_set_of_negative_boolean() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "-12");
@@ -165,7 +156,7 @@ public class DeleteEmptyTest {
     }
 
     @Test
-    public void testNotDelete6() {
+    public void should_not_delete_because_value_set_of_float() {
         Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "0.001");
@@ -174,4 +165,5 @@ public class DeleteEmptyTest {
         consumer.accept(dsr);
         assertFalse(dsr.isDeleted());
     }
+
 }

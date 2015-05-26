@@ -1,54 +1,71 @@
 package org.talend.dataprep.api.dataset;
 
-import java.util.Objects;
-import java.util.Optional;
+import static org.springframework.util.StringUtils.isEmpty;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.util.StringUtils;
+import org.talend.dataprep.api.dataset.diff.Flag;
+import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.util.StringUtils;
-import org.talend.dataprep.api.type.Type;
-
 /**
- * Represents information about a column in a data set. It includes:
- * <ul>
- * <li>Name ({@link #getId()})</li>
- * <li>Type ({@link #getType()})</li>
- * </ul>
+ * Represents information about a column in a data set.
  * 
  * @see ColumnMetadata.Builder
  */
 public class ColumnMetadata {
 
-    private final Quality quality = new Quality();
+    /** Quality of the column. */
+    private final Quality quality;
 
+    /** Id of the column. */
     private String id;
 
-    private String typeName = "N/A"; //$NON-NLS-1$
+    /** Type of the column (N/A as default). */
+    private String typeName;
 
-    // number of first lines with a text header
-    // non per default
-    private int headerSize = 0;
+    /** Number of first lines with a text header (none per default). */
+    private int headerSize;
 
+    /** Optional diff flag that shows diff status of this column metadata. */
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonProperty(value = FlagNames.COLUMN_DIFF_KEY)
+    private Flag diffFlag;
+
+    /** Statistics of the column. */
     @JsonRawValue
-    private String statistics = "{}"; //$NON-NLS-1$
+    private String statistics;
 
-    // Needed when objects are read back from the db.
+    /**
+     * Default empty constructor.
+     */
     public ColumnMetadata() {
-        // Do not remove!
+        quality = new Quality();
+        typeName = "N/A"; //$NON-NLS-1$
+        headerSize = 0;
+        statistics = "{}"; //$NON-NLS-1$
+        diffFlag = null;
     }
 
+    /**
+     * Create a column metadata from the given parameters.
+     *
+     * @param id the column name.
+     * @param typeName the column type.
+     */
     public ColumnMetadata(String id, String typeName) {
+        this();
         this.id = id;
         this.typeName = typeName;
     }
@@ -68,43 +85,46 @@ public class ColumnMetadata {
         return typeName;
     }
 
+    /**
+     * @param typeName the typename to set.
+     */
     public void setType(String typeName) {
         this.typeName = typeName;
     }
 
+    /**
+     * @return the diff flag.
+     */
+    public Flag getDiffFlag() {
+        return diffFlag;
+    }
+
+    /**
+     * @param diffFlag the diff flag to set.
+     */
+    public void setDiffFlag(Flag diffFlag) {
+        this.diffFlag = diffFlag;
+    }
+
+    /**
+     * @return the header size.
+     */
     public int getHeaderSize() {
         return headerSize;
     }
 
+    /**
+     * @param headerSize the header size to set.
+     */
     public void setHeaderSize(int headerSize) {
         this.headerSize = headerSize;
     }
 
+    /**
+     * @return the quality.
+     */
     public Quality getQuality() {
         return quality;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return Optional.ofNullable(obj) //
-                .filter(that -> that instanceof ColumnMetadata) //
-                .map(that -> (ColumnMetadata) that) //
-                .filter(that -> Objects.equals(this.id, that.id)) //
-                .filter(that -> Objects.equals(this.typeName, that.typeName)) //
-                .isPresent();
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + typeName.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "ColumnMetadata{" + "quality=" + quality + ", name='" + id + '\'' + ", typeName='" + typeName + '\''
-                + ", headerSize=" + headerSize + '}';
     }
 
     /**
@@ -141,6 +161,45 @@ public class ColumnMetadata {
         }
     }
 
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return Optional.ofNullable(obj) //
+                .filter(that -> that instanceof ColumnMetadata) //
+                .map(that -> (ColumnMetadata) that) //
+                .filter(that -> Objects.equals(this.id, that.id)) //
+                .filter(that -> Objects.equals(this.typeName, that.typeName)) //
+                .filter(that -> Objects.equals(this.diffFlag, that.diffFlag)) //
+                .isPresent();
+    }
+
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + typeName.hashCode();
+        return result;
+    }
+
+    /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ColumnMetadata{" + //
+                "quality=" + quality + //
+                ", name='" + id + '\'' + //
+                ", typeName='" + typeName + '\'' + //
+                ", headerSize=" + headerSize + //
+                ", diffFlag=" + diffFlag + //
+                ", statistics='" + statistics + '\'' + //
+                '}';
+    }
+
     public static class Builder {
 
         private Type type;
@@ -155,12 +214,14 @@ public class ColumnMetadata {
 
         private int headerSize;
 
+        private Flag diffFlag = null;
+
         public static ColumnMetadata.Builder column() {
             return new Builder();
         }
 
         public ColumnMetadata.Builder name(String name) {
-            if (StringUtils.isEmpty(name)) {
+            if (isEmpty(name)) {
                 throw new IllegalArgumentException("Name cannot be null or empty.");
             }
             this.name = name;
@@ -203,6 +264,7 @@ public class ColumnMetadata {
             this.valid = originalQuality.getValid();
             this.headerSize = original.getHeaderSize();
             this.type = Type.get(original.getType());
+            this.diffFlag = original.getDiffFlag();
             return this;
         }
 
@@ -212,6 +274,7 @@ public class ColumnMetadata {
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);
             columnMetadata.setHeaderSize(this.headerSize);
+            columnMetadata.setDiffFlag((this.diffFlag));
             return columnMetadata;
         }
     }

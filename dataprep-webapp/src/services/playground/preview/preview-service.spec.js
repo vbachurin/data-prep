@@ -50,7 +50,8 @@ describe('Preparation Service', function () {
             {firstname: 'Pepe', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
             {firstname: 'Pupu'}
         ],
-        columns: ['firstname']
+        columns: ['firstname'],
+        preview: true
     };
     //diff inserted at ids [0,1,2,6,7,10], with 'Tata Bis' filtered
     var filteredModifiedData = {
@@ -68,7 +69,8 @@ describe('Preparation Service', function () {
             {firstname: 'Pupu'},
             { tdpId: 11, firstname: 'Pypy' }
         ],
-        columns: ['firstname']
+        columns: ['firstname'],
+        preview: true
     };
 
     beforeEach(module('data-prep.services.playground'));
@@ -195,6 +197,6 @@ describe('Preparation Service', function () {
 
         //then
         expect(DatagridService.updateData.calls.count()).toBe(2);
-        expect(DatagridService.updateData.calls.argsFor(1)[0]).toEqual(data);
+        expect(DatagridService.updateData.calls.argsFor(1)[0]).toBe(data);
     }));
 });

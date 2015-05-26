@@ -1,7 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.talend.dataprep.api.dataset.DataSetRowWithDiff.FLAG.UPDATE;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -9,11 +7,10 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.DataSetRowWithDiff;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * Lower case a column in a dataset row.
@@ -63,23 +60,6 @@ public class LowerCase extends SingleColumnAction {
 
             String newValue = value.toLowerCase();
             row.set(columnName, newValue);
-
-            // compute the diff if needed
-            if (!(row instanceof DataSetRowWithDiff)) {
-                return;
-            }
-
-            DataSetRowWithDiff rowWithDiff = (DataSetRowWithDiff) row;
-            String originalValue = rowWithDiff.getReference().get(columnName);
-
-            // lower case action can only update value, no need to worry about new or deleted flags, they're taken
-            // cared of by other actions
-
-            if (StringUtils.equals(originalValue, newValue)) {
-                rowWithDiff.clearFlag(columnName);
-            } else {
-                rowWithDiff.setFlag(UPDATE, columnName);
-            }
         };
     }
 

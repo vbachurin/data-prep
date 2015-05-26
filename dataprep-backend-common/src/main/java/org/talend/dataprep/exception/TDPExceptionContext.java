@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Exception context holds the exception context, e.g. additional information
- * about TDPException when they occur.
+ * Exception context holds the exception context, e.g. additional information about TDPException when they occur.
  */
 public class TDPExceptionContext {
 
@@ -55,7 +54,9 @@ public class TDPExceptionContext {
     }
 
     public TDPExceptionContext from(Map<String, Object> context) {
-        this.context.putAll(context);
+        if (context != null) {
+            this.context.putAll(context);
+        }
         return this;
     }
 }

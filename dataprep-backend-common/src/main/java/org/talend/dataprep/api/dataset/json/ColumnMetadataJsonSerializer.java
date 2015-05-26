@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.api.dataset.diff.FlagNames;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -15,7 +16,8 @@ class ColumnMetadataJsonSerializer extends JsonSerializer<ColumnMetadata> {
     }
 
     @Override
-    public void serialize(ColumnMetadata column, JsonGenerator generator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(ColumnMetadata column, JsonGenerator generator, SerializerProvider serializerProvider)
+            throws IOException {
         generator.writeStartObject();
         {
             // Column name
@@ -38,6 +40,10 @@ class ColumnMetadataJsonSerializer extends JsonSerializer<ColumnMetadata> {
             // Column type
             String typeName = column.getType() != null ? column.getType() : "N/A"; //$NON-NLS-1
             generator.writeStringField("type", typeName); //$NON-NLS-1
+            // diff status
+            if (column.getDiffFlag() != null) {
+                generator.writeStringField(FlagNames.COLUMN_DIFF_KEY, column.getDiffFlag().getValue());
+            }
         }
         generator.writeEndObject();
     }

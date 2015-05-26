@@ -37,6 +37,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.diff.Flag;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
@@ -117,11 +118,41 @@ public class RenameTest {
 
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
+        //@formatter:off
+        ColumnMetadata renamedMetadata = ColumnMetadata.Builder.column()
+                .name("NAME_FIRST")
+                .type(Type.STRING)
+                .headerSize(102)
+                .empty(0)
+                .invalid(2)
+                .valid(5)
+                .build();
+        //@formatter:on
+
         List<ColumnMetadata> expected = new ArrayList<>();
-        ColumnMetadata renamedMetadata = ColumnMetadata.Builder.column().name("NAME_FIRST").type(Type.STRING).headerSize(102)
-                .empty(0).invalid(2).valid(5).build();
         expected.add(renamedMetadata);
 
         assertEquals(expected, actual);
     }
+
+    private ColumnMetadata getColumn(String name) {
+        //@formatter:off
+        return ColumnMetadata.Builder
+                .column()
+                .name(name)
+                .type(Type.STRING)
+                .headerSize(102)
+                .empty(0)
+                .invalid(0)
+                .valid(1)
+                .build();
+        //@formatter:on
+    }
+
+    private ColumnMetadata getColumn(String name, Flag flag) {
+        ColumnMetadata column = getColumn(name);
+        column.setDiffFlag(flag);
+        return column;
+    }
+
 }

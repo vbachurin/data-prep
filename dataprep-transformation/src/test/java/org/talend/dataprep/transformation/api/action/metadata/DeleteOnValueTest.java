@@ -13,8 +13,6 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.DataSetRowWithDiff.FLAG.DELETE;
-import static org.talend.dataprep.api.dataset.DataSetRowWithDiff.ROW_DIFF_KEY;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,7 +32,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.DataSetRowWithDiff;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
 
@@ -165,33 +162,4 @@ public class DeleteOnValueTest {
         assertEquals("üBerlin", dsr.get("city"));
     }
 
-    @Test
-    public void should_delete_with_diff() {
-        Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "Berlin");
-        DataSetRowWithDiff row = new DataSetRowWithDiff(new DataSetRow(values), new DataSetRow(values));
-
-        Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.putAll(values);
-        expectedValues.put(ROW_DIFF_KEY, DELETE.getValue());
-
-        consumer.accept(row);
-        assertTrue(row.isDeleted());
-
-        assertEquals(expectedValues, row.values());
-    }
-
-    @Test
-    public void should_not_delete_with_diff() {
-        Map<String, String> values = new HashMap<>();
-        values.put("name", "David Bowie");
-        values.put("city", "Aberdeen");
-        DataSetRowWithDiff row = new DataSetRowWithDiff(new DataSetRow(values), new DataSetRow(values));
-
-        consumer.accept(row);
-        assertFalse(row.isDeleted());
-
-        assertEquals(values, row.values());
-    }
 }

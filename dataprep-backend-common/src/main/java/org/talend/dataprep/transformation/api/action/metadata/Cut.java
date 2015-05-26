@@ -9,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(Cut.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
 public class Cut extends SingleColumnAction {

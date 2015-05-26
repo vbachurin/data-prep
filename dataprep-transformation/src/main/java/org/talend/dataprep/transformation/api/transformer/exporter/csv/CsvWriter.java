@@ -20,7 +20,6 @@ public class CsvWriter implements TransformerWriter {
 
     public CsvWriter(final OutputStream output, final char separator) {
         writer = new CSVWriter(new OutputStreamWriter(output), separator);
-
     }
 
     @Override
@@ -31,6 +30,9 @@ public class CsvWriter implements TransformerWriter {
 
     @Override
     public void write(final DataSetRow row) throws IOException {
+        if (columnIds == null) {
+            throw new UnsupportedOperationException("Write columns should be called before to init column list");
+        }
         final String[] csvRow = Arrays.stream(columnIds).map(row::get).toArray(String[]::new);
         writer.writeNext(csvRow);
     }

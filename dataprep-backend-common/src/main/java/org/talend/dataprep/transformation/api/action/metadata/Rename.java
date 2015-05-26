@@ -11,9 +11,13 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Rename a column.
+ *
+ * If the column to rename does not exist or the new name is already used, nothing happen.
  */
 @Component(Rename.ACTION_BEAN_PREFIX + Rename.RENAME_ACTION_NAME)
 public class Rename extends SingleColumnAction {
@@ -101,19 +105,20 @@ public class Rename extends SingleColumnAction {
             String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
 
-            // a new row metadata must be returned, the given one cannot be altered nor reused
             List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size());
 
             for (ColumnMetadata column : rowMetadata.getColumns()) {
                 ColumnMetadata newColumnMetadata;
                 // rename the column
                 if (StringUtils.equals(columnName, column.getId())) {
-                    newColumnMetadata = ColumnMetadata.Builder.column()
-                            .name(newColumnName)
-                            // new name
-                            .type(Type.get(column.getType())).empty(column.getQuality().getEmpty())
-                            .invalid(column.getQuality().getInvalid()).valid(column.getQuality().getValid())
-                            .headerSize(column.getHeaderSize()).build();
+                    newColumnMetadata = ColumnMetadata.Builder.column() //
+                            .name(newColumnName) // new name
+                            .type(Type.get(column.getType())) //
+                            .empty(column.getQuality().getEmpty()) //
+                            .invalid(column.getQuality().getInvalid()) //
+                            .valid(column.getQuality().getValid()) //
+                            .headerSize(column.getHeaderSize()) //
+                            .build();
                 }
                 // add a copy of the column
                 else {
@@ -123,7 +128,6 @@ public class Rename extends SingleColumnAction {
             }
 
             rowMetadata.setColumns(newColumns);
-
         };
     }
 

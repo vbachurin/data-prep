@@ -22,8 +22,8 @@ import javax.annotation.Nonnull;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.Item;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * This will compute the absolute value for numerical columns

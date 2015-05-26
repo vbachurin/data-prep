@@ -1,8 +1,14 @@
 package org.talend.dataprep.api.dataset;
 
+import static org.talend.dataprep.api.dataset.diff.Flag.*;
+
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import org.apache.commons.lang.StringUtils;
+import org.talend.dataprep.api.dataset.diff.FlagNames;
 
 /**
  * A DataSetRow is a row of a dataset.
@@ -12,13 +18,17 @@ public class DataSetRow implements Cloneable {
     /** True if this row is deleted. */
     private boolean deleted = false;
 
-    /** Values are stored in a map. */
-    protected final Map<String, String> values = new HashMap<>();
+    /** the old value used for the diff. */
+    private DataSetRow oldValue;
+
+    /** Values of the dataset row. */
+    private final Map<String, String> values;
 
     /**
      * Default empty constructor.
      */
     public DataSetRow() {
+        values = new LinkedHashMap<>();
     }
 
     /**
@@ -27,6 +37,7 @@ public class DataSetRow implements Cloneable {
      * @param values the row value.
      */
     public DataSetRow(Map<String, String> values) {
+        this();
         this.values.putAll(values);
     }
 
@@ -66,6 +77,15 @@ public class DataSetRow implements Cloneable {
     }
 
     /**
+     * Set the old row for diff
+     *
+     * @param oldRow - the original row
+     */
+    public void diff(final DataSetRow oldRow) {
+        this.oldValue = oldRow;
+    }
+
+    /**
      * Here we decide the flags to set and write is to the response
      * <ul>
      * <li>flag NEW : deleted by old but not by new</li>
@@ -74,8 +94,44 @@ public class DataSetRow implements Cloneable {
      * </ul>
      */
     public Map<String, Object> values() {
-        final Map<String, Object> result = new HashMap<>(values.size() + 1);
+
+        final Map<String, Object> result = new LinkedHashMap<>(values.size() + 1);
+
+        // if not old value, no diff to compute
+        if (this.oldValue == null) {
+            result.putAll(values);
+            return result;
+        }
+
+        // row is no more deleted : we write row values with the *NEW* flag
+        if (oldValue.isDeleted() && !isDeleted()) {
+            result.put(FlagNames.ROW_DIFF_KEY, NEW.getValue());
+            result.putAll(values);
+        }
+        // row has been deleted : we write row values with the *DELETED* flag
+        else if (!oldValue.isDeleted() && isDeleted()) {
+            result.put(FlagNames.ROW_DIFF_KEY, DELETE.getValue());
+            result.putAll(oldValue.values());
+        }
+
+        // row has been updated : write the new values and get the diff for each value, then write the DIFF_KEY
+        // property
+
+        final Map<String, Object> diff = new HashMap<>();
+        final Map<String, Object> originalValues = oldValue.values();
+
+        values.entrySet().stream().forEach((entry) -> {
+            final Object originalValue = originalValues.get(entry.getKey());
+            if (!StringUtils.equals(entry.getValue(), (String) originalValue)) {
+                diff.put(entry.getKey(), UPDATE.getValue());
+            }
+        });
+
         result.putAll(values);
+        if (!diff.isEmpty()) {
+            result.put(FlagNames.DIFF_KEY, diff);
+        }
+
         return result;
     }
 
@@ -102,7 +158,11 @@ public class DataSetRow implements Cloneable {
      * Determine if the row should be written
      */
     public boolean shouldWrite() {
-        return !isDeleted();
+        if (this.oldValue == null) {
+            return !isDeleted();
+        } else {
+            return !oldValue.isDeleted() || !isDeleted();
+        }
     }
 
     /**
@@ -113,14 +173,14 @@ public class DataSetRow implements Cloneable {
      */
     public void renameColumn(String columnName, String newColumnName) {
 
-        // defensive programming against
+        // defensive programming against NPE
         if (!values.containsKey(columnName)) {
             return;
         }
 
         // columns cannot have the same name
         if (values.containsKey(newColumnName)) {
-            throw new IllegalArgumentException("column '" + newColumnName + "' already exists");
+            return;
         }
 
         synchronized (values) {

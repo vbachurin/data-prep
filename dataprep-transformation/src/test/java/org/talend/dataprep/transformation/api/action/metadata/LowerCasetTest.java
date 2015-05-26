@@ -13,8 +13,6 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.assertEquals;
-import static org.talend.dataprep.api.dataset.DataSetRowWithDiff.DIFF_KEY;
-import static org.talend.dataprep.api.dataset.DataSetRowWithDiff.FLAG.UPDATE;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,7 +32,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.DataSetRowWithDiff;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
 
@@ -107,48 +104,4 @@ public class LowerCasetTest {
         assertEquals(expectedValues, row.values());
     }
 
-    /**
-     * @see LowerCase#create(Map)
-     */
-    @Test
-    public void should_lowercase_with_diff() {
-        Map<String, String> values = new HashMap<>();
-        values.put("name", "Vincent");
-        values.put("entity", "R&D");
-        values.put("joined", "May 20th 2015");
-        DataSetRowWithDiff row = new DataSetRowWithDiff(new DataSetRow(values), new DataSetRow(values));
-
-        Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("name", "Vincent");
-        expectedValues.put("entity", "r&d"); // R&D --> r&d
-        expectedValues.put("joined", "May 20th 2015");
-
-        // compute diff flag
-        Map<String, Object> diff = new HashMap<>();
-        diff.put("entity", UPDATE.getValue());
-        expectedValues.put(DIFF_KEY, diff);
-
-        rowClosure.accept(row);
-        assertEquals(expectedValues, row.values());
-    }
-
-    /**
-     * @see LowerCase#create(Map)
-     */
-    @Test
-    public void should_lowercase_without_diff() {
-        Map<String, String> values = new HashMap<>();
-        values.put("name", "Vincent");
-        values.put("entity", "sales");
-        values.put("joined", "May 20th 2015");
-        DataSetRowWithDiff row = new DataSetRowWithDiff(new DataSetRow(values), new DataSetRow(values));
-
-        Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("name", "Vincent");
-        expectedValues.put("entity", "sales");
-        expectedValues.put("joined", "May 20th 2015");
-
-        rowClosure.accept(row);
-        assertEquals(expectedValues, row.values());
-    }
 }

@@ -9,6 +9,8 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Model an action to perform on a dataset.
@@ -52,8 +54,8 @@ public interface ActionMetadata {
      * Returns the list of multiple valued parameters required for this Action to be executed. represented as list box
      * on the front end.
      * 
-     * @return A list of {@link Item items}. This should never return null, actions with no item should return empty
-     * list.
+     * @return A list of {@link org.talend.dataprep.transformation.api.action.parameters.Item items}. This should never
+     * return null, actions with no item should return empty list.
      **/
     Item[] getItems();
 
@@ -129,4 +131,11 @@ public interface ActionMetadata {
         return parsedParameters;
     }
 
+    /**
+     * @return True if the action is dynamic (i.e the parameters depends on the context
+     * (dataset/preparation/previous_actions)
+     */
+    default boolean isDynamic() {
+        return false;
+    }
 }

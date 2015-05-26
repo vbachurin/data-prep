@@ -178,11 +178,13 @@ describe('Playground Service', function () {
             spyOn(RecipeService, 'disableStepsAfter').and.callFake(function() {});
         }));
 
-        it('should load existing dataset', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
+        it('should load existing preparation when it is not already loaded', inject(function($rootScope, PlaygroundService, PreparationService, FilterService, RecipeService, DatagridService) {
             //given
             var preparation = {
+                id: '6845521254541',
                 dataset: {id: '1', name: 'my dataset'}
             };
+            PreparationService.currentPreparationId = '5746518486846';
 
             //when
             PlaygroundService.load(preparation);
@@ -198,7 +200,33 @@ describe('Playground Service', function () {
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
 
-        it('should load preparation content at a specific spec', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
+        it('should not change playground if the preparation to load is already loaded', inject(function($rootScope, PlaygroundService, PreparationService, FilterService, RecipeService, DatagridService) {
+            //given
+            var preparation = {
+                id: '6845521254541',
+                dataset: {id: '1', name: 'my dataset'}
+            };
+            var data = {};
+            var metadata = {};
+
+            PreparationService.currentPreparationId = '6845521254541';
+            PlaygroundService.currentMetadata = metadata;
+            PlaygroundService.currentData = data;
+
+            //when
+            PlaygroundService.load(preparation);
+            $rootScope.$apply();
+
+            //then
+            expect(PlaygroundService.currentMetadata).toBe(metadata);
+            expect(PlaygroundService.currentData).toBe(data);
+            expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
+            expect(RecipeService.refresh).not.toHaveBeenCalled();
+            expect(DatagridService.setDataset).not.toHaveBeenCalled();
+            expect($rootScope.$emit).not.toHaveBeenCalled();
+        }));
+
+        it('should load preparation content at a specific step', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
             //given
             var step = {
                 transformation: {stepId: 'a4353089cb0e039ac2'}
@@ -255,4 +283,63 @@ describe('Playground Service', function () {
         expect(PlaygroundService.preparationName).toBe(name);
         expect(PlaygroundService.originalPreparationName).toBe(name);
     }));
+
+    describe('trasnformation', function() {
+        var result, metadata;
+        beforeEach(inject(function($rootScope, $q, PlaygroundService, PreparationService, DatagridService, RecipeService) {
+            result = {
+                'records': [{
+                    'firstname': 'Grover',
+                    'avgAmount': '82.4',
+                    'city': 'BOSTON',
+                    'birth': '01-09-1973',
+                    'registration': '17-02-2008',
+                    'id': '1',
+                    'state': 'AR',
+                    'nbCommands': '41',
+                    'lastname': 'Quincy'
+                }, {
+                    'firstname': 'Warren',
+                    'avgAmount': '87.6',
+                    'city': 'NASHVILLE',
+                    'birth': '11-02-1960',
+                    'registration': '18-08-2007',
+                    'id': '2',
+                    'state': 'WA',
+                    'nbCommands': '17',
+                    'lastname': 'Johnson'
+                }]
+            };
+
+            metadata = {id : 'e85afAa78556d5425bc2'};
+            PlaygroundService.currentMetadata = metadata;
+
+            spyOn($rootScope, '$emit').and.callThrough();
+            spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: result}));
+            spyOn(DatagridService, 'updateData').and.returnValue();
+            spyOn(RecipeService, 'refresh').and.returnValue();
+        }));
+
+        it('should append preparation step', inject(function ($rootScope, PlaygroundService, PreparationService) {
+            //given
+            var action = 'uppercase';
+            var column = {id: 'firstname'};
+            var parameters = {param1: 'param1Value', param2: 4};
+
+            //when
+            PlaygroundService.appendStep(action, column, parameters);
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+            $rootScope.$digest();
+
+            //then
+            expect(PreparationService.appendStep).toHaveBeenCalledWith(
+                metadata,
+                action,
+                column,
+                parameters
+                );
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        }));
+    });
 });

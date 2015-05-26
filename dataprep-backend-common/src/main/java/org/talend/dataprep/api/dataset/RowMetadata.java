@@ -11,9 +11,6 @@ public class RowMetadata {
     /** List of row metadata. */
     private List<ColumnMetadata> columnMetadata = new ArrayList<>();
 
-    /** The previous metadata in case of a diff. */
-    private List<ColumnMetadata> previousMetadata;
-
     /**
      * Default constructor.
      * 
@@ -42,28 +39,6 @@ public class RowMetadata {
      */
     public int size() {
         return columnMetadata.size();
-    }
-
-    /**
-     * Set the previous row metadata and compute the diff with the current one.
-     * 
-     * @param previousMetadata to set.
-     */
-    public void setPreviousMetadata(RowMetadata previousMetadata) {
-        this.previousMetadata = previousMetadata.getColumns();
-        updateDiffMetadata();
-    }
-
-    /**
-     * Update the internal diff metadata.
-     */
-    private void updateDiffMetadata() {
-
-        // quick test to prevent cpu waste
-        if (previousMetadata == null) {
-            return;
-        }
-
     }
 
 }
