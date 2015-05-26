@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty("dataset.spark.master")
 public class Spark {
 
-    @Value("dataset.spark.master")
+    @Value("${dataset.spark.master}")
     private String sparkMasterUrl;
 
     @Bean
