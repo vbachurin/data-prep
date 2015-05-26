@@ -128,7 +128,7 @@ describe('Transform cluster params controller', function () {
         for(var i = 0; i < ctrl.details.clusters.length; i++) {
             var parameters = ctrl.details.clusters[i].parameters;
             for(var j = 0; j < parameters.length; j++) {
-                expect(parameters[j].default).toBe(true);
+                expect(parameters[j].default).toBe('true');
             }
         }
     });
