@@ -26,7 +26,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 
 /**

@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata;
+package org.talend.dataprep.transformation.api.action.parameters;
 
 import org.talend.dataprep.i18n.MessagesBundle;
 
@@ -9,6 +9,12 @@ public class Parameter {
     private final String type;
 
     private final String defaultValue;
+
+    public Parameter(String name, String type) {
+        this.name = name;
+        this.type = type;
+        this.defaultValue = null;
+    }
 
     public Parameter(String name, String type, String defaultValue) {
         this.name = name;

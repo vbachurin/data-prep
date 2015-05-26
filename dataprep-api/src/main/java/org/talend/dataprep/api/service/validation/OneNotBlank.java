@@ -15,13 +15,13 @@ import javax.validation.Payload;
  */
 @Target({TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = OneNotNullValidator.class)
+@Constraint(validatedBy = OneNotBlankValidator.class)
 @Documented
-public @interface OneNotNull {
+public @interface OneNotBlank {
 
     String[] value();
 
-    String message() default "OneNotNullValidator : all the tested fields are null";
+    String message() default "OneNotBlankValidator : all the tested fields are null/blank";
 
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
