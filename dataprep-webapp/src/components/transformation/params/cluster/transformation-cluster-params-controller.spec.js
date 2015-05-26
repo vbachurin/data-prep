@@ -19,21 +19,21 @@ describe('Transform cluster params controller', function () {
                             type: 'boolean',
                             description: 'parameter.Texa.desc',
                             label: 'parameter.Texa.label',
-                            default: 'true'
+                            default: null
                         },
                         {
                             name: 'Tixass',
                             type: 'boolean',
                             description: 'parameter.Tixass.desc',
                             label: 'parameter.Tixass.label',
-                            default: 'true'
+                            default: null
                         },
                         {
                             name: 'Tex@s',
                             type: 'boolean',
                             description: 'parameter.Tex@s.desc',
                             label: 'parameter.Tex@s.label',
-                            default: 'true'
+                            default: null
                         }
                     ],
                     'replace': {
@@ -51,35 +51,35 @@ describe('Transform cluster params controller', function () {
                             type: 'boolean',
                             description: 'parameter.Massachusetts.desc',
                             label: 'parameter.Massachusetts.label',
-                            default: 'false'
+                            default: null
                         },
                         {
                             name: 'Masachusetts',
                             type: 'boolean',
                             description: 'parameter.Masachusetts.desc',
                             label: 'parameter.Masachusetts.label',
-                            default: 'true'
+                            default: null
                         },
                         {
                             name: 'Massachussetts',
                             type: 'boolean',
                             description: 'parameter.Massachussetts.desc',
                             label: 'parameter.Massachussetts.label',
-                            default: 'true'
+                            default: null
                         },
                         {
                             name: 'Massachusets',
                             type: 'boolean',
                             description: 'parameter.Massachusets.desc',
                             label: 'parameter.Massachusets.label',
-                            default: 'true'
+                            default: null
                         },
                         {
                             name: 'Masachussets',
                             type: 'boolean',
                             description: 'parameter.Masachussets.desc',
                             label: 'parameter.Masachussets.label',
-                            default: 'true'
+                            default: null
                         }
                     ],
                     replace: {
@@ -118,6 +118,19 @@ describe('Transform cluster params controller', function () {
         //then
         expect(ctrl.details.clusters[0].active).toBe(true);
         expect(ctrl.details.clusters[1].active).toBe(true);
+    });
+
+    it('should init clusters parameters default value to true', function () {
+        //when
+        var ctrl = createController();
+
+        //then
+        for(var i = 0; i < ctrl.details.clusters.length; i++) {
+            var parameters = ctrl.details.clusters[i].parameters;
+            for(var j = 0; j < parameters.length; j++) {
+                expect(parameters[j].default).toBe(true);
+            }
+        }
     });
 
     it('should set clusters "active" flags to "allCheckboxState" flag value', function () {

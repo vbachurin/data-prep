@@ -30,6 +30,7 @@ public class TextClustering extends AbstractDynamicAction {
             final String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
             final String value = row.get(columnName);
 
+            //replace only the value if present in parameters
             final String replaceValue = parameters.get(value);
             if (replaceValue != null) {
                 row.set(columnName, replaceValue);

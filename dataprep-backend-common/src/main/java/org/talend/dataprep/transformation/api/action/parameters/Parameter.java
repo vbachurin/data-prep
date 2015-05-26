@@ -10,6 +10,12 @@ public class Parameter {
 
     private final String defaultValue;
 
+    public Parameter(String name, String type) {
+        this.name = name;
+        this.type = type;
+        this.defaultValue = null;
+    }
+
     public Parameter(String name, String type, String defaultValue) {
         this.name = name;
         this.type = type;

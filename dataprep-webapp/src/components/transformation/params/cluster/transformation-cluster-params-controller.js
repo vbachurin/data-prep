@@ -42,7 +42,21 @@
             vm.allCheckboxState = !inactiveCluster;
         };
 
-        //init active flag on each cluster to true
+        /**
+         * @ngdoc method
+         * @name initParamsValues
+         * @methodOf data-prep.transformation-params.controller:TransformClusterParamsCtrl
+         * @description Initialize parameters values
+         */
+        var initParamsValues = function() {
+            _.forEach(vm.details.clusters, function(cluster) {
+                _.forEach(cluster.parameters, function(param) {
+                    param.default = true;
+                });
+            });
+        };
+
+        initParamsValues();
         vm.refreshClusterState();
     }
 
