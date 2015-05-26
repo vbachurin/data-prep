@@ -20,23 +20,29 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Represents information about a column in a data set.
+ * Represents information about a column in a data set. It includes:
+ * <ul>
+ * <li>Name ({@link #getId()})</li>
+ * <li>Type ({@link #getType()})</li>
+ * </ul>
  * 
  * @see ColumnMetadata.Builder
  */
 public class ColumnMetadata {
 
     /** Quality of the column. */
-    private final Quality quality;
+    @JsonProperty("quality")
+    private final Quality quality = new Quality();
 
     /** Id of the column. */
     private String id;
 
     /** Type of the column (N/A as default). */
-    private String typeName;
+    @JsonProperty("type")
+    private String typeName = "N/A"; //$NON-NLS-1$
 
     /** Number of first lines with a text header (none per default). */
-    private int headerSize;
+    private int headerSize = 0;
 
     /** Optional diff flag that shows diff status of this column metadata. */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -44,18 +50,13 @@ public class ColumnMetadata {
     private Flag diffFlag;
 
     /** Statistics of the column. */
+    @JsonProperty("statistics")
     @JsonRawValue
-    private String statistics;
+    private String statistics = "{}"; //$NON-NLS-1$
 
-    /**
-     * Default empty constructor.
-     */
+    // Needed when objects are read back from the db.
     public ColumnMetadata() {
-        quality = new Quality();
-        typeName = "N/A"; //$NON-NLS-1$
-        headerSize = 0;
-        statistics = "{}"; //$NON-NLS-1$
-        diffFlag = null;
+        // Do not remove!
     }
 
     /**
@@ -65,7 +66,6 @@ public class ColumnMetadata {
      * @param typeName the column type.
      */
     public ColumnMetadata(String id, String typeName) {
-        this();
         this.id = id;
         this.typeName = typeName;
     }
@@ -127,6 +127,30 @@ public class ColumnMetadata {
         return quality;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return Optional.ofNullable(obj) //
+                .filter(that -> that instanceof ColumnMetadata) //
+                .map(that -> (ColumnMetadata) that) //
+                .filter(that -> Objects.equals(this.diffFlag, that.diffFlag)) //
+                .filter(that -> Objects.equals(this.id, that.id)) //
+                .filter(that -> Objects.equals(this.typeName, that.typeName)) //
+                .isPresent();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + typeName.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ColumnMetadata{" + "quality=" + quality + ", name='" + id + '\'' + ", typeName='" + typeName + '\''
+                + ", headerSize=" + headerSize + '}';
+    }
+
     /**
      * @return The statistics (as raw JSON content) returned by data quality library.
      */
@@ -159,45 +183,6 @@ public class ColumnMetadata {
                         + "' but don't know how to interpret it.");
             }
         }
-    }
-
-    /**
-     * @see Object#equals(Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        return Optional.ofNullable(obj) //
-                .filter(that -> that instanceof ColumnMetadata) //
-                .map(that -> (ColumnMetadata) that) //
-                .filter(that -> Objects.equals(this.id, that.id)) //
-                .filter(that -> Objects.equals(this.typeName, that.typeName)) //
-                .filter(that -> Objects.equals(this.diffFlag, that.diffFlag)) //
-                .isPresent();
-    }
-
-    /**
-     * @see Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + typeName.hashCode();
-        return result;
-    }
-
-    /**
-     * @see Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "ColumnMetadata{" + //
-                "quality=" + quality + //
-                ", name='" + id + '\'' + //
-                ", typeName='" + typeName + '\'' + //
-                ", headerSize=" + headerSize + //
-                ", diffFlag=" + diffFlag + //
-                ", statistics='" + statistics + '\'' + //
-                '}';
     }
 
     public static class Builder {

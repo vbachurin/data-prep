@@ -1,11 +1,16 @@
 package org.talend.dataprep.api.dataset;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Quality {
 
+    @JsonProperty("empty")
     private int empty;
 
+    @JsonProperty("invalid")
     private int invalid;
 
+    @JsonProperty("valid")
     private int valid;
 
     public int getEmpty() {
