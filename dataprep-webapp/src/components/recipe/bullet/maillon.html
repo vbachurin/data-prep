@@ -1,0 +1,5 @@
+<svg height="90" width="30" ng-class="{'maillon-circle-disabled all-svg-cls':step.inactive, 'maillon-circle all-svg-cls':!step.inactive}">
+    <path ng-show="type === 'middleChain' || type === 'endChain'" ng-attr-d={{topPath}} />
+    <circle cx="15" ng-attr-cy={{circleCenterY}} r=10 />
+    <path ng-show="type === 'startChain' || type === 'middleChain'" ng-attr-d={{bottomPath}} />
+</svg>

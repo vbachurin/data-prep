@@ -7,12 +7,12 @@
             <span class="recipe-description">{{step.transformation.label}}</span>
             {{::'RECIPE_ITEM_ON_COL' | translate}}
             <span class="recipe-description recipe-column-name">{{step.column.id}}</span>
+
+            <chain-link class="step-trigger2" step="step" step-index="$index" ng-if="recipeCtrl.recipe.length === 1" type="onlyone" bulletcolor="#b6be00"></chain-link>
+            <chain-link class="step-trigger2" step="step" step-index="$index" ng-if="($index === 0 && recipeCtrl.recipe.length !== 1)" type="startChain" alone="true" bulletcolor="#b6be00"></chain-link>
+            <chain-link class="step-trigger2" step="step" step-index="$index" ng-if="($index > 0 && $index < recipeCtrl.recipe.length-1)" type="middleChain" bulletcolor="#b6be00"></chain-link>
+            <chain-link class="step-trigger2" step="step" step-index="$index" ng-if="($index === recipeCtrl.recipe.length-1 && recipeCtrl.recipe.length !== 1)" type="endChain" bulletcolor="#b6be00"></chain-link>
         </div>
-        <div class="step-trigger"
-           ng-class="{downlight: step.downlight, highlight: step.highlight}"
-           ng-click="recipeCtrl.toggleStep(step)"
-           ng-mouseleave="recipeCtrl.stepHoverEnd()"
-           ng-mouseenter="recipeCtrl.stepHoverStart($index)"></div>
 
         <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>

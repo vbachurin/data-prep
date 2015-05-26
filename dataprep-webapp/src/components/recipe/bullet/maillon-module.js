@@ -9,11 +9,5 @@
      * @requires data-prep.services.recipe
      * @requires data-prep.services.preparation
      */
-    angular.module('data-prep.recipe', [
-        'pascalprecht.translate',
-        'data-prep.services.playground',
-        'data-prep.services.recipe',
-        'data-prep.services.preparation',
-        'data-prep.chainLink'
-    ]);
+    angular.module('data-prep.chainLink', []);
 })();

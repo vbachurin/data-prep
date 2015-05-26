@@ -25,6 +25,7 @@
         'data-prep.filter-list',
         'data-prep.recipe',
         'data-prep.suggestions',
+        'data-prep.chainLink',
         'data-prep.services.preparation',
         'data-prep.services.playground'
     ]);
