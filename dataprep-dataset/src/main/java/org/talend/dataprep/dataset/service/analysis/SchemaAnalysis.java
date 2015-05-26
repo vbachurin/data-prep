@@ -69,13 +69,13 @@ public class SchemaAnalysis {
                             LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
                             // Determine schema for the content (on the 20 first rows).
                             Analyzer<DataType> analyzer = new DataTypeAnalyzer();
-                            stream.limit(20).forEach(row -> {
+                            stream.limit(20).map(row -> {
                                 final Map<String, Object> rowValues = row.values();
                                 final List<String> strings = stream(rowValues.values().spliterator(), false) //
                                         .map(String::valueOf) //
                                         .collect(Collectors.<String>toList());
-                                analyzer.analyze(strings.toArray(new String[strings.size()]));
-                            });
+                                return strings.toArray(new String[strings.size()]);
+                            }).forEach(analyzer::analyze);
                             // Find the best suitable type
                             columnTypes = analyzer.getResult();
                             final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();

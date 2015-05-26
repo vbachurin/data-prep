@@ -11,12 +11,14 @@ import java.util.stream.Stream;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -38,6 +40,9 @@ import org.talend.datascience.common.inference.type.DataType;
 public class QualityAnalysis {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QualityAnalysis.class);
+
+    @Autowired
+    JmsTemplate jmsTemplate;
 
     @Autowired
     DataSetMetadataRepository repository;
@@ -69,7 +74,8 @@ public class QualityAnalysis {
                         final List<ColumnMetadata> columns = metadata.getRow().getColumns();
                         DataType.Type[] types = new DataType.Type[columns.size()];
                         for (int i = 0; i < columns.size(); i++) {
-                            switch (Type.get(columns.get(i).getType())) {
+                            final String type = columns.get(i).getType();
+                            switch (Type.get(type)) {
                                 case ANY:
                                 case STRING:
                                     types[i] = DataType.Type.STRING;
@@ -90,18 +96,20 @@ public class QualityAnalysis {
                                 case DATE:
                                     types[i] = DataType.Type.DATE;
                                     break;
+                                default:
+                                    throw new NotImplementedException("No support for '" + type + "'.");
                             }
                         }
                         // Run analysis
                         LOGGER.info("Analyzing quality of dataset #{}...", dataSetId);
                         Analyzer<ValueQuality> analyzer = new ValueQualityAnalyzer(types);
-                        stream.forEach(row -> {
+                        stream.map(row -> {
                             final Map<String, Object> rowValues = row.values();
                             final List<String> strings = stream(rowValues.values().spliterator(), false) //
                                     .map(String::valueOf) //
                                     .collect(Collectors.<String>toList());
-                            analyzer.analyze(strings.toArray(new String[strings.size()]));
-                        });
+                            return strings.toArray(new String[strings.size()]);
+                        }).forEach(analyzer::analyze);
                         // Determine content size
                         final List<ValueQuality> analyzerResult = analyzer.getResult();
                         final Iterator<ColumnMetadata> iterator = metadata.getRow().getColumns().iterator();
@@ -124,6 +132,12 @@ public class QualityAnalysis {
                         metadata.getLifecycle().qualityAnalyzed(true);
                         repository.add(metadata);
                         LOGGER.info("Analyzed quality of dataset #{}.", dataSetId);
+                        // Asks for a in depth schema analysis (for column type information).
+                        jmsTemplate.send(Destinations.STATISTICS_ANALYSIS, session -> {
+                            Message schemaAnalysisMessage = session.createMessage();
+                            schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
+                            return schemaAnalysisMessage;
+                        });
                     } else {
                         LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                     }
