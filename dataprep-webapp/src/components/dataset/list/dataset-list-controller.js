@@ -61,8 +61,12 @@
                     MessageService.error('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', {type: 'dataset'});
                 }
             } else{
-                MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
                 DatasetListService.refreshDatasets();
+                if (dataset.type){
+                    openDraft(dataset);
+                }else{
+                    MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
+                }
             }
         };
 
