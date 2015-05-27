@@ -6,6 +6,7 @@ import java.util.List;
 public enum Type {
     ANY("any"), //$NON-NLS-1$
     STRING("string", ANY), //$NON-NLS-1$
+    CHAR("char", STRING), //$NON-NLS-1$
     NUMERIC("numeric", ANY), //$NON-NLS-1$
     INTEGER("integer", NUMERIC), //$NON-NLS-1$
     DOUBLE("double", NUMERIC), //$NON-NLS-1$

@@ -96,6 +96,9 @@ public class QualityAnalysis {
                                 case DATE:
                                     types[i] = DataType.Type.DATE;
                                     break;
+                                case CHAR:
+                                    types[i] = DataType.Type.CHAR;
+                                    break;
                                 default:
                                     throw new NotImplementedException("No support for '" + type + "'.");
                             }
