@@ -8,7 +8,7 @@
      * <b style="color: red;">WARNING : do NOT use this service directly.
      * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      */
-    function DatasetRestService($rootScope, $upload, $http, RestURLs,$log) {
+    function DatasetRestService($rootScope, $upload, $http, RestURLs) {
         var self = this;
 
         /**

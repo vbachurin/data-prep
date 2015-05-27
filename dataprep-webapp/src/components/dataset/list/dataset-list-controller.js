@@ -30,7 +30,7 @@
          * @param {object} dataset - the dataset to open
          */
         vm.open = function(dataset) {
-            PlaygroundService.initPlayground(dataset,false)
+            PlaygroundService.initPlayground(dataset)
                 .then(PlaygroundService.show);
         };
 
@@ -70,10 +70,6 @@
             }
         };
 
-        vm.update = function(dataset){
-            console.log('update');
-        };
-
         /**
          * @ngdoc method
          * @name processCertification
@@ -92,7 +88,6 @@
          */
         var loadUrlSelectedDataset = function(datasets) {
             if($stateParams.datasetid) {
-                console.log('loadUrlSelectedDataset:'+$stateParams.datasetid);
                 var selectedDataset = _.find(datasets, function(dataset) {
                     return dataset.id === $stateParams.datasetid;
                 });
