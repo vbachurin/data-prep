@@ -123,7 +123,7 @@
               return DatasetRestService.getPreview(self.datasetid,true)
                   .then(function(data) {
                           $log.debug('before drawGrid');
-                          drawGrid(data)
+                          drawGrid(data);
                         },previewPremiseError);
           }
 

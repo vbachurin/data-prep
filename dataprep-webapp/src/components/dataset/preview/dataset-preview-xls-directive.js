@@ -8,8 +8,7 @@
      * @requires data-prep.dataset-preview.controller:DatasetXlsPreviewCtrl
      * @restrict E
      */
-    function DatasetPreviewXls($log) {
-        $log.debug("construct DatasetPreviewXls");
+    function DatasetPreviewXls() {
         return {
             restrict: 'E',
             templateUrl: 'components/dataset/preview/dataset-preview-xls.html',

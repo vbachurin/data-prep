@@ -63,7 +63,7 @@
             } else{
                 DatasetListService.refreshDatasets();
                 if (dataset.type){
-                    openDraft(dataset);
+                    vm.openDraft(dataset);
                 }else{
                     MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
                 }
