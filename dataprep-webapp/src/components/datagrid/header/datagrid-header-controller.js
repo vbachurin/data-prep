@@ -5,10 +5,9 @@
      * @ngdoc controller
      * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
      * @description Dataset Column Header controller.
-     * @requires data-prep.services.transformation.service:TransformationRestService
-     * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.transformation.service:TransformationService
      */
-    function DatagridHeaderCtrl(TransformationRestService, ConverterService) {
+    function DatagridHeaderCtrl(TransformationService) {
         var vm = this;
 
         /**
@@ -74,62 +73,6 @@
 
         /**
          * @ngdoc method
-         * @name insertType
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menu - the menu item with parameters to adapt
-         * @description [PRIVATE] Insert adapted html input type in each parameter in the menu
-         */
-        var insertType = function(menu) {
-            if(menu.parameters) {
-                _.forEach(menu.parameters, function(param) {
-                    param.inputType = ConverterService.toInputType(param.type);
-                });
-            }
-        };
-
-        /**
-         * @ngdoc method
-         * @name adaptInputTypes
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menus - the menus with parameters to adapt
-         * @description [PRIVATE] Adapt each parameter type to HTML input type
-         */
-        var adaptInputTypes = function(menus) {
-            _.forEach(menus, function(menu) {
-                insertType(menu);
-
-                _.forEach(menu.items, function(item) {
-                    _.forEach(item.values, function(choiceValue) {
-                        insertType(choiceValue);
-                    });
-                });
-            });
-
-            return menus;
-        };
-
-        /**
-         * @ngdoc method
-         * @name cleanParamsAndItems
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menus - the menus to clean
-         * @description [PRIVATE] Remove 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
-         */
-        var cleanParamsAndItems = function(menus) {
-            return _.forEach(menus, function(menu) {
-                //params
-                var filteredParameters = _.filter(menu.parameters, function(param) {
-                    return param.name !== 'column_name';
-                });
-                menu.parameters = filteredParameters.length ? filteredParameters : null;
-
-                //items
-                menu.items = menu.items.length ? menu.items : null;
-            });
-        };
-
-        /**
-         * @ngdoc method
          * @name initTransformations
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
          * @description Get transformations from REST call
@@ -139,10 +82,8 @@
                 vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
 
-                TransformationRestService.getTransformations(vm.column)
-                    .then(function(response) {
-                        var menus = cleanParamsAndItems(response.data);
-                        menus = adaptInputTypes(menus);
+                TransformationService.getTransformations(vm.column)
+                    .then(function(menus) {
                         vm.transformations = groupMenus(menus);
                     })
                     .catch(function() {

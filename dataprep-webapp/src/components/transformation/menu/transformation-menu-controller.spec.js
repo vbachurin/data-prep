@@ -198,7 +198,7 @@ describe('Transform menu controller', function () {
         $rootScope.$digest();
 
         //then
-        expect(TransformationRestService.getDynamicParameters).toHaveBeenCalledWith('textclustering', 'MostPopulousCity', '78bae6345aef9965e22b54', '721cd4455fb69e89543d4');
+        expect(TransformationRestService.getDynamicParameters).toHaveBeenCalledWith('textclustering', 'MostPopulousCity', '78bae6345aef9965e22b54', '721cd4455fb69e89543d4', undefined);
         expect(ctrl.menu.cluster).toBe(textClusteringParams.details);
     }));
 

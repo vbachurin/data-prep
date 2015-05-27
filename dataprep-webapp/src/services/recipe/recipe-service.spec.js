@@ -272,7 +272,6 @@ describe('Recipe service', function () {
                 ],
                 description: 'parameter.default_value.desc',
                 label: 'parameter.default_value.label',
-                type: 'LIST',
                 initialValue: { name: 'True', parameters: [], default: true },
                 selectedValue: { name: 'True', parameters: [], default: true }
             }]);

@@ -1,4 +1,4 @@
-describe('Datagrid directive', function() {
+describe('Recipe directive', function() {
     'use strict';
     var scope, element;
 
@@ -31,6 +31,7 @@ describe('Datagrid directive', function() {
         RecipeService.getRecipe().push({
             column: {id: 'col1'},
             transformation: {
+                stepId: '13a24e8765ef4',
                 name: 'split',
                 label: 'Split',
                 category: 'split',
@@ -41,6 +42,7 @@ describe('Datagrid directive', function() {
         RecipeService.getRecipe().push({
             column: {id: 'col2'},
             transformation: {
+                stepId: '9876fb498e36543ab51',
                 name: 'uppercase',
                 label: 'To uppercase',
                 category: 'case',

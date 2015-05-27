@@ -132,6 +132,9 @@
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                     return PlaygroundService.loadStep(activeStep);
                 })
+                .then(function() {
+                    vm.showModal = [];
+                })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });

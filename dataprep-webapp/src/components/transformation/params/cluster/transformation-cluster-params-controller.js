@@ -51,7 +51,7 @@
         var initParamsValues = function() {
             _.forEach(vm.details.clusters, function(cluster) {
                 _.forEach(cluster.parameters, function(param) {
-                    param.default = 'true';
+                    param.default = true;
                 });
             });
         };
