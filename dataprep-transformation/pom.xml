@@ -145,13 +145,17 @@
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>dockerfile/java:oracle-java8</baseImage>
-                            <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
+                            <baseImage>java:8</baseImage>
+                            <cmd>java -DLIBRARY_LD_PATH=/lib64 -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>
                                     <directory>${project.build.directory}</directory>
                                     <include>${project.build.finalName}.jar</include>
+                                </resource>
+                                <resource>
+                                    <targetPath>/lib64</targetPath>
+                                    <directory>${project.basedir}/src/main/resources/TDE_API/linux</directory>
                                 </resource>
                             </resources>
                         </configuration>

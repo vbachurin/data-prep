@@ -1,24 +1,33 @@
 package org.talend.dataprep.transformation.exception;
 
+import static org.springframework.http.HttpStatus.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.talend.dataprep.exception.ErrorCode;
 
 /**
  * Transformation error codes.
  */
 public enum TransformationErrorCodes implements ErrorCode {
-    OUTPUT_TYPE_NOT_SUPPORTED(415),
+    // 400
+    UNABLE_TO_PARSE_JSON(BAD_REQUEST), // TODO what is the difference with CommonErrorCodes.UNABLE_TO_PARSE_JSON ?
 
-    UNABLE_TO_PARSE_JSON(400), // TODO what is the difference with CommonErrorCodes.UNABLE_TO_PARSE_JSON ?
-    UNEXPECTED_EXCEPTION(500),
-    UNABLE_TO_COMPUTE_DATASET_ACTIONS(500),
-    UNABLE_TO_WRITE_JSON(500),
-    /** When an error occurs while transforming a dataset. */
-    UNABLE_TRANSFORM_DATASET(500);
+    // 404
+    UNKNOWN_DYNAMIC_ACTION(NOT_FOUND, "value"),
+
+    // 415
+    OUTPUT_TYPE_NOT_SUPPORTED(UNSUPPORTED_MEDIA_TYPE),
+
+    // 500
+    UNABLE_TO_COMPUTE_DATASET_ACTIONS(INTERNAL_SERVER_ERROR),
+    UNABLE_TO_WRITE_JSON(INTERNAL_SERVER_ERROR),
+    UNABLE_TRANSFORM_DATASET(INTERNAL_SERVER_ERROR),
+    UNEXPECTED_EXCEPTION(INTERNAL_SERVER_ERROR);
 
     /** The http status to use. */
     private int httpStatus;
@@ -31,8 +40,8 @@ public enum TransformationErrorCodes implements ErrorCode {
      * 
      * @param httpStatus the http status to use.
      */
-    TransformationErrorCodes(int httpStatus) {
-        this.httpStatus = httpStatus;
+    TransformationErrorCodes(final HttpStatus httpStatus) {
+        this.httpStatus = httpStatus.value();
         this.expectedContextEntries = Collections.emptyList();
     }
 
@@ -42,8 +51,8 @@ public enum TransformationErrorCodes implements ErrorCode {
      * @param httpStatus the http status to use.
      * @param contextEntries expected context entries.
      */
-    TransformationErrorCodes(int httpStatus, String... contextEntries) {
-        this.httpStatus = httpStatus;
+    TransformationErrorCodes(final HttpStatus httpStatus, final String... contextEntries) {
+        this.httpStatus = httpStatus.value();
         this.expectedContextEntries = Arrays.asList(contextEntries);
     }
 

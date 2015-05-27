@@ -1,3 +1,5 @@
+@import "cluster/transformation-cluster-params";
+
 .transformation-params {
   width: 100%;
 
@@ -9,6 +11,10 @@
   .param-input {
     input {
       width: 100%;
+
+      &[type="checkbox"] {
+        width: auto;
+      }
     }
   }
 

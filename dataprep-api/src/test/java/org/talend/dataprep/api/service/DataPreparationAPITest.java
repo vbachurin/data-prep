@@ -7,7 +7,6 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -115,7 +114,7 @@ public class DataPreparationAPITest {
         final String transformed = given().contentType(ContentType.JSON).body("").when().post("/api/transform/" + dataSetId).asString();
 
         //then
-        assertEquals(expectedContent, transformed);
+        assertThat(expectedContent, sameJSONAs(transformed));
     }
 
     @Test
@@ -642,6 +641,54 @@ public class DataPreparationAPITest {
                 .formParam("stepId", "head")
                 .when()
                 .get("/api/export");
+
+        // then
+        response.then().statusCode(400);
+    }
+
+    @Test
+    public void testSuggestActionParams_should_return_dynamic_params_with_dataset() throws Exception {
+        // given
+        final String dataSetId = createDataset("transformation/cluster_dataset.csv", "testClustering", "text/csv");
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+
+        // when
+        final String actualClusterParameters = given()
+                .formParam("datasetId", dataSetId)
+                .formParam("columnId", "uglystate")
+                .when()
+                .get("/api/transform/suggest/textclustering/params")
+                .asString();
+
+        // then
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+    }
+
+    @Test
+    public void testSuggestActionParams_should_return_dynamic_params_with_preparation() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("transformation/cluster_dataset.csv", "testClustering", "text/csv");
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+
+        // when
+        final String actualClusterParameters = given()
+                .formParam("preparationId", preparationId)
+                .formParam("columnId", "uglystate")
+                .when()
+                .get("/api/transform/suggest/textclustering/params")
+                .asString();
+
+        // then
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+    }
+
+    @Test
+    public void testSuggestActionParams_should_return_400_with_no_preparationId_and_no_datasetId() throws Exception {
+        // when
+        final Response response = given()
+                .formParam("columnId", "uglystate")
+                .when()
+                .get("/api/transform/suggest/textclustering/params");
 
         // then
         response.then().statusCode(400);

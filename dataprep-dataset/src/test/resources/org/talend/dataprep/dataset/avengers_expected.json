@@ -1,4 +1,5 @@
 {
+  "metadata": null,
   "columns": [
     {
       "id": "nickname",
@@ -12,10 +13,10 @@
         "valid": 5,
         "invalid": 0,
         "empty": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "mean": 0.0,
-        "variance": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
         "duplicate count": 0,
         "distinct count": 5,
         "frequency table": [
@@ -63,9 +64,9 @@
           }
         ],
         "quantiles": {
-          "median": 0.0,
-          "lower quantile": 0.0,
-          "upper quantile": 0.0
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
         },
         "histogram": [],
         "text length summary": {
@@ -90,10 +91,10 @@
         "valid": 5,
         "invalid": 0,
         "empty": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "mean": 0.0,
-        "variance": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
         "duplicate count": 0,
         "distinct count": 5,
         "frequency table": [
@@ -133,9 +134,9 @@
           }
         ],
         "quantiles": {
-          "median": 0.0,
-          "lower quantile": 0.0,
-          "upper quantile": 0.0
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
         },
         "histogram": [],
         "text length summary": {
@@ -160,10 +161,10 @@
         "valid": 5,
         "invalid": 0,
         "empty": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "mean": 0.0,
-        "variance": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
         "duplicate count": 0,
         "distinct count": 5,
         "frequency table": [
@@ -203,9 +204,9 @@
           }
         ],
         "quantiles": {
-          "median": 0.0,
-          "lower quantile": 0.0,
-          "upper quantile": 0.0
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
         },
         "histogram": [],
         "text length summary": {
@@ -230,10 +231,10 @@
         "valid": 5,
         "invalid": 0,
         "empty": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "mean": 0.0,
-        "variance": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
         "duplicate count": 0,
         "distinct count": 5,
         "frequency table": [
@@ -265,9 +266,9 @@
           }
         ],
         "quantiles": {
-          "median": 0.0,
-          "lower quantile": 0.0,
-          "upper quantile": 0.0
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
         },
         "histogram": [],
         "text length summary": {
@@ -292,10 +293,10 @@
         "valid": 5,
         "invalid": 0,
         "empty": 0.0,
-        "max": 0.0,
-        "min": 0.0,
-        "mean": 0.0,
-        "variance": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
         "duplicate count": 3,
         "distinct count": 2,
         "frequency table": [
@@ -319,9 +320,9 @@
           }
         ],
         "quantiles": {
-          "median": 0.0,
-          "lower quantile": 0.0,
-          "upper quantile": 0.0
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
         },
         "histogram": [],
         "text length summary": {

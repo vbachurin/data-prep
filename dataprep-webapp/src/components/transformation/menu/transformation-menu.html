@@ -7,7 +7,7 @@
         </a>
 
         <!-- Params and choice modal -->
-        <talend-modal ng-if="::(menuCtrl.menu.parameters || menuCtrl.menu.items)"
+        <talend-modal ng-if="::(menuCtrl.menu.dynamic || menuCtrl.menu.parameters || menuCtrl.menu.items)"
                       fullscreen="false"
                       state="menuCtrl.showModal"
                       close-button="true">
@@ -15,6 +15,11 @@
             <div class="modal-title">{{ menuCtrl.menu.label }}</div>
             <div class="modal-subtitle">{{::menuCtrl.menu.description | translate }}</div>
 
+            <div ng-if="menuCtrl.menu.dynamic && menuCtrl.dynamicFetchInProgress">
+                <img class="continuous-rotate"
+                     style="background-color: grey"
+                     src="/components/widgets/loading/loading.png" />
+            </div>
             <transform-params transformation="menuCtrl.menu"
                               on-submit="menuCtrl.transform(params)"></transform-params>
 

@@ -79,6 +79,10 @@
                         <groupId>org.eclipse.jetty.orbit</groupId>
                         <artifactId>javax.servlet</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <!-- Hazelcast -->
@@ -278,6 +282,11 @@
                 <version>1.9.13</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>2.5.3</version>
+            </dependency>
+            <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.10</version>
@@ -468,6 +477,7 @@
                             <rules>
                                 <bannedDependencies>
                                     <excludes>
+                                        <exclude>org.slf4j:slf4j-simple</exclude>
                                         <exclude>commons-logging:commons-logging-api</exclude>
                                         <exclude>ch.qos.logback:logback-classic</exclude>
                                         <exclude>ch.qos.logback:logback-core</exclude>
@@ -479,6 +489,17 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 </project>

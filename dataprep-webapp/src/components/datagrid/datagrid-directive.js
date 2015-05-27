@@ -15,6 +15,7 @@
      *
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
+     * @requires data-prep.services.playground.service:PreviewService
      * @restrict E
      */
     function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService) {
@@ -156,8 +157,7 @@
                 var createHeader = function(col) {
                     var headerScope = scope.$new(true);
                     headerScope.columns = col;
-                    headerScope.metadata = DatagridService.metadata;
-                    var headerElement = angular.element('<datagrid-header column="columns" metadata="metadata"></datagrid-header>');
+                    var headerElement = angular.element('<datagrid-header column="columns"></datagrid-header>');
                     $compile(headerElement)(headerScope);
 
                     return {

@@ -65,20 +65,23 @@ public class DataSetServiceTests {
     @Autowired
     DataSetContentStore contentStore;
 
-    @Autowired
+    @Autowired(required = false)
     SparkContext sparkContext;
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
-        while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
-            // TODO Is there a better way to wait for all Spark jobs to complete?
-            Thread.sleep(200);
+        if (sparkContext != null) {
+            while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
+                // TODO Is there a better way to wait for all Spark jobs to complete?
+                Thread.sleep(200);
+            }
         }
         // Wait for queue messages
         waitForQueue(Destinations.CONTENT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
         waitForQueue(Destinations.SCHEMA_ANALYSIS, dataSetId);
         waitForQueue(Destinations.FORMAT_ANALYSIS, dataSetId);
+        waitForQueue(Destinations.STATISTICS_ANALYSIS, dataSetId);
         // Asserts on metadata status
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         DataSetLifecycle lifecycle = metadata.getLifecycle();
@@ -140,7 +143,7 @@ public class DataSetServiceTests {
 
         String expected = "[{\"id\":\""
                 + id1
-                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"type\":\"text/csv\",\"created\":\"01-01-1970 00:00\"}]";
+                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":\"01-01-1970 00:00\"}]";
 
         InputStream content = when().get("/datasets").asInputStream();
         String contentAsString = IOUtils.toString(content);
@@ -355,7 +358,8 @@ public class DataSetServiceTests {
                 .headerSize(1) //
                 .qualityAnalyzed(true) //
                 .schemaAnalyzed(true) //
-                .formatGuessId(new CSVFormatGuess().getBeanId());
+                .formatGuessId(new CSVFormatGuess().getBeanId()) //
+                .mediaType("text/csv");
 
         DataSetMetadata metadata = builder.build();
         metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
@@ -371,7 +375,7 @@ public class DataSetServiceTests {
         DataSetMetadata metadata = dataSetMetadataRepository.get("9876");
         assertNull(metadata);
         int statusCode = when().get("/datasets/{id}/metadata", "9876").statusCode();
-        assertThat(HttpServletResponse.SC_NO_CONTENT, is(statusCode));
+        assertThat(statusCode, is(HttpServletResponse.SC_NO_CONTENT));
     }
 
     /**

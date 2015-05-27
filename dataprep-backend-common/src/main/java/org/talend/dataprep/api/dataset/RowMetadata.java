@@ -11,6 +11,9 @@ public class RowMetadata {
     /** List of row metadata. */
     private List<ColumnMetadata> columnMetadata = new ArrayList<>();
 
+    public RowMetadata() {
+    }
+
     /** The previous metadata in case of a diff. */
     private List<ColumnMetadata> previousMetadata;
 

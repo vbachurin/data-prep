@@ -131,6 +131,120 @@ describe('Transform params controller', function () {
         expect(extractedParams).toEqual({ mode: 'regex', regex: 'param1Value', comment: 'my comment', param1: 'param1Value', param2: 4});
     });
 
+    it('should extract cluster parameters', function() {
+        //given
+        transformation = {
+            name: 'cluster',
+            category: 'quickfix',
+            cluster: {
+                titles: [
+                    'We found these values',
+                    'And we\'ll keep this value'
+                ],
+                clusters: [
+                    {
+                        parameters: [
+                            {
+                                name: 'Texa',
+                                type: 'boolean',
+                                description: 'parameter.Texa.desc',
+                                label: 'parameter.Texa.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Tixass',
+                                type: 'boolean',
+                                description: 'parameter.Tixass.desc',
+                                label: 'parameter.Tixass.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Tex@s',
+                                type: 'boolean',
+                                description: 'parameter.Tex@s.desc',
+                                label: 'parameter.Tex@s.label',
+                                default: 'true'
+                            }
+                        ],
+                        'replace': {
+                            name: 'replaceValue',
+                            type: 'string',
+                            description: 'parameter.replaceValue.desc',
+                            label: 'parameter.replaceValue.label',
+                            default: 'Texas'
+                        }
+                    },
+                    {
+                        parameters: [
+                            {
+                                name: 'Massachusetts',
+                                type: 'boolean',
+                                description: 'parameter.Massachusetts.desc',
+                                label: 'parameter.Massachusetts.label',
+                                default: 'false'
+                            },
+                            {
+                                name: 'Masachusetts',
+                                type: 'boolean',
+                                description: 'parameter.Masachusetts.desc',
+                                label: 'parameter.Masachusetts.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Massachussetts',
+                                type: 'boolean',
+                                description: 'parameter.Massachussetts.desc',
+                                label: 'parameter.Massachussetts.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Massachusets',
+                                type: 'boolean',
+                                description: 'parameter.Massachusets.desc',
+                                label: 'parameter.Massachusets.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Masachussets',
+                                type: 'boolean',
+                                description: 'parameter.Masachussets.desc',
+                                label: 'parameter.Masachussets.label',
+                                default: 'true'
+                            }
+                        ],
+                        replace: {
+                            name: 'replaceValue',
+                            type: 'string',
+                            description: 'parameter.replaceValue.desc',
+                            label: 'parameter.replaceValue.label',
+                            default: 'Massachussets'
+                        }
+                    }
+                ]
+            }
+        };
+        var ctrl = createController();
+        ctrl.transformation.cluster.clusters[0].active = false;
+        ctrl.transformation.cluster.clusters[1].active = true;
+        ctrl.transformation.cluster.clusters[1].parameters[0].value = false;
+        ctrl.transformation.cluster.clusters[1].parameters[1].value = true;
+        ctrl.transformation.cluster.clusters[1].parameters[2].value = true;
+        ctrl.transformation.cluster.clusters[1].parameters[3].value = true;
+        ctrl.transformation.cluster.clusters[1].parameters[4].value = true;
+        ctrl.transformation.cluster.clusters[1].replace.value = 'Toto';
+
+        //when
+        ctrl.transformWithParam();
+
+        //then
+        expect(extractedParams).toEqual({
+            'Masachusetts': 'Toto',
+            'Massachussetts': 'Toto',
+            'Massachusets': 'Toto',
+            'Masachussets': 'Toto'
+        });
+    });
+
     it('should extract param and call ctrl onSubmitHoverOn function', function() {
         //given
         transformation = {
