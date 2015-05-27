@@ -15,10 +15,12 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
+     * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($log,$stateParams,$state,DatasetService, PlaygroundService, TalendConfirmService, MessageService,DatasetListService) {
         var vm = this;
         vm.datasetService = DatasetService;
+        vm.datasetListService = DatasetListService;
 
         /**
          * @ngdoc method
@@ -28,7 +30,7 @@
          * @param {object} dataset - the dataset to open
          */
         vm.open = function(dataset) {
-            PlaygroundService.initPlayground(dataset)
+            PlaygroundService.initPlayground(dataset,false)
                 .then(PlaygroundService.show);
         };
 
@@ -49,6 +51,29 @@
                 });
         };
 
+        vm.openDraft = function(dataset){
+            $log.debug('openDraf type: ' + dataset.type);
+            if (dataset.type){
+                if (dataset.type === 'application/vnd.ms-excel'){
+                    $state.go( 'nav.home.datasets-previewxls', {datasetid:dataset.id} );
+                    return;
+                }else{
+                    MessageService.error('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', {type: 'dataset'});
+                }
+            } else{
+                DatasetListService.refreshDatasets();
+                if (dataset.type){
+                    vm.openDraft(dataset);
+                }else{
+                    MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
+                }
+            }
+        };
+
+        vm.update = function(dataset){
+            console.log('update');
+        };
+
         /**
          * @ngdoc method
          * @name processCertification
@@ -67,6 +92,7 @@
          */
         var loadUrlSelectedDataset = function(datasets) {
             if($stateParams.datasetid) {
+                console.log('loadUrlSelectedDataset:'+$stateParams.datasetid);
                 var selectedDataset = _.find(datasets, function(dataset) {
                     return dataset.id === $stateParams.datasetid;
                 });

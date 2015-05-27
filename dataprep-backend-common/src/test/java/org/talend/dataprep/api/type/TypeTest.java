@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 public class TypeTest {
@@ -50,8 +51,9 @@ public class TypeTest {
             // Expected
         }
         try {
-            Type.get("null");
-            fail();
+            Type type = Type.get("null");
+            Assertions.assertThat(type).isEqualTo( Type.STRING );
+
         } catch (IllegalArgumentException e) {
             // Expected
         }
