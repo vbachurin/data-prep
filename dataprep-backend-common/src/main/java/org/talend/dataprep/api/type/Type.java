@@ -100,7 +100,9 @@ public enum Type {
             return type.get();
         }
 
-        throw new IllegalArgumentException("Type '" + name + "' does not exist.");
+        // default type to String
+        return STRING;
+        //throw new IllegalArgumentException("Type '" + name + "' does not exist.");
     }
 
     /**

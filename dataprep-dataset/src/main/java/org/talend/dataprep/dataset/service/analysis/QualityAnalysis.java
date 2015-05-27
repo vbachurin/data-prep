@@ -100,7 +100,7 @@ public class QualityAnalysis {
                                     types[i] = DataType.Type.CHAR;
                                     break;
                                 default:
-                                    throw new NotImplementedException("No support for '" + type + "'.");
+                                    types[i] = DataType.Type.STRING;
                             }
                         }
                         // Run analysis
