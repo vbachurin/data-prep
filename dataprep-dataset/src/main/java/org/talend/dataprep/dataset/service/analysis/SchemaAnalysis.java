@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +23,15 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.datascience.common.inference.type.ColumnTypeBean;
-import org.talend.datascience.common.inference.type.DataTypeInferExecutor;
+import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.type.DataType;
+import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
 
 @Component
 public class SchemaAnalysis {
@@ -50,9 +51,6 @@ public class SchemaAnalysis {
     ApplicationContext applicationContext;
 
     @Autowired
-    SparkContext sparkContext;
-
-    @Autowired
     Jackson2ObjectMapperBuilder builder;
 
     @JmsListener(destination = Destinations.SCHEMA_ANALYSIS)
@@ -60,67 +58,58 @@ public class SchemaAnalysis {
         try {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
             DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
-            DataSetMetadata metadata = repository.get(dataSetId);
+            datasetLock.lock();
             try {
-                datasetLock.lock();
-                if (metadata != null) {
-                    // Schema analysis
-                    try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                        LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
-                        // Determine schema for the content (on the 20 first rows).
-                        DataTypeInferExecutor executor = new DataTypeInferExecutor();
-                        stream.limit(20).forEach(row -> {
-                            final Map<String, Object> rowValues = row.values();
-                            final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                .map(String::valueOf) //
-                                .collect(Collectors.<String>toList());
-                            executor.handle(strings.toArray(new String[strings.size()]));
-                        });
-                        // Find the best suitable type
-                        final List<ColumnTypeBean> results = executor.getResults();
-                        final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
-                        results.forEach(columnResult -> {
-                            long max = 0;
-                            String electedType = "N/A"; //$NON-NLS-1$
-                            final Map<String, Long> countMap = columnResult.getTypeToCountMap();
-                            for (Map.Entry<String, Long> entry : countMap.entrySet()) {
-                                if (entry.getValue() > max) {
-                                    max = entry.getValue();
-                                    electedType = entry.getKey();
+                DataSetMetadata metadata = repository.get(dataSetId);
+                try {
+                    if (metadata != null) {
+                        // Schema analysis
+                        final List<DataType> columnTypes;
+                        try (Stream<DataSetRow> stream = store.stream(metadata)) {
+                            LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
+                            // Determine schema for the content (on the 20 first rows).
+                            Analyzer<DataType> analyzer = new DataTypeAnalyzer();
+                            stream.limit(20).map(row -> {
+                                final Map<String, Object> rowValues = row.values();
+                                final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                                    .map(String::valueOf) //
+                                    .collect(Collectors.<String>toList());
+                                return strings.toArray(new String[strings.size()]);
+                            }).forEach(analyzer::analyze);
+                            // Find the best suitable type
+                            columnTypes = analyzer.getResult();
+                            final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
+                            columnTypes.forEach(columnResult -> {
+                                final Type type = Type.get(columnResult.getSuggestedType().name());
+                                if (columns.hasNext()) {
+                                    final ColumnMetadata nextColumn = columns.next();
+                                    LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
+                                    nextColumn.setType(type.getName());
+                                } else {
+                                    LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
                                 }
-                            }
-                            if (columns.hasNext()) {
-                                columns.next().setType(electedType);
-                            } else {
-                                LOGGER.error("Unable to set type '" + electedType + "' to next column (no more column in dataset).");
-                            }
+                            });
+                        }
+                        LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
+                        metadata.getLifecycle().schemaAnalyzed(true);
+                        repository.add(metadata);
+                        // Asks for a in depth schema analysis (for column type information).
+                        jmsTemplate.send(Destinations.QUALITY_ANALYSIS, session -> {
+                            Message schemaAnalysisMessage = session.createMessage();
+                            schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
+                            return schemaAnalysisMessage;
                         });
+                    } else {
+                        LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                     }
-                    // Count lines
-                    try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                        LOGGER.info("Analyzing content size in dataset #{}...", dataSetId);
-                        // Determine content size
-                        metadata.getContent().setNbRecords((int) stream.count());
+                } catch(Exception e) {
+                    if (metadata != null) {
+                        metadata.getLifecycle().error(true);
+                        repository.add(metadata);
                     }
-                    LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
-                    metadata.getLifecycle().schemaAnalyzed(true);
-                    repository.add(metadata);
-                    // Asks for a in depth schema analysis (for column type information).
-                    jmsTemplate.send(Destinations.QUALITY_ANALYSIS, session -> {
-                        Message schemaAnalysisMessage = session.createMessage();
-                        schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                        return schemaAnalysisMessage;
-                    });
-                } else {
-                    LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
+                    LOGGER.error("Unable to analyse schema for dataset {}.", dataSetId, e);
+                    throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
                 }
-            } catch(Exception e) {
-                if (metadata != null) {
-                    metadata.getLifecycle().error(true);
-                    repository.add(metadata);
-                }
-                LOGGER.error("Unable to analyse schema for dataset {}.", dataSetId, e);
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
             } finally {
                 datasetLock.unlock();
                 message.acknowledge();

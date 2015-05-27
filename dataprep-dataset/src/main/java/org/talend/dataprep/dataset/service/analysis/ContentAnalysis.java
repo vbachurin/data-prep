@@ -41,10 +41,12 @@ public class ContentAnalysis {
             try {
                 DataSetMetadata metadata = repository.get(dataSetId);
                 if (metadata != null) {
+                    LOG.info("Indexing content of data set #{}...", dataSetId);
                     DataSetContent datasetContent = metadata.getContent();
                     datasetContent.setNbLinesInHeader(1);
                     datasetContent.setNbLinesInFooter(0);
                     metadata.getLifecycle().contentIndexed(true);
+                    LOG.info("Indexed content of data set #{}.", dataSetId);
                     repository.add(metadata);
                 } else {
                     LOG.info("Data set #{} no longer exists.", dataSetId); //$NON-NLS-1$

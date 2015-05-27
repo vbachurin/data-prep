@@ -15,7 +15,7 @@ public class Application implements DisposableBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-    @Autowired
+    @Autowired(required = false)
     private SparkContext context;
 
     public static void main(String[] args) {
@@ -24,8 +24,12 @@ public class Application implements DisposableBean {
 
     @Override
     public void destroy() throws Exception {
-        LOGGER.info("Stopping Spark context...");
-        context.stop();
-        LOGGER.info("Spark context stopped.");
+        if (context != null) {
+            LOGGER.info("Stopping Spark context...");
+            context.stop();
+            LOGGER.info("Spark context stopped.");
+        } else {
+            LOGGER.info("No Spark context to stop.");
+        }
     }
 }

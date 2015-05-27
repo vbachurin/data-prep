@@ -68,7 +68,7 @@ public class DataSetServiceTests {
     @Autowired
     DataSetContentStore contentStore;
 
-    @Autowired
+    @Autowired(required = false)
     SparkContext sparkContext;
 
     @Autowired
@@ -79,15 +79,18 @@ public class DataSetServiceTests {
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
-        while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
-            // TODO Is there a better way to wait for all Spark jobs to complete?
-            Thread.sleep(200);
+        if (sparkContext != null) {
+            while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
+                // TODO Is there a better way to wait for all Spark jobs to complete?
+                Thread.sleep(200);
+            }
         }
         // Wait for queue messages
         waitForQueue(Destinations.CONTENT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
         waitForQueue(Destinations.SCHEMA_ANALYSIS, dataSetId);
         waitForQueue(Destinations.FORMAT_ANALYSIS, dataSetId);
+        waitForQueue(Destinations.STATISTICS_ANALYSIS, dataSetId);
         // Asserts on metadata status
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         DataSetLifecycle lifecycle = metadata.getLifecycle();

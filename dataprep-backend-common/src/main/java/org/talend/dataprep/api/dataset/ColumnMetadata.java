@@ -1,7 +1,5 @@
 package org.talend.dataprep.api.dataset;
 
-import java.util.Objects;
-import java.util.Optional;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
@@ -28,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ColumnMetadata {
 
+    @JsonProperty("quality")
     private final Quality quality = new Quality();
 
     private String id;
