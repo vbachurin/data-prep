@@ -152,7 +152,7 @@ public class TableauWriter implements TransformerWriter {
         }
         is.close();
         outputStream.close();
-
+        file.delete();
     }
 
 

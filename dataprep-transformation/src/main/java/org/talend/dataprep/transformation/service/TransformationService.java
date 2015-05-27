@@ -33,6 +33,7 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
 
+
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
@@ -108,7 +109,6 @@ public class TransformationService {
             throw e;
         }
     }
-
     @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data diff between the old and the new transformation actions")
     @VolumeMetered
