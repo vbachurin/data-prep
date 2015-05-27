@@ -29,11 +29,6 @@
           $state.go('nav.home.datasets');
         };
 
-
-        self.openDraft = function(dataset){
-          $log.debug("openDraf type: " + dataset.type);
-        };
-
         /**
          * @methodOf data-prep.dataset-list.controller:DatasetPreviewXlsCtrl
          * @description triggered on non 200 http response. Can happen when dataset has been modified in the backend so
@@ -41,8 +36,8 @@
          * @param res rest call response
          */
         var previewPremiseError = function(res){
-          $log.debug("previewPremiseError status:"+res.status);
-          if (res.status = 301){
+          $log.debug('previewPremiseError status:'+res.status);
+          if (res.status === 301){
             $rootScope.$emit('talend.preview.draft.validated');
             DatasetListService
                 .refreshDatasets()
@@ -63,7 +58,7 @@
         self.updateSheetName = function(){
           return DatasetRestService.getPreview(self.datasetid,true,self.selectedSheetContent.name)
               .then(function(data) {
-                      drawGrid(data)
+                      drawGrid(data);
                     },previewPremiseError);
         };
 
@@ -121,13 +116,13 @@
          * @description [PRIVATE] find the dataset id in params then trigge grid draw
          */
         var loadPreview = function(){
-          $log.debug("loadPreview");
+          $log.debug('loadPreview');
           if($stateParams.datasetid) {
               self.datasetid = $stateParams.datasetid;
-              $log.debug("type:"+$stateParams.type);
+              $log.debug('type:'+$stateParams.type);
               return DatasetRestService.getPreview(self.datasetid,true)
                   .then(function(data) {
-                          $log.debug("before drawGrid");
+                          $log.debug('before drawGrid');
                           drawGrid(data)
                         },previewPremiseError);
           }

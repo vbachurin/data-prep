@@ -52,9 +52,9 @@
         };
 
         vm.openDraft = function(dataset){
-            $log.debug("openDraf type: " + dataset.type);
+            $log.debug('openDraf type: ' + dataset.type);
             if (dataset.type){
-                if (dataset.type == 'application/vnd.ms-excel'){
+                if (dataset.type === 'application/vnd.ms-excel'){
                     $state.go( 'nav.home.datasets-previewxls', {datasetid:dataset.id} );
                     return;
                 }else{
@@ -88,7 +88,7 @@
          */
         var loadUrlSelectedDataset = function(datasets) {
             if($stateParams.datasetid) {
-                console.log("loadUrlSelectedDataset:"+$stateParams.datasetid);
+                console.log('loadUrlSelectedDataset:'+$stateParams.datasetid);
                 var selectedDataset = _.find(datasets, function(dataset) {
                     return dataset.id === $stateParams.datasetid;
                 });
