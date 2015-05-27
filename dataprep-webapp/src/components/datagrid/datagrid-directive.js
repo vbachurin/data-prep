@@ -66,8 +66,10 @@
                  * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
                  */
                 var formatter = function(row, cell, value, columnDef, dataContext) {
-                    //hidden characters need to be shown
+
                     var returnStr = value;
+
+                    //hidden characters need to be shown
                     if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
                         var hiddenCharsRegExpMatch = value.match(/(^\s\s*)?(\S*)(\s\s*$)?/);
                         if (hiddenCharsRegExpMatch[1]){
@@ -88,8 +90,19 @@
                         return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
                     }
                     //updated cell preview
-                    if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id] === 'update') {
-                        return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                    if(dataContext.__tdpDiff){
+                        // update
+                        if (dataContext.__tdpDiff[columnDef.id] === 'update') {
+                            return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                        }
+                        // new
+                        else if (dataContext.__tdpDiff[columnDef.id] === 'new') {
+                            return '<div class="cellNewValue">' + returnStr + '</div>';
+                        }
+                        // new
+                        else if (dataContext.__tdpDiff[columnDef.id] === 'delete') {
+                            return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                        }
                     }
 
                     //no preview
@@ -111,7 +124,16 @@
                 var columnItem = function (col, index, preview) {
                     var template;
                     if(preview) {
-                        template = '<div class="grid-header">' +
+
+                        var diffClass = '';
+                        if (col.__tdpColumnDiff === 'new') {
+                            diffClass = 'newColumn';
+                        }
+                        else if (col.__tdpColumnDiff === 'delete') {
+                            diffClass = 'deletedColumn';
+                        }
+
+                        template = '<div class="grid-header '+ diffClass +'">' +
                             '<div class="grid-header-title dropdown-button ng-binding">' + col.id + '</div>' +
                             '<div class="grid-header-type ng-binding">' + col.type + '</div>' +
                             '</div>' +
@@ -128,7 +150,6 @@
                         name: template,
                         formatter: formatter
                     };
-                    //TODO Vincent : ajouter une classe au name en fonction du flag diff
                     return colItem;
                 };
 
@@ -448,7 +469,7 @@
                     function (cols) {
                         if (cols) {
                             initGridIfNeeded();
-                            updateColumns(cols);
+                            updateColumns(cols, DatagridService.data.preview);
                             grid.autosizeColumns();
                         }
                     }

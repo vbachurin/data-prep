@@ -2,11 +2,8 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -17,7 +14,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -541,7 +537,7 @@ public class DataPreparationAPITest {
                 .asString();
 
         // then
-        Assert.assertEquals(expectedExport, export);
+        assertEquals(expectedExport, export);
     }
 
     @Test
@@ -563,7 +559,7 @@ public class DataPreparationAPITest {
                 .formParam("stepId", steps.get(2)).when().get("/api/export").asString();
 
         // then
-        Assert.assertEquals(expectedExport, export);
+        assertEquals(expectedExport, export);
     }
 
     @Test
@@ -579,7 +575,7 @@ public class DataPreparationAPITest {
                 .formParam("stepId", "head").when().get("/api/export").asString();
 
         // then
-        Assert.assertEquals(expectedExport, export);
+        assertEquals(expectedExport, export);
     }
 
     @Test
@@ -595,7 +591,7 @@ public class DataPreparationAPITest {
                 .formParam("preparationId", preparationId).formParam("stepId", "head").when().get("/api/export").asString();
 
         // then
-        Assert.assertEquals(expectedExport, export);
+        assertEquals(expectedExport, export);
     }
 
     @Test

@@ -1,13 +1,15 @@
 package org.talend.dataprep.api.dataset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.talend.dataprep.api.dataset.diff.Flag;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 
 public class DataSetRowTest {
@@ -73,7 +75,7 @@ public class DataSetRowTest {
      * Test the new flag.
      */
     @Test
-    public void diff_with_new_flag() {
+    public void diff_with_new_row_flag() {
         DataSetRow row = createRow(defaultValues(), false);
         DataSetRow oldRow = createRow(defaultValues(), true);
 
@@ -86,7 +88,7 @@ public class DataSetRowTest {
      * Test the delete flag.
      */
     @Test
-    public void diff_with_delete_flag() {
+    public void diff_with_delete_row_flag() {
         DataSetRow row = createRow(defaultValues(), true);
         DataSetRow oldRow = createRow(defaultValues(), false);
 
@@ -99,7 +101,7 @@ public class DataSetRowTest {
      * test the update flag.
      */
     @Test
-    public void diff_with_update_flag() {
+    public void diff_with_update_record_flag() {
         DataSetRow row = createRow(defaultValues(), false);
 
         final Map<String, String> oldValues = new HashMap<>(4);
@@ -113,6 +115,60 @@ public class DataSetRowTest {
         Map<String, Object> actual = row.values();
         Map<String, Object> diff = (Map<String, Object>) actual.get(FlagNames.DIFF_KEY);
         diff.values().forEach(value -> assertEquals(value, UPDATE.getValue()));
+    }
+
+    /**
+     * test the new flag on records.
+     */
+    @Test
+    public void diff_with_new_flag() {
+        DataSetRow row = createRow(defaultValues(), false);
+
+        Map<String, String> oldValues = new HashMap<>(2);
+        oldValues.put("id", "1");
+        oldValues.put("age", "18");
+        DataSetRow oldRow = createRow(oldValues, false);
+
+        row.diff(oldRow);
+
+        Map<String, Object> diff = (Map<String, Object>) row.values().get(FlagNames.DIFF_KEY);
+
+        // firstName and lastName are new
+        List<String> expected = new ArrayList<>(2);
+        expected.add("firstName");
+        expected.add("lastName");
+
+        for (String expectedKey : expected) {
+            assertTrue(diff.containsKey(expectedKey));
+            assertEquals(Flag.NEW.getValue(), diff.get(expectedKey));
+        }
+    }
+
+    /**
+     * test the delete flag on records.
+     */
+    @Test
+    public void diff_with_delete_flag() {
+        DataSetRow oldRow = createRow(defaultValues(), false);
+
+        final Map<String, String> values = new HashMap<>(4);
+        values.put("id", "1");
+        values.put("age", "18");
+        DataSetRow row = createRow(values, false);
+
+        row.diff(oldRow);
+
+        Map<String, Object> diff = (Map<String, Object>) row.values().get(FlagNames.DIFF_KEY);
+
+        // firstName and lastName are new
+        List<String> expected = new ArrayList<>(2);
+        expected.add("firstName");
+        expected.add("lastName");
+
+        for (String expectedKey : expected) {
+            assertTrue(diff.containsKey(expectedKey));
+            assertEquals(Flag.DELETE.getValue(), diff.get(expectedKey));
+        }
     }
 
     /**
@@ -136,7 +192,6 @@ public class DataSetRowTest {
         values.put("firstName", "Toto");
         values.put("lastName", "Tata");
         values.put("age", "18");
-
         return values;
     }
 }

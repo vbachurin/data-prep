@@ -93,10 +93,10 @@ public class ColumnsTypeTransformer implements TypeTransformer {
 
                         // setup the diff in case of preview
                         if (configuration.isPreview()) {
-                            RowMetadata reference = new RowMetadata(rowMetadata.getColumns());
+                            RowMetadata reference = getRowMetadata(content);
                             Consumer<RowMetadata> referenceAction = actions.get(0);
                             referenceAction.accept(reference);
-                            // TODO do the diff rowMetadata.diff(reference);
+                            rowMetadata.diff(reference);
                         }
 
                         // write the result

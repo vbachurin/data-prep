@@ -151,7 +151,7 @@ public class RenameTest {
 
     private ColumnMetadata getColumn(String name, Flag flag) {
         ColumnMetadata column = getColumn(name);
-        column.setDiffFlag(flag);
+        column.setDiffFlagValue(flag.getValue());
         return column;
     }
 

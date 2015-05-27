@@ -120,10 +120,27 @@ public class DataSetRow implements Cloneable {
         final Map<String, Object> diff = new HashMap<>();
         final Map<String, Object> originalValues = oldValue.values();
 
+        // compute the new value (column is not found in old value)
         values.entrySet().stream().forEach((entry) -> {
-            final Object originalValue = originalValues.get(entry.getKey());
-            if (!StringUtils.equals(entry.getValue(), (String) originalValue)) {
-                diff.put(entry.getKey(), UPDATE.getValue());
+            if (!originalValues.containsKey(entry.getKey())) {
+                diff.put(entry.getKey(), NEW.getValue());
+            }
+        });
+
+        // compute the deleted values (column is deleted)
+        originalValues.entrySet().stream().forEach((entry) -> {
+            if (!values.containsKey(entry.getKey())) {
+                diff.put(entry.getKey(), DELETE.getValue());
+            }
+        });
+
+        // compute the update values (column is still here but value is different)
+        values.entrySet().stream().forEach((entry) -> {
+            if (originalValues.containsKey(entry.getKey())) {
+                final Object originalValue = originalValues.get(entry.getKey());
+                if (!StringUtils.equals(entry.getValue(), (String) originalValue)) {
+                    diff.put(entry.getKey(), UPDATE.getValue());
+                }
             }
         });
 

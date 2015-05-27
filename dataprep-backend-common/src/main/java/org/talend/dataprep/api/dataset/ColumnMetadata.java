@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.talend.dataprep.api.dataset.diff.Flag;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
@@ -47,7 +46,7 @@ public class ColumnMetadata {
     /** Optional diff flag that shows diff status of this column metadata. */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty(value = FlagNames.COLUMN_DIFF_KEY)
-    private Flag diffFlag;
+    private String diffFlagValue;
 
     /** Statistics of the column. */
     @JsonProperty("statistics")
@@ -95,15 +94,15 @@ public class ColumnMetadata {
     /**
      * @return the diff flag.
      */
-    public Flag getDiffFlag() {
-        return diffFlag;
+    public String getDiffFlagValue() {
+        return diffFlagValue;
     }
 
     /**
-     * @param diffFlag the diff flag to set.
+     * @param diffFlagValue the diff flag to set.
      */
-    public void setDiffFlag(Flag diffFlag) {
-        this.diffFlag = diffFlag;
+    public void setDiffFlagValue(String diffFlagValue) {
+        this.diffFlagValue = diffFlagValue;
     }
 
     /**
@@ -132,7 +131,7 @@ public class ColumnMetadata {
         return Optional.ofNullable(obj) //
                 .filter(that -> that instanceof ColumnMetadata) //
                 .map(that -> (ColumnMetadata) that) //
-                .filter(that -> Objects.equals(this.diffFlag, that.diffFlag)) //
+                .filter(that -> Objects.equals(this.diffFlagValue, that.diffFlagValue)) //
                 .filter(that -> Objects.equals(this.id, that.id)) //
                 .filter(that -> Objects.equals(this.typeName, that.typeName)) //
                 .isPresent();
@@ -147,8 +146,14 @@ public class ColumnMetadata {
 
     @Override
     public String toString() {
-        return "ColumnMetadata{" + "quality=" + quality + ", name='" + id + '\'' + ", typeName='" + typeName + '\''
-                + ", headerSize=" + headerSize + '}';
+        return "ColumnMetadata{" + //
+                "quality=" + quality + //
+                ", id='" + id + '\'' + //
+                ", typeName='" + typeName + '\'' + //
+                ", headerSize=" + headerSize + //
+                ", diffFlagValue='" + diffFlagValue + '\'' + //
+                ", statistics='" + statistics + '\'' + //
+                '}';
     }
 
     /**
@@ -199,7 +204,7 @@ public class ColumnMetadata {
 
         private int headerSize;
 
-        private Flag diffFlag = null;
+        private String diffFlagValue = null;
 
         public static ColumnMetadata.Builder column() {
             return new Builder();
@@ -249,7 +254,7 @@ public class ColumnMetadata {
             this.valid = originalQuality.getValid();
             this.headerSize = original.getHeaderSize();
             this.type = Type.get(original.getType());
-            this.diffFlag = original.getDiffFlag();
+            this.diffFlagValue = original.getDiffFlagValue();
             return this;
         }
 
@@ -259,7 +264,7 @@ public class ColumnMetadata {
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);
             columnMetadata.setHeaderSize(this.headerSize);
-            columnMetadata.setDiffFlag((this.diffFlag));
+            columnMetadata.setDiffFlagValue(this.diffFlagValue);
             return columnMetadata;
         }
     }
