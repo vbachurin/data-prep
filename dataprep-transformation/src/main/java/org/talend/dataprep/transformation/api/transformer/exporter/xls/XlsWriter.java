@@ -52,17 +52,15 @@ public class XlsWriter implements TransformerWriter {
         CreationHelper createHelper = this.workbook.getCreationHelper();
 
         // writing headers so first row
-        Row headerRow = this.sheet.createRow(rowIdx);
-        rowIdx++;
+        Row headerRow = this.sheet.createRow(rowIdx++);
 
         int cellIdx = 0;
 
         for (ColumnMetadata columnMetadata : columns.getColumns()) {
 
             // TODO apply some formatting as it's an header cell?
-            headerRow.createCell(cellIdx).setCellValue(createHelper.createRichTextString(columnMetadata.getId()));
+            headerRow.createCell(cellIdx++).setCellValue(createHelper.createRichTextString(columnMetadata.getId()));
 
-            cellIdx++;
         }
 
     }
@@ -72,33 +70,31 @@ public class XlsWriter implements TransformerWriter {
         logger.debug("write DataSetRow: {}", dataSetRow);
         // writing datas
 
-        Row row = this.sheet.createRow(rowIdx);
-        rowIdx++;
+        Row row = this.sheet.createRow(rowIdx++);
 
         int cellIdx = 0;
 
         for (ColumnMetadata columnMetadata : this.columnMetadatas) {
 
             // FIXME use constants see Type
-            Cell cell = row.createCell(cellIdx);
+            Cell cell = row.createCell(cellIdx++);
             switch (Type.get(columnMetadata.getType()).getName()) {
-            case "numeric":
-            case "integer":
-            case "double":
-            case "float":
-                cell.setCellValue(Double.valueOf(dataSetRow.get(columnMetadata.getId())));
-                break;
-            case "boolean":
-                cell.setCellValue(Boolean.valueOf(dataSetRow.get(columnMetadata.getId())));
-                break;
-            // FIXME ATM we don't have any idea about the date format so this can generate exceptions
-            // case "date":
-            // cell.setCellValue( );
-            default:
-                cell.setCellValue(dataSetRow.get(columnMetadata.getId()));
+                case "numeric":
+                case "integer":
+                case "double":
+                case "float":
+                    cell.setCellValue(Double.valueOf(dataSetRow.get(columnMetadata.getId())));
+                    break;
+                case "boolean":
+                    cell.setCellValue(Boolean.valueOf(dataSetRow.get(columnMetadata.getId())));
+                    break;
+                // FIXME ATM we don't have any idea about the date format so this can generate exceptions
+                // case "date":
+                // cell.setCellValue( );
+                default:
+                    cell.setCellValue(dataSetRow.get(columnMetadata.getId()));
             }
 
-            cellIdx++;
         }
 
     }
