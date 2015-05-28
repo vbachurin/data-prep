@@ -1,3 +1,5 @@
+/*jshint camelcase: false */
+
 describe('Transformation Service', function () {
     'use strict';
 
