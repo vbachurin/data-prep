@@ -3,8 +3,10 @@ package org.talend.dataprep.api.service.command.dataset;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -26,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("request")
-public class DataSetGet extends DataPrepCommand<InputStream> {
+public class DataSetPreview extends DataPrepCommand<InputStream> {
 
     @Value("${http.retry.pause}")
     public int PAUSE;
@@ -34,7 +36,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
     @Value("${http.retry.max_retry}")
     private int MAX_RETRY;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataSetGet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSetPreview.class);
 
     private final String dataSetId;
 
@@ -42,20 +44,31 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
 
     private final boolean columns;
 
+    private final String sheetName;
+
     private int retryCount = 0;
 
-    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns) {
+    public DataSetPreview(HttpClient client, String dataSetId, boolean metadata, boolean columns, String sheetName) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
+
         this.dataSetId = dataSetId;
         this.metadata = metadata;
         this.columns = columns;
+        this.sheetName = sheetName;
     }
 
     @Override
     protected InputStream run() throws Exception {
 
-        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata="
-                + metadata + "&columns=" + columns);
+        StringBuilder url = new StringBuilder(datasetServiceUrl + "/datasets/" + dataSetId + "/preview/?metadata=" + metadata
+                + "&columns=" + columns);
+
+        if (StringUtils.isNotEmpty(sheetName)) {
+            // yup this sheet name can contains weird characters space, great french accents or even chinese characters
+            url.append("&sheetName=" + URLEncoder.encode(sheetName, "UTF-8"));
+        }
+
+        final HttpGet contentRetrieval = new HttpGet(url.toString());
         final HttpResponse response = client.execute(contentRetrieval);
         return handleResponse(response, contentRetrieval);
     }
@@ -87,6 +100,10 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
                 return handleResponse(client.execute(contentRetrieval), contentRetrieval);
             } else if (statusCode == HttpStatus.SC_OK) {
                 return new ReleasableInputStream(response.getEntity().getContent(), contentRetrieval::releaseConnection);
+            } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+                Exception cause = new Exception(response.getStatusLine().getStatusCode() + ":" //
+                        + response.getStatusLine().getReasonPhrase());
+                throw new TDPException(APIErrorCodes.DATASET_REDIRECT, cause, TDPExceptionContext.build().put("id", dataSetId));
             }
         } else if (statusCode >= 400) { // Error (4xx & 5xx codes)
             final ObjectMapper build = builder.build();
@@ -94,7 +111,8 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             errorCode.setHttpStatus(statusCode);
             throw new TDPException(errorCode);
         }
-        Exception cause = new Exception(response.getStatusLine().getStatusCode() + response.getStatusLine().getReasonPhrase());
+        Exception cause = new Exception(response.getStatusLine().getStatusCode() + ":"
+                + response.getStatusLine().getReasonPhrase());
         throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, cause, TDPExceptionContext.build().put("id",
                 dataSetId));
     }

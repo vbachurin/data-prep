@@ -1,5 +1,10 @@
 package org.talend.dataprep.schema;
 
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 /**
@@ -31,5 +36,31 @@ public interface FormatGuess {
      */
     Serializer getSerializer();
 
+    /**
+     *
+     * @return the Spring beanId to be used to get the bean from the used injection container
+     */
     String getBeanId();
+
+    /**
+     *
+     * @return {@link DraftValidator} that will validate if the metadata are still in draft status for this format type
+     */
+    DraftValidator getDraftValidator();
+
+    @Component
+    class Factory {
+
+        @Autowired
+        private ApplicationContext applicationContext;
+
+        @Autowired
+        private Map<String, FormatGuess> formatGuessMap;
+
+        public FormatGuess getFormatGuess(String formatGuessId) {
+            return formatGuessMap.get(formatGuessId);
+        }
+
+    }
+
 }

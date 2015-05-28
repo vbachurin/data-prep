@@ -4,10 +4,15 @@ import java.io.IOException;
 
 import javax.annotation.PreDestroy;
 
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -40,7 +45,22 @@ public class APIService {
     public APIService() {
         connectionManager.setMaxTotal(50);
         connectionManager.setDefaultMaxPerRoute(50);
-        httpClient = HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        httpClient = HttpClientBuilder.create() //
+                .setRedirectStrategy(new RedirectTransferStrategy()) //
+                .setConnectionManager(connectionManager) //
+                .build();
+    }
+
+    /**
+     * 
+     */
+    static class RedirectTransferStrategy extends DefaultRedirectStrategy {
+
+        @Override
+        public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
+            return false;
+        }
+
     }
 
     @PreDestroy

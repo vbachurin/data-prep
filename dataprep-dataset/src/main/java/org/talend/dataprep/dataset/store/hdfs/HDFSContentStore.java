@@ -36,7 +36,7 @@ public class HDFSContentStore implements DataSetContentStore {
     private final FileSystem fileSystem;
 
     @Autowired
-    private ApplicationContext context;
+    private FormatGuess.Factory factory;
 
     @Value("${dataset.content.store.hdfs.location}")
     private String hdfsStoreLocation;
@@ -70,7 +70,7 @@ public class HDFSContentStore implements DataSetContentStore {
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
         if (content.getFormatGuessId() != null) {
-            Serializer serializer = context.getBean(content.getFormatGuessId(), FormatGuess.class).getSerializer();
+            Serializer serializer = factory.getFormatGuess(content.getFormatGuessId()).getSerializer();
             return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
         } else {
             return new ByteArrayInputStream(new byte[0]);

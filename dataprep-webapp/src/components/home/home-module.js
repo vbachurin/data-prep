@@ -17,6 +17,7 @@
         'talend.widget',
         'data-prep.dataset-upload-list',
         'data-prep.dataset-list',
+        'data-prep.dataset-preview-xls',
         'data-prep.playground',
         'data-prep.preparation-list',
         'data-prep.services.dataset',
