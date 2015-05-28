@@ -6,6 +6,7 @@ import static org.talend.dataprep.api.type.ExportType.CSV;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -16,7 +17,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExporter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,8 +30,10 @@ public class ExportFactoryTest {
     @Test
     public void getExporter_should_create_csv_exporter() throws Exception {
         // given
-        final ExportConfiguration configuration = CsvExportConfiguration.builder()
-                .csvSeparator(';')
+        HashMap<String,Object> arguments = new HashMap<>();
+        arguments.put("csvSeparator",';');
+        final ExportConfiguration configuration = ExportConfiguration.builder()
+                .args(arguments)
                 .format(CSV)
                 .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json")))
                 .build();
@@ -46,8 +48,10 @@ public class ExportFactoryTest {
     @Test
     public void getExporter_csv_exporter_should_write_csv_format() throws Exception {
         // given
-        final ExportConfiguration configuration = CsvExportConfiguration.builder()
-                .csvSeparator(';')
+        HashMap<String,Object> arguments = new HashMap<>();
+        arguments.put("csvSeparator",';');
+        final ExportConfiguration configuration = ExportConfiguration.builder()
+                .args(arguments)
                 .format(CSV)
                 .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json")))
                 .build();

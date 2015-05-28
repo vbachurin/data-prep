@@ -60,6 +60,22 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+
+        <!-- Tableau Software Desktop Dependencies-->
+        <dependency>
+            <groupId>tableau-software</groupId>
+            <artifactId>dataExtract</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/dataextract.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>tableau-software</groupId>
+            <artifactId>jna</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/jna.jar</systemPath>
+        </dependency>
         <!-- SWAGGER DEPENDENCIES -->
         <dependency>
             <groupId>com.mangofactory</groupId>
@@ -114,12 +130,19 @@
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
                             <baseImage>java:8</baseImage>
-                            <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
+                            <cmd><![CDATA[
+                                export PATH=/lib/tde/lib64:$PATH && java -Djna.library.path=/lib/tde/lib64 -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar
+                            ]]>
+                            </cmd>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>
                                     <directory>${project.build.directory}</directory>
                                     <include>${project.build.finalName}.jar</include>
+                                </resource>
+                                <resource>
+                                    <targetPath>/lib/tde/lib64</targetPath>
+                                    <directory>${project.basedir}/lib/tde/lib64</directory>
                                 </resource>
                             </resources>
                         </configuration>

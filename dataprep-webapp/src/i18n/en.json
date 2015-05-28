@@ -36,6 +36,7 @@
   "CANCEL": "Cancel",
   "EXPORT": "Export",
   "EXPORT_CSV": "Export to CSV",
+  "EXPORT_TABLEAU": "Export to TABLEAU",
   "IMPORT_FILE": "Import local file",
   "OK": "Ok",
   "_comment": "Common",

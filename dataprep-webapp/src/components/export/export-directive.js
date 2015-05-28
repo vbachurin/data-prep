@@ -9,9 +9,10 @@
             controllerAs: 'exportCtrl',
             controller: 'ExportCtrl',
             link: function (scope, iElement, iAttrs, ctrl) {
-                ctrl.export = function () {
-                    var form = document.getElementById('csvExport');
+                ctrl.export = function (type) {
+                    var form = document.getElementById('exportForm');
                     form.action = ctrl.exportUrl;
+                    form.exportType.value = type;
                     form.submit();
                 };
             }

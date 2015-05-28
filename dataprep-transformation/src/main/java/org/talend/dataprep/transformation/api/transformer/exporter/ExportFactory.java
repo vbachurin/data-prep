@@ -8,8 +8,8 @@ import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExporter;
+import org.talend.dataprep.transformation.api.transformer.exporter.tableau.TableauExporter;
 
 @Component
 public class ExportFactory {
@@ -26,7 +26,7 @@ public class ExportFactory {
         switch(configuration.getFormat()) {
             case CSV : return get(CsvExporter.class, actionConsumer, configuration);
             case XLS : throw new UnsupportedOperationException(configuration.getFormat() + "export not implemented yet");
-            case TABLEAU : throw new UnsupportedOperationException(configuration.getFormat() + "export not implemented yet");
+            case TABLEAU : return get(TableauExporter.class, actionConsumer, configuration);
         }
         throw new UnsupportedOperationException("Unknown export type : " + configuration.getFormat());
     }
