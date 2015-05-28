@@ -11,13 +11,13 @@
     function DatasetPreviewXlsCtrl($rootScope,$scope,$state,$log,$stateParams,DatasetRestService,DatasetListService) {
 
         var self = this;
-        self.datasetid;
+        //self.datasetid;
         self.visible = false;
-        self.metadata;
+        //self.metadata;
         self.selectedSheetContent={};
-        self.records;
-        self.columns;
-        self.grid;
+        //self.records;
+        //self.columns;
+        //self.grid;
 
         /**
          * @ngdoc method
@@ -41,7 +41,7 @@
             $rootScope.$emit('talend.preview.draft.validated');
             DatasetListService
                 .refreshDatasets()
-                .then(function(data){
+                .then(function(){
                         $state.go('nav.home.datasets');
                       });
             return;
@@ -72,10 +72,10 @@
           $log.debug('updateDataset');
           self.metadata.sheetName = self.selectedSheetContent.name;
           DatasetRestService.updateMetadata(self.metadata )
-              .then(function(data){
+              .then(function(){
                 DatasetListService
                     .refreshDatasets()
-                    .then(function(data){
+                    .then(function(){
                       $state.go('nav.home.datasets');
                     });
           });
@@ -100,7 +100,7 @@
           };
 
           self.columns = [];
-          angular.forEach(data.columns, function(value, key) {
+          angular.forEach(data.columns, function(value) {
             this.push({id: value.id, name: value.id, field: value.id});
           }, self.columns);
           self.records=data.records;
