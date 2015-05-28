@@ -5,6 +5,7 @@
      * @ngdoc service
      * @name data-prep.services.transformation.service:TransformationService
      * @description Transformation service. This service provide the entry point to get and manipulate transformations
+     * @requires data-prep.services.transformation.service:TransformationRestService
      * @requires data-prep.services.utils.service:ConverterService
      */
     function TransformationService(TransformationRestService, ConverterService) {
