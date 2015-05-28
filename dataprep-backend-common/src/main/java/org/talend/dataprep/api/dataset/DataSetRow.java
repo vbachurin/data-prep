@@ -184,31 +184,6 @@ public class DataSetRow implements Cloneable {
     }
 
     /**
-     * Rename the column.
-     *
-     * @param columnName the name of the column to rename.
-     * @param newColumnName the new column name.
-     */
-    public void renameColumn(String columnName, String newColumnName) {
-
-        // defensive programming against NPE
-        if (!values.containsKey(columnName)) {
-            return;
-        }
-
-        // columns cannot have the same name
-        if (values.containsKey(newColumnName)) {
-            return;
-        }
-
-        synchronized (values) {
-            String savedValue = values.get(columnName);
-            values.remove(columnName);
-            values.put(newColumnName, savedValue);
-        }
-    }
-
-    /**
      * @see Objects#equals(Object, Object)
      */
     @Override

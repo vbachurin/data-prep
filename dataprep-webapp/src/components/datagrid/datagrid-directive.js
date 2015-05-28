@@ -132,6 +132,9 @@
                         else if (col.__tdpColumnDiff === 'delete') {
                             diffClass = 'deletedColumn';
                         }
+                        else if (col.__tdpColumnDiff === 'update') {
+                            diffClass = 'updatedColumn';
+                        }
 
                         template = '<div class="grid-header '+ diffClass +'">' +
                             '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +

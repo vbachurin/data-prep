@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.dataset;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
 import java.util.ArrayList;
@@ -13,63 +14,6 @@ import org.talend.dataprep.api.dataset.diff.Flag;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 
 public class DataSetRowTest {
-
-    /**
-     * Test the rename column method.
-     *
-     * @see DataSetRow#renameColumn(String, String)
-     */
-    @Test
-    public void rename_should_work() {
-        // given
-        String oldName = "firstName";
-        String newName = "NAME_FIRST";
-        final DataSetRow row = createRow(defaultValues(), false);
-        String expected = row.get(oldName);
-
-        // when
-        row.renameColumn(oldName, newName);
-
-        // then
-        assertNull(row.get(oldName));
-        assertEquals(expected, row.get(newName));
-    }
-
-    /**
-     * Test the rename column method on a non existing column.
-     *
-     * @see DataSetRow#renameColumn(String, String)
-     */
-    @Test
-    public void rename_on_non_existing_column_should_not_throw_error() {
-        // given
-        final DataSetRow row = createRow(defaultValues(), false);
-
-        // when
-        row.renameColumn("non existing column", "new name");
-
-        // then
-        assertEquals(row, createRow(defaultValues(), false));
-    }
-
-    /**
-     * When rename overwrite an existing column.
-     *
-     * @see DataSetRow#renameColumn(String, String)
-     */
-    @Test
-    public void rename_to_an_existing_column() {
-        // given
-        String oldName = "firstName";
-        String newName = "lastName";
-        final DataSetRow row = createRow(defaultValues(), false);
-
-        // when
-        row.renameColumn(oldName, newName);
-
-        // then
-        assertEquals(row, createRow(defaultValues(), false));
-    }
 
     /**
      * Test the new flag.

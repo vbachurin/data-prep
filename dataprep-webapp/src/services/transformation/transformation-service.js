@@ -12,6 +12,17 @@
         var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
 
+        /**
+         * @ngdoc method
+         * @name isColumnInfo
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @param {object} param - the paramters to check
+         * @description [PRIVATE] Return true if the parameter is 'column_id' or 'column_name'
+         */
+        var isColumnInfo = function(param) {
+            return param.name === 'column_id' || param.name === 'column_name';
+        };
+
         //--------------------------------------------------------------------------------------------------------------
         //------------------------------------------Transformation suggestions------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -20,13 +31,13 @@
          * @name cleanParamsAndItems
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
          * @param {object[]} menus - the menus to clean
-         * @description [PRIVATE] Remove 'column_id' parameters (automatically sent), and clean empty arrays (choices and params)
+         * @description [PRIVATE] Remove 'column_id' and 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
          */
         var cleanParamsAndItems = function(menus) {
             return _.forEach(menus, function(menu) {
                 //params
                 var filteredParameters = _.filter(menu.parameters, function(param) {
-                    return param.name !== 'column_id';
+                    return !isColumnInfo(param);
                 });
                 menu.parameters = filteredParameters.length ? filteredParameters : null;
 
@@ -146,7 +157,7 @@
         var initParameters = function(parameters, paramValues) {
             return _.chain(parameters)
                 .filter(function(param) {
-                    return param.name !== 'column_name';
+                    return !isColumnInfo(param);
                 })
                 .forEach(function(param) {
                     param.initialValue = param.value = paramValues[param.name];

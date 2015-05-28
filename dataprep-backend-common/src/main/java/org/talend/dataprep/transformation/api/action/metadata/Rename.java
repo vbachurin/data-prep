@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
@@ -79,20 +78,6 @@ public class Rename extends SingleColumnAction {
     }
 
     /**
-     * Rename the column for each row.
-     *
-     * @see ActionMetadata#create(Map)
-     */
-    @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
-            String columnName = parameters.get(COLUMN_ID);
-            String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
-            row.renameColumn(columnName, newColumnName);
-        };
-    }
-
-    /**
      * Update the row metadata.
      * 
      * @see ActionMetadata#createMetadataClosure(Map)
@@ -102,7 +87,7 @@ public class Rename extends SingleColumnAction {
 
         return rowMetadata -> {
 
-            String columnName = parameters.get(COLUMN_ID);
+            String columnId = parameters.get(COLUMN_ID);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
 
             List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size());
@@ -110,7 +95,7 @@ public class Rename extends SingleColumnAction {
             for (ColumnMetadata column : rowMetadata.getColumns()) {
                 ColumnMetadata newColumnMetadata;
                 // rename the column
-                if (StringUtils.equals(columnName, column.getName())) {
+                if (StringUtils.equals(columnId, column.getId())) {
                     newColumnMetadata = ColumnMetadata.Builder.column() //
                             .id(column.getId()) //
                             .name(newColumnName) // new name

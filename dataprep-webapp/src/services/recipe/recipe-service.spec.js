@@ -58,7 +58,8 @@ describe('Recipe service', function () {
                         'Massachussetts': 'Massachussets',
                         'Massachusets': 'Massachussets',
                         'Masachussets': 'Massachussets',
-                        'column_name': 'uglystate'
+                        'column_name': 'uglystate',
+                        'column_id': '1'
                     }
                 },
                 {
@@ -455,13 +456,13 @@ describe('Recipe service', function () {
         //then
         var recipe = RecipeService.getRecipe();
         expect(recipe.length).toBe(6);
-        expect(recipe[0].column.id).toBe('country');
+        expect(recipe[0].column.name).toBe('country');
         expect(recipe[0].transformation.stepId).toBe('329ccf0cce42db4dc0ffa9f389c05ff7d75c1748');
         expect(recipe[0].transformation.name).toBe('uppercase');
         expect(recipe[0].transformation.parameters).toEqual([]);
         expect(recipe[0].transformation.items).toEqual([]);
 
-        expect(recipe[2].column.id).toBe('campain');
+        expect(recipe[2].column.name).toBe('campain');
         expect(recipe[2].transformation.stepId).toBe('0c58ee3034114eb620b8e598e02c74172a43e96a');
         expect(recipe[2].transformation.name).toBe('negate');
         expect(recipe[2].transformation.parameters).toEqual([]);
@@ -479,7 +480,7 @@ describe('Recipe service', function () {
         var recipe = RecipeService.getRecipe();
         expect(recipe.length).toBe(6);
 
-        expect(recipe[1].column.id).toBe('gender');
+        expect(recipe[1].column.name).toBe('gender');
         expect(recipe[1].transformation.stepId).toBe('ec87e2acda2b181fc7eb7c22d91e128c6d0434fc');
         expect(recipe[1].transformation.name).toBe('fillemptywithdefault');
         expect(recipe[1].transformation.items).toEqual([]);
@@ -495,7 +496,7 @@ describe('Recipe service', function () {
                 inputType: 'text'
             }]);
 
-        expect(recipe[3].column.id).toBe('first_item');
+        expect(recipe[3].column.name).toBe('first_item');
         expect(recipe[3].transformation.stepId).toBe('1e1f41dd6d4554705abebd8d1896022acdbad217');
         expect(recipe[3].transformation.name).toBe('cut');
         expect(recipe[3].transformation.items).toEqual([]);
@@ -523,7 +524,7 @@ describe('Recipe service', function () {
         var recipe = RecipeService.getRecipe();
         expect(recipe.length).toBe(6);
 
-        expect(recipe[5].column.id).toBe('campain');
+        expect(recipe[5].column.name).toBe('campain');
         expect(recipe[5].transformation.stepId).toBe('2aba0e60054728f046d35315830bce9abc3c5249');
         expect(recipe[5].transformation.name).toBe('fillemptywithdefaultboolean');
         expect(recipe[5].transformation.parameters).toEqual([]);
@@ -553,14 +554,14 @@ describe('Recipe service', function () {
         var recipe = RecipeService.getRecipe();
         expect(recipe.length).toBe(6);
 
-        expect(recipe[4].column.id).toBe('uglystate');
+        expect(recipe[4].column.name).toBe('uglystate');
         expect(recipe[4].transformation.stepId).toBe('add60ff0f6de4c703fa75725ada38fb37af065e6');
         expect(recipe[4].transformation.name).toBe('textclustering');
         expect(recipe[4].transformation.parameters).toEqual([]);
         expect(recipe[4].transformation.items).toEqual([]);
         expect(recipe[4].transformation.cluster).toEqual(expectedInitializedCluster);
 
-        expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(recipe[4].transformation, { columnId: 'uglystate', preparationId: null, stepId: '1e1f41dd6d4554705abebd8d1896022acdbad217' });
+        expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(recipe[4].transformation, { columnId: '1', preparationId: null, stepId: '1e1f41dd6d4554705abebd8d1896022acdbad217' });
         expect(TransformationService.initParamsValues).toHaveBeenCalledWith(recipe[4].transformation, recipe[4].actionParameters.parameters);
     }));
 
@@ -597,7 +598,7 @@ describe('Recipe service', function () {
         expect(recipe[1].actionParameters).toEqual({ action: 'fillemptywithdefault', parameters: Object({ default_value: 'M', column_name: 'gender' }) });
         expect(recipe[2].actionParameters).toEqual({ action: 'negate', parameters: Object({ column_name: 'campain' }) });
         expect(recipe[3].actionParameters).toEqual({ action: 'cut', parameters: Object({ pattern: '.', column_name: 'first_item' }) });
-        expect(recipe[4].actionParameters).toEqual({ action: 'textclustering', parameters: { Texa: 'Texas', Tixass: 'Texas', 'Tex@s': 'Texas', Massachusetts: 'Massachussets', Masachusetts: 'Massachussets', Massachussetts: 'Massachussets', Massachusets: 'Massachussets', Masachussets: 'Massachussets', column_name: 'uglystate' }});
+        expect(recipe[4].actionParameters).toEqual({ action: 'textclustering', parameters: { Texa: 'Texas', Tixass: 'Texas', 'Tex@s': 'Texas', Massachusetts: 'Massachussets', Masachusetts: 'Massachussets', Massachussetts: 'Massachussets', Massachusets: 'Massachussets', Masachussets: 'Massachussets', column_id: '1', column_name: 'uglystate' }});
         expect(recipe[5].actionParameters).toEqual({ action: 'fillemptywithdefaultboolean', parameters: Object({ default_value: 'True', column_name: 'campain' }) });
     }));
 

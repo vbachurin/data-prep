@@ -3,7 +3,8 @@
     {
       "action": "rename",
       "parameters": {
-        "column_id": "first name",
+        "column_id": "1",
+        "column_name": "first name",
         "new_column_name": "NAME_FIRST"
       }
     }

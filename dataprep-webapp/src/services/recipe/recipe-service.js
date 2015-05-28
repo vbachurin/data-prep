@@ -240,7 +240,7 @@
                 column: {
                     /*jshint camelcase: false */
                     id: actionValues.parameters.column_id,
-                    name: actionValues.parameters
+                    name: actionValues.parameters.column_name
                 },
                 transformation: {
                     stepId: stepId,

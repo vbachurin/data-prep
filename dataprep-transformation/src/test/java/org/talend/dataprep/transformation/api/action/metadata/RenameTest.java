@@ -13,11 +13,9 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -72,20 +70,6 @@ public class RenameTest {
         Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
         rowClosure = action.create(parameters);
         metadataClosure = action.createMetadataClosure(parameters);
-    }
-
-    /**
-     * @see Rename#create(Map)
-     */
-    @Test
-    public void should_rename_column_in_row() {
-        Map<String, String> values = new HashMap<>();
-        values.put("first name", "Peter");
-        DataSetRow row = new DataSetRow(values);
-
-        rowClosure.accept(row);
-        assertNull(row.get("first name"));
-        assertEquals("Peter", row.get("NAME_FIRST"));
     }
 
     /**
