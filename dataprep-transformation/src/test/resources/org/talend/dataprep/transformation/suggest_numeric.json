@@ -3,7 +3,7 @@
       "name":"fillemptywithdefaultinteger",
       "parameters":[
          {
-            "name":"column_name",
+           "name": "column_id",
             "type":"string",
             "default":"",
             "description":"The column on which apply this action to",
@@ -31,7 +31,7 @@
       "name":"absolute_int",
       "parameters":[
          {
-            "name":"column_name",
+           "name": "column_id",
             "type":"string",
             "default":"",
             "description":"The column on which apply this action to",
@@ -50,7 +50,7 @@
     "name": "delete_empty",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       }
@@ -60,7 +60,7 @@
     "name": "delete_on_value",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       },
@@ -75,7 +75,7 @@
     "name": "round",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       }
@@ -90,7 +90,7 @@
     "name": "rename_column",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",

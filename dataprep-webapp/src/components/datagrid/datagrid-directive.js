@@ -134,7 +134,7 @@
                         }
 
                         template = '<div class="grid-header '+ diffClass +'">' +
-                            '<div class="grid-header-title dropdown-button ng-binding">' + col.id + '</div>' +
+                            '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +
                             '<div class="grid-header-type ng-binding">' + col.type + '</div>' +
                             '</div>' +
                             '<div class="quality-bar"><div  class="record-ok" style="width: 100%;"></div></div>';
@@ -160,7 +160,7 @@
                  * @description [PRIVATE] Create and insert the dataset column headers (dropdown actions and quality bars).
                  The columns are from {@link data-prep.services.playground.service:DatagridService DatagridService}
                  */
-                var insertDatasetHeaders = function () {
+                var insertDatagridHeaders = function () {
                     _.forEach(DatagridService.data.columns, function (col, index) {
                         var header = createHeader(col);
                         iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
@@ -245,7 +245,7 @@
                     //destroy old elements and insert compiled column header directives
                     grid.onColumnsReordered.subscribe(function () {
                         clearHeaders();
-                        insertDatasetHeaders();
+                        insertDatagridHeaders();
                     });
 
                     //change column background and update column profil on click

@@ -1,62 +1,69 @@
 {
   "columns": [
     {
-      "id": "id",
+      "id": "0",
+      "name": "id",
       "type": "integer"
     },
     {
-      "id": "firstname",
+      "id": "1",
+      "name": "firstname",
       "type": "string"
     },
     {
-      "id": "lastname",
+      "id": "2",
+      "name": "lastname",
       "type": "string"
     },
     {
-      "id": "age",
+      "id": "3",
+      "name": "age",
       "type": "integer"
     },
     {
-      "id": "date-of-birth",
+      "id": "4",
+      "name": "date-of-birth",
       "type": "date"
     },
     {
-      "id": "alive",
+      "id": "5",
+      "name": "alive",
       "type": "boolean"
     },
     {
-      "id": "city",
+      "id": "6",
+      "name": "city",
       "type": "string"
     }
   ],
   "records": [
     {
       "__tdpRowDiff": "new",
-      "firstname": "BRUCE",
-      "alive": "true",
-      "city": "Gotham city",
-      "date-of-birth": "01/01/1947",
-      "id": "2",
-      "age": "50",
-      "lastname": "WAYNE"
+      "0": "2",
+      "1": "BRUCE",
+      "2": "WAYNE",
+      "3": "50",
+      "4": "01/01/1947",
+      "5": "true",
+      "6": "Gotham city"
     },
     {
-      "firstname": "BARRY",
-      "alive": "true",
-      "city": "Central city",
-      "date-of-birth": "01/02/1948",
-      "id": "3",
-      "age": "67",
-      "lastname": "ALLEN"
+      "0": "3",
+      "1": "BARRY",
+      "2": "ALLEN",
+      "3": "67",
+      "4": "01/02/1948",
+      "5": "true",
+      "6": "Central city"
     },
     {
-      "firstname": "OLIVER",
-      "alive": "true",
-      "city": "Star city",
-      "date-of-birth": "01/04/1950",
-      "id": "5",
-      "age": "81",
-      "lastname": "QUEEN"
+      "0": "5",
+      "1": "OLIVER",
+      "2": "QUEEN",
+      "3": "81",
+      "4": "01/04/1950",
+      "5": "true",
+      "6": "Star city"
     }
   ]
 }

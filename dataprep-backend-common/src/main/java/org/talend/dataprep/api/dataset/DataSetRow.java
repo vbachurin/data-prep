@@ -16,7 +16,7 @@ import org.talend.dataprep.api.dataset.diff.FlagNames;
 public class DataSetRow implements Cloneable {
 
     /** True if this row is deleted. */
-    private boolean deleted = false;
+    private boolean deleted;
 
     /** the old value used for the diff. */
     private DataSetRow oldValue;
@@ -29,6 +29,7 @@ public class DataSetRow implements Cloneable {
      */
     public DataSetRow() {
         values = new LinkedHashMap<>();
+        deleted = false;
     }
 
     /**
@@ -55,11 +56,11 @@ public class DataSetRow implements Cloneable {
     /**
      * Get the value associated with the provided key
      * 
-     * @param name - the key
+     * @param id the column id.
      * @return - the value as string
      */
-    public String get(final String name) {
-        return values.get(name);
+    public String get(final String id) {
+        return values.get(id);
     }
 
     /**

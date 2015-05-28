@@ -56,7 +56,7 @@ public class AbsoluteFloat extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID_PARAMETER_NAME);
             String value = row.get(columnName);
             String absValueStr = null;
             if (value != null) {

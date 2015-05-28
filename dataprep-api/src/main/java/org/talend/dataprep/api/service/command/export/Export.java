@@ -30,7 +30,7 @@ public class Export extends PreparationCommand<InputStream> {
     private final HttpServletResponse response;
 
     private Export(final HttpClient client, final ExportParameters input, final HttpServletResponse response) {
-        super(APIService.PREPARATION_GROUP, client);
+        super(APIService.TRANSFORM_GROUP, client);
         this.input = input;
         this.response = response;
     }

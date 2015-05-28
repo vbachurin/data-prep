@@ -49,9 +49,9 @@ public class ActionParser implements BeanFactoryAware {
             String content = actions.trim();
             // no op
             if (content.isEmpty()) {
-                return new ParsedActions(row -> {
-                }, rowMetadata -> {
-                });
+                //@formatter:off
+                return new ParsedActions(row -> {}, rowMetadata -> {});
+                //@formatter:on
             }
             JsonNode node = mapper.readTree(content);
             Iterator<JsonNode> elements = node.getElements();

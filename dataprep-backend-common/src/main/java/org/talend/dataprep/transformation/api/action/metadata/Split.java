@@ -95,7 +95,7 @@ public class Split extends SingleColumnAction {
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
 
         return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID_PARAMETER_NAME);
             String realSeparator = getSeparator(parameters);
 
             String value = row.get(columnName);
@@ -126,7 +126,7 @@ public class Split extends SingleColumnAction {
 
         return rowMetadata -> {
 
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID_PARAMETER_NAME);
 
             List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
 
@@ -135,10 +135,11 @@ public class Split extends SingleColumnAction {
                 newColumns.add(newColumnMetadata);
 
                 // append the split column
-                if (StringUtils.equals(columnName, column.getId())) {
+                if (StringUtils.equals(columnName, column.getName())) {
                     newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
-                            .name(column.getId() + SPLIT_COLUMN_APPENDIX) //
+                            .id(column.getId() + SPLIT_COLUMN_APPENDIX) //
+                            .name(column.getName() + SPLIT_COLUMN_APPENDIX) //
                             .type(Type.get(column.getType())) //
                             .empty(column.getQuality().getEmpty()) //
                             .invalid(column.getQuality().getInvalid()) //

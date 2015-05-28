@@ -33,7 +33,7 @@ public class FillWithDefaultIfEmpty extends AbstractDefaultIfEmpty {
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER,
+        return new Parameter[] { COLUMN_ID_PARAMETER,
                 new Parameter(DEFAULT_VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };
     }
 

@@ -40,7 +40,7 @@ public class Negate extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID_PARAMETER_NAME);
             String value = row.get(columnName);
 
             if (value != null && (value.trim().equalsIgnoreCase("true") || value.trim().equalsIgnoreCase("false"))) { //$NON-NLS-1$ //$NON-NLS-2$

@@ -12,22 +12,44 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
+/**
+ * Write datasets in CSV.
+ */
 public class CsvWriter implements TransformerWriter {
 
+    /** The CSV writer. */
     private final CSVWriter writer;
 
+    /** the columns ids. */
     private String[] columnIds;
 
+    /**
+     * Constructor.
+     * 
+     * @param output where to write the dataset.
+     * @param separator the separator to use.
+     */
     public CsvWriter(final OutputStream output, final char separator) {
         writer = new CSVWriter(new OutputStreamWriter(output), separator);
     }
 
+    /**
+     * @see TransformerWriter#write(RowMetadata)
+     */
     @Override
     public void write(final RowMetadata rowMetadata) throws IOException {
+        // write the columns names
+        String[] columnsName = rowMetadata.getColumns().stream().map(ColumnMetadata::getName).toArray(String[]::new);
+        writer.writeNext(columnsName);
+
+        // and store the columns ids for the rows.
         columnIds = rowMetadata.getColumns().stream().map(ColumnMetadata::getId).toArray(String[]::new);
-        writer.writeNext(columnIds);
     }
 
+    /**
+     * @see TransformerWriter#write(DataSetRow)
+     * @throws UnsupportedOperationException if CsvWriter#write(RowMetadata) was not called before.
+     */
     @Override
     public void write(final DataSetRow row) throws IOException {
         if (columnIds == null) {
@@ -37,6 +59,9 @@ public class CsvWriter implements TransformerWriter {
         writer.writeNext(csvRow);
     }
 
+    /**
+     * @see TransformerWriter#flush()
+     */
     @Override
     public void flush() throws IOException {
         writer.flush();

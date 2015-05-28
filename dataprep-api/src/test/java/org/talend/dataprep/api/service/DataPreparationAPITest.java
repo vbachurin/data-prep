@@ -362,7 +362,7 @@ public class DataPreparationAPITest {
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
         assertThat(steps.size(), is(2));
-        assertThat(steps.get(0), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(steps.get(0), is("cf1be652e81df206c06fcab763e32aa584e1129a"));
         assertThat(steps.get(1), is(ROOT_STEP.id()));
     }
 
@@ -506,7 +506,7 @@ public class DataPreparationAPITest {
                 + "   \"action\": {" //
                 + "       \"action\": \"delete_on_value\",\n"//
                 + "       \"parameters\": {" //
-                + "           \"column_name\": \"city\"," //
+                + "           \"column_id\": \"6\"," //
                 + "           \"value\": \"Coast city\""//
                 + "       }" //
                 + "   }"//

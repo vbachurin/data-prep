@@ -235,8 +235,7 @@ public class TransformationServiceTests {
     public void previewDiff() throws Exception {
         // given
         final String datasetContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("preview.json"));
-        final String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
-                .getResourceAsStream("preview_result.json"));
+        final String expected = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("preview_result.json"));
 
         final String oldActions = getSingleTransformation();
         final String newActions = getMultipleTransformation();
@@ -248,7 +247,7 @@ public class TransformationServiceTests {
         final String response = post.asString();
 
         // then
-        assertEquals(expectedSuggestions, response, false);
+        assertEquals(expected, response, false);
     }
 
     @Test
@@ -270,18 +269,18 @@ public class TransformationServiceTests {
 
     private String getSingleTransformation() {
         /**
-         * {"actions": [ { "action": "uppercase", "parameters":{ "column_name": "lastname" } } ]}
+         * {"actions": [ { "action": "uppercase", "parameters":{ "column_id": "lastname" } } ]}
          */
-        return "eyJhY3Rpb25zIjogWw0KICAgIHsNCiAgICAgICJhY3Rpb24iOiAidXBwZXJjYXNlIiwNCiAgICAgICJwYXJhbWV0ZXJzIjp7DQogICAgICAgICAgICAiY29sdW1uX25hbWUiOiAibGFzdG5hbWUiDQogICAgICB9DQogICAgfQ0KICBdDQp9";
+        return "eyJhY3Rpb25zIjogWyB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ICJsYXN0bmFtZSIgfSB9IF19";
     }
 
     private String getMultipleTransformation() {
         /**
-         * {"actions": [ { "action": "uppercase", "parameters":{ "column_name": "lastname" } }, { "action": "uppercase",
-         * "parameters":{ "column_name": "firstname" } }, { "action": "delete_on_value", "parameters":{ "column_name":
+         * {"actions": [ { "action": "uppercase", "parameters":{ "column_id": "lastname" } }, { "action": "uppercase",
+         * "parameters":{ "column_id": "firstname" } }, { "action": "delete_on_value", "parameters":{ "column_id":
          * "city", "value": "Columbia" } } ]}
          */
-        return "eyJhY3Rpb25zIjogWw0KICAgIHsNCiAgICAgICJhY3Rpb24iOiAidXBwZXJjYXNlIiwNCiAgICAgICJwYXJhbWV0ZXJzIjp7DQogICAgICAgICAgICAiY29sdW1uX25hbWUiOiAibGFzdG5hbWUiDQogICAgICB9DQogICAgfSwNCiAgICB7DQogICAgICAiYWN0aW9uIjogInVwcGVyY2FzZSIsDQogICAgICAicGFyYW1ldGVycyI6ew0KICAgICAgICAiY29sdW1uX25hbWUiOiAiZmlyc3RuYW1lIg0KICAgICAgfQ0KICAgIH0sDQogICAgew0KICAgICAgImFjdGlvbiI6ICJkZWxldGVfb25fdmFsdWUiLA0KICAgICAgInBhcmFtZXRlcnMiOnsNCiAgICAgICAgImNvbHVtbl9uYW1lIjogImNpdHkiLA0KICAgICAgICAidmFsdWUiOiAiQ29sdW1iaWEiDQogICAgICB9DQogICAgfQ0KICBdDQp9";
+        return "eyJhY3Rpb25zIjogWyB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ICJsYXN0bmFtZSIgfSB9LCB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwicGFyYW1ldGVycyI6eyAiY29sdW1uX2lkIjogImZpcnN0bmFtZSIgfSB9LCB7ICJhY3Rpb24iOiAiZGVsZXRlX29uX3ZhbHVlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ImNpdHkiLCAidmFsdWUiOiAiQ29sdW1iaWEiIH0gfSBdfQ==";
     }
 
 }

@@ -58,14 +58,14 @@ public class UpperCase extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
-            String value = row.get(columnName);
+            String columnId = parameters.get(COLUMN_ID_PARAMETER_NAME);
+            String value = row.get(columnId);
             if (value == null) {
                 return;
             }
 
             String newValue = value.toUpperCase();
-            row.set(columnName, newValue);
+            row.set(columnId, newValue);
         };
     }
 

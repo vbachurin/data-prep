@@ -252,7 +252,7 @@ describe('Datagrid directive', function () {
                     'valid': 72
                 },
                 'type': 'string',
-                "__tdpColumnDiff": "delete"
+                '__tdpColumnDiff': 'delete'
             },
             {
                 'id': 'State',
@@ -269,7 +269,7 @@ describe('Datagrid directive', function () {
                 'id': '1',
                 'Postal': '',
                 'State': 'My Alabama',
-                "__tdpDiff": {"Postal": "delete"}
+                '__tdpDiff': {'Postal': 'delete'}
             }
         ]
     };
@@ -294,7 +294,7 @@ describe('Datagrid directive', function () {
                     'valid': 72
                 },
                 'type': 'string',
-                "__tdpColumnDiff": "new"
+                '__tdpColumnDiff': 'new'
             },
             {
                 'id': 'State',
@@ -311,7 +311,7 @@ describe('Datagrid directive', function () {
                 'id': '1',
                 'Postal': '90210',
                 'State': 'My Alabama',
-                "__tdpDiff": {"Postal": "new"}
+                '__tdpDiff': {'Postal': 'new'}
             }
         ]
     };

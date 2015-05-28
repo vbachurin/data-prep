@@ -3,7 +3,7 @@
     {
       "action": "absolute_int",
       "parameters": {
-        "column_name": "int_column"
+        "column_id": "int_column"
       }
     }
   ]

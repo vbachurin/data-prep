@@ -117,7 +117,7 @@ public class DataSetJSONTest {
     @Test
     public void testWrite1() throws Exception {
         List<ColumnMetadata> columns = new ArrayList<>();
-        ColumnMetadata column = new ColumnMetadata("column1", "string");
+        ColumnMetadata column = new ColumnMetadata("0", "column1", "string");
         column.getQuality().setEmpty(0);
         column.getQuality().setInvalid(10);
         column.getQuality().setValid(50);

@@ -3,7 +3,7 @@
     {
       "action": "delete_empty",
       "parameters": {
-        "column_name": "city"
+        "column_id": "city"
       }
     }
   ]

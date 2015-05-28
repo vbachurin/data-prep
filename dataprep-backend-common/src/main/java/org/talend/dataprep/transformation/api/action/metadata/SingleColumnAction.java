@@ -21,9 +21,9 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
  */
 public abstract class SingleColumnAction implements ActionMetadata {
 
-    public static final String COLUMN_NAME_PARAMETER_NAME = "column_name"; //$NON-NLS-1$
+    public static final String COLUMN_ID_PARAMETER_NAME = "column_id"; //$NON-NLS-1$
 
-    public static final Parameter COLUMN_NAME_PARAMETER = new Parameter(COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(),
+    public static final Parameter COLUMN_ID_PARAMETER = new Parameter(COLUMN_ID_PARAMETER_NAME, Type.STRING.getName(),
             StringUtils.EMPTY);
 
     /**
@@ -31,7 +31,7 @@ public abstract class SingleColumnAction implements ActionMetadata {
      */
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER };
+        return new Parameter[] { COLUMN_ID_PARAMETER };
     }
 
 }

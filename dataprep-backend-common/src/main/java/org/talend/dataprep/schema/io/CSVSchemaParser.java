@@ -25,7 +25,7 @@ public class CSVSchemaParser implements SchemaParser {
 
     @Override
     public List<ColumnMetadata> parse(InputStream content, DataSetMetadata metadata) {
-        List<ColumnMetadata> columnMetadata = new LinkedList<>();
+        List<ColumnMetadata> columnsMetadata = new LinkedList<>();
         try {
             final Map<String, String> parameters = metadata.getContent().getParameters();
             final char separator = parameters.get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
@@ -33,15 +33,15 @@ public class CSVSchemaParser implements SchemaParser {
             // First line has column names
             String[] columns = reader.readNext();
             if (columns == null) { // Empty content?
-                return columnMetadata;
+                return columnsMetadata;
             }
             // By default, consider all columns as Strings (to be refined by deeper analysis).
-            for (String column : columns) {
-                columnMetadata.add(column().name(column).type(Type.STRING).build());
+            for (int i = 0; i < columns.length; i++) {
+                columnsMetadata.add(column().id(String.valueOf(i)).name(columns[i]).type(Type.STRING).build());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
         }
-        return columnMetadata;
+        return columnsMetadata;
     }
 }

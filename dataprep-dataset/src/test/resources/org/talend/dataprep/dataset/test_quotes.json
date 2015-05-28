@@ -1,19 +1,19 @@
 {
    "records":[
       {
-         "id":"1",
-         "name":"the beatles",
-         "description":"an english band"
+        "0": "1",
+        "1": "the beatles",
+        "2": "an english band"
       },
      {
-         "id":"2",
-         "name":"the rolling stones",
-         "description":"hey! another english band"
+       "0": "2",
+       "1": "the rolling stones",
+       "2": "hey! another english band"
       },
       {
-         "id":"3",
-         "name":"the who",
-         "description":"a third english band"
+        "0": "3",
+        "1": "the who",
+        "2": "a third english band"
       }
    ]
 }

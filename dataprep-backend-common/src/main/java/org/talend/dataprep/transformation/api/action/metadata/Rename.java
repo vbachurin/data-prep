@@ -66,7 +66,7 @@ public class Rename extends SingleColumnAction {
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER,
+        return new Parameter[] { COLUMN_ID_PARAMETER,
                 new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), StringUtils.EMPTY) };
     }
 
@@ -86,7 +86,7 @@ public class Rename extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID_PARAMETER_NAME);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
             row.renameColumn(columnName, newColumnName);
         };
@@ -102,7 +102,7 @@ public class Rename extends SingleColumnAction {
 
         return rowMetadata -> {
 
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID_PARAMETER_NAME);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
 
             List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size());
@@ -110,8 +110,9 @@ public class Rename extends SingleColumnAction {
             for (ColumnMetadata column : rowMetadata.getColumns()) {
                 ColumnMetadata newColumnMetadata;
                 // rename the column
-                if (StringUtils.equals(columnName, column.getId())) {
+                if (StringUtils.equals(columnName, column.getName())) {
                     newColumnMetadata = ColumnMetadata.Builder.column() //
+                            .id(column.getId()) //
                             .name(newColumnName) // new name
                             .type(Type.get(column.getType())) //
                             .empty(column.getQuality().getEmpty()) //

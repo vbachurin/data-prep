@@ -15,7 +15,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 public abstract class AbstractDelete implements ActionMetadata {
 
     /** Name of the column to delete parameter. */
-    public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
+    public static final String COLUMN_NAME_PARAMETER = "column_id"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getCategory()

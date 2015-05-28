@@ -5,7 +5,7 @@
     "name": "uppercase",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       }
@@ -17,7 +17,7 @@
     "name": "lowercase",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       }
@@ -29,7 +29,7 @@
     "name": "propercase",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       }
@@ -41,7 +41,7 @@
     "name": "trim",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       }
@@ -53,7 +53,7 @@
     "name": "fillemptywithdefault",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       },
@@ -68,7 +68,7 @@
     "name": "delete_empty",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       }
@@ -78,7 +78,7 @@
     "name": "delete_on_value",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       },
@@ -97,7 +97,7 @@
     "description":"Remove specified text from cells in this column",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "default": ""
       },
@@ -117,7 +117,7 @@
     "name": "rename_column",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",
@@ -180,7 +180,7 @@
     "name": "split",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",
@@ -201,7 +201,7 @@
     ],
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",

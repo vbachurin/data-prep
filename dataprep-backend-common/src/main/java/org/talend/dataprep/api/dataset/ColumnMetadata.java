@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.type.Type;
@@ -33,8 +34,11 @@ public class ColumnMetadata {
     @JsonProperty("quality")
     private final Quality quality = new Quality();
 
-    /** Id of the column. */
+    /** Technical id of the column (generated when instantiated). */
     private String id;
+
+    /** Human readable name of the column. */
+    private String name;
 
     /** Type of the column (N/A as default). */
     @JsonProperty("type")
@@ -53,19 +57,36 @@ public class ColumnMetadata {
     @JsonRawValue
     private String statistics = "{}"; //$NON-NLS-1$
 
-    // Needed when objects are read back from the db.
+    /**
+     * Default empty constructor.
+     */
     public ColumnMetadata() {
-        // Do not remove!
+        // generate random pseudo unique id
+        this.id = UUID.randomUUID().toString();
     }
 
     /**
      * Create a column metadata from the given parameters.
      *
-     * @param id the column name.
+     * @param name the column name.
      * @param typeName the column type.
      */
-    public ColumnMetadata(String id, String typeName) {
+    public ColumnMetadata(String name, String typeName) {
+        this();
+        this.name = name;
+        this.typeName = typeName;
+    }
+
+    /**
+     * Create a column metadata from the given parameters.
+     *
+     * @param id the column technical id.
+     * @param name the column name.
+     * @param typeName the column type.
+     */
+    public ColumnMetadata(String id, String name, String typeName) {
         this.id = id;
+        this.name = name;
         this.typeName = typeName;
     }
 
@@ -74,6 +95,20 @@ public class ColumnMetadata {
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * @return the column name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -133,6 +168,7 @@ public class ColumnMetadata {
                 .map(that -> (ColumnMetadata) that) //
                 .filter(that -> Objects.equals(this.diffFlagValue, that.diffFlagValue)) //
                 .filter(that -> Objects.equals(this.id, that.id)) //
+                .filter(that -> Objects.equals(this.name, that.name)) //
                 .filter(that -> Objects.equals(this.typeName, that.typeName)) //
                 .isPresent();
     }
@@ -149,6 +185,7 @@ public class ColumnMetadata {
         return "ColumnMetadata{" + //
                 "quality=" + quality + //
                 ", id='" + id + '\'' + //
+                ", name='" + name + '\'' + //
                 ", typeName='" + typeName + '\'' + //
                 ", headerSize=" + headerSize + //
                 ", diffFlagValue='" + diffFlagValue + '\'' + //
@@ -190,26 +227,48 @@ public class ColumnMetadata {
         }
     }
 
+    /**
+     * This class builder to ease the constructor.
+     */
     public static class Builder {
 
-        private Type type;
+        /** The column id. */
+        private String id;
 
+        /** The column name. */
         private String name;
 
+        /** The column type. */
+        private Type type;
+
+        /** The column empty value. */
         private int empty;
 
+        /** The column invalid value. */
         private int invalid;
 
+        /** The columne valid value. */
         private int valid;
 
+        /** The column header size. */
         private int headerSize;
 
+        /** The column diff flag (null by default). */
         private String diffFlagValue = null;
 
+        /**
+         * @return A ColumnMetadata builder.
+         */
         public static ColumnMetadata.Builder column() {
             return new Builder();
         }
 
+        /**
+         * Set the name of the column.
+         * 
+         * @param name the name of the column to set.
+         * @return the builder to carry on building the column.
+         */
         public ColumnMetadata.Builder name(String name) {
             if (isEmpty(name)) {
                 throw new IllegalArgumentException("Name cannot be null or empty.");
@@ -218,6 +277,26 @@ public class ColumnMetadata {
             return this;
         }
 
+        /**
+         * Set the id of the column.
+         * 
+         * @param id the id of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder id(String id) {
+            if (isEmpty(id)) {
+                throw new IllegalArgumentException("Id cannot be null or empty.");
+            }
+            this.id = id;
+            return this;
+        }
+
+        /**
+         * Set the type of the column.
+         * 
+         * @param type the type of the column to set.
+         * @return the builder to carry on building the column.
+         */
         public ColumnMetadata.Builder type(Type type) {
             if (type == null) {
                 throw new IllegalArgumentException("Type cannot be null.");
@@ -226,28 +305,59 @@ public class ColumnMetadata {
             return this;
         }
 
+        /**
+         * Set the empty value of the column.
+         * 
+         * @param value the empty value of the column to set.
+         * @return the builder to carry on building the column.
+         */
         public ColumnMetadata.Builder empty(int value) {
             empty = value;
             return this;
         }
 
+        /**
+         * Set the invalid value of the column.
+         * 
+         * @param value the invalid value of the column to set.
+         * @return the builder to carry on building the column.
+         */
         public ColumnMetadata.Builder invalid(int value) {
             invalid = value;
             return this;
         }
 
+        /**
+         * Set the valid value of the column.
+         * 
+         * @param value the valid value of the column to set.
+         * @return the builder to carry on building the column.
+         */
         public ColumnMetadata.Builder valid(int value) {
             valid = value;
             return this;
         }
 
+        /**
+         * Set the header size value of the column.
+         * 
+         * @param headerSize the header size value of the column to set.
+         * @return the builder to carry on building the column.
+         */
         public ColumnMetadata.Builder headerSize(int headerSize) {
             this.headerSize = headerSize;
             return this;
         }
 
+        /**
+         * Copy the column from the given one.
+         * 
+         * @param original the column to copy.
+         * @return the builder to carry on building the column.
+         */
         public ColumnMetadata.Builder copy(ColumnMetadata original) {
-            this.name = original.getId();
+            this.id = original.getId();
+            this.name = original.getName();
             Quality originalQuality = original.getQuality();
             this.empty = originalQuality.getEmpty();
             this.invalid = originalQuality.getInvalid();
@@ -258,8 +368,18 @@ public class ColumnMetadata {
             return this;
         }
 
+        /**
+         * Build the column with the previously entered values.
+         * 
+         * @return the buit column metadata.
+         */
         public ColumnMetadata build() {
-            ColumnMetadata columnMetadata = new ColumnMetadata(name, type.getName());
+            ColumnMetadata columnMetadata;
+            if (id == null) {
+                columnMetadata = new ColumnMetadata(name, type.getName());
+            } else {
+                columnMetadata = new ColumnMetadata(id, name, type.getName());
+            }
             columnMetadata.getQuality().setEmpty(empty);
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);
