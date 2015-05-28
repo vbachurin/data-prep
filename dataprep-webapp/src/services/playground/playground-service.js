@@ -142,7 +142,7 @@
                 $rootScope.$emit('talend.loading.start');
                 return PreparationService.getContent('head')
                     .then(function(response) {
-                        self.currentMetadata = preparation.dataset;
+                        self.currentMetadata = {id: preparation.datasetId};
                         self.currentData = response.data;
 
                         FilterService.removeAllFilters();

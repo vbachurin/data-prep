@@ -182,7 +182,7 @@ describe('Playground Service', function () {
             //given
             var preparation = {
                 id: '6845521254541',
-                dataset: {id: '1', name: 'my dataset'}
+                datasetId: '1'
             };
             PreparationService.currentPreparationId = '5746518486846';
 
@@ -192,7 +192,7 @@ describe('Playground Service', function () {
             $rootScope.$apply();
 
             //then
-            expect(PlaygroundService.currentMetadata).toBe(preparation.dataset);
+            expect(PlaygroundService.currentMetadata).toEqual({id: '1'});
             expect(PlaygroundService.currentData).toBe(data);
             expect(FilterService.removeAllFilters).toHaveBeenCalled();
             expect(RecipeService.refresh).toHaveBeenCalled();
