@@ -143,4 +143,103 @@ describe('Transformation params directive', function () {
         expect(paramChoice.find('.param-input').eq(0).find('input[type="text"]').length).toBe(1);
         expect(paramChoice.find('.param-input').eq(1).find('input[type="number"]').length).toBe(1);
     });
+
+    it('should render an action with cluster parameters', function() {
+        //given
+        scope.transformation = {
+            name: 'menu with param',
+            cluster: {
+                titles: [
+                    'We found these values',
+                    'And we\'ll keep this value'
+                ],
+                clusters: [
+                    {
+                        parameters: [
+                            {
+                                name: 'Texa',
+                                type: 'boolean',
+                                description: 'parameter.Texa.desc',
+                                label: 'parameter.Texa.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Tixass',
+                                type: 'boolean',
+                                description: 'parameter.Tixass.desc',
+                                label: 'parameter.Tixass.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Tex@s',
+                                type: 'boolean',
+                                description: 'parameter.Tex@s.desc',
+                                label: 'parameter.Tex@s.label',
+                                default: 'true'
+                            }
+                        ],
+                        'replace': {
+                            name: 'replaceValue',
+                            type: 'string',
+                            description: 'parameter.replaceValue.desc',
+                            label: 'parameter.replaceValue.label',
+                            default: 'Texas'
+                        }
+                    },
+                    {
+                        parameters: [
+                            {
+                                name: 'Massachusetts',
+                                type: 'boolean',
+                                description: 'parameter.Massachusetts.desc',
+                                label: 'parameter.Massachusetts.label',
+                                default: 'false'
+                            },
+                            {
+                                name: 'Masachusetts',
+                                type: 'boolean',
+                                description: 'parameter.Masachusetts.desc',
+                                label: 'parameter.Masachusetts.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Massachussetts',
+                                type: 'boolean',
+                                description: 'parameter.Massachussetts.desc',
+                                label: 'parameter.Massachussetts.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Massachusets',
+                                type: 'boolean',
+                                description: 'parameter.Massachusets.desc',
+                                label: 'parameter.Massachusets.label',
+                                default: 'true'
+                            },
+                            {
+                                name: 'Masachussets',
+                                type: 'boolean',
+                                description: 'parameter.Masachussets.desc',
+                                label: 'parameter.Masachussets.label',
+                                default: 'true'
+                            }
+                        ],
+                        replace: {
+                            name: 'replaceValue',
+                            type: 'string',
+                            description: 'parameter.replaceValue.desc',
+                            label: 'parameter.replaceValue.label',
+                            default: 'Massachussets'
+                        }
+                    }
+                ]
+            }
+        };
+
+        //when
+        var element = createElement();
+
+        //then
+        expect(element.find('table.cluster').length).toBe(1);
+    });
 });
