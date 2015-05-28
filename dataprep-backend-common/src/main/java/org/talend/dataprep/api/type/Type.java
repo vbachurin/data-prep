@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public enum Type {
+
     ANY("any"), //$NON-NLS-1$
     STRING("string", ANY), //$NON-NLS-1$
     CHAR("char", STRING), //$NON-NLS-1$
@@ -14,6 +15,27 @@ public enum Type {
     FLOAT("float", NUMERIC), //$NON-NLS-1$
     BOOLEAN("boolean", ANY), //$NON-NLS-1$
     DATE("date", ANY); //$NON-NLS-1$
+
+    /*
+    need to be moved in a separate class
+    public static final String ANY_TYPE = "any";
+
+    public static final String STRING_TYPE = "string";
+
+    public static final String CHAR_TYPE = "char";
+
+    public static final String NUMERIC_TYPE = "numeric";
+
+    public static final String INTEGER_TYPE = "integer";
+
+    public static final String DOUBLE_TYPE = "double";
+
+    public static final String FLOAT_TYPE = "float";
+
+    public static final String BOOLEAN_TYPE = "boolean";
+
+    public static final String DATE_TYPE = "date";
+    */
 
     private final String name;
 

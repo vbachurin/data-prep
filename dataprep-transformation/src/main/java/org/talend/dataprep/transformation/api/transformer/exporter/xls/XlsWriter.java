@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 public class XlsWriter implements TransformerWriter {
@@ -77,8 +79,24 @@ public class XlsWriter implements TransformerWriter {
 
         for (ColumnMetadata columnMetadata : this.columnMetadatas) {
 
-            // FIXME typed Cell!!
-            row.createCell(cellIdx).setCellValue(dataSetRow.get(columnMetadata.getId()));
+            // FIXME use constants see Type
+            Cell cell = row.createCell(cellIdx);
+            switch (Type.get(columnMetadata.getType()).getName()) {
+            case "numeric":
+            case "integer":
+            case "double":
+            case "float":
+                cell.setCellValue(Double.valueOf(dataSetRow.get(columnMetadata.getId())));
+                break;
+            case "boolean":
+                cell.setCellValue(Boolean.valueOf(dataSetRow.get(columnMetadata.getId())));
+                break;
+            // FIXME ATM we don't have any idea about the date format so this can generate exceptions
+            // case "date":
+            // cell.setCellValue( );
+            default:
+                cell.setCellValue(dataSetRow.get(columnMetadata.getId()));
+            }
 
             cellIdx++;
         }

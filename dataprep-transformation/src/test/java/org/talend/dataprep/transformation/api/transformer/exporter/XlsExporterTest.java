@@ -92,9 +92,9 @@ public class XlsExporterTest {
         Assertions.assertThat(row.getCell(0).getStringCellValue()).isEqualTo("1");
         Assertions.assertThat(row.getCell(1).getStringCellValue()).isEqualTo("Clark");
         Assertions.assertThat(row.getCell(2).getStringCellValue()).isEqualTo("Kent");
-        Assertions.assertThat(row.getCell(3).getStringCellValue()).isEqualTo("42");
+        Assertions.assertThat(row.getCell(3).getNumericCellValue()).isEqualTo((double) 42);
         Assertions.assertThat(row.getCell(4).getStringCellValue()).isEqualTo("10/09/1940");
-        Assertions.assertThat(row.getCell(5).getStringCellValue()).isEqualTo("false");
+        Assertions.assertThat(row.getCell(5).getBooleanCellValue()).isFalse();
         Assertions.assertThat(row.getCell(6).getStringCellValue()).isEqualTo("Smallville");
 
         // assert last content
@@ -106,9 +106,9 @@ public class XlsExporterTest {
         Assertions.assertThat(row.getCell(0).getStringCellValue()).isEqualTo("6");
         Assertions.assertThat(row.getCell(1).getStringCellValue()).isEqualTo("Ray");
         Assertions.assertThat(row.getCell(2).getStringCellValue()).isEqualTo("Palmer");
-        Assertions.assertThat(row.getCell(3).getStringCellValue()).isEqualTo("93");
+        Assertions.assertThat(row.getCell(3).getNumericCellValue()).isEqualTo((double) 93);
         Assertions.assertThat(row.getCell(4).getStringCellValue()).isEqualTo("01/05/1951");
-        Assertions.assertThat(row.getCell(5).getStringCellValue()).isEqualTo("true");
+        Assertions.assertThat(row.getCell(5).getBooleanCellValue()).isTrue();
         Assertions.assertThat(row.getCell(6).getStringCellValue()).isEqualTo("Star city");
     }
 
