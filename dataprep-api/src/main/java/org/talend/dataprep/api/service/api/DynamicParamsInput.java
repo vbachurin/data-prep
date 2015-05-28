@@ -10,6 +10,10 @@ public class DynamicParamsInput {
      */
     private String preparationId;
     /**
+     * The step id. If not provided, this is considered as 'head' version
+     */
+    private String stepId = "head";
+    /**
      * The dataset id. If this is null, preparationId must be set
      */
     private String datasetId;
@@ -42,5 +46,13 @@ public class DynamicParamsInput {
 
     public void setColumnId(String columnId) {
         this.columnId = columnId;
+    }
+
+    public String getStepId() {
+        return stepId;
+    }
+
+    public void setStepId(String stepId) {
+        this.stepId = stepId;
     }
 }
