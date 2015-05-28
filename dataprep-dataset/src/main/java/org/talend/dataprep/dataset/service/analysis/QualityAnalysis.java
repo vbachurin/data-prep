@@ -96,8 +96,11 @@ public class QualityAnalysis {
                                 case DATE:
                                     types[i] = DataType.Type.DATE;
                                     break;
+                                case CHAR:
+                                    types[i] = DataType.Type.CHAR;
+                                    break;
                                 default:
-                                    throw new NotImplementedException("No support for '" + type + "'.");
+                                    types[i] = DataType.Type.STRING;
                             }
                         }
                         // Run analysis
@@ -106,8 +109,8 @@ public class QualityAnalysis {
                         stream.map(row -> {
                             final Map<String, Object> rowValues = row.values();
                             final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                    .map(String::valueOf) //
-                                    .collect(Collectors.<String>toList());
+                                .map(String::valueOf) //
+                                .collect(Collectors.<String>toList());
                             return strings.toArray(new String[strings.size()]);
                         }).forEach(analyzer::analyze);
                         // Determine content size

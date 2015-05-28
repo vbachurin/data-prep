@@ -2,10 +2,12 @@ package org.talend.dataprep.api.type;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public enum Type {
     ANY("any"), //$NON-NLS-1$
     STRING("string", ANY), //$NON-NLS-1$
+    CHAR("char", STRING), //$NON-NLS-1$
     NUMERIC("numeric", ANY), //$NON-NLS-1$
     INTEGER("integer", NUMERIC), //$NON-NLS-1$
     DOUBLE("double", NUMERIC), //$NON-NLS-1$
@@ -60,10 +62,8 @@ public enum Type {
      */
     public List<Type> list() {
         List<Type> list = new LinkedList<>();
-        list.add(this);
-        for (Type subType : subTypes) {
-            list.addAll(subType.list());
-        }
+        list.add( this );
+        subTypes.forEach( type -> list.addAll(type.list() ));
         return list;
     }
 
@@ -93,12 +93,16 @@ public enum Type {
             throw new IllegalArgumentException("Name cannot be null.");
         }
         List<Type> types = ANY.list();
-        for (Type type : types) {
-            if (type.getName().equalsIgnoreCase(name)) {
-                return type;
-            }
+
+        Optional<Type> type = types.stream().filter( type1 -> type1.getName().equalsIgnoreCase(name) ).findFirst();
+
+        if (type.isPresent()){
+            return type.get();
         }
-        throw new IllegalArgumentException("Type '" + name + "' does not exist.");
+
+        // default type to String
+        return STRING;
+        //throw new IllegalArgumentException("Type '" + name + "' does not exist.");
     }
 
     /**
@@ -112,11 +116,8 @@ public enum Type {
             throw new IllegalArgumentException("Name cannot be null.");
         }
         List<Type> types = ANY.list();
-        for (Type type : types) {
-            if (type.getName().equalsIgnoreCase(name)) {
-                return true;
-            }
-        }
-        return false;
+        Optional<Type> type = types.stream().filter( type1 -> type1.getName().equalsIgnoreCase(name) ).findFirst();
+
+        return type.isPresent();
     }
 }

@@ -52,6 +52,7 @@ public class TransformAPI extends APIService {
             String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
             response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
+
             HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, false);
             HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, contentRetrieval, encodedActions);
 

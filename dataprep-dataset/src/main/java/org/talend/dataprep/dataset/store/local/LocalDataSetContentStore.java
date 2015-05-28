@@ -1,7 +1,17 @@
 package org.talend.dataprep.dataset.store.local;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -33,7 +42,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSetContentStore.class);
 
     @Autowired
-    private ApplicationContext context;
+    FormatGuess.Factory factory;
 
     @Value("${dataset.content.store.local.location}")
     private String storeLocation;
@@ -74,7 +83,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     @Override
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
-        Serializer serializer = context.getBean(content.getFormatGuessId(), FormatGuess.class).getSerializer();
+        Serializer serializer = factory.getFormatGuess(content.getFormatGuessId()).getSerializer();
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
     }
 

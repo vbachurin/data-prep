@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.schema.io.CSVSchemaParser;
 import org.talend.dataprep.schema.io.CSVSerializer;
+import org.talend.dataprep.schema.io.NoOpDraftValidator;
 
 @Service(CSVFormatGuess.BEAN_ID)
 public class CSVFormatGuess implements FormatGuess {
@@ -17,6 +18,9 @@ public class CSVFormatGuess implements FormatGuess {
 
     @Autowired
     private CSVSerializer serializer;
+
+    @Autowired
+    private NoOpDraftValidator noDraftValidator;
 
     public CSVFormatGuess() {
         //
@@ -40,6 +44,11 @@ public class CSVFormatGuess implements FormatGuess {
     @Override
     public Serializer getSerializer() {
         return this.serializer;
+    }
+
+    @Override
+    public DraftValidator getDraftValidator() {
+        return noDraftValidator;
     }
 
     @Override

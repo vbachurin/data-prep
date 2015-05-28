@@ -72,8 +72,8 @@ public class SchemaAnalysis {
                             stream.limit(20).map(row -> {
                                 final Map<String, Object> rowValues = row.values();
                                 final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                        .map(String::valueOf) //
-                                        .collect(Collectors.<String>toList());
+                                    .map(String::valueOf) //
+                                    .collect(Collectors.<String>toList());
                                 return strings.toArray(new String[strings.size()]);
                             }).forEach(analyzer::analyze);
                             // Find the best suitable type

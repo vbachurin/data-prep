@@ -2,7 +2,11 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -25,11 +29,12 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.FormatGuesser;
 import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 /**
  * Analyzes the raw content of a dataset and determine the best format (XLS, CSV...) for the data set raw content. It
- * also parses column name information.
- * Once analyzed, data prep would know how to access content.
+ * also parses column name information. Once analyzed, data prep would know how to access content.
+ * 
  * @see DataSetContentStore#get(DataSetMetadata)
  */
 @Component
@@ -73,7 +78,8 @@ public class FormatAnalysis {
                     }
                     // Select best format guess
                     List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
-                    Collections.sort(orderedGuess, (g1, g2) -> ((int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess().getConfidence())));
+                    Collections.sort(orderedGuess, (g1, g2) -> ((int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess()
+                            .getConfidence())));
 
                     FormatGuesser.Result bestGuessResult = orderedGuess.get(0);
                     FormatGuess bestGuess = bestGuessResult.getFormatGuess();
@@ -84,17 +90,31 @@ public class FormatAnalysis {
                     // Parse column name information
                     try (InputStream content = store.getAsRaw(metadata)) {
                         SchemaParser parser = bestGuess.getSchemaParser();
-                        metadata.getRow().setColumns(parser.parse( content, metadata ));
+
+                        SchemaParserResult schemaParserResult = parser.parse(new SchemaParser.Request(content, metadata));
+                        if (schemaParserResult.draft()) {
+                            metadata.setSheetName(schemaParserResult.getSheetContents().get(0).getName());
+                            metadata.setDraft(true);
+                            metadata.setSchemaParserResult(schemaParserResult);
+                            repository.add(metadata);
+                            LOG.info("format analysed for dataset: '{}'", dataSetId);
+                            return;
+                        }
+                        metadata.setDraft(false);
+                        metadata.getRow().setColumns(
+                                schemaParserResult.getSheetContents().get( 0 ).getColumnMetadatas());
+
                     } catch (IOException e) {
                         throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
                     }
                     repository.add(metadata);
+                    LOG.info("format analysed for dataset: '{}'", dataSetId);
                     // Asks for a in depth schema analysis (for column type information).
                     jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
                         Message schemaAnalysisMessage = session.createMessage();
                         schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                        return schemaAnalysisMessage;
-                    });
+                            return schemaAnalysisMessage;
+                        });
                 } else {
                     LOG.info("Data set #{} no longer exists.", dataSetId);
                 }
