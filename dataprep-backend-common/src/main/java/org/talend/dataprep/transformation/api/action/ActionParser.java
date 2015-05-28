@@ -31,7 +31,7 @@ public class ActionParser implements BeanFactoryAware {
     /** This class' logger. */
     public static final Logger LOGGER = LoggerFactory.getLogger(ActionParser.class);
 
-    private static BeanFactory beanFactory;
+    private BeanFactory beanFactory;
 
     /**
      * Return the parsed actions ready to be run.
@@ -110,6 +110,6 @@ public class ActionParser implements BeanFactoryAware {
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        ActionParser.beanFactory = beanFactory;
+        this.beanFactory = beanFactory;
     }
 }
