@@ -67,14 +67,14 @@
             <artifactId>dataExtract</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/TDE_API/lib64/dataextract/Java/dataextract.jar</systemPath>
+            <systemPath>${project.basedir}/src/main/resources/lib/dataextract.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>tableau-software</groupId>
             <artifactId>jna</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/TDE_API/lib64/dataextract/Java/jna.jar</systemPath>
+            <systemPath>${project.basedir}/src/main/resources/lib/jna.jar</systemPath>
         </dependency>
         <!-- SWAGGER DEPENDENCIES -->
         <dependency>
@@ -130,7 +130,10 @@
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
                             <baseImage>java:8</baseImage>
-                            <cmd>java -DLIBRARY_LD_PATH=/lib64 -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
+                            <cmd><![CDATA[
+                                export PATH=/lib/tde/lib64:$PATH && java -Djna.library.path=/lib/tde/lib64 -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar
+                            ]]>
+                            </cmd>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>
@@ -138,8 +141,8 @@
                                     <include>${project.build.finalName}.jar</include>
                                 </resource>
                                 <resource>
-                                    <targetPath>/lib64</targetPath>
-                                    <directory>${project.basedir}/src/main/resources/TDE_API/linux</directory>
+                                    <targetPath>/lib/tde/lib64</targetPath>
+                                    <directory>${project.basedir}/lib/tde/lib64</directory>
                                 </resource>
                             </resources>
                         </configuration>
