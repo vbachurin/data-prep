@@ -4,10 +4,7 @@
             <li class="primary">
                     <button type="button"
                             class="t-btn t-btn-import-new-file"
-                            id="button1"
-                            data-step="2" data-position='right'
-                            data-title="Import File Button"
-                            data-intro="Click here to import your new Dataset (csv, xls, etc.) and start play with it. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis mollis augue a neque cursus ac blandit orci faucibus. Phasellus nec metus purus."
+                            id="help-import-local"
                             onclick="document.getElementById('datasetFile').click()">
                         {{ ::'IMPORT_FILE' | translate }}
                     </button>
@@ -30,10 +27,7 @@
             </li>
         </ul>
         <div class="subheader-right ">
-          <button id="btn-toggle-right-panel" ng-click="homeCtrl.toggleRightPanel()" type="button" class="t-btn t-btn-expand-collapse-RHP"
-                  data-step="4" data-position='left'
-                  data-title="Show / Hide Left Hand Side Panel"
-                  data-intro="Show / Hide interesting information (owner, creation date, size, etc.) about the dataset you have selected. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis mollis augue a neque cursus ac blandit orci faucibus. Phasellus nec metus purus."></button>
+          <button id="btn-toggle-right-panel" ng-click="homeCtrl.toggleRightPanel()" type="button" class="t-btn t-btn-expand-collapse-RHP></button>
           <button id="" onclick="" type="button" class="t-btn t-btn-view-mode"></button>
         </div>
     </div>

@@ -9,11 +9,7 @@
             <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_marketplace" id="help-mkt"></a></li>
             <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_share" id="help-mail"></a></li>
             <li class="nav-link"><a href="#" class="icon t-top-bar_help"
-                                  onclick="javascript:introJs().start();"></a></li>
-            <li class="nav-link"><a href="#" class="icon t-top-bar_help"
-                                  onclick="javascript:startTourNavBar();"></a></li>
-            <li class="nav-link"><a href="#" class="icon t-top-bar_help"
-                                  onclick="javascript:startTourFooter();"></a></li>
+                                  onclick="javascript:startTourIntro();"></a></li>
             <li class="nav-link"><a href="http://dev.talend.com" class="icon t-top-bar_notification"></a></li>
             <li class="nav-link more"><a href="javascript:void(0)" class="icon t-top-bar_profile nomore"></a>
                 <ul class="submenu">
@@ -27,11 +23,7 @@
     <div class="navigation-tools">
         <div class="search-bar">
             <form role="search">
-                <input type="search" placeholder="{{ ::'SEARCH' | translate }}"
-                       data-step="1" data-position='bottom'
-                       data-title="Search Bar"
-                       data-intro="This is THE search bar. Use it anytime to find ressources such as Dataset, Recipes, etc."
-                        />
+                <input type="search" placeholder="{{ ::'SEARCH' | translate }}" />
             </form>
         </div>
     </div>
