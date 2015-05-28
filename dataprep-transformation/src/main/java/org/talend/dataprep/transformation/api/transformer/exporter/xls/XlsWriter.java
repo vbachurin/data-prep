@@ -76,16 +76,15 @@ public class XlsWriter implements TransformerWriter {
 
         for (ColumnMetadata columnMetadata : this.columnMetadatas) {
 
-            // FIXME use constants see Type
             Cell cell = row.createCell(cellIdx++);
-            switch (Type.get(columnMetadata.getType()).getName()) {
-                case "numeric":
-                case "integer":
-                case "double":
-                case "float":
+            switch (Type.get(columnMetadata.getType())) {
+                case NUMERIC:
+                case INTEGER:
+                case DOUBLE:
+                case FLOAT:
                     cell.setCellValue(Double.valueOf(dataSetRow.get(columnMetadata.getId())));
                     break;
-                case "boolean":
+                case BOOLEAN:
                     cell.setCellValue(Boolean.valueOf(dataSetRow.get(columnMetadata.getId())));
                     break;
                 // FIXME ATM we don't have any idea about the date format so this can generate exceptions
