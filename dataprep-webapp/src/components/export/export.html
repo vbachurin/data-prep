@@ -1,14 +1,18 @@
+<!-- TODO Styles are hard coded to get all buttons on a line (but this is temporary) -->
 <button type="button"
         class="t-btn t-btn-primary"
-        ng-click="exportCtrl.export('TABLEAU')">
-    {{ ::'EXPORT_TABLEAU' | translate }}
+        style="float: left;"
+        ng-click="exportCtrl.showExport = true">
+    {{ ::'EXPORT_CSV' | translate }}
 </button>
 
 <button type="button"
         class="t-btn t-btn-primary"
-        ng-click="exportCtrl.showExport = true">
-    {{ ::'EXPORT_CSV' | translate }}
+        style="float: left; margin-left: 10px"
+        ng-click="exportCtrl.export('TABLEAU')">
+    {{ ::'EXPORT_TABLEAU' | translate }}
 </button>
+
 
 <talend-modal fullscreen="false"
               state="exportCtrl.showExport"
