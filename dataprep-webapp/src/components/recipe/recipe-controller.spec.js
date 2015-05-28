@@ -310,6 +310,31 @@ describe('Recipe controller', function() {
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
 
+    it('should hide parameters modal on update step when parameters are different', inject(function($rootScope) {
+        //given
+        var ctrl = createController();
+        var step = {
+            column: {id: 'state'},
+            transformation: {
+                stepId: 'a598bc83fc894578a8b823',
+                name: 'cut'
+            },
+            actionParameters: {
+                action: 'cut',
+                parameters: {pattern: '.', column_name: 'state'}
+            }
+        };
+        var parameters = {pattern: '-'};
+        ctrl.showModal = {'a598bc83fc894578a8b823' : true};
+
+        //when
+        ctrl.updateStep(step, parameters);
+        $rootScope.$digest();
+
+        //then
+        expect(ctrl.showModal).toEqual({});
+    }));
+
     it('should do nothing if parameters are unchanged', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
         //given
         var ctrl = createController();

@@ -133,7 +133,7 @@
                     return PlaygroundService.loadStep(activeStep);
                 })
                 .then(function() {
-                    vm.showModal = [];
+                    vm.showModal = {};
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');

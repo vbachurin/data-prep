@@ -187,15 +187,17 @@
          */
         var initDynamicParams = function(recipes) {
             var getOldStepById = function(step) {
-                return _.find(recipes.old, { id: step.transformation.stepId });
+                return _.find(recipes.old, function(oldStep) {
+                    return oldStep.transformation.stepId === step.transformation.stepId;
+                });
             };
 
             var initOnStep = function(step) {
                 var oldStep = getOldStepById(step);
                 if(oldStep) {
-                    step.parameters = oldStep.parameters;
-                    step.items = oldStep.items;
-                    step.cluster = oldStep.cluster;
+                    step.transformation.parameters = oldStep.transformation.parameters;
+                    step.transformation.items = oldStep.transformation.items;
+                    step.transformation.cluster = oldStep.transformation.cluster;
                 }
                 else {
                     var infos = {

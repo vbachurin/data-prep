@@ -67,7 +67,6 @@
         var groupMenus = function(menus) {
             var groups = _.groupBy(menus, function(menuItem) { return menuItem.category; });
             var groupsAndDividers = insertDividers(groups);
-
             return _.flatten(groupsAndDividers);
         };
 

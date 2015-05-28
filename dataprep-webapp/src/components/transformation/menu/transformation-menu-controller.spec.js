@@ -24,99 +24,9 @@ describe('Transform menu controller', function () {
         'type': 'string'
     };
 
-    var textClusteringParams = {
-        'type':'cluster',
-        'details':{
-            'titles':[
-                'We found these values',
-                'And we\'ll keep this value'
-            ],
-            'clusters':[
-                {
-                    'parameters':[
-                        {
-                            'name':'Texa',
-                            'type':'boolean',
-                            'description':'parameter.Texa.desc',
-                            'label':'parameter.Texa.label',
-                            'default':'true'
-                        },
-                        {
-                            'name':'Tixass',
-                            'type':'boolean',
-                            'description':'parameter.Tixass.desc',
-                            'label':'parameter.Tixass.label',
-                            'default':'true'
-                        },
-                        {
-                            'name':'Tex@s',
-                            'type':'boolean',
-                            'description':'parameter.Tex@s.desc',
-                            'label':'parameter.Tex@s.label',
-                            'default':'true'
-                        }
-                    ],
-                    'replace':{
-                        'name':'replaceValue',
-                        'type':'string',
-                        'description':'parameter.replaceValue.desc',
-                        'label':'parameter.replaceValue.label',
-                        'default':'Texas'
-                    }
-                },
-                {
-                    'parameters':[
-                        {
-                            'name':'Massachusetts',
-                            'type':'boolean',
-                            'description':'parameter.Massachusetts.desc',
-                            'label':'parameter.Massachusetts.label',
-                            'default':'false'
-                        },
-                        {
-                            'name':'Masachusetts',
-                            'type':'boolean',
-                            'description':'parameter.Masachusetts.desc',
-                            'label':'parameter.Masachusetts.label',
-                            'default':'true'
-                        },
-                        {
-                            'name':'Massachussetts',
-                            'type':'boolean',
-                            'description':'parameter.Massachussetts.desc',
-                            'label':'parameter.Massachussetts.label',
-                            'default':'true'
-                        },
-                        {
-                            'name':'Massachusets',
-                            'type':'boolean',
-                            'description':'parameter.Massachusets.desc',
-                            'label':'parameter.Massachusets.label',
-                            'default':'true'
-                        },
-                        {
-                            'name':'Masachussets',
-                            'type':'boolean',
-                            'description':'parameter.Masachussets.desc',
-                            'label':'parameter.Masachussets.label',
-                            'default':'true'
-                        }
-                    ],
-                    'replace':{
-                        'name':'replaceValue',
-                        'type':'string',
-                        'description':'parameter.replaceValue.desc',
-                        'label':'parameter.replaceValue.label',
-                        'default':'Massachussets'
-                    }
-                }
-            ]
-        }
-    };
-
     beforeEach(module('data-prep.transformation-menu'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationRestService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -129,7 +39,7 @@ describe('Transform menu controller', function () {
         };
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
-        spyOn(TransformationRestService, 'getDynamicParameters').and.returnValue($q.when({data : textClusteringParams}));
+        spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when(true));
     }));
 
     it('should do nothing on select if the menu is a divider', inject(function (PlaygroundService) {
@@ -185,7 +95,7 @@ describe('Transform menu controller', function () {
         expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', column, undefined);
     }));
 
-    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationRestService) {
+    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService) {
         //given
         var ctrl = createController();
         ctrl.menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -198,8 +108,14 @@ describe('Transform menu controller', function () {
         $rootScope.$digest();
 
         //then
-        expect(TransformationRestService.getDynamicParameters).toHaveBeenCalledWith('textclustering', 'MostPopulousCity', '78bae6345aef9965e22b54', '721cd4455fb69e89543d4', undefined);
-        expect(ctrl.menu.cluster).toBe(textClusteringParams.details);
+        expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(
+            {name: 'textclustering', category: 'quickfix', dynamic: true},
+            {
+                columnId: 'MostPopulousCity',
+                datasetId:  '78bae6345aef9965e22b54',
+                preparationId:  '721cd4455fb69e89543d4'
+            }
+        );
     }));
 
     it('should display modal and set flags on dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService) {
@@ -220,27 +136,6 @@ describe('Transform menu controller', function () {
         //then
         expect(ctrl.showModal).toBeTruthy();
         expect(ctrl.dynamicFetchInProgress).toBeFalsy();
-    }));
-
-    it('should reset params before dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService) {
-        //given
-        var ctrl = createController();
-        ctrl.menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
-
-        PlaygroundService.currentMetadata = {id: '78bae6345aef9965e22b54'};
-        PreparationService.currentPreparationId = '721cd4455fb69e89543d4';
-
-        ctrl.menu.parameters = {};
-        ctrl.menu.items = {};
-        ctrl.menu.cluster = {};
-
-        //when
-        ctrl.select();
-
-        //then
-        expect(ctrl.menu.parameters).toBe(null);
-        expect(ctrl.menu.items).toBe(null);
-        expect(ctrl.menu.cluster).toBe(null);
     }));
 
     it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService) {
