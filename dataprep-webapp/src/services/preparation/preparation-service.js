@@ -168,7 +168,7 @@
         self.updateStep = function(step, parameters) {
             parameters = parameters || {};
             /*jshint camelcase: false */
-            parameters.column_name = step.column.id;
+            parameters.column_id = step.column.id;
 
             return PreparationListService.updateStep(self.currentPreparationId, step, parameters);
         };
@@ -187,7 +187,7 @@
         self.appendStep = function(metadata, action, column, parameters) {
             parameters = parameters || {};
             /*jshint camelcase: false */
-            parameters.column_name = column.id;
+            parameters.column_id = column.id;
 
             var promise = self.currentPreparationId ? $q.when(self.currentPreparationId) : self.create(metadata, 'New preparation');
 
@@ -208,7 +208,7 @@
         self.paramsHasChanged = function(step, newParams) {
             newParams = newParams || {};
             /*jshint camelcase: false */
-            newParams.column_name = step.column.id;
+            newParams.column_id = step.column.id;
 
             return JSON.stringify(newParams) !== JSON.stringify(step.actionParameters.parameters);
         };

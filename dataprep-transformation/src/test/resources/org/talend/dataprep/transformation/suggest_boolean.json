@@ -10,6 +10,11 @@
             "name": "column_id",
             "type":"string",
             "default":""
+         },
+         {
+            "name": "column_name",
+            "type": "string",
+            "default": ""
          }
       ]
    },
@@ -36,18 +41,28 @@
             "name": "column_id",
             "type":"string",
             "default":""
+         },
+         {
+            "name": "column_name",
+            "type": "string",
+            "default": ""
          }
       ]
    },
    {
     "name": "delete_empty",
-    "parameters": [
-      {
-         "name": "column_id",
-        "type": "string",
-        "default": ""
-      }
-    ]
+      "parameters": [
+         {
+            "name": "column_id",
+            "type": "string",
+            "default": ""
+         },
+         {
+            "name": "column_name",
+            "type": "string",
+            "default": ""
+         }
+      ]
    },
    {
       "category": "columns",
@@ -62,6 +77,13 @@
             "type": "string",
             "description": "The column on which apply this action to",
             "label": "Column",
+            "default": ""
+         },
+         {
+            "name": "column_name",
+            "type": "string",
+            "description": "The column name on which apply this action to",
+            "label": "Column name",
             "default": ""
          },
          {

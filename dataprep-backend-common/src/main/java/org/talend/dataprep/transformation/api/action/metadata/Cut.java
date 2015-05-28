@@ -39,13 +39,14 @@ public class Cut extends SingleColumnAction {
 
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_ID_PARAMETER, new Parameter(PATTERN_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };
+        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
+                new Parameter(PATTERN_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };
     }
 
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parameters.get(COLUMN_ID_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             if (value != null) {
                 row.set(columnName, value.replace(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$

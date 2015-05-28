@@ -19,13 +19,13 @@
          * @name cleanParamsAndItems
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
          * @param {object[]} menus - the menus to clean
-         * @description [PRIVATE] Remove 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
+         * @description [PRIVATE] Remove 'column_id' parameters (automatically sent), and clean empty arrays (choices and params)
          */
         var cleanParamsAndItems = function(menus) {
             return _.forEach(menus, function(menu) {
                 //params
                 var filteredParameters = _.filter(menu.parameters, function(param) {
-                    return param.name !== 'column_name';
+                    return param.name !== 'column_id';
                 });
                 menu.parameters = filteredParameters.length ? filteredParameters : null;
 

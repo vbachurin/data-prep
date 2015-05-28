@@ -39,7 +39,7 @@ public class Trim extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_ID_PARAMETER_NAME);
+            String columnName = parsedParameters.get(COLUMN_ID);
             String value = row.get(columnName);
 
             if (value != null) {

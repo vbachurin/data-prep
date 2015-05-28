@@ -239,7 +239,8 @@
             var item = {
                 column: {
                     /*jshint camelcase: false */
-                    id: actionValues.parameters.column_name
+                    id: actionValues.parameters.column_id,
+                    name: actionValues.parameters
                 },
                 transformation: {
                     stepId: stepId,

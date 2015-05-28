@@ -8,6 +8,11 @@
         "name": "column_id",
         "type": "string",
         "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
       }
     ]
   },
@@ -18,6 +23,11 @@
     "parameters": [
       {
         "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
         "type": "string",
         "default": ""
       }
@@ -32,6 +42,11 @@
         "name": "column_id",
         "type": "string",
         "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
       }
     ]
   },
@@ -44,6 +59,11 @@
         "name": "column_id",
         "type": "string",
         "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
       }
     ]
   },
@@ -54,6 +74,11 @@
     "parameters": [
       {
         "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
         "type": "string",
         "default": ""
       },
@@ -71,6 +96,11 @@
         "name": "column_id",
         "type": "string",
         "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
       }
     ]
   },
@@ -79,6 +109,11 @@
     "parameters": [
       {
         "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
         "type": "string",
         "default": ""
       },
@@ -102,6 +137,11 @@
         "default": ""
       },
       {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "pattern",
         "type": "string",
         "default": ""
@@ -121,6 +161,11 @@
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
         "default": ""
       },
       {
@@ -185,6 +230,11 @@
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
       }
     ],
     "description": "Split column from separators",
@@ -205,6 +255,11 @@
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
         "default": ""
       }
     ],

@@ -27,7 +27,7 @@ public class TextClustering extends AbstractDynamicAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            final String columnName = parameters.get(COLUMN_ID_PARAMETER_NAME);
+            final String columnName = parameters.get(COLUMN_ID);
             final String value = row.get(columnName);
 
             // replace only the value if present in parameters

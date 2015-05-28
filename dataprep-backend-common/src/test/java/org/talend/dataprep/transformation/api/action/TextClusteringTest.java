@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.api.action;
 
-import static org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction.COLUMN_ID_PARAMETER_NAME;
+import static org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction.COLUMN_ID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class TextClusteringTest {
     public void create_should_build_textclustering_consumer() {
         // given
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(COLUMN_ID_PARAMETER_NAME, "uglystate");
+        parameters.put(COLUMN_ID, "uglystate");
         parameters.put("T@T@", "Tata");
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
@@ -46,7 +46,7 @@ public class TextClusteringTest {
     public void create_result_should_not_change_unmatched_value() {
         // given
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(COLUMN_ID_PARAMETER_NAME, "uglystate");
+        parameters.put(COLUMN_ID, "uglystate");
         parameters.put("T@T@", "Tata");
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");

@@ -43,10 +43,11 @@ public class DeleteOnValue extends AbstractDelete {
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { //
-        new Parameter(COLUMN_NAME_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY), //
-                new Parameter(VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) //
-        };
+        //@formatter:off
+        return new Parameter[] {COLUMN_ID_PARAMETER,
+                                COLUMN_NAME_PARAMETER,
+                                new Parameter(VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY)};
+        //@formatter:on
     }
 
     /**

@@ -58,7 +58,7 @@ public class UpperCase extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnId = parameters.get(COLUMN_ID_PARAMETER_NAME);
+            String columnId = parameters.get(COLUMN_ID);
             String value = row.get(columnId);
             if (value == null) {
                 return;

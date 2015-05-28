@@ -9,6 +9,11 @@
             "description":"The column on which apply this action to",
             "label":"Column"
          },
+        {
+          "name": "column_name",
+          "type": "string",
+          "default": ""
+        },
          {
             "name":"default_value",
             "type":"integer",
@@ -36,7 +41,12 @@
             "default":"",
             "description":"The column on which apply this action to",
             "label":"Column"
-         }
+         },
+        {
+          "name": "column_name",
+          "type": "string",
+          "default": ""
+        }
       ],
       "category":"math",
       "items":[
@@ -53,6 +63,11 @@
         "name": "column_id",
         "type": "string",
         "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
       }
     ]
   },
@@ -61,6 +76,11 @@
     "parameters": [
       {
         "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
         "type": "string",
         "default": ""
       },
@@ -76,6 +96,11 @@
     "parameters": [
       {
         "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
         "type": "string",
         "default": ""
       }
@@ -94,6 +119,11 @@
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
         "default": ""
       },
       {
