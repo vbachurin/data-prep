@@ -1,9 +1,11 @@
-package org.talend.dataprep.transformation.api.transformer.exporter.csv;
+package org.talend.dataprep.transformation.api.transformer.exporter.xls;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,32 +19,39 @@ import org.talend.dataprep.transformation.api.transformer.input.TransformerConfi
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
-@Component("transformer#csv")
+@Component("transformer#xls")
 @Scope("request")
-public class CsvExporter implements Transformer {
+public class XlsExporter implements Transformer {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private TypeTransformerSelector typeStateSelector;
 
     private final ParsedActions actions;
+
     private final ExportConfiguration exportConfiguration;
 
-    public CsvExporter(final ParsedActions actions, final ExportConfiguration configuration) {
+    public XlsExporter(final ParsedActions actions, final ExportConfiguration configuration) {
         this.actions = actions;
         this.exportConfiguration = configuration;
     }
 
     @Override
     public void transform(InputStream input, OutputStream output) {
+
         try {
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
-                    .output(new CsvWriter(output, ((CsvExportConfiguration) exportConfiguration).getCsvSeparator()))
-                    .actions(DataSetRow.class, actions.getRowTransformer())
-                    .actions(RowMetadata.class, actions.getMetadataTransformer())
-                    .build();
+
+            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null) //
+                    .output(new XlsWriter(output)) //
+                    .actions(DataSetRow.class, actions.getRowTransformer()) //
+                    .actions(RowMetadata.class, actions.getMetadataTransformer()).build();
+
             typeStateSelector.process(configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
+
     }
+
 }

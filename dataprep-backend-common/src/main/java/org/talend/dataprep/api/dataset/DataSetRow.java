@@ -207,4 +207,13 @@ public class DataSetRow implements Cloneable {
         return Objects.hash(deleted, values);
     }
 
+    @Override
+    public String toString()
+    {
+        return "DataSetRow{" +
+            "deleted=" + deleted +
+            ", oldRow=" + oldRow +
+            ", values=" + values +
+            '}';
+    }
 }

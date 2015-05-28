@@ -6,7 +6,7 @@ public enum ExportType {
     private final String mimeType;
     private final String entension;
 
-    private ExportType(final String mimeType, String entension) {
+    ExportType(final String mimeType, String entension) {
         this.mimeType = mimeType;
         this.entension = entension;
     }

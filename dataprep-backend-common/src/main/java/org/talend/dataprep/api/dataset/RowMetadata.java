@@ -69,4 +69,12 @@ public class RowMetadata {
 
     }
 
+    @Override
+    public String toString()
+    {
+        return "RowMetadata{" +
+            "columnMetadata=" + columnMetadata +
+            ", previousMetadata=" + previousMetadata +
+            '}';
+    }
 }
