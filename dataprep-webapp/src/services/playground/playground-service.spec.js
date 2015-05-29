@@ -265,19 +265,24 @@ describe('Playground Service', function () {
         }));
     });
 
-    it('should do nothing when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationService) {
+    it('should reject when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationService) {
         //given
         var name = 'My preparation';
         var newName = name;
+        var rejected = false;
 
         PlaygroundService.originalPreparationName = name;
         PlaygroundService.preparationName = newName;
 
         //when
-        PlaygroundService.createOrUpdatePreparation(newName);
+        PlaygroundService.createOrUpdatePreparation(newName)
+            .catch(function() {
+                rejected = true;
+            });
         $rootScope.$digest();
 
         //then
+        expect(rejected).toBe(true);
         expect(PreparationService.create).not.toHaveBeenCalled();
         expect(PreparationService.setName).not.toHaveBeenCalled();
         expect(PlaygroundService.preparationName).toBe(name);
