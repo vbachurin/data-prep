@@ -102,7 +102,8 @@ public class DataSetRowTest {
 
         row.diff(oldRow);
 
-        Map<String, Object> diff = (Map<String, Object>) row.values().get(FlagNames.DIFF_KEY);
+        Map<String, Object> processedValues = row.values();
+        Map<String, Object> diff = (Map<String, Object>) processedValues.get(FlagNames.DIFF_KEY);
 
         // firstName and lastName are new
         List<String> expected = new ArrayList<>(2);
@@ -110,8 +111,11 @@ public class DataSetRowTest {
         expected.add("lastName");
 
         for (String expectedKey : expected) {
+            // check the diff
             assertTrue(diff.containsKey(expectedKey));
             assertEquals(Flag.DELETE.getValue(), diff.get(expectedKey));
+            // check the original value was put back
+            assertTrue(processedValues.containsKey(expectedKey));
         }
     }
 

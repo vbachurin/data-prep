@@ -132,6 +132,8 @@ public class DataSetRow implements Cloneable {
         originalValues.entrySet().stream().forEach((entry) -> {
             if (!values.containsKey(entry.getKey())) {
                 diff.put(entry.getKey(), DELETE.getValue());
+                // put back the original entry so that the value can be displayed
+                values.put(entry.getKey(), (String) entry.getValue());
             }
         });
 

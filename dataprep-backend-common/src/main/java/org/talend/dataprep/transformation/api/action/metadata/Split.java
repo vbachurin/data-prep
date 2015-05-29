@@ -126,7 +126,7 @@ public class Split extends SingleColumnAction {
 
         return rowMetadata -> {
 
-            String columnName = parameters.get(COLUMN_ID);
+            String columnId = parameters.get(COLUMN_ID);
 
             List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
 
@@ -135,7 +135,7 @@ public class Split extends SingleColumnAction {
                 newColumns.add(newColumnMetadata);
 
                 // append the split column
-                if (StringUtils.equals(columnName, column.getName())) {
+                if (StringUtils.equals(columnId, column.getId())) {
                     newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
                             .id(column.getId() + SPLIT_COLUMN_APPENDIX) //

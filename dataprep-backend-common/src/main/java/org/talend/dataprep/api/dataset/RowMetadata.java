@@ -74,14 +74,6 @@ public class RowMetadata {
             }
         });
 
-        // process the deleted columns (add the deleted ones)
-        reference.getColumns().forEach(referenceColumn -> {
-            if (getById(referenceColumn.getId()) == null) {
-                referenceColumn.setDiffFlagValue(Flag.DELETE.getValue());
-                columnMetadatas.add(referenceColumn);
-            }
-        });
-
         // process the updated columns
         columnMetadatas.forEach(column -> {
             ColumnMetadata referenceColumn = reference.getById(column.getId());
@@ -91,6 +83,17 @@ public class RowMetadata {
                 }
             }
         });
+
+        // process the deleted columns (add the deleted ones)
+        reference.getColumns().forEach(referenceColumn -> {
+            if (getById(referenceColumn.getId()) == null) {
+                referenceColumn.setDiffFlagValue(Flag.DELETE.getValue());
+                columnMetadatas.add(referenceColumn);
+            }
+        });
+
+        // sort the columns so that the deleted ones get placed where the were
+        columnMetadatas.sort((col1, col2) -> col1.getId().compareTo(col2.getId()));
     }
 
 }
