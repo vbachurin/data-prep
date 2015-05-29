@@ -14,7 +14,7 @@
 		var remainingHeight = ((parentHeight - 20) / 2) + 5;//5 is the distance between directives
 		vm.topPath                    = 'M 15 0 L 15 ' + remainingHeight + ' Z';
 		vm.circleCenterY              = remainingHeight + 10;
-		vm.bottomPath                 = 'M 15 ' + (vm.circleCenterY + 10) + ' L 15 ' + (vm.circleCenterY + 10 + remainingHeight) + ' Z';
+		vm.bottomPath                 = 'M 15 ' + (vm.circleCenterY + 10) + ' L 15 ' + (vm.circleCenterY + 12 + remainingHeight) + ' Z';
 		vm.currentStepIndex = vm.recipeService.getCurrentStepIndex(vm.step);
 
 		/**
