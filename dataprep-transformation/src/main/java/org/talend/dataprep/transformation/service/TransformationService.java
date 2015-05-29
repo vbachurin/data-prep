@@ -36,7 +36,6 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
 
-
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
@@ -81,31 +80,24 @@ public class TransformationService {
     @RequestMapping(value = "/transform/{format}", method = POST)
     @ApiOperation(value = "Transform input data", notes = "This operation export the input data transformed using the supplied actions in the provided format.")
     @VolumeMetered
-    public void transform(
-            @ApiParam(value = "Output format.")
-            @PathVariable("format")
-            final ExportType format,
-            @ApiParam(value = "Actions to perform on content (encoded in Base64).")
-            @RequestParam(value = "actions", defaultValue = "", required = false)
-            final String actions,
-            @ApiParam(value = "CSV separator.")
-            @RequestParam(value = "separator", required = false)
-            final String csvSeparator,
-            @ApiParam(value = "Data set content as JSON")
-            final InputStream content,
-            final HttpServletResponse response) {
+    public void transform(@ApiParam(value = "Output format.")
+    @PathVariable("format")
+    final ExportType format, @ApiParam(value = "Actions to perform on content (encoded in Base64).")
+    @RequestParam(value = "actions", defaultValue = "", required = false)
+    final String actions, @ApiParam(value = "CSV separator.")
+    @RequestParam(value = "separator", required = false)
+    final String csvSeparator, @ApiParam(value = "Data set content as JSON")
+    final InputStream content, final HttpServletResponse response) {
 
         try {
             final String decodedActions = new String(Base64.getDecoder().decode(actions));
-            final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator)).charAt(0) : au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
-            HashMap<String,Object> arguments = new HashMap<>();
-            arguments.put("csvSeparator",decodedCsvSeparator);
+            final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator))
+                    .charAt(0) : au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
+            HashMap<String, Object> arguments = new HashMap<>();
+            arguments.put("csvSeparator", decodedCsvSeparator);
 
-            final ExportConfiguration configuration = ExportConfiguration.builder()
-                    .args(arguments)
-                    .format(format)
-                    .actions(decodedActions)
-                    .build();
+            final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(format)
+                    .actions(decodedActions).build();
 
             response.setContentType(format.getMimeType());
 
@@ -120,19 +112,18 @@ public class TransformationService {
             throw e;
         }
     }
+
     @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data diff between the old and the new transformation actions")
     @VolumeMetered
-    public void transformPreview(
-            @ApiParam(value = "Old actions to perform on content (encoded in Base64).")
-            @RequestParam(value = "oldActions", required = false)
-            final String oldActions, @ApiParam(value = "New actions to perform on content (encoded in Base64).")
-            @RequestParam(value = "newActions", required = false)
-            final String newActions, @ApiParam(value = "The row indexes to return")
-            @RequestParam(value = "indexes", required = false)
-            final String indexes, @ApiParam(value = "Data set content as JSON")
-            final InputStream content,
-            final HttpServletResponse response) {
+    public void transformPreview(@ApiParam(value = "Old actions to perform on content (encoded in Base64).")
+    @RequestParam(value = "oldActions", required = false)
+    final String oldActions, @ApiParam(value = "New actions to perform on content (encoded in Base64).")
+    @RequestParam(value = "newActions", required = false)
+    final String newActions, @ApiParam(value = "The row indexes to return")
+    @RequestParam(value = "indexes", required = false)
+    final String indexes, @ApiParam(value = "Data set content as JSON")
+    final InputStream content, final HttpServletResponse response) {
         try {
             final String decodedIndexes = indexes == null ? null : new String(Base64.getDecoder().decode(indexes));
             final String decodedOldActions = oldActions == null ? null : new String(Base64.getDecoder().decode(oldActions));
@@ -214,15 +205,12 @@ public class TransformationService {
     @RequestMapping(value = "/transform/suggest/{action}/params", method = POST)
     @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
     @Timed
-    public GenericParameter dynamicParams(
-            @ApiParam(value = "Transformation name.")
-            @PathVariable("action")
-            final String action,
-            @ApiParam(value = "The column id.")
-            @RequestParam(value = "columnId", required = true)
-            final String columnId,
-            @ApiParam(value = "Data set content as JSON")
-            final InputStream content) {
+    public GenericParameter dynamicParams(@ApiParam(value = "Transformation name.")
+    @PathVariable("action")
+    final String action, @ApiParam(value = "The column id.")
+    @RequestParam(value = "columnId", required = true)
+    final String columnId, @ApiParam(value = "Data set content as JSON")
+    final InputStream content) {
 
         final DynamicType actionType = DynamicType.fromAction(action);
         if (actionType == null) {

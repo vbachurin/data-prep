@@ -72,8 +72,8 @@ public class SchemaAnalysis {
                             stream.limit(20).map(row -> {
                                 final Map<String, Object> rowValues = row.values();
                                 final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                    .map(String::valueOf) //
-                                    .collect(Collectors.<String>toList());
+                                        .map(String::valueOf) //
+                                        .collect(Collectors.<String> toList());
                                 return strings.toArray(new String[strings.size()]);
                             }).forEach(analyzer::analyze);
                             // Find the best suitable type
@@ -86,7 +86,8 @@ public class SchemaAnalysis {
                                     LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
                                     nextColumn.setType(type.getName());
                                 } else {
-                                    LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
+                                    LOGGER.error("Unable to set type '" + type.getName()
+                                            + "' to next column (no more column in dataset).");
                                 }
                             });
                         }
@@ -97,12 +98,12 @@ public class SchemaAnalysis {
                         jmsTemplate.send(Destinations.QUALITY_ANALYSIS, session -> {
                             Message schemaAnalysisMessage = session.createMessage();
                             schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                            return schemaAnalysisMessage;
-                        });
+                                return schemaAnalysisMessage;
+                            });
                     } else {
                         LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     if (metadata != null) {
                         metadata.getLifecycle().error(true);
                         repository.add(metadata);

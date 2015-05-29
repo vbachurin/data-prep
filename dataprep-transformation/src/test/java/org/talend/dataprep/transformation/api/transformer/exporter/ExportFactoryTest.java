@@ -30,13 +30,10 @@ public class ExportFactoryTest {
     @Test
     public void getExporter_should_create_csv_exporter() throws Exception {
         // given
-        HashMap<String,Object> arguments = new HashMap<>();
-        arguments.put("csvSeparator",';');
-        final ExportConfiguration configuration = ExportConfiguration.builder()
-                .args(arguments)
-                .format(CSV)
-                .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json")))
-                .build();
+        HashMap<String, Object> arguments = new HashMap<>();
+        arguments.put("csvSeparator", ';');
+        final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(CSV)
+                .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json"))).build();
 
         // when
         final Transformer exporter = factory.getExporter(configuration);
@@ -48,15 +45,13 @@ public class ExportFactoryTest {
     @Test
     public void getExporter_csv_exporter_should_write_csv_format() throws Exception {
         // given
-        HashMap<String,Object> arguments = new HashMap<>();
-        arguments.put("csvSeparator",';');
-        final ExportConfiguration configuration = ExportConfiguration.builder()
-                .args(arguments)
-                .format(CSV)
-                .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json")))
-                .build();
+        HashMap<String, Object> arguments = new HashMap<>();
+        arguments.put("csvSeparator", ';');
+        final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(CSV)
+                .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json"))).build();
         final Transformer exporter = factory.getExporter(configuration);
-        final String expectedCsv = IOUtils.toString(ExportFactory.class.getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
+        final String expectedCsv = IOUtils.toString(ExportFactory.class
+                .getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
 
         final InputStream inputStream = ExportFactory.class.getResourceAsStream("export_dataset.json");
         final OutputStream outputStream = new ByteArrayOutputStream();

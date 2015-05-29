@@ -1,1 +1,20 @@
-{"records":[{"firstname":"LENNON","alive":"false","date-of-birth":"10/09/1940","id":"1","age":"40","lastname":"JOHN"},{"firstname":"BOWIE","alive":"true","date-of-birth":"01/08/1947","id":"2","age":"67","lastname":"DAVID"}]}
+{
+  "records": [
+    {
+      "0": "1",
+      "1": "LENNON",
+      "2": "JOHN",
+      "3": "40",
+      "4": "10/09/1940",
+      "5": "false"
+    },
+    {
+      "0": "2",
+      "1": "BOWIE",
+      "2": "DAVID",
+      "3": "67",
+      "4": "01/08/1947",
+      "5": "true"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
     {
       "action": "round",
       "parameters": {
-        "column_name": "aNumber"
+        "column_id": "aNumber"
       }
     }
   ]

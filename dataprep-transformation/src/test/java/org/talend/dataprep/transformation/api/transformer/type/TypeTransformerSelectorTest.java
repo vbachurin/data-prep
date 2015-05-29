@@ -213,15 +213,13 @@ public class TypeTransformerSelectorTest {
         indexes.add(3);
         indexes.add(5);
 
-        //@formatter:off
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().input(parser)
-                .output(transformerWriter)
-                .indexes(indexes)
-                .preview(true)
-                .actions(DataSetRow.class, identityAction.getRowTransformer())
-                .actions(DataSetRow.class, getChangeNameAndDeleteAction.getRowTransformer())
+        final TransformerConfiguration configuration = TransformerConfiguration.builder().input(parser) //
+                .output(transformerWriter) //
+                .indexes(indexes) //
+                .preview(true) //
+                .actions(DataSetRow.class, identityAction.getRowTransformer()) //
+                .actions(DataSetRow.class, getChangeNameAndDeleteAction.getRowTransformer()) //
                 .build();
-        //@formatter:on
 
         // when
         transformer.process(configuration);

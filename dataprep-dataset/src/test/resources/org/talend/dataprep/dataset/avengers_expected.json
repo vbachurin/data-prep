@@ -2,7 +2,8 @@
   "metadata": null,
   "columns": [
     {
-      "id": "nickname",
+      "id": "0",
+      "name": "nickname",
       "quality": {
         "empty": 0,
         "invalid": 0,
@@ -80,7 +81,8 @@
       "type": "string"
     },
     {
-      "id": "secret firstname",
+      "id": "1",
+      "name": "secret firstname",
       "quality": {
         "empty": 0,
         "invalid": 0,
@@ -150,7 +152,8 @@
       "type": "string"
     },
     {
-      "id": "secret lastname",
+      "id": "2",
+      "name": "secret lastname",
       "quality": {
         "empty": 0,
         "invalid": 0,
@@ -220,7 +223,8 @@
       "type": "string"
     },
     {
-      "id": "date of birth",
+      "id": "3",
+      "name": "date of birth",
       "quality": {
         "empty": 0,
         "invalid": 0,
@@ -282,7 +286,8 @@
       "type": "date"
     },
     {
-      "id": "city",
+      "id": "4",
+      "name": "city",
       "quality": {
         "empty": 0,
         "invalid": 0,
@@ -338,39 +343,39 @@
   ],
   "records": [
     {
-      "nickname": "Spiderman",
-      "secret firstname": "Peter",
-      "secret lastname": "Parker",
-      "date of birth": "05/15/1962",
-      "city": "New York City"
+      "0": "Spiderman",
+      "1": "Peter",
+      "2": "Parker",
+      "3": "05/15/1962",
+      "4": "New York City"
     },
     {
-      "nickname": "Superman",
-      "secret firstname": "Clark",
-      "secret lastname": "Kent",
-      "date of birth": "02/28/1938",
-      "city": "New York City"
+      "0": "Superman",
+      "1": "Clark",
+      "2": "Kent",
+      "3": "02/28/1938",
+      "4": "New York City"
     },
     {
-      "nickname": "Batman",
-      "secret firstname": "Bruce",
-      "secret lastname": "Wayne",
-      "date of birth": "05/01/1939",
-      "city": "NYC"
+      "0": "Batman",
+      "1": "Bruce",
+      "2": "Wayne",
+      "3": "05/01/1939",
+      "4": "NYC"
     },
     {
-      "nickname": "Captain America",
-      "secret firstname": "Stevens",
-      "secret lastname": "Rogers",
-      "date of birth": "04/04/1918",
-      "city": "New York City"
+      "0": "Captain America",
+      "1": "Stevens",
+      "2": "Rogers",
+      "3": "04/04/1918",
+      "4": "New York City"
     },
     {
-      "nickname": "Iron Man",
-      "secret firstname": "Tony",
-      "secret lastname": "Stark",
-      "date of birth": "03/05/1963",
-      "city": "New York City"
+      "0": "Iron Man",
+      "1": "Tony",
+      "2": "Stark",
+      "3": "03/05/1963",
+      "4": "New York City"
     }
   ]
 }

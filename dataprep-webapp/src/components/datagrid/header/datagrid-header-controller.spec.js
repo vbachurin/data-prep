@@ -8,90 +8,93 @@ describe('DatasetColumnHeader controller', function () {
     var column = {
         id: '8c083df4ef4509c'
     };
+
     var menusMock = function() {
         return [
             {
-                'name': 'uppercase',
-                'category': 'case',
-                items: [],
-                parameters: [
-                    {name: 'column_name', type: 'string'}
-                ]
+                'name':'uppercase',
+                'category':'case',
+                'items':null,
+                'parameters':null
             },
             {
-                'name': 'lowercase',
-                'category': 'case',
-                items: [],
-                parameters: [
-                    {name: 'column_name', type: 'string'}
-                ]
+                'name':'lowercase',
+                'category':'case',
+                'items':null,
+                'parameters':null
             },
             {
-                'name': 'withParam',
-                'category': 'case',
-                items: [],
-                'parameters': [
+                'name':'withParam',
+                'category':'case',
+                'items':null,
+                'parameters':[
                     {
-                        'name': 'param',
-                        'type': 'string',
-                        'default': '.'
+                        'name':'param',
+                        'type':'string',
+                        'default':'.',
+                        'inputType':'text'
                     }
                 ]
             },
             {
-                'name': 'split',
-                'category': 'split',
-                parameters: [
-                    {name: 'column_name', type: 'string'}
-                ],
-                'items': [{
-                    name: 'mode',
-                    values: [
-                        {
-                            name: 'noparam'
-                        },
-                        {
-                            name: 'regex',
-                            'parameters': [
-                                {
-                                    'name': 'regexp',
-                                    'type': 'string',
-                                    'default': '.'
-                                }
-                            ]
-                        },
-                        {
-                            name: 'index',
-                            'parameters': [
-                                {
-                                    'name': 'index',
-                                    'type': 'integer',
-                                    'default': '5'
-                                }
-                            ]
-                        },
-                        {
-                            name: 'threeParams',
-                            'parameters': [
-                                {
-                                    'name': 'index',
-                                    'type': 'numeric',
-                                    'default': '5'
-                                },
-                                {
-                                    'name': 'index2',
-                                    'type': 'float',
-                                    'default': '5'
-                                },
-                                {
-                                    'name': 'index3',
-                                    'type': 'double',
-                                    'default': '5'
-                                }
-                            ]
-                        }
-                    ]
-                }]
+                'name':'split',
+                'category':'split',
+                'parameters':null,
+                'items':[
+                    {
+                        'name':'mode',
+                        'values':[
+                            {
+                                'name':'noparam'
+                            },
+                            {
+                                'name':'regex',
+                                'parameters':[
+                                    {
+                                        'name':'regexp',
+                                        'type':'string',
+                                        'default':'.',
+                                        'inputType':'text'
+                                    }
+                                ]
+                            },
+                            {
+                                'name':'index',
+                                'parameters':[
+                                    {
+                                        'name':'index',
+                                        'type':'integer',
+                                        'default':'5',
+                                        'inputType':'number'
+                                    }
+                                ]
+                            },
+                            {
+                                'name':'threeParams',
+                                'parameters':[
+                                    {
+                                        'name':'index',
+                                        'type':'numeric',
+                                        'default':'5',
+                                        'inputType':'number'
+                                    },
+                                    {
+                                        'name':'index2',
+                                        'type':'float',
+                                        'default':'5',
+                                        'inputType':'number'
+                                    },
+                                    {
+                                        'name':'index3',
+                                        'type':'double',
+                                        'default':'5',
+                                        'inputType':'number'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
         ];
     };
@@ -111,12 +114,64 @@ describe('DatasetColumnHeader controller', function () {
         };
     }));
 
+    it('should calculate column quality', function() {
+        //given
+        var ctrl = createController();
+        ctrl.column = {
+            'id': 'MostPopulousCity',
+            'quality': {
+                'empty': 5,
+                'invalid': 10,
+                'valid': 72
+            },
+            'type': 'string'
+        };
+
+        //when
+        ctrl.refreshQualityBar();
+
+        //then
+        expect(ctrl.column.total).toBe(87);
+        expect(ctrl.column.quality.emptyPercent).toBe(6);
+        expect(ctrl.column.quality.emptyPercentWidth).toBe(10);
+        expect(ctrl.column.quality.invalidPercent).toBe(12);
+        expect(ctrl.column.quality.invalidPercentWidth).toBe(12);
+        expect(ctrl.column.quality.validPercent).toBe(82);
+        expect(ctrl.column.quality.validPercentWidth).toBe(78);
+    });
+
+    it('should calculate column quality with 0 values', function() {
+        //given
+        var ctrl = createController();
+        ctrl.column = {
+            'id': 'MostPopulousCity',
+            'quality': {
+                'empty': 0,
+                'invalid': 0,
+                'valid': 100
+            },
+            'type': 'string'
+        };
+
+        //when
+        ctrl.refreshQualityBar();
+
+        //then
+        expect(ctrl.column.total).toBe(100);
+        expect(ctrl.column.quality.emptyPercent).toBe(0);
+        expect(ctrl.column.quality.emptyPercentWidth).toBe(0);
+        expect(ctrl.column.quality.invalidPercent).toBe(0);
+        expect(ctrl.column.quality.invalidPercentWidth).toBe(0);
+        expect(ctrl.column.quality.validPercent).toBe(100);
+        expect(ctrl.column.quality.validPercentWidth).toBe(100);
+    });
+
     describe('with transformation list success', function() {
-        beforeEach(inject(function ($q, TransformationRestService) {
-            spyOn(TransformationRestService, 'getTransformations').and.returnValue($q.when({data: menusMock()}));
+        beforeEach(inject(function ($q, TransformationService) {
+            spyOn(TransformationService, 'getTransformations').and.returnValue($q.when(menusMock()));
         }));
 
-        it('should init grouped and divided transformation menu', inject(function($rootScope, TransformationRestService) {
+        it('should init grouped and divided transformation menu', inject(function($rootScope, TransformationService) {
             //given
             var ctrl = createController();
 
@@ -125,7 +180,7 @@ describe('DatasetColumnHeader controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationRestService.getTransformations).toHaveBeenCalledWith(column);
+            expect(TransformationService.getTransformations).toHaveBeenCalledWith(column);
             expect(ctrl.transformations.length).toBe(5);
             expect(ctrl.transformations[0].name).toBe('uppercase');
             expect(ctrl.transformations[1].name).toBe('lowercase');
@@ -151,7 +206,7 @@ describe('DatasetColumnHeader controller', function () {
             expect(ctrl.transformations[4].items[0].values[3].parameters[2].inputType).toBe('number');
         }));
 
-        it('should not get transformations is transformations are already initiated', inject(function($rootScope, TransformationRestService) {
+        it('should not get transformations is transformations are already initiated', inject(function($rootScope, TransformationService) {
             //given
             var ctrl = createController();
             ctrl.initTransformations();
@@ -162,13 +217,13 @@ describe('DatasetColumnHeader controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationRestService.getTransformations.calls.count()).toBe(1);
+            expect(TransformationService.getTransformations.calls.count()).toBe(1);
         }));
     });
 
     describe('with transformation list error', function() {
-        beforeEach(inject(function ($q, TransformationRestService) {
-            spyOn(TransformationRestService, 'getTransformations').and.returnValue($q.reject('server error'));
+        beforeEach(inject(function ($q, TransformationService) {
+            spyOn(TransformationService, 'getTransformations').and.returnValue($q.reject('server error'));
         }));
 
         it('should change inProgress and error flags', inject(function($rootScope) {

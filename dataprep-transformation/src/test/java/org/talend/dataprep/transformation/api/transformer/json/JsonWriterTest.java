@@ -36,14 +36,14 @@ public class JsonWriterTest {
     @Test
     public void write_should_write_columns() throws Exception {
         // given
-        final ColumnMetadata column1 = new ColumnMetadata("id", "string");
-        final ColumnMetadata column2 = new ColumnMetadata("firstname", "string");
+        final ColumnMetadata column1 = new ColumnMetadata("1", "id", "string");
+        final ColumnMetadata column2 = new ColumnMetadata("2", "firstname", "string");
 
         final List<ColumnMetadata> columns = new ArrayList<>(2);
         columns.add(column1);
         columns.add(column2);
 
-        final String expectedOutput = "[{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"id\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"},{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"firstname\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"}]";
+        final String expectedOutput = "[{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"1\"; \"name\":\"id\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"},{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"2\",\"name\":\"firstname\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"}]";
 
         // when
         writer.write(new RowMetadata(columns));

@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
@@ -16,6 +15,8 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Rename a column.
+ *
+ * If the column to rename does not exist or the new name is already used, nothing happen.
  */
 @Component(Rename.ACTION_BEAN_PREFIX + Rename.RENAME_ACTION_NAME)
 public class Rename extends SingleColumnAction {
@@ -64,7 +65,7 @@ public class Rename extends SingleColumnAction {
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER,
+        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
                 new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), StringUtils.EMPTY) };
     }
 
@@ -77,20 +78,6 @@ public class Rename extends SingleColumnAction {
     }
 
     /**
-     * Rename the column for each row.
-     *
-     * @see ActionMetadata#create(Iterator)
-     */
-    @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
-            String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
-            row.renameColumn(columnName, newColumnName);
-        };
-    }
-
-    /**
      * Update the row metadata.
      * 
      * @see ActionMetadata#createMetadataClosure(Map)
@@ -100,22 +87,24 @@ public class Rename extends SingleColumnAction {
 
         return rowMetadata -> {
 
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnId = parameters.get(COLUMN_ID);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
 
-            // a new row metadata must be returned, the given one cannot be altered nor reused
             List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size());
 
             for (ColumnMetadata column : rowMetadata.getColumns()) {
                 ColumnMetadata newColumnMetadata;
                 // rename the column
-                if (StringUtils.equals(columnName, column.getId())) {
-                    newColumnMetadata = ColumnMetadata.Builder.column()
-                            .name(newColumnName)
-                            // new name
-                            .type(Type.get(column.getType())).empty(column.getQuality().getEmpty())
-                            .invalid(column.getQuality().getInvalid()).valid(column.getQuality().getValid())
-                            .headerSize(column.getHeaderSize()).build();
+                if (StringUtils.equals(columnId, column.getId())) {
+                    newColumnMetadata = ColumnMetadata.Builder.column() //
+                            .id(column.getId()) //
+                            .name(newColumnName) // new name
+                            .type(Type.get(column.getType())) //
+                            .empty(column.getQuality().getEmpty()) //
+                            .invalid(column.getQuality().getInvalid()) //
+                            .valid(column.getQuality().getValid()) //
+                            .headerSize(column.getHeaderSize()) //
+                            .build();
                 }
                 // add a copy of the column
                 else {
@@ -125,7 +114,6 @@ public class Rename extends SingleColumnAction {
             }
 
             rowMetadata.setColumns(newColumns);
-
         };
     }
 

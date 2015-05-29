@@ -1,20 +1,20 @@
 {
    "records":[
       {
-         "id":"1",
-         "firstname":"Lennon",
-         "lastname":"John",
-         "age":"40",
-         "date-of-birth":"10/09/1940",
-         "alive":"false"
+         "0": "1",
+         "1": "Lennon",
+         "2": "John",
+         "3": "40",
+         "4": "10/09/1940",
+         "5": "false"
       },
       {
-         "id":"2",
-         "firstname":"Bowie",
-         "lastname":"David",
-         "age":"67",
-         "date-of-birth":"01/08/1947",
-         "alive":"true"
+         "0": "2",
+         "1": "Bowie",
+         "2": "David",
+         "3": "67",
+         "4": "01/08/1947",
+         "5": "true"
       }
    ]
 }

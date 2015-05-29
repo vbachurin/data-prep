@@ -101,6 +101,7 @@
       color: $white;
       @include cellImitation();
       background-color: rgba(255, 0, 0, 0.5);
+      text-decoration: line-through;
     }
 
     &.active {

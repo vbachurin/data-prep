@@ -132,6 +132,9 @@
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                     return PlaygroundService.loadStep(activeStep);
                 })
+                .then(function() {
+                    vm.showModal = {};
+                })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });
@@ -177,8 +180,7 @@
          * @description [PRIVATE] Call the preview service to display the diff between the original steps and the updated steps
          */
         var updatePreview = function(updateStep, params) {
-            /*jshint camelcase: false */
-            params.column_name = updateStep.column.id;
+            PreparationService.insertColumnInfo(params, updateStep.column);
 
             //Parameters has not changed
             if(updateStep.inactive || JSON.stringify(params) === JSON.stringify(updateStep.actionParameters.parameters)) {

@@ -9,6 +9,7 @@ public enum DynamicType {
     TEXT_CLUSTER("textclustering", ClusterParameters.class);
 
     private String action;
+
     private Class<? extends DynamicParameters> generatorType;
 
     private DynamicType(final String action, Class<? extends DynamicParameters> generatorType) {
@@ -17,10 +18,7 @@ public enum DynamicType {
     }
 
     public static DynamicType fromAction(final String action) {
-        return Arrays.stream(values())
-                .filter(type -> type.getAction().equals(action))
-                .findFirst()
-                .orElse(null);
+        return Arrays.stream(values()).filter(type -> type.getAction().equals(action)).findFirst().orElse(null);
     }
 
     public DynamicParameters getGenerator(final WebApplicationContext context) {

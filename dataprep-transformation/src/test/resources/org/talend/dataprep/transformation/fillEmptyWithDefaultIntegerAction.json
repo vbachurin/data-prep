@@ -3,7 +3,7 @@
     {
       "action": "fillemptywithdefaultinteger",
       "parameters": {
-        "column_name": "nbCommands",
+        "column_id": "nbCommands",
         "default_value": 5
       }
     }

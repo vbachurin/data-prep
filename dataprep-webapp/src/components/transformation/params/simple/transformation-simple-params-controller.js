@@ -25,7 +25,7 @@
                 case 'float':
                     return parseFloat(param.default) || 0;
                 case 'boolean':
-                    return param.default === 'true';
+                    return param.default === 'true' || param.default === true;
                 default :
                     return param.default;
             }

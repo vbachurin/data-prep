@@ -2,11 +2,8 @@ package org.talend.dataprep.api.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
@@ -17,7 +14,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -106,57 +102,58 @@ public class DataPreparationAPITest {
 
     @Test
     public void testTransformNoOp() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("test1.csv", "testDataset", "text/csv");
         final String expectedContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1_expected.json"));
 
-        //when
-        final String transformed = given().contentType(ContentType.JSON).body("").when().post("/api/transform/" + dataSetId).asString();
+        // when
+        final String transformed = given().contentType(ContentType.JSON).body("").when().post("/api/transform/" + dataSetId)
+                .asString();
 
-        //then
+        // then
         assertThat(expectedContent, sameJSONAs(transformed));
     }
 
     @Test
     public void testTransformOneAction() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("test2.csv", "testDataset", "text/csv");
 
         final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
         final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
 
-        //when
+        // when
         final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
                 .asString();
 
-        //then
+        // then
         assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 
     @Test
     public void testTransformTwoActions() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("test3.csv", "testDataset", "text/csv");
         final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action2.json"));
         final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test3_expected.json");
 
-        //when
+        // when
         final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
                 .asString();
 
-        //then
+        // then
         assertThat(transformed, sameJSONAsFile(expectedContent));
     }
 
     @Test
     public void testDataSetList() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("test1.csv", "testDataset", "text/csv");
 
-        //when
+        // when
         final String list = when().get("/api/datasets").asString();
 
-        //then
+        // then
         assertTrue(list.contains(dataSetId));
     }
 
@@ -165,17 +162,17 @@ public class DataPreparationAPITest {
      */
     @Test
     public void testDataSetDelete() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("test1.csv", "testDataset", "text/csv");
 
         final String list = when().get("/api/datasets").asString();
         assertTrue(list.contains(dataSetId));
 
-        //when
+        // when
         when().delete("/api/datasets/" + dataSetId).asString();
-        final  String updatedList = when().get("/api/datasets").asString();
+        final String updatedList = when().get("/api/datasets").asString();
 
-        //then
+        // then
         assertEquals("[]", updatedList);
     }
 
@@ -184,44 +181,43 @@ public class DataPreparationAPITest {
      */
     @Test
     public void testDataSetDeleteWhenUsedByPreparation() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("test1.csv", "testDataset", "text/csv");
         createPreparationFromDataset(dataSetId, "testPreparation");
 
-        //when/then
+        // when/then
         when().delete("/api/datasets/" + dataSetId).then().log().ifValidationFails().assertThat().statusCode(400);
     }
 
     @Test
     public void testDataSetCreate() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
         final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_expected.json");
 
-        //when
+        // when
         final String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
 
-        //then
+        // then
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void testDataSetCreateWithSpace() throws Exception {
-        //given
+        // given
         String dataSetId = createDataset("testCreate.csv", "Test with spaces", "text/csv");
 
-        //when
+        // when
         final DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
 
-        //then
+        // then
         assertEquals("Test with spaces", metadata.getName());
     }
 
     @Test
     public void testDataSetColumnActions() throws Exception {
-        //given
-        String columnDescription = IOUtils.toString(DataPreparationAPITest.class
-                .getResourceAsStream("first_name_metadata.json"));
+        // given
+        String columnDescription = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("first_name_metadata.json"));
 
         // when
         String content = given().body(columnDescription).when().post("/api/transform/suggest/column").asString();
@@ -233,19 +229,19 @@ public class DataPreparationAPITest {
 
     @Test
     public void testDataSetActions() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("testCreate.csv", "testDataset", "text/csv");
 
-        //when
+        // when
         final String contentAsString = when().get("/api/datasets/{id}/actions", dataSetId).asString();
 
-        //then
+        // then
         assertThat(contentAsString, sameJSONAs("[]"));
     }
 
     @Test
     public void testAskCertification() throws Exception {
-        //given
+        // given
         final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
         // TODO remove this when a better solution is available
         Thread.sleep(200);
@@ -254,18 +250,18 @@ public class DataPreparationAPITest {
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
-        //when
+        // when
         when().put("/api/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
 
-        //then
+        // then
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
 
-        //when
+        // when
         when().put("/api/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
 
-        //then
+        // then
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
@@ -280,20 +276,20 @@ public class DataPreparationAPITest {
 
     @Test
     public void testPreparationsList() throws Exception {
-        //given
+        // given
         createPreparationFromDataset("1234", "testPreparation");
 
-        //when : short format
+        // when : short format
         final JsonPath shortFormat = when().get("/api/preparations/?format=short").jsonPath();
 
-        //then
+        // then
         final List<String> values = shortFormat.getList("");
         assertThat(values.get(0), is("6726763ed6f12386064d41d61ff6580f1cfabc2d"));
 
-        //when : long format
+        // when : long format
         final JsonPath longFormat = when().get("/api/preparations/?format=long").jsonPath();
 
-        //then
+        // then
         assertThat(longFormat.getList("dataSetId").size(), is(1));
         assertThat(longFormat.getList("dataSetId").get(0), is("1234"));
         assertThat(longFormat.getList("author").size(), is(1));
@@ -306,7 +302,7 @@ public class DataPreparationAPITest {
 
     @Test
     public void testPreparationUpdate() throws Exception {
-        //given
+        // given
         final String preparationId = createPreparationFromDataset("1234", "original_name");
 
         JsonPath longFormat = when().get("/api/preparations/?format=long").jsonPath();
@@ -315,11 +311,11 @@ public class DataPreparationAPITest {
         assertThat(longFormat.getList("id").size(), is(1));
         assertThat(longFormat.getList("id").get(0), is(preparationId));
 
-        //when
+        // when
         given().contentType(ContentType.JSON).body("{ \"name\": \"updated_name\", \"dataSetId\": \"1234\" }")
                 .put("/api/preparations/{id}", preparationId).asString();
 
-        //then
+        // then
         longFormat = when().get("/api/preparations/?format=long").jsonPath();
         assertThat(longFormat.getList("name").size(), is(1));
         assertThat(longFormat.getList("name").get(0), is("updated_name"));
@@ -327,26 +323,26 @@ public class DataPreparationAPITest {
 
     @Test
     public void testPreparationDelete() throws Exception {
-        //given
+        // given
         final String preparationId = createPreparationFromDataset("1234", "original_name");
 
         String list = when().get("/api/preparations").asString();
         assertTrue(list.contains(preparationId));
 
-        //when
+        // when
         when().delete("/api/preparations/" + preparationId).asString();
 
-        //then
+        // then
         list = when().get("/api/preparations").asString();
         assertEquals("[]", list);
     }
 
     @Test
     public void testPreparationGet() throws Exception {
-        //when
+        // when
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
 
-        //then
+        // then
         final JsonPath longFormat = given().get("/api/preparations/{id}/details", preparationId).jsonPath();
         assertThat(longFormat.getString("dataSetId"), is("1234"));
         assertThat(longFormat.getString("author"), is("anonymousUser"));
@@ -356,22 +352,23 @@ public class DataPreparationAPITest {
 
     @Test
     public void testPreparationAppendAction() throws Exception {
-        //when
+        // when
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
 
-        //when
+        // when
         applyActionFromFile(preparationId, "action1.json");
 
-        //then
-        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        // then
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
+                .getList("steps");
         assertThat(steps.size(), is(2));
-        assertThat(steps.get(0), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(steps.get(0), is("cf1be652e81df206c06fcab763e32aa584e1129a"));
         assertThat(steps.get(1), is(ROOT_STEP.id()));
     }
 
     @Test
     public void testPreparationUpdateAction() throws Exception {
-        //given
+        // given
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
         applyActionFromFile(preparationId, "upper_case_1.json");
         applyActionFromFile(preparationId, "upper_case_2.json");
@@ -382,13 +379,13 @@ public class DataPreparationAPITest {
         assertThat(steps.get(1), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59")); // <- upper_case_1
         assertThat(steps.get(2), is(ROOT_STEP.id()));
 
-        //when : Update first action (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
+        // when : Update first action (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
         final String actionContent3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("lower_case_1.json"));
         given().body(actionContent3)
                 .put("/api/preparations/{preparation}/actions/{action}", preparationId,
                         "2b6ae58738239819df3d8c4063e7cb56f53c0d59").then().statusCode(is(200));
 
-        //then : Steps id should have changed due to update
+        // then : Steps id should have changed due to update
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is("b96bf024a0265376ffaedcc974b8b66b3b2c7f64"));
@@ -509,7 +506,7 @@ public class DataPreparationAPITest {
                 + "   \"action\": {" //
                 + "       \"action\": \"delete_on_value\",\n"//
                 + "       \"parameters\": {" //
-                + "           \"column_name\": \"city\"," //
+                + "           \"column_id\": \"6\"," //
                 + "           \"value\": \"Coast city\""//
                 + "       }" //
                 + "   }"//
@@ -536,15 +533,11 @@ public class DataPreparationAPITest {
 
         // when
         Thread.sleep(200);// TODO remove this when a better solution is available
-        final String export = given()
-                .formParam("exportType", CSV)
-                .formParam("datasetId", datasetId)
-                .when()
-                .get("/api/export")
+        final String export = given().formParam("exportType", CSV).formParam("datasetId", datasetId).when().get("/api/export")
                 .asString();
 
         // then
-        Assert.assertEquals(expectedExport, export);
+        assertEquals(expectedExport, export);
     }
 
     @Test
@@ -562,16 +555,11 @@ public class DataPreparationAPITest {
                 .getList("steps");
 
         // when
-        final String export = given()
-                .formParam("exportType", CSV)
-                .formParam("preparationId", preparationId)
-                .formParam("stepId", steps.get(2))
-                .when()
-                .get("/api/export")
-                .asString();
+        final String export = given().formParam("exportType", CSV).formParam("preparationId", preparationId)
+                .formParam("stepId", steps.get(2)).when().get("/api/export").asString();
 
         // then
-        Assert.assertEquals(expectedExport, export);
+        assertEquals(expectedExport, export);
     }
 
     @Test
@@ -583,16 +571,11 @@ public class DataPreparationAPITest {
                 .getResourceAsStream("export/expected_export_default_separator.csv"));
 
         // when
-        final String export = given()
-                .formParam("exportType", CSV)
-                .formParam("preparationId", preparationId)
-                .formParam("stepId", "head")
-                .when()
-                .get("/api/export")
-                .asString();
+        final String export = given().formParam("exportType", CSV).formParam("preparationId", preparationId)
+                .formParam("stepId", "head").when().get("/api/export").asString();
 
         // then
-        Assert.assertEquals(expectedExport, export);
+        assertEquals(expectedExport, export);
     }
 
     @Test
@@ -604,43 +587,28 @@ public class DataPreparationAPITest {
                 .getResourceAsStream("export/expected_export_semicolon_separator.csv"));
 
         // when
-        final String export = given()
-                .formParam("exportType", CSV)
-                .formParam("csvSeparator", ";")
-                .formParam("preparationId", preparationId)
-                .formParam("stepId", "head")
-                .when()
-                .get("/api/export")
-                .asString();
+        final String export = given().formParam("exportType", CSV).formParam("csvSeparator", ";")
+                .formParam("preparationId", preparationId).formParam("stepId", "head").when().get("/api/export").asString();
 
         // then
-        Assert.assertEquals(expectedExport, export);
+        assertEquals(expectedExport, export);
     }
 
     @Test
     public void testExportCsvWithBadBodyInput_noExportType() throws Exception {
         // when
-        final Response response = given()
-                .formParam("csvSeparator", ";")
-                .formParam("preparationId", "4552157454657")
-                .formParam("stepId", "head")
-                .when()
-                .get("/api/export");
+        final Response response = given().formParam("csvSeparator", ";").formParam("preparationId", "4552157454657")
+                .formParam("stepId", "head").when().get("/api/export");
 
         // then
         response.then().statusCode(400);
     }
 
-
     @Test
     public void testExportCsvWithBadBodyInput_noPrepId_noDatasetId() throws Exception {
         // when
-        final Response response = given()
-                .formParam("exportType", CSV)
-                .formParam("csvSeparator", ";")
-                .formParam("stepId", "head")
-                .when()
-                .get("/api/export");
+        final Response response = given().formParam("exportType", CSV).formParam("csvSeparator", ";").formParam("stepId", "head")
+                .when().get("/api/export");
 
         // then
         response.then().statusCode(400);
@@ -650,15 +618,12 @@ public class DataPreparationAPITest {
     public void testSuggestActionParams_should_return_dynamic_params_with_dataset() throws Exception {
         // given
         final String dataSetId = createDataset("transformation/cluster_dataset.csv", "testClustering", "text/csv");
-        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("transformation/expected_cluster_params.json"));
 
         // when
-        final String actualClusterParameters = given()
-                .formParam("datasetId", dataSetId)
-                .formParam("columnId", "uglystate")
-                .when()
-                .get("/api/transform/suggest/textclustering/params")
-                .asString();
+        final String actualClusterParameters = given().formParam("datasetId", dataSetId).formParam("columnId", "uglystate")
+                .when().get("/api/transform/suggest/textclustering/params").asString();
 
         // then
         assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
@@ -668,15 +633,12 @@ public class DataPreparationAPITest {
     public void testSuggestActionParams_should_return_dynamic_params_with_preparation() throws Exception {
         // given
         final String preparationId = createPreparationFromFile("transformation/cluster_dataset.csv", "testClustering", "text/csv");
-        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("transformation/expected_cluster_params.json"));
 
         // when
-        final String actualClusterParameters = given()
-                .formParam("preparationId", preparationId)
-                .formParam("columnId", "uglystate")
-                .when()
-                .get("/api/transform/suggest/textclustering/params")
-                .asString();
+        final String actualClusterParameters = given().formParam("preparationId", preparationId)
+                .formParam("columnId", "uglystate").when().get("/api/transform/suggest/textclustering/params").asString();
 
         // then
         assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
@@ -685,9 +647,7 @@ public class DataPreparationAPITest {
     @Test
     public void testSuggestActionParams_should_return_400_with_no_preparationId_and_no_datasetId() throws Exception {
         // when
-        final Response response = given()
-                .formParam("columnId", "uglystate")
-                .when()
+        final Response response = given().formParam("columnId", "uglystate").when()
                 .get("/api/transform/suggest/textclustering/params");
 
         // then
@@ -696,13 +656,8 @@ public class DataPreparationAPITest {
 
     private String createDataset(final String file, final String name, final String type) throws IOException {
         final String datasetContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream(file));
-        final String dataSetId = given()
-                .contentType(ContentType.JSON)
-                .body(datasetContent)
-                .queryParam("Content-Type", type)
-                .when()
-                .post("/api/datasets?name={name}", name)
-                .asString();
+        final String dataSetId = given().contentType(ContentType.JSON).body(datasetContent).queryParam("Content-Type", type)
+                .when().post("/api/datasets?name={name}", name).asString();
         assertNotNull(dataSetId);
         assertThat(dataSetId, not(""));
 
@@ -715,11 +670,8 @@ public class DataPreparationAPITest {
     }
 
     private String createPreparationFromDataset(final String dataSetId, final String name) throws IOException {
-        final String preparationId = given()
-                .contentType(ContentType.JSON)
-                .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}")
-                .when()
-                .post("/api/preparations")
+        final String preparationId = given().contentType(ContentType.JSON)
+                .body("{ \"name\": \"" + name + "\", \"dataSetId\": \"" + dataSetId + "\"}").when().post("/api/preparations")
                 .asString();
         assertThat(preparationId, notNullValue());
         assertThat(preparationId, not(""));
@@ -728,9 +680,8 @@ public class DataPreparationAPITest {
     }
 
     private void applyActionFromFile(final String preparationId, final String actionFile) throws IOException {
-        final String action = IOUtils.toString(DataPreparationAPITest.class
-                .getResourceAsStream(actionFile));
-       applyAction(preparationId, action);
+        final String action = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream(actionFile));
+        applyAction(preparationId, action);
     }
 
     private void applyAction(final String preparationId, final String action) throws IOException {
