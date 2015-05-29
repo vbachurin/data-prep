@@ -204,7 +204,7 @@
                     });
             }
             else {
-                return $q.when(true);
+                return $q.reject();
             }
         };
 
