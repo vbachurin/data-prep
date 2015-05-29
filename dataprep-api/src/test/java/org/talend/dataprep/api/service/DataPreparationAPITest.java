@@ -630,7 +630,7 @@ public class DataPreparationAPITest {
     }
 
     @Test
-    public void testSuggestActionParams_should_return_dynamic_params_with_preparation() throws Exception {
+    public void testSuggestActionParams_should_return_dynamic_params_with_preparation_head() throws Exception {
         // given
         final String preparationId = createPreparationFromFile("transformation/cluster_dataset.csv", "testClustering", "text/csv");
         final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class
@@ -639,6 +639,31 @@ public class DataPreparationAPITest {
         // when
         final String actualClusterParameters = given().formParam("preparationId", preparationId)
                 .formParam("columnId", "uglystate").when().get("/api/transform/suggest/textclustering/params").asString();
+
+        // then
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+    }
+
+    @Test
+    public void testSuggestActionParams_should_return_dynamic_params_with_preparation_step() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("transformation/cluster_dataset.csv", "testClustering", "text/csv");
+        applyActionFromFile(preparationId, "export/upper_case_firstname.json");
+        applyActionFromFile(preparationId, "export/upper_case_lastname.json");
+
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
+                .getList("steps");
+
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+
+        // when
+        final String actualClusterParameters = given()
+                .formParam("preparationId", preparationId)
+                .formParam("stepId", steps.get(1))
+                .formParam("columnId", "uglystate")
+                .when()
+                .get("/api/transform/suggest/textclustering/params")
+                .asString();
 
         // then
         assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
