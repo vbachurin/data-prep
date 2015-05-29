@@ -23,7 +23,7 @@ public class Split extends SingleColumnAction {
     public static final String SPLIT_ACTION_NAME = "split"; //$NON-NLS-1$
 
     /** The split column appendix. */
-    public static final String SPLIT_COLUMN_APPENDIX = "_split"; //$NON-NLS-1$
+    public static final String SPLIT_APPENDIX = "_split"; //$NON-NLS-1$
 
     /**
      * The separator shown to the user as a list. An item in this list is the value 'other', which allow the user to
@@ -104,13 +104,13 @@ public class Split extends SingleColumnAction {
                 if (index != -1) {
                     row.set(columnName, value.substring(0, index));
                     if (index < value.length()) {
-                        row.set(columnName + SPLIT_COLUMN_APPENDIX, value.substring(index + 1));
+                        row.set(columnName + SPLIT_APPENDIX, value.substring(index + 1));
                     } else {
-                        row.set(columnName + SPLIT_COLUMN_APPENDIX, StringUtils.EMPTY);
+                        row.set(columnName + SPLIT_APPENDIX, StringUtils.EMPTY);
                     }
                 } else {
                     row.set(columnName, value);
-                    row.set(columnName + SPLIT_COLUMN_APPENDIX, StringUtils.EMPTY);
+                    row.set(columnName + SPLIT_APPENDIX, StringUtils.EMPTY);
                 }
             }
         };
@@ -138,8 +138,8 @@ public class Split extends SingleColumnAction {
                 if (StringUtils.equals(columnId, column.getId())) {
                     newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
-                            .id(column.getId() + SPLIT_COLUMN_APPENDIX) //
-                            .name(column.getName() + SPLIT_COLUMN_APPENDIX) //
+                            .id(column.getId() + SPLIT_APPENDIX) //
+                            .name(column.getName() + SPLIT_APPENDIX) //
                             .type(Type.get(column.getType())) //
                             .empty(column.getQuality().getEmpty()) //
                             .invalid(column.getQuality().getInvalid()) //

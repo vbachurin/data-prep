@@ -122,19 +122,19 @@ public class SplitTest {
     public void should_update_metadata() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("1", "recipe"));
-        input.add(createMetadata("2", "steps"));
-        input.add(createMetadata("3", "last update"));
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("steps", "steps"));
+        input.add(createMetadata("last update", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
         metadataClosure.accept(rowMetadata);
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("1", "recipe"));
-        expected.add(createMetadata("2", "steps"));
-        expected.add(createMetadata("2_split", "steps_split"));
-        expected.add(createMetadata("3", "last update"));
+        expected.add(createMetadata("recipe", "recipe"));
+        expected.add(createMetadata("steps", "steps"));
+        expected.add(createMetadata("steps_split", "steps_split"));
+        expected.add(createMetadata("last update", "last update"));
 
         assertEquals(expected, actual);
     }
