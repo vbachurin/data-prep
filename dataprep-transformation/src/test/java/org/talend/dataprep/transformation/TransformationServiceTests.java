@@ -5,9 +5,7 @@ import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -26,7 +24,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -67,16 +64,14 @@ public class TransformationServiceTests {
     @Test
     public void noAction() throws Exception {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when().post("/transform")
-                .asString();
+        String transformedContent = given().contentType(JSON).body(initialContent).when().post("/transform").asString();
         assertEquals(initialContent, transformedContent, false);
     }
 
     @Test
     public void noActionWithCarrierReturn() throws Exception {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("carrierReturn.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when().post("/transform")
-                .asString();
+        String transformedContent = given().contentType(JSON).body(initialContent).when().post("/transform").asString();
         assertEquals(initialContent, transformedContent, false);
     }
 
@@ -102,8 +97,8 @@ public class TransformationServiceTests {
 
     @Test
     public void testInvalidJSONInput() throws Exception {
-        given().contentType(JSON).body("invalid content on purpose.").when().post("/transform").then()
-                .statusCode(400).content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
+        given().contentType(JSON).body("invalid content on purpose.").when().post("/transform").then().statusCode(400)
+                .content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
     }
 
     @Test
@@ -240,8 +235,7 @@ public class TransformationServiceTests {
     public void previewDiff() throws Exception {
         // given
         final String datasetContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("preview.json"));
-        final String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
-                .getResourceAsStream("preview_result.json"));
+        final String expected = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("preview_result.json"));
 
         final String oldActions = getSingleTransformation();
         final String newActions = getMultipleTransformation();
@@ -253,21 +247,19 @@ public class TransformationServiceTests {
         final String response = post.asString();
 
         // then
-        assertEquals(expectedSuggestions, response, false);
+        assertEquals(expected, response, false);
     }
 
     @Test
     public void testDynamicParams_should_return_textclustering_dynamic_params() throws Exception {
         // given
-        final String datasetContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("parameters/dataset.json"));
+        final String datasetContent = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("parameters/dataset.json"));
         final String expectedParameters = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("parameters/expected_cluster_params.json"));
 
         // when
-        final Response post = given()
-                .contentType(JSON)
-                .body(datasetContent)
-                .when()
+        final Response post = given().contentType(JSON).body(datasetContent).when()
                 .post("/transform/suggest/textclustering/params?columnId=uglystate");
         final String response = post.asString();
 
@@ -277,18 +269,18 @@ public class TransformationServiceTests {
 
     private String getSingleTransformation() {
         /**
-         * {"actions": [ { "action": "uppercase", "parameters":{ "column_name": "lastname" } } ]}
+         * {"actions": [ { "action": "uppercase", "parameters":{ "column_id": "lastname" } } ]}
          */
-        return "eyJhY3Rpb25zIjogWw0KICAgIHsNCiAgICAgICJhY3Rpb24iOiAidXBwZXJjYXNlIiwNCiAgICAgICJwYXJhbWV0ZXJzIjp7DQogICAgICAgICAgICAiY29sdW1uX25hbWUiOiAibGFzdG5hbWUiDQogICAgICB9DQogICAgfQ0KICBdDQp9";
+        return "eyJhY3Rpb25zIjogWyB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ICJsYXN0bmFtZSIgfSB9IF19";
     }
 
     private String getMultipleTransformation() {
         /**
-         * {"actions": [ { "action": "uppercase", "parameters":{ "column_name": "lastname" } }, { "action": "uppercase",
-         * "parameters":{ "column_name": "firstname" } }, { "action": "delete_on_value", "parameters":{ "column_name":
+         * {"actions": [ { "action": "uppercase", "parameters":{ "column_id": "lastname" } }, { "action": "uppercase",
+         * "parameters":{ "column_id": "firstname" } }, { "action": "delete_on_value", "parameters":{ "column_id":
          * "city", "value": "Columbia" } } ]}
          */
-        return "eyJhY3Rpb25zIjogWw0KICAgIHsNCiAgICAgICJhY3Rpb24iOiAidXBwZXJjYXNlIiwNCiAgICAgICJwYXJhbWV0ZXJzIjp7DQogICAgICAgICAgICAiY29sdW1uX25hbWUiOiAibGFzdG5hbWUiDQogICAgICB9DQogICAgfSwNCiAgICB7DQogICAgICAiYWN0aW9uIjogInVwcGVyY2FzZSIsDQogICAgICAicGFyYW1ldGVycyI6ew0KICAgICAgICAiY29sdW1uX25hbWUiOiAiZmlyc3RuYW1lIg0KICAgICAgfQ0KICAgIH0sDQogICAgew0KICAgICAgImFjdGlvbiI6ICJkZWxldGVfb25fdmFsdWUiLA0KICAgICAgInBhcmFtZXRlcnMiOnsNCiAgICAgICAgImNvbHVtbl9uYW1lIjogImNpdHkiLA0KICAgICAgICAidmFsdWUiOiAiQ29sdW1iaWEiDQogICAgICB9DQogICAgfQ0KICBdDQp9";
+        return "eyJhY3Rpb25zIjogWyB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ICJsYXN0bmFtZSIgfSB9LCB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwicGFyYW1ldGVycyI6eyAiY29sdW1uX2lkIjogImZpcnN0bmFtZSIgfSB9LCB7ICJhY3Rpb24iOiAiZGVsZXRlX29uX3ZhbHVlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ImNpdHkiLCAidmFsdWUiOiAiQ29sdW1iaWEiIH0gfSBdfQ==";
     }
 
 }

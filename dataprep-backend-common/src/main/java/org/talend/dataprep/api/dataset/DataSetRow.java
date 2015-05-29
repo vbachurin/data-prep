@@ -1,34 +1,35 @@
 package org.talend.dataprep.api.dataset;
 
+import static org.talend.dataprep.api.dataset.diff.Flag.*;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
+import org.talend.dataprep.api.dataset.diff.FlagNames;
 
+/**
+ * A DataSetRow is a row of a dataset.
+ */
 public class DataSetRow implements Cloneable {
 
-    private final static String DIFF_KEY = "__tdpDiff";
+    /** True if this row is deleted. */
+    private boolean deleted;
 
-    private final static String ROW_DIFF_KEY = "__tdpRowDiff";
+    /** the old value used for the diff. */
+    private DataSetRow oldValue;
 
-    private final static String ROW_DIFF_DELETED = "delete";
-
-    private final static String ROW_DIFF_NEW = "new";
-
-    private final static String DIFF_UPDATE = "update";
-
-    private boolean deleted = false;
-
-    private DataSetRow oldRow;
-
-    private final Map<String, String> values = new LinkedHashMap<>();
+    /** Values of the dataset row. */
+    private final Map<String, String> values;
 
     /**
      * Default empty constructor.
      */
     public DataSetRow() {
+        values = new LinkedHashMap<>();
+        deleted = false;
     }
 
     /**
@@ -37,6 +38,7 @@ public class DataSetRow implements Cloneable {
      * @param values the row value.
      */
     public DataSetRow(Map<String, String> values) {
+        this();
         this.values.putAll(values);
     }
 
@@ -54,11 +56,11 @@ public class DataSetRow implements Cloneable {
     /**
      * Get the value associated with the provided key
      * 
-     * @param name - the key
+     * @param id the column id.
      * @return - the value as string
      */
-    public String get(final String name) {
-        return values.get(name);
+    public String get(final String id) {
+        return values.get(id);
     }
 
     /**
@@ -77,11 +79,11 @@ public class DataSetRow implements Cloneable {
 
     /**
      * Set the old row for diff
-     * 
+     *
      * @param oldRow - the original row
      */
     public void diff(final DataSetRow oldRow) {
-        this.oldRow = oldRow;
+        this.oldValue = oldRow;
     }
 
     /**
@@ -93,38 +95,61 @@ public class DataSetRow implements Cloneable {
      * </ul>
      */
     public Map<String, Object> values() {
+
         final Map<String, Object> result = new LinkedHashMap<>(values.size() + 1);
-        if(this.oldRow == null) {
+
+        // if not old value, no diff to compute
+        if (this.oldValue == null) {
             result.putAll(values);
-        } else {
-            // row is no more deleted : we write row values with the *NEW* flag
-            if (oldRow.isDeleted() && !isDeleted()) {
-                result.put(ROW_DIFF_KEY, ROW_DIFF_NEW);
-                result.putAll(values);
+            return result;
+        }
+
+        // row is no more deleted : we write row values with the *NEW* flag
+        if (oldValue.isDeleted() && !isDeleted()) {
+            result.put(FlagNames.ROW_DIFF_KEY, NEW.getValue());
+            result.putAll(values);
+        }
+        // row has been deleted : we write row values with the *DELETED* flag
+        else if (!oldValue.isDeleted() && isDeleted()) {
+            result.put(FlagNames.ROW_DIFF_KEY, DELETE.getValue());
+            result.putAll(oldValue.values());
+        }
+
+        // row has been updated : write the new values and get the diff for each value, then write the DIFF_KEY
+        // property
+
+        final Map<String, Object> diff = new HashMap<>();
+        final Map<String, Object> originalValues = oldValue.values();
+
+        // compute the new value (column is not found in old value)
+        values.entrySet().stream().forEach((entry) -> {
+            if (!originalValues.containsKey(entry.getKey())) {
+                diff.put(entry.getKey(), NEW.getValue());
             }
+        });
 
-            // row has been deleted : we write row values with the *DELETED* flag
-            else if (!oldRow.isDeleted() && isDeleted()) {
-                result.put(ROW_DIFF_KEY, ROW_DIFF_DELETED);
-                result.putAll(oldRow.values());
+        // compute the deleted values (column is deleted)
+        originalValues.entrySet().stream().forEach((entry) -> {
+            if (!values.containsKey(entry.getKey())) {
+                diff.put(entry.getKey(), DELETE.getValue());
+                // put back the original entry so that the value can be displayed
+                values.put(entry.getKey(), (String) entry.getValue());
             }
+        });
 
-            // row has been updated : write the new values and get the diff for each value, then write the DIFF_KEY
-            // property
-            else {
-                final Map<String, Object> diff = new HashMap<>();
-                final Map<String, Object> originalValues = oldRow.values();
-
-                values.entrySet().stream().forEach((entry) -> {
-                    final Object originalValue = originalValues.get(entry.getKey());
-                    if (!StringUtils.equals(entry.getValue(), (String) originalValue)) {
-                        diff.put(entry.getKey(), DIFF_UPDATE);
-                    }
-                });
-
-                result.putAll(values);
-                result.put(DIFF_KEY, diff);
+        // compute the update values (column is still here but value is different)
+        values.entrySet().stream().forEach((entry) -> {
+            if (originalValues.containsKey(entry.getKey())) {
+                final Object originalValue = originalValues.get(entry.getKey());
+                if (!StringUtils.equals(entry.getValue(), (String) originalValue)) {
+                    diff.put(entry.getKey(), UPDATE.getValue());
+                }
             }
+        });
+
+        result.putAll(values);
+        if (!diff.isEmpty()) {
+            result.put(FlagNames.DIFF_KEY, diff);
         }
 
         return result;
@@ -137,7 +162,6 @@ public class DataSetRow implements Cloneable {
     public void clear() {
         deleted = false;
         values.clear();
-        oldRow = null;
     }
 
     /**
@@ -154,35 +178,10 @@ public class DataSetRow implements Cloneable {
      * Determine if the row should be written
      */
     public boolean shouldWrite() {
-        if (this.oldRow == null) {
+        if (this.oldValue == null) {
             return !isDeleted();
         } else {
-            return !oldRow.isDeleted() || !isDeleted();
-        }
-    }
-
-    /**
-     * Rename the column.
-     *
-     * @param columnName the name of the column to rename.
-     * @param newColumnName the new column name.
-     */
-    public void renameColumn(String columnName, String newColumnName) {
-
-        // defensive programming against
-        if (values.containsKey(columnName) == false) {
-            return;
-        }
-
-        // columns cannot have the same name
-        if (values.containsKey(newColumnName)) {
-            throw new IllegalArgumentException("column '" + newColumnName + "' already exists");
-        }
-
-        synchronized (values) {
-            String savedValue = values.get(columnName);
-            values.remove(columnName);
-            values.put(newColumnName, savedValue);
+            return !oldValue.isDeleted() || !isDeleted();
         }
     }
 

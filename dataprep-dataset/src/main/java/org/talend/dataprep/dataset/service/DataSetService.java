@@ -5,23 +5,16 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
@@ -42,11 +35,13 @@ import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
-
-import com.wordnik.swagger.annotations.*;
 import org.talend.dataprep.schema.DraftValidator;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.*;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -78,9 +73,9 @@ public class DataSetService {
     private ObjectMapper objectMapper;
 
     @PostConstruct
-    public void initialize(){
+    public void initialize() {
         // to ease our life simply ignore unknown properties
-        this.objectMapper = builder.build().disable( DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES );
+        this.objectMapper = builder.build().disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
     }
 
     private static void queueEvents(String id, JmsTemplate template) {
@@ -89,8 +84,8 @@ public class DataSetService {
             template.send(destination, session -> {
                 Message message = session.createMessage();
                 message.setStringProperty("dataset.id", id); //$NON-NLS-1
-                return message;
-            });
+                    return message;
+                });
         }
     }
 
@@ -129,12 +124,12 @@ public class DataSetService {
     @Timed
     @VolumeMetered
     public String create(
-        @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
-        @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
+            @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
+            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE); //$NON-NLS-1$
         final String id = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(id).name(name).author(getUserName()).created(System.currentTimeMillis())
-            .build();
+                .build();
         // Save data set content
         contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
         // Create the new data set
@@ -157,12 +152,12 @@ public class DataSetService {
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
     public @ResponseBody DataSet get(
-        @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
-        @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
-        HttpServletResponse response) {
+            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
+            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
+            HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         lock.lock();
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
@@ -172,9 +167,10 @@ public class DataSetService {
             }
             if (dataSetMetadata.getLifecycle().error()) {
                 LOG.error("Unable to serve {}, data set met unrecoverable error.", dataSetId);
-                // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
+                // Data set is in error state, meaning content will never be delivered. Returns an error for this
+                // situation
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
-                                                                                                                          dataSetId));
+                        dataSetId));
             }
             if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
                 // Schema is not yet ready (but eventually will, returns 202 to indicate this).
@@ -212,8 +208,8 @@ public class DataSetService {
     @ApiOperation(value = "Delete a data set by id", notes = "Delete a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
     public void delete(@PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to delete") String dataSetId) {
-        DataSetMetadata metadata = dataSetMetadataRepository.get( dataSetId );
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
+        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
             lock.lock();
             if (metadata != null) {
@@ -225,11 +221,11 @@ public class DataSetService {
         }
     }
 
-    @RequestMapping( value = "/datasets/{id}/processcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/datasets/{id}/processcertification", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Ask certification for a dataset", notes = "Advance certification step of this dataset.")
     @Timed
     public void processCertification(
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Ask certification for dataset #{}", dataSetId);
         }
@@ -238,11 +234,11 @@ public class DataSetService {
         datasetLock.lock();
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-            LOG.trace( "Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep() );
+            LOG.trace("Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
 
             if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
-                dataSetMetadata.getGovernance().setCertificationStep( Certification.PENDING );
-                dataSetMetadataRepository.add( dataSetMetadata );
+                dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
+                dataSetMetadataRepository.add(dataSetMetadata);
             } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
                 dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
                 dataSetMetadataRepository.add(dataSetMetadata);
@@ -270,9 +266,9 @@ public class DataSetService {
     @Timed
     @VolumeMetered
     public void updateRawDataSet(
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId, //
-        @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name, //
-        @ApiParam(value = "content") InputStream dataSetContent) {
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId, //
+            @RequestParam(value = "name", required = false) @ApiParam(name = "name", value = "New value for the data set name") String name, //
+            @ApiParam(value = "content") InputStream dataSetContent) {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
             lock.lock();
@@ -288,7 +284,7 @@ public class DataSetService {
             lock.unlock();
         }
         // Content was changed, so queue events (format analysis, content indexing for search...)
-        queueEvents( dataSetId, jmsTemplate );
+        queueEvents(dataSetId, jmsTemplate);
     }
 
     /**
@@ -301,11 +297,11 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}/metadata", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get metadata information of a data set by id", notes = "Get metadata information of a data set by id. Not valid or non existing data set id returns empty content.")
     @ApiResponses({ @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist."),
-        @ApiResponse(code = HttpServletResponse.SC_ACCEPTED, message = "Data set metadata is not yet ready.") })
+            @ApiResponse(code = HttpServletResponse.SC_ACCEPTED, message = "Data set metadata is not yet ready.") })
     @Timed
     public @ResponseBody DataSet getMetadata(
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
-        HttpServletResponse response) {
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
+            HttpServletResponse response) {
         if (dataSetId == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return null;
@@ -316,12 +312,12 @@ public class DataSetService {
             return null;
         }
         if (!metadata.getLifecycle().schemaAnalyzed()) {
-            response.setStatus( HttpServletResponse.SC_ACCEPTED );
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return DataSet.empty();
         }
         DataSet dataSet = new DataSet();
         dataSet.setMetadata(metadata);
-        dataSet.setColumns( metadata.getRow().getColumns() );
+        dataSet.setColumns(metadata.getRow().getColumns());
         return dataSet;
     }
 
@@ -345,8 +341,9 @@ public class DataSetService {
     }
 
     /**
-     * Returns preview of the the data set content for given id. Service might return {@link HttpServletResponse#SC_ACCEPTED} if the
-     * data set exists but analysis is not yet fully completed so content is not yet ready to be served.
+     * Returns preview of the the data set content for given id. Service might return
+     * {@link HttpServletResponse#SC_ACCEPTED} if the data set exists but analysis is not yet fully completed so content
+     * is not yet ready to be served.
      *
      * @param metadata If <code>true</code>, includes data set metadata information.
      * @param columns If <code>true</code>, includes column metadata information (column types...).
@@ -358,11 +355,11 @@ public class DataSetService {
     @ApiOperation(value = "Get a data preview set by id", notes = "Get a data set preview content based on provided id. Not valid or non existing data set id returns empty content. Data set not in drat status will return a redirect 301")
     @Timed
     public @ResponseBody DataSet preview(
-        @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-        @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
-        @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
-        HttpServletResponse response) {
+            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
+            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
+            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
+            HttpServletResponse response) {
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         if (dataSetMetadata == null) {
@@ -370,48 +367,44 @@ public class DataSetService {
             return DataSet.empty(); // No data set, returns empty content.
         }
 
-        if (!dataSetMetadata.isDraft()){
+        if (!dataSetMetadata.isDraft()) {
             response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
             return DataSet.empty(); // dataset not anymore a draft so preview doesn't make sense.
         }
-
-
 
         if (StringUtils.isNotEmpty(sheetName)) {
             dataSetMetadata.setSheetName(sheetName);
         }
 
         // take care of previous datas without schema parser result
-        if ( dataSetMetadata.getSchemaParserResult() != null)
-        {
+        if (dataSetMetadata.getSchemaParserResult() != null) {
 
             // sheet not yet set correctly so use the first one
-            if ( StringUtils.isEmpty( dataSetMetadata.getSheetName() ) )
-            {
-                String theSheetName = dataSetMetadata.getSchemaParserResult().getSheetContents().get( 0 ).getName();
-                LOG.debug( "preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName );
-                dataSetMetadata.setSheetName( theSheetName );
+            if (StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
+                String theSheetName = dataSetMetadata.getSchemaParserResult().getSheetContents().get(0).getName();
+                LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName);
+                dataSetMetadata.setSheetName(theSheetName);
             }
 
             String theSheetName = dataSetMetadata.getSheetName();
 
             Optional<SchemaParserResult.SheetContent> sheetContentFound = dataSetMetadata.getSchemaParserResult()
-                .getSheetContents().stream().filter(sheetContent -> theSheetName.equals(sheetContent.getName())).findFirst();
+                    .getSheetContents().stream().filter(sheetContent -> theSheetName.equals(sheetContent.getName())).findFirst();
 
-            if (!sheetContentFound.isPresent()){
+            if (!sheetContentFound.isPresent()) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return DataSet.empty(); // No sheet found, returns empty content.
             }
 
             List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
 
-            if (dataSetMetadata.getRow()==null){
-                dataSetMetadata.setRowMetadata( new RowMetadata(  ) );
+            if (dataSetMetadata.getRow() == null) {
+                dataSetMetadata.setRowMetadata(new RowMetadata(Collections.EMPTY_LIST));
             }
 
-            dataSetMetadata.getRow().setColumns( columnMetadatas );
+            dataSetMetadata.getRow().setColumns(columnMetadatas);
         } else {
-            LOG.warn( "dataset#{} has draft status but any SchemaParserResult" );
+            LOG.warn("dataset#{} has draft status but any SchemaParserResult");
         }
 
         // Build the result
@@ -426,7 +419,6 @@ public class DataSetService {
         return dataSet;
     }
 
-
     /**
      * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
      *
@@ -439,13 +431,13 @@ public class DataSetService {
     @Timed
     @VolumeMetered
     public void updateDataSet(
-        @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-        @ApiParam(value = "content") InputStream dataSetContent ) {
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
+            @ApiParam(value = "content") InputStream dataSetContent) {
 
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
 
-            DataSetMetadata dataSetMetadata = objectMapper.readValue( dataSetContent, DataSetMetadata.class );
+            DataSetMetadata dataSetMetadata = objectMapper.readValue(dataSetContent, DataSetMetadata.class);
 
             lock.lock();
 
@@ -455,14 +447,13 @@ public class DataSetService {
             DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
 
             Optional<SchemaParserResult.SheetContent> sheetContentFound = read.getSchemaParserResult().getSheetContents()
-                .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())
-                ).findFirst();
+                    .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())).findFirst();
 
             if (sheetContentFound.isPresent()) {
                 List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
 
                 if (read.getRow() == null) {
-                    read.setRowMetadata(new RowMetadata());
+                    read.setRowMetadata(new RowMetadata(Collections.EMPTY_LIST));
                 }
                 read.getRow().setColumns(columnMetadatas);
             }
@@ -492,8 +483,8 @@ public class DataSetService {
             jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
                 Message schemaAnalysisMessage = session.createMessage();
                 schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                return schemaAnalysisMessage;
-            });
+                    return schemaAnalysisMessage;
+                });
 
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);

@@ -3,7 +3,7 @@
     {
       "action": "negate",
       "parameters": {
-        "column_name": "tagada"
+        "column_id": "tagada"
       }
     }
   ]

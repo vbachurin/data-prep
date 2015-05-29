@@ -35,14 +35,13 @@ public class CSVSchemaParser implements SchemaParser {
             String[] columns = reader.readNext();
             if (columns == null) { // Empty content?
                 return SchemaParserResult.Builder.parserResult() //
-                        .sheetContents( sheetContents ).build();
+                        .sheetContents(sheetContents).build();
             }
             // By default, consider all columns as Strings (to be refined by deeper analysis).
-            for (String column : columns) {
-                sheetContents.stream().filter( sheetContent -> META_KEY.equals( sheetContent.getName()) )
-                    .findFirst() //
-                    .get().getColumnMetadatas() //
-                    .add( column().name( column ).type( Type.STRING ).build() );
+            for (int i = 0; i < columns.length; i++) {
+                sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
+                        .get().getColumnMetadatas() //
+                        .add(column().id(String.valueOf(i)).name(columns[i]).type(Type.STRING).build());
             }
 
             // Best guess (and naive) on data types
@@ -52,16 +51,14 @@ public class CSVSchemaParser implements SchemaParser {
                     String columnValue = line[i];
                     try {
                         Integer.parseInt(columnValue);
-                        sheetContents.stream().filter( sheetContent -> META_KEY.equals( sheetContent.getName()) )
-                            .findFirst() //
-                            .get().getColumnMetadatas().get(i).setType(Type.INTEGER.getName());
+                        sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
+                                .get().getColumnMetadatas().get(i).setType(Type.INTEGER.getName());
                     } catch (NumberFormatException e) {
                         // Not an number
                     }
                     if ("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim())) {
-                        sheetContents.stream().filter( sheetContent -> META_KEY.equals( sheetContent.getName()) )
-                            .findFirst() //
-                            .get().getColumnMetadatas().get(i).setType(Type.BOOLEAN.getName());
+                        sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
+                                .get().getColumnMetadatas().get(i).setType(Type.BOOLEAN.getName());
                     }
                 }
             }

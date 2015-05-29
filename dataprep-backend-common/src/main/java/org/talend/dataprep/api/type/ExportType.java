@@ -1,9 +1,12 @@
 package org.talend.dataprep.api.type;
 
 public enum ExportType {
-    CSV("text/csv", ".csv"), XLS("application/vnd.ms-excel", ".xls"), TABLEAU("application/tde", ".tde");
+    CSV("text/csv", ".csv"),
+    XLS("application/vnd.ms-excel", ".xls"),
+    TABLEAU("", "");
 
     private final String mimeType;
+
     private final String entension;
 
     ExportType(final String mimeType, String entension) {

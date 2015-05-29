@@ -310,7 +310,7 @@ describe('Recipe controller', function() {
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
 
-    it('should do nothing if parameters are unchanged', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
+    it('should hide parameters modal on update step when parameters are different', inject(function($rootScope) {
         //given
         var ctrl = createController();
         var step = {
@@ -322,6 +322,31 @@ describe('Recipe controller', function() {
             actionParameters: {
                 action: 'cut',
                 parameters: {pattern: '.', column_name: 'state'}
+            }
+        };
+        var parameters = {pattern: '-'};
+        ctrl.showModal = {'a598bc83fc894578a8b823' : true};
+
+        //when
+        ctrl.updateStep(step, parameters);
+        $rootScope.$digest();
+
+        //then
+        expect(ctrl.showModal).toEqual({});
+    }));
+
+    it('should do nothing if parameters are unchanged', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
+        //given
+        var ctrl = createController();
+        var step = {
+            column: {id: '0', name:'state'},
+            transformation: {
+                stepId: 'a598bc83fc894578a8b823',
+                name: 'cut'
+            },
+            actionParameters: {
+                action: 'cut',
+                parameters: {pattern: '.', column_id: '0', column_name: 'state'}
             }
         };
         var parameters = {pattern: '.'};
@@ -367,14 +392,14 @@ describe('Recipe controller', function() {
         //given
         var ctrl = createController();
         var step = {
-            column: {id: 'state'},
+            column: {id: '0', name:'state'},
             transformation: {
                 stepId: 'a598bc83fc894578a8b823',
                 name: 'cut'
             },
             actionParameters: {
                 action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
+                parameters: {pattern: '.', column_id:'0', column_name: 'state'}
             }
         };
         var parameters = {pattern: '.'};
@@ -395,14 +420,14 @@ describe('Recipe controller', function() {
 
         var ctrl = createController();
         var step = {
-            column: {id: 'state'},
+            column: {id: '0', name:'state'},
             transformation: {
                 stepId: 'a598bc83fc894578a8b823',
                 name: 'cut'
             },
             actionParameters: {
                 action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
+                parameters: {pattern: '.', column_id: '0', column_name: 'state'}
             }
         };
         var parameters = {pattern: '--'};
@@ -413,6 +438,6 @@ describe('Recipe controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(lastActiveStep, step, {pattern: '--', column_name: 'state'});
+        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(lastActiveStep, step, {pattern: '--', column_id: '0', column_name: 'state'});
     }));
 });

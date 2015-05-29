@@ -1,4 +1,4 @@
-describe('Transformation Service', function() {
+describe('Transformation Rest Service', function() {
     'use strict';
 
     var $httpBackend;
@@ -43,6 +43,30 @@ describe('Transformation Service', function() {
 
         //when
         TransformationRestService.getDynamicParameters(action, columnId, null, preparationId)
+            .then(function (resp) {
+                response = resp.data;
+            });
+        $httpBackend.flush();
+
+        //then
+        expect(response).toEqual(result);
+    }));
+
+    it('should call GET transformation dynamic params rest service with preparationId and stepId', inject(function ($rootScope, TransformationRestService, RestURLs) {
+        //given
+        var response = null;
+        var action = 'textclustering';
+        var columnId = 'firstname';
+        var preparationId = '7b89ef45f6';
+        var stepId = '126578a98bf';
+
+        var result = {type: 'cluster', details: {titles: ['', '']}};
+        $httpBackend
+            .expectGET(RestURLs.transformUrl + '/suggest/textclustering/params?preparationId=7b89ef45f6&stepId=126578a98bf&columnId=firstname')
+            .respond(200, result);
+
+        //when
+        TransformationRestService.getDynamicParameters(action, columnId, null, preparationId, stepId)
             .then(function (resp) {
                 response = resp.data;
             });

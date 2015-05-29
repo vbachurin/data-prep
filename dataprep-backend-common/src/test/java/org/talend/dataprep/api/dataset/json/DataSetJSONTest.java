@@ -117,7 +117,7 @@ public class DataSetJSONTest {
     @Test
     public void testWrite1() throws Exception {
         List<ColumnMetadata> columns = new ArrayList<>();
-        ColumnMetadata column = new ColumnMetadata("column1", "string");
+        ColumnMetadata column = new ColumnMetadata("0", "column1", "string");
         column.getQuality().setEmpty(0);
         column.getQuality().setInvalid(10);
         column.getQuality().setValid(50);
@@ -135,8 +135,7 @@ public class DataSetJSONTest {
         dataSet.setMetadata(metadata);
         dataSet.setColumns(metadata.getRow().getColumns());
         to(dataSet, writer);
-        assertThat(writer.toString(),
-                sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test2.json")));
+        assertThat(writer.toString(), sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test2.json")));
     }
 
     @Test
@@ -148,8 +147,7 @@ public class DataSetJSONTest {
         assertNotNull(metadata);
         StringWriter writer = new StringWriter();
         to(dataSet, writer);
-        assertThat(writer.toString(),
-                sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test3.json")));
+        assertThat(writer.toString(), sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test3.json")));
     }
 
 }

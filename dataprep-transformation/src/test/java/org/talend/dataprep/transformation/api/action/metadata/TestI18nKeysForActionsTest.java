@@ -30,7 +30,6 @@ import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-
 /**
  * Test that a translation exists for i18n keys label/desc for each action and each params/item.
  *
@@ -41,7 +40,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 @WebAppConfiguration
 public class TestI18nKeysForActionsTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( TestI18nKeysForActionsTest.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestI18nKeysForActionsTest.class);
 
     @Autowired
     private ActionMetadata[] allActions;

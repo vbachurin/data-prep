@@ -104,7 +104,7 @@ public class DataSetMetadata {
     public String getId() {
         return id;
     }
-    
+
     /**
      * @return the dataset row description.
      */

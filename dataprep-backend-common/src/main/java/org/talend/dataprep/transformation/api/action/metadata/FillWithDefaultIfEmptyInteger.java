@@ -26,7 +26,12 @@ public class FillWithDefaultIfEmptyInteger extends AbstractDefaultIfEmpty {
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER, new Parameter(DEFAULT_VALUE_PARAMETER, Type.INTEGER.getName(), "0") }; //$NON-NLS-1$
+        //@formatter:off
+        return new Parameter[] {
+                COLUMN_ID_PARAMETER,
+                COLUMN_NAME_PARAMETER,
+                new Parameter(DEFAULT_VALUE_PARAMETER, Type.INTEGER.getName(), "0") }; //$NON-NLS-1$
+        //@formatter:on
     }
 
     @Override

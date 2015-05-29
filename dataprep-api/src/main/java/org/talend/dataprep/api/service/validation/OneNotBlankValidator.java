@@ -1,13 +1,13 @@
 package org.talend.dataprep.api.service.validation;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
+import java.lang.reflect.InvocationTargetException;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.lang.reflect.InvocationTargetException;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import org.apache.commons.beanutils.BeanUtils;
 
 public class OneNotBlankValidator implements ConstraintValidator<OneNotBlank, Object> {
 
@@ -23,7 +23,7 @@ public class OneNotBlankValidator implements ConstraintValidator<OneNotBlank, Ob
         try {
             for (final String name : fieldsName) {
                 final String prop = BeanUtils.getProperty(value, name);
-                if(isNotBlank(prop)) {
+                if (isNotBlank(prop)) {
                     return true;
                 }
             }
@@ -33,8 +33,7 @@ public class OneNotBlankValidator implements ConstraintValidator<OneNotBlank, Ob
 
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
-                .addPropertyNode(fieldsName[0])
-                .addConstraintViolation();
+                .addPropertyNode(fieldsName[0]).addConstraintViolation();
         return false;
     }
 }
