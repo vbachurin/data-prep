@@ -16,7 +16,6 @@
 			require: '^recipe',
 			scope: {
 				type: '@',
-				stepIndex: '=',
 				step: '='
 			},
 			templateNamespace: 'svg',
