@@ -16,11 +16,6 @@
             <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="($index > 0 && $index < recipeCtrl.recipe.length-1)" type="middleChain" ></recipe-bullet>
             <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="($index === recipeCtrl.recipe.length-1 && recipeCtrl.recipe.length !== 1)" type="endChain" ></recipe-bullet>
         </div>
-        <div class="step-trigger"
-             ng-class="{downlight: step.downlight, highlight: step.highlight}"
-             ng-click="recipeCtrl.toggleStep(step)"
-             ng-mouseleave="recipeCtrl.stepHoverEnd()"
-             ng-mouseenter="recipeCtrl.stepHoverStart($index)"></div>
 
         <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>
