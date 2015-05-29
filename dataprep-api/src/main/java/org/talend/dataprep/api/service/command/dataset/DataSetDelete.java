@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.service.command.dataset;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class DataSetDelete extends DataPrepCommand<Void> {
     /**
      * @return List of preparation(s) that use this dataset or en empty list if there's none.
      */
-    private List<Preparation> getPreparationsForDataSet() throws Exception {
+    private List<Preparation> getPreparationsForDataSet() throws IOException {
 
         // call preparation api
         PreparationListForDataSet preparationsForDataSet = context.getBean(PreparationListForDataSet.class, client, dataSetId);
@@ -83,7 +84,7 @@ public class DataSetDelete extends DataPrepCommand<Void> {
      * 
      * @throws Exception if an error occurs.
      */
-    private Void doDeleteDataSet() throws Exception {
+    private Void doDeleteDataSet() throws IOException {
         HttpDelete contentRetrieval = new HttpDelete(datasetServiceUrl + "/datasets/" + dataSetId);
         HttpResponse response = client.execute(contentRetrieval);
         int statusCode = response.getStatusLine().getStatusCode();

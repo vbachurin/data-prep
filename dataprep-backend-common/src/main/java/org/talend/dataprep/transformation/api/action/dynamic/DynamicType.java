@@ -12,7 +12,7 @@ public enum DynamicType {
 
     private Class<? extends DynamicParameters> generatorType;
 
-    private DynamicType(final String action, Class<? extends DynamicParameters> generatorType) {
+    DynamicType(final String action, Class<? extends DynamicParameters> generatorType) {
         this.action = action;
         this.generatorType = generatorType;
     }

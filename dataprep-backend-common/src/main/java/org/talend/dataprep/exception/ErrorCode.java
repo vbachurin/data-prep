@@ -1,11 +1,12 @@
 package org.talend.dataprep.exception;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * Interface used to unify error message behaviour.
  */
-public interface ErrorCode {
+public interface ErrorCode extends Serializable {
 
     /**
      * @return the product used for the error message... Hum... TDP ? ;-)

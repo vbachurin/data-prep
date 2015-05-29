@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Component
 public class ServiceCORSFilter implements Filter, ApplicationContextAware {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( ServiceCORSFilter.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCORSFilter.class);
 
     private final Set<String> serviceRootPaths = new HashSet<>();
 
@@ -44,10 +44,12 @@ public class ServiceCORSFilter implements Filter, ApplicationContextAware {
 
     @Override
     public void init(FilterConfig filterConfig) {
+        // nothing to do here
     }
 
     @Override
     public void destroy() {
+        // nothing to do here
     }
 
     @Override

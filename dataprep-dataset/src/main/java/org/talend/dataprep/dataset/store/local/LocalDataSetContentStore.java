@@ -1,17 +1,7 @@
 package org.talend.dataprep.dataset.store.local;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.io.*;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import javax.annotation.PostConstruct;
@@ -92,7 +82,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {
-            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata));
+            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata), e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }
