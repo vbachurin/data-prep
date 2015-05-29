@@ -42,7 +42,8 @@ public class DataSetAPI extends APIService {
     }
 
     @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Update a data set by id.", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create or update a data set based on content provided in PUT body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
+    @ApiOperation(value = "Update a data set by id.", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, //
+        notes = "Create or update a data set based on content provided in PUT body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
     public String createOrUpdateById(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
             @ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
@@ -52,6 +53,23 @@ public class DataSetAPI extends APIService {
         }
         HttpClient client = getClient();
         HystrixCommand<String> creation = getCommand(CreateOrUpdateDataSet.class, client, id, name, dataSetContent);
+        String result = creation.execute();
+        LOG.debug("Dataset creation or update for #{} done.", id);
+        return result;
+    }
+
+
+    @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a dataset.", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, //
+        notes = "Update a data set based on content provided in PUT body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    public String update(
+        @ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
+        @ApiParam(value = "content") InputStream dataSetContent) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+        }
+        HttpClient client = getClient();
+        HystrixCommand<String> creation = getCommand(UpdateDataSet.class, client, id, dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;
@@ -69,7 +87,8 @@ public class DataSetAPI extends APIService {
         }
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns);
+
+        HystrixCommand<InputStream> retrievalCommand = getCommand( DataSetGet.class, client, id, metadata, columns );
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
@@ -81,6 +100,34 @@ public class DataSetAPI extends APIService {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
+
+    @RequestMapping(value = "/api/datasets/preview/{id}", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a data set by id.", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Get a data set based on given id.")
+    public void preview(
+        @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
+        @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
+        @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
+        @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
+        HttpServletResponse response) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+        }
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
+        HttpClient client = getClient();
+        HystrixCommand<InputStream> retrievalCommand = getCommand( DataSetPreview.class, client, id,
+                                                                   metadata, columns, sheetName );
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
+            outputStream.flush();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
+            }
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
 
     @RequestMapping(value = "/api/datasets", method = RequestMethod.GET, consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List data sets.", produces = MediaType.APPLICATION_JSON_VALUE, notes = "Returns a list of data sets the user can use.")

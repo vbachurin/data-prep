@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dataprep-backend</artifactId>
         <groupId>org.talend.dataprep</groupId>
-        <version>1.0.m4-SNAPSHOT</version>
+        <version>1.0.m5-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -129,7 +129,7 @@
                         <version>0.1.1</version>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>dockerfile/java:oracle-java8</baseImage>
+                            <baseImage>java:8</baseImage>
                             <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
                             <resources>
                                 <resource>

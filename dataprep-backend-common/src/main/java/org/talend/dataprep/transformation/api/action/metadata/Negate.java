@@ -11,6 +11,7 @@ import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 @Component(Negate.ACTION_BEAN_PREFIX + Negate.NEGATE_ACTION_NAME)
 public class Negate extends SingleColumnAction {

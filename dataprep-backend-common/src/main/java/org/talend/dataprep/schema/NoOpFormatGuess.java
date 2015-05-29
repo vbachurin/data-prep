@@ -2,6 +2,7 @@ package org.talend.dataprep.schema;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.schema.io.NoOpDraftValidator;
 import org.talend.dataprep.schema.io.NoOpParser;
 import org.talend.dataprep.schema.io.NoOpSerializer;
 
@@ -16,6 +17,9 @@ public class NoOpFormatGuess implements FormatGuess {
     @Autowired
     private NoOpParser parser;
 
+    @Autowired
+    private NoOpDraftValidator noDraftValidator;
+
     @Override
     public String getMediaType() {
         return "*/*"; //$NON-NLS-1$
@@ -27,14 +31,18 @@ public class NoOpFormatGuess implements FormatGuess {
     }
 
     @Override
-    public NoOpSerializer getSerializer()
-    {
+    public Serializer getSerializer() {
         return serializer;
     }
 
-    public NoOpParser getSchemaParser()
-    {
+    @Override
+    public SchemaParser getSchemaParser() {
         return parser;
+    }
+
+    @Override
+    public DraftValidator getDraftValidator() {
+        return noDraftValidator;
     }
 
     @Override

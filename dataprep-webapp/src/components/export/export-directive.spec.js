@@ -22,7 +22,7 @@ describe('Export directive', function() {
 
     it('should bind csvSeparator form value to controller', function() {
         //given
-        var input = angular.element('body').find('#csvExport').eq(0)[0].csvSeparator;
+        var input = angular.element('body').find('#exportForm').eq(0)[0].csvSeparator;
         expect(input.value).toBe(';');
 
         //when
@@ -35,7 +35,7 @@ describe('Export directive', function() {
 
     it('should bind preparationId form value to controller', inject(function(PreparationService) {
         //given
-        var input = angular.element('body').find('#csvExport').eq(0)[0].preparationId;
+        var input = angular.element('body').find('#exportForm').eq(0)[0].preparationId;
         expect(input.value).toBeFalsy();
 
         //when
@@ -48,7 +48,7 @@ describe('Export directive', function() {
 
     it('should bind stepId form value to controller', inject(function(RecipeService) {
         //given
-        var input = angular.element('body').find('#csvExport').eq(0)[0].stepId;
+        var input = angular.element('body').find('#exportForm').eq(0)[0].stepId;
         expect(input.value).toBeFalsy();
 
         //when
@@ -65,7 +65,7 @@ describe('Export directive', function() {
 
     it('should bind datasetId form value to controller', inject(function(PlaygroundService) {
         //given
-        var input = angular.element('body').find('#csvExport').eq(0)[0].datasetId;
+        var input = angular.element('body').find('#exportForm').eq(0)[0].datasetId;
         expect(input.value).toBeFalsy();
 
         //when
@@ -80,7 +80,7 @@ describe('Export directive', function() {
 
     it('should set actionUrl and submit form', inject(function() {
         //given
-        var form = angular.element('body').find('#csvExport').eq(0)[0];
+        var form = angular.element('body').find('#exportForm').eq(0)[0];
         spyOn(form, 'submit').and.returnValue(null);
 
         var actionUrl = 'http://toto/export';

@@ -1,8 +1,18 @@
+<!-- TODO Styles are hard coded to get all buttons on a line (but this is temporary) -->
 <button type="button"
         class="t-btn t-btn-primary"
+        style="float: left;"
         ng-click="exportCtrl.showExport = true">
     {{ ::'EXPORT_CSV' | translate }}
 </button>
+
+<button type="button"
+        class="t-btn t-btn-primary"
+        style="float: left; margin-left: 10px"
+        ng-click="exportCtrl.export('TABLEAU')">
+    {{ ::'EXPORT_TABLEAU' | translate }}
+</button>
+
 
 <talend-modal fullscreen="false"
               state="exportCtrl.showExport"
@@ -16,15 +26,15 @@
 
     <div class="modal-buttons">
         <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
-        <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.export()">{{ ::'EXPORT' | translate }}</button>
+        <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.export('CSV')">{{ ::'EXPORT' | translate }}</button>
     </div>
 
-    <form id="csvExport" target="_blank">
+    <form id="exportForm" target="_blank">
         <input type="hidden" name="csvSeparator" value="{{ exportCtrl.csvSeparator }}" />
         <input type="hidden" name="preparationId" value="{{ exportCtrl.preparationId }}" />
         <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
         <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
-        <input type="hidden" name="exportType" value="CSV" />
+        <input type="hidden" name="exportType" />
     </form>
 
 </talend-modal>

@@ -1,0 +1,46 @@
+/** maillon circles **/
+.maillon-circle{
+  circle{
+    stroke:#b6be00;
+    stroke-width:3;
+    fill:#b6be00;
+    &.maillon-circle-enabled-hovered{
+      stroke:#00CCFF;
+      stroke-width:3;
+      fill:#ffffff;
+    }
+  }
+  path{
+    stroke:#b6be00;
+    stroke-width:1;
+    fill:none;
+    &.maillon-cables-disabled{
+      stroke:#DFDFDF;
+      stroke-width:0.4;
+      fill:none;
+    }
+    &.single-maillon-cables-disabled{
+      stroke:#DFDFDF;
+      stroke-width:0.4;
+      fill:none;
+    }
+  }
+}
+
+.maillon-circle-disabled{
+  circle{
+    stroke:#D2D2D2;
+    stroke-width:3;
+    fill:#ffffff;
+    &.maillon-circle-disabled-hovered{
+      stroke:blue;
+      stroke-width:3;
+      fill:#B122FF;
+    }
+  }
+  path{
+    stroke:#DFDFDF;
+    stroke-width:0.4;
+    fill:none;
+  }
+}

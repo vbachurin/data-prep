@@ -182,7 +182,7 @@ describe('Playground Service', function () {
             //given
             var preparation = {
                 id: '6845521254541',
-                dataset: {id: '1', name: 'my dataset'}
+                datasetId: '1'
             };
             PreparationService.currentPreparationId = '5746518486846';
 
@@ -192,7 +192,7 @@ describe('Playground Service', function () {
             $rootScope.$apply();
 
             //then
-            expect(PlaygroundService.currentMetadata).toBe(preparation.dataset);
+            expect(PlaygroundService.currentMetadata).toEqual({id: '1'});
             expect(PlaygroundService.currentData).toBe(data);
             expect(FilterService.removeAllFilters).toHaveBeenCalled();
             expect(RecipeService.refresh).toHaveBeenCalled();
@@ -283,4 +283,63 @@ describe('Playground Service', function () {
         expect(PlaygroundService.preparationName).toBe(name);
         expect(PlaygroundService.originalPreparationName).toBe(name);
     }));
+
+    describe('trasnformation', function() {
+        var result, metadata;
+        beforeEach(inject(function($rootScope, $q, PlaygroundService, PreparationService, DatagridService, RecipeService) {
+            result = {
+                'records': [{
+                    'firstname': 'Grover',
+                    'avgAmount': '82.4',
+                    'city': 'BOSTON',
+                    'birth': '01-09-1973',
+                    'registration': '17-02-2008',
+                    'id': '1',
+                    'state': 'AR',
+                    'nbCommands': '41',
+                    'lastname': 'Quincy'
+                }, {
+                    'firstname': 'Warren',
+                    'avgAmount': '87.6',
+                    'city': 'NASHVILLE',
+                    'birth': '11-02-1960',
+                    'registration': '18-08-2007',
+                    'id': '2',
+                    'state': 'WA',
+                    'nbCommands': '17',
+                    'lastname': 'Johnson'
+                }]
+            };
+
+            metadata = {id : 'e85afAa78556d5425bc2'};
+            PlaygroundService.currentMetadata = metadata;
+
+            spyOn($rootScope, '$emit').and.callThrough();
+            spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: result}));
+            spyOn(DatagridService, 'updateData').and.returnValue();
+            spyOn(RecipeService, 'refresh').and.returnValue();
+        }));
+
+        it('should append preparation step', inject(function ($rootScope, PlaygroundService, PreparationService) {
+            //given
+            var action = 'uppercase';
+            var column = {id: 'firstname'};
+            var parameters = {param1: 'param1Value', param2: 4};
+
+            //when
+            PlaygroundService.appendStep(action, column, parameters);
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+            $rootScope.$digest();
+
+            //then
+            expect(PreparationService.appendStep).toHaveBeenCalledWith(
+                metadata,
+                action,
+                column,
+                parameters
+                );
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        }));
+    });
 });

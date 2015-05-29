@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 @Component(LowerCase.ACTION_BEAN_PREFIX + LowerCase.LOWER_CASE_ACTION_NAME)
 public class LowerCase extends SingleColumnAction {

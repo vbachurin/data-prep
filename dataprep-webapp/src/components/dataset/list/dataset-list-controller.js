@@ -15,10 +15,12 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
+     * @requires data-prep.services.dataset.service:DatasetListService
      */
-    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($log,$stateParams,$state,DatasetService, PlaygroundService, TalendConfirmService, MessageService,DatasetListService) {
         var vm = this;
         vm.datasetService = DatasetService;
+        vm.datasetListService = DatasetListService;
 
         /**
          * @ngdoc method
@@ -47,6 +49,25 @@
                 .then(function() {
                     MessageService.success('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: dataset.name});
                 });
+        };
+
+        vm.openDraft = function(dataset){
+            $log.debug('openDraf type: ' + dataset.type);
+            if (dataset.type){
+                if (dataset.type === 'application/vnd.ms-excel'){
+                    $state.go( 'nav.home.datasets-previewxls', {datasetid:dataset.id} );
+                    return;
+                }else{
+                    MessageService.error('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', {type: 'dataset'});
+                }
+            } else{
+                DatasetListService.refreshDatasets();
+                if (dataset.type){
+                    vm.openDraft(dataset);
+                }else{
+                    MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
+                }
+            }
         };
 
         /**

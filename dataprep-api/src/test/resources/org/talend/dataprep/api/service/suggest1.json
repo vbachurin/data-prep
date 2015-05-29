@@ -189,5 +189,27 @@
     ],
     "description": "Split column from separators",
     "label": "Split"
+  },
+  {
+    "category":"quickfix",
+    "compatibleColumnTypes":[
+      "STRING"
+    ],
+    "name":"textclustering",
+    "dynamic":true,
+    "items":[
+
+    ],
+    "parameters":[
+      {
+        "name":"column_name",
+        "type":"string",
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
+      }
+    ],
+    "description":"Replace all similar values with the right one",
+    "label":"Cluster"
   }
 ]

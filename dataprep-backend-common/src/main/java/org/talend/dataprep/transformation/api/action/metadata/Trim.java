@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 @Component(Trim.ACTION_BEAN_PREFIX + Trim.TRIM_ACTION_NAME)
 public class Trim extends SingleColumnAction {

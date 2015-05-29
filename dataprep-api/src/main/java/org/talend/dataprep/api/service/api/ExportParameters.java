@@ -1,6 +1,6 @@
 package org.talend.dataprep.api.service.api;
 
-import org.talend.dataprep.api.service.validation.OneNotNull;
+import org.talend.dataprep.api.service.validation.OneNotBlank;
 import org.talend.dataprep.api.type.ExportType;
 
 import javax.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Parameters for dataset/preparation export
  */
-@OneNotNull({"preparationId", "datasetId"})
+@OneNotBlank({"preparationId", "datasetId"})
 public class ExportParameters {
     /**
      * The export type

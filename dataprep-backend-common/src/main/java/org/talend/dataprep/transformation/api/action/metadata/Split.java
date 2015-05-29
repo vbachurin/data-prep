@@ -9,7 +9,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Split a cell value on a separator.

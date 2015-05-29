@@ -8,7 +8,7 @@ describe('Transformation menu directive', function () {
     beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
         createElement = function() {
-            element = angular.element('<transform-menu column="column" metadata="metadata" menu="menu"></transform-menu>');
+            element = angular.element('<transform-menu column="column" menu="menu"></transform-menu>');
             $compile(element)(scope);
             scope.$digest();
             return element;
