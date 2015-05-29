@@ -100,8 +100,7 @@ public class RowMetadata {
     public String toString()
     {
         return "RowMetadata{" +
-            "columnMetadata=" + columnMetadata +
-            ", previousMetadata=" + previousMetadata +
+            "columnMetadatas=" + columnMetadatas +
             '}';
     }
 }

@@ -59,7 +59,7 @@ public class XlsWriter implements TransformerWriter {
         for (ColumnMetadata columnMetadata : columns.getColumns()) {
 
             // TODO apply some formatting as it's an header cell?
-            headerRow.createCell(cellIdx++).setCellValue(createHelper.createRichTextString(columnMetadata.getId()));
+            headerRow.createCell(cellIdx++).setCellValue(createHelper.createRichTextString(columnMetadata.getName()));
 
         }
 

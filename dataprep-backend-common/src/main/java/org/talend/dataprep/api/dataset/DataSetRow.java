@@ -39,7 +39,7 @@ public class DataSetRow implements Cloneable {
      */
     public DataSetRow(Map<String, String> values) {
         this();
-        this.values.putAll(values);
+        this.values.putAll( values );
     }
 
     /**
@@ -211,7 +211,7 @@ public class DataSetRow implements Cloneable {
     {
         return "DataSetRow{" +
             "deleted=" + deleted +
-            ", oldRow=" + oldRow +
+            ", oldValue=" + oldValue +
             ", values=" + values +
             '}';
     }
