@@ -2,7 +2,8 @@
   "records":[
     {
       "__tdpRowDiff":"delete",
-      "firstname":"Calvin",
+      "__tdpDiff": {"firstname": "update"},
+      "firstname": "CALVIN",
       "avgAmount":"200.56",
       "city":"Columbia",
       "birth":"01-02-1986",

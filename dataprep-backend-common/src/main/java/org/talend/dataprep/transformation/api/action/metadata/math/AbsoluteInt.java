@@ -22,8 +22,8 @@ import javax.annotation.Nonnull;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * This will compute the absolute value for numerical columns
@@ -56,7 +56,7 @@ public class AbsoluteInt extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             String absValueStr = null;
             if (value != null) {

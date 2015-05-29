@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,31 +75,31 @@ public class QualityAnalysis {
                         for (int i = 0; i < columns.size(); i++) {
                             final String type = columns.get(i).getType();
                             switch (Type.get(type)) {
-                                case ANY:
-                                case STRING:
-                                    types[i] = DataType.Type.STRING;
-                                    break;
-                                case NUMERIC:
-                                    types[i] = DataType.Type.INTEGER;
-                                    break;
-                                case INTEGER:
-                                    types[i] = DataType.Type.INTEGER;
-                                    break;
-                                case DOUBLE:
-                                case FLOAT:
-                                    types[i] = DataType.Type.DOUBLE;
-                                    break;
-                                case BOOLEAN:
-                                    types[i] = DataType.Type.BOOLEAN;
-                                    break;
-                                case DATE:
-                                    types[i] = DataType.Type.DATE;
-                                    break;
-                                case CHAR:
-                                    types[i] = DataType.Type.CHAR;
-                                    break;
-                                default:
-                                    types[i] = DataType.Type.STRING;
+                            case ANY:
+                            case STRING:
+                                types[i] = DataType.Type.STRING;
+                                break;
+                            case NUMERIC:
+                                types[i] = DataType.Type.INTEGER;
+                                break;
+                            case INTEGER:
+                                types[i] = DataType.Type.INTEGER;
+                                break;
+                            case DOUBLE:
+                            case FLOAT:
+                                types[i] = DataType.Type.DOUBLE;
+                                break;
+                            case BOOLEAN:
+                                types[i] = DataType.Type.BOOLEAN;
+                                break;
+                            case DATE:
+                                types[i] = DataType.Type.DATE;
+                                break;
+                            case CHAR:
+                                types[i] = DataType.Type.CHAR;
+                                break;
+                            default:
+                                types[i] = DataType.Type.STRING;
                             }
                         }
                         // Run analysis
@@ -109,8 +108,8 @@ public class QualityAnalysis {
                         stream.map(row -> {
                             final Map<String, Object> rowValues = row.values();
                             final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                .map(String::valueOf) //
-                                .collect(Collectors.<String>toList());
+                                    .map(String::valueOf) //
+                                    .collect(Collectors.<String> toList());
                             return strings.toArray(new String[strings.size()]);
                         }).forEach(analyzer::analyze);
                         // Determine content size
@@ -129,7 +128,8 @@ public class QualityAnalysis {
                         }
                         // If there are columns remaining, warn for missing information
                         while (iterator.hasNext()) {
-                            LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(), dataSetId);
+                            LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(),
+                                    dataSetId);
                         }
                         // ... all quality is now analyzed, mark it so.
                         metadata.getLifecycle().qualityAnalyzed(true);
@@ -139,8 +139,8 @@ public class QualityAnalysis {
                         jmsTemplate.send(Destinations.STATISTICS_ANALYSIS, session -> {
                             Message schemaAnalysisMessage = session.createMessage();
                             schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                            return schemaAnalysisMessage;
-                        });
+                                return schemaAnalysisMessage;
+                            });
                     } else {
                         LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
                     }

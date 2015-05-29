@@ -2,14 +2,7 @@ package org.talend.dataprep.schema.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalLong;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,14 +38,14 @@ public class XlsSchemaParser implements SchemaParser {
         if (!sheetContents.isEmpty()) {
             return sheetContents.size() == 1 ? //
             SchemaParserResult.Builder.parserResult() //
-                    .sheetContents( sheetContents ) //
+                    .sheetContents(sheetContents) //
                     .draft(false) //
                     .build() //
                     : //
                     SchemaParserResult.Builder.parserResult() //
-                            .sheetContents( sheetContents ) //
+                            .sheetContents(sheetContents) //
                             .draft(true) //
-                            .sheetName(sheetContents.get( 0 ).getName()) //
+                            .sheetName(sheetContents.get(0).getName()) //
                             .build();
         }
 
@@ -145,6 +138,7 @@ public class XlsSchemaParser implements SchemaParser {
             columnMetadatas.add(ColumnMetadata.Builder //
                     .column() //
                     .headerSize(averageHeaderSize) //
+                    .id(String.valueOf(integer)) //
                     .name(headerText) //
                     .type(type) //
                     .build());

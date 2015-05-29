@@ -145,6 +145,28 @@
 
         /**
          * @ngdoc method
+         * @name getActiveThresholdStepIndexOnLaunch
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get the last active step index, at launch it gets all the recipe Length
+         * @returns {number} The last active step index, at launch it gets all the recipe Length
+         */
+        this.getActiveThresholdStepIndexOnLaunch = function() {
+            return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : recipe.length - 1;
+        };
+
+        /**
+         * @ngdoc method
+         * @name getCurrentStepIndex
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get the current clicked step index
+         * @returns {number} The current step index
+         */
+        this.getCurrentStepIndex = function(step) {
+            return step?recipe.indexOf(step):-1;
+        };
+
+        /**
+         * @ngdoc method
          * @name getLastActiveStep
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @description Get the last active step (last step if activeThresholdStep var is not set)
@@ -239,7 +261,8 @@
             var item = {
                 column: {
                     /*jshint camelcase: false */
-                    id: actionValues.parameters.column_name
+                    id: actionValues.parameters.column_id,
+                    name: actionValues.parameters.column_name
                 },
                 transformation: {
                     stepId: stepId,

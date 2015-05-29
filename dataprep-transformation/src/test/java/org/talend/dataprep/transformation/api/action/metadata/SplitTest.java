@@ -122,19 +122,19 @@ public class SplitTest {
     public void should_update_metadata() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe"));
-        input.add(createMetadata("steps"));
-        input.add(createMetadata("last update"));
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("steps", "steps"));
+        input.add(createMetadata("last update", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
         metadataClosure.accept(rowMetadata);
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe"));
-        expected.add(createMetadata("steps"));
-        expected.add(createMetadata("steps_split"));
-        expected.add(createMetadata("last update"));
+        expected.add(createMetadata("recipe", "recipe"));
+        expected.add(createMetadata("steps", "steps"));
+        expected.add(createMetadata("steps_split", "steps_split"));
+        expected.add(createMetadata("last update", "last update"));
 
         assertEquals(expected, actual);
     }
@@ -143,7 +143,8 @@ public class SplitTest {
      * @param name name of the column metadata to create.
      * @return a new column metadata
      */
-    private ColumnMetadata createMetadata(String name) {
-        return ColumnMetadata.Builder.column().name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2).valid(5).build();
+    private ColumnMetadata createMetadata(String id, String name) {
+        return ColumnMetadata.Builder.column().id(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2).valid(5)
+                .build();
     }
 }

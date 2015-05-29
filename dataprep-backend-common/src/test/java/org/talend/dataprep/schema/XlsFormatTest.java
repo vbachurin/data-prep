@@ -78,14 +78,14 @@ public class XlsFormatTest {
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(4);
 
             ColumnMetadata columnMetadataFound = columnMetadatas.stream()
-                    .filter(columnMetadata -> StringUtils.equals(columnMetadata.getId(), "country")).findFirst().get();
+                    .filter(columnMetadata -> StringUtils.equals(columnMetadata.getName(), "country")).findFirst().get();
 
             logger.debug("columnMetadataFound: {}", columnMetadataFound);
 
             Assertions.assertThat(columnMetadataFound.getType()).isEqualTo(Type.STRING.getName());
 
             columnMetadataFound = columnMetadatas.stream()
-                    .filter(columnMetadata -> StringUtils.equals(columnMetadata.getId(), "note")).findFirst().get();
+                    .filter(columnMetadata -> StringUtils.equals(columnMetadata.getName(), "note")).findFirst().get();
 
             logger.debug("columnMetadataFound: {}", columnMetadataFound);
 
@@ -159,7 +159,7 @@ public class XlsFormatTest {
 
             logger.debug("values: {}", values);
 
-            // expected
+            // expected*
             // {country=Australie, note=10.0, beer name =Little Creatures, quality=Awesome}
             // {country=France , note=, beer name =Heinekein, quality=crappy}
             // {country=Australie, note=6.0, beer name =Foo, quality=10.0}
@@ -168,29 +168,28 @@ public class XlsFormatTest {
             Assertions.assertThat(values).isNotEmpty().hasSize(4);
 
             Assertions.assertThat(values.get(0)) //
-                    .contains(MapEntry.entry("country", "Australie"),//
-                            MapEntry.entry("note", "10.0"), //
-                            MapEntry.entry("beer name", "Little Creatures"), //
-                            MapEntry.entry("quality", "Awesome"));
+                    .contains(MapEntry.entry("0", "Little Creatures"), //
+                            MapEntry.entry("1", "Australie"),//
+                            MapEntry.entry("2", "Awesome"), //
+                            MapEntry.entry("3", "10.0")); //
 
             Assertions.assertThat(values.get(1)) //
-                    .contains(MapEntry.entry("country", "France"),//
-                            MapEntry.entry("note", ""), //
-                            MapEntry.entry("beer name", "Heinekein"), //
-                            MapEntry.entry("quality", "crappy"));
+                    .contains(MapEntry.entry("0", "Heinekein"), //
+                            MapEntry.entry("1", "France"),//
+                            MapEntry.entry("2", "crappy"), //
+                            MapEntry.entry("3", "")); //
 
             Assertions.assertThat(values.get(2)) //
-                    .contains(MapEntry.entry("country", "Australie"),//
-                            MapEntry.entry("note", "6.0"), //
-                            MapEntry.entry("beer name", "Foo"), //
-                            MapEntry.entry("quality", "10.0"));
+                    .contains(MapEntry.entry("0", "Foo"), //
+                            MapEntry.entry("1", "Australie"),//
+                            MapEntry.entry("2", "10.0"),//
+                            MapEntry.entry("3", "6.0"));
 
             Assertions.assertThat(values.get(3)) //
-                    .contains(MapEntry.entry("country", "France"),//
-                            MapEntry.entry("note", "2.0"), //
-                            MapEntry.entry("beer name", "Bar"), //
-                            MapEntry.entry("quality", "crappy"));
-
+                    .contains(MapEntry.entry("0", "Bar"), //
+                            MapEntry.entry("1", "France"),//
+                            MapEntry.entry("2", "crappy"), //
+                            MapEntry.entry("3", "2.0"));
         }
 
     }
@@ -228,7 +227,7 @@ public class XlsFormatTest {
 
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
 
-            Assertions.assertThat(columnMetadata.getId()).isEqualTo("NoAuto");
+            Assertions.assertThat(columnMetadata.getName()).isEqualTo("NoAuto");
 
         }
 
@@ -270,9 +269,9 @@ public class XlsFormatTest {
         }
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-
             List<ColumnMetadata> columnMetadatas = formatGuess.getSchemaParser()
                     .parse(new SchemaParser.Request(inputStream, null)).getSheetContents().get(0).getColumnMetadatas();
+
             logger.debug("columnMetadatas: {}", columnMetadatas);
             Assertions.assertThat(columnMetadatas).isNotNull().isNotEmpty().hasSize(13);
 
@@ -280,7 +279,7 @@ public class XlsFormatTest {
 
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
 
-            Assertions.assertThat(columnMetadata.getId()).isEqualTo("CP");
+            Assertions.assertThat(columnMetadata.getName()).isEqualTo("CP");
 
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.STRING.getName());
 
@@ -337,7 +336,7 @@ public class XlsFormatTest {
 
             Assertions.assertThat(columnMetadata.getHeaderSize()).isEqualTo(1);
 
-            Assertions.assertThat(columnMetadata.getId()).isEqualTo("telephone");
+            Assertions.assertThat(columnMetadata.getName()).isEqualTo("telephone");
 
             Assertions.assertThat(columnMetadata.getType()).isEqualTo(Type.NUMERIC.getName());
 
@@ -364,19 +363,19 @@ public class XlsFormatTest {
             Assertions.assertThat(values).isNotEmpty().hasSize(239);
 
             Assertions.assertThat(values.get(0)) //
-                    .contains(MapEntry.entry("date", "24-Jul-2014"),//
-                            MapEntry.entry("SOCIETE", "COFACE"), //
-                            MapEntry.entry("email", "tony_fernandes@coface.com"));
+                    .contains(MapEntry.entry("0", "24-Jul-2014"),//
+                            MapEntry.entry("1", "COFACE"), //
+                            MapEntry.entry("6", "tony_fernandes@coface.com"));
 
             Assertions.assertThat(values.get(1)) //
-                    .contains(MapEntry.entry("date", "24-Jul-2014"),//
-                            MapEntry.entry("SOCIETE", "ENABLON"), //
-                            MapEntry.entry("NOM", "COCUD"));
+                    .contains(MapEntry.entry("0", "24-Jul-2014"),//
+                            MapEntry.entry("1", "ENABLON"), //
+                            MapEntry.entry("4", "COCUD"));
 
             Assertions.assertThat(values.get(17)) //
-                    .contains(MapEntry.entry("date", "17-Jul-2014"),//
-                            MapEntry.entry("SOCIETE", "SODEBO"), //
-                            MapEntry.entry("Prenom", "Tanguy"));
+                    .contains(MapEntry.entry("0", "17-Jul-2014"),//
+                            MapEntry.entry("1", "SODEBO"), //
+                            MapEntry.entry("3", "Tanguy"));
 
         }
 

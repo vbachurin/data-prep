@@ -54,8 +54,8 @@ public interface ActionMetadata {
      * Returns the list of multiple valued parameters required for this Action to be executed. represented as list box
      * on the front end.
      * 
-     * @return A list of {@link org.talend.dataprep.transformation.api.action.parameters.Item items}. This should never return null, actions with no item should return empty
-     * list.
+     * @return A list of {@link org.talend.dataprep.transformation.api.action.parameters.Item items}. This should never
+     * return null, actions with no item should return empty list.
      **/
     Item[] getItems();
 
@@ -71,15 +71,6 @@ public interface ActionMetadata {
      * @return A set of the column {@link Type types} this Action can handle.
      */
     Set<Type> getCompatibleColumnTypes();
-
-    /**
-     * @param input Action parameters as json input.
-     * @return the closure that transforms the row.
-     */
-    default Consumer<DataSetRow> create(Iterator<Map.Entry<String, JsonNode>> input) {
-        Map<String, String> parsedParameters = parseParameters(input);
-        return create(parsedParameters);
-    }
 
     /**
      * Create a closure to perform the transformation on a DatasetRow according to the parameter.
@@ -141,7 +132,8 @@ public interface ActionMetadata {
     }
 
     /**
-     * @return True if the action is dynamic (i.e the parameters depends on the context (dataset/preparation/previous_actions)
+     * @return True if the action is dynamic (i.e the parameters depends on the context
+     * (dataset/preparation/previous_actions)
      */
     default boolean isDynamic() {
         return false;

@@ -32,7 +32,7 @@ public interface Transformer {
         final JsonParser parser = factory.createParser(input);
 
         JsonWriter writer = null;
-        if(builder != null) {
+        if (builder != null) {
             final JsonGenerator generator = factory.createGenerator(output);
             generator.setCodec(builder.build());
             writer = new JsonWriter(generator);

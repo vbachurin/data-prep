@@ -134,7 +134,8 @@ describe('Transformation Service', function () {
                 'category': 'case',
                 items: [],
                 parameters: [
-                    {name: 'column_name', type: 'string'}
+                    {name: 'column_name', type: 'string'},
+                    {name: 'column_id', type: 'string'}
                 ]
             },
             {
@@ -142,7 +143,8 @@ describe('Transformation Service', function () {
                 'category': 'case',
                 items: [],
                 parameters: [
-                    {name: 'column_name', type: 'string'}
+                    {name: 'column_name', type: 'string'},
+                    {name: 'column_id', type: 'string'}
                 ]
             },
             {
@@ -151,6 +153,7 @@ describe('Transformation Service', function () {
                 items: [],
                 parameters: [
                     {name: 'column_name', type: 'string'},
+                    {name: 'column_id', type: 'string'},
                     {name: 'value', type: 'string'}
                 ]
             },
@@ -158,7 +161,8 @@ describe('Transformation Service', function () {
                 'name': 'split',
                 'category': 'split',
                 parameters: [
-                    {name: 'column_name', type: 'string'}
+                    {name: 'column_name', type: 'string'},
+                    {name: 'column_id', type: 'string'}
                 ],
                 'items': [{
                     name: 'mode',
@@ -587,11 +591,11 @@ describe('Transformation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(transformations[0].parameters).toBe(null); // delete column_name parameter
-        expect(transformations[1].parameters).toBe(null); // delete column_name parameter
-        expect(transformations[2].parameters.length).toBe(1); // delete column_name parameter
+        expect(transformations[0].parameters).toBe(null); // delete column_name & column_id parameter
+        expect(transformations[1].parameters).toBe(null); // delete column_name & column_id parameter
+        expect(transformations[2].parameters.length).toBe(1); // delete column_name & column_id parameter
         expect(transformations[2].parameters[0].inputType).toBe('text'); //adapt input type
-        expect(transformations[3].parameters).toBe(null); // delete column_name parameter
+        expect(transformations[3].parameters).toBe(null); // delete column_name & column_id parameter
         expect(transformations[3].items[0].values[1].parameters[0].inputType).toBe('text'); //adapt input type
         expect(transformations[3].items[0].values[2].parameters[0].inputType).toBe('number'); //adapt input type
         expect(transformations[3].items[0].values[3].parameters[0].inputType).toBe('number'); //adapt input type

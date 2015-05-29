@@ -4,7 +4,7 @@ describe('Recipe directive', function() {
 
     var recipe = [
         {
-            column: {id: 'col1'},
+            column: {id: '0', name: 'col1'},
             transformation: {
                 stepId: '13a24e8765ef4',
                 name: 'split',
@@ -15,7 +15,7 @@ describe('Recipe directive', function() {
             }
         },
         {
-            column: {id: 'col2'},
+            column: {id: '1', name: 'col2'},
             transformation: {
                 stepId: '9876fb498e36543ab51',
                 name: 'uppercase',
@@ -27,7 +27,7 @@ describe('Recipe directive', function() {
             inactive: true
         },
         {
-            column: {id: 'col3'},
+            column: {id: '2', name: 'col3'},
             transformation: {
                 stepId: '8876fb498e3625ab53',
                 name: 'textclustering',

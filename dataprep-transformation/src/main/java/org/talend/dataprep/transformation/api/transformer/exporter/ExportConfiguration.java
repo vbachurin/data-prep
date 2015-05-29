@@ -1,13 +1,14 @@
 package org.talend.dataprep.transformation.api.transformer.exporter;
 
-import org.talend.dataprep.api.type.ExportType;
-
 import java.util.HashMap;
+
+import org.talend.dataprep.api.type.ExportType;
 
 /**
  * Export configuration. It holds the parameters that configures the wanted export
  */
 public class ExportConfiguration {
+
     /**
      * The export format {@link org.talend.dataprep.api.type.ExportType}
      */
@@ -21,12 +22,11 @@ public class ExportConfiguration {
     /**
      * The arguments in HashMap
      */
-    private final HashMap<String,Object> arguments ;
-
-
+    private final HashMap<String, Object> arguments;
 
     /**
      * The constructor
+     * 
      * @param format The export type.
      * @param actions The actions in JSON string format.
      * @param arguments Arguments for the Exporter
@@ -39,6 +39,7 @@ public class ExportConfiguration {
 
     /**
      * Create an ExportConfiguration builder
+     * 
      * @return The builder
      */
     public static Builder builder() {
@@ -49,14 +50,19 @@ public class ExportConfiguration {
         return format;
     }
 
-    public String getActions() { return actions; }
+    public String getActions() {
+        return actions;
+    }
 
-    public HashMap<String,Object> getArguments() { return arguments; }
+    public HashMap<String, Object> getArguments() {
+        return arguments;
+    }
 
     /**
      * Export configuration builder
      */
     public static class Builder {
+
         /**
          * The export format {@link org.talend.dataprep.api.type.ExportType}
          */
@@ -70,10 +76,11 @@ public class ExportConfiguration {
         /**
          * The actions in HashMap
          */
-        protected HashMap<String,Object> arguments;
+        protected HashMap<String, Object> arguments;
 
         /**
          * Builder DSL for format setter
+         * 
          * @param format The export type.
          * @return The builder
          */
@@ -84,6 +91,7 @@ public class ExportConfiguration {
 
         /**
          * Builder DSL for actions setter
+         * 
          * @param actions The actions in JSON string format.
          * @return The builder
          */
@@ -94,6 +102,7 @@ public class ExportConfiguration {
 
         /**
          * Builder DSL for arguments setter
+         * 
          * @param arguments The arguments in HashMap
          * @return The builder
          */
@@ -104,12 +113,12 @@ public class ExportConfiguration {
 
         /**
          * Create an Export Configuration
+         * 
          * @return The configuration
          */
         public ExportConfiguration build() {
             return new ExportConfiguration(format, actions, arguments);
         }
-
 
     }
 }

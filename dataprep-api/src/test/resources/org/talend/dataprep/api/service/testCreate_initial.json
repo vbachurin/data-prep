@@ -1,46 +1,52 @@
 {
   "columns": [
     {
-      "id": "id",
+      "id": "0",
+      "name": "id",
       "type": "integer"
     },
     {
-      "id": "firstname",
+      "id": "1",
+      "name": "firstname",
       "type": "string"
     },
     {
-      "id": "lastname",
+      "id": "2",
+      "name": "lastname",
       "type": "string"
     },
     {
-      "id": "age",
+      "id": "3",
+      "name": "age",
       "type": "integer"
     },
     {
-      "id": "date-of-birth",
+      "id": "4",
+      "name": "date-of-birth",
       "type": "date"
     },
     {
-      "id": "alive",
+      "id": "5",
+      "name": "alive",
       "type": "boolean"
     }
   ],
   "records": [
     {
-      "firstname": "Lennon",
-      "alive": "false",
-      "date-of-birth": "10/09/1940",
-      "id": "1",
-      "age": "40",
-      "lastname": "John"
+      "0": "1",
+      "1": "Lennon",
+      "2": "John",
+      "3": "40",
+      "4": "10/09/1940",
+      "5": "false"
     },
     {
-      "firstname": "Bowie",
-      "alive": "true",
-      "date-of-birth": "01/08/1947",
-      "id": "2",
-      "age": "67",
-      "lastname": "David"
+      "0": "2",
+      "1": "Bowie",
+      "2": "David",
+      "3": "67",
+      "4": "01/08/1947",
+      "5": "true"
     }
   ]
 }

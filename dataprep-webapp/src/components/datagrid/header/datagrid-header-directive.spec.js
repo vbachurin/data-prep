@@ -23,7 +23,8 @@ describe('Dataset column header directive', function() {
     it('should display column title, type and set quality bars width', function() {
         //given
         scope.column = {
-            'id': 'MostPopulousCity',
+            'id': '0',
+            'name': 'MostPopulousCity',
             'quality': {
                 'empty': 5,
                 'invalid': 10,
@@ -43,10 +44,11 @@ describe('Dataset column header directive', function() {
         expect(element.find('.record-nok').css('width')).toBe('12%');
     });
 
-    it('should display colum title, type and set quality bars width', function() {
+    it('should display column title, type and set quality bars width', function() {
         //given
         scope.column = {
-            'id': 'MostPopulousCity',
+            'id': '0',
+            'name': 'MostPopulousCity',
             'quality': {
                 'empty': 5,
                 'invalid': 10,

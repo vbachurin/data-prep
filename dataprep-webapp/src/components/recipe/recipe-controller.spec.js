@@ -339,14 +339,14 @@ describe('Recipe controller', function() {
         //given
         var ctrl = createController();
         var step = {
-            column: {id: 'state'},
+            column: {id: '0', name:'state'},
             transformation: {
                 stepId: 'a598bc83fc894578a8b823',
                 name: 'cut'
             },
             actionParameters: {
                 action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
+                parameters: {pattern: '.', column_id: '0', column_name: 'state'}
             }
         };
         var parameters = {pattern: '.'};
@@ -392,14 +392,14 @@ describe('Recipe controller', function() {
         //given
         var ctrl = createController();
         var step = {
-            column: {id: 'state'},
+            column: {id: '0', name:'state'},
             transformation: {
                 stepId: 'a598bc83fc894578a8b823',
                 name: 'cut'
             },
             actionParameters: {
                 action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
+                parameters: {pattern: '.', column_id:'0', column_name: 'state'}
             }
         };
         var parameters = {pattern: '.'};
@@ -420,14 +420,14 @@ describe('Recipe controller', function() {
 
         var ctrl = createController();
         var step = {
-            column: {id: 'state'},
+            column: {id: '0', name:'state'},
             transformation: {
                 stepId: 'a598bc83fc894578a8b823',
                 name: 'cut'
             },
             actionParameters: {
                 action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
+                parameters: {pattern: '.', column_id: '0', column_name: 'state'}
             }
         };
         var parameters = {pattern: '--'};
@@ -438,6 +438,6 @@ describe('Recipe controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(lastActiveStep, step, {pattern: '--', column_name: 'state'});
+        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(lastActiveStep, step, {pattern: '--', column_id: '0', column_name: 'state'});
     }));
 });

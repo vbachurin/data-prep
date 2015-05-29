@@ -27,7 +27,7 @@ public class FillWithDefaultIfEmptyBoolean extends AbstractDefaultIfEmpty {
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER };
+        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER };
     }
 
     @Override

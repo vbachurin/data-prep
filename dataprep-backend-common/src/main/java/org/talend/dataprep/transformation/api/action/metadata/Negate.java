@@ -16,7 +16,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Item;
 @Component(Negate.ACTION_BEAN_PREFIX + Negate.NEGATE_ACTION_NAME)
 public class Negate extends SingleColumnAction {
 
-    public static final String NEGATE_ACTION_NAME = "negate";                             //$NON-NLS-1$
+    public static final String NEGATE_ACTION_NAME = "negate"; //$NON-NLS-1$
 
     private Negate() {
     }
@@ -40,7 +40,7 @@ public class Negate extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
 
             if (value != null && (value.trim().equalsIgnoreCase("true") || value.trim().equalsIgnoreCase("false"))) { //$NON-NLS-1$ //$NON-NLS-2$

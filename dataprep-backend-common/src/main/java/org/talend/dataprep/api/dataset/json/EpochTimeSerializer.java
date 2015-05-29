@@ -13,6 +13,7 @@ public class EpochTimeSerializer extends JsonSerializer<Long> {
 
     @Override
     public void serialize(Long value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        jgen.writeString(Instant.ofEpochMilli(value.longValue()).atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("MM-dd-YYYY HH:mm")));
+        jgen.writeString(Instant.ofEpochMilli(value.longValue()).atZone(ZoneId.of("UTC"))
+                .format(DateTimeFormatter.ofPattern("MM-dd-YYYY HH:mm")));
     }
 }

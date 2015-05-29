@@ -109,14 +109,11 @@ public class TransformAPI extends APIService {
     @RequestMapping(value = "/api/transform/suggest/{action}/params", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
     @Timed
-    public void suggestActionParams(
-            @ApiParam(value = "Transformation name.")
-            @PathVariable("action")
-            final String action,
-            @ApiParam(value = "Suggested dynamic transformation input (preparation id or dataset id")
-            @Valid
-            final DynamicParamsInput dynamicParamsInput,
-            final HttpServletResponse response) {
+    public void suggestActionParams(@ApiParam(value = "Transformation name.")
+    @PathVariable("action")
+    final String action, @ApiParam(value = "Suggested dynamic transformation input (preparation id or dataset id")
+    @Valid
+    final DynamicParamsInput dynamicParamsInput, final HttpServletResponse response) {
 
         try {
             // get preparation/dataset content
