@@ -25,6 +25,7 @@ public class CsvExporter implements Transformer {
     private TypeTransformerSelector typeStateSelector;
 
     private final ParsedActions actions;
+
     private final ExportConfiguration exportConfiguration;
 
     public CsvExporter(final ParsedActions actions, final ExportConfiguration configuration) {
@@ -39,8 +40,7 @@ public class CsvExporter implements Transformer {
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
                     .output(new CsvWriter(output, (char)exportConfiguration.getArguments().get("csvSeparator")))
                     .actions(DataSetRow.class, actions.getRowTransformer())
-                    .actions(RowMetadata.class, actions.getMetadataTransformer())
-                    .build();
+                    .actions(RowMetadata.class, actions.getMetadataTransformer()).build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);

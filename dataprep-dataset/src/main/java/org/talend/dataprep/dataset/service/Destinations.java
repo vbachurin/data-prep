@@ -34,7 +34,6 @@ public interface Destinations {
      */
     String QUALITY_ANALYSIS = "org.talend.tdp.dataset.content.quality"; //$NON-NLS-1
 
-
     /**
      * JMS Destination for format analysis of a data set.
      *

@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -55,7 +55,8 @@ public class RoundTest {
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
-        consumer = roundAction.create(node.get("actions").get(0).get("parameters").getFields());
+        Map<String, String> parameters = roundAction.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
+        consumer = roundAction.create(parameters);
     }
 
     public void testCommon(String input, String expected) {

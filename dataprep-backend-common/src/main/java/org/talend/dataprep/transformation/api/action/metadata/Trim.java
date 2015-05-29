@@ -15,7 +15,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Item;
 @Component(Trim.ACTION_BEAN_PREFIX + Trim.TRIM_ACTION_NAME)
 public class Trim extends SingleColumnAction {
 
-    public static final String TRIM_ACTION_NAME = "trim";                             //$NON-NLS-1$
+    public static final String TRIM_ACTION_NAME = "trim"; //$NON-NLS-1$
 
     private Trim() {
     }
@@ -39,7 +39,7 @@ public class Trim extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parsedParameters.get(COLUMN_ID);
             String value = row.get(columnName);
 
             if (value != null) {

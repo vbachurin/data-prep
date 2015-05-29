@@ -3,6 +3,7 @@ package org.talend.dataprep.schema.io;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +39,11 @@ public class CSVSchemaParser implements SchemaParser {
                         .sheetContents( sheetContents ).build();
             }
             // By default, consider all columns as Strings (to be refined by deeper analysis).
-            for (String column : columns) {
+            for (int i = 0; i < columns.length; i++) {
                 sheetContents.stream().filter( sheetContent -> META_KEY.equals( sheetContent.getName()) )
-                    .findFirst() //
-                    .get().getColumnMetadatas() //
-                    .add( column().name( column ).type( Type.STRING ).build() );
+                        .findFirst() //
+                        .get().getColumnMetadatas() //
+                        .add(column().id(String.valueOf(i)).name(columns[i]).type(Type.STRING).build() );
             }
 
             // Best guess (and naive) on data types

@@ -129,7 +129,8 @@ public class QualityAnalysis {
                         }
                         // If there are columns remaining, warn for missing information
                         while (iterator.hasNext()) {
-                            LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(), dataSetId);
+                            LOGGER.warn("No quality information returned for {} in data set #{}.", iterator.next().getId(),
+                                    dataSetId);
                         }
                         // ... all quality is now analyzed, mark it so.
                         metadata.getLifecycle().qualityAnalyzed(true);

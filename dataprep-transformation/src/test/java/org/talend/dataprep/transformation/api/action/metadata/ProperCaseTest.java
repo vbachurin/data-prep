@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,7 +47,7 @@ public class ProperCaseTest {
     private Consumer<DataSetRow> consumer;
 
     @Autowired
-    private ProperCase           action;
+    private ProperCase action;
 
     @Before
     public void setUp() throws IOException {
@@ -55,7 +55,8 @@ public class ProperCaseTest {
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
-        consumer = action.create(node.get("actions").get(0).get("parameters").getFields());
+        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
+        consumer = action.create(parameters);
     }
 
     @Test

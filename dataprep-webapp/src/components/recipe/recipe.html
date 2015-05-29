@@ -1,19 +1,25 @@
 <ul class="talend-accordion">
-    <li ng-repeat="step in recipeCtrl.recipe track by $index" ng-class="{'inactive': step.inactive}">
+    <li ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId" ng-class="{'inactive': step.inactive}">
         <div class="talend-accordion-trigger step-description"
+             ng-click="recipeCtrl.showModal[$index] = !!step.transformation.cluster"
              on-open="recipeCtrl.resetParams(step)">
 
             {{$index + 1}}.
             <span class="recipe-description">{{step.transformation.label}}</span>
             {{::'RECIPE_ITEM_ON_COL' | translate}}
             <br/>
-            <span class="recipe-description recipe-column-name">{{step.column.id}}</span>
+            <span class="recipe-description recipe-column-name">{{step.column.name}}</span>
 
             <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="recipeCtrl.recipe.length === 1" type="onlyone" ></recipe-bullet>
             <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="($index === 0 && recipeCtrl.recipe.length !== 1)" type="startChain" ></recipe-bullet>
             <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="($index > 0 && $index < recipeCtrl.recipe.length-1)" type="middleChain" ></recipe-bullet>
             <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="($index === recipeCtrl.recipe.length-1 && recipeCtrl.recipe.length !== 1)" type="endChain" ></recipe-bullet>
         </div>
+        <div class="step-trigger"
+           ng-class="{downlight: step.downlight, highlight: step.highlight}"
+           ng-click="recipeCtrl.toggleStep(step)"
+           ng-mouseleave="recipeCtrl.stepHoverEnd()"
+           ng-mouseenter="recipeCtrl.stepHoverStart($index)"></div>
 
         <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>
@@ -23,5 +29,18 @@
                                   on-submit-hover-off="recipeCtrl.stepHoverEnd()"></transform-params>
             </li>
         </ul>
+
+        <talend-modal ng-if="step.transformation.cluster"
+                      fullscreen="false"
+                      state="recipeCtrl.showModal[$index]"
+                      close-button="true">
+
+            <div class="modal-title">{{ step.transformation.label }}</div>
+            <div class="modal-subtitle">{{ step.transformation.description }}</div>
+
+            <transform-params transformation="step.transformation"
+                              on-submit="recipeCtrl.stepUpdateClosure(step)(params)"></transform-params>
+
+        </talend-modal>
     </li>
 </ul>

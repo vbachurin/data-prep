@@ -4,7 +4,9 @@
     /**
      * @ngdoc service
      * @name data-prep.services.transformation.service:TransformationRestService
-     * @description Transformation service. This service provide the entry point to get transformation menu from REST api
+     * @description Transformation REST service. This service provide the entry point to transformation REST api
+     * <b style="color: red;">WARNING : do NOT use this service directly.
+     * {@link data-prep.services.transformation.service:TransformationService TransformationService} must be the only entry point for transformation</b>
      */
     function TransformationRestService($http, RestURLs) {
 
@@ -29,11 +31,13 @@
          * @param {string} columnId The column Id
          * @param {string} datasetId The datasetId
          * @param {string} preparationId The preparation Id
+         * @param {string} stepId The step Id
          * @description Fetch the transformations dynamic params
          * @returns {HttpPromise} The GET promise
          */
-        this.getDynamicParameters = function(action, columnId, datasetId, preparationId) {
+        this.getDynamicParameters = function(action, columnId, datasetId, preparationId, stepId) {
             var queryParams = preparationId ? '?preparationId=' + encodeURIComponent(preparationId) : '?datasetId=' + encodeURIComponent(datasetId);
+            queryParams += stepId ? '&stepId=' + encodeURIComponent(stepId) : '';
             queryParams+= '&columnId=' + encodeURIComponent(columnId);
 
             return $http.get(RestURLs.transformUrl + '/suggest/' + action + '/params' + queryParams);

@@ -226,8 +226,11 @@ public class DataSetServiceTests {
 
     @Test
     public void test1() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
-                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv"))) //
+                .queryParam("Content-Type", "text/csv") //
+                .when() //
+                .post("/datasets") //
+                .asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
@@ -362,8 +365,15 @@ public class DataSetServiceTests {
 
     @Test
     public void getMetadata() throws Exception {
-        DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id( "1234" );
-        builder.row(ColumnMetadata.Builder.column().empty(0).invalid(0).valid(0).name("id").type(Type.STRING))//
+        DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id("1234");
+        builder.row(ColumnMetadata.Builder//
+                .column()//
+                .id("1234")//
+                .name("id")//
+                .empty(0)//
+                .invalid(0)//
+                .valid(0)//
+                .type(Type.STRING))//
                 .created(0)//
                 .name("name")//
                 .author("author")//
@@ -444,7 +454,7 @@ public class DataSetServiceTests {
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
-        assertEquals(Certification. NONE, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode( HttpStatus.OK.value() );
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());

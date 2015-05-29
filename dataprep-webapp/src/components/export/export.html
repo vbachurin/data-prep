@@ -18,11 +18,12 @@
               state="exportCtrl.showExport"
               close-button="true">
 
-    <p>{{ ::'CHOOSE_SEPARATOR' | translate }}</p>
+<p>{{ ::'CHOOSE_SEPARATOR' | translate }}</p>
 
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="';'" />{{ :: 'SEPARATOR_SEMI_COLON' | translate }} (;)&emsp;
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="'	'" />{{ :: 'SEPARATOR_TAB' | translate }} (&emsp;)&emsp;
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="','" />{{ :: 'SEPARATOR_COMMA' | translate }} (,)&emsp;
+    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="';'"/>{{ :: 'SEPARATOR_SEMI_COLON' | translate }}
+    (;)&emsp;
+    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="'	'"/>{{ :: 'SEPARATOR_TAB' | translate }} (&emsp;)&emsp;
+    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="','"/>{{ :: 'SEPARATOR_COMMA' | translate }} (,)&emsp;
 
     <div class="modal-buttons">
         <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>

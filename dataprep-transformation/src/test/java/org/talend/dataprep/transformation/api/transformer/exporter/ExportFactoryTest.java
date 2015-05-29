@@ -56,7 +56,8 @@ public class ExportFactoryTest {
                 .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json")))
                 .build();
         final Transformer exporter = factory.getExporter(configuration);
-        final String expectedCsv = IOUtils.toString(ExportFactory.class.getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
+        final String expectedCsv = IOUtils.toString(ExportFactory.class
+                .getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
 
         final InputStream inputStream = ExportFactory.class.getResourceAsStream("export_dataset.json");
         final OutputStream outputStream = new ByteArrayOutputStream();

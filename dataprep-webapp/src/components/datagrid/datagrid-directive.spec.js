@@ -192,7 +192,7 @@ describe('Datagrid directive', function () {
         ]
     };
 
-    var deleteData = {
+    var deletedRowData = {
         'columns': [
             {
                 'id': 'id',
@@ -228,6 +228,90 @@ describe('Datagrid directive', function () {
                 'id': '1',
                 'Postal': '',
                 'State': 'My Alabama'
+            }
+        ]
+    };
+
+    var deletedColumnData = {
+        'preview' : true,
+        'columns': [
+            {
+                'id': 'id',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'number'
+            },
+            {
+                'id': 'Postal',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string',
+                '__tdpColumnDiff': 'delete'
+            },
+            {
+                'id': 'State',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                'id': '1',
+                'Postal': '',
+                'State': 'My Alabama',
+                '__tdpDiff': {'Postal': 'delete'}
+            }
+        ]
+    };
+
+    var newColumnData = {
+        'preview' : true,
+        'columns': [
+            {
+                'id': 'id',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'number'
+            },
+            {
+                'id': 'Postal',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string',
+                '__tdpColumnDiff': 'new'
+            },
+            {
+                'id': 'State',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
+            }
+        ],
+        'records': [
+            {
+                'id': '1',
+                'Postal': '90210',
+                'State': 'My Alabama',
+                '__tdpDiff': {'Postal': 'new'}
             }
         ]
     };
@@ -331,6 +415,9 @@ describe('Datagrid directive', function () {
     function GridGetter(element) {
         this.row = function (index) {
             return new GridGetter(element.find('.slick-row').eq(index));
+        };
+        this.column = function (index) {
+            return new GridGetter(element.find('.grid-header').eq(index));
         };
         this.cell = function (index) {
             return new GridGetter(element.find('.slick-cell').eq(index));
@@ -584,7 +671,7 @@ describe('Datagrid directive', function () {
 
     it('should add a "delete cell" class and fill content with a space if empty', inject(function (FilterService, DatagridService) {
         //when
-        DatagridService.setDataset(metadata, deleteData);
+        DatagridService.setDataset(metadata, deletedRowData);
         scope.$digest();
 
         //then
@@ -593,6 +680,59 @@ describe('Datagrid directive', function () {
         expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
         expect(grid.row(0).cell(1).element().find('> div').eq(0).text()).toBe(' ');
         expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
+    }));
+
+    it('should add a "delete cell" when column is deleted', inject(function (FilterService, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, deletedColumnData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(false);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).text()).toBe(' ');
+        expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellDeletedValue')).toBe(false);
+    }));
+
+    it('should add a "delete column" when column is deleted', inject(function (FilterService, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, deletedColumnData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.column(0).element().hasClass('deletedColumn')).toBe(false);
+        expect(grid.column(1).element().hasClass('deletedColumn')).toBe(true);
+        expect(grid.column(2).element().hasClass('deletedColumn')).toBe(false);
+
+    }));
+
+
+    it('should add a "new cell" when column is new', inject(function (FilterService, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, newColumnData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.row(0).cell(0).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(false);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(true);
+        expect(grid.row(0).cell(1).element().find('> div').eq(0).text()).toBe('90210');
+        expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellNewValue')).toBe(false);
+    }));
+
+    it('should add a "new column" when column is new', inject(function (FilterService, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, newColumnData);
+        scope.$digest();
+
+        //then
+        var grid = new GridGetter(element);
+        expect(grid.column(0).element().hasClass('newColumn')).toBe(false);
+        expect(grid.column(1).element().hasClass('newColumn')).toBe(true);
+        expect(grid.column(2).element().hasClass('newColumn')).toBe(false);
+
     }));
 
     it('should add an "update cell" class', inject(function (FilterService, DatagridService) {

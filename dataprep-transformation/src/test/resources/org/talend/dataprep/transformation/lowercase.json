@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "action": "lowercase",
+      "parameters": {
+        "column_id": "entity"
+      }
+    }
+  ]
+}

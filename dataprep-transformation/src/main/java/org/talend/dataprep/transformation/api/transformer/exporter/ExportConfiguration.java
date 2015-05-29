@@ -8,6 +8,7 @@ import java.util.HashMap;
  * Export configuration. It holds the parameters that configures the wanted export
  */
 public class ExportConfiguration {
+
     /**
      * The export format {@link org.talend.dataprep.api.type.ExportType}
      */
@@ -27,6 +28,7 @@ public class ExportConfiguration {
 
     /**
      * The constructor
+     * 
      * @param format The export type.
      * @param actions The actions in JSON string format.
      * @param arguments Arguments for the Exporter
@@ -39,6 +41,7 @@ public class ExportConfiguration {
 
     /**
      * Create an ExportConfiguration builder
+     * 
      * @return The builder
      */
     public static Builder builder() {
@@ -57,6 +60,7 @@ public class ExportConfiguration {
      * Export configuration builder
      */
     public static class Builder {
+
         /**
          * The export format {@link org.talend.dataprep.api.type.ExportType}
          */
@@ -74,6 +78,7 @@ public class ExportConfiguration {
 
         /**
          * Builder DSL for format setter
+         * 
          * @param format The export type.
          * @return The builder
          */
@@ -84,6 +89,7 @@ public class ExportConfiguration {
 
         /**
          * Builder DSL for actions setter
+         * 
          * @param actions The actions in JSON string format.
          * @return The builder
          */
@@ -104,6 +110,7 @@ public class ExportConfiguration {
 
         /**
          * Create an Export Configuration
+         * 
          * @return The configuration
          */
         public ExportConfiguration build() {

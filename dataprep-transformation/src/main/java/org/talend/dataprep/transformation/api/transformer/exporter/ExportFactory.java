@@ -31,7 +31,8 @@ public class ExportFactory {
         throw new UnsupportedOperationException("Unknown export type : " + configuration.getFormat());
     }
 
-    public Transformer get(final Class<? extends Transformer> transformerClass, final ParsedActions actionConsumer, final ExportConfiguration configuration) {
+    public Transformer get(final Class<? extends Transformer> transformerClass, final ParsedActions actionConsumer,
+            final ExportConfiguration configuration) {
         return context.getBean(transformerClass, actionConsumer, configuration);
     }
 }

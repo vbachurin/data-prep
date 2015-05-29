@@ -13,11 +13,9 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -75,53 +73,42 @@ public class RenameTest {
     }
 
     /**
-     * @see Rename#create(Map)
-     */
-    @Test
-    public void should_rename_column_in_row() {
-        Map<String, String> values = new HashMap<>();
-        values.put("first name", "Peter");
-        DataSetRow row = new DataSetRow(values);
-
-        rowClosure.accept(row);
-        assertNull(row.get("first name"));
-        assertEquals("Peter", row.get("NAME_FIRST"));
-    }
-
-    /**
      * @see Rename#createMetadataClosure(Map)
      */
     @Test
     public void should_update_metadata() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        //@formatter:off
-        ColumnMetadata metadata = ColumnMetadata.Builder
-                .column()
-                .name("first name")
-                .type(Type.STRING)
-                .headerSize(102)
-                .empty(0)
-                .invalid(2)
-                .valid(5)
+        ColumnMetadata metadata = ColumnMetadata.Builder //
+                .column() //
+                .id("1") //
+                .name("first name") //
+                .type(Type.STRING) //
+                .headerSize(102) //
+                .empty(0) //
+                .invalid(2) //
+                .valid(5) //
                 .build();
-        //@formatter:on
         input.add(metadata);
         RowMetadata rowMetadata = new RowMetadata(input);
-
-        Map<String, String> values = new HashMap<>();
-        values.put("first name", "Peter");
-        DataSetRow row = new DataSetRow(values);
 
         metadataClosure.accept(rowMetadata);
 
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
+        ColumnMetadata renamedMetadata = ColumnMetadata.Builder.column() //
+                .id("1") //
+                .name("NAME_FIRST") //
+                .type(Type.STRING) //
+                .headerSize(102) //
+                .empty(0) //
+                .invalid(2) //
+                .valid(5) //
+                .build();
         List<ColumnMetadata> expected = new ArrayList<>();
-        ColumnMetadata renamedMetadata = ColumnMetadata.Builder.column().name("NAME_FIRST").type(Type.STRING).headerSize(102)
-                .empty(0).invalid(2).valid(5).build();
         expected.add(renamedMetadata);
 
         assertEquals(expected, actual);
     }
+
 }
