@@ -1,8 +1,8 @@
 package org.talend.dataprep.transformation.api.transformer.exporter;
 
-import org.talend.dataprep.api.type.ExportType;
-
 import java.util.HashMap;
+
+import org.talend.dataprep.api.type.ExportType;
 
 /**
  * Export configuration. It holds the parameters that configures the wanted export
@@ -22,9 +22,7 @@ public class ExportConfiguration {
     /**
      * The arguments in HashMap
      */
-    private final HashMap<String,Object> arguments ;
-
-
+    private final HashMap<String, Object> arguments;
 
     /**
      * The constructor
@@ -52,9 +50,13 @@ public class ExportConfiguration {
         return format;
     }
 
-    public String getActions() { return actions; }
+    public String getActions() {
+        return actions;
+    }
 
-    public HashMap<String,Object> getArguments() { return arguments; }
+    public HashMap<String, Object> getArguments() {
+        return arguments;
+    }
 
     /**
      * Export configuration builder
@@ -74,7 +76,7 @@ public class ExportConfiguration {
         /**
          * The actions in HashMap
          */
-        protected HashMap<String,Object> arguments;
+        protected HashMap<String, Object> arguments;
 
         /**
          * Builder DSL for format setter
@@ -100,6 +102,7 @@ public class ExportConfiguration {
 
         /**
          * Builder DSL for arguments setter
+         * 
          * @param arguments The arguments in HashMap
          * @return The builder
          */
@@ -116,7 +119,6 @@ public class ExportConfiguration {
         public ExportConfiguration build() {
             return new ExportConfiguration(format, actions, arguments);
         }
-
 
     }
 }

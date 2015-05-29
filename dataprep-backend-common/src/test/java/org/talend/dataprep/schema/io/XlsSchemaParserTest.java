@@ -11,6 +11,8 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 /**
  * Unit test for the XLSSchemaParser class.
@@ -30,7 +32,7 @@ public class XlsSchemaParserTest {
     }
 
     @Test
-    public void should_parse_csv() throws IOException {
+    public void should_parse_xls() throws IOException {
         String fileName = "org/talend/dataprep/schema/simple.xls";
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
 
@@ -40,7 +42,8 @@ public class XlsSchemaParserTest {
             expected.add(getColumnMetadata("0", "Film"));
             expected.add(getColumnMetadata("1", "Producer"));
 
-            List<ColumnMetadata> actual = parser.parse(inputStream, datasetMetadata);
+            SchemaParserResult result = parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
+            List<ColumnMetadata> actual = result.getSheetContents().get(0).getColumnMetadatas();
 
             Assert.assertEquals(expected, actual);
         }

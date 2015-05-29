@@ -38,7 +38,7 @@ public class CsvExporter implements Transformer {
         try {
 
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
-                    .output(new CsvWriter(output, (char)exportConfiguration.getArguments().get("csvSeparator")))
+                    .output(new CsvWriter(output, (char) exportConfiguration.getArguments().get("csvSeparator")))
                     .actions(DataSetRow.class, actions.getRowTransformer())
                     .actions(RowMetadata.class, actions.getMetadataTransformer()).build();
             typeStateSelector.process(configuration);

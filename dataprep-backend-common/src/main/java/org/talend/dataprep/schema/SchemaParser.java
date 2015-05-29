@@ -30,9 +30,10 @@ public interface SchemaParser {
 
         DataSetMetadata metadata;
 
-        /*
+        /**
+         * Constructor.
+         *
          * @param content The data set content. It should never be <code>null</code>.
-         * 
          * @param metadata The data set metadata, to be used to retrieve parameters needed to understand format in
          * <code>content</code>.
          */
@@ -41,13 +42,11 @@ public interface SchemaParser {
             this.metadata = metadata;
         }
 
-        public InputStream getContent()
-        {
+        public InputStream getContent() {
             return content;
         }
 
-        public DataSetMetadata getMetadata()
-        {
+        public DataSetMetadata getMetadata() {
             return metadata;
         }
     }

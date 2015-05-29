@@ -36,7 +36,6 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
 
-
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
@@ -92,15 +91,13 @@ public class TransformationService {
 
         try {
             final String decodedActions = new String(Base64.getDecoder().decode(actions));
-            final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator)).charAt(0) : au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
-            HashMap<String,Object> arguments = new HashMap<>();
-            arguments.put("csvSeparator",decodedCsvSeparator);
+            final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator))
+                    .charAt(0) : au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
+            HashMap<String, Object> arguments = new HashMap<>();
+            arguments.put("csvSeparator", decodedCsvSeparator);
 
-            final ExportConfiguration configuration = ExportConfiguration.builder()
-                    .args(arguments)
-                    .format(format)
-                    .actions(decodedActions)
-                    .build();
+            final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(format)
+                    .actions(decodedActions).build();
 
             response.setContentType(format.getMimeType());
 
@@ -115,6 +112,7 @@ public class TransformationService {
             throw e;
         }
     }
+
     @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data diff between the old and the new transformation actions")
     @VolumeMetered
