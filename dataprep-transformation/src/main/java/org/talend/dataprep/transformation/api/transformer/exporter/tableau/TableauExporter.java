@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-@Component
+@Component("transformer#tableau")
 @Scope("request")
 public class TableauExporter implements Transformer {
 
