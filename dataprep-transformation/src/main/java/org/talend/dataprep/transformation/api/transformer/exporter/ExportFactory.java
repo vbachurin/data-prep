@@ -1,13 +1,15 @@
 package org.talend.dataprep.transformation.api.transformer.exporter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExporter;
+import org.talend.dataprep.transformation.api.transformer.exporter.xls.XlsExporter;
 import org.talend.dataprep.transformation.api.transformer.exporter.tableau.TableauExporter;
+
 
 @Component
 public class ExportFactory {
@@ -16,7 +18,7 @@ public class ExportFactory {
     private ActionParser parser;
 
     @Autowired
-    private WebApplicationContext context;
+    private ApplicationContext context;
 
     public Transformer getExporter(final ExportConfiguration configuration) {
         final ParsedActions actionConsumer = parser.parse(configuration.getActions());
@@ -25,7 +27,7 @@ public class ExportFactory {
         case CSV:
             return get(CsvExporter.class, actionConsumer, configuration);
         case XLS:
-            throw new UnsupportedOperationException(configuration.getFormat() + "export not implemented yet");
+            return get(XlsExporter.class, actionConsumer, configuration);
         case TABLEAU:
             return get(TableauExporter.class, actionConsumer, configuration);
         }

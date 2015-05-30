@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public enum Type {
+
     ANY("any"), //$NON-NLS-1$
     STRING("string", ANY), //$NON-NLS-1$
     CHAR("char", STRING), //$NON-NLS-1$

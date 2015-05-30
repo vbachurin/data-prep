@@ -96,4 +96,11 @@ public class RowMetadata {
         columnMetadatas.sort((col1, col2) -> col1.getId().compareTo(col2.getId()));
     }
 
+    @Override
+    public String toString()
+    {
+        return "RowMetadata{" +
+            "columnMetadatas=" + columnMetadatas +
+            '}';
+    }
 }
