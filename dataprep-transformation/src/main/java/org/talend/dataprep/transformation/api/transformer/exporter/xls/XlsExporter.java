@@ -11,17 +11,20 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
+import org.talend.dataprep.transformation.api.transformer.exporter.Exporter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 @Component("transformer#xls")
 @Scope("request")
-public class XlsExporter implements Transformer {
+public class XlsExporter implements Transformer, Exporter
+{
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -54,4 +57,9 @@ public class XlsExporter implements Transformer {
 
     }
 
+    @Override
+    public ExportType getExportType()
+    {
+        return ExportType.XLS;
+    }
 }
