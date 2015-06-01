@@ -27,5 +27,5 @@ echo 'after: '
 sed 's/[.]constant/\n/g' $JS_FILE | grep '(.apiUrl'
 
 # launch apache service (foreground to prevent command to finish, and container to stop)
-/usr/sbin/apache2ctl -DFOREGROUND
+/run-apache.sh
 
