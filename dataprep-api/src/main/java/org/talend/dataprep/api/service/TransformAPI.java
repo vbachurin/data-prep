@@ -119,7 +119,7 @@ public class TransformAPI extends APIService {
             // get preparation/dataset content
             HystrixCommand<InputStream> inputData;
             if (isNotBlank(dynamicParamsInput.getPreparationId())) {
-                inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), "head");
+                inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), dynamicParamsInput.getStepId());
             } else {
                 inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), false, true);
             }

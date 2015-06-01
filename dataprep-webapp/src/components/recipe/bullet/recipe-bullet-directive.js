@@ -16,7 +16,6 @@
 			require: '^recipe',
 			scope: {
 				type: '@',
-				stepIndex: '=',
 				step: '='
 			},
 			templateNamespace: 'svg',
@@ -31,17 +30,9 @@
 				var recipeBulletCtrl    = scope.recipeBulletCtrl;
 				var bulletsToBeChanged  = [];
 
-				bulletCircleElement.onmouseenter = function () {
-					recipeCtrl.stepHoverStart(recipeBulletCtrl.currentStepIndex);
-				};
-
-				/** onmouseleave **/
-				bulletCircleElement.onmouseleave = function () {
-					$timeout(recipeCtrl.stepHoverEnd);
-				};
-
 				/** onmouseenter **/
 				bulletElement.onmouseenter = function () {
+					recipeCtrl.stepHoverStart(recipeBulletCtrl.currentStepIndex);
 					allBulletsSvgs = angular.element('.all-svg-cls');
 					if (!recipeBulletCtrl.step.inactive) {
 						bulletsToBeChanged = recipeBulletCtrl.getBulletsTochange(allBulletsSvgs, recipeBulletCtrl.step);
@@ -58,6 +49,7 @@
 
 				/** onmouseleave **/
 				bulletElement.onmouseleave = function () {
+					recipeCtrl.stepHoverEnd();
 					_.each(bulletsToBeChanged, function (svg) {
 						svg.children[1].setAttribute('class', '');
 					});

@@ -39,7 +39,7 @@ public class DataSetRow implements Cloneable {
      */
     public DataSetRow(Map<String, String> values) {
         this();
-        this.values.putAll(values);
+        this.values.putAll( values );
     }
 
     /**
@@ -206,4 +206,13 @@ public class DataSetRow implements Cloneable {
         return Objects.hash(deleted, values);
     }
 
+    @Override
+    public String toString()
+    {
+        return "DataSetRow{" +
+            "deleted=" + deleted +
+            ", oldValue=" + oldValue +
+            ", values=" + values +
+            '}';
+    }
 }

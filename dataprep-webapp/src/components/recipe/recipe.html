@@ -11,10 +11,10 @@
             <br/>
             <span class="recipe-description recipe-column-name">{{step.column.name}}</span>
 
-            <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="recipeCtrl.recipe.length === 1" type="onlyone" ></recipe-bullet>
-            <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="($index === 0 && recipeCtrl.recipe.length !== 1)" type="startChain" ></recipe-bullet>
-            <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="($index > 0 && $index < recipeCtrl.recipe.length-1)" type="middleChain" ></recipe-bullet>
-            <recipe-bullet class="step-trigger2" step="step" step-index="$index" ng-if="($index === recipeCtrl.recipe.length-1 && recipeCtrl.recipe.length !== 1)" type="endChain" ></recipe-bullet>
+            <recipe-bullet class="step-trigger2" step="step" ng-if="recipeCtrl.recipe.length === 1" type="onlyone" ></recipe-bullet>
+            <recipe-bullet class="step-trigger2" step="step" ng-if="($index === 0 && recipeCtrl.recipe.length !== 1)" type="startChain" ></recipe-bullet>
+            <recipe-bullet class="step-trigger2" step="step" ng-if="($index > 0 && $index < recipeCtrl.recipe.length-1)" type="middleChain" ></recipe-bullet>
+            <recipe-bullet class="step-trigger2" step="step" ng-if="($index === recipeCtrl.recipe.length-1 && recipeCtrl.recipe.length !== 1)" type="endChain" ></recipe-bullet>
         </div>
 
         <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
