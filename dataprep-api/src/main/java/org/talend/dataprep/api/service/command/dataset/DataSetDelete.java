@@ -82,7 +82,7 @@ public class DataSetDelete extends DataPrepCommand<Void> {
     /**
      * Actual method that deletes the DataSet.
      * 
-     * @throws Exception if an error occurs.
+     * @throws IOException if an error occurs.
      */
     private Void doDeleteDataSet() throws IOException {
         HttpDelete contentRetrieval = new HttpDelete(datasetServiceUrl + "/datasets/" + dataSetId);
