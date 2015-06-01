@@ -110,7 +110,7 @@ public class TransformationService {
             final String decodedActions = new String(Base64.getDecoder().decode(actions));
             final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator))
                     .charAt(0) : au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
-            HashMap<String, Object> arguments = new HashMap<>();
+            Map<String, Object> arguments = new HashMap<>();
             arguments.put("csvSeparator", decodedCsvSeparator);
 
             final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(format)

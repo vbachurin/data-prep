@@ -1,10 +1,11 @@
 package org.talend.dataprep.api.type;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public enum Type {
+public enum Type implements Serializable {
 
     ANY("any"), //$NON-NLS-1$
     STRING("string", ANY), //$NON-NLS-1$
@@ -55,16 +56,16 @@ public enum Type {
     }
 
     /**
-     * Returns the type hierarchy starting from this type. Calling this method on {@link Type#ANY} returns all
-     * supported types.
+     * Returns the type hierarchy starting from this type. Calling this method on {@link Type#ANY} returns all supported
+     * types.
      * 
      * @return The list of types assignable from this type, including this type (i.e. . Returned list is never empty
      * since it at least <code>this</code>.
      */
     public List<Type> list() {
         List<Type> list = new LinkedList<>();
-        list.add( this );
-        subTypes.forEach( type -> list.addAll(type.list() ));
+        list.add(this);
+        subTypes.forEach(type -> list.addAll(type.list()));
         return list;
     }
 
@@ -95,19 +96,19 @@ public enum Type {
         }
         List<Type> types = ANY.list();
 
-        Optional<Type> type = types.stream().filter( type1 -> type1.getName().equalsIgnoreCase(name) ).findFirst();
+        Optional<Type> type = types.stream().filter(type1 -> type1.getName().equalsIgnoreCase(name)).findFirst();
 
-        if (type.isPresent()){
+        if (type.isPresent()) {
             return type.get();
         }
 
         // default type to String
         return STRING;
-        //throw new IllegalArgumentException("Type '" + name + "' does not exist.");
     }
 
     /**
      * Allows to test existence of a type by name.
+     * 
      * @param name A non-null type name.
      * @return <code>true</code> if type exists, <code>false</code> otherwise.
      * @see #get(String)
@@ -117,7 +118,7 @@ public enum Type {
             throw new IllegalArgumentException("Name cannot be null.");
         }
         List<Type> types = ANY.list();
-        Optional<Type> type = types.stream().filter( type1 -> type1.getName().equalsIgnoreCase(name) ).findFirst();
+        Optional<Type> type = types.stream().filter(type1 -> type1.getName().equalsIgnoreCase(name)).findFirst();
 
         return type.isPresent();
     }

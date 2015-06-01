@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class TDPExceptionController {
 
     /** This class' logger. */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(TDPExceptionController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TDPExceptionController.class);
 
     /**
      * Send the TDPException into the http response.

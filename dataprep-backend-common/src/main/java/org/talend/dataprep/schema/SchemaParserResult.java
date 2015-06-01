@@ -1,7 +1,6 @@
 package org.talend.dataprep.schema;
 
 import java.util.List;
-import java.util.SortedMap;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 

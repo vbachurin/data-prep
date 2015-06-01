@@ -63,7 +63,7 @@ public class XlsUtils {
             return new XSSFWorkbook(new ByteArrayInputStream(bytes));
 
         } catch (Exception e) {
-            LOGGER.debug("{} so try XSSFWorkbook", e.getClass());
+            LOGGER.debug("{} so try XSSFWorkbook", e);
             return new HSSFWorkbook(new ByteArrayInputStream(bytes));
         }
     }

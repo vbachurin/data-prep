@@ -2,11 +2,7 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -78,8 +74,8 @@ public class FormatAnalysis {
                     }
                     // Select best format guess
                     List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
-                    Collections.sort(orderedGuess, (g1, g2) -> ((int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess()
-                            .getConfidence())));
+                    Collections.sort(orderedGuess, (g1, g2) -> (int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess()
+                            .getConfidence()));
 
                     FormatGuesser.Result bestGuessResult = orderedGuess.get(0);
                     FormatGuess bestGuess = bestGuessResult.getFormatGuess();
@@ -101,8 +97,7 @@ public class FormatAnalysis {
                             return;
                         }
                         metadata.setDraft(false);
-                        metadata.getRow().setColumns(
-                                schemaParserResult.getSheetContents().get( 0 ).getColumnMetadatas());
+                        metadata.getRow().setColumns(schemaParserResult.getSheetContents().get(0).getColumnMetadatas());
 
                     } catch (IOException e) {
                         throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);

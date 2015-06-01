@@ -1,6 +1,5 @@
 package org.talend.dataprep.exception;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,17 +31,6 @@ public enum CommonErrorCodes implements ErrorCode {
     }
 
     /**
-     * default constructor.
-     * 
-     * @param httpStatus the http status to use.
-     * @param contextEntries expected context entries.
-     */
-    CommonErrorCodes(int httpStatus, String... contextEntries) {
-        this.httpStatus = httpStatus;
-        this.expectedContextEntries = Arrays.asList(contextEntries);
-    }
-
-    /**
      * @return the product.
      */
     @Override
@@ -69,6 +57,7 @@ public enum CommonErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
+    @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }
