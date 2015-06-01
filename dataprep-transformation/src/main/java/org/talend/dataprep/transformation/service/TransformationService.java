@@ -1,18 +1,30 @@
 package org.talend.dataprep.transformation.service;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.ExportType;
@@ -34,14 +46,19 @@ import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformer
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.*;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
 public class TransformationService {
 
     @Autowired
-    private WebApplicationContext context;
+    private ApplicationContext context;
 
     @Autowired(required = true)
     private Jackson2ObjectMapperBuilder builder;
@@ -77,7 +94,7 @@ public class TransformationService {
         }
     }
 
-    @RequestMapping(value = "/transform/{format}", method = POST)
+    @RequestMapping(value = "/export/{format}", method = POST)
     @ApiOperation(value = "Transform input data", notes = "This operation export the input data transformed using the supplied actions in the provided format.")
     @VolumeMetered
     public void transform(@ApiParam(value = "Output format.")
@@ -219,5 +236,25 @@ public class TransformationService {
         }
 
         return actionType.getGenerator(context).getParameters(columnId, content);
+    }
+
+    /**
+     * Get the available export types
+     */
+    @RequestMapping(value = "/export/types", method = GET)
+    @ApiOperation(value = "Get the available export types")
+    @Timed
+    public void exportTypes(final HttpServletResponse response) {
+
+        List<ExportType> exportTypes = exportFactory.getExportTypes();
+
+        try {
+            builder.build() //
+                    .writer() //
+                    .writeValue(response.getOutputStream(), exportTypes);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+
     }
 }

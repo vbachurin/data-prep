@@ -1,15 +1,18 @@
 package org.talend.dataprep.transformation.api.transformer.exporter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExporter;
-import org.talend.dataprep.transformation.api.transformer.exporter.xls.XlsExporter;
 import org.talend.dataprep.transformation.api.transformer.exporter.tableau.TableauExporter;
-
+import org.talend.dataprep.transformation.api.transformer.exporter.xls.XlsExporter;
 
 @Component
 public class ExportFactory {
@@ -32,6 +35,20 @@ public class ExportFactory {
             return get(TableauExporter.class, actionConsumer, configuration);
         }
         throw new UnsupportedOperationException("Unknown export type : " + configuration.getFormat());
+    }
+
+    public List<ExportType> getExportTypes() {
+
+        String[] beansNames = context.getBeanNamesForType(Exporter.class);
+
+        List<ExportType> exportTypes = new ArrayList<>(beansNames.length);
+
+        for (String beanName : beansNames) {
+            exportTypes.add( ((Exporter) context.getBean(beanName, null, null)).getExportType());
+        }
+
+        return exportTypes;
+
     }
 
     public Transformer get(final Class<? extends Transformer> transformerClass, final ParsedActions actionConsumer,
