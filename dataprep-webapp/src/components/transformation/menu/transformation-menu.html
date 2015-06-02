@@ -1,0 +1,28 @@
+<li ng-click="menuCtrl.select()"
+    ng-class="::{divider: menuCtrl.menu.isDivider}">
+
+    <span ng-if="::(!menuCtrl.menu.isDivider)">
+        <a href="#">
+            {{ menuCtrl.menu.label }}
+        </a>
+
+        <!-- Params modal -->
+        <talend-modal ng-if="::(menuCtrl.menu.dynamic || menuCtrl.menu.parameters || menuCtrl.menu.items)"
+                      fullscreen="false"
+                      state="menuCtrl.showModal"
+                      close-button="true">
+
+            <div class="modal-title">{{ menuCtrl.menu.label }}</div>
+            <div class="modal-subtitle">{{ menuCtrl.menu.description }}</div>
+
+            <div ng-if="menuCtrl.menu.dynamic && menuCtrl.dynamicFetchInProgress">
+                <img class="continuous-rotate"
+                     style="background-color: grey"
+                     src="/components/widgets/loading/loading.png"/>
+            </div>
+            <transform-params transformation="menuCtrl.menu"
+                              on-submit="menuCtrl.transform(params)"></transform-params>
+
+        </talend-modal>
+    </span>
+</li>

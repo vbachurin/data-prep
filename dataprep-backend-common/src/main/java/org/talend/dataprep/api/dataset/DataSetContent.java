@@ -1,33 +1,63 @@
 package org.talend.dataprep.api.dataset;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.talend.dataprep.schema.FormatGuess;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * Dataset content summary.
+ */
 
 public class DataSetContent {
 
-    private int                     nbRecords;
+    @JsonProperty("records")
+    private int nbRecords;
 
-    private int                     nbLinesInHeader;
+    @JsonProperty("nbLinesHeader")
+    private int nbLinesInHeader;
 
-    private int                     nbLinesInFooter;
+    @JsonProperty("nbLinesFooter")
+    private int nbLinesInFooter;
 
-    private final List<FormatGuess> contentTypes = new LinkedList<>();
+    @JsonProperty("type")
+    private String mediaType;
 
-    private FormatGuess contentType;
+    @JsonProperty("parameters")
+    private Map<String, String> parameters = new HashMap<>();
 
-    public void setContentTypeCandidates(List<FormatGuess> guessList) {
-        contentTypes.clear();
-        contentTypes.addAll(guessList);
+    @JsonProperty("formatGuess")
+    private String formatGuessId;
+
+    /**
+     * @return A map that contains additional information about the format (e.g. a separator for a CSV format).
+     */
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
-    public FormatGuess getContentType() {
-        return contentType;
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
     }
 
-    public void setContentType(FormatGuess contentType) {
-        this.contentType = contentType;
+    public void addParameter(String key, String value) {
+        this.parameters.put(key, value);
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    public String getFormatGuessId() {
+        return formatGuessId;
+    }
+
+    public void setFormatGuessId(String formatGuessId) {
+        this.formatGuessId = formatGuessId;
     }
 
     public int getNbRecords() {

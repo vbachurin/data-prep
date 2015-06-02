@@ -2,18 +2,27 @@
     'use strict';
 
     /**
-     * Badge controller. The directive initialize :
-     * - ctrl.onChange and ctrl.onClose functions
-     * - ctrl.obj where ctrl.obj.value define an editable value
-     *
-     * @param $scope
+     * @ngdoc controller
+     * @name talend.widget.controller:BadgeCtrl
+     * @description Badge controller. The directive initialize :
+     * <ul>
+     *     <li>ctrl.onChange and ctrl.onClose functions</li>
+     *     <li>ctrl.obj where ctrl.obj.value define an editable value</li>
+     * </ul>
+     * Watchers
+     * <ul>
+     *     <li>bind obj.value to the input value</li>
+     * </ul>
      */
     function BadgeCtrl($scope) {
         var vm = this;
         vm.value = '';
 
         /**
-         * Update filter
+         * @ngdoc method
+         * @name manageChange
+         * @methodOf talend.widget.controller:BadgeCtrl
+         * @description Trigger the change callback
          */
         vm.manageChange = function () {
             if (vm.obj.value !== vm.value) {
@@ -25,7 +34,10 @@
         };
 
         /**
-         * Close the badge
+         * @ngdoc method
+         * @name close
+         * @methodOf talend.widget.controller:BadgeCtrl
+         * @description Trigger the close callback
          */
         vm.close = function () {
             vm.onClose({obj: vm.obj});

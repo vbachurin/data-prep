@@ -63,15 +63,16 @@ public class AbsoluteTest {
         String content = floatAction.trim();
         JsonNode node = mapper.readTree(content);
 
-        absFloatConsumer = absFloatAction.create(node.get("actions").get(0).get("parameters").getFields()); //$NON-NLS-1$//$NON-NLS-2$
+        Map<String, String> parameters = absFloatAction.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
+        absFloatConsumer = absFloatAction.create(parameters);
 
         String intAction = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("absoluteIntAction.json")); //$NON-NLS-1$
 
         content = intAction.trim();
         node = mapper.readTree(content);
 
-        absIntConsumer = absIntAction.create(node.get("actions").get(0).get("parameters").getFields()); //$NON-NLS-1$ //$NON-NLS-2$
-
+        Map<String, String> parameters2 = absIntAction.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
+        absIntConsumer = absIntAction.create(parameters2); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Test
@@ -175,7 +176,7 @@ public class AbsoluteTest {
     }
 
     @Test
-    public void testAbsoluteFloatWithEmty() {
+    public void testAbsoluteFloatWithEmpty() {
         Map<String, String> values = new HashMap<>();
         values.put(FLOAT_COLUMN, ""); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
@@ -185,7 +186,7 @@ public class AbsoluteTest {
     }
 
     @Test
-    public void testAbsoluteIntWithEMpty() {
+    public void testAbsoluteIntWithEmpty() {
         Map<String, String> values = new HashMap<>();
         values.put(INT_COLUMN, ""); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);

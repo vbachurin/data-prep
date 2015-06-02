@@ -1,14 +1,19 @@
 package org.talend.dataprep.api.dataset;
 
-import java.io.InputStream;
-import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.data.annotation.Id;
-import org.talend.dataprep.api.dataset.json.DataSetMetadataModule;
+import org.talend.dataprep.api.dataset.json.EpochTimeDeserializer;
+import org.talend.dataprep.api.dataset.json.EpochTimeSerializer;
+import org.talend.dataprep.schema.SchemaParserResult;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -22,21 +27,69 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class DataSetMetadata {
 
+    /** The dataset id. */
     @Id
-    private final String id;
+    private String id;
 
-    private final RowMetadata rowMetadata;
+    /** Row description. */
+    @JsonIgnore(true)
+    private RowMetadata rowMetadata;
 
+    /** Dataset life cycle status. */
+    @JsonProperty("lifecycle")
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
-    private final DataSetContent content = new DataSetContent();
+    @JsonProperty("content")
+    @JsonUnwrapped
+    private DataSetContent content = new DataSetContent();
 
-    private final String name;
+    /** Dataset governance. */
+    @JsonProperty("governance")
+    @JsonUnwrapped
+    private final DataSetGovernance governance = new DataSetGovernance();
 
-    private final String author;
+    /** Dataset name. */
+    @JsonProperty("name")
+    private String name;
 
-    private final long creationDate;
+    /** Dataset author. */
+    @JsonProperty("author")
+    private String author;
 
+    @JsonProperty("created")
+    @JsonSerialize(using = EpochTimeSerializer.class)
+    @JsonDeserialize(using = EpochTimeDeserializer.class)
+    private long creationDate;
+
+    /** Sheet number in case of excel source. */
+    @JsonProperty("sheetName")
+    private String sheetName;
+
+    /**
+     * if <code>true</code> this dataset is still a draft as we need more informations from the user
+     */
+    @JsonProperty("draft")
+    private boolean draft = false;
+
+    /**
+     * available only when draft is <code>true</code> i.e until some informations has been confirmed by the user
+     */
+    @JsonProperty("schemaParserResult")
+    private SchemaParserResult schemaParserResult;
+
+    public DataSetMetadata() {
+        // no op
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param id dataset id.
+     * @param name dataset name.
+     * @param author dataset author.
+     * @param creationDate dataset creation date.
+     * @param rowMetadata row metadata.
+     */
     public DataSetMetadata(String id, String name, String author, long creationDate, RowMetadata rowMetadata) {
         this.id = id;
         this.name = name;
@@ -46,76 +99,97 @@ public class DataSetMetadata {
     }
 
     /**
-     * @param json A valid JSON stream, may be <code>null</code>.
-     * @return The {@link DataSetMetadata} instance parsed from stream or <code>null</code> if parameter is null. If
-     * stream is empty, also returns <code>null</code>.
+     * @return the dataset id.
      */
-    public static DataSetMetadata from(InputStream json) {
-        if (json == null) {
-            return null;
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.DEFAULT);
-            String jsonString = IOUtils.toString(json).trim();
-            if (jsonString.isEmpty()) {
-                return null; // Empty stream
-            }
-            return mapper.reader(DataSetMetadata.class).readValue(jsonString);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to parse '" + json + "'.", e);
-        }
-    }
-
     public String getId() {
         return id;
     }
 
+    /**
+     * @return the dataset row description.
+     */
+    @JsonIgnore(true)
     public RowMetadata getRow() {
         return rowMetadata;
     }
 
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
+    }
+
+    /**
+     * @return the dataset lifecycle.
+     */
     public DataSetLifecycle getLifecycle() {
         return lifecycle;
     }
 
+    /**
+     * @return the dataset content summary.
+     */
     public DataSetContent getContent() {
         return content;
     }
 
+    public void setContent(DataSetContent content) {
+        this.content = content;
+    }
+
+    /**
+     * @return the dataset governance.
+     */
+    public DataSetGovernance getGovernance() {
+        return this.governance;
+    }
+
+    /**
+     * @return the dataset name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return the dataset author.
+     */
     public String getAuthor() {
         return author;
     }
 
-    public Date getCreationDate() {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
-        calendar.setTimeInMillis(creationDate);
-        return calendar.getTime();
+    public String getSheetName() {
+        return sheetName;
+    }
+
+    public void setSheetName(String sheetName) {
+        this.sheetName = sheetName;
     }
 
     /**
-     * Writes the current {@link DataSetMetadata} to <code>writer</code> as JSON format.
-     *
-     * @param writer A non-null writer.
+     * @return the dataset creation date.
      */
-    public void to(Writer writer) {
-        if (writer == null) {
-            throw new IllegalArgumentException("Writer cannot be null.");
-        }
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(DataSetMetadataModule.DEFAULT);
-            mapper.writer().writeValue(writer, this);
-            writer.flush();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to serialize object to JSON.", e);
-        }
+    public long getCreationDate() {
+        return creationDate;
     }
 
+    public boolean isDraft() {
+        return draft;
+    }
+
+    public void setDraft(boolean draft) {
+        this.draft = draft;
+    }
+
+    public SchemaParserResult getSchemaParserResult() {
+        return schemaParserResult;
+    }
+
+    public void setSchemaParserResult(SchemaParserResult schemaParserResult) {
+        this.schemaParserResult = schemaParserResult;
+    }
+
+    /**
+     * Dataset builder.
+     */
     public static class Builder {
 
         private String id;
@@ -139,6 +213,14 @@ public class DataSetMetadata {
         private boolean schemaAnalyzed;
 
         private boolean qualityAnalyzed;
+
+        private String sheetName;
+
+        private boolean draft = true;
+
+        private String formatGuessId;
+
+        private String mediaType;
 
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
@@ -199,6 +281,26 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder sheetName(String sheetName) {
+            this.sheetName = sheetName;
+            return this;
+        }
+
+        public Builder draft(boolean draft) {
+            this.draft = draft;
+            return this;
+        }
+
+        public Builder formatGuessId(String formatGuessId) {
+            this.formatGuessId = formatGuessId;
+            return this;
+        }
+
+        public Builder mediaType(String mediaType) {
+            this.mediaType = mediaType;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -214,16 +316,23 @@ public class DataSetMetadata {
             }
             RowMetadata row = new RowMetadata(columns);
             DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row);
+            metadata.sheetName = this.sheetName;
+            metadata.draft = this.draft;
             // Content information
             DataSetContent content = metadata.getContent();
             content.setNbRecords(size);
             content.setNbLinesInHeader(headerSize);
             content.setNbLinesInFooter(footerSize);
+
+            if (formatGuessId != null) {
+                content.setFormatGuessId(formatGuessId);
+            }
+            content.setMediaType(mediaType);
             // Lifecycle information
-            DataSetLifecycle lifecycle = metadata.getLifecycle();
-            lifecycle.contentIndexed(contentAnalyzed);
-            lifecycle.schemaAnalyzed(schemaAnalyzed);
-            lifecycle.qualityAnalyzed(qualityAnalyzed);
+            DataSetLifecycle metadataLifecycle = metadata.getLifecycle();
+            metadataLifecycle.contentIndexed(contentAnalyzed);
+            metadataLifecycle.schemaAnalyzed(schemaAnalyzed);
+            metadataLifecycle.qualityAnalyzed(qualityAnalyzed);
             return metadata;
         }
     }

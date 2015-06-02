@@ -1,6 +1,6 @@
 #! /bin/bash
 
-LOCATION='/var/www/scripts'
+LOCATION='/var/www/html/scripts'
 
 # improve following to support ipv6
 IP_ADDRESS_REGEX='[0-9\.]*'
@@ -27,5 +27,5 @@ echo 'after: '
 sed 's/[.]constant/\n/g' $JS_FILE | grep '(.apiUrl'
 
 # launch apache service (foreground to prevent command to finish, and container to stop)
-/usr/sbin/apache2ctl -DFOREGROUND
+/run-apache.sh
 

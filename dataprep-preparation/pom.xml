@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m3-SNAPSHOT</version>
+        <version>1.0.m5-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <artifactId>dataprep-preparation</artifactId>
-    <version>1.0.m3-SNAPSHOT</version>
+    <version>1.0.m5-SNAPSHOT</version>
     <name>dataprep-preparation</name>
     <properties>
         <start-class>org.talend.dataprep.preparation.Application</start-class>
@@ -67,26 +67,6 @@
         </dependency>
         <!-- SPRING DEPENDENCIES-->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-pool</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
@@ -137,7 +117,7 @@
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>dockerfile/java:oracle-java8</baseImage>
+                            <baseImage>java:8</baseImage>
                             <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
                             <resources>
                                 <resource>

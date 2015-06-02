@@ -2,7 +2,7 @@
               fullscreen="true"
               state="playgroundCtrl.showPlayground"
               close-button="true"
-              on-close="playgroundCtrl.refreshPreparations()">
+              on-close="playgroundCtrl.close()">
     <div class="modal-header">
         <ul>
             <li>
@@ -19,6 +19,11 @@
                        ng-blur="playgroundCtrl.changeName()"/>
             </li>
         </ul>
+
+        <div class="previewBadge" ng-show="playgroundCtrl.previewInProgress">
+            <img src="assets/images/eye.svg" alt="Blue Square" height="24px" class="previewBadgeElement"/>
+            <span class="previewBadgeElement">Preview</span>
+        </div>
     </div>
 
     <div class="modal-body flex">

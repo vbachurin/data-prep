@@ -1,4 +1,6 @@
-/.DS_Store
+.DS_Store
+.project
+.settings
 target/
 .idea/
 *.ipr
@@ -11,4 +13,5 @@ dataprep-webapp/src/assets/fonts/font_dl_from_google.sh
 
 #jenv file
 .java-version
+devENV.sh
 

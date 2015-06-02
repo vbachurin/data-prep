@@ -1,27 +1,18 @@
-describe('Dataset playground directive', function() {
+describe('Export directive', function() {
     'use strict';
 
-    var scope, createElement, element;
-    var csv = {
-        name: 'my dataset.csv',
-        charset: 'utf-8',
-        content: 'content'
-    };
+    var scope, element, ctrl;
 
     beforeEach(module('data-prep.export'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, ExportService) {
+    beforeEach(inject(function($rootScope, $compile) {
         scope = $rootScope.$new();
-        createElement = function() {
-            element = angular.element('<export></export>');
-            angular.element('body').append(element);
+        element = angular.element('<export></export>');
+        $compile(element)(scope);
+        scope.$digest();
 
-            $compile(element)(scope);
-            scope.$digest();
-        };
-
-        spyOn(ExportService, 'exportToCSV').and.returnValue(csv);
+        ctrl = element.controller('export');
     }));
 
     afterEach(function() {
@@ -29,29 +20,77 @@ describe('Dataset playground directive', function() {
         element.remove();
     });
 
-    it('should show modal on export button click', function() {
+    it('should bind csvSeparator form value to controller', function() {
         //given
-        createElement();
-        expect(element.controller('export').showExport).toBeFalsy();
+        var input = angular.element('body').find('#exportForm').eq(0)[0].csvSeparator;
+        expect(input.value).toBe(';');
 
         //when
-        element.find('.t-btn-primary').eq(0).click();
+        ctrl.csvSeparator = ',';
+        scope.$digest();
 
         //then
-        expect(element.controller('export').showExport).toBeTruthy();
+        expect(input.value).toBe(',');
     });
 
-    it('should init download link', inject(function() {
+    it('should bind preparationId form value to controller', inject(function(PreparationService) {
         //given
-        createElement();
-        var exportModals = angular.element('body').find('talend-modal');
-        expect(exportModals.length).toBe(1);
+        var input = angular.element('body').find('#exportForm').eq(0)[0].preparationId;
+        expect(input.value).toBeFalsy();
 
         //when
-        var link = element.controller('export').initExportLink(csv);
+        PreparationService.currentPreparationId = '48da64513c43a548e678bc99';
+        scope.$digest();
 
         //then
-        expect(link.getAttribute('download')).toBe('my dataset.csv');
-        expect(link.href).toBeDefined();
+        expect(input.value).toBe('48da64513c43a548e678bc99');
+    }));
+
+    it('should bind stepId form value to controller', inject(function(RecipeService) {
+        //given
+        var input = angular.element('body').find('#exportForm').eq(0)[0].stepId;
+        expect(input.value).toBeFalsy();
+
+        //when
+        RecipeService.getRecipe().push({
+            transformation : {
+                stepId: '48da64513c43a548e678bc99'
+            }
+        });
+        scope.$digest();
+
+        //then
+        expect(input.value).toBe('48da64513c43a548e678bc99');
+    }));
+
+    it('should bind datasetId form value to controller', inject(function(PlaygroundService) {
+        //given
+        var input = angular.element('body').find('#exportForm').eq(0)[0].datasetId;
+        expect(input.value).toBeFalsy();
+
+        //when
+        PlaygroundService.currentMetadata = {
+            id: '48da64513c43a548e678bc99'
+        };
+        scope.$digest();
+
+        //then
+        expect(input.value).toBe('48da64513c43a548e678bc99');
+    }));
+
+    it('should set actionUrl and submit form', inject(function() {
+        //given
+        var form = angular.element('body').find('#exportForm').eq(0)[0];
+        spyOn(form, 'submit').and.returnValue(null);
+
+        var actionUrl = 'http://toto/export';
+        ctrl.exportUrl = actionUrl;
+
+        //when
+        ctrl.export();
+
+        //then
+        expect(form.action).toBe(actionUrl);
+        expect(form.submit).toHaveBeenCalled();
     }));
 });

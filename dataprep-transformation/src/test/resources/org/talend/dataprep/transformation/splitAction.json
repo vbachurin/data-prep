@@ -1,0 +1,13 @@
+{
+  "actions": [
+    {
+      "action": "split",
+      "parameters": {
+        "column_id": "steps",
+        "column_name": "steps",
+        "separator": "other",
+        "manual_separator": " "
+      }
+    }
+  ]
+}

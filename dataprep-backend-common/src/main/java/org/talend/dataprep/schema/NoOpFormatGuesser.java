@@ -1,17 +1,20 @@
 package org.talend.dataprep.schema;
 
 import java.io.InputStream;
+import java.util.Collections;
 
-import org.springframework.data.annotation.Transient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NoOpFormatGuesser implements FormatGuesser {
 
-    @Transient
+    @Autowired
+    private NoOpFormatGuess noOpFormatGuess;
+
     @Override
-    public FormatGuess guess(InputStream stream) {
-        return new NoOpFormatGuess();
+    public FormatGuesser.Result guess(InputStream stream) {
+        return new FormatGuesser.Result(noOpFormatGuess, Collections.emptyMap());
     }
 
 }

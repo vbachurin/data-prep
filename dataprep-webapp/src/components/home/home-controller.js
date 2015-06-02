@@ -1,26 +1,51 @@
 (function() {
     'use strict';
 
-    function HomeCtrl(MessageService, DatasetService, DatasetListService, TalendConfirmService) {
+    /**
+     * @ngdoc controller
+     * @name data-prep.home.controller:HomeCtrl
+     * @description Home controller.
+     * @requires data-prep.services.utils.service:MessageService
+     * @requires data-prep.services.dataset.service:DatasetService
+     * @requires talend.widget.service:TalendConfirmService
+     */
+    function HomeCtrl(MessageService, DatasetService, TalendConfirmService) {
         var vm = this;
-        vm.showRightPanel = true;
-        vm.selectedMenu = 0;
 
         /**
-         * Array of all uploading datasets
-         * @type {Array}
+         * @ngdoc property
+         * @name showRightPanel
+         * @propertyOf data-prep.home.controller:HomeCtrl
+         * @description Flag that control the right panel display
+         * @type {boolean}
+         */
+        vm.showRightPanel = true;
+
+        /**
+         * @ngdoc property
+         * @name uploadingDatasets
+         * @propertyOf data-prep.home.controller:HomeCtrl
+         * @description The current uploading datasets
+         * @type {object[]}
          */
         vm.uploadingDatasets = [];
 
         /**
-         * Show/Hide right panel containing inventory data
+         * @ngdoc method
+         * @name toggleRightPanel
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Toggle the right panel containing inventory data
          */
         vm.toggleRightPanel = function() {
             vm.showRightPanel = !vm.showRightPanel;
         };
 
         /**
-         * Upload dataset : Step 1 - file selected
+         * @ngdoc method
+         * @name uploadDatasetFile
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Upload dataset : Step 1 - file selected. It takes the file name, and display the dataset name
+         * change modal
          */
         vm.uploadDatasetFile = function() {
             var file = vm.datasetFile[0];
@@ -34,14 +59,18 @@
         };
 
         /**
-         * Upload dataset : Step 2 - name entered
+         * @ngdoc method
+         * @name uploadDatasetName
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Upload dataset : Step 2 - name entered. It ask for override if a dataset with the same name
+         * exists, and trigger the upload
          */
         vm.uploadDatasetName = function() {
             var file = vm.datasetFile[0];
             var name = vm.datasetName;
 
             // if the name exists, ask for update or creation
-            vm.existingDatasetFromName = DatasetListService.getDatasetByName(name);
+            vm.existingDatasetFromName = DatasetService.getDatasetByName(name);
             if(vm.existingDatasetFromName) {
                 TalendConfirmService.confirm(null, ['UPDATE_EXISTING_DATASET'], {dataset: vm.datasetName})
                     .then(
@@ -62,17 +91,23 @@
         };
 
         /**
-         * Upload dataset : Step 3 - Create a new dataset with a unique name (add (n))
+         * @ngdoc method
+         * @name createDatasetFromExistingName
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Upload dataset : Step 3 - Create a new dataset with a unique name (add (n)).
          */
         vm.createDatasetFromExistingName = function() {
             var file = vm.datasetFile[0];
             var name = vm.datasetName;
-            name = DatasetListService.getUniqueName(name);
+            name = DatasetService.getUniqueName(name);
             createDataset(file, name);
         };
 
         /**
-         * Upload dataset : Step 3 bis - Update existing dataset
+         * @ngdoc method
+         * @name updateExistingDataset
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Upload dataset : Step 3 bis - Update existing dataset
          */
         vm.updateExistingDataset = function() {
             var file = vm.datasetFile[0];
@@ -82,19 +117,23 @@
         };
 
         /**
-         * Create a new dataset
+         * @ngdoc method
+         * @name createDataset
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @param {object} file - the file to upload
+         * @param {string} name - the dataset name
+         * @description [PRIVATE] Create a new dataset
          */
         var createDataset = function(file, name) {
             var dataset = DatasetService.fileToDataset(file, name);
             vm.uploadingDatasets.push(dataset);
 
-            DatasetService.createDataset(dataset)
+            DatasetService.create(dataset)
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    DatasetListService.refreshDatasets();
                     MessageService.success('DATASET_CREATE_SUCCESS_TITLE', 'DATASET_CREATE_SUCCESS', {dataset: dataset.name});
                 })
                 .catch(function() {
@@ -104,21 +143,23 @@
         };
 
         /**
-         * Update existing dataset
-         * @param file - the new file
-         * @param existingDataset - the existing dataset
+         * @ngdoc method
+         * @name updateDataset
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @param {object} file - the file to upload
+         * @param {object} existingDataset - the existing dataset
+         * @description [PRIVATE] Update existing dataset
          */
         var updateDataset = function(file, existingDataset) {
             var dataset = DatasetService.fileToDataset(file, existingDataset.name, existingDataset.id);
             vm.uploadingDatasets.push(dataset);
 
-            DatasetService.updateDataset(dataset)
+            DatasetService.update(dataset)
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
                 .then(function() {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    DatasetListService.refreshDatasets();
                     MessageService.success('DATASET_UPDATE_SUCCESS_TITLE', 'DATASET_UPDATE_SUCCESS', {dataset: dataset.name});
                 })
                 .catch(function() {

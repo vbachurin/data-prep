@@ -1,0 +1,69 @@
+{
+  "columns": [
+    {
+      "id": "0000",
+      "name": "id",
+      "type": "integer"
+    },
+    {
+      "id": "0001",
+      "name": "firstname",
+      "type": "string"
+    },
+    {
+      "id": "0002",
+      "name": "lastname",
+      "type": "string"
+    },
+    {
+      "id": "0003",
+      "name": "age",
+      "type": "integer"
+    },
+    {
+      "id": "0004",
+      "name": "date-of-birth",
+      "type": "date"
+    },
+    {
+      "id": "0005",
+      "name": "alive",
+      "type": "boolean"
+    },
+    {
+      "id": "0006",
+      "name": "city",
+      "type": "string"
+    }
+  ],
+  "records": [
+    {
+      "__tdpRowDiff": "new",
+      "0000": "2",
+      "0001": "BRUCE",
+      "0002": "WAYNE",
+      "0003": "50",
+      "0004": "01/01/1947",
+      "0005": "true",
+      "0006": "Gotham city"
+    },
+    {
+      "0000": "3",
+      "0001": "BARRY",
+      "0002": "ALLEN",
+      "0003": "67",
+      "0004": "01/02/1948",
+      "0005": "true",
+      "0006": "Central city"
+    },
+    {
+      "0000": "5",
+      "0001": "OLIVER",
+      "0002": "QUEEN",
+      "0003": "81",
+      "0004": "01/04/1950",
+      "0005": "true",
+      "0006": "Star city"
+    }
+  ]
+}

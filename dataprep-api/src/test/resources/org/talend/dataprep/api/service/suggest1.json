@@ -5,6 +5,11 @@
     "name": "uppercase",
     "parameters": [
       {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "column_name",
         "type": "string",
         "default": ""
@@ -17,6 +22,11 @@
     "name": "lowercase",
     "parameters": [
       {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "column_name",
         "type": "string",
         "default": ""
@@ -24,10 +34,49 @@
     ]
   },
   {
-    "category": "repair",
+    "category": "case",
+    "items": [],
+    "name": "propercase",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "category": "quickfix",
+    "items": [],
+    "name": "trim",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "category": "quickfix",
     "items": [],
     "name": "fillemptywithdefault",
     "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
       {
         "name": "column_name",
         "type": "string",
@@ -44,6 +93,11 @@
     "name": "delete_empty",
     "parameters": [
       {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "column_name",
         "type": "string",
         "default": ""
@@ -53,6 +107,11 @@
   {
     "name": "delete_on_value",
     "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
       {
         "name": "column_name",
         "type": "string",
@@ -66,12 +125,17 @@
     ]
   },
   {
-    "category": "repair",
+    "category": "quickfix",
     "items": [],
     "name": "cut",
     "label":"Cut",
     "description":"Remove specified text from cells in this column",
     "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
       {
         "name": "column_name",
         "type": "string",
@@ -83,5 +147,123 @@
         "default": ""
       }
     ]
+  },
+  {
+    "category": "columns",
+    "compatibleColumnTypes": [
+      "ANY"
+    ],
+    "items": [],
+    "name": "rename_column",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "new_column_name",
+        "type": "string",
+        "description": "The new column name",
+        "label": "New name",
+        "default": ""
+      }
+    ],
+    "description": "Rename this column",
+    "label": "Rename"
+  },
+  {
+    "category": "columns",
+    "compatibleColumnTypes": [
+      "STRING"
+    ],
+    "items": [
+      {
+        "name": "separator",
+        "category": "categ",
+        "values": [
+          {
+            "name": ":",
+            "parameters": [],
+            "default": true
+          },
+          {
+            "name": "@",
+            "parameters": [],
+            "default": false
+          },
+          {
+            "name": " ",
+            "parameters": [],
+            "default": false
+          },
+          {
+            "name": "other",
+            "parameters": [
+              {
+                "name": "manual_separator",
+                "type": "string",
+                "description": "choose your own separator",
+                "label": "manual separator",
+                "default": ""
+              }
+            ],
+            "default": false
+          }
+        ],
+        "description": "character to use as separator",
+        "label": "separator"
+      }
+    ],
+    "name": "split",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ],
+    "description": "Split column from separators",
+    "label": "Split"
+  },
+  {
+    "category": "quickfix",
+    "compatibleColumnTypes": [
+      "STRING"
+    ],
+    "name": "textclustering",
+    "dynamic": true,
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ],
+    "description": "Replace all similar values with the right one",
+    "label": "Cluster"
   }
 ]

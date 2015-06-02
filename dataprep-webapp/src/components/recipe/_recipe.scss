@@ -1,41 +1,119 @@
+
+.talend-accordion{
+  margin: 2px;
+}
+
 .recipe {
-  $color: white;
-  $background: $dark-gray;
+  $color: $black;
+  $color-not-active: $shadow-gray;
+  $color-not-active-hover: $medium-gray;
+  $background: $white;
 
   background: $background;
   color: $color;
-  font-size: 0.85em;
+  font-size: 0.95em;
 
+
+  /*************************************Step text*************************************/
   li {
     padding: 5px 5px 5px 10px;
+    position: relative;
 
-    a {
-      text-decoration: none;
-      color: $color;
-    }
+    .step-description {
+      padding-right: 30px;
 
-    input {
-      color: #000000;
-    }
+      .recipe-description {
 
-    .submenu {
-      background: tint($background, 30%);
-    }
 
-    .recipe-description {
-      text-transform: capitalize;
-
-      &.recipe-column-name {
-        font-weight: bold;
+        &.recipe-column-name {
+          font-weight: bold;
+          text-transform: uppercase;
+        }
       }
+    }
+    &:hover{
+      background-color: $light-gray;
     }
   }
 
-  .action {
-    background: shade($background, 10%);
+  /*******************************Active/inactive trigger******************************/
+  .step-trigger {
+    text-decoration: none;
+    color: $color;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: -1px;
+    padding-top: 5px;
+    height: 100%;
 
+    &::after {
+      display: inline-block;
+      vertical-align: middle;
+
+      height: 20px;
+      width: 20px;
+      border-radius: 10px;
+
+      background-color: $dark-green;
+      content: '';
+    }
+
+    &.highlight {
+      color: $medium-gray;
+    }
+  }
+
+  .step-trigger2 {
+    cursor: pointer;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    padding-top: 0px;
+    height: 100%;
+
+    &::after {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+
+  }
+
+  .inactive {
+    color: $color-not-active;
+
+    .step-trigger {
+      &::after {
+        background-color: $white;
+        border: 3px solid $color-not-active;
+      }
+
+      &.highlight::after {
+        background-color: $dark-blue;
+        border: none;
+      }
+    }
+
+    &:hover{
+      color: $color-not-active-hover;
+    }
+  }
+
+  /*************************************Parameters**********************************/
+  .submenu {
+    background: darken($background, 10%);
+    padding: 5px;
+
+    input {
+      color: #000000 !important;
+    }
+  }
+
+  /***********************************Panel hide/show*******************************/
+  .action {
     &:hover {
-      background: tint($background, 10%);
+      background: darken($background, 10%);
     }
   }
 }

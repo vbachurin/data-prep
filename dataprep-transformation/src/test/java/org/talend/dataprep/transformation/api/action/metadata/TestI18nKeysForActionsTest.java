@@ -26,8 +26,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
-
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Test that a translation exists for i18n keys label/desc for each action and each params/item.
@@ -39,7 +40,7 @@ import org.talend.dataprep.transformation.api.action.metadata.Item.Value;
 @WebAppConfiguration
 public class TestI18nKeysForActionsTest {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger( TestI18nKeysForActionsTest.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestI18nKeysForActionsTest.class);
 
     @Autowired
     private ActionMetadata[] allActions;
@@ -65,7 +66,10 @@ public class TestI18nKeysForActionsTest {
             assertNotEquals("", desc);
             assertI18nKeyExists("action." + name + ".desc");
 
-            LOGGER.debug(name + " | " + label + " | " + desc);
+            String toString = actionMetadata.getName() + "," + actionMetadata.getCategory() + ","
+                    + actionMetadata.getCompatibleColumnTypes() + "," + actionMetadata.getLabel() + ","
+                    + actionMetadata.getDescription();
+            LOGGER.info(toString);
 
             for (Parameter param : actionMetadata.getParameters()) {
                 String pname = param.getName();
@@ -82,7 +86,7 @@ public class TestI18nKeysForActionsTest {
                 assertNotEquals("", pdesc);
                 assertI18nKeyExists("parameter." + pname + ".desc");
 
-                LOGGER.debug("  - " + pname + " | " + plabel + " | " + pdesc);
+                LOGGER.trace("  - " + pname + " | " + plabel + " | " + pdesc);
             }
 
             for (Item item : actionMetadata.getItems()) {
@@ -100,9 +104,9 @@ public class TestI18nKeysForActionsTest {
                 assertNotEquals("", pdesc);
                 assertI18nKeyExists("parameter." + pname + ".desc");
 
-                LOGGER.debug("  - " + pname + " | " + plabel + " | " + pdesc);
+                LOGGER.trace("  - " + pname + " | " + plabel + " | " + pdesc);
                 for (Value value : item.getValues()) {
-                    LOGGER.debug("    - " + value);
+                    LOGGER.trace("    - " + value);
 
                     for (Parameter param : value.getParameters()) {
                         String oname = param.getName();
@@ -119,7 +123,7 @@ public class TestI18nKeysForActionsTest {
                         assertNotEquals("", odesc);
                         assertI18nKeyExists("parameter." + oname + ".desc");
 
-                        LOGGER.debug("      - " + oname + " | " + olabel + " | " + odesc);
+                        LOGGER.trace("      - " + oname + " | " + olabel + " | " + odesc);
                     }
                 }
             }

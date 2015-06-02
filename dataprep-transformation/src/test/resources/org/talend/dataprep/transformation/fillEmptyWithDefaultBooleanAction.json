@@ -3,7 +3,7 @@
     {
       "action": "fillemptywithdefaultboolean",
       "parameters": {
-        "column_name": "tagada",
+        "column_id": "tagada",
         "default_value": "True"
       }
     }

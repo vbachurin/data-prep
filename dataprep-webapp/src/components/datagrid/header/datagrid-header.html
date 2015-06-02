@@ -1,0 +1,67 @@
+<talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
+    <div class="dropdown-container grid-header">
+        <div class="dropdown-action">
+            <div class="grid-header-title dropdown-button">{{ datagridHeaderCtrl.column.name }}</div>
+            <div class="grid-header-type">{{ datagridHeaderCtrl.column.type }}</div>
+        </div>
+        <ul class="dropdown-menu grid-header-menu">
+            <li ng-if="datagridHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
+            <li ng-if="datagridHeaderCtrl.transformations && !datagridHeaderCtrl.transformations.length">{{ ::'NO_TRANSFORMATION' | translate }}</li>
+
+            <transform-menu
+                    ng-repeat="item in datagridHeaderCtrl.transformations track by $index"
+                    column="datagridHeaderCtrl.column"
+                    menu="item"></transform-menu>
+        </ul>
+    </div>
+</talend-dropdown>
+
+<div class="quality-bar">
+    <div talend-dropdown
+         class="record-ok"
+         style="width: {{ datagridHeaderCtrl.column.quality.validPercentWidth }}%;"
+         title="{{ datagridHeaderCtrl.column.quality.valid }} valid records ({{ datagridHeaderCtrl.column.quality.validPercent }}%)">
+
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
+                <li role="presentation">
+                    <a role="menuitem" href="#">Select Valid Records for {{ datagridHeaderCtrl.column.id | uppercase }}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div talend-dropdown
+         class="record-empty"
+         style="width: {{ datagridHeaderCtrl.column.quality.emptyPercentWidth }}%;"
+         ng-if="datagridHeaderCtrl.column.quality.empty > 0"
+         title="{{ datagridHeaderCtrl.column.quality.empty }} empty records ({{ datagridHeaderCtrl.column.quality.emptyPercent }}%)">
+
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
+                <li role="presentation"><a role="menuitem" href="#">Select Empty Records for {{ datagridHeaderCtrl.column.id | uppercase }}</a></li>
+                <li class="divider"></li>
+                <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Top adjacent value</a></li>
+                <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Bottom adjacent value</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="record-nok" talend-dropdown
+         style="width: {{ datagridHeaderCtrl.column.quality.invalidPercentWidth }}%;"
+         ng-if="datagridHeaderCtrl.column.quality.invalid > 0"
+         title="{{ datagridHeaderCtrl.column.quality.invalid }} invalid records ({{ datagridHeaderCtrl.column.quality.invalidPercent }}%)">
+
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
+                <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{ datagridHeaderCtrl.column.id | uppercase }}</a></li>
+                <li class="divider"></li>
+                <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Top adjacent value</a></li>
+                <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Bottom adjacent value</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

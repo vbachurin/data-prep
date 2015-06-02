@@ -21,8 +21,6 @@
   $navigation-height: 51px;
   $navigation-item-space: 15px;
 
-  $body-margin: 15px;
-
   p {
     color: $base-font-color;
     line-height: $base-line-height;
@@ -62,7 +60,7 @@
     z-index: 99999;
 
     @include media($large-screen) {
-      padding-top: 10em;
+      padding-top: 9em;
     }
 
     .modal-bg {
@@ -111,13 +109,13 @@
     width: 95%;
 
     @include media($medium-screen) {
-      max-height: 70%;
+      max-height: 80%;
       padding: $modal-padding;
-      width: 60%;
+      width: 80%;
     }
 
     @include media($large-screen) {
-      width: 50%;
+      width: 900px;
     }
 
     h1 {
@@ -213,7 +211,7 @@
         width: $navigation-height;
         height: $navigation-height;
         line-height: $navigation-height - 1px;
-        border: 1px solid #000000;
+        //border: 1px solid #000000;
         cursor: pointer;
 
         position: absolute;
@@ -244,7 +242,6 @@
         display: table;
         height: $navigation-height;
         min-height: $navigation-height;
-        margin-bottom: $body-margin;
         width: 100%;
 
         @include background(linear-gradient($navigation-background-top, $navigation-background-bottom) left repeat);
@@ -289,7 +286,7 @@
       }
 
       .modal-body {
-        @include calc(height, "100% - #{$navigation-height} - #{$body-margin}");
+        @include calc(height, "100% - #{$navigation-height}");
         width: 100%;
 
         background: white;

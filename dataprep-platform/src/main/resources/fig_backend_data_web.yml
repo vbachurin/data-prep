@@ -1,39 +1,39 @@
 data:
-    image: talend-registry:5000/talend/dataprep-data:1.0.m2
+    image: talend-registry:5000/talend/dataprep-data:1.0.m5-SNAPSHOT
     volumes:
         - /data/db
         - /store
 mongodb:
-    image: dockerfile/mongodb
+    image: mongo
     volumes_from:
         - data
+    expose:
+        - 27017
     ports:
         - "27017:27017"
 api:
-    image: talend/dataprep-api:1.0.m3-SNAPSHOT
+    image: talend/dataprep-api:1.0.m5-SNAPSHOT
     expose:
         - 8888
     ports:
-        - "8081:8888"
+        - "8888:8888"
     links:
         - transform
         - dataset
         - preparation
     environment:
         TDP_API_SERVER_PORT: 8888
-        TDP_API_DATASET_SERVICE_URL: http://${DATASET_PORT_8080_TCP_ADDR}:${DATASET_PORT_8080_TCP_PORT}/datasets
+        TDP_API_DATASET_SERVICE_URL: http://${DATASET_PORT_8080_TCP_ADDR}:${DATASET_PORT_8080_TCP_PORT}
         TDP_API_TRANSFORMATION_SERVICE_URL: http://${TRANSFORM_PORT_8180_TCP_ADDR}:${TRANSFORM_1_PORT_8180_TCP_PORT}
         TDP_API_PREPARATION_SERVICE_URL: http://${PREPARATION_PORT_9090_TCP_ADDR}:${PREPARATION_1_PORT_9090_TCP_PORT}
 transform:
-    image: talend/dataprep-transformation:1.0.m3-SNAPSHOT
-    volumes_from:
-        - data
+    image: talend/dataprep-transformation:1.0.m5-SNAPSHOT
     expose:
         - 8180
     environment:
         TDP_TRANSFORMATION_SERVER_PORT: 8180
 dataset:
-    image: talend/dataprep-dataset:1.0.m3-SNAPSHOT
+    image: talend/dataprep-dataset:1.0.m5-SNAPSHOT
     volumes_from:
         - data
     expose:
@@ -48,13 +48,18 @@ dataset:
         TDP_DATASET_MONGODB_HOST: ${MONGODB_PORT_27017_TCP_ADDR}
         TDP_DATASET_MONGODB_PORT: ${MONGODB_PORT_27017_TCP_PORT}
 preparation:
-    image: talend/dataprep-preparation:1.0.m3-SNAPSHOT
+    image: talend/dataprep-preparation:1.0.m5-SNAPSHOT
     expose:
         - 9090
+    links:
+        - mongodb
     environment:
         TDP_PREPARATION_SERVER_PORT: 9090
+        TDP_PREPARATION_STORE: mongodb
+        TDP_PREPARATION_MONGODB_HOST: ${MONGODB_PORT_27017_TCP_ADDR}
+        TDP_PREPARATION_MONGODB_PORT: ${MONGODB_PORT_27017_TCP_PORT}
 web:
-    image: talend/dataprep-webapp:1.0.m3-SNAPSHOT
+    image: talend/dataprep-webapp:1.0.m5-SNAPSHOT
     expose:
         - 80
     ports:
@@ -62,5 +67,5 @@ web:
         - "443:443"
     environment:
         TDP_API_HOST: 10.42.10.99
-        TDP_API_PORT: 8081
+        TDP_API_PORT: 8888
 

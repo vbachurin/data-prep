@@ -1,7 +1,9 @@
 package org.talend.dataprep.schema;
 
-import java.beans.Transient;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 /**
@@ -20,16 +22,41 @@ public interface FormatGuess {
     float getConfidence();
 
     /**
-     * @return A {@link org.talend.dataprep.schema.SchemaParser} that allowed data prep to read
-     * {@link ColumnMetadata column metadata} information from the data set.
+     * @return {@link org.talend.dataprep.schema.SchemaParser} that allowed data prep to read {@link ColumnMetadata
+     * column metadata} information from the data set.
+     * @see org.springframework.context.ApplicationContext#getBean(String)
      */
-    @Transient
     SchemaParser getSchemaParser();
 
     /**
-     * @return A {@link org.talend.dataprep.schema.Serializer serializer} able to transform the
-     * underlying data set content into JSON stream.
+     * @return {@link org.talend.dataprep.schema.Serializer serializer} able to transform the underlying data set
+     * content into JSON stream.
+     * @see org.springframework.context.ApplicationContext#getBean(String)
      */
-    @Transient
     Serializer getSerializer();
+
+    /**
+     *
+     * @return the Spring beanId to be used to get the bean from the used injection container
+     */
+    String getBeanId();
+
+    /**
+     *
+     * @return {@link DraftValidator} that will validate if the metadata are still in draft status for this format type
+     */
+    DraftValidator getDraftValidator();
+
+    @Component
+    class Factory {
+
+        @Autowired
+        private Map<String, FormatGuess> formatGuessMap;
+
+        public FormatGuess getFormatGuess(String formatGuessId) {
+            return formatGuessMap.get(formatGuessId);
+        }
+
+    }
+
 }

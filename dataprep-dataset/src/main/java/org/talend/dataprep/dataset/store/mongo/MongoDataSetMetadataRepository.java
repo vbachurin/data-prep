@@ -3,6 +3,8 @@ package org.talend.dataprep.dataset.store.mongo;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
@@ -10,6 +12,9 @@ public class MongoDataSetMetadataRepository implements DataSetMetadataRepository
 
     @Autowired
     MongoDBRepository repository;
+
+    @Autowired
+    ApplicationContext appcontext;
 
     @Override
     public Iterable<DataSetMetadata> list() {
@@ -39,5 +44,10 @@ public class MongoDataSetMetadataRepository implements DataSetMetadataRepository
     @Override
     public void remove(String id) {
         repository.delete(id);
+    }
+
+    @Override
+    public DistributedLock createDatasetMetadataLock(String id) {
+        return appcontext.getBean(DistributedLock.class, DATASET_LOCK_PREFIX + id);
     }
 }

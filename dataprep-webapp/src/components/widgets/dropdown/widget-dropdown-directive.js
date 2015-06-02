@@ -2,33 +2,35 @@
     'use strict';
 
     /**
-     * Dropdown directive
-     *
-     * Example :
-     * <talend-dropdown close-on-select="false" on-open="onOpen()">
-     * <div class="dropdown-container grid-header">
-     *      <div class="dropdown-action">
-     *          <div class="grid-header-title dropdown-button">{{ column.id }}</div>
-     *          <div class="grid-header-type">{{ column.type }}</div>
-     *      </div>
-     *      <ul class="dropdown-menu">
-     *          <li role="presentation"><a role="menuitem" href="#">Hide Column {{ column.id | uppercase }}</a></li>
-     *          <li class="divider"></li>
-     *          <li role="presentation"><a role="menuitem"href="#">Split first Space</a></li>
-     *          <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>
-     *      </ul>
-     * </div>
-     * </talend-dropdown>
-     *
-     * Attribute close-on-select : default true. If set to false, dropdown will not close on inner item click
-     * Attribute on-open : function to execute on dropdown open
-     * Class 'dropdown-action' : action zone that trigger menu toggle
-     * Class 'dropdown-button' : add a caret at the end off element
-     * Class 'dropdown-menu' : menu
-     * Class 'dorpdown-menu > li' : menu items
-     * Class 'dorpdown-menu > li.divider' : menu items divider
-     *
-     * @returns directive
+     * @ngdoc directive
+     * @name talend.widget.directive:TalendDropdown
+     * @description This directive create a dropdown element.<br/>
+     * Key action :
+     * <ul>
+     *     <li>ESC : close the dropdown</li>
+     * </ul>
+     * @restrict EA
+     * @usage
+     <talend-dropdown close-on-select="false" on-open="onOpen()">
+      <div class="dropdown-container">
+           <div class="dropdown-action">
+               <div class="dropdown-button">{{ column.id }}</div>
+               <div>{{ column.type }}</div>
+           </div>
+           <ul class="dropdown-menu">
+               <li><a href="#">Hide Column {{ column.id | uppercase }}</a></li>
+               <li class="divider"></li>
+               <li<a href="#">Split first Space</a></li>
+               <li><a href="#">Uppercase</a></li>
+           </ul>
+      </div>
+      </talend-dropdown>
+     * @param {boolean} closeOnSelect Default `true`. If set to false, dropdown will not close on inner item click
+     * @param {function} onOpen The callback to execute on dropdown open
+     * @param {class} dropdown-action Action zone that trigger menu toggle
+     * @param {class} dropdown-button Add a caret at the end off element
+     * @param {class} dropdown-menu The menu to open
+     * @param {class} divider `dropdown-menu > li.divider` : menu items divider
      */
     function TalendDropdown($window) {
         return {
@@ -106,8 +108,7 @@
                     };
 
                     //Click : Show/focus or hide menu on action zone click
-                    action.click(function (event) {
-                        event.stopPropagation();
+                    action.click(function () {
                         var isVisible = menu.hasClass('show-menu');
                         hideAllDropDowns();
 

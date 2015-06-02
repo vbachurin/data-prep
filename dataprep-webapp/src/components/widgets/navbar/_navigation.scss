@@ -3,7 +3,7 @@ header.navigation {
   $base-border-color: gainsboro !default;
   $base-border-radius: 3px !default;
   $base-accent-color: #477DCA !default;
-  $dark-gray: #333 !default;
+//  $dark-gray: #333 !default;
 
   $navigation-background-top: rgba(85, 89, 100, 0.8);
   $navigation-background-bottom: rgb(85, 89, 100);
@@ -20,7 +20,7 @@ header.navigation {
   $navigation-background: $dark-gray;
   $navigation-color-hover: white;
   $navigation-height: 51px;
-  $navigation-search-border: 1px solid darken($navigation-background, 5);
+  $navigation-search-border: 1px solid $medium-gray;
   $navigation-active-link-color: transparentize(white, 0.5);
   $navigation-submenu-padding: 1em;
   $navigation-submenu-width: 12em;
@@ -310,6 +310,7 @@ header.navigation {
         border-radius: $base-border-radius * 2;
         border: $navigation-search-border;
         color: $navigation-color;
+        font-family: $base-font-family;
         font-size: 0.9em;
         font-style: italic;
         margin: 0;

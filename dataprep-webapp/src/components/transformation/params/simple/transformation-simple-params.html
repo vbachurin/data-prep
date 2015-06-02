@@ -1,0 +1,23 @@
+<table class="no-border param">
+    <tr ng-repeat="param in simpleParamsCtrl.parameters track by $index">
+        <td class="param-name" ng-if="::(simpleParamsCtrl.label !== 'false')">
+            {{simpleParamsCtrl.label}}{{::param.label}} :
+        </td>
+
+        <td class="param-input">
+            <input name="{{::(param.name + $index)}}"
+                   type="{{::param.inputType}}"
+                   ng-model="param.value"
+                   type-validation="{{::param.type}}"/>
+            <span ng-if="param.type === 'boolean'">{{param.name}}</span>
+
+            <span class="error"
+                  ng-if="paramCtrl.paramForm[param.name + $index].$error.typeValidation || paramsCtrl.paramForm[param.name + $index].$error.number">
+                This must be a {{::param.type}}
+            </span>
+        </td>
+        <td class="param-desc" ng-if="::(simpleParamsCtrl.tooltip !== 'false')"><img src="assets/images/information.png"
+                                                                                     title="{{::param.description}}"/>
+        </td>
+    </tr>
+</table>

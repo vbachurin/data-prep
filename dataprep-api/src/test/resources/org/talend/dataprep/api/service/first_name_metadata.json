@@ -1,0 +1,17 @@
+{
+  "id": "0",
+  "name": "firstname",
+  "quality": {
+    "empty": 0,
+    "invalid": 0,
+    "valid": 2,
+    "emptyPercent": 0,
+    "emptyPercentWidth": 0,
+    "invalidPercent": 0,
+    "invalidPercentWidth": 0,
+    "validPercent": 100,
+    "validPercentWidth": 100
+  },
+  "type": "string",
+  "total": 2
+}

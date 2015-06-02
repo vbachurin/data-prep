@@ -23,9 +23,25 @@ $border-color: #CECECE;
   }
 
   .inventory-icon {
-    width: 50px;
-    padding: 5px;
+    width: 60px;
+    padding: 10px 5px 10px 15px;
     border-bottom: 1px solid $border-color;
+    position: relative;
+    cursor: pointer;
+    &:hover{
+      padding: 8px 3px 8px 13px;
+    }
+  }
+
+  .inventory-icon>img {
+    z-index: 0;
+  }
+
+  .inventory-icon>img.pin {
+    position: absolute;
+    z-index: 1;
+    top: 5px;
+    left: 11px;
   }
 
   .inventory-title {
@@ -34,9 +50,13 @@ $border-color: #CECECE;
     font-weight: 700;
     font-size: 1.1em;
     text-transform: uppercase;
-
     height: 34px;
     overflow: hidden;
+    cursor: pointer;
+    &:hover {
+      color: $dark-blue;
+      text-decoration: underline;
+    }
   }
 
   .inventory-description {
@@ -137,4 +157,8 @@ $border-color: #CECECE;
 
 .t-btn-more{
   background-image: url('/assets/images/more.png');
+}
+
+.pending{
+  background-color: darkgrey;
 }

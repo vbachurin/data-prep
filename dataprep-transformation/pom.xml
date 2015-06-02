@@ -6,11 +6,11 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m3-SNAPSHOT</version>
+        <version>1.0.m5-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <artifactId>dataprep-transformation</artifactId>
-    <version>1.0.m3-SNAPSHOT</version>
+    <version>1.0.m5-SNAPSHOT</version>
     <name>dataprep-transformation</name>
     <properties>
         <start-class>org.talend.dataprep.transformation.Application</start-class>
@@ -60,6 +60,22 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+
+        <!-- Tableau Software Desktop Dependencies-->
+        <dependency>
+            <groupId>tableau-software</groupId>
+            <artifactId>dataExtract</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/dataextract.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>tableau-software</groupId>
+            <artifactId>jna</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/jna.jar</systemPath>
+        </dependency>
         <!-- SWAGGER DEPENDENCIES -->
         <dependency>
             <groupId>com.mangofactory</groupId>
@@ -94,6 +110,11 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
@@ -108,13 +129,20 @@
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>dockerfile/java:oracle-java8</baseImage>
-                            <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
+                            <baseImage>java:8</baseImage>
+                            <cmd><![CDATA[
+                                export PATH=/lib/tde/lib64:$PATH && java -Djna.library.path=/lib/tde/lib64 -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar
+                            ]]>
+                            </cmd>
                             <resources>
                                 <resource>
                                     <targetPath>/</targetPath>
                                     <directory>${project.build.directory}</directory>
                                     <include>${project.build.finalName}.jar</include>
+                                </resource>
+                                <resource>
+                                    <targetPath>/lib/tde/lib64</targetPath>
+                                    <directory>${project.basedir}/lib/tde/lib64</directory>
                                 </resource>
                             </resources>
                         </configuration>

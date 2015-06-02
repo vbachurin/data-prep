@@ -3,20 +3,26 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dataprep-dataset</artifactId>
-    <version>1.0.m3-SNAPSHOT</version>
+    <version>1.0.m5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>dataprep-dataset</name>
     <description>Talend Data Preparation - Data Set service</description>
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m3-SNAPSHOT</version>
+        <version>1.0.m5-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <properties>
         <start-class>org.talend.dataprep.dataset.Application</start-class>
     </properties>
+
     <dependencies>
+        <!-- Data Quality - Content analysis -->
+        <dependency>
+            <groupId>org.talend</groupId>
+            <artifactId>org.talend.datascience.spark</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jetty</artifactId>
@@ -85,15 +91,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-pool</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -141,7 +139,7 @@
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>dockerfile/java:oracle-java8</baseImage>
+                            <baseImage>java:8</baseImage>
                             <cmd>java -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar</cmd>
                             <resources>
                                 <resource>
@@ -235,6 +233,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

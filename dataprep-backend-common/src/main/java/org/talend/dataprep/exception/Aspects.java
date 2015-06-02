@@ -8,33 +8,32 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.netflix.hystrix.exception.HystrixRuntimeException;
+
 @Configuration
 @Aspect
 class Aspects {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Aspects.class );
+    private static final Logger LOG = LoggerFactory.getLogger(Aspects.class);
 
     @Around("execution(* *(..)) && @annotation(requestMapping)")
     public Object exception(ProceedingJoinPoint pjp, RequestMapping requestMapping) throws Throwable {
         try {
             return pjp.proceed(pjp.getArgs());
-        } catch (Exception e) {
-            LOG.error("Exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
-            throw Exceptions.Internal(DefaultMessage.UNEXPECTED_EXCEPTION, e);
         }
-    }
-
-    enum DefaultMessage implements Messages {
-        UNEXPECTED_EXCEPTION;
-
-        @Override
-        public String getProduct() {
-            return "TDP";
+        catch (TDPException e) {
+            throw e; // Let TDPException pass through (to be processed in correct HTTP code by controller advice).
         }
-
-        @Override
-        public String getGroup() {
-            return "ALL";
+        // filter out hystrix exception level if possible
+        catch (HystrixRuntimeException hre) {
+            if (hre.getCause() instanceof TDPException) {
+                throw hre.getCause();
+            }
+            throw hre;
+        }
+        catch (Exception e) {
+            LOG.error("Unexpected exception occurred in '" + pjp.getSignature().toShortString() + "'", e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 

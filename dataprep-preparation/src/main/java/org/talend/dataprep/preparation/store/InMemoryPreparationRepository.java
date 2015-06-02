@@ -3,12 +3,12 @@ package org.talend.dataprep.preparation.store;
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.preparation.Identifiable;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 
 public class InMemoryPreparationRepository implements PreparationRepository {
@@ -20,10 +20,12 @@ public class InMemoryPreparationRepository implements PreparationRepository {
         add(ROOT_STEP);
     }
 
+    @Override
     public void add(Identifiable object) {
         store.put(object.id(), object);
     }
 
+    @Override
     public <T extends Identifiable> T get(String id, Class<T> clazz) {
         if (id == null) {
             return null;
@@ -39,6 +41,30 @@ public class InMemoryPreparationRepository implements PreparationRepository {
         } else {
             return null;
         }
+    }
+
+    /**
+     * @see PreparationRepository#getByDataSet(String)
+     */
+    @Override
+    public Collection<Preparation> getByDataSet(String dataSetId) {
+
+        // defensive programming
+        if (StringUtils.isEmpty(dataSetId)) {
+            return Collections.emptyList();
+        }
+
+        List<Preparation> filteredPreparations = new ArrayList<>();
+
+        // first filter on the class and then second filter on the dataset id
+        store.entrySet().stream().filter(entry -> Preparation.class.equals(entry.getValue().getClass())).forEach(entry -> {
+            Preparation preparation = (Preparation) entry.getValue();
+            // second filter on the dataset id
+            if (dataSetId.equals(preparation.getDataSetId())) {
+                filteredPreparations.add(preparation);
+            }
+        });
+        return filteredPreparations;
     }
 
     @Override

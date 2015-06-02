@@ -1,25 +1,44 @@
 package org.talend.dataprep.dataset.store.local;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.util.Base64;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
+@Configuration
+@ConditionalOnExpression()
+@ConditionalOnProperty(name = "dataset.content.store", havingValue = "local", matchIfMissing = false)
 public class LocalDataSetContentStore implements DataSetContentStore {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( LocalDataSetContentStore.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSetContentStore.class);
 
-    private final String storeLocation;
+    @Autowired
+    FormatGuess.Factory factory;
 
-    public LocalDataSetContentStore(String storeLocation) {
+    @Value("${dataset.content.store.local.location}")
+    private String storeLocation;
+
+    @PostConstruct
+    public void init() {
         if (storeLocation == null) {
             throw new IllegalArgumentException("Store location cannot be null.");
         }
@@ -27,7 +46,6 @@ public class LocalDataSetContentStore implements DataSetContentStore {
             storeLocation += "/"; //$NON-NLS-1$
         }
         LOGGER.info("Content store location: {}", storeLocation);
-        this.storeLocation = storeLocation;
     }
 
     private File getFile(DataSetMetadata dataSetMetadata) {
@@ -35,34 +53,27 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     }
 
     @Override
-    public void store(DataSetMetadata dataSetMetadata, InputStream dataSetJsonContent, String actions) {
-        try {
-            LOGGER.info("Actions: {}", new String(Base64.getDecoder().decode(actions)));
-            LOGGER.info("Content: {}", IOUtils.toString(dataSetJsonContent));
-        } catch (IOException e) {
-            LOGGER.error("Unable to dump content & actions.", e);
-        }
-    }
-
-    @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         try {
-            File dataSetFile = getFile(dataSetMetadata);
-            FileUtils.touch(dataSetFile);
-            FileOutputStream fos = new FileOutputStream(dataSetFile);
-            IOUtils.copy(dataSetContent, fos);
-
-            LOGGER.debug( "Data set #{} stored to '{}'.", dataSetMetadata.getId(),dataSetFile);
-
+            if (dataSetContent.available() > 0) {
+                File dataSetFile = getFile(dataSetMetadata);
+                FileUtils.touch(dataSetFile);
+                FileOutputStream fos = new FileOutputStream(dataSetFile);
+                IOUtils.copy(dataSetContent, fos);
+                LOGGER.debug("Data set #{} stored to '{}'.", dataSetMetadata.getId(), dataSetFile);
+            } else {
+                LOGGER.debug("Ignore update of data set #{} as content seems empty", dataSetMetadata.getId());
+            }
         } catch (IOException e) {
-            throw new RuntimeException("Unable to save data set in temporary directory.", e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_STORE_DATASET_CONTENT, e, TDPExceptionContext.build().put("id",
+                    dataSetMetadata.getId()));
         }
     }
 
     @Override
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
-        Serializer serializer = content.getContentType().getSerializer();
+        Serializer serializer = factory.getFormatGuess(content.getFormatGuessId()).getSerializer();
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
     }
 
@@ -71,7 +82,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {
-            LOGGER.warn("File '{}' does not exist.",getFile(dataSetMetadata));
+            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata), e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }
@@ -80,19 +91,45 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     public void delete(DataSetMetadata dataSetMetadata) {
         if (getFile(dataSetMetadata).exists()) {
             if (!getFile(dataSetMetadata).delete()) {
-                throw new RuntimeException("Unable to delete data set content #" + dataSetMetadata.getId());
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_DELETE_DATASET, TDPExceptionContext.build().put("dataSetId",
+                        dataSetMetadata.getId()));
             }
         } else {
-            LOGGER.warn("Data set #{} has no content.",dataSetMetadata.getId());
+            LOGGER.warn("Data set #{} has no content.", dataSetMetadata.getId());
         }
     }
 
     @Override
     public void clear() {
         try {
-            FileUtils.deleteDirectory(new File(storeLocation));
+            Path path = FileSystems.getDefault().getPath(storeLocation);
+            if (!path.toFile().exists()) {
+                return;
+            }
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
+                    // Skip NFS file content
+                    if (!file.getFileName().toFile().getName().startsWith(".nfs")) { //$NON-NLS-1$
+                        Files.delete(file);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+                    if (e == null) {
+                        return FileVisitResult.CONTINUE;
+                    } else {
+                        // directory iteration failed
+                        throw e;
+                    }
+                }
+            });
         } catch (IOException e) {
-            throw new RuntimeException("Unable to clear content store.", e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CLEAR_DATASETS, e);
         }
     }
+
 }

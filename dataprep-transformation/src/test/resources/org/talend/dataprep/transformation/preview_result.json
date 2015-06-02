@@ -1,0 +1,45 @@
+{
+  "records":[
+    {
+      "__tdpRowDiff":"delete",
+      "__tdpDiff": {"firstname": "update"},
+      "firstname": "CALVIN",
+      "avgAmount":"200.56",
+      "city":"Columbia",
+      "birth":"01-02-1986",
+      "registration":"25-08-2008",
+      "id":"2",
+      "state":"TN",
+      "nbCommands":"13",
+      "lastname":"JEFFERSON"
+    },
+    {
+      "firstname":"ANDREW",
+      "avgAmount":"387.21",
+      "city":"Salem",
+      "birth":"18-09-1948",
+      "registration":"15-03-2008",
+      "id":"4",
+      "state":"NV",
+      "nbCommands":"54",
+      "lastname":"TAFT",
+      "__tdpDiff":{
+        "firstname":"update"
+      }
+    },
+    {
+      "firstname":"FRANKLIN",
+      "avgAmount":"537.4",
+      "city":"Salem",
+      "birth":"25-07-1980",
+      "registration":"31-03-2007",
+      "id":"6",
+      "state":"IN",
+      "nbCommands":"85",
+      "lastname":"TAYLOR",
+      "__tdpDiff":{
+        "firstname":"update"
+      }
+    }
+  ]
+}

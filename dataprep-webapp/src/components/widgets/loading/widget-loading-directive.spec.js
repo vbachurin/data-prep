@@ -23,7 +23,7 @@ describe('Dropdown directive', function () {
         $rootScope.$emit('talend.loading.start');
         $rootScope.$digest();
         expect(body.hasClass('loading-open')).toBe(false);
-        $timeout.flush(200);
+        $timeout.flush(120);
 
         //then
         expect(body.hasClass('loading-open')).toBe(true);

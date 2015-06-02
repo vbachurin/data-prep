@@ -1,15 +1,23 @@
 (function() {
     'use strict';
 
+    /**
+     * @ngdoc service
+     * @name talend.widget.service:TalendConfirmService
+     * @description Talend confirm service
+     */
     function TalendConfirmService($rootScope, $compile, $document, $q, $timeout, $translate) {
         var body = $document.find('body').eq(0);
         var self = this;
 
         /**
-         * Translate the texts to display
-         * @param textIds - text ids for translation
-         * @param textArgs - text translation args
-         * @returns Promise
+         * @ngdoc method
+         * @name translateTexts
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @param {string[]} textIds The text ids for translation
+         * @param {object} textArgs The text translation args
+         * @description [PRIVATE] Translate the texts to display
+         * @returns {promise} The promise that resolves the translated texts
          */
         var translateTexts = function(textIds, textArgs) {
             return $translate(textIds, textArgs)
@@ -21,10 +29,13 @@
         };
 
         /**
-         * Create confirm modal isolated scope
-         * @param options - modal options
-         * @param textIds - text ids for translation
-         * @param textArgs - text translation args
+         * @ngdoc method
+         * @name createScope
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @param {object} options The modal options
+         * @param {string[]} textIds The text ids for translation
+         * @param {object} textArgs The translation args
+         * @description [PRIVATE] Create confirm modal isolated scope
          */
         var createScope = function(options, textIds, textArgs) {
             if(self.modalScope) {
@@ -42,7 +53,10 @@
         };
 
         /**
-         * Destroy the modal scope
+         * @ngdoc method
+         * @name removeScope
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @description [PRIVATE] Destroy the modal scope
          */
         var removeScope = function() {
             self.modalScope.$destroy();
@@ -50,7 +64,10 @@
         };
 
         /**
-         * Create the confirm modal element and attach it to the body
+         * @ngdoc method
+         * @name createElement
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @description [PRIVATE] Create the confirm modal element and attach it to the body
          */
         var createElement = function() {
             self.element = angular.element('<talend-confirm disable-enter="disableEnter" texts="texts"></talend-confirm>');
@@ -59,7 +76,10 @@
         };
 
         /**
-         * Remove the the element
+         * @ngdoc method
+         * @name removeElement
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @description [PRIVATE] Remove the the element
          */
         var removeElement = function() {
             self.element.remove();
@@ -67,7 +87,10 @@
         };
 
         /**
-         * Remove the modal and reset everything
+         * @ngdoc method
+         * @name close
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @description [PRIVATE] Remove the modal and reset everything
          */
         var close = function() {
             removeScope();
@@ -78,7 +101,10 @@
         };
 
         /**
-         * Resolve the modal promise and destroy the modal
+         * @ngdoc method
+         * @name resolve
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @description Resolve the modal promise and destroy the modal
          */
         this.resolve = function() {
             self.confirmResolve();
@@ -86,8 +112,11 @@
         };
 
         /**
-         * Reject the modal promise and destroy the modal
-         * @param cause - 'dismiss' if the modal is closed without clicking on a button
+         * @ngdoc method
+         * @name reject
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @param {string} cause 'dismiss' if the modal is closed without clicking on a button
+         * @description Reject the modal promise and destroy the modal
          */
         this.reject = function(cause) {
             self.confirmReject(cause);
@@ -95,13 +124,15 @@
         };
 
         /**
-         * Create the confirm modal element and return a promise that will be resolve on button click or modal dismiss
-         * Example : TalendConfirmService.confirm({disableEnter: true}, 'First text', 'Second text')
-         *
-         * @param options - {disableEnter: boolean}
-         * @param textIds - Array containing the texts ids to display
-         * @param textArgs - Text translation args
-         * @returns Promise
+         * @ngdoc method
+         * @name confirm
+         * @methodOf talend.widget.service:TalendConfirmService
+         * @param {object} options Confirm modal options {disableEnter: boolean}
+         * @param {string[]} textIds Array containing the texts ids to display
+         * @param {object} textArgs Text translation args
+         * @returns {promise} Promise that resolves (validate) or reject (refuse/cancel) the choice
+         * @description Create the confirm modal element and return a promise that will be resolve on button click or modal dismiss
+         * Example : TalendConfirmService.confirm({disableEnter: true}, ['First text', 'Second text'], {translateArg: 'value'})
          */
         this.confirm = function(options, textIds, textArgs) {
             createScope(options, textIds, textArgs);

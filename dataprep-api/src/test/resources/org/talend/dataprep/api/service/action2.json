@@ -3,12 +3,14 @@
     {
       "action": "uppercase",
       "parameters": {
+        "column_id": "0002",
         "column_name": "lastname"
       }
     },
     {
       "action": "uppercase",
       "parameters": {
+        "column_id": "0001",
         "column_name": "firstname"
       }
     }

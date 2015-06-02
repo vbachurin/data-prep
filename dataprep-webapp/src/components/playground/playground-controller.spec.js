@@ -5,7 +5,7 @@ describe('Playground controller', function() {
 
     beforeEach(module('data-prep.playground'));
 
-    beforeEach(inject(function($rootScope, $controller, PlaygroundService) {
+    beforeEach(inject(function($rootScope, $q, $controller, $state, PlaygroundService) {
         scope = $rootScope.$new();
 
         createController = function() {
@@ -15,7 +15,8 @@ describe('Playground controller', function() {
             return ctrl;
         };
 
-        spyOn(PlaygroundService, 'createOrUpdatePreparation').and.callFake(function() {});
+        spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
+        spyOn($state, 'go').and.returnValue();
     }));
 
     it('should bind showPlayground getter with PlaygroundService', inject(function(PlaygroundService) {
@@ -91,6 +92,20 @@ describe('Playground controller', function() {
         expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('My preparation');
     }));
 
+    it('should change route on create/update name', inject(function($rootScope, $state, PreparationService) {
+        //given
+        var ctrl = createController();
+        ctrl.preparationName = 'My preparation ';
+        PreparationService.currentPreparationId = 'fe6843da512545e';
+
+        //when
+        ctrl.changeName();
+        $rootScope.$digest();
+
+        //then
+        expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid : 'fe6843da512545e'}, {location:'replace', inherit:false});
+    }));
+
     it('should not call service create/updateName service if name is blank', inject(function(PlaygroundService) {
         //given
         var ctrl = createController();
@@ -101,5 +116,17 @@ describe('Playground controller', function() {
 
         //then
         expect(PlaygroundService.createOrUpdatePreparation).not.toHaveBeenCalled();
+    }));
+
+    it('should bind previewInProgress getter with PreviewService', inject(function(PlaygroundService, PreviewService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.previewInProgress).toBeFalsy();
+
+        //when
+        spyOn(PreviewService, 'previewInProgress').and.returnValue(true);
+
+        //then
+        expect(ctrl.previewInProgress).toBe(true);
     }));
 });

@@ -1,15 +1,16 @@
 package org.talend.dataprep.api.service.command;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.annotation.Nonnull;
 
-class ReleasableInputStream extends InputStream {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    private static final Logger LOG = LoggerFactory.getLogger( ReleasableInputStream.class );
+public class ReleasableInputStream extends InputStream {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ReleasableInputStream.class);
 
     private final InputStream delegate;
 
@@ -35,7 +36,7 @@ class ReleasableInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] bytes) throws IOException {
+    public int read(@Nonnull byte[] bytes) throws IOException {
         try {
             int read = delegate.read(bytes);
             if (read < 0) {
@@ -49,7 +50,7 @@ class ReleasableInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] bytes, int i, int i1) throws IOException {
+    public int read(@Nonnull byte[] bytes, int i, int i1) throws IOException {
         try {
             int read = delegate.read(bytes, i, i1);
             if (read < 0) {
@@ -96,8 +97,8 @@ class ReleasableInputStream extends InputStream {
             LOG.debug("Safe close on stream using {}", onClose);
 
             onClose.run();
-        } catch (Throwable t) {
-            LOG.error("Unable to invoke onClose closure.", t);
+        } catch (Exception e) {
+            LOG.error("Unable to invoke onClose closure.", e);
         }
     }
 

@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-parent</artifactId>
-        <version>1.0.m3-SNAPSHOT</version>
+        <version>1.0.m5-SNAPSHOT</version>
     </parent>
     <groupId>org.talend.dataprep</groupId>
     <artifactId>dataprep-webapp</artifactId>
-    <version>1.0.m3-SNAPSHOT</version>
+    <version>1.0.m5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>dataprep-webapp</name>
@@ -20,6 +20,7 @@
         <docker.registry.name>talend-registry:5000</docker.registry.name>
         <docker.tools.image.name>${docker.registry.name}/talend/data-prep-webapp-tools:1.0</docker.tools.image.name>
         <!--            <docker.registry.name>tal-qa158.talend.lan:5000</docker.registry.name>-->
+	<docker.user>1000</docker.user>
     </properties>
     <profiles>
         <profile>
@@ -192,6 +193,7 @@
                                         <argument>run</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
@@ -212,6 +214,7 @@
                                         <argument>run</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
@@ -232,9 +235,10 @@
                                     <arguments>
                                         <argument>run</argument>
                                         <argument>--user</argument>
-                                        <argument>1000</argument>
+                                        <argument>${docker.user}</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>
@@ -253,9 +257,10 @@
                                     <arguments>
                                         <argument>run</argument>
                                         <argument>--user</argument>
-                                        <argument>1000</argument>
+                                        <argument>${docker.user}</argument>
                                         <argument>-v</argument>
                                         <argument>${basedir}:/dataprep-webapp</argument>
+                                        <argument>--rm=true</argument>
                                         <argument>${docker.tools.image.name}</argument>
                                         <argument>/bin/sh</argument>
                                         <argument>-c</argument>

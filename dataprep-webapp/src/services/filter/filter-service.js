@@ -33,14 +33,30 @@
         });
     }
 
-    function FilterService(DatasetGridService) {
+    /**
+     * @ngdoc service
+     * @name data-prep.services.filter.service:FilterService
+     * @description Filter service. This service holds the filters list and provide the entry point to datagrid filters
+     * @requires data-prep.services.playground.service:DatagridService
+     */
+    function FilterService(DatagridService) {
         var self = this;
+
+        /**
+         * @ngdoc property
+         * @name filters
+         * @propertyOf data-prep.services.filter.service:FilterService
+         * @description the filters list
+         */
         self.filters = [];
 
         /**
-         * Return the column with a cell that can match the phrase
-         * @param phrase - to match
-         * @returns {Array}
+         * @ngdoc method
+         * @name getColumnsContaining
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} phrase - to match. Wildcard (*) accepted
+         * @description Return the column with a cell that can match the phrase. It take into account a possible wildcard (*)
+         * @returns {string[]} - the columns id that contains a matching value
          */
         self.getColumnsContaining = function(phrase) {
             if (!phrase) {
@@ -51,22 +67,28 @@
             var canBeNumeric = !isNaN(phrase.replace(/\*/g, ''));
             var canBeBoolean = 'true'.match(regexp) || 'false'.match(regexp);
 
-            return DatasetGridService.getColumnsContaining(regexp, canBeNumeric, canBeBoolean);
+            return DatagridService.getColumnsContaining(regexp, canBeNumeric, canBeBoolean);
         };
 
         /**
-         * Remove all the filters and update datagrid filters
+         * @ngdoc method
+         * @name removeAllFilters
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @description Remove all the filters and update datagrid filters
          */
         self.removeAllFilters = function() {
-            DatasetGridService.resetFilters();
+            DatagridService.resetFilters();
             self.filters = [];
         };
 
         /**
-         * Create 'contains' filter function
-         * @param colId - the column id
-         * @param phrase - the phrase that the item must contain
-         * @returns {Function}
+         * @ngdoc method
+         * @name createContainFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId - the column id
+         * @param {string} phrase - the phrase that the item must contain
+         * @description [PRIVATE] Create a 'contains' filter function
+         * @returns {function} - the predicated function
          */
         var createContainFilter = function(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
@@ -77,10 +99,13 @@
         };
 
         /**
-         * Add a filter and update datagrid filters
-         * @param type - the filter type (ex : contains)
-         * @param colId - the column id
-         * @param args - the filter arguments (ex for 'contains' type : {phrase: 'toto'})
+         * @ngdoc method
+         * @name addFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} type - the filter type (ex : contains)
+         * @param {string} colId - the column id
+         * @param {string} args - the filter arguments (ex for 'contains' type : {phrase: 'toto'})
+         * @description Add a filter and update datagrid filters
          */
         self.addFilter = function(type, colId, args) {
             var filterFn;
@@ -91,26 +116,32 @@
             }
 
             var filterInfos = new Filter(type, colId, args, filterFn);
-            DatasetGridService.addFilter(filterFn);
+            DatagridService.addFilter(filterFn);
             self.filters.push(filterInfos);
         };
 
         /**
-         * Remove a filter and update datagrid filters
-         * @param filter
+         * @ngdoc method
+         * @name removeFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {object} filter - the filter to delete
+         * @description Remove a filter and update datagrid filters
          */
         self.removeFilter = function(filter) {
             var filterIndex = self.filters.indexOf(filter);
             if(filterIndex > -1) {
-                DatasetGridService.removeFilter(filter.filterFn);
+                DatagridService.removeFilter(filter.filterFn);
                 self.filters.splice(filterIndex, 1);
             }
         };
 
         /**
-         * Update existing filter and update datagrid filters
-         * @param oldFilter - the old filter to update
-         * @param newValue - the new filter value
+         * @ngdoc method
+         * @name updateFilter
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {object} oldFilter - the filter to update
+         * @param {object} newValue - the filter update parameters
+         * @description Update an existing filter and update datagrid filters
          */
         self.updateFilter = function(oldFilter, newValue) {
             var index = self.filters.indexOf(oldFilter);
@@ -126,7 +157,7 @@
             }
             var newFilter = new Filter(oldFilter.type, oldFilter.colId, newArgs, newFilterFn);
 
-            DatasetGridService.updateFilter(oldFn, newFilter.filterFn);
+            DatagridService.updateFilter(oldFn, newFilter.filterFn);
             self.filters.splice(index, 1, newFilter);
         };
     }

@@ -16,7 +16,6 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -30,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessagesBundle implements ApplicationContextAware {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MessagesBundle.class );
+    private static final Logger LOG = LoggerFactory.getLogger(MessagesBundle.class);
 
     private static ResourceBundleMessageSource source;
 
@@ -71,8 +70,8 @@ public class MessagesBundle implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         source = applicationContext.getBean(ResourceBundleMessageSource.class);
-        LOG.info("Activated i18n messages ({}).",source);
+        LOG.info("Activated i18n messages ({}).", source);
     }
 }
