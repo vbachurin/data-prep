@@ -1,6 +1,6 @@
 #! /bin/bash
 
-LOCATION='/var/www/scripts'
+LOCATION='/var/www/html/scripts'
 
 # improve following to support ipv6
 IP_ADDRESS_REGEX='[0-9\.]*'
