@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
@@ -36,7 +35,7 @@ public class HDFSContentStore implements DataSetContentStore {
     private final FileSystem fileSystem;
 
     @Autowired
-    private ApplicationContext context;
+    private FormatGuess.Factory factory;
 
     @Value("${dataset.content.store.hdfs.location}")
     private String hdfsStoreLocation;
@@ -70,7 +69,7 @@ public class HDFSContentStore implements DataSetContentStore {
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
         if (content.getFormatGuessId() != null) {
-            Serializer serializer = context.getBean(content.getFormatGuessId(), FormatGuess.class).getSerializer();
+            Serializer serializer = factory.getFormatGuess(content.getFormatGuessId()).getSerializer();
             return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
         } else {
             return new ByteArrayInputStream(new byte[0]);
@@ -82,7 +81,7 @@ public class HDFSContentStore implements DataSetContentStore {
         try {
             return fileSystem.open(getPath(dataSetMetadata));
         } catch (Exception e) {
-            LOGGER.warn("File '{}' does not exist.", getPath(dataSetMetadata));
+            LOGGER.warn("File '{}' does not exist.", getPath(dataSetMetadata), e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }

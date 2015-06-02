@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -33,7 +32,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSetContentStore.class);
 
     @Autowired
-    private ApplicationContext context;
+    FormatGuess.Factory factory;
 
     @Value("${dataset.content.store.local.location}")
     private String storeLocation;
@@ -74,7 +73,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
     @Override
     public InputStream get(DataSetMetadata dataSetMetadata) {
         DataSetContent content = dataSetMetadata.getContent();
-        Serializer serializer = context.getBean(content.getFormatGuessId(), FormatGuess.class).getSerializer();
+        Serializer serializer = factory.getFormatGuess(content.getFormatGuessId()).getSerializer();
         return serializer.serialize(getAsRaw(dataSetMetadata), dataSetMetadata);
     }
 
@@ -83,7 +82,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {
-            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata));
+            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata), e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }

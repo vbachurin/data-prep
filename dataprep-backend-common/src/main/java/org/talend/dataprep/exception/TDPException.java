@@ -25,10 +25,10 @@ public class TDPException extends RuntimeException {
     private final ErrorCode code;
 
     /** The exception cause. */
-    private Throwable cause;
+    private final Throwable cause;
 
     /** Context of the error when it occurred (used to detail the user error message in frontend). */
-    private TDPExceptionContext context;
+    private final TDPExceptionContext context;
 
     /**
      * Full constructor.

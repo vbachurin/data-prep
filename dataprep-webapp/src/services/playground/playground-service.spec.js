@@ -182,7 +182,7 @@ describe('Playground Service', function () {
             //given
             var preparation = {
                 id: '6845521254541',
-                dataset: {id: '1', name: 'my dataset'}
+                datasetId: '1'
             };
             PreparationService.currentPreparationId = '5746518486846';
 
@@ -192,7 +192,7 @@ describe('Playground Service', function () {
             $rootScope.$apply();
 
             //then
-            expect(PlaygroundService.currentMetadata).toBe(preparation.dataset);
+            expect(PlaygroundService.currentMetadata).toEqual({id: '1'});
             expect(PlaygroundService.currentData).toBe(data);
             expect(FilterService.removeAllFilters).toHaveBeenCalled();
             expect(RecipeService.refresh).toHaveBeenCalled();
@@ -265,19 +265,24 @@ describe('Playground Service', function () {
         }));
     });
 
-    it('should do nothing when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationService) {
+    it('should reject when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationService) {
         //given
         var name = 'My preparation';
         var newName = name;
+        var rejected = false;
 
         PlaygroundService.originalPreparationName = name;
         PlaygroundService.preparationName = newName;
 
         //when
-        PlaygroundService.createOrUpdatePreparation(newName);
+        PlaygroundService.createOrUpdatePreparation(newName)
+            .catch(function() {
+                rejected = true;
+            });
         $rootScope.$digest();
 
         //then
+        expect(rejected).toBe(true);
         expect(PreparationService.create).not.toHaveBeenCalled();
         expect(PreparationService.setName).not.toHaveBeenCalled();
         expect(PlaygroundService.preparationName).toBe(name);

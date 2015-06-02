@@ -82,8 +82,8 @@ public class Split extends SingleColumnAction {
      * @return the searator to use according to the given parameters.
      */
     private String getSeparator(Map<String, String> parameters) {
-        return (parameters.get(SEPARATOR_PARAMETER).equals("other") ? parameters.get(MANUAL_SEPARATOR_PARAMETER) : parameters
-                .get(SEPARATOR_PARAMETER));
+        return ("other").equals(parameters.get(SEPARATOR_PARAMETER)) ? parameters.get(MANUAL_SEPARATOR_PARAMETER) : parameters
+                .get(SEPARATOR_PARAMETER);
     }
 
     /**

@@ -8,6 +8,7 @@
      * @requires talend.widget
      * @requires data-prep.services.playground
      * @requires data-prep.services.recipe
+     * @requires data-prep.services.recipeBullet
      * @requires data-prep.services.preparation
      * @requires data-prep.transformation-params
      */
@@ -17,6 +18,7 @@
         'data-prep.services.playground',
         'data-prep.services.recipe',
         'data-prep.services.preparation',
+        'data-prep.recipeBullet',
         'data-prep.transformation-params'
     ]);
 })();

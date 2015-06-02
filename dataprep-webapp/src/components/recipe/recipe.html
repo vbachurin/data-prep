@@ -1,5 +1,6 @@
 <ul class="talend-accordion">
-    <li ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId" ng-class="{'inactive': step.inactive}">
+    <li ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId"
+        ng-class="{'inactive': step.inactive}">
         <div class="talend-accordion-trigger step-description"
              ng-click="recipeCtrl.showModal[$index] = !!step.transformation.cluster"
              on-open="recipeCtrl.resetParams(step)">
@@ -7,13 +8,14 @@
             {{$index + 1}}.
             <span class="recipe-description">{{step.transformation.label}}</span>
             {{::'RECIPE_ITEM_ON_COL' | translate}}
+            <br/>
             <span class="recipe-description recipe-column-name">{{step.column.name}}</span>
+
+            <recipe-bullet class="step-trigger2" step="step" ng-if="recipeCtrl.recipe.length === 1" type="onlyone" ></recipe-bullet>
+            <recipe-bullet class="step-trigger2" step="step" ng-if="($index === 0 && recipeCtrl.recipe.length !== 1)" type="startChain" ></recipe-bullet>
+            <recipe-bullet class="step-trigger2" step="step" ng-if="($index > 0 && $index < recipeCtrl.recipe.length-1)" type="middleChain" ></recipe-bullet>
+            <recipe-bullet class="step-trigger2" step="step" ng-if="($index === recipeCtrl.recipe.length-1 && recipeCtrl.recipe.length !== 1)" type="endChain" ></recipe-bullet>
         </div>
-        <div class="step-trigger"
-           ng-class="{downlight: step.downlight, highlight: step.highlight}"
-           ng-click="recipeCtrl.toggleStep(step)"
-           ng-mouseleave="recipeCtrl.stepHoverEnd()"
-           ng-mouseenter="recipeCtrl.stepHoverStart($index)"></div>
 
         <ul class="submenu" ng-if="(step.transformation.parameters.length || step.transformation.items.length)">
             <li>

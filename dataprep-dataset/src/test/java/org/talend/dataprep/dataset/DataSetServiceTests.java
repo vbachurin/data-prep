@@ -23,6 +23,8 @@ import org.apache.spark.SparkContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
@@ -41,6 +43,7 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Separator;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,6 +70,11 @@ public class DataSetServiceTests {
 
     @Autowired(required = false)
     SparkContext sparkContext;
+
+    @Autowired
+    FormatGuess.Factory factory;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
@@ -175,14 +183,14 @@ public class DataSetServiceTests {
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
-        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
-                Character.toString(new Separator().separator));
+        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
-        assertTrue(statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
+        assertTrue("statusCode is:" + statusCode,
+                statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
     }
 
     @Test
@@ -200,6 +208,7 @@ public class DataSetServiceTests {
         int before = dataSetMetadataRepository.size();
         when().delete("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
         int after = dataSetMetadataRepository.size();
+        logger.debug("delete before {} after {}", before, after);
         assertThat(before - after, is(1));
     }
 
@@ -385,7 +394,9 @@ public class DataSetServiceTests {
         DataSetMetadata metadata = dataSetMetadataRepository.get("9876");
         assertNull(metadata);
         int statusCode = when().get("/datasets/{id}/metadata", "9876").statusCode();
+
         assertThat(statusCode, is(HttpServletResponse.SC_NO_CONTENT));
+
     }
 
     /**

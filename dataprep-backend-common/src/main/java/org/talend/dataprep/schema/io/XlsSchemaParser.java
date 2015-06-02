@@ -7,15 +7,18 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 /**
  * This class is responsible to parse excel file (note poi is used for reading .xls)
@@ -26,33 +29,46 @@ public class XlsSchemaParser implements SchemaParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(XlsSchemaParser.class);
 
     @Override
-    public List<ColumnMetadata> parse(InputStream content, DataSetMetadata metadata) {
+    public SchemaParserResult parse(Request request) {
 
         // FIXME ATM only first sheet but need to be discuss
         // maybe return List<List<ColumnMetadata>> ??
         // so we could return all sheets
 
-        Map<String, List<ColumnMetadata>> schema = parseAllSheets(content);
+        List<SchemaParserResult.SheetContent> sheetContents = parseAllSheets(request.getContent());
 
-        if (schema.size() > 0) {
-            return schema.values().iterator().next();
+        if (!sheetContents.isEmpty()) {
+            return sheetContents.size() == 1 ? //
+            SchemaParserResult.Builder.parserResult() //
+                    .sheetContents(sheetContents) //
+                    .draft(false) //
+                    .build() //
+                    : //
+                    SchemaParserResult.Builder.parserResult() //
+                            .sheetContents(sheetContents) //
+                            .draft(true) //
+                            .sheetName(sheetContents.get(0).getName()) //
+                            .build();
         }
 
-        return Collections.emptyList();
+        return SchemaParserResult.Builder.parserResult() //
+                .sheetContents(Collections.emptyList()) //
+                .draft(false) //
+                .build();
 
     }
 
-    public Map<String, List<ColumnMetadata>> parseAllSheets(InputStream content) {
+    public List<SchemaParserResult.SheetContent> parseAllSheets(InputStream content) {
         try {
             Workbook hssfWorkbook = XlsUtils.getWorkbook(content);
 
             int sheetNumber = hssfWorkbook.getNumberOfSheets();
 
             if (sheetNumber < 1) {
-                return Collections.emptyMap();
+                return Collections.emptyList();
             }
 
-            Map<String, List<ColumnMetadata>> schema = new LinkedHashMap<>(sheetNumber);
+            List<SchemaParserResult.SheetContent> schemas = new ArrayList<>();
 
             for (int i = 0; i < sheetNumber; i++) {
                 Sheet sheet = hssfWorkbook.getSheetAt(i);
@@ -66,15 +82,16 @@ public class XlsSchemaParser implements SchemaParser {
 
                 String sheetName = sheet.getSheetName();
 
-                schema.put(sheetName == null ? "sheet-" + i : sheetName, columnMetadatas);
+                // update XlsSerializer if this default sheet naming change!!!
+                schemas.add(new SchemaParserResult.SheetContent(sheetName == null ? "sheet-" + i : sheetName, columnMetadatas));
 
             }
 
-            return schema;
+            return schemas;
 
         } catch (IOException e) {
             LOGGER.debug("IOEXception during parsing xls content :" + e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -102,7 +119,6 @@ public class XlsSchemaParser implements SchemaParser {
         final List<ColumnMetadata> columnMetadatas = new ArrayList<>(cellsTypeMatrix.size());
 
         cellsTypeMatrix.forEach((integer, integerTypeSortedMap) -> {
-            int colRowTypeChange = cellTypeChange.get(integer);
 
             Type type = guessColumnType(integerTypeSortedMap, averageHeaderSize);
 
@@ -188,7 +204,14 @@ public class XlsSchemaParser implements SchemaParser {
         for (int rowCounter = firstRowNum; rowCounter <= lastRowNum; rowCounter++) {
 
             int cellCounter = 0;
-            Iterator<Cell> cellIterator = sheet.getRow(rowCounter).cellIterator();
+
+            Row row = sheet.getRow(rowCounter);
+
+            if (row == null) {
+                continue;
+            }
+
+            Iterator<Cell> cellIterator = row.cellIterator();
 
             Type currentType;
 

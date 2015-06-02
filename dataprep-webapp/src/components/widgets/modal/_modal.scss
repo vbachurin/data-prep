@@ -111,11 +111,11 @@
     @include media($medium-screen) {
       max-height: 80%;
       padding: $modal-padding;
-      width: 60%;
+      width: 80%;
     }
 
     @include media($large-screen) {
-      width: 50%;
+      width: 900px;
     }
 
     h1 {

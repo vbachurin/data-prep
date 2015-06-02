@@ -9,17 +9,20 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
+import org.talend.dataprep.transformation.api.transformer.exporter.Exporter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
-@Component
+@Component("transformer#csv")
 @Scope("request")
-public class CsvExporter implements Transformer {
+public class CsvExporter implements Transformer,Exporter
+{
 
     @Autowired
     private TypeTransformerSelector typeStateSelector;
@@ -36,13 +39,20 @@ public class CsvExporter implements Transformer {
     @Override
     public void transform(InputStream input, OutputStream output) {
         try {
+
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
-                    .output(new CsvWriter(output, ((CsvExportConfiguration) exportConfiguration).getCsvSeparator()))
+                    .output(new CsvWriter(output, (char) exportConfiguration.getArguments().get("csvSeparator")))
                     .actions(DataSetRow.class, actions.getRowTransformer())
                     .actions(RowMetadata.class, actions.getMetadataTransformer()).build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
+    }
+
+    @Override
+    public ExportType getExportType()
+    {
+        return ExportType.CSV;
     }
 }

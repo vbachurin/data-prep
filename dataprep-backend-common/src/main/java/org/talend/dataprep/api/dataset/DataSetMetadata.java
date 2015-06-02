@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.json.EpochTimeDeserializer;
 import org.talend.dataprep.api.dataset.json.EpochTimeSerializer;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -38,10 +39,9 @@ public class DataSetMetadata {
     @JsonProperty("lifecycle")
     private final DataSetLifecycle lifecycle = new DataSetLifecycle();
 
-    /** Dataset content summary. */
     @JsonProperty("content")
     @JsonUnwrapped
-    private final DataSetContent content = new DataSetContent();
+    private DataSetContent content = new DataSetContent();
 
     /** Dataset governance. */
     @JsonProperty("governance")
@@ -62,10 +62,23 @@ public class DataSetMetadata {
     private long creationDate;
 
     /** Sheet number in case of excel source. */
-    @JsonProperty("sheetNumber")
-    private int sheetNumber;
+    @JsonProperty("sheetName")
+    private String sheetName;
+
+    /**
+     * if <code>true</code> this dataset is still a draft as we need more informations from the user
+     */
+    @JsonProperty("draft")
+    private boolean draft = false;
+
+    /**
+     * available only when draft is <code>true</code> i.e until some informations has been confirmed by the user
+     */
+    @JsonProperty("schemaParserResult")
+    private SchemaParserResult schemaParserResult;
 
     public DataSetMetadata() {
+        // no op
     }
 
     /**
@@ -100,6 +113,10 @@ public class DataSetMetadata {
         return rowMetadata;
     }
 
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
+    }
+
     /**
      * @return the dataset lifecycle.
      */
@@ -112,6 +129,10 @@ public class DataSetMetadata {
      */
     public DataSetContent getContent() {
         return content;
+    }
+
+    public void setContent(DataSetContent content) {
+        this.content = content;
     }
 
     /**
@@ -135,11 +156,12 @@ public class DataSetMetadata {
         return author;
     }
 
-    /**
-     * @return the dataset sheet number in case of excel source.
-     */
-    public int getSheetNumber() {
-        return sheetNumber;
+    public String getSheetName() {
+        return sheetName;
+    }
+
+    public void setSheetName(String sheetName) {
+        this.sheetName = sheetName;
     }
 
     /**
@@ -147,6 +169,22 @@ public class DataSetMetadata {
      */
     public long getCreationDate() {
         return creationDate;
+    }
+
+    public boolean isDraft() {
+        return draft;
+    }
+
+    public void setDraft(boolean draft) {
+        this.draft = draft;
+    }
+
+    public SchemaParserResult getSchemaParserResult() {
+        return schemaParserResult;
+    }
+
+    public void setSchemaParserResult(SchemaParserResult schemaParserResult) {
+        this.schemaParserResult = schemaParserResult;
     }
 
     /**
@@ -176,7 +214,9 @@ public class DataSetMetadata {
 
         private boolean qualityAnalyzed;
 
-        private int sheetNumber;
+        private String sheetName;
+
+        private boolean draft = true;
 
         private String formatGuessId;
 
@@ -241,8 +281,13 @@ public class DataSetMetadata {
             return this;
         }
 
-        public Builder sheetNumber(int sheetNumber) {
-            this.sheetNumber = sheetNumber;
+        public Builder sheetName(String sheetName) {
+            this.sheetName = sheetName;
+            return this;
+        }
+
+        public Builder draft(boolean draft) {
+            this.draft = draft;
             return this;
         }
 
@@ -271,21 +316,23 @@ public class DataSetMetadata {
             }
             RowMetadata row = new RowMetadata(columns);
             DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row);
-            metadata.sheetNumber = this.sheetNumber;
+            metadata.sheetName = this.sheetName;
+            metadata.draft = this.draft;
             // Content information
             DataSetContent content = metadata.getContent();
             content.setNbRecords(size);
             content.setNbLinesInHeader(headerSize);
             content.setNbLinesInFooter(footerSize);
+
             if (formatGuessId != null) {
                 content.setFormatGuessId(formatGuessId);
             }
             content.setMediaType(mediaType);
             // Lifecycle information
-            DataSetLifecycle lifecycle = metadata.getLifecycle();
-            lifecycle.contentIndexed(contentAnalyzed);
-            lifecycle.schemaAnalyzed(schemaAnalyzed);
-            lifecycle.qualityAnalyzed(qualityAnalyzed);
+            DataSetLifecycle metadataLifecycle = metadata.getLifecycle();
+            metadataLifecycle.contentIndexed(contentAnalyzed);
+            metadataLifecycle.schemaAnalyzed(schemaAnalyzed);
+            metadataLifecycle.qualityAnalyzed(qualityAnalyzed);
             return metadata;
         }
     }

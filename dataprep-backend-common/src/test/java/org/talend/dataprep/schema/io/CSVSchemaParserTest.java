@@ -11,6 +11,8 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.SchemaParser;
+import org.talend.dataprep.schema.SchemaParserResult;
 
 /**
  * Unit test for the CSVSchemaParser class.
@@ -40,7 +42,8 @@ public class CSVSchemaParserTest {
             expected.add(getColumnMetadata(0, "first name"));
             expected.add(getColumnMetadata(1, "last name"));
 
-            List<ColumnMetadata> actual = parser.parse(inputStream, datasetMetadata);
+            SchemaParserResult result = parser.parse(new SchemaParser.Request(inputStream, datasetMetadata));
+            List<ColumnMetadata> actual = result.getSheetContents().get(0).getColumnMetadatas();
 
             Assert.assertEquals(expected, actual);
         }

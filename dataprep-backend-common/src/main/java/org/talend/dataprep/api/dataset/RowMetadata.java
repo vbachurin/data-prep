@@ -77,10 +77,8 @@ public class RowMetadata {
         // process the updated columns
         columnMetadatas.forEach(column -> {
             ColumnMetadata referenceColumn = reference.getById(column.getId());
-            if (referenceColumn != null) {
-                if (!column.getName().equals(referenceColumn.getName())) {
-                    column.setDiffFlagValue(Flag.UPDATE.getValue());
-                }
+            if (referenceColumn != null && !column.getName().equals(referenceColumn.getName())) {
+                column.setDiffFlagValue(Flag.UPDATE.getValue());
             }
         });
 
@@ -96,4 +94,8 @@ public class RowMetadata {
         columnMetadatas.sort((col1, col2) -> col1.getId().compareTo(col2.getId()));
     }
 
+    @Override
+    public String toString() {
+        return "RowMetadata{" + "columnMetadatas=" + columnMetadatas + '}';
+    }
 }

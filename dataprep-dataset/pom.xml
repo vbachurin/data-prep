@@ -3,14 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dataprep-dataset</artifactId>
-    <version>1.0.m4-SNAPSHOT</version>
+    <version>1.0.m5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>dataprep-dataset</name>
     <description>Talend Data Preparation - Data Set service</description>
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m4-SNAPSHOT</version>
+        <version>1.0.m5-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <properties>

@@ -44,7 +44,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
 
     private int retryCount = 0;
 
-    private DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns) {
+    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         this.dataSetId = dataSetId;
         this.metadata = metadata;
@@ -53,6 +53,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
+
         final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata="
                 + metadata + "&columns=" + columns);
         final HttpResponse response = client.execute(contentRetrieval);

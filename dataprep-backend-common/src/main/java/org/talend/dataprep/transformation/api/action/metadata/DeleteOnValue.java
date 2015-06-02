@@ -55,7 +55,7 @@ public class DeleteOnValue extends AbstractDelete {
      */
     @Override
     public boolean toDelete(Map<String, String> parsedParameters, String value) {
-        return (value != null && value.trim().equals(parsedParameters.get(VALUE_PARAMETER)));
+        return value != null && value.trim().equals(parsedParameters.get(VALUE_PARAMETER));
     }
 
     /**
