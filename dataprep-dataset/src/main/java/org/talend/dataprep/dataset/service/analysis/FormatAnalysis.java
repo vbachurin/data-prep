@@ -62,16 +62,10 @@ public class FormatAnalysis {
             try {
                 DataSetMetadata metadata = repository.get(dataSetId);
                 if (metadata != null) {
+
                     // Guess media type based on InputStream
-                    Set<FormatGuesser.Result> mediaTypes = new HashSet<>();
-                    for (FormatGuesser guesser : guessers) {
-                        try (InputStream content = store.getAsRaw(metadata)) {
-                            FormatGuesser.Result mediaType = guesser.guess(content);
-                            mediaTypes.add(mediaType);
-                        } catch (IOException e) {
-                            LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
-                        }
-                    }
+                    Set<FormatGuesser.Result> mediaTypes = guessMediaTypes(dataSetId, metadata);
+
                     // Select best format guess
                     List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
                     Collections.sort(orderedGuess, (g1, g2) -> (int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess()
@@ -83,25 +77,9 @@ public class FormatAnalysis {
                     dataSetContent.setParameters(bestGuessResult.getParameters());
                     dataSetContent.setFormatGuessId(bestGuess.getBeanId());
                     dataSetContent.setMediaType(bestGuess.getMediaType());
-                    // Parse column name information
-                    try (InputStream content = store.getAsRaw(metadata)) {
-                        SchemaParser parser = bestGuess.getSchemaParser();
 
-                        SchemaParserResult schemaParserResult = parser.parse(new SchemaParser.Request(content, metadata));
-                        if (schemaParserResult.draft()) {
-                            metadata.setSheetName(schemaParserResult.getSheetContents().get(0).getName());
-                            metadata.setDraft(true);
-                            metadata.setSchemaParserResult(schemaParserResult);
-                            repository.add(metadata);
-                            LOG.info("format analysed for dataset: '{}'", dataSetId);
-                            return;
-                        }
-                        metadata.setDraft(false);
-                        metadata.getRow().setColumns(schemaParserResult.getSheetContents().get(0).getColumnMetadatas());
+                    parseColumnNameInformation(dataSetId, metadata, bestGuess);
 
-                    } catch (IOException e) {
-                        throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
-                    }
                     repository.add(metadata);
                     LOG.info("format analysed for dataset: '{}'", dataSetId);
                     // Asks for a in depth schema analysis (for column type information).
@@ -120,6 +98,53 @@ public class FormatAnalysis {
         } catch (JMSException e) {
             throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
         }
+    }
 
+    /**
+     * Guess the media types for the given metadata.
+     *
+     * @param dataSetId the dataset id.
+     * @param metadata the dataset to analyse.
+     * @return a set of FormatGuesser.Result.
+     */
+    private Set<FormatGuesser.Result> guessMediaTypes(String dataSetId, DataSetMetadata metadata) {
+        Set<FormatGuesser.Result> mediaTypes = new HashSet<>();
+        for (FormatGuesser guesser : guessers) {
+            try (InputStream content = store.getAsRaw(metadata)) {
+                FormatGuesser.Result mediaType = guesser.guess(content);
+                mediaTypes.add(mediaType);
+            } catch (IOException e) {
+                LOG.debug("Unable to use guesser '" + guesser + "' on data set #" + dataSetId, e);
+            }
+        }
+        return mediaTypes;
+    }
+
+    /**
+     * Parse and store column name information.
+     *
+     * @param dataSetId the dataset id.
+     * @param metadata the dataset metadata to parse.
+     * @param bestGuess the format guesser.
+     */
+    private void parseColumnNameInformation(String dataSetId, DataSetMetadata metadata, FormatGuess bestGuess) {
+        try (InputStream content = store.getAsRaw(metadata)) {
+            SchemaParser parser = bestGuess.getSchemaParser();
+
+            SchemaParserResult schemaParserResult = parser.parse(new SchemaParser.Request(content, metadata));
+            if (schemaParserResult.draft()) {
+                metadata.setSheetName(schemaParserResult.getSheetContents().get(0).getName());
+                metadata.setDraft(true);
+                metadata.setSchemaParserResult(schemaParserResult);
+                repository.add(metadata);
+                LOG.info("format analysed for dataset: '{}'", dataSetId);
+                return;
+            }
+            metadata.setDraft(false);
+            metadata.getRow().setColumns(schemaParserResult.getSheetContents().get(0).getColumnMetadatas());
+
+        } catch (IOException e) {
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
+        }
     }
 }

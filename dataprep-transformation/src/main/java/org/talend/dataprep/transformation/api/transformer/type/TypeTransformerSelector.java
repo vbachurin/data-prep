@@ -49,6 +49,8 @@ public class TypeTransformerSelector implements TypeTransformer {
                         writer.fieldName("records");
                         recordsTransformer.process(configuration);
                         break;
+                    default:
+                        break;
                     }
                 }
             }

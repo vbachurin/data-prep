@@ -119,7 +119,6 @@ public class XlsSchemaParser implements SchemaParser {
         final List<ColumnMetadata> columnMetadatas = new ArrayList<>(cellsTypeMatrix.size());
 
         cellsTypeMatrix.forEach((integer, integerTypeSortedMap) -> {
-            int colRowTypeChange = cellTypeChange.get(integer);
 
             Type type = guessColumnType(integerTypeSortedMap, averageHeaderSize);
 

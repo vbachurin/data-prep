@@ -19,7 +19,14 @@ import org.slf4j.LoggerFactory;
 
 public class XlsUtils {
 
-    private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsUtils.class);
+    private static final transient Logger LOGGER = LoggerFactory.getLogger(XlsUtils.class);
+
+    /**
+     * Private constructor.
+     */
+    private XlsUtils() {
+        // Utility class should not have a public constructor.
+    }
 
     public static String getCellValueAsString(Cell cell) {
         if (cell == null) {
@@ -35,8 +42,7 @@ public class XlsUtils {
         case Cell.CELL_TYPE_FORMULA:
             return cell.getCellFormula();
         case Cell.CELL_TYPE_NUMERIC:
-            // TODO configurable??
-            if (HSSFDateUtil.isCellDateFormatted(cell)) {
+            if (HSSFDateUtil.isCellDateFormatted(cell)) { // TODO configurable??
                 DateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
                 return sdf.format(cell.getDateCellValue());
             }

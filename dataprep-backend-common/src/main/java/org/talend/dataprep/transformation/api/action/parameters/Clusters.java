@@ -9,11 +9,11 @@ public class Clusters {
 
     private final List<String> titles = new ArrayList<>(2);
 
-    private final List<ClusterItem> clusters = new ArrayList<>();
+    private final List<ClusterItem> clusterItems = new ArrayList<>();
 
     Clusters(List<String> titles, final List<ClusterItem> clusters) {
         this.titles.addAll(titles);
-        this.clusters.addAll(clusters);
+        this.clusterItems.addAll(clusters);
     }
 
     public static Builder builder() {
@@ -25,7 +25,7 @@ public class Clusters {
     }
 
     public List<ClusterItem> getClusters() {
-        return clusters;
+        return clusterItems;
     }
 
     public static class Builder {
@@ -45,8 +45,8 @@ public class Clusters {
         }
 
         public Clusters build() {
-            final List<ClusterItem> clusterItems = this.clusters.stream().map(ClusterItem.Builder::build).collect(toList());
-            return new Clusters(titles, clusterItems);
+            final List<ClusterItem> items = this.clusters.stream().map(ClusterItem.Builder::build).collect(toList());
+            return new Clusters(titles, items);
         }
     }
 }
