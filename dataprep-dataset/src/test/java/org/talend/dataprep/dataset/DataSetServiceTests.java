@@ -355,7 +355,7 @@ public class DataSetServiceTests {
         DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id("1234");
         builder.row(ColumnMetadata.Builder//
                 .column()//
-                .id("1234")//
+                .id(1234)//
                 .name("id")//
                 .empty(0)//
                 .invalid(0)//

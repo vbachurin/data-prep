@@ -134,6 +134,6 @@ public class RowMetadataTest {
      * @return a new column.
      */
     private ColumnMetadata getColumnMetadata(String id, String name) {
-        return ColumnMetadata.Builder.column().id(id).name(name).type(Type.STRING).build();
+        return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).build();
     }
 }

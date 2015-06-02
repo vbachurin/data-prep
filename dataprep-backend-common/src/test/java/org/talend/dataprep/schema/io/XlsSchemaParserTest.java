@@ -37,8 +37,8 @@ public class XlsSchemaParserTest {
             DataSetMetadata datasetMetadata = getDataSetMetadata();
 
             List<ColumnMetadata> expected = new ArrayList<>(2);
-            expected.add(getColumnMetadata("0", "Film"));
-            expected.add(getColumnMetadata("1", "Producer"));
+            expected.add(getColumnMetadata(0, "Film"));
+            expected.add(getColumnMetadata(1, "Producer"));
 
             List<ColumnMetadata> actual = parser.parse(inputStream, datasetMetadata);
 
@@ -60,7 +60,7 @@ public class XlsSchemaParserTest {
      * @param name the column name.
      * @return the wanted column metadata.
      */
-    private ColumnMetadata getColumnMetadata(String id, String name) {
+    private ColumnMetadata getColumnMetadata(int id, String name) {
         return ColumnMetadata.Builder.column().id(id).name(name).headerSize(1).type(Type.STRING).build();
     }
 

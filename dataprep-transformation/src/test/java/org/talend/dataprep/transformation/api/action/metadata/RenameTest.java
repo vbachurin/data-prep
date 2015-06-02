@@ -81,7 +81,7 @@ public class RenameTest {
         List<ColumnMetadata> input = new ArrayList<>();
         ColumnMetadata metadata = ColumnMetadata.Builder //
                 .column() //
-                .id("1") //
+                .id(1) //
                 .name("first name") //
                 .type(Type.STRING) //
                 .headerSize(102) //
@@ -97,7 +97,7 @@ public class RenameTest {
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         ColumnMetadata renamedMetadata = ColumnMetadata.Builder.column() //
-                .id("1") //
+                .id(1) //
                 .name("NAME_FIRST") //
                 .type(Type.STRING) //
                 .headerSize(102) //

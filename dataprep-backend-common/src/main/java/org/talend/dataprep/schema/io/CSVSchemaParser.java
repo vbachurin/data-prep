@@ -37,7 +37,7 @@ public class CSVSchemaParser implements SchemaParser {
             }
             // By default, consider all columns as Strings (to be refined by deeper analysis).
             for (int i = 0; i < columns.length; i++) {
-                columnsMetadata.add(column().id(String.valueOf(i)).name(columns[i]).type(Type.STRING).build());
+                columnsMetadata.add(column().id(i).name(columns[i]).type(Type.STRING).build());
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);

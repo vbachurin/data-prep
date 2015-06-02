@@ -10,7 +10,8 @@
   },
   "columns": [
     {
-      "id": "id",
+      "id": "0001",
+      "name": "id",
       "quality": {
         "empty": 20,
         "invalid": 26,
@@ -19,7 +20,8 @@
       "type": "integer"
     },
     {
-      "id": "firstname",
+      "id": "0002",
+      "name": "firstname",
       "quality": {
         "empty": 12,
         "invalid": 26,
@@ -28,7 +30,8 @@
       "type": "string"
     },
     {
-      "id": "lastname",
+      "id": "0003",
+      "name": "lastname",
       "quality": {
         "empty": 23,
         "invalid": 27,
@@ -37,7 +40,8 @@
       "type": "string"
     },
     {
-      "id": "age",
+      "id": "0004",
+      "name": "age",
       "quality": {
         "empty": 15,
         "invalid": 25,
@@ -46,7 +50,8 @@
       "type": "integer"
     },
     {
-      "id": "date-of-birth",
+      "id": "0006",
+      "name": "date-of-birth",
       "quality": {
         "empty": 16,
         "invalid": 26,
@@ -55,7 +60,8 @@
       "type": "string"
     },
     {
-      "id": "alive",
+      "id": "0007",
+      "name": "alive",
       "quality": {
         "empty": 8,
         "invalid": 25,
