@@ -34,6 +34,7 @@ public class CSVSchemaParser implements SchemaParser {
             // First line has column names
             String[] columns = reader.readNext();
             if (columns == null) { // Empty content?
+                reader.close();
                 return SchemaParserResult.Builder.parserResult() //
                         .sheetContents(sheetContents).build();
             }
@@ -45,23 +46,7 @@ public class CSVSchemaParser implements SchemaParser {
             }
 
             // Best guess (and naive) on data types
-            String[] line;
-            while ((line = reader.readNext()) != null) {
-                for (int i = 0; i < line.length; i++) {
-                    String columnValue = line[i];
-                    try {
-                        Integer.parseInt(columnValue);
-                        sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
-                                .get().getColumnMetadatas().get(i).setType(Type.INTEGER.getName());
-                    } catch (NumberFormatException e) {
-                        // Not an number
-                    }
-                    if ("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim())) {
-                        sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
-                                .get().getColumnMetadatas().get(i).setType(Type.BOOLEAN.getName());
-                    }
-                }
-            }
+            bestGuess(reader, sheetContents);
 
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
@@ -69,5 +54,33 @@ public class CSVSchemaParser implements SchemaParser {
         return SchemaParserResult.Builder.parserResult() //
                 .sheetContents(sheetContents) //
                 .draft(false).build();
+    }
+
+    /**
+     * Best (and naive) data type guess.
+     *
+     * @param reader the csv reader.
+     * @param sheetContents the sheet content.
+     * @throws IOException if an error occurs.
+     */
+    private void bestGuess(CSVReader reader, List<SchemaParserResult.SheetContent> sheetContents) throws IOException {
+        // Best guess (and naive) on data types
+        String[] line;
+        while ((line = reader.readNext()) != null) {
+            for (int i = 0; i < line.length; i++) {
+                String columnValue = line[i];
+                try {
+                    Integer.parseInt(columnValue);
+                    sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
+                            .get().getColumnMetadatas().get(i).setType(Type.INTEGER.getName());
+                } catch (NumberFormatException e) {
+                    // Not an number
+                }
+                if ("true".equalsIgnoreCase(columnValue.trim()) || "false".equalsIgnoreCase(columnValue.trim())) {
+                    sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
+                            .get().getColumnMetadatas().get(i).setType(Type.BOOLEAN.getName());
+                }
+            }
+        }
     }
 }

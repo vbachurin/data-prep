@@ -80,6 +80,7 @@ public interface ActionMetadata {
      */
     default Consumer<DataSetRow> create(Map<String, String> parameters) {
         return row -> {
+            // default empty implementation
         };
     }
 
@@ -93,6 +94,7 @@ public interface ActionMetadata {
      */
     default Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
         return rowMetadata -> {
+            // default empty implementation
         };
     }
 

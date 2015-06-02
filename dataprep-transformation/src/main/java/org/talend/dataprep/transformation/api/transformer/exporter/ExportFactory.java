@@ -33,8 +33,9 @@ public class ExportFactory {
             return get(XlsExporter.class, actionConsumer, configuration);
         case TABLEAU:
             return get(TableauExporter.class, actionConsumer, configuration);
+        default:
+            throw new UnsupportedOperationException("Unknown export type : " + configuration.getFormat());
         }
-        throw new UnsupportedOperationException("Unknown export type : " + configuration.getFormat());
     }
 
     public List<ExportType> getExportTypes() {

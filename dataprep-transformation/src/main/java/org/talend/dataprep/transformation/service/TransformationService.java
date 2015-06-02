@@ -158,13 +158,14 @@ public class TransformationService {
     @RequestMapping(value = "/suggest/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ApiResponses({ @ApiResponse(code = 500, message = "Internal error") })
-    public @ResponseBody List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column) {
+    @ResponseBody
+    public List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column) {
         if (column == null) {
             return Collections.emptyList();
         }
         String typeName = column.getType();
         Type type = Type.get(typeName);
-        ArrayList<ActionMetadata> suggestedActions = new ArrayList<>();
+        List<ActionMetadata> suggestedActions = new ArrayList<>();
         // look for all actions applicable to the column type
         for (ActionMetadata am : allActions) {
             Set<Type> compatibleColumnTypes = am.getCompatibleColumnTypes();
@@ -180,7 +181,8 @@ public class TransformationService {
     @RequestMapping(value = "/suggest/dataset", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ApiResponses({ @ApiResponse(code = 500, message = "Internal error") })
-    public @ResponseBody List<ActionMetadata> suggest(InputStream dataset) {
+    @ResponseBody
+    public List<ActionMetadata> suggest(InputStream dataset) {
         if (dataset == null) {
             return Collections.emptyList();
         }

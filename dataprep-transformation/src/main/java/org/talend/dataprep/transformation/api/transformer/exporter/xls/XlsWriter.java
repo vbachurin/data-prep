@@ -6,11 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -21,7 +17,7 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 public class XlsWriter implements TransformerWriter {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(TransformerWriter.class);
 
     private final OutputStream outputStream;
 
@@ -79,29 +75,29 @@ public class XlsWriter implements TransformerWriter {
 
             Cell cell = row.createCell(cellIdx++);
             switch (Type.get(columnMetadata.getType())) {
-                case NUMERIC:
-                case INTEGER:
-                case DOUBLE:
-                case FLOAT:
-                    String val = dataSetRow.get(columnMetadata.getId());
-                    try {
-                        if (!StringUtils.isEmpty(val)) {
-                            cell.setCellValue(Double.valueOf(val));
-                        }
-                    } catch (NumberFormatException e) {
-                        logger.warn("skip NumberFormatException and use string for value {} row {} cell {}", //
-                                dataSetRow.get(columnMetadata.getId()), rowIdx - 1, cellIdx - 1);
-                        cell.setCellValue(val);
+            case NUMERIC:
+            case INTEGER:
+            case DOUBLE:
+            case FLOAT:
+                String val = dataSetRow.get(columnMetadata.getId());
+                try {
+                    if (!StringUtils.isEmpty(val)) {
+                        cell.setCellValue(Double.valueOf(val));
                     }
-                    break;
-                case BOOLEAN:
-                    cell.setCellValue(Boolean.valueOf(dataSetRow.get(columnMetadata.getId())));
-                    break;
-                // FIXME ATM we don't have any idea about the date format so this can generate exceptions
-                // case "date":
-                // cell.setCellValue( );
-                default:
-                    cell.setCellValue(dataSetRow.get(columnMetadata.getId()));
+                } catch (NumberFormatException e) {
+                    logger.warn("skip NumberFormatException and use string for value {} row {} cell {}", //
+                            dataSetRow.get(columnMetadata.getId()), rowIdx - 1, cellIdx - 1);
+                    cell.setCellValue(val);
+                }
+                break;
+            case BOOLEAN:
+                cell.setCellValue(Boolean.valueOf(dataSetRow.get(columnMetadata.getId())));
+                break;
+            // FIXME ATM we don't have any idea about the date format so this can generate exceptions
+            // case "date":
+            // cell.setCellValue( );
+            default:
+                cell.setCellValue(dataSetRow.get(columnMetadata.getId()));
             }
 
         }

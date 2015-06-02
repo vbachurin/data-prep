@@ -28,7 +28,8 @@ public class TDPExceptionController {
      * @return the http response.
      */
     @ExceptionHandler(TDPException.class)
-    public @ResponseBody String handleError(HttpServletResponse response, TDPException e) {
+    @ResponseBody
+    public String handleError(HttpServletResponse response, TDPException e) {
 
         LOGGER.error("An error occurred", e);
 

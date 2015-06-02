@@ -131,9 +131,7 @@ public class DataSetMetadata {
         return content;
     }
 
-
-    public void setContent( DataSetContent content )
-    {
+    public void setContent(DataSetContent content) {
         this.content = content;
     }
 
@@ -162,7 +160,7 @@ public class DataSetMetadata {
         return sheetName;
     }
 
-    public void setSheetName( String sheetName ) {
+    public void setSheetName(String sheetName) {
         this.sheetName = sheetName;
     }
 
@@ -331,10 +329,10 @@ public class DataSetMetadata {
             }
             content.setMediaType(mediaType);
             // Lifecycle information
-            DataSetLifecycle lifecycle = metadata.getLifecycle();
-            lifecycle.contentIndexed(contentAnalyzed);
-            lifecycle.schemaAnalyzed(schemaAnalyzed);
-            lifecycle.qualityAnalyzed(qualityAnalyzed);
+            DataSetLifecycle metadataLifecycle = metadata.getLifecycle();
+            metadataLifecycle.contentIndexed(contentAnalyzed);
+            metadataLifecycle.schemaAnalyzed(schemaAnalyzed);
+            metadataLifecycle.qualityAnalyzed(qualityAnalyzed);
             return metadata;
         }
     }

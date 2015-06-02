@@ -3,8 +3,8 @@ package org.talend.dataprep.schema;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 
 /**
- * class responsible to validate if the {@link DataSetMetadata} is still a draft
- * TODO return more reasons (i.e field etc..)
+ * class responsible to validate if the {@link DataSetMetadata} is still a draft TODO return more reasons (i.e field
+ * etc..)
  */
 public interface DraftValidator {
 
@@ -12,12 +12,12 @@ public interface DraftValidator {
 
     class Result {
 
-        public Result( boolean draft )
-        {
+        public boolean draft;
+
+        public Result(boolean draft) {
             this.draft = draft;
         }
 
-        public boolean draft;
     }
 
 }
