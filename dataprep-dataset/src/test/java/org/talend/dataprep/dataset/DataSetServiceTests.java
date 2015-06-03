@@ -312,8 +312,11 @@ public class DataSetServiceTests {
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
+    /**
+     * see https://jira.talendforge.org/browse/TDP-71
+     */
     @Test
-    public void test_TDP_71() throws Exception {
+    public void empty_lines_and_missing_values() throws Exception {
         String dataSetId = given()
                 .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("us_states_to_clean.csv")))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
@@ -321,7 +324,7 @@ public class DataSetServiceTests {
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("TDP-71.expected.json");
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("us_states_to_clean.csv_expected.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
