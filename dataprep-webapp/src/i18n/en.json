@@ -51,6 +51,7 @@
   "CHOOSE_SEPARATOR": "Which character do you want as delimiter ?",
   "SEPARATOR_SEMI_COLON": "Semi colon",
   "SEPARATOR_TAB": "Tabulation",
+  "SEPARATOR_SPACE": "Space",
   "SEPARATOR_COMMA": "Comma",
   "_comment": "Success",
   "DATASET_CREATE_SUCCESS_TITLE": "New dataset",
