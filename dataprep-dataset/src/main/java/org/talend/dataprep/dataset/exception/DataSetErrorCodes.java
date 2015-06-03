@@ -29,8 +29,8 @@ public enum DataSetErrorCodes implements ErrorCode {
      */
     UNABLE_TO_SERVE_DATASET_CONTENT(500, "id"),
     /**
-     * this one will happen when user do something on datas whereas those datas has been updated async
-     * in the backend and this action is not possible anymore (i.e preview whereas this dataset do not need any preview)
+     * this one will happen when user do something on datas whereas those datas has been updated async in the backend
+     * and this action is not possible anymore (i.e preview whereas this dataset do not need any preview)
      */
     REDIRECT_CONTENT(301);
 
@@ -88,6 +88,7 @@ public enum DataSetErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
+    @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }

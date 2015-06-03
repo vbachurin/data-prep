@@ -4,11 +4,12 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
@@ -35,6 +36,7 @@ public class ColumnMetadata {
     private final Quality quality = new Quality();
 
     /** Technical id of the column (generated when instantiated). */
+    @JsonProperty("id")
     private String id;
 
     /** Human readable name of the column. */
@@ -61,20 +63,7 @@ public class ColumnMetadata {
      * Default empty constructor.
      */
     public ColumnMetadata() {
-        // generate random pseudo unique id
-        this.id = UUID.randomUUID().toString();
-    }
 
-    /**
-     * Create a column metadata from the given parameters.
-     *
-     * @param name the column name.
-     * @param typeName the column type.
-     */
-    public ColumnMetadata(String name, String typeName) {
-        this();
-        this.name = name;
-        this.typeName = typeName;
     }
 
     /**
@@ -84,10 +73,37 @@ public class ColumnMetadata {
      * @param name the column name.
      * @param typeName the column type.
      */
-    public ColumnMetadata(String id, String name, String typeName) {
-        this.id = id;
+    private ColumnMetadata(int id, String name, String typeName) {
+        this.id = computeInternalId(id);
         this.name = name;
         this.typeName = typeName;
+    }
+
+    /**
+     * Create a column metadata from the given parameters.
+     *
+     * @param computedId the column computed id.
+     * @param name the column name.
+     * @param typeName the column type.
+     */
+    private ColumnMetadata(String computedId, String name, String typeName) {
+        if (StringUtils.isEmpty(computedId)) {
+            throw new IllegalArgumentException("computed id cannot be null for a column metadata");
+        }
+        this.id = computedId;
+        this.name = name;
+        this.typeName = typeName;
+    }
+
+    /**
+     * Set and convert the given id : make sure the id is padded with '000'. So dataset up to 1000 columns should be ok.
+     *
+     * @param id the id as integer.
+     * @return the formatted id.
+     */
+    private String computeInternalId(int id) {
+        DecimalFormat format = new DecimalFormat("0000"); //$NON-NLS-1$
+        return format.format(id);
     }
 
     /**
@@ -233,7 +249,10 @@ public class ColumnMetadata {
     public static class Builder {
 
         /** The column id. */
-        private String id;
+        private int id;
+
+        /** The column computedId. */
+        private String computedId;
 
         /** The column name. */
         private String name;
@@ -283,11 +302,19 @@ public class ColumnMetadata {
          * @param id the id of the column to set.
          * @return the builder to carry on building the column.
          */
-        public ColumnMetadata.Builder id(String id) {
-            if (isEmpty(id)) {
-                throw new IllegalArgumentException("Id cannot be null or empty.");
-            }
+        public ColumnMetadata.Builder id(int id) {
             this.id = id;
+            return this;
+        }
+
+        /**
+         * Set the computed id of the column.
+         *
+         * @param computedId the computed id of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder computedId(String computedId) {
+            this.computedId = computedId;
             return this;
         }
 
@@ -356,7 +383,7 @@ public class ColumnMetadata {
          * @return the builder to carry on building the column.
          */
         public ColumnMetadata.Builder copy(ColumnMetadata original) {
-            this.id = original.getId();
+            this.computedId = original.getId();
             this.name = original.getName();
             Quality originalQuality = original.getQuality();
             this.empty = originalQuality.getEmpty();
@@ -375,10 +402,10 @@ public class ColumnMetadata {
          */
         public ColumnMetadata build() {
             ColumnMetadata columnMetadata;
-            if (id == null) {
-                columnMetadata = new ColumnMetadata(name, type.getName());
-            } else {
+            if (StringUtils.isEmpty(computedId)) {
                 columnMetadata = new ColumnMetadata(id, name, type.getName());
+            } else {
+                columnMetadata = new ColumnMetadata(computedId, name, type.getName());
             }
             columnMetadata.getQuality().setEmpty(empty);
             columnMetadata.getQuality().setInvalid(invalid);

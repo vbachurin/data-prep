@@ -61,62 +61,74 @@ public class SchemaAnalysis {
             datasetLock.lock();
             try {
                 DataSetMetadata metadata = repository.get(dataSetId);
-                try {
-                    if (metadata != null) {
-                        // Schema analysis
-                        final List<DataType> columnTypes;
-                        try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                            LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
-                            // Determine schema for the content (on the 20 first rows).
-                            Analyzer<DataType> analyzer = new DataTypeAnalyzer();
-                            stream.limit(20).map(row -> {
-                                final Map<String, Object> rowValues = row.values();
-                                final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                        .map(String::valueOf) //
-                                        .collect(Collectors.<String> toList());
-                                return strings.toArray(new String[strings.size()]);
-                            }).forEach(analyzer::analyze);
-                            // Find the best suitable type
-                            columnTypes = analyzer.getResult();
-                            final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
-                            columnTypes.forEach(columnResult -> {
-                                final Type type = Type.get(columnResult.getSuggestedType().name());
-                                if (columns.hasNext()) {
-                                    final ColumnMetadata nextColumn = columns.next();
-                                    LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
-                                    nextColumn.setType(type.getName());
-                                } else {
-                                    LOGGER.error("Unable to set type '" + type.getName()
-                                            + "' to next column (no more column in dataset).");
-                                }
-                            });
-                        }
-                        LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
-                        metadata.getLifecycle().schemaAnalyzed(true);
-                        repository.add(metadata);
-                        // Asks for a in depth schema analysis (for column type information).
-                        jmsTemplate.send(Destinations.QUALITY_ANALYSIS, session -> {
-                            Message schemaAnalysisMessage = session.createMessage();
-                            schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                                return schemaAnalysisMessage;
-                            });
-                    } else {
-                        LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
-                    }
-                } catch (Exception e) {
-                    if (metadata != null) {
-                        metadata.getLifecycle().error(true);
-                        repository.add(metadata);
-                    }
-                    LOGGER.error("Unable to analyse schema for dataset {}.", dataSetId, e);
-                    throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
-                }
+                analyseMetadata(dataSetId, metadata);
             } finally {
                 datasetLock.unlock();
                 message.acknowledge();
             }
         } catch (JMSException e) {
             throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
+        }
+    }
+
+    /**
+     * Analyse the dataset metadata.
+     *
+     * @param dataSetId the dataset id.
+     * @param metadata the dataset metadata to analyse.
+     */
+    private void analyseMetadata(String dataSetId, DataSetMetadata metadata) {
+
+        if (metadata == null) {
+            LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
+            return;
+        }
+
+        try {
+            // Schema analysis
+            final List<DataType> columnTypes;
+            try (Stream<DataSetRow> stream = store.stream(metadata)) {
+                LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
+                // Determine schema for the content (on the 20 first rows).
+                Analyzer<DataType> analyzer = new DataTypeAnalyzer();
+                stream.limit(20).map(row -> {
+                    final Map<String, Object> rowValues = row.values();
+                    final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                            .map(String::valueOf) //
+                            .collect(Collectors.<String> toList());
+                    return strings.toArray(new String[strings.size()]);
+                }).forEach(analyzer::analyze);
+                // Find the best suitable type
+                columnTypes = analyzer.getResult();
+                final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
+                columnTypes.forEach(columnResult -> {
+                    final Type type = Type.get(columnResult.getSuggestedType().name());
+                    if (columns.hasNext()) {
+                        final ColumnMetadata nextColumn = columns.next();
+                        LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
+                        nextColumn.setType(type.getName());
+                    } else {
+                        LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
+                    }
+                });
+            }
+            LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
+            metadata.getLifecycle().schemaAnalyzed(true);
+            repository.add(metadata);
+            // Asks for a in depth schema analysis (for column type information).
+            jmsTemplate.send(Destinations.QUALITY_ANALYSIS, session -> {
+                Message schemaAnalysisMessage = session.createMessage();
+                schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
+                    return schemaAnalysisMessage;
+                });
+
+        } catch (Exception e) {
+            if (metadata != null) {
+                metadata.getLifecycle().error(true);
+                repository.add(metadata);
+            }
+            LOGGER.error("Unable to analyse schema for dataset {}.", dataSetId, e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_COLUMN_TYPES, e);
         }
     }
 }

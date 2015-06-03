@@ -7,10 +7,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 
+/**
+ * Data-prep security setup.
+ */
 @Configuration
 @EnableWebMvcSecurity
 public class Security extends WebSecurityConfigurerAdapter {
 
+    /**
+     * @see WebSecurityConfigurerAdapter#configure(HttpSecurity)
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers("**").permitAll();
@@ -19,5 +25,6 @@ public class Security extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        // method not used yet but will be needed.
     }
 }

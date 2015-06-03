@@ -39,7 +39,7 @@ public class DataSetRow implements Cloneable {
      */
     public DataSetRow(Map<String, String> values) {
         this();
-        this.values.putAll( values );
+        this.values.putAll(values);
     }
 
     /**
@@ -122,7 +122,7 @@ public class DataSetRow implements Cloneable {
         final Map<String, Object> originalValues = oldValue.values();
 
         // compute the new value (column is not found in old value)
-        values.entrySet().stream().forEach((entry) -> {
+        values.entrySet().stream().forEach(entry -> {
             if (!originalValues.containsKey(entry.getKey())) {
                 diff.put(entry.getKey(), NEW.getValue());
             }
@@ -161,6 +161,7 @@ public class DataSetRow implements Cloneable {
      */
     public void clear() {
         deleted = false;
+        oldValue = null;
         values.clear();
     }
 
@@ -207,12 +208,7 @@ public class DataSetRow implements Cloneable {
     }
 
     @Override
-    public String toString()
-    {
-        return "DataSetRow{" +
-            "deleted=" + deleted +
-            ", oldValue=" + oldValue +
-            ", values=" + values +
-            '}';
+    public String toString() {
+        return "DataSetRow{" + "deleted=" + deleted + ", oldValue=" + oldValue + ", values=" + values + '}';
     }
 }

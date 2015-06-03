@@ -32,7 +32,6 @@ public enum APIErrorCodes implements ErrorCode {
     DATASET_REDIRECT(301),
     UNABLE_TO_GET_DYNAMIC_ACTION_PARAMS(400);
 
-
     /** The http status to use. */
     private int httpStatus;
 
@@ -87,6 +86,7 @@ public enum APIErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
+    @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }

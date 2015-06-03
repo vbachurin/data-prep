@@ -106,7 +106,7 @@ public class DataSetService {
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
-    public Iterable<DataSetMetadata> list(final HttpServletResponse response) {
+    public Iterable<DataSetMetadata> list() {
         return dataSetMetadataRepository.list();
     }
 
@@ -151,7 +151,8 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
-    public @ResponseBody DataSet get(
+    @ResponseBody
+    public DataSet get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
@@ -165,6 +166,7 @@ public class DataSetService {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return DataSet.empty(); // No data set, returns empty content.
             }
+
             if (dataSetMetadata.getLifecycle().error()) {
                 LOG.error("Unable to serve {}, data set met unrecoverable error.", dataSetId);
                 // Data set is in error state, meaning content will never be delivered. Returns an error for this
@@ -184,6 +186,7 @@ public class DataSetService {
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
                 return DataSet.empty();
             }
+
             // Build the result
             DataSet dataSet = new DataSet();
             if (metadata) {
@@ -272,11 +275,11 @@ public class DataSetService {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
             lock.lock();
-            DataSetMetadata.Builder builder = metadata().id(dataSetId);
+            DataSetMetadata.Builder datasetBuilder = metadata().id(dataSetId);
             if (name != null) {
-                builder = builder.name(name);
+                datasetBuilder = datasetBuilder.name(name);
             }
-            DataSetMetadata dataSetMetadata = builder.build();
+            DataSetMetadata dataSetMetadata = datasetBuilder.build();
             // Save data set content
             contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
             dataSetMetadataRepository.add(dataSetMetadata);
@@ -299,7 +302,8 @@ public class DataSetService {
     @ApiResponses({ @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist."),
             @ApiResponse(code = HttpServletResponse.SC_ACCEPTED, message = "Data set metadata is not yet ready.") })
     @Timed
-    public @ResponseBody DataSet getMetadata(
+    @ResponseBody
+    public DataSet getMetadata(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
             HttpServletResponse response) {
         if (dataSetId == null) {
@@ -354,7 +358,8 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}/preview", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data preview set by id", notes = "Get a data set preview content based on provided id. Not valid or non existing data set id returns empty content. Data set not in drat status will return a redirect 301")
     @Timed
-    public @ResponseBody DataSet preview(
+    @ResponseBody
+    public DataSet preview(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
             @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
@@ -399,7 +404,7 @@ public class DataSetService {
             List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
 
             if (dataSetMetadata.getRow() == null) {
-                dataSetMetadata.setRowMetadata(new RowMetadata(Collections.EMPTY_LIST));
+                dataSetMetadata.setRowMetadata(new RowMetadata(Collections.emptyList()));
             }
 
             dataSetMetadata.getRow().setColumns(columnMetadatas);
@@ -454,7 +459,7 @@ public class DataSetService {
                 List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
 
                 if (read.getRow() == null) {
-                    read.setRowMetadata(new RowMetadata(Collections.EMPTY_LIST));
+                    read.setRowMetadata(new RowMetadata(Collections.emptyList()));
                 }
                 read.getRow().setColumns(columnMetadatas);
             }

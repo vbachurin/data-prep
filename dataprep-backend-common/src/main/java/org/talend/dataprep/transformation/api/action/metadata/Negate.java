@@ -43,7 +43,7 @@ public class Negate extends SingleColumnAction {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
 
-            if (value != null && (value.trim().equalsIgnoreCase("true") || value.trim().equalsIgnoreCase("false"))) { //$NON-NLS-1$ //$NON-NLS-2$
+            if (value != null && ("true".equalsIgnoreCase(value.trim()) || "false".equalsIgnoreCase(value.trim()))) { //$NON-NLS-1$ //$NON-NLS-2$
                 Boolean boolValue = Boolean.valueOf(value);
                 row.set(columnName, WordUtils.capitalizeFully("" + !boolValue)); //$NON-NLS-1$
             }

@@ -13,7 +13,7 @@ describe('Dataset list directive', function() {
             'author': 'anonymousUser',
             'created': '02-03-2015 14:52',
             'type': 'text/csv',
-            'certification': 'NONE'
+            'certificationStep': 'NONE'
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead2b',
@@ -21,14 +21,14 @@ describe('Dataset list directive', function() {
             'author': 'anonymousUser',
             'created': '02-03-2015 14:53',
             'type': 'application/vnd.ms-excel',
-            'certification': 'PENDING'
+            'certificationStep': 'PENDING'
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead3a',
             'name': 'Customers 2',
             'author': 'anonymousUser',
             'created': '02-03-2015 14:54',
-            'certification': 'CERTIFIED'
+            'certificationStep': 'CERTIFIED'
         }
     ];
 

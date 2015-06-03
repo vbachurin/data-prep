@@ -2,7 +2,6 @@ package org.talend.dataprep.preparation.exception;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.talend.dataprep.exception.ErrorCode;
@@ -19,16 +18,6 @@ public enum PreparationErrorCodes implements ErrorCode {
 
     /** Expected entries to be in the context. */
     private List<String> expectedContextEntries;
-
-    /**
-     * default constructor.
-     * 
-     * @param httpStatus the http status to use.
-     */
-    PreparationErrorCodes(int httpStatus) {
-        this.httpStatus = httpStatus;
-        this.expectedContextEntries = Collections.emptyList();
-    }
 
     /**
      * default constructor.
@@ -65,6 +54,7 @@ public enum PreparationErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
+    @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }

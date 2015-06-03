@@ -15,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Component
 public class ServiceCORSFilter implements Filter, ApplicationContextAware {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( ServiceCORSFilter.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCORSFilter.class);
 
     private final Set<String> serviceRootPaths = new HashSet<>();
 
@@ -44,14 +43,16 @@ public class ServiceCORSFilter implements Filter, ApplicationContextAware {
 
     @Override
     public void init(FilterConfig filterConfig) {
+        // nothing to do here
     }
 
     @Override
     public void destroy() {
+        // nothing to do here
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         // REST Services need special headers for communication with web UI, find REST paths in class definition
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(RestController.class);
         for (Map.Entry<String, Object> currentBean : beans.entrySet()) {

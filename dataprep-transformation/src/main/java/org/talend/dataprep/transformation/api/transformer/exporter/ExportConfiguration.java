@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.api.transformer.exporter;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.talend.dataprep.api.type.ExportType;
 
@@ -20,9 +20,9 @@ public class ExportConfiguration {
     private final String actions;
 
     /**
-     * The arguments in HashMap
+     * The arguments in Map
      */
-    private final HashMap<String, Object> arguments;
+    private final Map<String, Object> arguments;
 
     /**
      * The constructor
@@ -31,7 +31,7 @@ public class ExportConfiguration {
      * @param actions The actions in JSON string format.
      * @param arguments Arguments for the Exporter
      */
-    protected ExportConfiguration(final ExportType format, final String actions, final HashMap<String, Object> arguments) {
+    protected ExportConfiguration(final ExportType format, final String actions, final Map<String, Object> arguments) {
         this.format = format;
         this.actions = actions;
         this.arguments = arguments;
@@ -54,7 +54,7 @@ public class ExportConfiguration {
         return actions;
     }
 
-    public HashMap<String, Object> getArguments() {
+    public Map<String, Object> getArguments() {
         return arguments;
     }
 
@@ -74,9 +74,9 @@ public class ExportConfiguration {
         protected String actions;
 
         /**
-         * The actions in HashMap
+         * The actions in Map
          */
-        protected HashMap<String, Object> arguments;
+        protected Map<String, Object> arguments;
 
         /**
          * Builder DSL for format setter
@@ -103,10 +103,10 @@ public class ExportConfiguration {
         /**
          * Builder DSL for arguments setter
          * 
-         * @param arguments The arguments in HashMap
+         * @param arguments The arguments in Map
          * @return The builder
          */
-        public Builder args(final HashMap<String, Object> arguments) {
+        public Builder args(final Map<String, Object> arguments) {
             this.arguments = arguments;
             return this;
         }

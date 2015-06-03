@@ -21,14 +21,14 @@ public class DataSetBuilderTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder. //
                 metadata() //
                 .id(dataSetId) //
-                .row(column().id("1").name("firstname").type(Type.STRING), column().id("2").name("lastname").type(Type.STRING)) //
+                .row(column().id(1).name("firstname").type(Type.STRING), column().id(2).name("lastname").type(Type.STRING)) //
                 .build();
         assertThat(dataSetMetadata.getId(), is(dataSetId));
 
         List<ColumnMetadata> columns = dataSetMetadata.getRow().getColumns();
         assertThat(columns.size(), is(2));
-        assertThat(columns, CoreMatchers.hasItems(column().id("1").name("firstname").type(Type.STRING).build()));
-        assertThat(columns, CoreMatchers.hasItems(column().id("2").name("lastname").type(Type.STRING).build()));
+        assertThat(columns, CoreMatchers.hasItems(column().id(1).name("firstname").type(Type.STRING).build()));
+        assertThat(columns, CoreMatchers.hasItems(column().id(2).name("lastname").type(Type.STRING).build()));
     }
 
 }

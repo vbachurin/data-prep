@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class TDPExceptionController {
 
     /** This class' logger. */
-    protected static final Logger LOGGER = LoggerFactory.getLogger(TDPExceptionController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TDPExceptionController.class);
 
     /**
      * Send the TDPException into the http response.
@@ -28,7 +28,8 @@ public class TDPExceptionController {
      * @return the http response.
      */
     @ExceptionHandler(TDPException.class)
-    public @ResponseBody String handleError(HttpServletResponse response, TDPException e) {
+    @ResponseBody
+    public String handleError(HttpServletResponse response, TDPException e) {
 
         LOGGER.error("An error occurred", e);
 

@@ -312,6 +312,22 @@ public class DataSetServiceTests {
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
+    /**
+     * see https://jira.talendforge.org/browse/TDP-71
+     */
+    @Test
+    public void empty_lines_and_missing_values() throws Exception {
+        String dataSetId = given()
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("us_states_to_clean.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("us_states_to_clean.csv_expected.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
+    }
+
     @Test
     public void nbLines() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
@@ -364,7 +380,7 @@ public class DataSetServiceTests {
         DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id("1234");
         builder.row(ColumnMetadata.Builder//
                 .column()//
-                .id("1234")//
+                .id(1234)//
                 .name("id")//
                 .empty(0)//
                 .invalid(0)//

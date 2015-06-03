@@ -17,12 +17,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.Serializer;
 
 @Service("serializer#xls")
 public class XlsSerializer implements Serializer {
 
-    private transient static final Logger LOGGER = LoggerFactory.getLogger(XlsSerializer.class);
+    private static final transient Logger LOGGER = LoggerFactory.getLogger(XlsSerializer.class);
 
     @Override
     public InputStream serialize(InputStream rawContent, DataSetMetadata metadata) {
@@ -91,7 +93,7 @@ public class XlsSerializer implements Serializer {
             generator.flush();
             return new ByteArrayInputStream(writer.toString().getBytes("UTF-8"));
         } catch (IOException e) {
-            throw new RuntimeException("Unable to serialize to JSON.", e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
         }
 
     }

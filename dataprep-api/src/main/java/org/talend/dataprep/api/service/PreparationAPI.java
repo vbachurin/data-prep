@@ -54,8 +54,7 @@ public class PreparationAPI extends APIService {
     @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
     public String createPreparation(
-            @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
-            HttpServletResponse response) {
+            @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
         LOG.debug("Creating preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         PreparationCreate preparationCreate = getCommand(PreparationCreate.class, client, preparation);
@@ -69,8 +68,7 @@ public class PreparationAPI extends APIService {
     @Timed
     public String updatePreparation(
             @ApiParam(name = "id", value = "The id of the preparation to update.") @PathVariable("id") String id,
-            @ApiParam(name = "body", value = "The updated preparation. Null values are ignored during update. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation,
-            HttpServletResponse response) {
+            @ApiParam(name = "body", value = "The updated preparation. Null values are ignored during update. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
         LOG.debug("Updating preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         PreparationUpdate preparationUpdate = getCommand(PreparationUpdate.class, client, id, preparation);
@@ -139,7 +137,7 @@ public class PreparationAPI extends APIService {
     @Timed
     public void addPreparationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
-            @ApiParam("Action to add at end of the preparation.") InputStream body, HttpServletResponse response) {
+            @ApiParam("Action to add at end of the preparation.") InputStream body) {
         LOG.debug("Adding action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationId, body);
@@ -153,7 +151,7 @@ public class PreparationAPI extends APIService {
     public void updatePreparationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId,
-            @ApiParam("New content for the action.") InputStream body, HttpServletResponse response) {
+            @ApiParam("New content for the action.") InputStream body) {
         LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId, stepId, body);

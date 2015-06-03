@@ -62,6 +62,7 @@
   "CHOOSE_SEPARATOR": "Which character do you want as delimiter ?",
   "SEPARATOR_SEMI_COLON": "Semi colon",
   "SEPARATOR_TAB": "Tabulation",
+  "SEPARATOR_SPACE": "Space",
   "SEPARATOR_COMMA": "Comma",
   "CONTENT_100_FIRST_ROWS": "Content (100 first rows)",
 
