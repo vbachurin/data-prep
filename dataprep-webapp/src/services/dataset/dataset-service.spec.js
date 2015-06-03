@@ -22,6 +22,8 @@ describe('Dataset Service', function () {
         spyOn(DatasetListService, 'processCertification').and.returnValue($q.when(true));
 
         spyOn(DatasetRestService, 'getContent').and.returnValue($q.when({}));
+        spyOn(DatasetRestService, 'getSheetPreview').and.returnValue($q.when({}));
+        spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when({}));
 
         spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(datasets));
         spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue(preparationConsolidation);
@@ -277,5 +279,30 @@ describe('Dataset Service', function () {
 
         //then
         expect(DatasetRestService.getContent).toHaveBeenCalledWith(datasetId, withMetadata);
+    }));
+
+    it('should get sheet preview from rest service', inject(function (DatasetService, DatasetRestService) {
+        //given
+        var metadata = {id: '7c98ae64154bc'};
+        var sheetName = 'my sheet';
+
+        //when
+        DatasetService.getSheetPreview(metadata, sheetName);
+
+        //then
+        expect(DatasetRestService.getSheetPreview).toHaveBeenCalledWith(metadata.id, sheetName);
+    }));
+
+    it('should set metadata sheet', inject(function (DatasetService, DatasetRestService) {
+        //given
+        var metadata = {id: '7c98ae64154bc', sheetName: 'my old sheet'};
+        var sheetName = 'my sheet';
+
+        //when
+        DatasetService.setDatasetSheet(metadata, sheetName);
+
+        //then
+        expect(metadata.sheetName).toBe(sheetName);
+        expect(DatasetRestService.updateMetadata).toHaveBeenCalledWith(metadata);
     }));
 });

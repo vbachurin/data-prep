@@ -194,12 +194,12 @@
          * @name getSheetPreview
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {object} metadata The dataset metadata
-         * @param {string} sheet The sheet name
+         * @param {string} sheetName The sheet name
          * @description Get a dataset sheet preview
          * @returns {object} The preview data
          */
-        self.getSheetPreview = function(metadata, sheet) {
-            return DatasetRestService.getSheetPreview(metadata.id, sheet);
+        self.getSheetPreview = function(metadata, sheetName) {
+            return DatasetRestService.getSheetPreview(metadata.id, sheetName);
         };
 
         /**
