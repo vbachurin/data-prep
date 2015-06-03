@@ -11,17 +11,9 @@
     function DatasetRestService($rootScope, $upload, $http, RestURLs) {
         var self = this;
 
-        /**
-         * @ngdoc method
-         * @name getDatasets
-         * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description Get the dataset list
-         * @returns {Promise} - the GET call promise
-         */
-        self.getDatasets = function() {
-            return $http.get(RestURLs.datasetUrl);
-        };
-
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Dataset----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name create
@@ -57,18 +49,6 @@
 
         /**
          * @ngdoc method
-         * @name updateMetadata
-         * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description Update the dataset metadata
-         * @param {dataset} dataset - the dataset infos to update
-         * @returns {Promise} The POST promise
-         */
-        self.updateMetadata = function(dataset){
-            return $http.post(RestURLs.datasetUrl + '/' + dataset.id, dataset);
-        };
-
-        /**
-         * @ngdoc method
          * @name delete
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Delete the dataset
@@ -79,6 +59,46 @@
             return $http.delete(RestURLs.datasetUrl + '/' + dataset.id);
         };
 
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Metadata---------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name getDatasets
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Get the dataset list
+         * @returns {Promise} - the GET call promise
+         */
+        self.getDatasets = function() {
+            return $http.get(RestURLs.datasetUrl);
+        };
+
+        /**
+         * @ngdoc method
+         * @name updateMetadata
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Update the dataset metadata
+         * @param {dataset} metadata The dataset infos to update
+         * @returns {Promise} The POST promise
+         */
+        self.updateMetadata = function(metadata){
+            return $http.post(RestURLs.datasetUrl + '/' + metadata.id, metadata);
+        };
+
+        /**
+         * @ngdoc method
+         * @name processCertification
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Ask certification for a dataset
+         * @param {string} datasetId The dataset id
+         */
+        self.processCertification = function(datasetId) {
+            return $http.put(RestURLs.datasetUrl + '/' + datasetId + '/processcertification');
+        };
+
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Content----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name getContent
@@ -99,19 +119,21 @@
                 });
         };
 
+        //--------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------Sheet Preview-------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
-         * @name getPreview
+         * @name getSheetPreview
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Get the dataset content
          * @param {string} datasetId The dataset id
-         * @param {boolean} metadata If false, the metadata will not be returned
-         * @param {string} sheetName to preview
-         * @returns {Promise} - the GET promise 301 status if not anymore a draft
+         * @param {string} sheetName The sheet to preview
+         * @returns {Promise} The GET promise
          */
-        self.getPreview = function(datasetId, metadata,sheetName) {
+        self.getSheetPreview = function(datasetId, sheetName) {
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=' + metadata + (sheetName?'&sheetName='+encodeURIComponent(sheetName): ''))
+            return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true' + (sheetName ? '&sheetName=' + encodeURIComponent(sheetName): ''))
                 .then(function(res) {
                     return res.data;
                 })
@@ -120,16 +142,6 @@
                 });
         };
 
-        /**
-         * @ngdoc method
-         * @name processCertification
-         * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description Ask certification for a dataset
-         * @param {string} datasetId The dataset id
-         */
-        self.processCertification = function(datasetId) {
-            return $http.put(RestURLs.datasetUrl + '/' + datasetId + '/processcertification');
-        };
     }
 
     angular.module('data-prep.services.dataset')

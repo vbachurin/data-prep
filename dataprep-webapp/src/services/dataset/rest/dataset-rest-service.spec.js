@@ -5,8 +5,10 @@ describe('Dataset Rest Service', function () {
 
     beforeEach(module('data-prep.services.dataset'));
 
-    beforeEach(inject(function ($injector) {
+    beforeEach(inject(function ($rootScope, $injector) {
         $httpBackend = $injector.get('$httpBackend');
+
+        spyOn($rootScope, '$emit').and.callThrough();
     }));
 
     it('should call dataset list rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
@@ -122,5 +124,87 @@ describe('Dataset Rest Service', function () {
 
         //then
         //expect PUT not to throw any exception
+    }));
+
+    it('should call dataset metadata update rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var metadata = {id: 'e85afAa78556d5425bc2', name: 'my dataset'};
+
+        $httpBackend
+            .expectPOST(RestURLs.datasetUrl + '/e85afAa78556d5425bc2', metadata)
+            .respond(200);
+
+        //when
+        DatasetRestService.updateMetadata(metadata);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        //expect POST not to throw any exception
+    }));
+
+    it('should call dataset sheet preview service with default sheet', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var result = null;
+        var datasetId = 'e85afAa78556d5425bc2';
+        var data = {columns: [{id: 'col1'}], records: [{col1: 'toto'}, {col1: 'tata'}]};
+
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true')
+            .respond(200, {data: data});
+
+        //when
+        DatasetRestService.getSheetPreview(datasetId)
+            .then(function(response) {
+                result = response.data;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(result).toEqual(data);
+    }));
+
+    it('should call dataset sheet preview service with provided sheet', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var result = null;
+        var datasetId = 'e85afAa78556d5425bc2';
+        var sheetName = 'my sheet';
+        var data = {columns: [{id: 'col1'}], records: [{col1: 'toto'}, {col1: 'tata'}]};
+
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true&sheetName=my%20sheet')
+            .respond(200, {data: data});
+
+        //when
+        DatasetRestService.getSheetPreview(datasetId, sheetName)
+            .then(function(response) {
+                result = response.data;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(result).toEqual(data);
+    }));
+
+    it('should show loading on call dataset sheet preview service', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var datasetId = 'e85afAa78556d5425bc2';
+        var sheetName = 'my sheet';
+        var data = {columns: [{id: 'col1'}], records: [{col1: 'toto'}, {col1: 'tata'}]};
+
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true&sheetName=my%20sheet')
+            .respond(200, {data: data});
+
+        //when
+        DatasetRestService.getSheetPreview(datasetId, sheetName);
+        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
 });

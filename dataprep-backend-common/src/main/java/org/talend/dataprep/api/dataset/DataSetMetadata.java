@@ -150,16 +150,29 @@ public class DataSetMetadata {
     }
 
     /**
+     * @param name the dataset name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * @return the dataset author.
      */
     public String getAuthor() {
         return author;
     }
 
+    /**
+     * @return the sheet name
+     */
     public String getSheetName() {
         return sheetName;
     }
 
+    /**
+     * @param sheetName the new sheet name
+     */
     public void setSheetName(String sheetName) {
         this.sheetName = sheetName;
     }

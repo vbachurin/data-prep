@@ -3,13 +3,13 @@
 
     /**
      * @ngdoc object
-     * @name data-prep.dataset-preview-xls
+     * @name data-prep.dataset-xls-preview
      * @description This module contains the controller and directives to manage the dataset xls preview
      * @requires talend.widget
      * @requires data-prep.services.dataset
      * @requires data-prep.services.utils
      */
-    angular.module('data-prep.dataset-preview-xls', [
+    angular.module('data-prep.dataset-xls-preview', [
         'ui.router',
         'pascalprecht.translate',
         'talend.widget',

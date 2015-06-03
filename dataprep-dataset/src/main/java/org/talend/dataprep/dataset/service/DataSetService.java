@@ -345,7 +345,7 @@ public class DataSetService {
     }
 
     /**
-     * Returns preview of the the data set content for given id. Service might return
+     * Returns preview of the the data set content for given id (first 100 rows). Service might return
      * {@link HttpServletResponse#SC_ACCEPTED} if the data set exists but analysis is not yet fully completed so content
      * is not yet ready to be served.
      *
@@ -420,7 +420,7 @@ public class DataSetService {
         if (columns) {
             dataSet.setColumns(dataSetMetadata.getRow().getColumns());
         }
-        dataSet.setRecords(contentStore.stream(dataSetMetadata));
+        dataSet.setRecords(contentStore.stream(dataSetMetadata).limit(100));
         return dataSet;
     }
 
@@ -450,6 +450,7 @@ public class DataSetService {
 
             // we retry informations we do not update
             DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
+            read.setName(dataSetMetadata.getName());
 
             Optional<SchemaParserResult.SheetContent> sheetContentFound = read.getSchemaParserResult().getSheetContents()
                     .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())).findFirst();
