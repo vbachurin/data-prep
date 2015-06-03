@@ -36,6 +36,31 @@ describe('Recipe Bullet controller', function () {
 		expect(result).toEqual([58, 4, 212]);
 	}));
 
+	it('should bind recipe getter with RecipeService', inject(function(RecipeService) {
+		//given
+		var ctrl = createController();
+		expect(ctrl.recipe).toEqual([]);
+
+		var column = {id: 'colId'};
+		var transformation = {
+			name: 'split',
+			category: 'split',
+			parameters: [],
+			items: []
+		};
+
+		//when
+		RecipeService.getRecipe().push({
+			column: column,
+			transformation: transformation
+		});
+
+		//then
+		expect(ctrl.recipe.length).toBe(1);
+		expect(ctrl.recipe[0].column).toBe(column);
+		expect(ctrl.recipe[0].transformation).toEqual(transformation);
+	}));
+
 	it('should return be a slice of an Array step is inactive', inject(function (RecipeService) {
 		//given
 		spyOn(RecipeService, 'getCurrentStepIndex').and.returnValue(3);

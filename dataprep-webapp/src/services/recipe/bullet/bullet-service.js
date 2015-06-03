@@ -18,7 +18,7 @@
         /**
          * @ngdoc method
          * @name toggleStep
-         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @methodOf data-prep.services.recipe.service:BulletService
          * @param {object} step - the step to toggle
          * @description Toggle selected step and load the last active step content
          * <ul>
@@ -41,7 +41,7 @@
         /**
          * @ngdoc method
          * @name stepHoverStart
-         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @methodOf data-prep.services.recipe.service:BulletService
          * @param {number} index - the position of the hovered button
          * @description On step button hover in order to inform actions on steps :
          * <ul>
@@ -66,7 +66,7 @@
         /**
          * @ngdoc method
          * @name stepHoverEnd
-         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @methodOf data-prep.services.recipe.service:BulletService
          * @description On step button leave : reset steps button highlight
          */
         this.stepHoverEnd = function() {
@@ -84,7 +84,7 @@
         /**
          * @ngdoc method
          * @name previewAppend
-         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @methodOf data-prep.services.recipe.service:BulletService
          * @param {string} stepPosition The step position index to preview
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the disabled targeted step
          */
@@ -98,7 +98,7 @@
         /**
          * @ngdoc method
          * @name previewDisable
-         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @methodOf data-prep.services.recipe.service:BulletService
          * @param {string} stepPosition The step position index to disable for the preview
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the step before the active targeted step
          */
