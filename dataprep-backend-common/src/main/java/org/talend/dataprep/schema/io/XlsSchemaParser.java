@@ -139,7 +139,7 @@ public class XlsSchemaParser implements SchemaParser {
             columnMetadatas.add(ColumnMetadata.Builder //
                     .column() //
                     .headerSize(averageHeaderSize) //
-                    .id(String.valueOf(integer)) //
+                    .id(integer) //
                     .name(headerText) //
                     .type(type) //
                     .build());

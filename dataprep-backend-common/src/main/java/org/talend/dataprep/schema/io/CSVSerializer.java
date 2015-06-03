@@ -50,13 +50,20 @@ public class CSVSerializer implements Serializer {
      */
     private void writeLineContent(CSVReader reader, DataSetMetadata metadata, JsonGenerator generator) throws IOException {
         String[] line;
+
         while ((line = reader.readNext()) != null) {
+
+            // skip empty lines
+            if (line.length == 1) {
+                continue;
+            }
+
             List<ColumnMetadata> columns = metadata.getRow().getColumns();
             generator.writeStartObject();
             for (int i = 0; i < columns.size(); i++) {
                 ColumnMetadata columnMetadata = columns.get(i);
                 generator.writeFieldName(columnMetadata.getId());
-                if (line[i] != null) {
+                if (i < line.length && line[i] != null) {
                     generator.writeString(line[i]);
                 } else {
                     generator.writeNull();

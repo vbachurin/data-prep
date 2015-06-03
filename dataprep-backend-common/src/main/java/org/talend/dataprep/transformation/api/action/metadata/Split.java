@@ -138,7 +138,7 @@ public class Split extends SingleColumnAction {
                 if (StringUtils.equals(columnId, column.getId())) {
                     newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
-                            .id(column.getId() + SPLIT_APPENDIX) //
+                            .computedId(column.getId() + SPLIT_APPENDIX) //
                             .name(column.getName() + SPLIT_APPENDIX) //
                             .type(Type.get(column.getType())) //
                             .empty(column.getQuality().getEmpty()) //

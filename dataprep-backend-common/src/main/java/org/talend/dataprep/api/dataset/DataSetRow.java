@@ -161,6 +161,7 @@ public class DataSetRow implements Cloneable {
      */
     public void clear() {
         deleted = false;
+        oldValue = null;
         values.clear();
     }
 

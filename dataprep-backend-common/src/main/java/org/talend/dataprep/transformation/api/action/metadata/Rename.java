@@ -97,7 +97,7 @@ public class Rename extends SingleColumnAction {
                 // rename the column
                 if (StringUtils.equals(columnId, column.getId())) {
                     newColumnMetadata = ColumnMetadata.Builder.column() //
-                            .id(column.getId()) //
+                            .computedId(column.getId()) //
                             .name(newColumnName) // new name
                             .type(Type.get(column.getType())) //
                             .empty(column.getQuality().getEmpty()) //

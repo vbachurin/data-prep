@@ -42,7 +42,7 @@ public class CSVSchemaParser implements SchemaParser {
             for (int i = 0; i < columns.length; i++) {
                 sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
                         .get().getColumnMetadatas() //
-                        .add(column().id(String.valueOf(i)).name(columns[i]).type(Type.STRING).build());
+                        .add(column().id(i).name(columns[i]).type(Type.STRING).build());
             }
 
             // Best guess (and naive) on data types
