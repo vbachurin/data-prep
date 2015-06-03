@@ -145,6 +145,25 @@ describe('Dataset Service', function () {
         expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
     }));
 
+    it('should refresh dataset list', inject(function (DatasetService, DatasetListService) {
+        //when
+        DatasetService.refreshDatasets();
+
+        //then
+        expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
+    }));
+
+    it('should consolidate preparations and datasets on datasets refresh', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
+        //when
+        DatasetService.refreshDatasets();
+        DatasetListService.datasets = datasets; // simulate dataset list initialisation
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
+        expect(DatasetListService.refreshDefaultPreparation).toHaveBeenCalledWith(preparations);
+    }));
+
     it('should delete a dataset', inject(function ($rootScope, DatasetService, DatasetListService) {
         //given
         var dataset = DatasetListService.datasets[0];

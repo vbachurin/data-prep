@@ -12,15 +12,14 @@
         <li>datasets : on dataset list change, set the default preparation id in each element</li>
      </ul>
      * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.dataset.service:DatasetSheetPreviewService
      * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires data-prep.services.utils.service:MessageService
      * @requires talend.widget.service:TalendConfirmService
-     * @requires data-prep.services.dataset.service:DatasetListService
+     * @requires data-prep.services.utils.service:MessageService
      */
-    function DatasetListCtrl($log,$stateParams,$state,DatasetService, PlaygroundService, TalendConfirmService, MessageService,DatasetListService) {
+    function DatasetListCtrl($stateParams, DatasetService, DatasetSheetPreviewService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetService = DatasetService;
-        vm.datasetListService = DatasetListService;
 
         /**
          * @ngdoc method
@@ -51,22 +50,29 @@
                 });
         };
 
-        vm.openDraft = function(dataset){
-            $log.debug('openDraf type: ' + dataset.type);
-            if (dataset.type){
-                if (dataset.type === 'application/vnd.ms-excel'){
-                    $state.go( 'nav.home.datasets-previewxls', {datasetid:dataset.id} );
-                    return;
-                }else{
-                    MessageService.error('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', {type: 'dataset'});
-                }
-            } else{
-                DatasetListService.refreshDatasets();
-                if (dataset.type){
-                    vm.openDraft(dataset);
-                }else{
-                    MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', {type: 'dataset'});
-                }
+        /**
+         * @ngdoc method
+         * @name openDraft
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Draft management
+         * <ul>
+         *      <li>File type is not defined : display error, refresh dataset list</li>
+         *      <li>File type is excel : redirect to schema selection</li>
+         *      <li>File type defined but unknown : display error</li>
+         * </ul>
+         * @param {object} dataset The dataset draft to open
+         */
+        vm.openDraft = function (dataset) {
+            if (dataset.type === 'application/vnd.ms-excel') {
+                DatasetSheetPreviewService.loadPreview(dataset)
+                    .then(DatasetSheetPreviewService.display);
+            }
+            else if (dataset.type) {
+                MessageService.error('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE');
+            }
+            else {
+                DatasetService.refreshDatasets();
+                MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_CONTENT');
             }
         };
 

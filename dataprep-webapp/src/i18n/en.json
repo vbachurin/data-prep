@@ -3,35 +3,42 @@
   "EDIT_PROFIL": "Edit profil",
   "SEARCH": "Search anything here",
   "LOGOUT": "Logout",
+
   "_comment": "Left side menu",
   "ALL_FOLDERS": "All Folders",
   "ALL_PREPARATIONS": "All Preparations",
   "ALL_SHAKED_FILES": "All shaked files",
   "FAVORITE_FILES": "Favorites",
   "MOST_RECENT_FILES": "Most revent files",
+
   "_comment": "Right side menu",
   "INVENTORY_DATA": "Data Inventory",
   "SELECT_DATASET_DESCRIPTION": "Select a dataset or a folder to access its details",
+
   "_comment": "Inventory",
   "INVENTORY_DETAILS": "owned by {{author}}, created on {{created}}, contains {{records}} lines",
   "NAME_SORT": "Name",
   "SORTED_BY": "Sorted by",
   "UPLOAD_ERROR": "Upload error",
+
   "_comment": "Preparations",
   "LAST_MODIFICATION": "last change",
   "OWNED_BY": "owned by",
   "RECIPE": "recipe",
   "ROWS": "row(s)",
   "STEPS": "step(s)",
+
   "_comment": "Datagrid transformations",
   "RECIPE_ITEM_ON_COL": "on column",
   "NO_TRANSFORMATION": "No transformation available",
+
   "_comment": "Datagrid",
   "ENTER_PREPARATION_NAME": "Enter preparation name",
   "FILE_DETAILS": "File: {{name}} ({{records}} lines)",
   "FILTER": "Search and Filter",
   "NEW_FILTER": "New filter...",
   "PREPARATION": "Preparation",
+
   "_comment": "Buttons",
   "CANCEL": "Cancel",
   "EXPORT": "Export",
@@ -39,19 +46,25 @@
   "EXPORT_TABLEAU": "Export to TABLEAU",
   "IMPORT_FILE": "Import local file",
   "OK": "Ok",
+  "CONFIRM": "Confirm",
+
   "_comment": "Common",
   "LOADING": "Loading",
   "PROCESSING": "Processing",
+
   "_comment": "Confirm",
   "DELETE_PERMANENTLY": "You are going to permanently delete the {{type}} \"{{name}}\".",
   "ENTER_DATASET_NAME": "Enter the dataset name",
   "NO_UNDONE_CONFIRM": "This operation cannot be undone. Are you sure ?",
   "UPDATE_EXISTING_DATASET": "Do you want to update existing \"{{dataset}}\" dataset ?",
+
   "_comment": "Instructions",
   "CHOOSE_SEPARATOR": "Which character do you want as delimiter ?",
   "SEPARATOR_SEMI_COLON": "Semi colon",
   "SEPARATOR_TAB": "Tabulation",
   "SEPARATOR_COMMA": "Comma",
+  "CONTENT_100_FIRST_ROWS": "Content (100 first rows)",
+
   "_comment": "Success",
   "DATASET_CREATE_SUCCESS_TITLE": "New dataset",
   "DATASET_CREATE_SUCCESS": "The dataset \"{{dataset}}\" has been created",
@@ -61,6 +74,7 @@
   "DATASET_UPDATE_SUCCESS": "The dataset \"{{dataset}}\" has been updated",
   "REMOVE_SUCCESS_TITLE": "{{type}} removed",
   "REMOVE_SUCCESS": "The {{type}} \"{{name}}\" has been removed.",
+
   "_comment": "Errors",
   "GENERIC_ERROR": "An error occurred",
   "INVALID_DATASET_TITLE": "Invalid dataset",
