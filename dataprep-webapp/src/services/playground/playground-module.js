@@ -9,6 +9,7 @@
      * @requires data-prep.services.preparation
      * @requires data-prep.services.filter
      * @requires data-prep.services.recipe
+     * @requires data-prep.services.recipe.bullet
      * @requires data-prep.services.utils
      */
     angular.module('data-prep.services.playground', [

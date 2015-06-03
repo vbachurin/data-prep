@@ -10,10 +10,9 @@
 	 * <recipe-bullet class="step-trigger2" step="step" step-index="$index" ></recipe-bullet>
 	 * */
 
-	function RecipeBullet ($timeout) {
+	function RecipeBullet () {
 		return {
 			restrict: 'E',
-			require: '^recipe',
 			scope: {
 				type: '@',
 				step: '='
@@ -23,7 +22,7 @@
 			controllerAs: 'recipeBulletCtrl',
 			bindToController: true,
 			templateUrl: 'components/recipe/bullet/recipe-bullet.html',
-			link: function (scope, element, attrs, recipeCtrl) {
+			link: function (scope, element) {
 				var bulletCircleElement = angular.element(element[0]).find('circle')[0];
 				var bulletElement = element[0];
 				var allBulletsSvgs      = [];
@@ -32,7 +31,7 @@
 
 				/** onmouseenter **/
 				bulletElement.onmouseenter = function () {
-					recipeCtrl.stepHoverStart(recipeBulletCtrl.currentStepIndex);
+					recipeBulletCtrl.bulletService.stepHoverStart(recipeBulletCtrl.currentStepIndex);
 					allBulletsSvgs = angular.element('.all-svg-cls');
 					if (!recipeBulletCtrl.step.inactive) {
 						bulletsToBeChanged = recipeBulletCtrl.getBulletsTochange(allBulletsSvgs, recipeBulletCtrl.step);
@@ -49,7 +48,7 @@
 
 				/** onmouseleave **/
 				bulletElement.onmouseleave = function () {
-					recipeCtrl.stepHoverEnd();
+					recipeBulletCtrl.bulletService.stepHoverEnd();
 					_.each(bulletsToBeChanged, function (svg) {
 						svg.children[1].setAttribute('class', '');
 					});
@@ -70,7 +69,7 @@
 				/** onclick **/
 				bulletCircleElement.onclick = function (event) {
 					event.stopPropagation();
-					recipeCtrl.toggleStep(recipeBulletCtrl.step);
+					recipeBulletCtrl.bulletService.toggleStep(recipeBulletCtrl.step);
 
 					var allSingles = angular.element('.single-maillon-cables-disabled');
 					_.each(allSingles, activateBranch);
@@ -79,7 +78,7 @@
 					if (!recipeBulletCtrl.step.inactive && recipeBulletCtrl.currentStepIndex !== 0) {
 						deActivateBranch(recipeBulletCtrl.currentStepIndex - 1);
 					} else {
-						if (recipeBulletCtrl.currentStepIndex !== recipeCtrl.recipe.length - 1) {
+						if (recipeBulletCtrl.currentStepIndex !== recipeBulletCtrl.recipe.length - 1) {
 							deActivateBranch(recipeBulletCtrl.currentStepIndex);
 						}
 					}

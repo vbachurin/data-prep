@@ -10,6 +10,7 @@
      */
     angular.module('data-prep.services.recipe', [
         'data-prep.services.preparation',
-        'data-prep.services.transformation'
+        'data-prep.services.transformation',
+        'data-prep.services.playground'
     ]);
 })();
