@@ -289,7 +289,7 @@ public class DataSetService {
     @Timed
     @ResponseBody
     public DataSet getMetadata(
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId, //
             HttpServletResponse response) {
         if (dataSetId == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -345,30 +345,25 @@ public class DataSetService {
     @Timed
     @ResponseBody
     public DataSet preview(
-            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
-            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
-            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
-            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
+            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
+            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
+            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName, //
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
             HttpServletResponse response) {
-
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         if (dataSetMetadata == null) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return DataSet.empty(); // No data set, returns empty content.
         }
-
         if (!dataSetMetadata.isDraft()) {
             response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
             return DataSet.empty(); // dataset not anymore a draft so preview doesn't make sense.
         }
-
         if (StringUtils.isNotEmpty(sheetName)) {
             dataSetMetadata.setSheetName(sheetName);
         }
-
         // take care of previous datas without schema parser result
         if (dataSetMetadata.getSchemaParserResult() != null) {
-
             // sheet not yet set correctly so use the first one
             if (StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
                 String theSheetName = dataSetMetadata.getSchemaParserResult().getSheetContents().get(0).getName();
@@ -396,7 +391,6 @@ public class DataSetService {
         } else {
             LOG.warn("dataset#{} has draft status but any SchemaParserResult");
         }
-
         // Build the result
         DataSet dataSet = new DataSet();
         if (metadata) {
@@ -413,19 +407,20 @@ public class DataSetService {
      * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
      *
      * @param dataSetId The id of data set to be updated.
-     * @param dataSetMetadata The new content for the data set. If empty, existing content will <b>not</b> be replaced.
+     * @param dataSet The new content for the data set. If empty, existing content will <b>not</b> be replaced.
      * For delete operation, look at {@link #delete(String)}.
      */
-    @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set metadata according to the content of the PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
     @VolumeMetered
     public void updateDataSet(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @RequestBody DataSetMetadata dataSetMetadata) {
+            @RequestBody DataSet dataSet) {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         lock.lock();
         try {
+            final DataSetMetadata dataSetMetadata = dataSet.getMetadata();
             LOG.debug("updateDataSet: {}", dataSetMetadata);
             // we retry information we do not update
             DataSetMetadata previous = dataSetMetadataRepository.get(dataSetId);
