@@ -3,23 +3,24 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.services.recipe.service:BulletService
-     * @description Recipe service. This service provide the entry point to manipulate properly the recipeBullet
-     * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.transformation.service:TransformationService
+     * @name data-prep.services.recipe.service:RecipeBulletService
+     * @description Recipe Bullet service. This service provides the action services triggered by bullets
+     * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function BulletService(RecipeService, $timeout, PreviewService, PlaygroundService) {
+    function RecipeBulletService($timeout, RecipeService, PreviewService, PlaygroundService) {
         var self = this;
         var previewTimeout;
 
         //---------------------------------------------------------------------------------------------
-        //------------------------------------------Mouse handlers-------------------------------------
+        //------------------------------------------Mouse Actions--------------------------------------
         //---------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name toggleStep
-         * @methodOf data-prep.services.recipe.service:BulletService
-         * @param {object} step - the step to toggle
+         * @methodOf data-prep.services.recipe.service:RecipeBulletService
+         * @param {object} step The step to toggle
          * @description Toggle selected step and load the last active step content
          * <ul>
          *     <li>step is inactive : activate it with all the previous steps</li>
@@ -41,8 +42,8 @@
         /**
          * @ngdoc method
          * @name stepHoverStart
-         * @methodOf data-prep.services.recipe.service:BulletService
-         * @param {number} index - the position of the hovered button
+         * @methodOf data-prep.services.recipe.service:RecipeBulletService
+         * @param {number} index The position of the hovered button
          * @description On step button hover in order to inform actions on steps :
          * <ul>
          *     <li>highlight inactive buttons above the one (including the one)</li>
@@ -66,7 +67,7 @@
         /**
          * @ngdoc method
          * @name stepHoverEnd
-         * @methodOf data-prep.services.recipe.service:BulletService
+         * @methodOf data-prep.services.recipe.service:RecipeBulletService
          * @description On step button leave : reset steps button highlight
          */
         this.stepHoverEnd = function() {
@@ -84,7 +85,7 @@
         /**
          * @ngdoc method
          * @name previewAppend
-         * @methodOf data-prep.services.recipe.service:BulletService
+         * @methodOf data-prep.services.recipe.service:RecipeBulletService
          * @param {string} stepPosition The step position index to preview
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the disabled targeted step
          */
@@ -98,7 +99,7 @@
         /**
          * @ngdoc method
          * @name previewDisable
-         * @methodOf data-prep.services.recipe.service:BulletService
+         * @methodOf data-prep.services.recipe.service:RecipeBulletService
          * @param {string} stepPosition The step position index to disable for the preview
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the step before the active targeted step
          */
@@ -111,5 +112,5 @@
     }
 
     angular.module('data-prep.services.recipe')
-        .service('BulletService', BulletService);
+        .service('RecipeBulletService', RecipeBulletService);
 })();

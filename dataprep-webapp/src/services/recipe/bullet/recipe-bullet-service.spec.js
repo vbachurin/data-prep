@@ -1,6 +1,4 @@
-/*jshint camelcase: false */
-
-describe('Recipe controller', function() {
+describe('Recipe Bullet controller', function() {
 	'use strict';
 
 	var createController, scope;
@@ -9,7 +7,7 @@ describe('Recipe controller', function() {
 
 	beforeEach(module('data-prep.services.recipe'));
 
-	beforeEach(inject(function($rootScope, $controller, $q, $timeout, BulletService, RecipeService, PlaygroundService, PreparationService, PreviewService) {
+	beforeEach(inject(function($rootScope, $controller, $q, $timeout, RecipeBulletService, RecipeService, PlaygroundService, PreparationService, PreviewService) {
 		scope = $rootScope.$new();
 
 		createController = function() {
@@ -38,7 +36,7 @@ describe('Recipe controller', function() {
 		RecipeService.reset();
 	}));
 
-	it('should highlight active steps after the targeted one (included)', inject(function(RecipeService, BulletService) {
+	it('should highlight active steps after the targeted one (included)', inject(function(RecipeService, RecipeBulletService) {
 		//given
 		var recipe = RecipeService.getRecipe();
 	    recipe.push(
@@ -49,7 +47,7 @@ describe('Recipe controller', function() {
 	    );
 
 	    //when
-		BulletService.stepHoverStart(1);
+		RecipeBulletService.stepHoverStart(1);
 
 	    //then
 	    expect(recipe[0].highlight).toBeFalsy();
@@ -58,7 +56,7 @@ describe('Recipe controller', function() {
 	    expect(recipe[3].highlight).toBeTruthy();
 	}));
 
-	it('should highlight inactive steps before the targeted one (included)', inject(function(RecipeService, BulletService) {
+	it('should highlight inactive steps before the targeted one (included)', inject(function(RecipeService, RecipeBulletService) {
 		//given
 		var recipe = RecipeService.getRecipe();
 	    recipe.push(
@@ -69,7 +67,7 @@ describe('Recipe controller', function() {
 	    );
 
 	    //when
-		BulletService.stepHoverStart(2);
+		RecipeBulletService.stepHoverStart(2);
 
 	    //then
 	    expect(recipe[0].highlight).toBeFalsy();
@@ -78,7 +76,7 @@ describe('Recipe controller', function() {
 	    expect(recipe[3].highlight).toBeFalsy();
 	}));
 
-	it('should trigger append preview on inactive step hover after a delay of 100ms', inject(function($timeout, RecipeService, PreviewService, BulletService) {
+	it('should trigger append preview on inactive step hover after a delay of 100ms', inject(function($timeout, RecipeService, PreviewService, RecipeBulletService) {
 		//given
 		var recipe = RecipeService.getRecipe();
 	    recipe.push(
@@ -90,7 +88,7 @@ describe('Recipe controller', function() {
 	    RecipeService.disableStepsAfter(recipe[0]);
 
 	    //when
-		BulletService.stepHoverStart(2);
+		RecipeBulletService.stepHoverStart(2);
 	    $timeout.flush(99);
 	    expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
 	    $timeout.flush(1);
@@ -99,7 +97,7 @@ describe('Recipe controller', function() {
 	    expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[0], recipe[2]);
 	}));
 
-	it('should cancel pending preview action on step hover', inject(function($timeout, RecipeService, BulletService) {
+	it('should cancel pending preview action on step hover', inject(function($timeout, RecipeService, RecipeBulletService) {
 	    //given
 	    var recipe = RecipeService.getRecipe();
 	    recipe.push(
@@ -110,14 +108,14 @@ describe('Recipe controller', function() {
 	    );
 
 	    //when
-		BulletService.stepHoverStart(2);
+		RecipeBulletService.stepHoverStart(2);
 
 	    //then
 	    expect($timeout.cancel).toHaveBeenCalled();
 	}));
 
 
-	it('should trigger disable preview on active step hover', inject(function($timeout, RecipeService, PreviewService, BulletService) {
+	it('should trigger disable preview on active step hover', inject(function($timeout, RecipeService, PreviewService, RecipeBulletService) {
 	    //given
 	    var recipe = RecipeService.getRecipe();
 	    recipe.push(
@@ -128,7 +126,7 @@ describe('Recipe controller', function() {
 	    );
 
 	    //when
-		BulletService.stepHoverStart(2);
+		RecipeBulletService.stepHoverStart(2);
 	    $timeout.flush(99);
 	    expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
 	    $timeout.flush(1);
@@ -137,7 +135,7 @@ describe('Recipe controller', function() {
 	    expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], recipe[1]);
 	}));
 
-	it('should remove highlight on mouse hover end', inject(function(RecipeService, BulletService) {
+	it('should remove highlight on mouse hover end', inject(function(RecipeService, RecipeBulletService) {
 	    //given
 	    var recipe = RecipeService.getRecipe();
 	    recipe.push(
@@ -148,7 +146,7 @@ describe('Recipe controller', function() {
 	    );
 
 	    //when
-		BulletService.stepHoverEnd();
+		RecipeBulletService.stepHoverEnd();
 
 	    //then
 	    expect(recipe[0].highlight).toBeFalsy();
@@ -157,10 +155,9 @@ describe('Recipe controller', function() {
 	    expect(recipe[3].highlight).toBeFalsy();
 	}));
 
-	it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function($timeout, PreviewService, BulletService) {
-	    //given
+	it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function($timeout, PreviewService, RecipeBulletService) {
 	    //when
-		BulletService.stepHoverEnd();
+		RecipeBulletService.stepHoverEnd();
 	    $timeout.flush(99);
 	    expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
 	    $timeout.flush(1);
@@ -169,44 +166,44 @@ describe('Recipe controller', function() {
 	    expect(PreviewService.cancelPreview).toHaveBeenCalled();
 	}));
 
-	it('should cancel pending preview action on mouse hover end', inject(function($timeout, BulletService) {
+	it('should cancel pending preview action on mouse hover end', inject(function($timeout, RecipeBulletService) {
 	    //given
 
 	    //when
-		BulletService.stepHoverEnd();
+		RecipeBulletService.stepHoverEnd();
 
 	    //then
 	    expect($timeout.cancel).toHaveBeenCalled();
 	}));
 
-	it('should load current step content if the step is first inactive', inject(function(PlaygroundService, BulletService) {
+	it('should load current step content if the step is first inactive', inject(function(PlaygroundService, RecipeBulletService) {
 	    //given
 	    var step = {inactive: true};
 
 	    //when
-		BulletService.toggleStep(step);
+		RecipeBulletService.toggleStep(step);
 
 	    //then
 	    expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step);
 	}));
 
-	it('should load previous step content if the step is first active', inject(function(PlaygroundService, BulletService) {
+	it('should load previous step content if the step is first active', inject(function(PlaygroundService, RecipeBulletService) {
 	    //given
 	    var step = {inactive: false};
 
 	    //when
-		BulletService.toggleStep(step);
+		RecipeBulletService.toggleStep(step);
 
 	    //then
 	    expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
 	}));
 
-	it('should cancel current preview on toggle', inject(function(PreviewService, BulletService) {
+	it('should cancel current preview on toggle', inject(function(PreviewService, RecipeBulletService) {
 	    //given
 	    var step = {inactive: true};
 
 	    //when
-		BulletService.toggleStep(step);
+		RecipeBulletService.toggleStep(step);
 
 	    //then
 	    expect(PreviewService.cancelPreview).toHaveBeenCalled();

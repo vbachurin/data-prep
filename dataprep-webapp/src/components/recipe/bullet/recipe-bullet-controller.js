@@ -1,59 +1,97 @@
 (function () {
-	'use strict';
+    'use strict';
 
-	/**
-	 * @ngdoc controller
-	 * @name data-prep.recipe.controller:RecipeBulletCtrl
-	 * @description recipeBullet controller.
-	 * @requires data-prep.services.recipe.service:RecipeService
-	 * @requires data-prep.services.playground.service:playground
-	 **/
-	function RecipeBulletCtrl (RecipeService, $element, BulletService) {
-		var vm           = this;
-		vm.recipeService = RecipeService;
-		vm.bulletService = BulletService;
-		var parentHeight    = $element.parent().height();
-		var remainingHeight = ((parentHeight - 20) / 2) + 5;//5 is the distance between directives
-		vm.topPath          = 'M 15 0 L 15 ' + remainingHeight + ' Z';
-		vm.circleCenterY    = remainingHeight + 10;
-		vm.bottomPath       = 'M 15 ' + (vm.circleCenterY + 12) + ' L 15 ' + (vm.circleCenterY + 10 + remainingHeight) + ' Z';
-		vm.currentStepIndex = vm.recipeService.getCurrentStepIndex(vm.step);
+    /**
+     * @ngdoc controller
+     * @name data-prep.recipe.controller:RecipeBulletCtrl
+     * @description The recipeBullet controller
+     * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.recipe.service:RecipeBulletService
+     */
+    function RecipeBulletCtrl(RecipeService, RecipeBulletService) {
+        var vm = this;
 
-		/**
-		 * @ngdoc method
-		 * @name getBulletsTochange
-		 * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
-		 * @param the bullets Elements Array and the object Step
-		 * @description according to the step.inactive, it slices the svg Array
-		 * @returns returns the bullets Elements Array to be changed after a hover
-		 */
-		vm.getBulletsTochange = function (allSvgs, step) {
-			var lastActiveStepIndex = vm.recipeService.getActiveThresholdStepIndexOnLaunch();
-			if (!step.inactive) {
-				return allSvgs.slice(vm.currentStepIndex, lastActiveStepIndex + 1);
-			} else {
-				return allSvgs.slice(lastActiveStepIndex + 1, vm.currentStepIndex + 1);
-			}
-		};
-	}
+        /**
+         * @ngdoc property
+         * @name stepIndex
+         * @propertyOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @description The step index in the recipe
+         * @type {number}
+         */
+        vm.stepIndex = RecipeService.getStepIndex(vm.step);
 
-	/**
-	 * @ngdoc property
-	 * @name recipe
-	 * @propertyOf data-prep.recipeBullet.controller:RecipeBulletCtrl
-	 * @description The recipe.
-	 * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} property
-	 * @type {object[]}
-	 */
-	Object.defineProperty(RecipeBulletCtrl.prototype,
-		'recipe', {
-			enumerable: true,
-			configurable: false,
-			get: function () {
-				return this.recipeService.getRecipe();
-			}
-		});
+        /**
+         * @ngdoc method
+         * @name getBulletsToChange
+         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @param {object} allSvgs The list of bullets
+         * @description Get the bullets to modify, according to the current bullet
+         * @returns The bullets elements to changed
+         */
+        vm.getBulletsToChange = function (allSvgs) {
+            //current step active : we should deactivate all the steps from current to the end
+            if (!vm.step.inactive) {
+                return allSvgs.slice(vm.stepIndex);
+            }
+            //current step inactive : we should activate the steps from last inactive to the current
+            else {
+                var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
+                return allSvgs.slice(lastActiveStepIndex + 1, vm.stepIndex + 1);
+            }
+        };
 
-	angular.module('data-prep.recipeBullet')
-		.controller('RecipeBulletCtrl', RecipeBulletCtrl);
+        /**
+         * @ngdoc method
+         * @name isStartChain
+         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @description Test if step is the first element of the chain
+         * @returns true if step is the first step
+         */
+        vm.isStartChain = function () {
+            return RecipeService.isFirstStep(vm.step);
+        };
+
+        /**
+         * @ngdoc method
+         * @name isEndChain
+         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @description Test if step is the last element of the chain
+         * @returns true if step is the last step
+         */
+        vm.isEndChain = function () {
+            return RecipeService.isLastStep(vm.step);
+        };
+
+        /**
+         * @ngdoc method
+         * @name stepHoverStart
+         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @description Trigger actions called at mouse enter
+         */
+        vm.stepHoverStart = function() {
+            var index = RecipeService.getStepIndex(vm.step);
+            RecipeBulletService.stepHoverStart(index);
+        };
+
+        /**
+         * @ngdoc method
+         * @name stepHoverEnd
+         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @description Trigger actions called at mouse leave
+         */
+        vm.stepHoverEnd = RecipeBulletService.stepHoverEnd;
+
+        /**
+         * @ngdoc method
+         * @name toggleStep
+         * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
+         * @description Enable/disable step
+         */
+        vm.toggleStep = function() {
+            RecipeBulletService.toggleStep(vm.step);
+        };
+    }
+
+    angular.module('data-prep.recipe-bullet')
+        .controller('RecipeBulletCtrl', RecipeBulletCtrl);
 })();
