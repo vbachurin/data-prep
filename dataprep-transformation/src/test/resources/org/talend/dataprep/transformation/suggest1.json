@@ -241,9 +241,6 @@
   },
   {
     "category": "columns",
-    "compatibleColumnTypes": [
-      "STRING"
-    ],
     "name": "extractemaildomain",
     "parameters": [
       {

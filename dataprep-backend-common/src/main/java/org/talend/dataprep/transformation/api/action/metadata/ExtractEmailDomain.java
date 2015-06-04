@@ -46,8 +46,8 @@ public class ExtractEmailDomain extends SingleColumnAction {
      * @see ActionMetadata#getCompatibleColumnTypes()
      */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.STRING);
+    public boolean accept(ColumnMetadata column) {
+        return Type.STRING.equals(Type.get(column.getType()));
     }
 
     /**
