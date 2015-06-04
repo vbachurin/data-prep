@@ -1,12 +1,10 @@
 describe('DatasetColumnHeader controller', function () {
     'use strict';
 
-    var createController, scope;
-    var metadata = {
-        id: 'ef4509c8c083df4'
-    };
+    var createController, createControllerFromColumn, scope;
     var column = {
-        id: '8c083df4ef4509c'
+        id: '8c083df4ef4509c',
+        type: 'string'
     };
 
     var menusMock = function() {
@@ -105,12 +103,16 @@ describe('DatasetColumnHeader controller', function () {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('DatagridHeaderCtrl', {
-                $scope: scope
-            });
-            ctrl.metadata = metadata;
-            ctrl.column = column;
-            return ctrl;
+            return createControllerFromColumn(column);
+        };
+
+        createControllerFromColumn = function (col) {
+            var ctrlFn = $controller('DatagridHeaderCtrl', {
+                $scope: scope,
+            }, true);
+
+            ctrlFn.instance.column = col;
+            return ctrlFn();
         };
     }));
 
@@ -244,5 +246,20 @@ describe('DatasetColumnHeader controller', function () {
             expect(ctrl.transformationsRetrieveError).toBeTruthy();
             expect(ctrl.initTransformationsInProgress).toBeFalsy();
         }));
+    });
+
+    it('should set the simplified column type name', function() {
+
+        //given
+        var stringColumn = {
+            'name': 'bestColumnEver',
+            'type': 'string'
+        };
+
+        //when
+        var ctrl = createControllerFromColumn(stringColumn);
+
+        //then
+        expect(ctrl.column.simplifiedType).toBe('text');
     });
 });

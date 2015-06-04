@@ -10,7 +10,7 @@
 	 * <recipe-bullet class="step-trigger2" step="step" step-index="$index" ></recipe-bullet>
 	 * */
 
-	function RecipeBullet ($timeout) {
+	function RecipeBullet () {
 		return {
 			restrict: 'E',
 			require: '^recipe',
