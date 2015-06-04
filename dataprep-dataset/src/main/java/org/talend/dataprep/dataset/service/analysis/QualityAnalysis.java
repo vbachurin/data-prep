@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,16 +126,18 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
      */
     @Override
     public void analyze(String dataSetId) {
+        if (StringUtils.isEmpty(dataSetId)) {
+            throw new IllegalArgumentException("Data set id cannot be null or empty.");
+        }
         DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
         datasetLock.lock();
         try {
             DataSetMetadata metadata = repository.get(dataSetId);
+            if (metadata == null) {
+                LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
+                return;
+            }
             try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                if (metadata == null) {
-                    LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
-                    return;
-                }
-
                 if (!metadata.getLifecycle().schemaAnalyzed()) {
                     LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
                     return; // no acknowledge to allow re-poll.
@@ -179,10 +182,8 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
                 repository.add(metadata);
                 LOGGER.info("Analyzed quality of dataset #{}.", dataSetId);
             } catch (Exception e) {
-                if (metadata != null) {
-                    metadata.getLifecycle().error(true);
-                    repository.add(metadata);
-                }
+                metadata.getLifecycle().error(true);
+                repository.add(metadata);
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
             }
         } finally {

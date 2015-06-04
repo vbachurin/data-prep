@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
 
     @Override
     public void analyze(String dataSetId) {
+        if (StringUtils.isEmpty(dataSetId)) {
+            throw new IllegalArgumentException("Data set id cannot be null or empty.");
+        }
         DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
         datasetLock.lock();
         try {

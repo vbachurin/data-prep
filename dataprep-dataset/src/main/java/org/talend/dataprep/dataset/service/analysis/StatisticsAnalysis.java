@@ -67,6 +67,9 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Override
     public void analyze(String dataSetId) {
+        if (StringUtils.isEmpty(dataSetId)) {
+            throw new IllegalArgumentException("Data set id cannot be null or empty.");
+        }
         DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
         datasetLock.lock();
         try {
