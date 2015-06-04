@@ -76,8 +76,9 @@ public class SplitTest {
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon");
-        expectedValues.put("steps_split", "ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_split_1", "Bacon");
+        expectedValues.put("steps_split_2", "ipsum dolor amet swine leberkas pork belly");
         expectedValues.put("last update", "01/01/2015");
 
         rowClosure.accept(row);
@@ -97,8 +98,31 @@ public class SplitTest {
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ");
+        expectedValues.put("steps_split_1", "Bacon");
+        expectedValues.put("steps_split_2", "");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row);
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @see Split#createMetadataClosure(Map)
+     */
+    @Test
+    public void should_split_row_no_separator() {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
         expectedValues.put("steps", "Bacon");
-        expectedValues.put("steps_split", "");
+        expectedValues.put("steps_split_1", "Bacon");
+        expectedValues.put("steps_split_2", "");
         expectedValues.put("last update", "01/01/2015");
 
         rowClosure.accept(row);
@@ -123,7 +147,8 @@ public class SplitTest {
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
         expected.add(createMetadata("steps", "steps"));
-        expected.add(createMetadata("steps_split", "steps_split"));
+        expected.add(createMetadata("steps_split_1", "steps_split_1"));
+        expected.add(createMetadata("steps_split_2", "steps_split_2"));
         expected.add(createMetadata("last update", "last update"));
 
         assertEquals(expected, actual);

@@ -204,16 +204,16 @@
               {
                 "name": "manual_separator",
                 "type": "string",
-                "description": "choose your own separator",
-                "label": "manual separator",
+                "description": "Choose your own separator",
+                "label": "Manual separator",
                 "default": ""
               }
             ],
             "default": false
           }
         ],
-        "description": "character to use as separator",
-        "label": "separator"
+        "description": "Character to use as separator",
+        "label": "Separator"
       }
     ],
     "name": "split",
@@ -229,6 +229,11 @@
         "name": "column_name",
         "type": "string",
         "default": ""
+      },
+      {
+        "name": "limit",
+        "type": "integer",
+        "default": "2"
       }
     ],
     "description": "Split column from separators",
