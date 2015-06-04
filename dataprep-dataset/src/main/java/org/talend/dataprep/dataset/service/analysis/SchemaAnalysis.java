@@ -12,9 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -39,12 +37,6 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
 
     @Autowired
     DataSetContentStore store;
-
-    @Autowired
-    JmsTemplate jmsTemplate;
-
-    @Autowired
-    ApplicationContext applicationContext;
 
     @Autowired
     Jackson2ObjectMapperBuilder builder;

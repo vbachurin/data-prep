@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -40,9 +39,6 @@ import org.talend.datascience.common.inference.type.DataType;
 public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QualityAnalysis.class);
-
-    @Autowired
-    JmsTemplate jmsTemplate;
 
     @Autowired
     DataSetMetadataRepository repository;
@@ -104,13 +100,6 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
             String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
             try {
                 analyze(dataSetId);
-                // Asks for a in depth schema analysis (for column type information).
-                jmsTemplate.send(Destinations.STATISTICS_ANALYSIS, session -> {
-                    Message schemaAnalysisMessage = session.createMessage();
-                    schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                        return schemaAnalysisMessage;
-                    });
-
             } finally {
                 message.acknowledge();
             }
