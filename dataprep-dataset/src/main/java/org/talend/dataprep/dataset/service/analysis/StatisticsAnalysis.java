@@ -145,6 +145,13 @@ public class StatisticsAnalysis {
                     }
                 } catch (Exception e) {
                     if (metadata != null) {
+                        // just log it
+                        LOGGER.warn( "dataset '{}' generate an error, message: {} ", dataSetId, e.getMessage() );
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug( "dataset '"+ dataSetId +"' generate an error", e );
+                        }
+                        // FIXME there is an error but with the following code the datasets will be still in the list
+                        // the user won't be able to read and will get a weird error without any nice explanation
                         metadata.getLifecycle().error(true);
                         repository.add(metadata);
                     }

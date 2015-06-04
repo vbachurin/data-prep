@@ -1,0 +1,30 @@
+<talend-modal fullscreen="false"
+              close-button="true"
+              state="previewCtrl.state">
+    <div class="modal-title">Import Excel File</div>
+
+    <div class="dataset-sheet-preview">
+        <table class="no-border">
+            <tr>
+                <td class="form-title">Dataset Name:</td>
+                <td><input type="text" ng-model="previewCtrl.metadata.name"/></td>
+            </tr>
+            <tr>
+                <td class="form-title">StyleSheet:</td>
+                <td><select ng-options="sheetContent.name as sheetContent.name for sheetContent in previewCtrl.metadata.schemaParserResult.sheetContents"
+                            ng-model="previewCtrl.selectedSheetName"
+                            ng-change="previewCtrl.selectSheet()"></select></td>
+            </tr>
+        </table>
+
+        <div>{{::'CONTENT_100_FIRST_ROWS' | translate}} :</div>
+        <div id="datasetSheetPreviewGrid" class="datagrid" ></div>
+    </div>
+
+    <div class="modal-buttons">
+        <button class="talend-modal-close t-btn-secondary modal-secondary-button"
+                ng-click="confirmCtrl.cancel()">{{::'CANCEL' | translate}}</button>
+        <button  class="talend-modal-close t-btn-primary modal-primary-button"
+                 ng-click="previewCtrl.setDatasetSheet()">{{::'CONFIRM' | translate}}</button>
+    </div>
+</talend-modal>

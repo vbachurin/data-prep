@@ -15,7 +15,7 @@
         "count": 5,
         "valid": 5,
         "invalid": 0,
-        "empty": 0,
+        "empty": 0.0,
         "max": "NaN",
         "min": "NaN",
         "mean": "NaN",
@@ -73,9 +73,9 @@
         },
         "histogram": [],
         "textLengthSummary": {
-          "minimalLength": 6,
-          "minimalLengthWithBlank": 0,
-          "maximalLength": 15,
+          "minimalLength": 6.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 15.0,
           "averageLength": 9.2,
           "averageLengthWithBlank": 9.2
         }
@@ -95,7 +95,7 @@
         "count": 5,
         "valid": 5,
         "invalid": 0,
-        "empty": 0,
+        "empty": 0.0,
         "max": "NaN",
         "min": "NaN",
         "mean": "NaN",
@@ -145,9 +145,9 @@
         },
         "histogram": [],
         "textLengthSummary": {
-          "minimalLength": 4,
-          "minimalLengthWithBlank": 0,
-          "maximalLength": 7,
+          "minimalLength": 4.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 7.0,
           "averageLength": 5.2,
           "averageLengthWithBlank": 5.2
         }
@@ -167,7 +167,7 @@
         "count": 5,
         "valid": 5,
         "invalid": 0,
-        "empty": 0,
+        "empty": 0.0,
         "max": "NaN",
         "min": "NaN",
         "mean": "NaN",
@@ -217,9 +217,9 @@
         },
         "histogram": [],
         "textLengthSummary": {
-          "minimalLength": 4,
-          "minimalLengthWithBlank": 0,
-          "maximalLength": 6,
+          "minimalLength": 4.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 6.0,
           "averageLength": 5.2,
           "averageLengthWithBlank": 5.2
         }
@@ -239,7 +239,7 @@
         "count": 5,
         "valid": 5,
         "invalid": 0,
-        "empty": 0,
+        "empty": 0.0,
         "max": "NaN",
         "min": "NaN",
         "mean": "NaN",
@@ -281,11 +281,11 @@
         },
         "histogram": [],
         "textLengthSummary": {
-          "minimalLength": 0,
-          "minimalLengthWithBlank": 0,
-          "maximalLength": 0,
-          "averageLength": 0,
-          "averageLengthWithBlank": 0
+          "minimalLength": 0.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 0.0,
+          "averageLength": 0.0,
+          "averageLengthWithBlank": 0.0
         }
       }
     },
@@ -303,7 +303,7 @@
         "count": 5,
         "valid": 5,
         "invalid": 0,
-        "empty": 0,
+        "empty": 0.0,
         "max": "NaN",
         "min": "NaN",
         "mean": "NaN",
@@ -337,11 +337,11 @@
         },
         "histogram": [],
         "textLengthSummary": {
-          "minimalLength": 3,
-          "minimalLengthWithBlank": 0,
-          "maximalLength": 13,
-          "averageLength": 11,
-          "averageLengthWithBlank": 11
+          "minimalLength": 3.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 13.0,
+          "averageLength": 11.0,
+          "averageLengthWithBlank": 11.0
         }
       }
     }
