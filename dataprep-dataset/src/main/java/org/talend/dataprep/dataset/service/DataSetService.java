@@ -27,6 +27,8 @@ import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
+import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.CommonErrorCodes;
@@ -39,8 +41,6 @@ import org.talend.dataprep.schema.DraftValidator;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
 
 @RestController
@@ -54,6 +54,12 @@ public class DataSetService {
     static {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC")); //$NON-NLS-1$
     }
+
+    @Autowired
+    AsynchronousDataSetAnalyzer[] asynchronousAnalyzers;
+
+    @Autowired
+    List<SynchronousDataSetAnalyzer> synchronousAnalyzers;
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -70,22 +76,23 @@ public class DataSetService {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
-    private ObjectMapper objectMapper;
-
     @PostConstruct
     public void initialize() {
-        // to ease our life simply ignore unknown properties
-        this.objectMapper = builder.build().disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+        synchronousAnalyzers.sort((analyzer1, analyzer2) -> analyzer1.order() - analyzer2.order());
     }
 
-    private static void queueEvents(String id, JmsTemplate template) {
-        String[] destinations = { Destinations.FORMAT_ANALYSIS, Destinations.CONTENT_ANALYSIS };
-        for (String destination : destinations) {
-            template.send(destination, session -> {
+    private void queueEvents(String id) {
+        // Calls all synchronous analysis first
+        for (SynchronousDataSetAnalyzer synchronousDataSetAnalyzer : synchronousAnalyzers) {
+            synchronousDataSetAnalyzer.analyze(id);
+        }
+        // Then use JMS queue for all optional analysis
+        for (AsynchronousDataSetAnalyzer asynchronousDataSetAnalyzer : asynchronousAnalyzers) {
+            jmsTemplate.send(asynchronousDataSetAnalyzer.destination(), session -> {
                 Message message = session.createMessage();
                 message.setStringProperty("dataset.id", id); //$NON-NLS-1
-                    return message;
-                });
+                return message;
+            });
         }
     }
 
@@ -135,7 +142,7 @@ public class DataSetService {
         // Create the new data set
         dataSetMetadataRepository.add(dataSetMetadata);
         // Queue events (format analysis, content indexing for search...)
-        queueEvents(id, jmsTemplate);
+        queueEvents(id);
         return id;
     }
 
@@ -173,18 +180,6 @@ public class DataSetService {
                 // situation
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
                         dataSetId));
-            }
-            if (!dataSetMetadata.getLifecycle().schemaAnalyzed()) {
-                // Schema is not yet ready (but eventually will, returns 202 to indicate this).
-                LOG.debug("Data set #{} not yet ready for service.", dataSetId);
-                response.setStatus(HttpServletResponse.SC_ACCEPTED);
-                return DataSet.empty();
-            }
-            if (!dataSetMetadata.getLifecycle().qualityAnalyzed()) {
-                // Quality is not yet ready (but eventually will, returns 202 to indicate this).
-                LOG.debug("Column information #{} not yet ready for service (missing quality information).", dataSetId);
-                response.setStatus(HttpServletResponse.SC_ACCEPTED);
-                return DataSet.empty();
             }
 
             // Build the result
@@ -287,7 +282,7 @@ public class DataSetService {
             lock.unlock();
         }
         // Content was changed, so queue events (format analysis, content indexing for search...)
-        queueEvents(dataSetId, jmsTemplate);
+        queueEvents(dataSetId);
     }
 
     /**
@@ -440,15 +435,12 @@ public class DataSetService {
             @ApiParam(value = "content") InputStream dataSetContent) {
 
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        lock.lock();
         try {
-
-            DataSetMetadata dataSetMetadata = objectMapper.readValue(dataSetContent, DataSetMetadata.class);
-
-            lock.lock();
-
+            DataSetMetadata dataSetMetadata = builder.build().readValue(dataSetContent, DataSetMetadata.class);
             LOG.debug("updateDataSet: {}", dataSetMetadata);
 
-            // we retry informations we do not update
+            // we retry information we do not update
             DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
             read.setName(dataSetMetadata.getName());
 
@@ -486,12 +478,7 @@ public class DataSetService {
 
             // all good mate!! so send that to jms
             // Asks for a in depth schema analysis (for column type information).
-            jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
-                Message schemaAnalysisMessage = session.createMessage();
-                schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                    return schemaAnalysisMessage;
-                });
-
+            queueEvents(dataSetId);
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } finally {
