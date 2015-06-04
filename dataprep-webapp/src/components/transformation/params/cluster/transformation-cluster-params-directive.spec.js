@@ -2,12 +2,8 @@ describe('Transformation simple params directive', function () {
     'use strict';
     var scope, createElement;
 
-    beforeEach(module('data-prep.transformation-params'));
-    beforeEach(module('htmlTemplates'));
-
-    beforeEach(inject(function($rootScope, $compile) {
-        scope = $rootScope.$new();
-        scope.details = {
+    var clusterDetails = function () {
+        return {
             titles: [
                 'We found these values',
                 'And we\'ll keep this value'
@@ -93,10 +89,19 @@ describe('Transformation simple params directive', function () {
                 }
             ]
         };
+    };
+
+    beforeEach(module('data-prep.transformation-params'));
+    beforeEach(module('htmlTemplates'));
+
+    beforeEach(inject(function($rootScope, $compile, $timeout) {
+        scope = $rootScope.$new();
+        scope.details = clusterDetails();
 
         createElement = function() {
             var element = angular.element('<transform-cluster-params details="details"></transform-cluster-params>');
             $compile(element)(scope);
+            $timeout.flush();
             scope.$digest();
             return element;
         };
@@ -200,5 +205,44 @@ describe('Transformation simple params directive', function () {
         expect(allCheck.is(':checked')).toBe(true);
         expect(firstRowCheckbox.is(':checked')).toBe(true);
         expect(secondRowCheckbox.is(':checked')).toBe(true);
+    });
+
+    it('should update style on "active --> inactive" cluster row', function() {
+        //given
+        var element = createElement();
+        var firstRow = element.find('tbody').eq(0).find('>tr').eq(0);
+        var firstRowCheckbox = firstRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
+
+        expect(firstRow.hasClass('disabled')).toBe(false);
+        expect(firstRow.find('input:not(.cluster-activation)').is(':disabled')).toBe(false);
+
+        //when
+        firstRowCheckbox.click();
+        scope.$digest();
+
+        //then
+        expect(firstRow.hasClass('disabled')).toBe(true);
+        expect(firstRow.find('input:not(.cluster-activation)').is(':disabled')).toBe(true);
+    });
+
+    it('should update style on "inactive --> active" cluster row', function() {
+        //given
+        var element = createElement();
+        var firstRow = element.find('tbody').eq(0).find('>tr').eq(0);
+        var firstRowCheckbox = firstRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
+
+        firstRowCheckbox.click();
+        scope.$digest();
+
+        expect(firstRow.hasClass('disabled')).toBe(true);
+        expect(firstRow.find('input:not(.cluster-activation)').is(':disabled')).toBe(true);
+
+        //when
+        firstRowCheckbox.click();
+        scope.$digest();
+
+        //then
+        expect(firstRow.hasClass('disabled')).toBe(false);
+        expect(firstRow.find('input:not(.cluster-activation)').is(':disabled')).toBe(false);
     });
 });

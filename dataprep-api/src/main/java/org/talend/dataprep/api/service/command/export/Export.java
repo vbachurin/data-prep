@@ -61,7 +61,7 @@ public class Export extends PreparationCommand<InputStream> {
 
         // Set response headers
         response.setContentType(input.getExportType().getMimeType());
-        response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getEntension());
+        response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getExtension());
 
         // Get dataset content and call export service
         final String uri = getTransformationUri(input.getExportType(), input.getCsvSeparator(), encodedActions);
@@ -82,7 +82,7 @@ public class Export extends PreparationCommand<InputStream> {
      * @return The built URI
      */
     private String getTransformationUri(final ExportType exportType, final Character csvSeparator, final String encodedActions) {
-        String result = this.transformationServiceUrl + "/transform/" + exportType;
+        String result = this.transformationServiceUrl + "/export/" + exportType;
         boolean hasQueryParams = false;
 
         if (csvSeparator != null) {

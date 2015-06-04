@@ -168,28 +168,28 @@ public class XlsFormatTest {
             Assertions.assertThat(values).isNotEmpty().hasSize(4);
 
             Assertions.assertThat(values.get(0)) //
-                    .contains(MapEntry.entry("0", "Little Creatures"), //
-                            MapEntry.entry("1", "Australie"),//
-                            MapEntry.entry("2", "Awesome"), //
-                            MapEntry.entry("3", "10.0")); //
+                    .contains(MapEntry.entry("0000", "Little Creatures"), //
+                            MapEntry.entry("0001", "Australie"),//
+                            MapEntry.entry("0002", "Awesome"), //
+                            MapEntry.entry("0003", "10.0")); //
 
             Assertions.assertThat(values.get(1)) //
-                    .contains(MapEntry.entry("0", "Heinekein"), //
-                            MapEntry.entry("1", "France"),//
-                            MapEntry.entry("2", "crappy"), //
-                            MapEntry.entry("3", "")); //
+                    .contains(MapEntry.entry("0000", "Heinekein"), //
+                            MapEntry.entry("0001", "France"),//
+                            MapEntry.entry("0002", "crappy"), //
+                            MapEntry.entry("0003", "")); //
 
             Assertions.assertThat(values.get(2)) //
-                    .contains(MapEntry.entry("0", "Foo"), //
-                            MapEntry.entry("1", "Australie"),//
-                            MapEntry.entry("2", "10.0"),//
-                            MapEntry.entry("3", "6.0"));
+                    .contains(MapEntry.entry("0000", "Foo"), //
+                            MapEntry.entry("0001", "Australie"),//
+                            MapEntry.entry("0002", "10.0"),//
+                            MapEntry.entry("0003", "6.0"));
 
             Assertions.assertThat(values.get(3)) //
-                    .contains(MapEntry.entry("0", "Bar"), //
-                            MapEntry.entry("1", "France"),//
-                            MapEntry.entry("2", "crappy"), //
-                            MapEntry.entry("3", "2.0"));
+                    .contains(MapEntry.entry("0000", "Bar"), //
+                            MapEntry.entry("0001", "France"),//
+                            MapEntry.entry("0002", "crappy"), //
+                            MapEntry.entry("0003", "2.0"));
         }
 
     }
@@ -363,19 +363,19 @@ public class XlsFormatTest {
             Assertions.assertThat(values).isNotEmpty().hasSize(239);
 
             Assertions.assertThat(values.get(0)) //
-                    .contains(MapEntry.entry("0", "24-Jul-2014"),//
-                            MapEntry.entry("1", "COFACE"), //
-                            MapEntry.entry("6", "tony_fernandes@coface.com"));
+                    .contains(MapEntry.entry("0000", "24-Jul-2014"),//
+                            MapEntry.entry("0001", "COFACE"), //
+                            MapEntry.entry("0006", "tony_fernandes@coface.com"));
 
             Assertions.assertThat(values.get(1)) //
-                    .contains(MapEntry.entry("0", "24-Jul-2014"),//
-                            MapEntry.entry("1", "ENABLON"), //
-                            MapEntry.entry("4", "COCUD"));
+                    .contains(MapEntry.entry("0000", "24-Jul-2014"),//
+                            MapEntry.entry("0001", "ENABLON"), //
+                            MapEntry.entry("0004", "COCUD"));
 
             Assertions.assertThat(values.get(17)) //
-                    .contains(MapEntry.entry("0", "17-Jul-2014"),//
-                            MapEntry.entry("1", "SODEBO"), //
-                            MapEntry.entry("3", "Tanguy"));
+                    .contains(MapEntry.entry("0000", "17-Jul-2014"),//
+                            MapEntry.entry("0001", "SODEBO"), //
+                            MapEntry.entry("0003", "Tanguy"));
 
         }
 

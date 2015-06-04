@@ -3,7 +3,6 @@ package org.talend.dataprep.schema;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 
@@ -50,9 +49,6 @@ public interface FormatGuess {
 
     @Component
     class Factory {
-
-        @Autowired
-        private ApplicationContext applicationContext;
 
         @Autowired
         private Map<String, FormatGuess> formatGuessMap;

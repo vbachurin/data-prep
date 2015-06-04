@@ -3,8 +3,8 @@ package org.talend.dataprep.api.service.command.common;
 import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -35,7 +35,7 @@ public abstract class DataPrepCommand<T> extends HystrixCommand<T> {
     protected Jackson2ObjectMapperBuilder builder;
 
     @Autowired
-    protected WebApplicationContext context;
+    protected ApplicationContext context;
 
     protected DataPrepCommand(final HystrixCommandGroupKey groupKey, final HttpClient client) {
         super(groupKey);

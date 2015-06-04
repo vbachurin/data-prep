@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
@@ -82,7 +81,7 @@ public class HDFSContentStore implements DataSetContentStore {
         try {
             return fileSystem.open(getPath(dataSetMetadata));
         } catch (Exception e) {
-            LOGGER.warn("File '{}' does not exist.", getPath(dataSetMetadata));
+            LOGGER.warn("File '{}' does not exist.", getPath(dataSetMetadata), e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }

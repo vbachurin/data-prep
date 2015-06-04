@@ -34,7 +34,7 @@ public class RecordsTypeTransformer implements TypeTransformer {
         final Consumer<DataSetRow> referenceAction = configuration.isPreview() ? actions.get(0) : null;
         final Consumer<DataSetRow> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
 
-        final boolean isIndexLimited = indexes != null && indexes.size() > 0;
+        final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
         final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : null;
         final Integer maxIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).max().getAsInt() : null;
 

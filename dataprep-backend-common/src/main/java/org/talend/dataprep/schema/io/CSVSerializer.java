@@ -28,29 +28,48 @@ public class CSVSerializer implements Serializer {
             StringWriter writer = new StringWriter();
             JsonGenerator generator = new JsonFactory().createJsonGenerator(writer);
             reader.readNext(); // Skip column names
-            String[] line;
+
             generator.writeStartArray();
-            {
-                while ((line = reader.readNext()) != null) {
-                    List<ColumnMetadata> columns = metadata.getRow().getColumns();
-                    generator.writeStartObject();
-                    for (int i = 0; i < columns.size(); i++) {
-                        ColumnMetadata columnMetadata = columns.get(i);
-                        generator.writeFieldName(columnMetadata.getId());
-                        if (line[i] != null) {
-                            generator.writeString(line[i]);
-                        } else {
-                            generator.writeNull();
-                        }
-                    }
-                    generator.writeEndObject();
-                }
-            }
+            writeLineContent(reader, metadata, generator);
             generator.writeEndArray();
+
             generator.flush();
             return new ByteArrayInputStream(writer.toString().getBytes("UTF-8")); //$NON-NLS-1$
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_SERIALIZE_TO_JSON, e);
+        }
+    }
+
+    /**
+     * Write the line content.
+     *
+     * @param reader the csv reader to use as data source.
+     * @param metadata the dataset metadata to use to get the columns.
+     * @param generator the json generator used to actually write the line content.
+     * @throws IOException if an error occurs.
+     */
+    private void writeLineContent(CSVReader reader, DataSetMetadata metadata, JsonGenerator generator) throws IOException {
+        String[] line;
+
+        while ((line = reader.readNext()) != null) {
+
+            // skip empty lines
+            if (line.length == 1) {
+                continue;
+            }
+
+            List<ColumnMetadata> columns = metadata.getRow().getColumns();
+            generator.writeStartObject();
+            for (int i = 0; i < columns.size(); i++) {
+                ColumnMetadata columnMetadata = columns.get(i);
+                generator.writeFieldName(columnMetadata.getId());
+                if (i < line.length && line[i] != null) {
+                    generator.writeString(line[i]);
+                } else {
+                    generator.writeNull();
+                }
+            }
+            generator.writeEndObject();
         }
     }
 }

@@ -2,6 +2,7 @@
   $border-color: $medium-gray;
   $left-space: 15px;
 
+  $background-color: $light-gray;
   $column-one-width: 30px;
   $column-two-width: 420px;
   $column-three-width: 350px;
@@ -9,6 +10,11 @@
   $table-height: 350px;
   $table-header-height: 30px;
   $table-body-height: $table-height - $table-header-height;
+  $text-color: $dark-gray;
+
+  $disabled-background-color: $medium-gray;
+  $disabled-border-color: $black;
+  $disabled-text-color: $white;
 
   @mixin column-sizes() {
     &:nth-child(1) {
@@ -25,7 +31,6 @@
   }
 
   table.cluster {
-    //border: 1px solid $dark-gray;
     max-height: $table-height;
     width: $table-width;
 
@@ -55,15 +60,27 @@
       overflow-x: hidden;
 
       >tr{
+        @include transition(background-color 0.3s ease-in-out);
+
         &:nth-child(odd){
-          background-color: $light-gray;
+          background-color: $background-color;
+        }
+
+        &.disabled {
+          background-color: $disabled-background-color;
+          color: $disabled-text-color;
+          font-style: italic;
+
+          >td {
+            border: 1px solid $disabled-border-color;
+          }
         }
 
         >td {
           @include column-sizes();
 
           font-size: 0.9em;
-          color: $dark-gray;
+          color: $text-color;
 
           border: 1px solid $border-color;
           padding: 0px $left-space;

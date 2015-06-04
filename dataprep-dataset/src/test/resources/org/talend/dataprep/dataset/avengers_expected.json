@@ -2,7 +2,7 @@
   "metadata": null,
   "columns": [
     {
-      "id": "0",
+      "id": "0000",
       "name": "nickname",
       "quality": {
         "empty": 0,
@@ -81,7 +81,7 @@
       "type": "string"
     },
     {
-      "id": "1",
+      "id": "0001",
       "name": "secret firstname",
       "quality": {
         "empty": 0,
@@ -152,7 +152,7 @@
       "type": "string"
     },
     {
-      "id": "2",
+      "id": "0002",
       "name": "secret lastname",
       "quality": {
         "empty": 0,
@@ -223,7 +223,7 @@
       "type": "string"
     },
     {
-      "id": "3",
+      "id": "0003",
       "name": "date of birth",
       "quality": {
         "empty": 0,
@@ -286,7 +286,7 @@
       "type": "date"
     },
     {
-      "id": "4",
+      "id": "0004",
       "name": "city",
       "quality": {
         "empty": 0,
@@ -343,39 +343,39 @@
   ],
   "records": [
     {
-      "0": "Spiderman",
-      "1": "Peter",
-      "2": "Parker",
-      "3": "05/15/1962",
-      "4": "New York City"
+      "0000": "Spiderman",
+      "0001": "Peter",
+      "0002": "Parker",
+      "0003": "05/15/1962",
+      "0004": "New York City"
     },
     {
-      "0": "Superman",
-      "1": "Clark",
-      "2": "Kent",
-      "3": "02/28/1938",
-      "4": "New York City"
+      "0000": "Superman",
+      "0001": "Clark",
+      "0002": "Kent",
+      "0003": "02/28/1938",
+      "0004": "New York City"
     },
     {
-      "0": "Batman",
-      "1": "Bruce",
-      "2": "Wayne",
-      "3": "05/01/1939",
-      "4": "NYC"
+      "0000": "Batman",
+      "0001": "Bruce",
+      "0002": "Wayne",
+      "0003": "05/01/1939",
+      "0004": "NYC"
     },
     {
-      "0": "Captain America",
-      "1": "Stevens",
-      "2": "Rogers",
-      "3": "04/04/1918",
-      "4": "New York City"
+      "0000": "Captain America",
+      "0001": "Stevens",
+      "0002": "Rogers",
+      "0003": "04/04/1918",
+      "0004": "New York City"
     },
     {
-      "0": "Iron Man",
-      "1": "Tony",
-      "2": "Stark",
-      "3": "03/05/1963",
-      "4": "New York City"
+      "0000": "Iron Man",
+      "0001": "Tony",
+      "0002": "Stark",
+      "0003": "03/05/1963",
+      "0004": "New York City"
     }
   ]
 }

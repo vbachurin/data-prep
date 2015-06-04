@@ -13,24 +13,41 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import com.tableausoftware.DataExtract.*;
 import com.tableausoftware.TableauException;
 
+/**
+ * Tableau implementation of the TransformerWriter.
+ */
 public class TableauWriter implements TransformerWriter {
 
+    /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(TableauWriter.class);
 
+    /** A SecureRandom used to generate tableau id. */
     private static final SecureRandom random = new SecureRandom();
 
+    /** The tableau default type. */
     private static org.talend.dataprep.api.type.Type DEFAULT_TYPE = org.talend.dataprep.api.type.Type.ANY;
 
+    /** List of column metadata. */
     private ColumnMetadata[] columnMetadatas;
 
+    /** Where to write the tableau. */
     private OutputStream outputStream;
 
+    /** Name of the tableau file to wirte.. */
     private String fileName;
 
+    /** Tableau data extract. */
     private Extract extract;
 
+    /** The tableau table object. */
     private Table table;
 
+    /**
+     * Constructor.
+     *
+     * @param output Where this writer should write.
+     * @throws IOException if an unexpected error occurs.
+     */
     public TableauWriter(final OutputStream output) throws IOException {
         this.outputStream = output;
 
@@ -50,6 +67,10 @@ public class TableauWriter implements TransformerWriter {
         }
     }
 
+    /**
+     * @param dataPrepType the data-prep type.
+     * @return Return the tableau type from the data-prep one.
+     */
     private static Type getTableauType(org.talend.dataprep.api.type.Type dataPrepType) {
         switch (dataPrepType) {
         case ANY:
@@ -70,6 +91,9 @@ public class TableauWriter implements TransformerWriter {
         }
     }
 
+    /**
+     * @see TransformerWriter#write(RowMetadata)
+     */
     @Override
     public void write(final RowMetadata rowMetadata) throws IOException {
         columnMetadatas = rowMetadata.getColumns().stream().map(columnMetadata -> columnMetadata).toArray(ColumnMetadata[]::new);
@@ -91,6 +115,9 @@ public class TableauWriter implements TransformerWriter {
         }
     }
 
+    /**
+     * @see TransformerWriter#write(DataSetRow)
+     */
     @Override
     public void write(final DataSetRow row) throws IOException {
         if (columnMetadatas == null) {
@@ -153,10 +180,9 @@ public class TableauWriter implements TransformerWriter {
 
     }
 
-    @Override
-    public void flush() throws IOException {
-    }
-
+    /**
+     * @see TransformerWriter#endObject()
+     */
     @Override
     public void endObject() throws IOException {
         this.extract.close();

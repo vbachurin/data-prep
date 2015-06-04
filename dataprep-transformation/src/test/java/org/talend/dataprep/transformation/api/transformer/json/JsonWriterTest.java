@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.type.Type;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -36,14 +37,14 @@ public class JsonWriterTest {
     @Test
     public void write_should_write_columns() throws Exception {
         // given
-        final ColumnMetadata column1 = new ColumnMetadata("1", "id", "string");
-        final ColumnMetadata column2 = new ColumnMetadata("2", "firstname", "string");
+        final ColumnMetadata column1 = ColumnMetadata.Builder.column().id(1).name("id").type(Type.STRING).build();
+        final ColumnMetadata column2 = ColumnMetadata.Builder.column().id(2).name("firstname").type(Type.STRING).build();
 
         final List<ColumnMetadata> columns = new ArrayList<>(2);
         columns.add(column1);
         columns.add(column2);
 
-        final String expectedOutput = "[{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"1\"; \"name\":\"id\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"},{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"2\",\"name\":\"firstname\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"}]";
+        final String expectedOutput = "[{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"0001\"; \"name\":\"id\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"},{\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"0002\",\"name\":\"firstname\",\"headerSize\":0,\"statistics\":{},\"type\":\"string\"}]";
 
         // when
         writer.write(new RowMetadata(columns));

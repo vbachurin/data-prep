@@ -11,7 +11,7 @@ import org.talend.dataprep.api.dataset.diff.Flag;
 public class RowMetadata {
 
     /** List of row metadata. */
-    private List<ColumnMetadata> columnMetadatas = new ArrayList<>();
+    private List<ColumnMetadata> columnMetadata = new ArrayList<>();
 
     /**
      * Default constructor.
@@ -19,28 +19,28 @@ public class RowMetadata {
      * @param columnMetadata the list of column metadata.
      */
     public RowMetadata(List<ColumnMetadata> columnMetadata) {
-        this.columnMetadatas = columnMetadata;
+        this.columnMetadata = columnMetadata;
     }
 
     /**
      * @return The metadata of this row's columns.
      */
     public List<ColumnMetadata> getColumns() {
-        return columnMetadatas;
+        return columnMetadata;
     }
 
     /**
      * @param columnMetadata the metadata to set.
      */
     public void setColumns(List<ColumnMetadata> columnMetadata) {
-        this.columnMetadatas = columnMetadata;
+        this.columnMetadata = columnMetadata;
     }
 
     /**
      * @return the row size.
      */
     public int size() {
-        return columnMetadatas.size();
+        return columnMetadata.size();
     }
 
     /**
@@ -52,7 +52,7 @@ public class RowMetadata {
         if (wantedId == null) {
             return null;
         }
-        for (ColumnMetadata column : columnMetadatas) {
+        for (ColumnMetadata column : columnMetadata) {
             if (wantedId.equals(column.getId())) {
                 return column;
             }
@@ -61,26 +61,24 @@ public class RowMetadata {
     }
 
     /**
-     * Compute the diff from the given reference to this and update the diffFlag on each columnMetadatas.
+     * Compute the diff from the given reference to this and update the diffFlag on each columnMetadata.
      * 
      * @param reference the starting point to compute the diff.
      */
     public void diff(RowMetadata reference) {
 
         // process the new columns
-        columnMetadatas.forEach(column -> {
+        columnMetadata.forEach(column -> {
             if (reference.getById(column.getId()) == null) {
                 column.setDiffFlagValue(Flag.NEW.getValue());
             }
         });
 
         // process the updated columns
-        columnMetadatas.forEach(column -> {
+        columnMetadata.forEach(column -> {
             ColumnMetadata referenceColumn = reference.getById(column.getId());
-            if (referenceColumn != null) {
-                if (!column.getName().equals(referenceColumn.getName())) {
-                    column.setDiffFlagValue(Flag.UPDATE.getValue());
-                }
+            if (referenceColumn != null && !column.getName().equals(referenceColumn.getName())) {
+                column.setDiffFlagValue(Flag.UPDATE.getValue());
             }
         });
 
@@ -88,12 +86,16 @@ public class RowMetadata {
         reference.getColumns().forEach(referenceColumn -> {
             if (getById(referenceColumn.getId()) == null) {
                 referenceColumn.setDiffFlagValue(Flag.DELETE.getValue());
-                columnMetadatas.add(referenceColumn);
+                columnMetadata.add(referenceColumn);
             }
         });
 
         // sort the columns so that the deleted ones get placed where the were
-        columnMetadatas.sort((col1, col2) -> col1.getId().compareTo(col2.getId()));
+        columnMetadata.sort((col1, col2) -> col1.getId().compareTo(col2.getId()));
     }
 
+    @Override
+    public String toString() {
+        return "RowMetadata{" + "columnMetadata=" + columnMetadata + '}';
+    }
 }

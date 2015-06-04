@@ -35,7 +35,7 @@ public class DeleteEmpty extends AbstractDelete {
      */
     @Override
     public boolean toDelete(Map<String, String> parsedParameters, String value) {
-        return (value == null || value.trim().length() == 0);
+        return value == null || value.trim().length() == 0;
     }
 
     /**

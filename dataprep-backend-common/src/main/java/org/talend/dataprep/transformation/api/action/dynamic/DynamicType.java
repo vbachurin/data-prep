@@ -2,7 +2,7 @@ package org.talend.dataprep.transformation.api.action.dynamic;
 
 import java.util.Arrays;
 
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.talend.dataprep.transformation.api.action.dynamic.cluster.ClusterParameters;
 
 public enum DynamicType {
@@ -12,7 +12,7 @@ public enum DynamicType {
 
     private Class<? extends DynamicParameters> generatorType;
 
-    private DynamicType(final String action, Class<? extends DynamicParameters> generatorType) {
+    DynamicType(final String action, Class<? extends DynamicParameters> generatorType) {
         this.action = action;
         this.generatorType = generatorType;
     }
@@ -21,7 +21,7 @@ public enum DynamicType {
         return Arrays.stream(values()).filter(type -> type.getAction().equals(action)).findFirst().orElse(null);
     }
 
-    public DynamicParameters getGenerator(final WebApplicationContext context) {
+    public DynamicParameters getGenerator(final ApplicationContext context) {
         return context.getBean(generatorType);
     }
 

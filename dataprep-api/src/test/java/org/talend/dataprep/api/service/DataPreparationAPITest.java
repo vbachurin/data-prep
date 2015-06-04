@@ -123,8 +123,8 @@ public class DataPreparationAPITest {
         final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
 
         // when
-        final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
-                .asString();
+        final String transformed = given().contentType(ContentType.JSON).body(actions).when().log().ifValidationFails()
+                .post("/api/transform/" + dataSetId).asString();
 
         // then
         assertThat(transformed, sameJSONAsFile(expectedContent));
@@ -362,7 +362,7 @@ public class DataPreparationAPITest {
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
         assertThat(steps.size(), is(2));
-        assertThat(steps.get(0), is("cf1be652e81df206c06fcab763e32aa584e1129a"));
+        assertThat(steps.get(0), is("96f62093552b1803eefb6790cf66d12aee0f2211"));
         assertThat(steps.get(1), is(ROOT_STEP.id()));
     }
 
@@ -375,21 +375,21 @@ public class DataPreparationAPITest {
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
-        assertThat(steps.get(0), is("4115f6d965e146ddbff622633895277c96754541")); // <- upper_case_2
-        assertThat(steps.get(1), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59")); // <- upper_case_1
+        assertThat(steps.get(0), is("3dbbab224c7ef6352c6ab2e48f6af29322dee932")); // <- upper_case_2
+        assertThat(steps.get(1), is("4e3b0c1e2f2ee1e399f3f8bd8092fe0f2f74e690")); // <- upper_case_1
         assertThat(steps.get(2), is(ROOT_STEP.id()));
 
         // when : Update first action (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
         final String actionContent3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("lower_case_1.json"));
         given().body(actionContent3)
                 .put("/api/preparations/{preparation}/actions/{action}", preparationId,
-                        "2b6ae58738239819df3d8c4063e7cb56f53c0d59").then().statusCode(is(200));
+                        "4e3b0c1e2f2ee1e399f3f8bd8092fe0f2f74e690").then().statusCode(is(200));
 
         // then : Steps id should have changed due to update
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
-        assertThat(steps.get(0), is("b96bf024a0265376ffaedcc974b8b66b3b2c7f64"));
-        assertThat(steps.get(1), is("1af242477273e0dae4bb3d32cc524b61744c7895"));
+        assertThat(steps.get(0), is("0047ac44eb97d99115bd6c45c5efe9def7104ac7"));
+        assertThat(steps.get(1), is("b85406721e33024bcadecd98b9b7d87465113a5a"));
         assertThat(steps.get(2), is(ROOT_STEP.id()));
     }
 
@@ -506,7 +506,7 @@ public class DataPreparationAPITest {
                 + "   \"action\": {" //
                 + "       \"action\": \"delete_on_value\",\n"//
                 + "       \"parameters\": {" //
-                + "           \"column_id\": \"6\"," //
+                + "           \"column_id\": \"0006\"," //
                 + "           \"value\": \"Coast city\""//
                 + "       }" //
                 + "   }"//
@@ -630,7 +630,7 @@ public class DataPreparationAPITest {
     }
 
     @Test
-    public void testSuggestActionParams_should_return_dynamic_params_with_preparation() throws Exception {
+    public void testSuggestActionParams_should_return_dynamic_params_with_preparation_head() throws Exception {
         // given
         final String preparationId = createPreparationFromFile("transformation/cluster_dataset.csv", "testClustering", "text/csv");
         final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class
@@ -639,6 +639,31 @@ public class DataPreparationAPITest {
         // when
         final String actualClusterParameters = given().formParam("preparationId", preparationId)
                 .formParam("columnId", "uglystate").when().get("/api/transform/suggest/textclustering/params").asString();
+
+        // then
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+    }
+
+    @Test
+    public void testSuggestActionParams_should_return_dynamic_params_with_preparation_step() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("transformation/cluster_dataset.csv", "testClustering", "text/csv");
+        applyActionFromFile(preparationId, "export/upper_case_firstname.json");
+        applyActionFromFile(preparationId, "export/upper_case_lastname.json");
+
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
+                .getList("steps");
+
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+
+        // when
+        final String actualClusterParameters = given()
+                .formParam("preparationId", preparationId)
+                .formParam("stepId", steps.get(1))
+                .formParam("columnId", "uglystate")
+                .when()
+                .get("/api/transform/suggest/textclustering/params")
+                .asString();
 
         // then
         assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));

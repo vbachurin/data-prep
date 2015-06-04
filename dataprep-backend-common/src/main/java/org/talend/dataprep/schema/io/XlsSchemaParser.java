@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.SchemaParserResult;
 
@@ -89,7 +91,7 @@ public class XlsSchemaParser implements SchemaParser {
 
         } catch (IOException e) {
             LOGGER.debug("IOEXception during parsing xls content :" + e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -117,7 +119,6 @@ public class XlsSchemaParser implements SchemaParser {
         final List<ColumnMetadata> columnMetadatas = new ArrayList<>(cellsTypeMatrix.size());
 
         cellsTypeMatrix.forEach((integer, integerTypeSortedMap) -> {
-            int colRowTypeChange = cellTypeChange.get(integer);
 
             Type type = guessColumnType(integerTypeSortedMap, averageHeaderSize);
 
@@ -138,7 +139,7 @@ public class XlsSchemaParser implements SchemaParser {
             columnMetadatas.add(ColumnMetadata.Builder //
                     .column() //
                     .headerSize(averageHeaderSize) //
-                    .id(String.valueOf(integer)) //
+                    .id(integer) //
                     .name(headerText) //
                     .type(type) //
                     .build());

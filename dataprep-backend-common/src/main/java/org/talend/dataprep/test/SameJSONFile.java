@@ -2,6 +2,7 @@ package org.talend.dataprep.test;
 
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -19,7 +20,7 @@ public class SameJSONFile {
      * @param stream A stream that contains the expected json.
      * @return a SameJSONAs to use like in assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
      */
-    public static SameJSONAs<? super String> sameJSONAsFile(InputStream stream) throws Exception {
+    public static SameJSONAs<? super String> sameJSONAsFile(InputStream stream) throws IOException {
         return sameJSONAs(IOUtils.toString(stream)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
     }
 }

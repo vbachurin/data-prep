@@ -68,7 +68,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
                 // if there are separators, let's see compute their coefficient of variation to see which one is the
                 // most likely to use
-                if (separators.size() > 0) {
+                if (!separators.isEmpty()) {
                     for (Separator separator : separators) {
                         separator.averagePerLine = separator.totalCount / (double) lineCount;
                         separator.stddev = Math

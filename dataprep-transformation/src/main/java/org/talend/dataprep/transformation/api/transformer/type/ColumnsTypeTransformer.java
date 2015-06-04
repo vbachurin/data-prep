@@ -105,6 +105,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
 
                     }
                 case VALUE_NULL:
+                default:
                     break;
                 }
             }
