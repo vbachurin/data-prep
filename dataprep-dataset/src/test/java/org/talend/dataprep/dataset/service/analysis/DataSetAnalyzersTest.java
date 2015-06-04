@@ -1,7 +1,6 @@
 package org.talend.dataprep.dataset.service.analysis;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -44,6 +43,7 @@ public class DataSetAnalyzersTest {
     public void testAsynchronousDestinations() throws Exception {
         for (AsynchronousDataSetAnalyzer asynchronousAnalyzer : asynchronousAnalyzers) {
             assertThat(asynchronousAnalyzer.destination(), notNullValue());
+            assertThat(asynchronousAnalyzer.destination(), not(is("")));
         }
     }
 

@@ -171,8 +171,7 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
                 repository.add(metadata);
                 LOGGER.info("Analyzed quality of dataset #{}.", dataSetId);
             } catch (Exception e) {
-                metadata.getLifecycle().error(true);
-                repository.add(metadata);
+                LOGGER.warn("dataset '{}' generate an error, message: {} ", dataSetId, e.getMessage());
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_ANALYZE_DATASET_QUALITY, e);
             }
         } finally {

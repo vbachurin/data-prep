@@ -33,7 +33,6 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -173,15 +172,6 @@ public class DataSetService {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return DataSet.empty(); // No data set, returns empty content.
             }
-
-            if (dataSetMetadata.getLifecycle().error()) {
-                LOG.error("Unable to serve {}, data set met unrecoverable error.", dataSetId);
-                // Data set is in error state, meaning content will never be delivered. Returns an error for this
-                // situation
-                throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
-                        dataSetId));
-            }
-
             // Build the result
             DataSet dataSet = new DataSet();
             if (metadata) {
@@ -423,7 +413,7 @@ public class DataSetService {
      * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
      *
      * @param dataSetId The id of data set to be updated.
-     * @param dataSetContent The new content for the data set. If empty, existing content will <b>not</b> be replaced.
+     * @param dataSetMetadata The new content for the data set. If empty, existing content will <b>not</b> be replaced.
      * For delete operation, look at {@link #delete(String)}.
      */
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -432,50 +422,40 @@ public class DataSetService {
     @VolumeMetered
     public void updateDataSet(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @ApiParam(value = "content") InputStream dataSetContent) {
-
+            @RequestBody DataSetMetadata dataSetMetadata) {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         lock.lock();
         try {
-            DataSetMetadata dataSetMetadata = builder.build().readValue(dataSetContent, DataSetMetadata.class);
             LOG.debug("updateDataSet: {}", dataSetMetadata);
-
             // we retry information we do not update
-            DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
-            read.setName(dataSetMetadata.getName());
+            DataSetMetadata previous = dataSetMetadataRepository.get(dataSetId);
+            previous.setName(dataSetMetadata.getName());
 
-            Optional<SchemaParserResult.SheetContent> sheetContentFound = read.getSchemaParserResult().getSheetContents()
+            Optional<SchemaParserResult.SheetContent> sheetContentFound = previous.getSchemaParserResult().getSheetContents()
                     .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())).findFirst();
 
             if (sheetContentFound.isPresent()) {
                 List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
-
-                if (read.getRow() == null) {
-                    read.setRowMetadata(new RowMetadata(Collections.emptyList()));
+                if (previous.getRow() == null) {
+                    previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
                 }
-                read.getRow().setColumns(columnMetadatas);
+                previous.getRow().setColumns(columnMetadatas);
             }
-
-            read.setSheetName(dataSetMetadata.getSheetName());
-
-            read.setSchemaParserResult(null);
-
+            // Set the user-selected sheet name
+            previous.setSheetName(dataSetMetadata.getSheetName());
+            previous.setSchemaParserResult(null);
             FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
-
             DraftValidator draftValidator = formatGuess.getDraftValidator();
-
+            // Validate that the new data set metadata removes the draft status
             DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
-
             if (result.draft) {
                 // FIXME what to do here?? exception?
                 LOG.warn("dataSetMetadata#{} still a draft", dataSetId);
                 return;
             }
-
-            read.setDraft(false);
-
-            dataSetMetadataRepository.add(read);
-
+            // Data set metadata to update is no longer a draft
+            previous.setDraft(false);
+            dataSetMetadataRepository.add(previous); // Save it
             // all good mate!! so send that to jms
             // Asks for a in depth schema analysis (for column type information).
             queueEvents(dataSetId);
