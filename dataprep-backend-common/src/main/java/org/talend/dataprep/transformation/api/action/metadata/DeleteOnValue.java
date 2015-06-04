@@ -1,13 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -22,12 +21,6 @@ public class DeleteOnValue extends AbstractDelete {
 
     /** Name of the parameter needed. */
     public static final String VALUE_PARAMETER = "value"; //$NON-NLS-1$
-
-    /**
-     * Private constructor to ensure IoC.
-     */
-    private DeleteOnValue() {
-    }
 
     /**
      * @see ActionMetadata#getName()
@@ -59,14 +52,11 @@ public class DeleteOnValue extends AbstractDelete {
     }
 
     /**
-     * @see ActionMetadata#getCompatibleColumnTypes()
+     * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        Set<Type> toReturn = new HashSet<>();
-        toReturn.add(Type.STRING);
-        toReturn.add(Type.NUMERIC);
-        return toReturn;
+    public boolean accept(ColumnMetadata column) {
+        return Type.STRING.equals(Type.get(column.getType())) || Type.NUMERIC.isAssignableFrom(Type.get(column.getType()));
     }
 
 }

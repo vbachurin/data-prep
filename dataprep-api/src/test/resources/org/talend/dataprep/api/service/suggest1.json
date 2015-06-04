@@ -150,9 +150,6 @@
   },
   {
     "category": "columns",
-    "compatibleColumnTypes": [
-      "ANY"
-    ],
     "items": [],
     "name": "rename_column",
     "parameters": [
@@ -181,9 +178,6 @@
   },
   {
     "category": "columns",
-    "compatibleColumnTypes": [
-      "STRING"
-    ],
     "items": [
       {
         "name": "separator",
@@ -242,9 +236,6 @@
   },
   {
     "category": "quickfix",
-    "compatibleColumnTypes": [
-      "STRING"
-    ],
     "name": "textclustering",
     "dynamic": true,
     "items": [

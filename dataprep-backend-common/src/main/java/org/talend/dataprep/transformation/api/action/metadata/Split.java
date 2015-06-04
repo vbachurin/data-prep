@@ -1,6 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,12 +37,6 @@ public class Split extends SingleColumnAction {
     private static final String MANUAL_SEPARATOR_PARAMETER = "manual_separator"; //$NON-NLS-1$
 
     /**
-     * Private constructor to ensure IoC use.
-     */
-    private Split() {
-    }
-
-    /**
      * @see ActionMetadata#getName()
      */
     @Override
@@ -70,11 +66,11 @@ public class Split extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCompatibleColumnTypes()
+     * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.STRING);
+    public boolean accept(ColumnMetadata column) {
+        return Type.STRING.equals(Type.get(column.getType()));
     }
 
     /**

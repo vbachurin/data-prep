@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,41 +24,37 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
+import org.talend.dataprep.api.type.Type;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
+/**
+ * Unit test for the absolute actions.
+ * 
+ * @see AbsoluteFloat
+ * @see AbsoluteFloat
+ */
 public class AbsoluteTest {
 
     private static final String FLOAT_COLUMN = "float_column"; //$NON-NLS-1$
 
     private static final String INT_COLUMN = "int_column"; //$NON-NLS-1$
 
-    @Autowired
     private AbsoluteFloat absFloatAction;
 
-    @Autowired
     private AbsoluteInt absIntAction;
 
     private Consumer<DataSetRow> absFloatConsumer;
 
     private Consumer<DataSetRow> absIntConsumer;
 
-    @Before
-    public void setUp() throws IOException {
-        String floatAction = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("absoluteFloatAction.json")); //$NON-NLS-1$
+    /**
+     * Default empty constructor.
+     */
+    public AbsoluteTest() throws IOException {
+
+        absFloatAction = new AbsoluteFloat();
+        String floatAction = IOUtils.toString(AbsoluteTest.class.getResourceAsStream("absoluteFloatAction.json")); //$NON-NLS-1$
 
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = floatAction.trim();
@@ -66,7 +63,8 @@ public class AbsoluteTest {
         Map<String, String> parameters = absFloatAction.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
         absFloatConsumer = absFloatAction.create(parameters);
 
-        String intAction = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("absoluteIntAction.json")); //$NON-NLS-1$
+        absIntAction = new AbsoluteInt();
+        String intAction = IOUtils.toString(AbsoluteTest.class.getResourceAsStream("absoluteIntAction.json")); //$NON-NLS-1$
 
         content = intAction.trim();
         node = mapper.readTree(content);
@@ -235,4 +233,27 @@ public class AbsoluteTest {
         assertEquals("-13", dsr.get("wrong_column")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    @Test
+    public void should_accept_column() {
+        assertTrue(absIntAction.accept(getColumn(Type.INTEGER)));
+        assertTrue(absFloatAction.accept(getColumn(Type.FLOAT)));
+    }
+
+    @Test
+    public void should_not_accept_column() {
+        assertFalse(absIntAction.accept(getColumn(Type.NUMERIC)));
+        assertFalse(absIntAction.accept(getColumn(Type.DOUBLE)));
+        assertFalse(absIntAction.accept(getColumn(Type.FLOAT)));
+        assertFalse(absIntAction.accept(getColumn(Type.STRING)));
+        assertFalse(absIntAction.accept(getColumn(Type.DATE)));
+        assertFalse(absIntAction.accept(getColumn(Type.BOOLEAN)));
+
+        assertFalse(absFloatAction.accept(getColumn(Type.NUMERIC)));
+        assertFalse(absFloatAction.accept(getColumn(Type.DOUBLE)));
+        assertFalse(absFloatAction.accept(getColumn(Type.INTEGER)));
+        assertFalse(absFloatAction.accept(getColumn(Type.STRING)));
+        assertFalse(absFloatAction.accept(getColumn(Type.DATE)));
+        assertFalse(absFloatAction.accept(getColumn(Type.BOOLEAN)));
+
+    }
 }

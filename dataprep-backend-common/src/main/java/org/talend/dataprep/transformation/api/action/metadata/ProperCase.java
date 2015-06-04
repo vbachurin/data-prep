@@ -1,15 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 @Component(ProperCase.ACTION_BEAN_PREFIX + ProperCase.PROPER_CASE_ACTION_NAME)
 public class ProperCase extends SingleColumnAction {
@@ -27,11 +25,6 @@ public class ProperCase extends SingleColumnAction {
     }
 
     @Override
-    public Item[] getItems() {
-        return new Item[0];
-    }
-
-    @Override
     public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         return row -> {
             String columnName = parsedParameters.get(COLUMN_ID);
@@ -42,8 +35,11 @@ public class ProperCase extends SingleColumnAction {
         };
     }
 
+    /**
+     * @see ActionMetadata#accept(ColumnMetadata)
+     */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.STRING);
+    public boolean accept(ColumnMetadata column) {
+        return Type.STRING.equals(Type.get(column.getType()));
     }
 }

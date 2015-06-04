@@ -25,9 +25,6 @@
       "items":[
 
       ],
-      "compatibleColumnTypes":[
-         "INTEGER"
-      ],
       "category":"quickfix",
       "description":"Fill empty cells of this column with given value",
       "label":"Fill empty with value"
@@ -51,9 +48,6 @@
       "category":"math",
       "items":[
 
-      ],
-      "compatibleColumnTypes":[
-         "INTEGER"
       ]
    },
    {
@@ -108,9 +102,6 @@
   },
   {
     "category": "columns",
-    "compatibleColumnTypes": [
-      "ANY"
-    ],
     "items": [],
     "name": "rename_column",
     "parameters": [

@@ -13,6 +13,8 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,28 +26,17 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
 
 /**
  * Test class for Rename action. Creates one consumer, and test it.
+ * 
+ * @see Rename
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
 public class RenameTest {
 
     /** The row consumer to test. */
@@ -55,15 +46,15 @@ public class RenameTest {
     private Consumer<RowMetadata> metadataClosure;
 
     /** The action to test. */
-    @Autowired
     private Rename action;
 
     /**
-     * Initialization before each test.
+     * Constructor.
      */
-    @Before
-    public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("renameAction.json"));
+    public RenameTest() throws IOException {
+        action = new Rename();
+
+        String actions = IOUtils.toString(RenameTest.class.getResourceAsStream("renameAction.json"));
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
@@ -109,6 +100,15 @@ public class RenameTest {
         expected.add(renamedMetadata);
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void should_accept_column() {
+        assertTrue(action.accept(getColumn(Type.STRING)));
+        assertTrue(action.accept(getColumn(Type.NUMERIC)));
+        assertTrue(action.accept(getColumn(Type.FLOAT)));
+        assertTrue(action.accept(getColumn(Type.DATE)));
+        assertTrue(action.accept(getColumn(Type.BOOLEAN)));
     }
 
 }
