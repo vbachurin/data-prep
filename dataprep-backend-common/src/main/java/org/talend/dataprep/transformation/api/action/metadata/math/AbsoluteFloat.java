@@ -80,7 +80,7 @@ public class AbsoluteFloat extends SingleColumnAction {
      */
     @Override
     public boolean accept(ColumnMetadata column) {
-        return Type.FLOAT.equals(Type.get(column.getType()));
+        return Type.FLOAT.equals(Type.get(column.getType())) || Type.DOUBLE.equals(Type.get(column.getType()));
     }
 
 }
