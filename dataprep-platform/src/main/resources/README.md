@@ -6,7 +6,7 @@ This folder contains the REST service to all Transformation operations.
 ## Dockerfile
 
 this dockerfile is designed to build the 'data' image based on what's locally in 'runtime' folder.
-1. use 'runtime' folder as a volume for your images like:
+#### 1. use 'runtime' folder as a volume for your images like:
 ```
 mongodb:
     volumes:
@@ -18,17 +18,17 @@ dataset:
     volumes:
         - runtime/dataset/store:/store
 ```
-2. building the image will COPY this folder to the image.
+#### 2. building the image will COPY this folder to the image.
 ```
 docker build -rm=true -t talend/dataprep-data:<image_version> .
 ```
-3. tag & push to talend-registry
+#### 3. tag & push to talend-registry
 ```
 docker tag talend/dataprep-data:<image_version> talend-registry:5000/talend/dataprep-data:<image_version>
 docker push talend-registry:5000/talend/dataprep-data:<image_version>
 ```
 
-4. use your new image
+#### 4. use your new image
 Then use the 'data' image in fig files instead of the volumes.
 like:
 ```
@@ -45,7 +45,7 @@ transform:
         - data
 ```
 
-##Fig option for accesing the Talend registry   
+## Fig option for accesing the Talend registry   
 you may use the option `--allow-insecure-ssl` when doing a **fig up** to allow fig to acces the Talend registry without errors.
 
 ## License
