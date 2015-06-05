@@ -19,7 +19,16 @@ dataset:
         - runtime/dataset/store:/store
 ```
 2. building the image will COPY this folder to the image.
+```
+docker build -rm=true -t talend/dataprep-data:<image_version> .
+```
+3. tag & push to talend-registry
+```
+docker tag talend/dataprep-data:<image_version> talend-registry:5000/talend/dataprep-data:<image_version>
+docker push talend-registry:5000/talend/dataprep-data:<image_version>
+```
 
+4. use your new image
 Then use the 'data' image in fig files instead of the volumes.
 like:
 ```
