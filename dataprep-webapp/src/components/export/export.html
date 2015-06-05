@@ -1,4 +1,5 @@
 <!-- TODO Styles are hard coded to get all buttons on a line (but this is temporary) -->
+<!--
 <button type="button"
         class="t-btn t-btn-primary"
         style="float: left;"
@@ -19,6 +20,22 @@
         ng-click="exportCtrl.export('XLS')">
   {{ ::'EXPORT_XLS' | translate }}
 </button>
+-->
+
+<talend-split-button-dropdown close-on-select="false" on-open="onOpen()">
+  <div class="dropdown-container">
+    <div class="dropdown-action">
+      <button class="split-button-dropdown-button">foo</button>
+      <button></button>
+    </div>
+
+    <ul class="dropdown-menu">
+      <li><a href="#">CSV</a></li>
+      <li><a href="#">TABLEAU</a></li>
+      <li><a href="#">XLS</a></li>
+    </ul>
+  </div>
+</talend-split-button-dropdown>
 
 <talend-modal fullscreen="false"
               state="exportCtrl.showExport"
