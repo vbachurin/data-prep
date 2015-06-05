@@ -1,7 +1,7 @@
 <talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
     <div class="dropdown-container grid-header">
         <div class="dropdown-action">
-            <div class="grid-header-title dropdown-button">{{ datagridHeaderCtrl.column.id }}</div>
+            <div class="grid-header-title dropdown-button">{{ datagridHeaderCtrl.column.name }}</div>
             <div class="grid-header-type">{{ datagridHeaderCtrl.column.type }}</div>
         </div>
         <ul class="dropdown-menu grid-header-menu">
@@ -10,7 +10,6 @@
 
             <transform-menu
                     ng-repeat="item in datagridHeaderCtrl.transformations track by $index"
-                    metadata="datagridHeaderCtrl.metadata"
                     column="datagridHeaderCtrl.column"
                     menu="item"></transform-menu>
         </ul>

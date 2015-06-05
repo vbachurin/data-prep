@@ -168,7 +168,7 @@ public class TransformerConfiguration {
         public <T> Builder actions(final Class<T> targetClass, final Consumer<T> actionsToAdd) {
             List<Consumer> existingActions = this.actions.get(targetClass);
             if (existingActions == null) {
-                existingActions = new ArrayList<>(1);
+                existingActions = new ArrayList<>(2);
                 this.actions.put(targetClass, existingActions);
             }
             existingActions.add(actionsToAdd);

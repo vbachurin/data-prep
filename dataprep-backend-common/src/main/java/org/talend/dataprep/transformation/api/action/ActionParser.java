@@ -12,7 +12,6 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,7 @@ public class ActionParser implements BeanFactoryAware {
     /** This class' logger. */
     public static final Logger LOGGER = LoggerFactory.getLogger(ActionParser.class);
 
-    private static BeanFactory beanFactory;
+    private BeanFactory beanFactory;
 
     /**
      * Return the parsed actions ready to be run.
@@ -49,9 +48,9 @@ public class ActionParser implements BeanFactoryAware {
             String content = actions.trim();
             // no op
             if (content.isEmpty()) {
-                return new ParsedActions(row -> {
-                }, rowMetadata -> {
-                });
+                //@formatter:off
+                return new ParsedActions(row -> {}, rowMetadata -> {});
+                //@formatter:on
             }
             JsonNode node = mapper.readTree(content);
             Iterator<JsonNode> elements = node.getElements();
@@ -99,9 +98,9 @@ public class ActionParser implements BeanFactoryAware {
 
             } else {
                 // Should not happen, but no action means no op.
-                return new ParsedActions(row -> {
-                }, rowMetadata -> {
-                });
+                //@formatter:off
+                return new ParsedActions(row -> {}, rowMetadata -> {});
+                //@formatter:on
             }
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_ACTIONS, e);
@@ -109,7 +108,7 @@ public class ActionParser implements BeanFactoryAware {
     }
 
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        ActionParser.beanFactory = beanFactory;
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 }

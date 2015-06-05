@@ -28,7 +28,9 @@ public enum APIErrorCodes implements ErrorCode {
     UNABLE_TO_GET_PREPARATION_DETAILS(400),
     UNABLE_TO_TRANSFORM_DATASET(400, "dataSetId"),
     UNABLE_TO_UPDATE_ACTION_IN_PREPARATION(400, "id"),
-    UNABLE_TO_EXPORT_CONTENT(400);
+    UNABLE_TO_EXPORT_CONTENT(400),
+    DATASET_REDIRECT(301),
+    UNABLE_TO_GET_DYNAMIC_ACTION_PARAMS(400);
 
     /** The http status to use. */
     private int httpStatus;
@@ -84,6 +86,7 @@ public enum APIErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
+    @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }

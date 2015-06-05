@@ -11,11 +11,10 @@ import org.talend.dataprep.api.dataset.json.DataSetRowIterator;
 public interface DataSetContentStore {
 
     /**
-     * Stores (persists) a data set raw content to a storage. The only expectation is for
-     * {@link #get(DataSetMetadata)} to return content after this method ends.
+     * Stores (persists) a data set raw content to a storage. The only expectation is for {@link #get(DataSetMetadata)}
+     * to return content after this method ends.
      *
-     * @param dataSetMetadata The data set metadata attached to the {@link DataSetMetadata data
-     * set}.
+     * @param dataSetMetadata The data set metadata attached to the {@link DataSetMetadata data set}.
      * @param dataSetContent Content of the data set.
      * @see #get(DataSetMetadata)
      * @see #delete(DataSetMetadata)
@@ -41,6 +40,7 @@ public interface DataSetContentStore {
     /**
      * Similarly to {@link #get(DataSetMetadata)} returns the content of the data set but as a {@link Stream stream} of
      * {@link DataSetRow rows} instead of JSON content.
+     * 
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
      * @return A valid <b>{@link DataSetRow}</b> stream.
      */
@@ -50,8 +50,8 @@ public interface DataSetContentStore {
     }
 
     /**
-     * Returns the {@link DataSetMetadata data set} content as "raw" (i.e. the content supplied
-     * by user upon data set creation).
+     * Returns the {@link DataSetMetadata data set} content as "raw" (i.e. the content supplied by user upon data set
+     * creation).
      * 
      * @param dataSetMetadata The {@link DataSetMetadata data set} to read content from.
      * @return The content associated with <code>dataSetMetadata</code>.

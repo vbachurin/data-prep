@@ -58,16 +58,22 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
                     return row;
                 }
                 switch (nextToken) {
-                    case START_OBJECT:
-                        row.clear();
-                        break;
-                    // DataSetRow fields
-                    case FIELD_NAME:
-                        currentFieldName = parser.getText();
-                        break;
-                    case VALUE_STRING:
-                        row.set(currentFieldName, parser.getText());
-                        break;
+                case START_OBJECT:
+                    row.clear();
+                    break;
+                // DataSetRow fields
+                case FIELD_NAME:
+                    currentFieldName = parser.getText();
+                    break;
+                case VALUE_STRING:
+                    row.set(currentFieldName, parser.getText());
+                    break;
+                case VALUE_NULL:
+                    row.set(currentFieldName, "");
+                    break;
+                default:
+                    // let's skip this unsupported token
+                    break;
                 }
             }
             return row;

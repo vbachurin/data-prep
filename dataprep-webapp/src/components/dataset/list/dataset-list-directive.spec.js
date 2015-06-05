@@ -5,7 +5,7 @@ describe('Dataset list directive', function() {
         return str.match(suffix + '$')[0] === suffix;
     }
 
-    var scope, createElement;
+    var scope, createElement, element;
     var datasets = [
         {
             'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -13,7 +13,7 @@ describe('Dataset list directive', function() {
             'author': 'anonymousUser',
             'created': '02-03-2015 14:52',
             'type': 'text/csv',
-            'certification': 'NONE'
+            'certificationStep': 'NONE'
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead2b',
@@ -21,14 +21,14 @@ describe('Dataset list directive', function() {
             'author': 'anonymousUser',
             'created': '02-03-2015 14:53',
             'type': 'application/vnd.ms-excel',
-            'certification': 'PENDING'
+            'certificationStep': 'PENDING'
         },
         {
             'id': 'e93b9c92-e054-4f6a-a38f-ca52f22ead3a',
             'name': 'Customers 2',
             'author': 'anonymousUser',
             'created': '02-03-2015 14:54',
-            'certification': 'CERTIFIED'
+            'certificationStep': 'CERTIFIED'
         }
     ];
 
@@ -44,7 +44,7 @@ describe('Dataset list directive', function() {
     beforeEach(inject(function($rootScope, $compile, $q, DatasetService) {
         scope = $rootScope.$new();
         createElement = function() {
-            var element = angular.element('<dataset-list></dataset-list>');
+            element = angular.element('<dataset-list></dataset-list>');
             $compile(element)(scope);
             scope.$digest();
             return element;
@@ -56,9 +56,14 @@ describe('Dataset list directive', function() {
         });
     }));
 
+    afterEach(function() {
+        scope.$destroy();
+        element.remove();
+    });
+
     it('should render dataset list', function() {
         //when
-        var element = createElement();
+        createElement();
 
         //then
         var icon = element.find('td.inventory-icon').eq(0);

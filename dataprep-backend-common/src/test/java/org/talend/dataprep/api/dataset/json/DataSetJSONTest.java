@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.CSVFormatGuess;
@@ -85,8 +86,10 @@ public class DataSetJSONTest {
 
     @Test
     public void testRead1() throws Exception {
+
         DataSet dataSet = from(DataSetJSONTest.class.getResourceAsStream("test1.json"));
         assertNotNull(dataSet);
+
         final DataSetMetadata metadata = dataSet.getMetadata();
         assertEquals("410d2196-8f90-478f-a817-7e8b6694ac91", metadata.getId());
         assertEquals("test", metadata.getName());
@@ -96,18 +99,23 @@ public class DataSetJSONTest {
         assertEquals(0, metadata.getContent().getNbLinesInFooter());
         final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-YYYY HH:mm");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         Date expectedDate = dateFormat.parse("02-17-2015 09:02");
         assertEquals(expectedDate, new Date(metadata.getCreationDate()));
+
         List<ColumnMetadata> columns = dataSet.getColumns();
         assertEquals(6, columns.size());
+
         ColumnMetadata firstColumn = columns.get(0);
-        assertEquals("id", firstColumn.getId());
+        assertEquals("0001", firstColumn.getId());
+        assertEquals("id", firstColumn.getName());
         assertEquals("integer", firstColumn.getType());
         assertEquals(20, firstColumn.getQuality().getEmpty());
         assertEquals(26, firstColumn.getQuality().getInvalid());
         assertEquals(54, firstColumn.getQuality().getValid());
+
         ColumnMetadata lastColumn = columns.get(5);
-        assertEquals("alive", lastColumn.getId());
+        assertEquals("0007", lastColumn.getId());
         assertEquals("string", lastColumn.getType());
         assertEquals(8, lastColumn.getQuality().getEmpty());
         assertEquals(25, lastColumn.getQuality().getInvalid());
@@ -117,10 +125,15 @@ public class DataSetJSONTest {
     @Test
     public void testWrite1() throws Exception {
         List<ColumnMetadata> columns = new ArrayList<>();
-        ColumnMetadata column = new ColumnMetadata("column1", "string");
-        column.getQuality().setEmpty(0);
-        column.getQuality().setInvalid(10);
-        column.getQuality().setValid(50);
+        ColumnMetadata column = ColumnMetadata.Builder //
+                .column() //
+                .id(5) //
+                .name("column1") //
+                .type(Type.STRING) //
+                .empty(0) //
+                .invalid(10) //
+                .valid(50) //
+                .build();
         columns.add(column);
         RowMetadata row = new RowMetadata(columns);
         DataSetMetadata metadata = new DataSetMetadata("1234", "name", "author", 0, row);
@@ -135,8 +148,7 @@ public class DataSetJSONTest {
         dataSet.setMetadata(metadata);
         dataSet.setColumns(metadata.getRow().getColumns());
         to(dataSet, writer);
-        assertThat(writer.toString(),
-                sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test2.json")));
+        assertThat(writer.toString(), sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test2.json")));
     }
 
     @Test
@@ -148,8 +160,7 @@ public class DataSetJSONTest {
         assertNotNull(metadata);
         StringWriter writer = new StringWriter();
         to(dataSet, writer);
-        assertThat(writer.toString(),
-                sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test3.json")));
+        assertThat(writer.toString(), sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test3.json")));
     }
 
 }

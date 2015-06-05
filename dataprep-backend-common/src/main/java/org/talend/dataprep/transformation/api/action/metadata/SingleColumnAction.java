@@ -14,23 +14,35 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Base class for all single column action.
  */
 public abstract class SingleColumnAction implements ActionMetadata {
 
-    public static final String COLUMN_NAME_PARAMETER_NAME = "column_name"; //$NON-NLS-1$
+    /** Name of the parameter for the column id. */
+    public static final String COLUMN_ID = "column_id"; //$NON-NLS-1$
 
-    public static final Parameter COLUMN_NAME_PARAMETER = new Parameter(COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(),
-            StringUtils.EMPTY);
+    /** The parameter object for the column id. */
+    public static final Parameter COLUMN_ID_PARAMETER = new Parameter(COLUMN_ID, Type.STRING.getName(), StringUtils.EMPTY);
 
     /**
-     * @return the parameters needed tor the action to be performed.
+     * Name of the parameter for the column name. <strong>The name of the column is only for information usage, only
+     * column id should be used.</strong> Storing the column name in the parameter is an easy way to display the name of
+     * the column.
+     */
+    public static final String COLUMN_NAME = "column_name"; //$NON-NLS-1$
+
+    /** The parameter object for the column name. */
+    public static final Parameter COLUMN_NAME_PARAMETER = new Parameter(COLUMN_NAME, Type.STRING.getName(), StringUtils.EMPTY);
+
+    /**
+     * @see ActionMetadata#getParameters()
      */
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER };
+        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER };
     }
 
 }

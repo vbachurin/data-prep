@@ -31,10 +31,10 @@ public class RecordsTypeTransformer implements TypeTransformer {
         final List<Consumer<DataSetRow>> actions = configuration.getActions(DataSetRow.class);
         final List<Integer> indexes = configuration.getIndexes();
 
-        final Consumer<DataSetRow> oldAction = configuration.isPreview() ? actions.get(0) : null;
+        final Consumer<DataSetRow> referenceAction = configuration.isPreview() ? actions.get(0) : null;
         final Consumer<DataSetRow> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
 
-        final boolean isIndexLimited = indexes != null && indexes.size() > 0;
+        final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
         final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : null;
         final Integer maxIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).max().getAsInt() : null;
 
@@ -52,9 +52,10 @@ public class RecordsTypeTransformer implements TypeTransformer {
                     break;
                 case END_OBJECT:
                     if (configuration.isPreview()) {
-                        // apply old actions
-                        final DataSetRow oldRow = row.clone();
-                        oldAction.accept(oldRow);
+
+                        // compute the reference row
+                        final DataSetRow referenceRow = row.clone();
+                        referenceAction.accept(referenceRow);
 
                         if (isIndexLimited) {
                             // we only start to process at the min index
@@ -67,14 +68,15 @@ public class RecordsTypeTransformer implements TypeTransformer {
                                 // 1. the row has a wanted index : we write it no matter what
                                 // 2. the row has NOT a wanted index : we write it only if it was originally deleted,
                                 // but not anymore
-                                if (indexes.contains(currentIndex) || (oldRow.isDeleted() && !row.isDeleted())) {
-                                    writeRow(writer, row, oldRow);
+                                if (indexes.contains(currentIndex) || (referenceRow.isDeleted() && !row.isDeleted())) {
+                                    row.diff(referenceRow);
+                                    writeRow(writer, row);
                                 }
                             }
 
                             // if the oldRow is not deleted, we move the current index
                             // the index represents the originally not deleted rows
-                            currentIndex = oldRow.isDeleted() ? currentIndex : currentIndex + 1;
+                            currentIndex = referenceRow.isDeleted() ? currentIndex : currentIndex + 1;
 
                             // we stop the process after the max index
                             if (currentIndex > maxIndex) {
@@ -84,13 +86,14 @@ public class RecordsTypeTransformer implements TypeTransformer {
                         } else {
                             // apply new actions
                             action.accept(row);
+                            row.diff(referenceRow);
 
                             // write preview. Rules are delegated to DataSetRow
-                            writeRow(writer, row, oldRow);
+                            writeRow(writer, row);
                         }
                     } else {
                         action.accept(row);
-                        writeRow(writer, row, null);
+                        writeRow(writer, row);
                     }
 
                     break;
@@ -118,13 +121,17 @@ public class RecordsTypeTransformer implements TypeTransformer {
         }
     }
 
-    private void writeRow(TransformerWriter writer, DataSetRow row, DataSetRow oldRow) throws IOException {
-        if (oldRow != null) {
-            row.diff(oldRow);
-        }
-
+    /**
+     * Write the given row using the given writer.
+     *
+     * @param writer the writer to use.
+     * @param row the row to write.
+     * @throws IOException if an error occurs.
+     */
+    private void writeRow(TransformerWriter writer, DataSetRow row) throws IOException {
         if (row.shouldWrite()) {
             writer.write(row);
         }
     }
+
 }

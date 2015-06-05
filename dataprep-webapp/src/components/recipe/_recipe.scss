@@ -1,6 +1,6 @@
 
 .talend-accordion{
-  margin: 5px;
+  margin: 2px;
 }
 
 .recipe {
@@ -64,9 +64,24 @@
     }
   }
 
+  .step-trigger2 {
+    cursor: pointer;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    padding-top: 0px;
+    height: 100%;
+
+    &::after {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+
+  }
+
   .inactive {
     color: $color-not-active;
-    font-style: italic;
 
     .step-trigger {
       &::after {

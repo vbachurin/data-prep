@@ -61,6 +61,39 @@ describe('Transform simple params controller', function () {
         expect(ctrl.parameters[0].value).toBe(5.1);
     });
 
+    it('should set boolean true default value', function () {
+        //given
+        parameters = [{name: 'param1', type: 'boolean', default: 'true'}];
+
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.parameters[0].value).toBe(true);
+    });
+
+    it('should set boolean true default value (with boolean default)', function () {
+        //given
+        parameters = [{name: 'param1', type: 'boolean', default: true}];
+
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.parameters[0].value).toBe(true);
+    });
+
+    it('should set boolean false default value', function () {
+        //given
+        parameters = [{name: 'param1', type: 'boolean', default: 'false'}];
+
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.parameters[0].value).toBe(false);
+    });
+
     it('should set 0 value if default value is not numeric with numeric type', function () {
         //given
         parameters = [{name: 'param1', type: 'numeric', default: 'a'}];

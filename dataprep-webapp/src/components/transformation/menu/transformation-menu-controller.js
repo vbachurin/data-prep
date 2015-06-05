@@ -5,12 +5,28 @@
      * @ngdoc controller
      * @name data-prep.transformation-menu.controller:TransformMenuCtrl
      * @description Transformation menu item controller.
-     * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
-     * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.transformation.service:TransformationService
      */
-    function TransformMenuCtrl($rootScope, DatagridService, PreparationService, RecipeService) {
+    function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService) {
         var vm = this;
+
+        /**
+         * @ngdoc method
+         * @name initDynamicParams
+         * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
+         * @description [PRIVATE] Fetch the transformation dynamic parameters and inject them into transformation menu params
+         * @returns {promise} The GET request promise
+         */
+        var initDynamicParams = function() {
+            var infos = {
+                columnId: vm.column.id,
+                datasetId:  PlaygroundService.currentMetadata.id,
+                preparationId:  PreparationService.currentPreparationId
+            };
+            return TransformationService.initDynamicParameters(vm.menu, infos);
+        };
 
         /**
          * @ngdoc method
@@ -28,7 +44,16 @@
                 return;
             }
 
-            if (vm.menu.parameters || vm.menu.items) {
+            if(vm.menu.dynamic) {
+                vm.dynamicFetchInProgress = true;
+                vm.showModal = true;
+
+                //get new parameters
+                initDynamicParams().finally(function() {
+                    vm.dynamicFetchInProgress = false;
+                });
+            }
+            else if (vm.menu.parameters || vm.menu.items) {
                 vm.showModal = true;
             }
             else {
@@ -40,23 +65,13 @@
          * @ngdoc method
          * @name transform
          * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
-         * @param {object} params - the transformation params
-         * @description Perform a transformation on the column and refresh the recipe
+         * @param {object} params The transformation params
+         * @description Perform a transformation on the column
          */
         vm.transform = function (params) {
-            $rootScope.$emit('talend.loading.start');
-
-            PreparationService.appendStep(vm.metadata, vm.menu.name, vm.column, params)
+            PlaygroundService.appendStep(vm.menu.name, vm.column, params)
                 .then(function() {
-                    return PreparationService.getContent('head');
-                })
-                .then(function(response) {
-                    DatagridService.updateData(response.data);
-                    RecipeService.refresh();
                     vm.showModal = false;
-                })
-                .finally(function () {
-                    $rootScope.$emit('talend.loading.stop');
                 });
         };
     }

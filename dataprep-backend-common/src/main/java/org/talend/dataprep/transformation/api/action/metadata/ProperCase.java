@@ -9,6 +9,7 @@ import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 @Component(ProperCase.ACTION_BEAN_PREFIX + ProperCase.PROPER_CASE_ACTION_NAME)
 public class ProperCase extends SingleColumnAction {
@@ -33,7 +34,7 @@ public class ProperCase extends SingleColumnAction {
     @Override
     public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
         return row -> {
-            String columnName = parsedParameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parsedParameters.get(COLUMN_ID);
             String value = row.get(columnName);
             if (value != null) {
                 row.set(columnName, WordUtils.capitalizeFully(value));

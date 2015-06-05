@@ -78,12 +78,15 @@ describe('Dataset list controller', function () {
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService) {
+        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService, DatasetSheetPreviewService) {
             ctrl = createController();
             scope.$digest();
 
             spyOn(DatasetService, 'delete').and.returnValue($q.when(true));
+            spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.callThrough();
+            spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
+            spyOn(DatasetSheetPreviewService, 'display').and.returnValue($q.when(true));
         }));
 
         it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService) {
@@ -128,6 +131,46 @@ describe('Dataset list controller', function () {
 
             //then
             expect(DatasetService.processCertification).toHaveBeenCalledWith(datasets[0]);
+        }));
+
+        it('should load excel draft preview and display it', inject(function ($rootScope, DatasetSheetPreviewService) {
+            //given
+            var draft = {type: 'application/vnd.ms-excel'};
+
+            //when
+            ctrl.openDraft(draft);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetSheetPreviewService.loadPreview).toHaveBeenCalledWith(draft);
+            expect(DatasetSheetPreviewService.display).toHaveBeenCalled();
+        }));
+
+        it('should display error message with unknown draft type', inject(function (DatasetSheetPreviewService, MessageService) {
+            //given
+            var draft = {type: 'application/myCustomType'};
+
+            //when
+            ctrl.openDraft(draft);
+
+            //then
+            expect(DatasetSheetPreviewService.loadPreview).not.toHaveBeenCalled();
+            expect(DatasetSheetPreviewService.display).not.toHaveBeenCalled();
+            expect(MessageService.error).toHaveBeenCalledWith('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE');
+        }));
+
+        it('should refresh dataset list and display error when draft has no type yet', inject(function (DatasetSheetPreviewService, DatasetService, MessageService) {
+            //given
+            var draft = {};
+
+            //when
+            ctrl.openDraft(draft);
+
+            //then
+            expect(DatasetSheetPreviewService.loadPreview).not.toHaveBeenCalled();
+            expect(DatasetSheetPreviewService.display).not.toHaveBeenCalled();
+            expect(MessageService.error).toHaveBeenCalledWith('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_CONTENT');
+            expect(DatasetService.refreshDatasets).toHaveBeenCalled();
         }));
     });
 });

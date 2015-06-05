@@ -2,15 +2,21 @@
     <form ng-submit="paramsCtrl.transformWithParam()" name="paramsCtrl.paramForm">
         <!-- Menu item param -->
         <transform-simple-params
-                ng-if="paramsCtrl.transformation.parameters"
+                ng-if="paramsCtrl.transformation.parameters.length"
                 parameters="paramsCtrl.transformation.parameters">
         </transform-simple-params>
 
         <!-- Choice -->
         <transform-choice-params
-                ng-if="paramsCtrl.transformation.items"
+                ng-if="paramsCtrl.transformation.items.length"
                 choices="paramsCtrl.transformation.items">
         </transform-choice-params>
+
+        <!-- Cluster -->
+        <transform-cluster-params
+                ng-if="paramsCtrl.transformation.cluster"
+                details="paramsCtrl.transformation.cluster">
+        </transform-cluster-params>
     </form>
 
     <div class="param-buttons">

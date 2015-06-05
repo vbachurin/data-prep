@@ -15,6 +15,7 @@
      *
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
+     * @requires data-prep.services.playground.service:PreviewService
      * @restrict E
      */
     function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService) {
@@ -65,8 +66,10 @@
                  * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
                  */
                 var formatter = function(row, cell, value, columnDef, dataContext) {
-                    //hidden characters need to be shown
+
                     var returnStr = value;
+
+                    //hidden characters need to be shown
                     if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
                         var hiddenCharsRegExpMatch = value.match(/(^\s\s*)?(\S*)(\s\s*$)?/);
                         if (hiddenCharsRegExpMatch[1]){
@@ -87,8 +90,19 @@
                         return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
                     }
                     //updated cell preview
-                    if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id] === 'update') {
-                        return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                    if(dataContext.__tdpDiff){
+                        // update
+                        if (dataContext.__tdpDiff[columnDef.id] === 'update') {
+                            return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                        }
+                        // new
+                        else if (dataContext.__tdpDiff[columnDef.id] === 'new') {
+                            return '<div class="cellNewValue">' + returnStr + '</div>';
+                        }
+                        // new
+                        else if (dataContext.__tdpDiff[columnDef.id] === 'delete') {
+                            return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                        }
                     }
 
                     //no preview
@@ -110,8 +124,20 @@
                 var columnItem = function (col, index, preview) {
                     var template;
                     if(preview) {
-                        template = '<div class="grid-header">' +
-                            '<div class="grid-header-title dropdown-button ng-binding">' + col.id + '</div>' +
+
+                        var diffClass = '';
+                        if (col.__tdpColumnDiff === 'new') {
+                            diffClass = 'newColumn';
+                        }
+                        else if (col.__tdpColumnDiff === 'delete') {
+                            diffClass = 'deletedColumn';
+                        }
+                        else if (col.__tdpColumnDiff === 'update') {
+                            diffClass = 'updatedColumn';
+                        }
+
+                        template = '<div class="grid-header '+ diffClass +'">' +
+                            '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +
                             '<div class="grid-header-type ng-binding">' + col.type + '</div>' +
                             '</div>' +
                             '<div class="quality-bar"><div  class="record-ok" style="width: 100%;"></div></div>';
@@ -127,7 +153,6 @@
                         name: template,
                         formatter: formatter
                     };
-
                     return colItem;
                 };
 
@@ -138,7 +163,7 @@
                  * @description [PRIVATE] Create and insert the dataset column headers (dropdown actions and quality bars).
                  The columns are from {@link data-prep.services.playground.service:DatagridService DatagridService}
                  */
-                var insertDatasetHeaders = function () {
+                var insertDatagridHeaders = function () {
                     _.forEach(DatagridService.data.columns, function (col, index) {
                         var header = createHeader(col);
                         iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
@@ -156,8 +181,7 @@
                 var createHeader = function(col) {
                     var headerScope = scope.$new(true);
                     headerScope.columns = col;
-                    headerScope.metadata = DatagridService.metadata;
-                    var headerElement = angular.element('<datagrid-header column="columns" metadata="metadata"></datagrid-header>');
+                    var headerElement = angular.element('<datagrid-header column="columns"></datagrid-header>');
                     $compile(headerElement)(headerScope);
 
                     return {
@@ -224,7 +248,7 @@
                     //destroy old elements and insert compiled column header directives
                     grid.onColumnsReordered.subscribe(function () {
                         clearHeaders();
-                        insertDatasetHeaders();
+                        insertDatagridHeaders();
                     });
 
                     //change column background and update column profil on click
@@ -448,7 +472,7 @@
                     function (cols) {
                         if (cols) {
                             initGridIfNeeded();
-                            updateColumns(cols);
+                            updateColumns(cols, DatagridService.data.preview);
                             grid.autosizeColumns();
                         }
                     }

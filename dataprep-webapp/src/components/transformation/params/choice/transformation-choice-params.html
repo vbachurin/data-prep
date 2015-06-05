@@ -4,15 +4,16 @@
         <td class="param-choice-name">{{choice.label}} :</td>
         <td class="param-choice-select">
             <select
-                ng-model="choice.selectedValue"
-                ng-options="option as option.name for option in choice.values"
-                required></select>
+                    ng-model="choice.selectedValue"
+                    ng-options="option as option.name for option in choice.values"
+                    required></select>
         </td>
         <td class="param-desc"><img src="assets/images/information.png" title="{{::choice.description}}"/></td>
     </tr>
 
     <tr>
-        <td ng-repeat="option in choice.values track by $index" ng-if="option.parameters && choice.selectedValue === option">
+        <td ng-repeat="option in choice.values track by $index"
+            ng-if="option.parameters && choice.selectedValue === option">
             <transform-simple-params
                     ng-if="option.parameters && choice.selectedValue === option"
                     parameters="option.parameters">

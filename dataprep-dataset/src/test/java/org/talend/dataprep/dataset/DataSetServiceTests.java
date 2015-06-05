@@ -23,6 +23,8 @@ import org.apache.spark.SparkContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
@@ -41,6 +43,7 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
+import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Separator;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,6 +70,11 @@ public class DataSetServiceTests {
 
     @Autowired(required = false)
     SparkContext sparkContext;
+
+    @Autowired
+    FormatGuess.Factory factory;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
@@ -175,14 +183,14 @@ public class DataSetServiceTests {
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
-        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
-                Character.toString(new Separator().separator));
+        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(dataSetMetadata);
         contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
-        assertTrue(statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
+        assertTrue("statusCode is:" + statusCode,
+                statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
     }
 
     @Test
@@ -200,6 +208,7 @@ public class DataSetServiceTests {
         int before = dataSetMetadataRepository.size();
         when().delete("/datasets/{id}", expectedId).then().statusCode(HttpStatus.OK.value());
         int after = dataSetMetadataRepository.size();
+        logger.debug("delete before {} after {}", before, after);
         assertThat(before - after, is(1));
     }
 
@@ -215,8 +224,11 @@ public class DataSetServiceTests {
 
     @Test
     public void test1() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
-                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv"))) //
+                .queryParam("Content-Type", "text/csv") //
+                .when() //
+                .post("/datasets") //
+                .asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
@@ -300,6 +312,22 @@ public class DataSetServiceTests {
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
+    /**
+     * see https://jira.talendforge.org/browse/TDP-71
+     */
+    @Test
+    public void empty_lines_and_missing_values() throws Exception {
+        String dataSetId = given()
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("us_states_to_clean.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+        InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
+        String contentAsString = IOUtils.toString(content);
+
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream("us_states_to_clean.csv_expected.json");
+        assertThat(contentAsString, sameJSONAsFile(expected));
+    }
+
     @Test
     public void nbLines() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
@@ -350,7 +378,14 @@ public class DataSetServiceTests {
     @Test
     public void getMetadata() throws Exception {
         DataSetMetadata.Builder builder = DataSetMetadata.Builder.metadata().id("1234");
-        builder.row(ColumnMetadata.Builder.column().empty(0).invalid(0).valid(0).name("id").type(Type.STRING))//
+        builder.row(ColumnMetadata.Builder//
+                .column()//
+                .id(1234)//
+                .name("id")//
+                .empty(0)//
+                .invalid(0)//
+                .valid(0)//
+                .type(Type.STRING))//
                 .created(0)//
                 .name("name")//
                 .author("author")//
@@ -375,7 +410,9 @@ public class DataSetServiceTests {
         DataSetMetadata metadata = dataSetMetadataRepository.get("9876");
         assertNull(metadata);
         int statusCode = when().get("/datasets/{id}/metadata", "9876").statusCode();
+
         assertThat(statusCode, is(HttpServletResponse.SC_NO_CONTENT));
+
     }
 
     /**
@@ -428,7 +465,7 @@ public class DataSetServiceTests {
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
-        assertEquals(Certification. NONE, dataSetMetadata.getGovernance().getCertificationStep());
+        assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());

@@ -11,17 +11,9 @@
     function DatasetRestService($rootScope, $upload, $http, RestURLs) {
         var self = this;
 
-        /**
-         * @ngdoc method
-         * @name getDatasets
-         * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description Get the dataset list
-         * @returns {Promise} - the GET call promise
-         */
-        self.getDatasets = function() {
-            return $http.get(RestURLs.datasetUrl);
-        };
-
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Dataset----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name create
@@ -60,31 +52,37 @@
          * @name delete
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Delete the dataset
-         * @param {dataset} dataset - the dataset infos to update
+         * @param {dataset} dataset - the dataset infos to delete
          * @returns {Promise} The DELETE promise
          */
         self.delete = function(dataset) {
             return $http.delete(RestURLs.datasetUrl + '/' + dataset.id);
         };
 
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Metadata---------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
-         * @name getContent
+         * @name getDatasets
          * @methodOf data-prep.services.dataset.service:DatasetRestService
-         * @description Get the dataset content
-         * @param {string} datasetId The dataset id
-         * @param {boolean} metadata If false, the metadata will not be returned
-         * @returns {Promise} - the GET promise
+         * @description Get the dataset list
+         * @returns {Promise} - the GET call promise
          */
-        self.getContent = function(datasetId, metadata) {
-            $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata)
-                .then(function(res) {
-                    return res.data;
-                })
-                .finally(function() {
-                    $rootScope.$emit('talend.loading.stop');
-                });
+        self.getDatasets = function() {
+            return $http.get(RestURLs.datasetUrl);
+        };
+
+        /**
+         * @ngdoc method
+         * @name updateMetadata
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Update the dataset metadata
+         * @param {dataset} metadata The dataset infos to update
+         * @returns {Promise} The POST promise
+         */
+        self.updateMetadata = function(metadata){
+            return $http.post(RestURLs.datasetUrl + '/' + metadata.id, metadata);
         };
 
         /**
@@ -97,6 +95,53 @@
         self.processCertification = function(datasetId) {
             return $http.put(RestURLs.datasetUrl + '/' + datasetId + '/processcertification');
         };
+
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Content----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name getContent
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Get the dataset content
+         * @param {string} datasetId The dataset id
+         * @param {boolean} metadata If false, the metadata will not be returned
+         * @returns {Promise} - the GET promise
+         */
+        self.getContent = function(datasetId, metadata) {
+            $rootScope.$emit('talend.loading.start');
+            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata )
+                .then(function(res) {
+                    return res.data;
+                })
+                .finally(function() {
+                    $rootScope.$emit('talend.loading.stop');
+                });
+        };
+
+        //--------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------Sheet Preview-------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name getSheetPreview
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Get the dataset content
+         * @param {string} datasetId The dataset id
+         * @param {string} sheetName The sheet to preview
+         * @returns {Promise} The GET promise
+         */
+        self.getSheetPreview = function(datasetId, sheetName) {
+            $rootScope.$emit('talend.loading.start');
+            return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true' + (sheetName ? '&sheetName=' + encodeURIComponent(sheetName): ''))
+                .then(function(res) {
+                    return res.data;
+                })
+                .finally(function() {
+                    $rootScope.$emit('talend.loading.stop');
+                });
+        };
+
     }
 
     angular.module('data-prep.services.dataset')

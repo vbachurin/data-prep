@@ -1,21 +1,28 @@
 package org.talend.dataprep.api.service;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.APIErrorCodes;
+import org.talend.dataprep.api.service.api.DynamicParamsInput;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
+import org.talend.dataprep.api.service.command.preparation.PreparationGetContent;
+import org.talend.dataprep.api.service.command.transformation.SuggestActionParams;
 import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
 import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.exception.CommonErrorCodes;
@@ -32,7 +39,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "api", basePath = "/api", description = "Transformation API")
 public class TransformAPI extends APIService {
 
-    @RequestMapping(value = "/api/transform/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/transform/{id}", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transforms a data set given data set id. This operation retrieves data set content and pass it to the transformation service.", notes = "Returns the data set modified with the provided actions in request body.")
     public void transform(@PathVariable(value = "id") @ApiParam(value = "Data set id.") String dataSetId,
             @ApiParam(value = "Actions to perform on data set (as JSON format).") InputStream body, HttpServletResponse response) {
@@ -43,8 +50,9 @@ public class TransformAPI extends APIService {
         try {
             // Configure transformation flow
             String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
-            response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
+
             HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, false);
             HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, contentRetrieval, encodedActions);
 
@@ -72,7 +80,7 @@ public class TransformAPI extends APIService {
      * @param body the column description (json encoded) in the request body.
      * @param response the http response.
      */
-    @RequestMapping(value = "/api/transform/suggest/column", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/transform/suggest/column", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get suggested actions for a data set column.", notes = "Returns the suggested actions for the given column in decreasing order of likeness.")
     @Timed
     public void suggestColumnActions(@ApiParam(value = "Column Metadata content as JSON") InputStream body,
@@ -89,6 +97,43 @@ public class TransformAPI extends APIService {
             outputStream.flush();
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
+    /**
+     * Get the suggested action dynamic params. Dynamic params depends on the context (dataset / preparation / actual
+     * transformations)
+     *
+     * @param response the http response.
+     */
+    @RequestMapping(value = "/api/transform/suggest/{action}/params", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
+    @Timed
+    public void suggestActionParams(@ApiParam(value = "Transformation name.")
+    @PathVariable("action")
+    final String action, @ApiParam(value = "Suggested dynamic transformation input (preparation id or dataset id")
+    @Valid
+    final DynamicParamsInput dynamicParamsInput, final HttpServletResponse response) {
+
+        try {
+            // get preparation/dataset content
+            HystrixCommand<InputStream> inputData;
+            if (isNotBlank(dynamicParamsInput.getPreparationId())) {
+                inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), dynamicParamsInput.getStepId());
+            } else {
+                inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), false, true);
+            }
+
+            // get params, passing content in the body
+            final HystrixCommand<InputStream> getActionDynamicParams = getCommand(SuggestActionParams.class, getClient(),
+                    inputData, action, dynamicParamsInput.getColumnId());
+
+            // trigger calls and return last call content
+            final ServletOutputStream outputStream = response.getOutputStream();
+            IOUtils.copyLarge(getActionDynamicParams.execute(), outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new TDPException(APIErrorCodes.UNABLE_TO_GET_DYNAMIC_ACTION_PARAMS, e);
         }
     }
 }

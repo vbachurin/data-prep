@@ -20,35 +20,11 @@ describe('Dataset column header directive', function() {
         };
     }));
     
-    it('should calculate column quality', function() {
+    it('should display column title, type and set quality bars width', function() {
         //given
         scope.column = {
-            'id': 'MostPopulousCity',
-            'quality': {
-                'empty': 5,
-                'invalid': 10,
-                'valid': 72
-            },
-            'type': 'string'
-        };
-
-        //when
-        createElement(scope);
-
-        //then
-        expect(scope.column.total).toBe(87);
-        expect(scope.column.quality.emptyPercent).toBe(6);
-        expect(scope.column.quality.emptyPercentWidth).toBe(10);
-        expect(scope.column.quality.invalidPercent).toBe(12);
-        expect(scope.column.quality.invalidPercentWidth).toBe(12);
-        expect(scope.column.quality.validPercent).toBe(82);
-        expect(scope.column.quality.validPercentWidth).toBe(78);
-    });
-
-    it('should display colum title, type and set quality bars width', function() {
-        //given
-        scope.column = {
-            'id': 'MostPopulousCity',
+            'id': '0',
+            'name': 'MostPopulousCity',
             'quality': {
                 'empty': 5,
                 'invalid': 10,
@@ -68,10 +44,11 @@ describe('Dataset column header directive', function() {
         expect(element.find('.record-nok').css('width')).toBe('12%');
     });
 
-    it('should display colum title, type and set quality bars width', function() {
+    it('should display column title, type and set quality bars width', function() {
         //given
         scope.column = {
-            'id': 'MostPopulousCity',
+            'id': '0',
+            'name': 'MostPopulousCity',
             'quality': {
                 'empty': 5,
                 'invalid': 10,

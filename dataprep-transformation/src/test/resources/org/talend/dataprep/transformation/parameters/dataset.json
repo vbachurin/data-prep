@@ -1,0 +1,943 @@
+{
+  "metadata": null,
+  "columns": [
+    {
+      "id": "id",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": 15.0,
+        "min": 1.0,
+        "mean": 8.0,
+        "variance": 20.000000000000004,
+        "duplicate count": 1,
+        "distinct count": 14,
+        "frequency table": [
+          {
+            "data": "12",
+            "occurrences": 1
+          },
+          {
+            "data": "8",
+            "occurrences": 1
+          },
+          {
+            "data": "4",
+            "occurrences": 1
+          },
+          {
+            "data": "15",
+            "occurrences": 1
+          },
+          {
+            "data": "11",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "9",
+            "occurrences": 9
+          },
+          {
+            "pattern": "99",
+            "occurrences": 6
+          }
+        ],
+        "quantiles": {
+          "median": 8.0,
+          "lower quantile": 4.0,
+          "upper quantile": 12.0
+        },
+        "histogram": [
+          {
+            "range": {
+              "min": 1.0,
+              "max": 8.0
+            },
+            "occurrences": 7
+          },
+          {
+            "range": {
+              "min": 8.0,
+              "max": 15.0
+            },
+            "occurrences": 8
+          }
+        ],
+        "text length summary": {
+          "minimal length": "NaN",
+          "minimal length with blank": "NaN",
+          "maximal length": "NaN",
+          "average length": "NaN",
+          "average length with blank": "NaN"
+        }
+      },
+      "type": "integer"
+    },
+    {
+      "id": "uglystate",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicate count": 0,
+        "distinct count": 15,
+        "frequency table": [
+          {
+            "data": "09-04-2007",
+            "occurrences": 1
+          },
+          {
+            "data": "08-02-2007",
+            "occurrences": 1
+          },
+          {
+            "data": "19-11-2008",
+            "occurrences": 1
+          },
+          {
+            "data": "14-10-2007",
+            "occurrences": 1
+          },
+          {
+            "data": "05-08-2007",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "99-99-9999",
+            "occurrences": 12
+          },
+          {
+            "pattern": "99-99-99",
+            "occurrences": 3
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
+        },
+        "histogram": [
+        ],
+        "text length summary": {
+          "minimal length": 8.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 10.0,
+          "average length": 9.6,
+          "average length with blank": 9.6
+        }
+      },
+      "type": "string"
+    },
+    {
+      "id": "firstname",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicate count": 3,
+        "distinct count": 12,
+        "frequency table": [
+          {
+            "data": "tata",
+            "occurrences": 2
+          },
+          {
+            "data": "Tex@s",
+            "occurrences": 2
+          },
+          {
+            "data": "Tixass",
+            "occurrences": 2
+          },
+          {
+            "data": "Tata",
+            "occurrences": 1
+          },
+          {
+            "data": "Massachussetts",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "Aaaaaaaaaaaa",
+            "occurrences": 3
+          },
+          {
+            "pattern": "Aaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "aaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaa@a",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
+        },
+        "histogram": [
+        ],
+        "text length summary": {
+          "minimal length": 4.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 14.0,
+          "average length": 7.333333333333333,
+          "average length with blank": 7.333333333333333
+        }
+      },
+      "type": "string"
+    },
+    {
+      "id": "lastname",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicate count": 0,
+        "distinct count": 15,
+        "frequency table": [
+          {
+            "data": "SACRAMENTO",
+            "occurrences": 1
+          },
+          {
+            "data": "Richmond",
+            "occurrences": 1
+          },
+          {
+            "data": "Hartford",
+            "occurrences": 1
+          },
+          {
+            "data": "Annapolis",
+            "occurrences": 1
+          },
+          {
+            "data": "Boston",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "Aaaaaa",
+            "occurrences": 3
+          },
+          {
+            "pattern": "Aaaaaaaaaa",
+            "occurrences": 3
+          },
+          {
+            "pattern": "Aaaaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "AAAAAAAAAA",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
+        },
+        "histogram": [
+        ],
+        "text length summary": {
+          "minimal length": 5.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 13.0,
+          "average length": 8.733333333333333,
+          "average length with blank": 8.733333333333333
+        }
+      },
+      "type": "string"
+    },
+    {
+      "id": "state",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": 98.5,
+        "min": 5.7,
+        "mean": 53.53333333333333,
+        "variance": 1013.3238095238095,
+        "duplicate count": 1,
+        "distinct count": 14,
+        "frequency table": [
+          {
+            "data": "56.3",
+            "occurrences": 2
+          },
+          {
+            "data": "44.9",
+            "occurrences": 1
+          },
+          {
+            "data": "6.0",
+            "occurrences": 1
+          },
+          {
+            "data": "18.3",
+            "occurrences": 1
+          },
+          {
+            "data": "51.2",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "99.9",
+            "occurrences": 13
+          },
+          {
+            "pattern": "9.9",
+            "occurrences": 2
+          }
+        ],
+        "quantiles": {
+          "median": 56.0,
+          "lower quantile": 18.0,
+          "upper quantile": 87.0
+        },
+        "histogram": [
+          {
+            "range": {
+              "min": 5.7,
+              "max": 52.1
+            },
+            "occurrences": 7
+          },
+          {
+            "range": {
+              "min": 52.1,
+              "max": 98.5
+            },
+            "occurrences": 8
+          }
+        ],
+        "text length summary": {
+          "minimal length": "NaN",
+          "minimal length with blank": "NaN",
+          "maximal length": "NaN",
+          "average length": "NaN",
+          "average length with blank": "NaN"
+        }
+      },
+      "type": "string"
+    },
+    {
+      "id": "registration",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicate count": 2,
+        "distinct count": 13,
+        "frequency table": [
+          {
+            "data": "Richard",
+            "occurrences": 2
+          },
+          {
+            "data": "Grover",
+            "occurrences": 2
+          },
+          {
+            "data": "    John",
+            "occurrences": 1
+          },
+          {
+            "data": "        Grover",
+            "occurrences": 1
+          },
+          {
+            "data": "  Millard",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "Aaaaaa",
+            "occurrences": 4
+          },
+          {
+            "pattern": "Aaaaaaa",
+            "occurrences": 3
+          },
+          {
+            "pattern": "   Aaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "    Aaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "        Aaaaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
+        },
+        "histogram": [
+        ],
+        "text length summary": {
+          "minimal length": 6.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 14.0,
+          "average length": 8.133333333333333,
+          "average length with blank": 8.133333333333333
+        }
+      },
+      "type": "string"
+    },
+    {
+      "id": "city",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicate count": 0,
+        "distinct count": 15,
+        "frequency table": [
+          {
+            "data": "14-08-1986",
+            "occurrences": 1
+          },
+          {
+            "data": "17-10-1948",
+            "occurrences": 1
+          },
+          {
+            "data": "30-10-1963",
+            "occurrences": 1
+          },
+          {
+            "data": "26-08-1948",
+            "occurrences": 1
+          },
+          {
+            "data": "22-11-1969",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "99-99-9999",
+            "occurrences": 15
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
+        },
+        "histogram": [
+        ],
+        "text length summary": {
+          "minimal length": 10.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 10.0,
+          "average length": 10.0,
+          "average length with blank": 10.0
+        }
+      },
+      "type": "string"
+    },
+    {
+      "id": "birth",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicate count": 2,
+        "distinct count": 13,
+        "frequency table": [
+          {
+            "data": "Hoover",
+            "occurrences": 3
+          },
+          {
+            "data": "Pierce",
+            "occurrences": 1
+          },
+          {
+            "data": "Adams",
+            "occurrences": 1
+          },
+          {
+            "data": "Reagan",
+            "occurrences": 1
+          },
+          {
+            "data": "Taft",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "Aaaaaa",
+            "occurrences": 8
+          },
+          {
+            "pattern": "Aaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaaa",
+            "occurrences": 2
+          },
+          {
+            "pattern": "Aaaaaaaa",
+            "occurrences": 1
+          },
+          {
+            "pattern": "Aaaaa",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
+        },
+        "histogram": [
+        ],
+        "text length summary": {
+          "minimal length": 4.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 9.0,
+          "average length": 6.133333333333334,
+          "average length with blank": 6.133333333333334
+        }
+      },
+      "type": "string"
+    },
+    {
+      "id": "nbCommands",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": 0,
+        "empty": 0.0,
+        "max": 15.0,
+        "min": 1.0,
+        "mean": 7.0,
+        "variance": 23.571428571428573,
+        "duplicate count": 5,
+        "distinct count": 10,
+        "frequency table": [
+          {
+            "data": "5",
+            "occurrences": 2
+          },
+          {
+            "data": "10",
+            "occurrences": 2
+          },
+          {
+            "data": "1",
+            "occurrences": 2
+          },
+          {
+            "data": "2",
+            "occurrences": 2
+          },
+          {
+            "data": "15",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "9",
+            "occurrences": 9
+          },
+          {
+            "pattern": "99",
+            "occurrences": 6
+          }
+        ],
+        "quantiles": {
+          "median": 6.0,
+          "lower quantile": 2.0,
+          "upper quantile": 11.0
+        },
+        "histogram": [
+          {
+            "range": {
+              "min": 1.0,
+              "max": 8.0
+            },
+            "occurrences": 9
+          },
+          {
+            "range": {
+              "min": 8.0,
+              "max": 15.0
+            },
+            "occurrences": 6
+          }
+        ],
+        "text length summary": {
+          "minimal length": "NaN",
+          "minimal length with blank": "NaN",
+          "maximal length": "NaN",
+          "average length": "NaN",
+          "average length with blank": "NaN"
+        }
+      },
+      "type": "integer"
+    },
+    {
+      "id": "avgAmount",
+      "quality": {
+        "empty": 1,
+        "invalid": -1,
+        "valid": 15
+      },
+      "statistics": {
+        "count": 15,
+        "valid": 15,
+        "invalid": -1,
+        "empty": 1.0,
+        "max": "NaN",
+        "min": "NaN",
+        "mean": "NaN",
+        "variance": "NaN",
+        "duplicate count": 2,
+        "distinct count": 13,
+        "frequency table": [
+          {
+            "data": "WA",
+            "occurrences": 2
+          },
+          {
+            "data": "VA",
+            "occurrences": 2
+          },
+          {
+            "data": "IN",
+            "occurrences": 1
+          },
+          {
+            "data": "",
+            "occurrences": 1
+          },
+          {
+            "data": "ID",
+            "occurrences": 1
+          }
+        ],
+        "pattern frequency table": [
+          {
+            "pattern": "AA",
+            "occurrences": 14
+          },
+          {
+            "pattern": "",
+            "occurrences": 1
+          }
+        ],
+        "quantiles": {
+          "median": "NaN",
+          "lower quantile": "NaN",
+          "upper quantile": "NaN"
+        },
+        "histogram": [
+        ],
+        "text length summary": {
+          "minimal length": 2.0,
+          "minimal length with blank": 0.0,
+          "maximal length": 2.0,
+          "average length": 2.0,
+          "average length with blank": 1.8666666666666667
+        }
+      },
+      "type": "double"
+    }
+  ],
+  "records": [
+    {
+      "id": "1",
+      "uglystate": "Tixass",
+      "firstname": "        Grover",
+      "lastname": "Quincy",
+      "state": "AR",
+      "registration": "17-02-2008",
+      "city": "Boston",
+      "birth": "01-09-1973",
+      "nbCommands": "10",
+      "avgAmount": "82.4"
+    },
+    {
+      "id": "2",
+      "uglystate": "Tex@s",
+      "firstname": "   Warren",
+      "lastname": "Johnson",
+      "state": "WA",
+      "registration": "18-08-2007",
+      "city": "Nashville",
+      "birth": "11-02-1960",
+      "nbCommands": "15",
+      "avgAmount": "87.6"
+    },
+    {
+      "id": "3",
+      "uglystate": "Tex@s",
+      "firstname": "  Andrew",
+      "lastname": "Ford",
+      "state": "WA",
+      "registration": "13-09-2008",
+      "city": "Richmond",
+      "birth": "13-11-1971",
+      "nbCommands": "7",
+      "avgAmount": "18.3"
+    },
+    {
+      "id": "4",
+      "uglystate": "Tixass",
+      "firstname": " Gerald",
+      "lastname": "Pierce",
+      "state": "ID",
+      "registration": "05-08-2007",
+      "city": "Pierre",
+      "birth": "30-10-1963",
+      "nbCommands": "2",
+      "avgAmount": "6.0"
+    },
+    {
+      "id": "5",
+      "uglystate": "Texas",
+      "firstname": "  Millard",
+      "lastname": "Reagan",
+      "state": "TX",
+      "registration": "09-01-2007",
+      "city": "Montpelier",
+      "birth": "12-09-1954",
+      "nbCommands": "5",
+      "avgAmount": "15.1"
+    },
+    {
+      "id": "6",
+      "uglystate": "Massachusetts",
+      "firstname": "   Lyndon",
+      "lastname": "Monroe",
+      "state": "IN",
+      "registration": "19-11-2008",
+      "city": "Tallahassee",
+      "birth": "22-07-1946",
+      "nbCommands": "5",
+      "avgAmount": "5.7"
+    },
+    {
+      "id": "7",
+      "uglystate": "Masachussets",
+      "firstname": "    John",
+      "lastname": "Hoover",
+      "state": "VA",
+      "registration": "09-04-2007",
+      "city": "Des Moines",
+      "birth": "14-08-1986",
+      "nbCommands": "11",
+      "avgAmount": "87.4"
+    },
+    {
+      "id": "8",
+      "uglystate": "Massachusets",
+      "firstname": "     Theodore",
+      "lastname": "Taft",
+      "state": "VA",
+      "registration": "27-01-2008",
+      "city": "Harrisburg",
+      "birth": "11-08-1953",
+      "nbCommands": "10",
+      "avgAmount": "98.5"
+    },
+    {
+      "id": "9",
+      "uglystate": "Massachussetts",
+      "firstname": "Grover",
+      "lastname": "Hoover",
+      "state": "",
+      "registration": "18-07-2008",
+      "city": "Annapolis",
+      "birth": "17-10-1948",
+      "nbCommands": "1",
+      "avgAmount": "56.3"
+    },
+    {
+      "id": "10",
+      "uglystate": "Masachusetts",
+      "firstname": "Richard",
+      "lastname": "Roosevelt",
+      "state": "OK",
+      "registration": "08-02-2007",
+      "city": "Oklahoma City",
+      "birth": "06-09-1948",
+      "nbCommands": "14",
+      "avgAmount": "44.9"
+    },
+    {
+      "id": "11",
+      "uglystate": "Tata",
+      "firstname": "Grover",
+      "lastname": "Wilson",
+      "state": "NJ",
+      "registration": "11-14-2008",
+      "city": "Hartford",
+      "birth": "03-10-1957",
+      "nbCommands": "2",
+      "avgAmount": "51.2"
+    },
+    {
+      "id": "12",
+      "uglystate": "tata",
+      "firstname": "Zachary",
+      "lastname": "Adams",
+      "state": "MI",
+      "registration": "14-10-2007",
+      "city": "Atlant",
+      "birth": "22-11-1969",
+      "nbCommands": "1",
+      "avgAmount": "89.7"
+    },
+    {
+      "id": "13",
+      "uglystate": "t@t@",
+      "firstname": "Richard",
+      "lastname": "Coolidge",
+      "state": "KY",
+      "registration": "02-09-07",
+      "city": "Dover",
+      "birth": "01-07-1959",
+      "nbCommands": "3",
+      "avgAmount": "56.3"
+    },
+    {
+      "id": "14",
+      "uglystate": "T@T@",
+      "firstname": "Gerald",
+      "lastname": "Clinton",
+      "state": "ND",
+      "registration": "27-06-07",
+      "city": "SACRAMENTO",
+      "birth": "26-06-1980",
+      "nbCommands": "6",
+      "avgAmount": "65.0"
+    },
+    {
+      "id": "15",
+      "uglystate": "tata",
+      "firstname": "George",
+      "lastname": "Hoover",
+      "state": "TN",
+      "registration": "05-11-07",
+      "city": "Sacramento",
+      "birth": "26-08-1948",
+      "nbCommands": "13",
+      "avgAmount": "38.6"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "metadata": null,
+  "records": [
+    {
+      "0000": "al",
+      "0001": "Alabama",
+      "0002": "Montgomery",
+      "0003": "Birmingham city"
+    },
+    {
+      "0000": "--",
+      "0001": "--",
+      "0002": "--",
+      "0003": "--"
+    },
+    {
+      "0000": "AK",
+      "0001": "Alaska",
+      "0002": "Juneau",
+      "0003": "Anchorage"
+    },
+    {
+      "0000": "AZ",
+      "0001": "ARIZONA",
+      "0002": "PHOENIX",
+      "0003": "PHOENIX"
+    },
+    {
+      "0000": "AR",
+      "0001": "Arkansas",
+      "0002": "Little Rock",
+      "0003": "Little Rock"
+    },
+    {
+      "0000": "CA",
+      "0001": "California",
+      "0002": "",
+      "0003": ""
+    },
+    {
+      "0000": "CO",
+      "0001": "Colorado",
+      "0002": "Denver",
+      "0003": "Denver"
+    }
+  ]
+}

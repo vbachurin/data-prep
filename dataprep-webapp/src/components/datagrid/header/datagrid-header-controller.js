@@ -5,10 +5,9 @@
      * @ngdoc controller
      * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
      * @description Dataset Column Header controller.
-     * @requires data-prep.services.transformation.service:TransformationRestService
-     * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.transformation.service:TransformationService
      */
-    function DatagridHeaderCtrl(TransformationRestService, ConverterService) {
+    function DatagridHeaderCtrl(TransformationService) {
         var vm = this;
 
         /**
@@ -25,23 +24,11 @@
 
             // *_percent is the real % of empty/valid/invalid records, while *_percent_width is the width % of the bar.
             // They can be differents if less than MIN_PERCENT are valid/invalid/empty, to assure a min width of each bar. To be usable by the user.
-            // TODO remove completely one bar if absolute zero records match (ie: if 0 invalid records, do not display invalid bar)
+            column.quality.emptyPercent = column.quality.empty <= 0 ? 0 : Math.ceil(column.quality.empty * 100 / column.total);
+            column.quality.emptyPercentWidth = column.quality.empty <= 0 ? 0 : Math.max(column.quality.emptyPercent, MIN_PERCENT);
 
-            if (column.quality.empty > 0) {
-                column.quality.emptyPercent = Math.ceil(column.quality.empty * 100 / column.total);
-                column.quality.emptyPercentWidth = Math.max(column.quality.emptyPercent, MIN_PERCENT);
-            } else {
-                column.quality.emptyPercent = 0;
-                column.quality.emptyPercentWidth = 0;
-            }
-
-            if (column.quality.invalid > 0) {
-                column.quality.invalidPercent = Math.ceil(column.quality.invalid * 100 / column.total);
-                column.quality.invalidPercentWidth = Math.max(column.quality.invalidPercent, MIN_PERCENT);
-            } else {
-                column.quality.invalidPercent = 0;
-                column.quality.invalidPercentWidth = 0;
-            }
+            column.quality.invalidPercent = column.quality.invalid <= 0 ? 0 : Math.ceil(column.quality.invalid * 100 / column.total);
+            column.quality.invalidPercentWidth = column.quality.invalid <= 0 ? 0 : Math.max(column.quality.invalidPercent, MIN_PERCENT);
 
             column.quality.validPercent = 100 - column.quality.emptyPercent - column.quality.invalidPercent;
             column.quality.validPercentWidth = 100 - column.quality.emptyPercentWidth - column.quality.invalidPercentWidth;
@@ -80,64 +67,7 @@
         var groupMenus = function(menus) {
             var groups = _.groupBy(menus, function(menuItem) { return menuItem.category; });
             var groupsAndDividers = insertDividers(groups);
-
             return _.flatten(groupsAndDividers);
-        };
-
-        /**
-         * @ngdoc method
-         * @name insertType
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menu - the menu item with parameters to adapt
-         * @description [PRIVATE] Insert adapted html input type in each parameter in the menu
-         */
-        var insertType = function(menu) {
-            if(menu.parameters) {
-                _.forEach(menu.parameters, function(param) {
-                    param.inputType = ConverterService.toInputType(param.type);
-                });
-            }
-        };
-
-        /**
-         * @ngdoc method
-         * @name adaptInputTypes
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menus - the menus with parameters to adapt
-         * @description [PRIVATE] Adapt each parameter type to HTML input type
-         */
-        var adaptInputTypes = function(menus) {
-            _.forEach(menus, function(menu) {
-                insertType(menu);
-
-                _.forEach(menu.items, function(item) {
-                    _.forEach(item.values, function(choiceValue) {
-                        insertType(choiceValue);
-                    });
-                });
-            });
-
-            return menus;
-        };
-
-        /**
-         * @ngdoc method
-         * @name cleanParamsAndItems
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menus - the menus to clean
-         * @description [PRIVATE] Remove 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
-         */
-        var cleanParamsAndItems = function(menus) {
-            return _.forEach(menus, function(menu) {
-                //params
-                var filteredParameters = _.filter(menu.parameters, function(param) {
-                    return param.name !== 'column_name';
-                });
-                menu.parameters = filteredParameters.length ? filteredParameters : null;
-
-                //items
-                menu.items = menu.items.length ? menu.items : null;
-            });
         };
 
         /**
@@ -151,10 +81,8 @@
                 vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
 
-                TransformationRestService.getTransformations(vm.column)
-                    .then(function(response) {
-                        var menus = cleanParamsAndItems(response.data);
-                        menus = adaptInputTypes(menus);
+                TransformationService.getTransformations(vm.column)
+                    .then(function(menus) {
                         vm.transformations = groupMenus(menus);
                     })
                     .catch(function() {

@@ -3,7 +3,7 @@
     {
       "action": "delete_on_value",
       "parameters": {
-        "column_name": "city",
+        "column_id": "0006",
         "value": "Gotham city"
       }
     }

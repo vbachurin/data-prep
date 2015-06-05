@@ -1,0 +1,50 @@
+$stroke-width: 4;
+$stroke-width-path: 2.5;
+
+$disabled-color: $shadow-gray;
+
+.maillon-circle{
+  circle{
+    stroke:$dark-green;
+    stroke-width:$stroke-width;
+    fill:$dark-green;
+    &.maillon-circle-enabled-hovered{
+      stroke:$blue;
+      stroke-width:$stroke-width;
+      fill:$white;
+    }
+  }
+  path{
+    stroke:$dark-green;
+    stroke-width:$stroke-width-path;
+    fill:none;
+    &.maillon-cables-disabled{
+      stroke:$disabled-color;
+      stroke-width:$stroke-width-path;
+      fill:none;
+    }
+    &.single-maillon-cables-disabled{
+      stroke:$disabled-color;
+      stroke-width:$stroke-width-path;
+      fill:none;
+    }
+  }
+}
+
+.maillon-circle-disabled{
+  circle{
+    stroke:$disabled-color;
+    stroke-width:$stroke-width;
+    fill:$white;
+    &.maillon-circle-disabled-hovered{
+      stroke:$dark-blue;
+      stroke-width:$stroke-width;
+      fill:$blue;
+    }
+  }
+  path{
+    stroke:$disabled-color;
+    stroke-width:$stroke-width-path;
+    fill:none;
+  }
+}

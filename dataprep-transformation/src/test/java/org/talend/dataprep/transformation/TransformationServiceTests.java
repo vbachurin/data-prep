@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.http.ContentType.JSON;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -23,7 +24,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -64,16 +64,14 @@ public class TransformationServiceTests {
     @Test
     public void noAction() throws Exception {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when().post("/transform")
-                .asString();
+        String transformedContent = given().contentType(JSON).body(initialContent).when().post("/transform").asString();
         assertEquals(initialContent, transformedContent, false);
     }
 
     @Test
     public void noActionWithCarrierReturn() throws Exception {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("carrierReturn.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when().post("/transform")
-                .asString();
+        String transformedContent = given().contentType(JSON).body(initialContent).when().post("/transform").asString();
         assertEquals(initialContent, transformedContent, false);
     }
 
@@ -82,7 +80,7 @@ public class TransformationServiceTests {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("action1.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1_action1.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+        String transformedContent = given().contentType(JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
@@ -92,15 +90,15 @@ public class TransformationServiceTests {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("action2.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1_action2.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+        String transformedContent = given().contentType(JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
     @Test
     public void testInvalidJSONInput() throws Exception {
-        given().contentType(ContentType.JSON).body("invalid content on purpose.").when().post("/transform").then()
-                .statusCode(400).content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
+        given().contentType(JSON).body("invalid content on purpose.").when().post("/transform").then().statusCode(400)
+                .content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
     }
 
     @Test
@@ -110,7 +108,7 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_fillEmptyWithDefaultAction.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+        String transformedContent = given().contentType(JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
@@ -122,7 +120,7 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_fillEmptyWithDefaultBooleanAction.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+        String transformedContent = given().contentType(JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
@@ -134,7 +132,7 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_fillEmptyWithDefaultIntegerAction.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+        String transformedContent = given().contentType(JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
@@ -145,7 +143,7 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils
                 .toString(TransformationServiceTests.class.getResourceAsStream("test3_negateAction.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+        String transformedContent = given().contentType(JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
@@ -155,7 +153,7 @@ public class TransformationServiceTests {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("cutAction.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test4.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test4_cutAction.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+        String transformedContent = given().contentType(JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
@@ -166,14 +164,14 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_deleteEmptyAction.json"));
-        String transformedContent = given().contentType(ContentType.JSON).body(initialContent).when()
+        String transformedContent = given().contentType(JSON).body(initialContent).when()
                 .post("/transform?actions=" + encode(actions)).asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
     @Test
     public void emptyColumnSuggest() throws Exception {
-        String response = given().contentType(ContentType.JSON).body("").when().post("/suggest/column").asString();
+        String response = given().contentType(JSON).body("").when().post("/suggest/column").asString();
         assertEquals("[]", response, false);
     }
 
@@ -181,7 +179,7 @@ public class TransformationServiceTests {
     public void stringColumnSuggest() throws Exception {
         String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column1.json"));
         String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("suggest1.json"));
-        Response post = given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column");
+        Response post = given().contentType(JSON).body(columnMetadata).when().post("/suggest/column");
         String response = post.asString();
         assertEquals(expectedSuggestions, response, false);
     }
@@ -191,7 +189,7 @@ public class TransformationServiceTests {
         String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column2.json"));
         String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("suggest_numeric.json"));
-        Response post = given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column");
+        Response post = given().contentType(JSON).body(columnMetadata).when().post("/suggest/column");
         String response = post.asString();
         assertEquals(expectedSuggestions, response, false);
     }
@@ -201,7 +199,7 @@ public class TransformationServiceTests {
         String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column3.json"));
         String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("suggest_boolean.json"));
-        Response post = given().contentType(ContentType.JSON).body(columnMetadata).when().post("/suggest/column");
+        Response post = given().contentType(JSON).body(columnMetadata).when().post("/suggest/column");
         String response = post.asString();
         assertEquals(expectedSuggestions, response, false);
     }
@@ -209,7 +207,7 @@ public class TransformationServiceTests {
     @Test
     public void dataSetSuggest() throws Exception {
         String dataSetMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("metadata1.json"));
-        String response = given().contentType(ContentType.JSON).body(dataSetMetadata).when().post("/suggest/dataset").asString();
+        String response = given().contentType(JSON).body(dataSetMetadata).when().post("/suggest/dataset").asString();
         assertEquals("[]", response, false);
     }
 
@@ -237,36 +235,52 @@ public class TransformationServiceTests {
     public void previewDiff() throws Exception {
         // given
         final String datasetContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("preview.json"));
-        final String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
-                .getResourceAsStream("preview_result.json"));
+        final String expected = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("preview_result.json"));
 
         final String oldActions = getSingleTransformation();
         final String newActions = getMultipleTransformation();
         final String indexes = "WzEsMyw1XQ=="; // [1,3,5] Base64 encoded
 
         // when
-        final Response post = given().contentType(ContentType.JSON).body(datasetContent).when()
+        final Response post = given().contentType(JSON).body(datasetContent).when()
                 .post("/transform/preview?oldActions=" + oldActions + "&newActions=" + newActions + "&indexes=" + indexes);
         final String response = post.asString();
 
         // then
-        assertEquals(expectedSuggestions, response, false);
+        assertEquals(expected, response, false);
+    }
+
+    @Test
+    public void testDynamicParams_should_return_textclustering_dynamic_params() throws Exception {
+        // given
+        final String datasetContent = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("parameters/dataset.json"));
+        final String expectedParameters = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("parameters/expected_cluster_params.json"));
+
+        // when
+        final Response post = given().contentType(JSON).body(datasetContent).when()
+                .post("/transform/suggest/textclustering/params?columnId=uglystate");
+        final String response = post.asString();
+
+        // then
+        assertEquals(expectedParameters, response, false);
     }
 
     private String getSingleTransformation() {
         /**
-         * {"actions": [ { "action": "uppercase", "parameters":{ "column_name": "lastname" } } ]}
+         * {"actions": [ { "action": "uppercase", "parameters":{ "column_id": "lastname" } } ]}
          */
-        return "eyJhY3Rpb25zIjogWw0KICAgIHsNCiAgICAgICJhY3Rpb24iOiAidXBwZXJjYXNlIiwNCiAgICAgICJwYXJhbWV0ZXJzIjp7DQogICAgICAgICAgICAiY29sdW1uX25hbWUiOiAibGFzdG5hbWUiDQogICAgICB9DQogICAgfQ0KICBdDQp9";
+        return "eyJhY3Rpb25zIjogWyB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ICJsYXN0bmFtZSIgfSB9IF19";
     }
 
     private String getMultipleTransformation() {
         /**
-         * {"actions": [ { "action": "uppercase", "parameters":{ "column_name": "lastname" } }, { "action": "uppercase",
-         * "parameters":{ "column_name": "firstname" } }, { "action": "delete_on_value", "parameters":{ "column_name":
+         * {"actions": [ { "action": "uppercase", "parameters":{ "column_id": "lastname" } }, { "action": "uppercase",
+         * "parameters":{ "column_id": "firstname" } }, { "action": "delete_on_value", "parameters":{ "column_id":
          * "city", "value": "Columbia" } } ]}
          */
-        return "eyJhY3Rpb25zIjogWw0KICAgIHsNCiAgICAgICJhY3Rpb24iOiAidXBwZXJjYXNlIiwNCiAgICAgICJwYXJhbWV0ZXJzIjp7DQogICAgICAgICAgICAiY29sdW1uX25hbWUiOiAibGFzdG5hbWUiDQogICAgICB9DQogICAgfSwNCiAgICB7DQogICAgICAiYWN0aW9uIjogInVwcGVyY2FzZSIsDQogICAgICAicGFyYW1ldGVycyI6ew0KICAgICAgICAiY29sdW1uX25hbWUiOiAiZmlyc3RuYW1lIg0KICAgICAgfQ0KICAgIH0sDQogICAgew0KICAgICAgImFjdGlvbiI6ICJkZWxldGVfb25fdmFsdWUiLA0KICAgICAgInBhcmFtZXRlcnMiOnsNCiAgICAgICAgImNvbHVtbl9uYW1lIjogImNpdHkiLA0KICAgICAgICAidmFsdWUiOiAiQ29sdW1iaWEiDQogICAgICB9DQogICAgfQ0KICBdDQp9";
+        return "eyJhY3Rpb25zIjogWyB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ICJsYXN0bmFtZSIgfSB9LCB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwicGFyYW1ldGVycyI6eyAiY29sdW1uX2lkIjogImZpcnN0bmFtZSIgfSB9LCB7ICJhY3Rpb24iOiAiZGVsZXRlX29uX3ZhbHVlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ImNpdHkiLCAidmFsdWUiOiAiQ29sdW1iaWEiIH0gfSBdfQ==";
     }
 
 }

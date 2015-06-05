@@ -5,27 +5,27 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.DistributedLock;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -35,7 +35,12 @@ import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
+import org.talend.dataprep.schema.DraftValidator;
+import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.schema.SchemaParserResult;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
 
 @RestController
@@ -60,10 +65,18 @@ public class DataSetService {
     private DataSetContentStore contentStore;
 
     @Autowired
-    private ApplicationContext applicationContext;
+    private FormatGuess.Factory formatGuessFactory;
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
+
+    private ObjectMapper objectMapper;
+
+    @PostConstruct
+    public void initialize() {
+        // to ease our life simply ignore unknown properties
+        this.objectMapper = builder.build().disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+    }
 
     private static void queueEvents(String id, JmsTemplate template) {
         String[] destinations = { Destinations.FORMAT_ANALYSIS, Destinations.CONTENT_ANALYSIS };
@@ -93,13 +106,13 @@ public class DataSetService {
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
-    public Iterable<DataSetMetadata> list(final HttpServletResponse response) {
+    public Iterable<DataSetMetadata> list() {
         return dataSetMetadataRepository.list();
     }
 
     /**
      * Creates a new data set and returns the new data set id as text in the response.
-     * 
+     *
      * @param name An optional name for the new data set (might be <code>null</code>).
      * @param dataSetContent The raw content of the data set (might be a CSV, XLS...).
      * @param response The HTTP response to interact with caller.
@@ -129,7 +142,7 @@ public class DataSetService {
     /**
      * Returns the data set content for given id. Service might return {@link HttpServletResponse#SC_ACCEPTED} if the
      * data set exists but analysis is not yet fully completed so content is not yet ready to be served.
-     * 
+     *
      * @param metadata If <code>true</code>, includes data set metadata information.
      * @param columns If <code>true</code>, includes column metadata information (column types...).
      * @param dataSetId A data set id.
@@ -138,7 +151,8 @@ public class DataSetService {
     @RequestMapping(value = "/datasets/{id}/content", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id", notes = "Get a data set content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
     @Timed
-    public @ResponseBody DataSet get(
+    @ResponseBody
+    public DataSet get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
@@ -152,9 +166,11 @@ public class DataSetService {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return DataSet.empty(); // No data set, returns empty content.
             }
+
             if (dataSetMetadata.getLifecycle().error()) {
                 LOG.error("Unable to serve {}, data set met unrecoverable error.", dataSetId);
-                // Data set is in error state, meaning content will never be delivered. Returns an error for this situation
+                // Data set is in error state, meaning content will never be delivered. Returns an error for this
+                // situation
                 throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, TDPExceptionContext.build().put("id",
                         dataSetId));
             }
@@ -170,6 +186,7 @@ public class DataSetService {
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
                 return DataSet.empty();
             }
+
             // Build the result
             DataSet dataSet = new DataSet();
             if (metadata) {
@@ -187,7 +204,7 @@ public class DataSetService {
 
     /**
      * Deletes a data set with provided id.
-     * 
+     *
      * @param dataSetId A data set id. If data set id is unknown, no exception nor status code to indicate this is set.
      */
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -241,7 +258,7 @@ public class DataSetService {
 
     /**
      * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
-     * 
+     *
      * @param dataSetId The id of data set to be updated.
      * @param name The new name for the data set.
      * @param dataSetContent The new content for the data set. If empty, existing content will <b>not</b> be replaced.
@@ -258,11 +275,11 @@ public class DataSetService {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         try {
             lock.lock();
-            DataSetMetadata.Builder builder = metadata().id(dataSetId);
+            DataSetMetadata.Builder datasetBuilder = metadata().id(dataSetId);
             if (name != null) {
-                builder = builder.name(name);
+                datasetBuilder = datasetBuilder.name(name);
             }
-            DataSetMetadata dataSetMetadata = builder.build();
+            DataSetMetadata dataSetMetadata = datasetBuilder.build();
             // Save data set content
             contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
             dataSetMetadataRepository.add(dataSetMetadata);
@@ -275,7 +292,7 @@ public class DataSetService {
 
     /**
      * Returns the data set {@link DataSetMetadata metadata} for given <code>dataSetId</code>.
-     * 
+     *
      * @param dataSetId A data set id. If <code>null</code> <b>or</b> if no data set with provided id exits, operation
      * returns {@link HttpServletResponse#SC_NO_CONTENT}
      * @param response The HTTP response to interact with caller.
@@ -285,7 +302,8 @@ public class DataSetService {
     @ApiResponses({ @ApiResponse(code = HttpServletResponse.SC_NO_CONTENT, message = "Data set does not exist."),
             @ApiResponse(code = HttpServletResponse.SC_ACCEPTED, message = "Data set metadata is not yet ready.") })
     @Timed
-    public @ResponseBody DataSet getMetadata(
+    @ResponseBody
+    public DataSet getMetadata(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set metadata") String dataSetId,
             HttpServletResponse response) {
         if (dataSetId == null) {
@@ -323,6 +341,161 @@ public class DataSetService {
             builder.build().writer().writeValue(response.getOutputStream(), errors);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
+    /**
+     * Returns preview of the the data set content for given id (first 100 rows). Service might return
+     * {@link HttpServletResponse#SC_ACCEPTED} if the data set exists but analysis is not yet fully completed so content
+     * is not yet ready to be served.
+     *
+     * @param metadata If <code>true</code>, includes data set metadata information.
+     * @param columns If <code>true</code>, includes column metadata information (column types...).
+     * @param sheetName the sheet name to preview
+     * @param dataSetId A data set id.
+     * @param response The HTTP response to interact with caller.
+     */
+    @RequestMapping(value = "/datasets/{id}/preview", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get a data preview set by id", notes = "Get a data set preview content based on provided id. Not valid or non existing data set id returns empty content. Data set not in drat status will return a redirect 301")
+    @Timed
+    @ResponseBody
+    public DataSet preview(
+            @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
+            @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns,
+            @RequestParam(defaultValue = "") @ApiParam(name = "sheetName", value = "Sheet name to preview") String sheetName,
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId,
+            HttpServletResponse response) {
+
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        if (dataSetMetadata == null) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return DataSet.empty(); // No data set, returns empty content.
+        }
+
+        if (!dataSetMetadata.isDraft()) {
+            response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+            return DataSet.empty(); // dataset not anymore a draft so preview doesn't make sense.
+        }
+
+        if (StringUtils.isNotEmpty(sheetName)) {
+            dataSetMetadata.setSheetName(sheetName);
+        }
+
+        // take care of previous datas without schema parser result
+        if (dataSetMetadata.getSchemaParserResult() != null) {
+
+            // sheet not yet set correctly so use the first one
+            if (StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
+                String theSheetName = dataSetMetadata.getSchemaParserResult().getSheetContents().get(0).getName();
+                LOG.debug("preview for dataSetMetadata: {} with sheetName: {}", dataSetId, theSheetName);
+                dataSetMetadata.setSheetName(theSheetName);
+            }
+
+            String theSheetName = dataSetMetadata.getSheetName();
+
+            Optional<SchemaParserResult.SheetContent> sheetContentFound = dataSetMetadata.getSchemaParserResult()
+                    .getSheetContents().stream().filter(sheetContent -> theSheetName.equals(sheetContent.getName())).findFirst();
+
+            if (!sheetContentFound.isPresent()) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                return DataSet.empty(); // No sheet found, returns empty content.
+            }
+
+            List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
+
+            if (dataSetMetadata.getRow() == null) {
+                dataSetMetadata.setRowMetadata(new RowMetadata(Collections.emptyList()));
+            }
+
+            dataSetMetadata.getRow().setColumns(columnMetadatas);
+        } else {
+            LOG.warn("dataset#{} has draft status but any SchemaParserResult");
+        }
+
+        // Build the result
+        DataSet dataSet = new DataSet();
+        if (metadata) {
+            dataSet.setMetadata(dataSetMetadata);
+        }
+        if (columns) {
+            dataSet.setColumns(dataSetMetadata.getRow().getColumns());
+        }
+        dataSet.setRecords(contentStore.stream(dataSetMetadata).limit(100));
+        return dataSet;
+    }
+
+    /**
+     * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
+     *
+     * @param dataSetId The id of data set to be updated.
+     * @param dataSetContent The new content for the data set. If empty, existing content will <b>not</b> be replaced.
+     * For delete operation, look at {@link #delete(String)}.
+     */
+    @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set content based on provided id and PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    @Timed
+    @VolumeMetered
+    public void updateDataSet(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
+            @ApiParam(value = "content") InputStream dataSetContent) {
+
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        try {
+
+            DataSetMetadata dataSetMetadata = objectMapper.readValue(dataSetContent, DataSetMetadata.class);
+
+            lock.lock();
+
+            LOG.debug("updateDataSet: {}", dataSetMetadata);
+
+            // we retry informations we do not update
+            DataSetMetadata read = dataSetMetadataRepository.get(dataSetId);
+            read.setName(dataSetMetadata.getName());
+
+            Optional<SchemaParserResult.SheetContent> sheetContentFound = read.getSchemaParserResult().getSheetContents()
+                    .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())).findFirst();
+
+            if (sheetContentFound.isPresent()) {
+                List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
+
+                if (read.getRow() == null) {
+                    read.setRowMetadata(new RowMetadata(Collections.emptyList()));
+                }
+                read.getRow().setColumns(columnMetadatas);
+            }
+
+            read.setSheetName(dataSetMetadata.getSheetName());
+
+            read.setSchemaParserResult(null);
+
+            FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
+
+            DraftValidator draftValidator = formatGuess.getDraftValidator();
+
+            DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
+
+            if (result.draft) {
+                // FIXME what to do here?? exception?
+                LOG.warn("dataSetMetadata#{} still a draft", dataSetId);
+                return;
+            }
+
+            read.setDraft(false);
+
+            dataSetMetadataRepository.add(read);
+
+            // all good mate!! so send that to jms
+            // Asks for a in depth schema analysis (for column type information).
+            jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
+                Message schemaAnalysisMessage = session.createMessage();
+                schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
+                    return schemaAnalysisMessage;
+                });
+
+        } catch (Exception e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        } finally {
+            lock.unlock();
         }
     }
 

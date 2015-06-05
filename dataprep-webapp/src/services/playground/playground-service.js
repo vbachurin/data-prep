@@ -142,7 +142,7 @@
                 $rootScope.$emit('talend.loading.start');
                 return PreparationService.getContent('head')
                     .then(function(response) {
-                        self.currentMetadata = preparation.dataset;
+                        self.currentMetadata = {id: preparation.datasetId};
                         self.currentData = response.data;
 
                         FilterService.removeAllFilters();
@@ -204,8 +204,33 @@
                     });
             }
             else {
-                return $q.when(true);
+                return $q.reject();
             }
+        };
+
+        /**
+         * @ngdoc method
+         * @name transform
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} action The action name
+         * @param {object} column The columns metadata
+         * @param {object} params The transformation params
+         * @description Perform a transformation on the column in the current preparation, refresh the recipe and the
+         * data. If there is no preparation yet, PreparationService create it.
+         */
+        self.appendStep = function(action, column, params) {
+            $rootScope.$emit('talend.loading.start');
+            return PreparationService.appendStep(self.currentMetadata, action, column, params)
+                .then(function() {
+                    return PreparationService.getContent('head');
+                })
+                .then(function(response) {
+                    DatagridService.updateData(response.data);
+                    RecipeService.refresh();
+                })
+                .finally(function () {
+                    $rootScope.$emit('talend.loading.stop');
+                });
         };
     }
 

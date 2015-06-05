@@ -7,6 +7,8 @@ import javax.annotation.Nonnull;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(value = FillWithDefaultIfEmptyInteger.ACTION_BEAN_PREFIX + FillWithDefaultIfEmptyInteger.FILL_EMPTY_ACTION_NAME)
 public class FillWithDefaultIfEmptyInteger extends AbstractDefaultIfEmpty {
@@ -24,7 +26,12 @@ public class FillWithDefaultIfEmptyInteger extends AbstractDefaultIfEmpty {
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_NAME_PARAMETER, new Parameter(DEFAULT_VALUE_PARAMETER, Type.INTEGER.getName(), "0") }; //$NON-NLS-1$
+        //@formatter:off
+        return new Parameter[] {
+                COLUMN_ID_PARAMETER,
+                COLUMN_NAME_PARAMETER,
+                new Parameter(DEFAULT_VALUE_PARAMETER, Type.INTEGER.getName(), "0") }; //$NON-NLS-1$
+        //@formatter:on
     }
 
     @Override

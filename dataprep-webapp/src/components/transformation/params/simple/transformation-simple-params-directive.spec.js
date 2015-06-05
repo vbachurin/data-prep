@@ -1,12 +1,11 @@
 describe('Transformation simple params directive', function () {
     'use strict';
-    var scope, createElement, extractedParams;
+    var scope, createElement;
 
     beforeEach(module('data-prep.transformation-params'));
     beforeEach(module('htmlTemplates'));
 
     beforeEach(inject(function($rootScope, $compile) {
-        extractedParams = null;
         scope = $rootScope.$new();
 
         createElement = function() {
