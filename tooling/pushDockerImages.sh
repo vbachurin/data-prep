@@ -4,14 +4,19 @@
 
 version=$1
 
-registry='talend-registry:5000'
-
 if [ -z "$version"  ]; then
   echo "please specify a version"
   exit 1
 fi
 
-images='talend/dataprep-api talend/dataprep-dataset talend/dataprep-transformation talend/dataprep-preparation talend/dataprep-webapp talend/dataprep-data'
+echo 'WARNING: you are going to erase images already pushed to the registry!'
+read -p "Are you sure (YES to continue)? " yn
+if [[ "$yn" != "YES" ]]; then
+  exit 1
+fi
+
+images=`more docker_images.txt | grep images | cut --delimiter='=' --fields=2`
+registry=`more docker_images.txt | grep registry | cut --delimiter='=' --fields=2`
 
 for image in $images;
 do

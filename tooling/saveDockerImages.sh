@@ -1,6 +1,5 @@
 #! /bin/bash
-
-# given a version, tag & push all data-prep LOCAL images with this version to talend-registry
+# given a version, creates a tar.gz that contains all images of this version (based on docker save)
 
 version=$1
 

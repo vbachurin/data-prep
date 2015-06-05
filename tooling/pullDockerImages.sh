@@ -1,17 +1,16 @@
 #! /bin/bash
 
-# given a version, tag & push all data-prep LOCAL images with this version to talend-registry
+# given a version, pull all data-prep images with this version from talend-registry
 
 version=$1
-
-registry='talend-registry:5000'
 
 if [ -z "$version"  ]; then
   echo "please specify a version"
   exit 1
 fi
 
-images='talend/dataprep-api talend/dataprep-dataset talend/dataprep-transformation talend/dataprep-preparation talend/dataprep-webapp talend/dataprep-data'
+images=`more docker_images.txt | grep images | cut --delimiter='=' --fields=2`
+registry=`more docker_images.txt | grep registry | cut --delimiter='=' --fields=2`
 
 for image in $images;
 do
