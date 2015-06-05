@@ -9,10 +9,12 @@ if [ -z "$version"  ]; then
   exit 1
 fi
 
-echo 'WARNING: you are going to erase images already pushed to the registry!'
-read -p "Are you sure (YES to continue)? " yn
-if [[ "$yn" != "YES" ]]; then
-  exit 1
+if [[ "$2" != "--ni" ]]; then
+  echo 'WARNING: you are going to erase images already pushed to the registry!'
+  read -p "Are you sure (YES to continue)? " yn
+  if [[ "$yn" != "YES" ]]; then
+    exit 1
+  fi
 fi
 
 images=`more docker_images.txt | grep images | cut --delimiter='=' --fields=2`
