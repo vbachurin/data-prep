@@ -237,6 +237,7 @@ public class AbsoluteTest {
     public void should_accept_column() {
         assertTrue(absIntAction.accept(getColumn(Type.INTEGER)));
         assertTrue(absFloatAction.accept(getColumn(Type.FLOAT)));
+        assertTrue(absFloatAction.accept(getColumn(Type.DOUBLE)));
     }
 
     @Test
@@ -249,7 +250,6 @@ public class AbsoluteTest {
         assertFalse(absIntAction.accept(getColumn(Type.BOOLEAN)));
 
         assertFalse(absFloatAction.accept(getColumn(Type.NUMERIC)));
-        assertFalse(absFloatAction.accept(getColumn(Type.DOUBLE)));
         assertFalse(absFloatAction.accept(getColumn(Type.INTEGER)));
         assertFalse(absFloatAction.accept(getColumn(Type.STRING)));
         assertFalse(absFloatAction.accept(getColumn(Type.DATE)));
