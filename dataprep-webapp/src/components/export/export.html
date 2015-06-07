@@ -22,20 +22,18 @@
 </button>
 -->
 
-<talend-split-button-dropdown close-on-select="false" on-open="onOpen()">
+<talend-button-dropdown close-on-select="false" on-open="onOpen()">
   <div class="dropdown-container">
-    <div class="dropdown-action">
-      <button class="split-button-dropdown-button">foo</button>
-      <button></button>
-    </div>
-
-    <ul class="dropdown-menu">
-      <li><a href="#">CSV</a></li>
-      <li><a href="#">TABLEAU</a></li>
-      <li><a href="#">XLS</a></li>
+    <p class="dropdown-description">Description</p>
+    <p class="dropdown-button">Click to Select</p>
+    <ul class="dropdown-menu dropdown-select">
+      <li>Dropdown Menu Item</li>
+      <li>Another Item</li>
+      <li>Item Three</li>
+      <li>The Last One</li>
     </ul>
   </div>
-</talend-split-button-dropdown>
+</talend-button-dropdown>
 
 <talend-modal fullscreen="false"
               state="exportCtrl.showExport"

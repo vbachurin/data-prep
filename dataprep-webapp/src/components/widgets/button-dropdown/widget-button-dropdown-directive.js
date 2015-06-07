@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name talend.widget.directive:TalendSplitButtonDropdown
+     * @name talend.widget.directive:TalendButtonDropdown
      * @description This directive create a split button dropdown element.<br/>
      * Key action :
      * <ul>
@@ -11,20 +11,20 @@
      * </ul>
      * @restrict EA
      * @usage
-     <talend-split-button-dropdown close-on-select="false" on-open="onOpen()">
-      <div class="split-button-dropdown-container">
-           <div class="split-button-dropdown-action">
-               <div class="split-button-dropdown-button">{{ column.id }}</div>
+     <talend-button-dropdown close-on-select="false" on-open="onOpen()">
+      <div class="button-dropdown-container">
+           <div class="button-dropdown-action">
+               <div class="button-dropdown-button">{{ column.id }}</div>
                <div>{{ column.type }}</div>
            </div>
-           <ul class="split-button-dropdown-menu">
+           <ul class="button-dropdown-menu">
                <li><a href="#">Hide Column {{ column.id | uppercase }}</a></li>
                <li class="divider"></li>
                <li<a href="#">Split first Space</a></li>
                <li><a href="#">Uppercase</a></li>
            </ul>
       </div>
-      </talend-split-button-dropdown>
+      </talend-button-dropdown>
      * @param {boolean} closeOnSelect Default `true`. If set to false, dropdown will not close on inner item click
      * @param {function} onOpen The callback to execute on dropdown open
      * @param {class} dropdown-action Action zone that trigger menu toggle
@@ -32,11 +32,11 @@
      * @param {class} dropdown-menu The menu to open
      * @param {class} divider `dropdown-menu > li.divider` : menu items divider
      */
-    function TalendSplitButtonDropdown($window) {
+    function TalendButtonDropdown($window) {
         return {
             restrict: 'EA',
             transclude: true,
-            templateUrl: 'components/widgets/split-button-dropdown/split-button-dropdown.html',
+            templateUrl: 'components/widgets/button-dropdown/button-dropdown.html',
             scope: {
                 closeOnSelect: '=',
                 onOpen: '&'
@@ -163,5 +163,5 @@
     }
 
     angular.module('talend.widget')
-        .directive('talendSplitButtonDropdown', TalendSplitButtonDropdown);
+        .directive('talendButtonDropdown', TalendButtonDropdown);
 })();
