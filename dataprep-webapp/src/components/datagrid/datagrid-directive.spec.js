@@ -10,7 +10,8 @@ describe('Datagrid directive', function () {
     var data = {
         'columns': [
             {
-                'id': 'id',
+                'id': '0000',
+                'name': 'id',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -19,7 +20,8 @@ describe('Datagrid directive', function () {
                 'type': 'number'
             },
             {
-                'id': 'Postal',
+                'id': '0001',
+                'name': 'Postal',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -28,7 +30,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'State',
+                'id': '0002',
+		        'name': 'State',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -37,7 +40,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'Capital',
+                'id': '0003', 
+				'name': 'Capital',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -46,7 +50,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'MostPopulousCity',
+                'id': '0004', 
+				'name': 'MostPopulousCity',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -57,32 +62,33 @@ describe('Datagrid directive', function () {
         ],
         'records': [
             {
-                'id': '1',
-                'Postal': 'AL',
-                'State': 'My Alabama',
-                'Capital': 'Montgomery',
-                'MostPopulousCity': 'Birmingham city'
+                '0000': '1',
+                '0001': 'AL',
+                '0002': 'My Alabama',
+                '0003': 'Montgomery',
+                '0004': 'Birmingham city'
             },
             {
-                'id': '2',
-                'Postal': 'AK',
-                'State': 'Alaska',
-                'Capital': 'Juneau',
-                'MostPopulousCity': 'Anchorage'
+                '0000': '2',
+                '0001': 'AK',
+                '0002': 'Alaska',
+                '0003': 'Juneau',
+                '0004': 'Anchorage'
             },
             {
-                'id': '3',
-                'Postal': 'AL',
-                'State': 'My Alabama 2',
-                'Capital': 'Montgomery',
-                'MostPopulousCity': 'Birmingham city'
+                '0000': '3',
+                '0001': 'AL',
+                '0002': 'My Alabama 2',
+                '0003': 'Montgomery',
+                '0004': 'Birmingham city'
             }
         ]
     };
     var dataWithEmptyCell = {
         'columns': [
             {
-                'id': 'id',
+                'id': '0000',
+                'name': 'id',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -91,7 +97,8 @@ describe('Datagrid directive', function () {
                 'type': 'number'
             },
             {
-                'id': 'Postal',
+                'id': '0001',
+                'name': 'Postal',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -100,7 +107,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'State',
+                'id': '0002',
+				'name': 'State',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -109,7 +117,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'Capital',
+                'id': '0003', 
+				'name': 'Capital',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -118,7 +127,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'MostPopulousCity',
+                'id': '0004', 
+				'name': 'MostPopulousCity',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -129,25 +139,25 @@ describe('Datagrid directive', function () {
         ],
         'records': [
             {
-                'id': '5',
-                'Postal': 'AK',
-                'State': 'Alaska',
-                'Capital': 'Juneau',
-                'MostPopulousCity': 'Anchorage'
+                '0000': '5',
+                '0001': 'AK',
+                '0002': 'Alaska',
+                '0003': 'Juneau',
+                '0004': 'Anchorage'
             },
             {
-                'id': '6',
-                'Postal': '--',
-                'State': '',
-                'Capital': '--',
-                'MostPopulousCity': '--'
+                '0000': '6',
+                '0001': '--',
+                '0002': '',
+                '0003': '--',
+                '0004': '--'
             },
             {
-                'id': '7',
-                'Postal': '--',
-                'State': '',
-                'Capital': '--',
-                'MostPopulousCity': '--'
+                '0000': '7',
+                '0001': '--',
+                '0002': '',
+                '0003': '--',
+                '0004': '--'
             }
         ]
     };
@@ -155,7 +165,8 @@ describe('Datagrid directive', function () {
     var newData = {
         'columns': [
             {
-                'id': 'id',
+                'id': '0000',
+                'name': 'id',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -164,7 +175,8 @@ describe('Datagrid directive', function () {
                 'type': 'number'
             },
             {
-                'id': 'Postal',
+                'id': '0001',
+                'name': 'Postal',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -173,7 +185,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'State',
+                'id': '0002', 
+				'name': 'State',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -185,9 +198,9 @@ describe('Datagrid directive', function () {
         'records': [
             {
                 '__tdpRowDiff': 'new',
-                'id': '1',
-                'Postal': '',
-                'State': 'My Alabama'
+                '0000': '1',
+                '0001': '',
+                '0002': 'My Alabama'
             }
         ]
     };
@@ -195,7 +208,8 @@ describe('Datagrid directive', function () {
     var deletedRowData = {
         'columns': [
             {
-                'id': 'id',
+                'id': '0000',
+                'name': 'id',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -204,7 +218,8 @@ describe('Datagrid directive', function () {
                 'type': 'number'
             },
             {
-                'id': 'Postal',
+                'id': '0001',
+                'name': 'Postal',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -213,7 +228,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'State',
+                'id': '0002', 
+				'name': 'State',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -225,9 +241,9 @@ describe('Datagrid directive', function () {
         'records': [
             {
                 '__tdpRowDiff': 'delete',
-                'id': '1',
-                'Postal': '',
-                'State': 'My Alabama'
+                '0000': '1',
+                '0001': '',
+                '0002': 'My Alabama'
             }
         ]
     };
@@ -236,7 +252,8 @@ describe('Datagrid directive', function () {
         'preview' : true,
         'columns': [
             {
-                'id': 'id',
+                'id': '0000',
+                'name': 'id',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -245,7 +262,8 @@ describe('Datagrid directive', function () {
                 'type': 'number'
             },
             {
-                'id': 'Postal',
+                'id': '0001',
+                'name': 'Postal',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -255,7 +273,8 @@ describe('Datagrid directive', function () {
                 '__tdpColumnDiff': 'delete'
             },
             {
-                'id': 'State',
+                'id': '0002', 
+				'name': 'State',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -266,10 +285,10 @@ describe('Datagrid directive', function () {
         ],
         'records': [
             {
-                'id': '1',
-                'Postal': '',
-                'State': 'My Alabama',
-                '__tdpDiff': {'Postal': 'delete'}
+                '0000': '1',
+                '0001': '',
+                '0002': 'My Alabama',
+                '__tdpDiff': {'0001': 'delete'}
             }
         ]
     };
@@ -278,7 +297,8 @@ describe('Datagrid directive', function () {
         'preview' : true,
         'columns': [
             {
-                'id': 'id',
+                'id': '0000',
+                'name': 'id',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -287,7 +307,8 @@ describe('Datagrid directive', function () {
                 'type': 'number'
             },
             {
-                'id': 'Postal',
+                'id': '0001',
+                'name': 'Postal',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -297,7 +318,8 @@ describe('Datagrid directive', function () {
                 '__tdpColumnDiff': 'new'
             },
             {
-                'id': 'State',
+                'id': '0002', 
+				'name': 'State',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -308,10 +330,10 @@ describe('Datagrid directive', function () {
         ],
         'records': [
             {
-                'id': '1',
-                'Postal': '90210',
-                'State': 'My Alabama',
-                '__tdpDiff': {'Postal': 'new'}
+                '0000': '1',
+                '0001': '90210',
+                '0002': 'My Alabama',
+                '__tdpDiff': {'0001': 'new'}
             }
         ]
     };
@@ -319,7 +341,8 @@ describe('Datagrid directive', function () {
     var updateData = {
         'columns': [
             {
-                'id': 'id',
+                'id': '0000',
+                'name': 'id',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -328,7 +351,8 @@ describe('Datagrid directive', function () {
                 'type': 'number'
             },
             {
-                'id': 'Postal',
+                'id': '0001',
+                'name': 'Postal',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -337,7 +361,8 @@ describe('Datagrid directive', function () {
                 'type': 'string'
             },
             {
-                'id': 'State',
+                'id': '0002', 
+				'name': 'State',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -348,10 +373,10 @@ describe('Datagrid directive', function () {
         ],
         'records': [
             {
-                '__tdpDiff': {State: 'update'},
-                'id': '1',
-                'Postal': 'AL',
-                'State': 'My Alabama'
+                '__tdpDiff': {'0002': 'update'},
+                '0000': '1',
+                '0001': 'AL',
+                '0002': 'My Alabama'
             }
         ]
     };
@@ -554,7 +579,7 @@ describe('Datagrid directive', function () {
         $timeout.flush();
 
         //then
-        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('State');
+        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0002');
     }));
 
     it('should highlight empty cells only', inject(function (DatagridService) {
@@ -599,7 +624,7 @@ describe('Datagrid directive', function () {
         $timeout.flush();
 
         //then
-        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('Postal');
+        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0001');
     }));
 
     it('should do nothing on already selected column header click', inject(function ($timeout, DatagridService) {
@@ -646,7 +671,7 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(0).element().hasClass('selected')).toBe(true);
 
         //when
-        FilterService.addFilter('contains', 'State', {phrase: 'AL'});
+        FilterService.addFilter('contains', '0002', 'State', {phrase: 'AL'});
         scope.$digest();
 
         //then

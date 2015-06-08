@@ -23,9 +23,9 @@ describe('Filter search directive', function() {
 
     it('should render filter list badges', inject(function(FilterService) {
         //given
-        FilterService.addFilter('contains', 'col1', {phrase: 'toto'});
-        FilterService.addFilter('contains', 'col2', {phrase: 'tata'});
-        FilterService.addFilter('contains', 'col3', {phrase: 'titi'});
+        FilterService.addFilter('contains', '0001', 'col1', {phrase: 'toto'});
+        FilterService.addFilter('contains', '0002', 'col2', {phrase: 'tata'});
+        FilterService.addFilter('contains', '0003', 'col3', {phrase: 'titi'});
 
         //when
         createElement();
@@ -42,9 +42,9 @@ describe('Filter search directive', function() {
 
     it('should remove badge on close click', inject(function(FilterService) {
         //given
-        FilterService.addFilter('contains', 'col1', {phrase: 'toto'});
-        FilterService.addFilter('contains', 'col2', {phrase: 'tata'});
-        FilterService.addFilter('contains', 'col3', {phrase: 'titi'});
+        FilterService.addFilter('contains', '0001', 'col1', {phrase: 'toto'});
+        FilterService.addFilter('contains', '0002', 'col2', {phrase: 'tata'});
+        FilterService.addFilter('contains', '0003', 'col3', {phrase: 'titi'});
 
         createElement();
 

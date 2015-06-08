@@ -5,7 +5,7 @@
             <filter-search></filter-search>
         </li>
         <li ng-repeat="filter in filterCtrl.filters track by $index">
-            <talend-badge text="{{filter.colId}}"
+            <talend-badge text="{{filter.colName}}"
                           obj="filter"
                           on-change="filterCtrl.update(obj, newValue)"
                           on-close="filterCtrl.delete(obj)"></talend-badge>

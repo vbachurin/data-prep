@@ -14,15 +14,17 @@
      * Filter infos object
      * @param type - the filter type
      * @param colId - the column id
+     * @param colName - the column name
      * @param args - the filter arguments
      * @param filterFn - the filter function
      * @constructor
      */
-    function Filter(type, colId, args, filterFn) {
+    function Filter(type, colId, colName, args, filterFn) {
         var self = this;
 
         self.type = type;
         self.colId = colId;
+        self.colName = colName;
         self.args = args;
         self.filterFn = filterFn;
         self.__defineGetter__('value', function(){
@@ -56,7 +58,7 @@
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} phrase - to match. Wildcard (*) accepted
          * @description Return the column with a cell that can match the phrase. It take into account a possible wildcard (*)
-         * @returns {string[]} - the columns id that contains a matching value
+         * @returns {Object[]} - the columns id that contains a matching value (col.id & col.name)
          */
         self.getColumnsContaining = function(phrase) {
             if (!phrase) {
@@ -104,10 +106,11 @@
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} type - the filter type (ex : contains)
          * @param {string} colId - the column id
+         * @param {string} colName - the column name
          * @param {string} args - the filter arguments (ex for 'contains' type : {phrase: 'toto'})
          * @description Add a filter and update datagrid filters
          */
-        self.addFilter = function(type, colId, args) {
+        self.addFilter = function(type, colId, colName, args) {
             var filterFn;
             switch(type) {
                 case 'contains':
@@ -115,9 +118,9 @@
                     break;
             }
 
-            var filterInfos = new Filter(type, colId, args, filterFn);
+            var filterInfo = new Filter(type, colId, colName, args, filterFn);
             DatagridService.addFilter(filterFn);
-            self.filters.push(filterInfos);
+            self.filters.push(filterInfo);
         };
 
         /**
@@ -155,7 +158,7 @@
                     newFilterFn = createContainFilter(oldFilter.colId, newValue);
                     break;
             }
-            var newFilter = new Filter(oldFilter.type, oldFilter.colId, newArgs, newFilterFn);
+            var newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, newArgs, newFilterFn);
 
             DatagridService.updateFilter(oldFn, newFilter.filterFn);
             self.filters.splice(index, 1, newFilter);
