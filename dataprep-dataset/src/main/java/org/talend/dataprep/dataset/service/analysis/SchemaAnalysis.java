@@ -54,6 +54,11 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
         DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
         datasetLock.lock();
         try {
+            DataSetMetadata metadata = repository.get(dataSetId);
+            if (metadata == null) {
+                LOGGER.info("Unable to analyze schema of data set #{}: seems to be removed.", dataSetId);
+                return;
+            }
             // Schema analysis
             try (Stream<DataSetRow> stream = store.stream(metadata)) {
                 LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
@@ -93,35 +98,6 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                         LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
                     }
                 });
-            }
-            try {
-                // Schema analysis
-                final List<DataType> columnTypes;
-                try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                    LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
-                    // Determine schema for the content (on the 20 first rows).
-                    Analyzer<DataType> analyzer = new DataTypeAnalyzer();
-                    stream.limit(20).map(row -> {
-                        final Map<String, Object> rowValues = row.values();
-                        final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                .map(String::valueOf) //
-                                .collect(Collectors.<String> toList());
-                        return strings.toArray(new String[strings.size()]);
-                    }).forEach(analyzer::analyze);
-                    // Find the best suitable type
-                    columnTypes = analyzer.getResult();
-                    final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
-                    columnTypes.forEach(columnResult -> {
-                        final Type type = Type.get(columnResult.getSuggestedType().name());
-                        if (columns.hasNext()) {
-                            final ColumnMetadata nextColumn = columns.next();
-                            LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
-                            nextColumn.setType(type.getName());
-                        } else {
-                            LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
-                        }
-                    });
-                }
                 LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                 metadata.getLifecycle().schemaAnalyzed(true);
                 repository.add(metadata);

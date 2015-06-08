@@ -60,7 +60,7 @@ public class ColumnMetadata {
     private String statistics = "{}"; //$NON-NLS-1$
 
     @JsonProperty("domain")
-    private String domain;
+    private String domain = StringUtils.EMPTY;
 
     /**
      * Default empty constructor.
