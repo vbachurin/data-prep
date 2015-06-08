@@ -54,7 +54,7 @@ public class CopyColumn extends SingleColumnAction {
      */
     @Override
     public boolean accept(ColumnMetadata column) {
-        return Type.STRING.equals(Type.get(column.getType()));
+        return true;
     }
 
     /**
