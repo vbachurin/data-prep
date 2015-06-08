@@ -33,6 +33,10 @@ import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import com.jayway.restassured.RestAssured;
 
+/**
+ * This test ensures the data set service behaves as stated in <a
+ * href="https://jira.talendforge.org/browse/TDP-157">https://jira.talendforge.org/browse/TDP-157</a>.
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
@@ -50,13 +54,13 @@ public class DataSetImportTest {
     @BeforeClass
     public static void enter() {
         // Set pause in analysis
-        System.setProperty("DataSetImportTest.PausedAnalyzer", "1");
+        System.setProperty("DataSetImportTest.PausedAnalyzer", "1"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @AfterClass
     public static void leave() {
-        // Overrides connection information with random port value
-        System.setProperty("DataSetImportTest.PausedAnalyzer", "0");
+        // Set pause in analysis
+        System.setProperty("DataSetImportTest.PausedAnalyzer", "0"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Before
@@ -78,6 +82,10 @@ public class DataSetImportTest {
         }
     }
 
+    /**
+     * Test 'importing' status: the data set should remain in 'importing' state as long as create operation isn't
+     * completed.
+     */
     @Test
     public void testImportStatus() throws Exception {
         // Create a data set (asynchronously)
@@ -110,6 +118,10 @@ public class DataSetImportTest {
         assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
     }
 
+    /**
+     * Test 'importing' status with list operation: data set in 'importing' mode should not appear in results of the
+     * list operation.
+     */
     @Test
     public void testListImported() throws Exception {
         assertThat(dataSetMetadataRepository.size(), is(0));
@@ -147,6 +159,11 @@ public class DataSetImportTest {
                 .body(sameJSONAs(expected).allowingAnyArrayOrdering().allowingExtraUnexpectedFields());
     }
 
+    /**
+     * Test 'importing' status with get: user is not allowed to get data set content when it's still being imported. In
+     * real life situation, this kind of event is rather unlikely since the UUID of the data set is only returned once
+     * the creation completes (no access before this).
+     */
     @Test
     public void testCannotOpenDataSetBeingImported() throws Exception {
         // Create a data set (asynchronously)
@@ -182,6 +199,10 @@ public class DataSetImportTest {
         assertThat(statusCode, is(200));
     }
 
+    /**
+     * A special (for tests) implementation of {@link SynchronousDataSetAnalyzer} that allows test code to intentionally
+     * slow down import process for test purposes.
+     */
     @Component
     public static class PausedAnalyzer implements SynchronousDataSetAnalyzer {
 
