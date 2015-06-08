@@ -9,8 +9,17 @@
         vm.playgroundService = PlaygroundService;
         vm.exportService = ExportService;
         vm.csvSeparator = ';';
+        vm.exportTypes = [];
 
-        vm.exportTypes = vm.exportService.exportTypes();
+
+        ExportService.exportTypes()
+            .then(function(response){
+                console.log("vm.exportTypes:"+vm.exportTypes.length);
+                vm.exportTypes = response.data;
+                console.log("vm.exportTypes:"+vm.exportTypes.length);
+        });
+
+
     }
 
     /**

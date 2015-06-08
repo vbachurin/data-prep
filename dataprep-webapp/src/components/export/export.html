@@ -27,10 +27,7 @@
     <p class="dropdown-description">{{ ::'EXPORT' | translate }}</p>
     <p class="dropdown-button"></p>
     <ul class="dropdown-menu dropdown-select">
-      <li>Dropdown Menu Item</li>
-      <li>Another Item</li>
-      <li>Item Three</li>
-      <li>The Last One</li>
+      <li ng-repeat="exportType in exportCtrl.exportTypes">{{exportType.id}}</li>
     </ul>
   </div>
 </talend-button-dropdown>
