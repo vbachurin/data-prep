@@ -1,25 +1,37 @@
 .dataset-sheet-preview {
-  padding-right: 20px;
-  padding-left: 20px;
+  $medium-screen: em(640) !default;
+  $large-screen: em(860) !default;
 
-  margin-bottom: 10px;
+  padding: 10px 20px;
 
-  table {
-    margin: 20px;
-    width: 80%;
+  @include display(flex);
+  @include flex-direction(column);
+  @include justify-content(flex-start);
+  @include flex-wrap(wrap);
+  @include align-items(stretch);
 
-    td {
-      padding: 0.25em 0;
+  .form-row {
+    @include display(flex);
+    @include flex-direction(row);
+    @include flex-wrap(wrap);
+  }
+
+  .form-title {
+    @include flex-grow(1);
+    @include flex-basis(150px);
+    padding-right: 5px;
+
+    @include media($medium-screen) {
+      text-align: right;
     }
+  }
+
+  .form-value {
+    @include flex-grow(2);
+    @include flex-basis(300px);
 
     input, select {
       margin: 0;
-    }
-
-    .form-title {
-      text-align: right;
-      width: 30%;
-      padding-right: 10px;
     }
   }
 
