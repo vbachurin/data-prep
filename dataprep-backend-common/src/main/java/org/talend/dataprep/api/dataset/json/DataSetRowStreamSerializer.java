@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -18,7 +20,7 @@ public class DataSetRowStreamSerializer extends JsonSerializer<Stream<DataSetRow
             try {
                 generator.writeObject(row.values());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
             }
         });
         generator.writeEndArray();

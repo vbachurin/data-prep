@@ -7,6 +7,7 @@ import java.util.List;
 public enum CommonErrorCodes implements ErrorCode {
     UNEXPECTED_EXCEPTION(500),
     UNABLE_TO_PARSE_JSON(500),
+    UNABLE_TO_WRITE_JSON(500),
     UNABLE_TO_SERIALIZE_TO_JSON(500),
     UNABLE_TO_COMPUTE_ID(500),
     UNABLE_TO_PRINT_PREPARATION(500),
