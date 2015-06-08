@@ -3,6 +3,7 @@
         <div class="dropdown-action">
             <div class="grid-header-title dropdown-button">{{ datagridHeaderCtrl.column.name }}</div>
             <div class="grid-header-type">{{ datagridHeaderCtrl.column.type }}</div>
+            <div class="grid-header-domain">{{ datagridHeaderCtrl.column.domain }}</div>
         </div>
         <ul class="dropdown-menu grid-header-menu">
             <li ng-if="datagridHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
