@@ -10,11 +10,9 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function RecipeCtrl($rootScope, $timeout, RecipeService, PlaygroundService, PreparationService, PreviewService) {
+    function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;
         vm.recipeService = RecipeService;
-
-        var previewTimeout;
 
         /**
          * @ngdoc method

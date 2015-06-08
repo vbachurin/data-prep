@@ -5,7 +5,7 @@ describe('Recipe Bullet controller', function () {
 
     beforeEach(module('data-prep.recipe-bullet'));
 
-    beforeEach(inject(function ($rootScope, $controller, RecipeService) {
+    beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
         step = {
             transformation: {stepId: '138ea798bc56'}
