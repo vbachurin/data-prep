@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,28 +26,17 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
+ * 
+ * @see Split
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
 public class SplitTest {
 
     /** The row consumer to test. */
@@ -56,15 +46,15 @@ public class SplitTest {
     private Consumer<RowMetadata> metadataClosure;
 
     /** The action to test. */
-    @Autowired
     private Split action;
 
     /**
-     * Initialization before each test.
+     * Constructor.
      */
-    @Before
-    public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("splitAction.json"));
+    public SplitTest() throws IOException {
+        action = new Split();
+
+        String actions = IOUtils.toString(SplitTest.class.getResourceAsStream("splitAction.json"));
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
@@ -86,8 +76,9 @@ public class SplitTest {
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon");
-        expectedValues.put("steps_split", "ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_split_1", "Bacon");
+        expectedValues.put("steps_split_2", "ipsum dolor amet swine leberkas pork belly");
         expectedValues.put("last update", "01/01/2015");
 
         rowClosure.accept(row);
@@ -107,8 +98,31 @@ public class SplitTest {
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ");
+        expectedValues.put("steps_split_1", "Bacon");
+        expectedValues.put("steps_split_2", "");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row);
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @see Split#createMetadataClosure(Map)
+     */
+    @Test
+    public void should_split_row_no_separator() {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
         expectedValues.put("steps", "Bacon");
-        expectedValues.put("steps_split", "");
+        expectedValues.put("steps_split_1", "Bacon");
+        expectedValues.put("steps_split_2", "");
         expectedValues.put("last update", "01/01/2015");
 
         rowClosure.accept(row);
@@ -133,10 +147,24 @@ public class SplitTest {
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
         expected.add(createMetadata("steps", "steps"));
-        expected.add(createMetadata("steps_split", "steps_split"));
+        expected.add(createMetadata("steps_split_1", "steps_split_1"));
+        expected.add(createMetadata("steps_split_2", "steps_split_2"));
         expected.add(createMetadata("last update", "last update"));
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void should_accept_column() {
+        assertTrue(action.accept(getColumn(Type.STRING)));
+    }
+
+    @Test
+    public void should_not_accept_column() {
+        assertFalse(action.accept(getColumn(Type.NUMERIC)));
+        assertFalse(action.accept(getColumn(Type.FLOAT)));
+        assertFalse(action.accept(getColumn(Type.DATE)));
+        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
     }
 
     /**
@@ -147,4 +175,5 @@ public class SplitTest {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
     }
+
 }

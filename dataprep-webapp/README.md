@@ -118,6 +118,14 @@ when in folder _checkouts/data-prep/dataprep-webapp_ type the command
 This will precompile jade and scss templates, update the index.html with all the css, and javascript available. 
 Then it will start a web server usually on port 3000 and watch any code change to refresh the browser. 
 
+### Alternative way to launch, this does't require the prerequisites.
+
+`docker run -v /home/stef/talend/checkouts/data-prep/dataprep-webapp:/dataprep-webapp -p 3000:3000 talend-registry:5000/talend/data-prep-webapp-tools:1.0 /bin/sh -c "gulp serve"`
+
+Of course change */home/stef/talend/checkouts/data-prep/dataprep-webapp* regarding the path of your git clone.
+
+Then application is available at http://localhost:3000
+
 ### Run on your local machine
 By default, the webapp is setup to access the api hosted on `10.42.10.99`. This setting can be changed in the following file :
 

@@ -9,7 +9,7 @@
   "ALL_PREPARATIONS": "All Preparations",
   "ALL_SHAKED_FILES": "All shaked files",
   "FAVORITE_FILES": "Favorites",
-  "MOST_RECENT_FILES": "Most revent files",
+  "MOST_RECENT_FILES": "Most recent files",
 
   "_comment": "Right side menu",
   "INVENTORY_DATA": "Data Inventory",
@@ -65,6 +65,9 @@
   "SEPARATOR_SPACE": "Space",
   "SEPARATOR_COMMA": "Comma",
   "CONTENT_100_FIRST_ROWS": "Content (100 first rows)",
+  "DATASET_NAME": "Dataset Name",
+  "IMPORT_EXCEL_FILE": "Import Excel File",
+  "STYLESHEET": "Style sheet",
 
   "_comment": "Success",
   "DATASET_CREATE_SUCCESS_TITLE": "New dataset",

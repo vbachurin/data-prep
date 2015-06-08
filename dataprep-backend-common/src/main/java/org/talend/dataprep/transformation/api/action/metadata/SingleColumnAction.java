@@ -12,8 +12,11 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -45,4 +48,14 @@ public abstract class SingleColumnAction implements ActionMetadata {
         return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER };
     }
 
+    /**
+     * By default, no Item.
+     * 
+     * @see ActionMetadata#getItems()
+     */
+    @Override
+    @Nonnull
+    public Item[] getItems() {
+        return new Item[0];
+    }
 }

@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "action": "negate",
+      "parameters": {
+        "column_id": "active"
+      }
+    }
+  ]
+}

@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,35 +24,30 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
+import org.talend.dataprep.api.type.Type;
 
 /**
- * Test class for DeleteEmpty action. Creates one consumer, and test it.
+ * Test class for ProperCase action. Creates one consumer, and test it.
+ * 
+ * @see ProperCase
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
-public class TrimTest {
+public class ProperCaseTest {
 
+    /** The action to test. */
+    private ProperCase action;
+
+    /** The consumer out of the action. */
     private Consumer<DataSetRow> consumer;
 
-    @Autowired
-    private Trim action;
+    /**
+     * Constructor.
+     */
+    public ProperCaseTest() throws IOException {
+        action = new ProperCase();
 
-    @Before
-    public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("trimAction.json"));
+        String actions = IOUtils.toString(ProperCaseTest.class.getResourceAsStream("properCaseAction.json"));
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
@@ -62,23 +58,23 @@ public class TrimTest {
     @Test
     public void test1() {
         Map<String, String> values = new HashMap<>();
-        values.put("band", " the beatles ");
+        values.put("band", "the beatles");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
 
-        assertEquals("the beatles", dsr.get("band"));
+        assertEquals("The Beatles", dsr.get("band"));
     }
 
     @Test
     public void test2() {
         Map<String, String> values = new HashMap<>();
-        values.put("band", "The  Beatles");
+        values.put("band", "THE BEATLES");
         DataSetRow dsr = new DataSetRow(values);
 
         consumer.accept(dsr);
 
-        assertEquals("The  Beatles", dsr.get("band"));
+        assertEquals("The Beatles", dsr.get("band"));
     }
 
     @Test
@@ -90,5 +86,18 @@ public class TrimTest {
         consumer.accept(dsr);
 
         assertEquals("the beatles", dsr.get("bando"));
+    }
+
+    @Test
+    public void should_accept_column() {
+        assertTrue(action.accept(getColumn(Type.STRING)));
+    }
+
+    @Test
+    public void should_not_accept_column() {
+        assertFalse(action.accept(getColumn(Type.NUMERIC)));
+        assertFalse(action.accept(getColumn(Type.FLOAT)));
+        assertFalse(action.accept(getColumn(Type.DATE)));
+        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
     }
 }

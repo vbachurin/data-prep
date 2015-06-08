@@ -48,7 +48,7 @@
          * @name getRecipe
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @description Return recipe step list
-         * @returns {object[]} - The recipe step list
+         * @returns {object[]} The recipe step list
          */
         this.getRecipe = function() {
             return recipe;
@@ -93,7 +93,7 @@
          * @ngdoc method
          * @name getPreviousStep
          * @methodOf data-prep.services.recipe.service:RecipeService
-         * @param {object} step - the given step
+         * @param {object} step The given step
          * @description Get the step before the given one
          */
         this.getPreviousStep = function(step) {
@@ -140,29 +140,19 @@
          * @returns {number} The last active step index
          */
         this.getActiveThresholdStepIndex = function() {
-            return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : -1;
+            return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : recipe.length -1;
         };
 
         /**
          * @ngdoc method
-         * @name getActiveThresholdStepIndexOnLaunch
+         * @name getStepIndex
          * @methodOf data-prep.services.recipe.service:RecipeService
-         * @description Get the last active step index, at launch it gets all the recipe Length
-         * @returns {number} The last active step index, at launch it gets all the recipe Length
-         */
-        this.getActiveThresholdStepIndexOnLaunch = function() {
-            return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : recipe.length - 1;
-        };
-
-        /**
-         * @ngdoc method
-         * @name getCurrentStepIndex
-         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} step The step
          * @description Get the current clicked step index
          * @returns {number} The current step index
          */
-        this.getCurrentStepIndex = function(step) {
-            return step?recipe.indexOf(step):-1;
+        this.getStepIndex = function(step) {
+            return recipe.indexOf(step);
         };
 
         /**
@@ -174,6 +164,30 @@
          */
         this.getLastActiveStep = function() {
             return activeThresholdStep ? activeThresholdStep : recipe[recipe.length - 1];
+        };
+
+        /**
+         * @ngdoc method
+         * @name isFirstStep
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} step The step to test
+         * @description Test if the provided step is the first step of the recipe
+         * @returns {object} The step to test
+         */
+        this.isFirstStep = function(step) {
+            return  self.getStepIndex(step) === 0;
+        };
+
+        /**
+         * @ngdoc method
+         * @name isLastStep
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} step The step to test
+         * @description Test if the provided step is the last step of the recipe
+         * @returns {object} The step to test
+         */
+        this.isLastStep = function(step) {
+            return  self.getStepIndex(step) === recipe.length - 1;
         };
 
         //--------------------------------------------------------------------------------------------------------------

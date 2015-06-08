@@ -6,6 +6,7 @@
      * @name data-prep.dataset-xls-preview.controller:DatasetPreviewXlsCtrl
      * @description Dataset preview grid controller.
      * @requires data-prep.services.dataset.service:DatasetSheetPreviewService
+     * @requires data-prep.services.dataset.service:DatasetService
      */
     function DatasetXlsPreviewCtrl($timeout, DatasetSheetPreviewService, DatasetService) {
         var vm = this;
