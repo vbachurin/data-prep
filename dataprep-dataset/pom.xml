@@ -20,9 +20,8 @@
     <dependencies>
         <!-- Data Quality - Content analysis -->
         <dependency>
-            <groupId>org.talend.elasticsearch</groupId>
-            <artifactId>tdq-semantic-index-local</artifactId>
-            <type>zip</type>
+            <groupId>org.talend.studio</groupId>
+            <artifactId>org.talend.dataquality.semantic</artifactId>
         </dependency>
         <dependency>
             <groupId>org.talend</groupId>
