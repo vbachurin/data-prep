@@ -108,6 +108,14 @@
                 updatePreview(step, params);
             };
         };
+
+        /**
+         * @ngdoc method
+         * @name cancelPreview
+         * @methodOf data-prep.recipe.controller:RecipeCtrl
+         * @description Cancel current preview and restore original data
+         */
+        vm.cancelPreview = PreviewService.cancelPreview;
     }
 
     /**
