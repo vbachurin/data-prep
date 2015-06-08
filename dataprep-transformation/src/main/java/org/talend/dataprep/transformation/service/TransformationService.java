@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.ExportType;
-import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
@@ -146,8 +145,6 @@ public class TransformationService {
         if (column == null) {
             return Collections.emptyList();
         }
-        String typeName = column.getType();
-        Type type = Type.get(typeName);
         List<ActionMetadata> suggestedActions = new ArrayList<>();
         // look for all actions applicable to the column type
         for (ActionMetadata am : allActions) {
