@@ -36,6 +36,7 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -177,6 +178,12 @@ public class DataSetService {
             if (dataSetMetadata == null) {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return DataSet.empty(); // No data set, returns empty content.
+            }
+            if (dataSetMetadata.getLifecycle().importing()) {
+                // Data set is being imported, this is an error since user should not have an id to a being-created
+                // data set (create() operation is a blocking operation).
+                final TDPExceptionContext context = TDPExceptionContext.build().put("id", dataSetId); //$NON-NLS-1$
+                throw new TDPException(DataSetErrorCodes.UNABLE_TO_SERVE_DATASET_CONTENT, context);
             }
             // Build the result
             DataSet dataSet = new DataSet();

@@ -133,13 +133,50 @@ public class DataSetImportTest {
         assertThat(next.getLifecycle().importing(), is(true));
         // ... list operation should *not* return data set being imported...
         when().get("/datasets").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
-        // Asserts when import is done
+        // Assert the new data set is returned when creation completes.
         creationThread.join(); // Wait until creation is done (i.e. end of thread since creation is a blocking
                                // operation).
         String expected = "[{\"id\":\"" + next.getId() + "\"}]";
         when().get("/datasets").then().statusCode(HttpStatus.OK.value())
                 .body(sameJSONAs(expected).allowingExtraUnexpectedFields());
     }
+
+    @Test
+    public void testCannotOpenDataSetBeingImported() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        // Create a data set (asynchronously)
+        Runnable creation = () -> {
+            try {
+                given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                        .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+                int after = dataSetMetadataRepository.size();
+                assertThat(after - before, is(1));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        Thread creationThread = new Thread(creation);
+        creationThread.start();
+        // Wait for creation of data set object
+        while (!dataSetMetadataRepository.list().iterator().hasNext()) {
+            TimeUnit.MILLISECONDS.sleep(20);
+        }
+        // Find data set being imported...
+        final Iterable<DataSetMetadata> list = dataSetMetadataRepository.list();
+        final Iterator<DataSetMetadata> iterator = list.iterator();
+        assertThat(iterator.hasNext(), is(true));
+        final DataSetMetadata next = iterator.next();
+        assertThat(next.getLifecycle().importing(), is(true));
+        // ... get operation should *not* return data set being imported but report an error ...
+        int statusCode = when().get("/datasets/{id}/content", next.getId()).getStatusCode();
+        assertThat(statusCode, is(400));
+        // Assert the new data set is returned when creation completes.
+        // Wait until creation is done (i.e. end of thread since creation is a blocking operation).
+        creationThread.join();
+        statusCode = when().get("/datasets/{id}/content", next.getId()).getStatusCode();
+        assertThat(statusCode, is(200));
+    }
+
 
     @Component
     public static class PausedAnalyzer implements SynchronousDataSetAnalyzer {
