@@ -1,11 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.Collections;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
@@ -37,9 +35,12 @@ public class FillWithDefaultIfEmptyBoolean extends AbstractDefaultIfEmpty {
         return new Item[] { new Item(DEFAULT_VALUE_PARAMETER, "categ", values) }; //$NON-NLS-1$
     }
 
+    /**
+     * @see ActionMetadata#accept(ColumnMetadata)
+     */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.BOOLEAN);
+    public boolean accept(ColumnMetadata column) {
+        return Type.BOOLEAN.equals(Type.get(column.getType()));
     }
 
 }

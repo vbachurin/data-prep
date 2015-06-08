@@ -85,10 +85,7 @@ public class DataSetServiceTests {
             }
         }
         // Wait for queue messages
-        waitForQueue(Destinations.CONTENT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
-        waitForQueue(Destinations.SCHEMA_ANALYSIS, dataSetId);
-        waitForQueue(Destinations.FORMAT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.STATISTICS_ANALYSIS, dataSetId);
         // Asserts on metadata status
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);

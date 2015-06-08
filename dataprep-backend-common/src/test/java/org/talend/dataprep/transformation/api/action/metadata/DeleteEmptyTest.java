@@ -1,6 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,38 +12,30 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
+import org.talend.dataprep.api.type.Type;
 
 /**
  * Test class for DeleteEmpty action. Creates one consumer, and test it.
  *
  * @see DeleteEmpty
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
 public class DeleteEmptyTest {
 
-    private Consumer<DataSetRow> consumer;
-
     /** The action to test. */
-    @Autowired
     private DeleteEmpty deleteEmpty;
 
-    @Before
-    public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("deleteEmptyAction.json"));
+    /** The consumer out of the action. */
+    private Consumer<DataSetRow> consumer;
+
+    /**
+     * Default constructor.
+     */
+    public DeleteEmptyTest() throws IOException {
+        deleteEmpty = new DeleteEmpty();
+
+        String actions = IOUtils.toString(DeleteEmptyTest.class.getResourceAsStream("deleteEmptyAction.json"));
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
@@ -164,6 +157,16 @@ public class DeleteEmptyTest {
 
         consumer.accept(dsr);
         assertFalse(dsr.isDeleted());
+    }
+
+    @Test
+    public void should_accept_column() {
+        assertTrue(deleteEmpty.accept(getColumn(Type.STRING)));
+        assertTrue(deleteEmpty.accept(getColumn(Type.NUMERIC)));
+        assertTrue(deleteEmpty.accept(getColumn(Type.FLOAT)));
+        assertTrue(deleteEmpty.accept(getColumn(Type.DATE)));
+        assertTrue(deleteEmpty.accept(getColumn(Type.BOOLEAN)));
+        assertTrue(deleteEmpty.accept(getColumn(Type.ANY)));
     }
 
 }

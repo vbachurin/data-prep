@@ -1,6 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -26,12 +27,6 @@ public class Rename extends SingleColumnAction {
 
     /** Name of the new column parameter. */
     public static final String NEW_COLUMN_NAME_PARAMETER_NAME = "new_column_name"; //$NON-NLS-1$
-
-    /**
-     * Private constructor to ensure IoC use.
-     */
-    private Rename() {
-    }
 
     /**
      * @see ActionMetadata#getName()
@@ -51,15 +46,6 @@ public class Rename extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getItems()
-     */
-    @Override
-    @Nonnull
-    public Item[] getItems() {
-        return new Item[0];
-    }
-
-    /**
      * @see ActionMetadata#getParameters()
      */
     @Override
@@ -70,11 +56,12 @@ public class Rename extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCompatibleColumnTypes()
+     * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.ANY);
+    public boolean accept(ColumnMetadata column) {
+        // allow on all columns
+        return true;
     }
 
     /**

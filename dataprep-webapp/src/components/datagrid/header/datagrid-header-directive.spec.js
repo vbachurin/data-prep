@@ -39,7 +39,7 @@ describe('Dataset column header directive', function() {
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
-        expect(element.find('.grid-header-type').text()).toBe('string');
+        expect(element.find('.grid-header-type').text()).toBe('text');
         expect(element.find('.grid-header-domain').text()).toBe('city');
         expect(element.find('.record-ok').css('width')).toBe('78%');
         expect(element.find('.record-empty').css('width')).toBe('10%');
@@ -64,7 +64,7 @@ describe('Dataset column header directive', function() {
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
-        expect(element.find('.grid-header-type').text()).toBe('string');
+        expect(element.find('.grid-header-type').text()).toBe('text');
         expect(element.find('.record-ok').css('width')).toBe('78%');
         expect(element.find('.record-empty').css('width')).toBe('10%');
         expect(element.find('.record-nok').css('width')).toBe('12%');

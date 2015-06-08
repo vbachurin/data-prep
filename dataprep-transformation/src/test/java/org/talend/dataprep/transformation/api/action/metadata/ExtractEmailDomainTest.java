@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -40,13 +41,13 @@ import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
 
 /**
- * Test class for Rename action. Creates one consumer, and test it.
+ * Test class for Split action. Creates one consumer, and test it.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @IntegrationTest
 @WebAppConfiguration
-public class RenameTest {
+public class ExtractEmailDomainTest {
 
     /** The row consumer to test. */
     private Consumer<DataSetRow> rowClosure;
@@ -56,14 +57,14 @@ public class RenameTest {
 
     /** The action to test. */
     @Autowired
-    private Rename action;
+    private ExtractEmailDomain action;
 
     /**
      * Initialization before each test.
      */
     @Before
     public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("renameAction.json"));
+        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("extractDomainAction.json"));
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
@@ -73,42 +74,76 @@ public class RenameTest {
     }
 
     /**
-     * @see Rename#createMetadataClosure(Map)
+     * @see Split#create(Map)
      */
     @Test
-    public void should_update_metadata() {
+    public void test_values() {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("email", "david.bowie@yopmail.com");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
 
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("email", "david.bowie@yopmail.com");
+        expectedValues.put("email_local", "david.bowie");
+        expectedValues.put("email_domain", "yopmail.com");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row);
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void test_values_invalid() {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("email", "david.bowie");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("email", "david.bowie");
+        expectedValues.put("email_local", "");
+        expectedValues.put("email_domain", "");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row);
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @see Split#createMetadataClosure(Map)
+     */
+    @Test
+    public void test_metadata() {
         List<ColumnMetadata> input = new ArrayList<>();
-        ColumnMetadata metadata = ColumnMetadata.Builder //
-                .column() //
-                .id(1) //
-                .name("first name") //
-                .type(Type.STRING) //
-                .headerSize(102) //
-                .empty(0) //
-                .invalid(2) //
-                .valid(5) //
-                .build();
-        input.add(metadata);
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("email", "email"));
+        input.add(createMetadata("last update", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
         metadataClosure.accept(rowMetadata);
-
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
-        ColumnMetadata renamedMetadata = ColumnMetadata.Builder.column() //
-                .id(1) //
-                .name("NAME_FIRST") //
-                .type(Type.STRING) //
-                .headerSize(102) //
-                .empty(0) //
-                .invalid(2) //
-                .valid(5) //
-                .build();
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(renamedMetadata);
+        expected.add(createMetadata("recipe", "recipe"));
+        expected.add(createMetadata("email", "email"));
+        expected.add(createMetadata("email_local", "email_local"));
+        expected.add(createMetadata("email_domain", "email_domain"));
+        expected.add(createMetadata("last update", "last update"));
 
         assertEquals(expected, actual);
     }
 
+    /**
+     * @param name name of the column metadata to create.
+     * @return a new column metadata
+     */
+    private ColumnMetadata createMetadata(String id, String name) {
+        return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
+                .valid(5).build();
+    }
 }

@@ -1,15 +1,3 @@
-// ============================================================================
-//
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
-//
-// This source code is available under agreement available at
-// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
-//
-// You should have received a copy of the agreement
-// along with this program; if not, write to Talend SA
-// 9 rue Pages 92150 Suresnes, France
-//
-// ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.assertNotEquals;
@@ -66,9 +54,8 @@ public class TestI18nKeysForActionsTest {
             assertNotEquals("", desc);
             assertI18nKeyExists("action." + name + ".desc");
 
-            String toString = actionMetadata.getName() + "," + actionMetadata.getCategory() + ","
-                    + actionMetadata.getCompatibleColumnTypes() + "," + actionMetadata.getLabel() + ","
-                    + actionMetadata.getDescription();
+            String toString = actionMetadata.getName() + "," + actionMetadata.getCategory() + "," + actionMetadata.getLabel()
+                    + "," + actionMetadata.getDescription();
             LOGGER.info(toString);
 
             for (Parameter param : actionMetadata.getParameters()) {

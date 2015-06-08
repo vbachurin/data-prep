@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.transformer.exporter.tableau;
 
+
 import java.io.*;
 import java.security.SecureRandom;
 
@@ -103,9 +104,9 @@ public class TableauWriter implements TransformerWriter {
 
             for (ColumnMetadata col : columnMetadatas) {
                 if (col.getQuality().getInvalid() == 0) {
-                    tableDef.addColumn(col.getId(), getTableauType(org.talend.dataprep.api.type.Type.get(col.getType())));
+                    tableDef.addColumn(col.getName(), getTableauType(org.talend.dataprep.api.type.Type.get(col.getType())));
                 } else {
-                    tableDef.addColumn(col.getId(), getTableauType(DEFAULT_TYPE));
+                    tableDef.addColumn(col.getName(), getTableauType(DEFAULT_TYPE));
                 }
             }
 

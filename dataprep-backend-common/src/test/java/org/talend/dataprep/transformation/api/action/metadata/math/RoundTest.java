@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,35 +24,31 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
+import org.talend.dataprep.api.type.Type;
 
 /**
- * Test class for DeleteEmpty action. Creates one consumer, and test it.
+ * Test class for Round action. Creates one consumer, and test it.
+ * 
+ * @see Round
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
 public class RoundTest {
 
-    private Consumer<DataSetRow> consumer;
-
-    @Autowired
+    /** The action ton test. */
     private Round roundAction;
 
-    @Before
-    public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("roundAction.json"));
+    /** The consumer out of the consumer. */
+    private Consumer<DataSetRow> consumer;
+
+    /**
+     * Constructor.
+     */
+    public RoundTest() throws IOException {
+
+        roundAction = new Round();
+
+        String actions = IOUtils.toString(RoundTest.class.getResourceAsStream("roundAction.json"));
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
@@ -94,5 +91,20 @@ public class RoundTest {
         testCommon("tagada", "tagada");
         testCommon("", "");
         testCommon("null", "null");
+    }
+
+    @Test
+    public void should_accept_column() {
+        assertTrue(roundAction.accept(getColumn(Type.NUMERIC)));
+        assertTrue(roundAction.accept(getColumn(Type.DOUBLE)));
+        assertTrue(roundAction.accept(getColumn(Type.FLOAT)));
+        assertTrue(roundAction.accept(getColumn(Type.INTEGER)));
+    }
+
+    @Test
+    public void should_not_accept_column() {
+        assertFalse(roundAction.accept(getColumn(Type.STRING)));
+        assertFalse(roundAction.accept(getColumn(Type.DATE)));
+        assertFalse(roundAction.accept(getColumn(Type.BOOLEAN)));
     }
 }

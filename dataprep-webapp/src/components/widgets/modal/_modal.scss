@@ -28,7 +28,7 @@
   //////////////////////////////////////////////////////////////////////////////////
 
   $modal-padding: 4em;
-  $modal-padding-top: 1em;
+  $modal-padding-top: 3em;
   $modal-background: $base-background-color;
   $modal-close-color: $light-gray;
   $modal-image-height: 135px;
@@ -71,7 +71,7 @@
   }
 
   .modal-close {
-    @include position(absolute, ($modal-padding /2) ($modal-padding /2) null null);
+    @include position(absolute, ($modal-padding-top /2) ($modal-padding /2) null null);
     @include size(2em);
     background: $modal-background;
     cursor: pointer;
@@ -105,7 +105,7 @@
     max-height: 95%;
     overflow: auto;
     padding: $modal-padding / 2;
-    //padding-top: $modal-padding-top;
+    padding-top: $modal-padding-top;
     position: relative;
     width: 95%;
 
@@ -127,6 +127,7 @@
 
     .modal-title {
       padding: 5px 5px 0;
+      margin-top: $modal-padding / 2 - $modal-padding-top;
       border-bottom: 1px solid $medium-gray;
       font-weight: 300;
       font-size: 1.7em;
