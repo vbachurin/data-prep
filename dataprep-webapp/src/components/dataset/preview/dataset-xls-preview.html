@@ -1,16 +1,16 @@
 <talend-modal fullscreen="false"
               close-button="true"
               state="previewCtrl.state">
-    <div class="modal-title">Import Excel File</div>
+    <div class="modal-title">{{::'IMPORT_EXCEL_FILE' | translate}}</div>
 
     <div class="dataset-sheet-preview">
         <div class="form-row">
-            <div class="form-title">Dataset Name :</div>
+            <div class="form-title">{{::'DATASET_NAME' | translate}} :</div>
             <div class="form-value"><input type="text" ng-model="previewCtrl.metadata.name"/></div>
         </div>
 
         <div class="form-row">
-            <div class="form-title">StyleSheet :</div>
+            <div class="form-title">{{::'STYLESHEET' | translate}} :</div>
             <div class="form-value">
                 <select
                     ng-options="sheetContent.name as sheetContent.name for sheetContent in previewCtrl.metadata.schemaParserResult.sheetContents"
