@@ -17,7 +17,7 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 public class XlsWriter implements TransformerWriter {
 
-    private static final Logger logger = LoggerFactory.getLogger(TransformerWriter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XlsWriter.class);
 
     private final OutputStream outputStream;
 
@@ -27,7 +27,7 @@ public class XlsWriter implements TransformerWriter {
 
     private int rowIdx = 0;
 
-    private List<ColumnMetadata> columnMetadatas;
+    private List<ColumnMetadata> columnsMetadata;
 
     public XlsWriter(final OutputStream output) {
         this.outputStream = output;
@@ -39,12 +39,12 @@ public class XlsWriter implements TransformerWriter {
 
     @Override
     public void write(RowMetadata columns) throws IOException {
-        logger.debug("write RowMetadata: {}", columns);
+        LOGGER.debug("write RowMetadata: {}", columns);
         if (columns.getColumns().isEmpty()) {
             return;
         }
 
-        this.columnMetadatas = columns.getColumns();
+        this.columnsMetadata = columns.getColumns();
 
         CreationHelper createHelper = this.workbook.getCreationHelper();
 
@@ -64,14 +64,14 @@ public class XlsWriter implements TransformerWriter {
 
     @Override
     public void write(DataSetRow dataSetRow) throws IOException {
-        logger.debug("write DataSetRow: {}", dataSetRow);
+        LOGGER.debug("write DataSetRow: {}", dataSetRow);
         // writing datas
 
         Row row = this.sheet.createRow(rowIdx++);
 
         int cellIdx = 0;
 
-        for (ColumnMetadata columnMetadata : this.columnMetadatas) {
+        for (ColumnMetadata columnMetadata : this.columnsMetadata) {
 
             Cell cell = row.createCell(cellIdx++);
             switch (Type.get(columnMetadata.getType())) {
@@ -85,7 +85,7 @@ public class XlsWriter implements TransformerWriter {
                         cell.setCellValue(Double.valueOf(val));
                     }
                 } catch (NumberFormatException e) {
-                    logger.warn("skip NumberFormatException and use string for value {} row {} cell {}", //
+                    LOGGER.warn("skip NumberFormatException and use string for value {} row {} cell {}", //
                             dataSetRow.get(columnMetadata.getId()), rowIdx - 1, cellIdx - 1);
                     cell.setCellValue(val);
                 }

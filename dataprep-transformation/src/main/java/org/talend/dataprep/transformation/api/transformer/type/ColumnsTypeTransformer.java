@@ -10,6 +10,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -112,7 +113,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
         } catch (JsonParseException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_WRITE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
         }
     }
 

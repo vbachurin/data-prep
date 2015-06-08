@@ -1,6 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,7 +11,6 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * Split a cell value on a separator.
@@ -19,6 +20,12 @@ public class ExtractEmailDomain extends SingleColumnAction {
 
     /** The action name. */
     public static final String EXTRACT_DOMAIN_ACTION_NAME = "extractemaildomain"; //$NON-NLS-1$
+
+    /** The local suffix. */
+    private static final String _LOCAL = "_local"; //$NON-NLS-1$
+
+    /** The domain suffix. */
+    private static final String _DOMAIN = "_domain"; //$NON-NLS-1$
 
     /**
      * Private constructor to ensure IoC use.
@@ -43,19 +50,11 @@ public class ExtractEmailDomain extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCompatibleColumnTypes()
+     * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
     public boolean accept(ColumnMetadata column) {
         return Type.STRING.equals(Type.get(column.getType()));
-    }
-
-    /**
-     * @see ActionMetadata#getItems()@return
-     */
-    @Override
-    public Item[] getItems() {
-        return new Item[] {};
     }
 
     /**
@@ -73,11 +72,11 @@ public class ExtractEmailDomain extends SingleColumnAction {
             if (originalValue != null) {
                 String[] split = originalValue.split(realSeparator, 2);
 
-                String local_part = (split.length >= 2 ? split[0] : StringUtils.EMPTY);
-                row.set(columnName + "_local", local_part);
+                String local_part = split.length >= 2 ? split[0] : StringUtils.EMPTY;
+                row.set(columnName + _LOCAL, local_part);
 
-                String domain_part = (split.length >= 2 ? split[1] : StringUtils.EMPTY);
-                row.set(columnName + "_domain", domain_part);
+                String domain_part = split.length >= 2 ? split[1] : StringUtils.EMPTY;
+                row.set(columnName + _DOMAIN, domain_part);
             }
         };
     }
@@ -104,8 +103,8 @@ public class ExtractEmailDomain extends SingleColumnAction {
                 if (StringUtils.equals(columnId, column.getId())) {
                     newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
-                            .computedId(column.getId() + "_local") //
-                            .name(column.getName() + "_local") //
+                            .computedId(column.getId() + _LOCAL) //
+                            .name(column.getName() + _LOCAL) //
                             .type(Type.get(column.getType())) //
                             .empty(column.getQuality().getEmpty()) //
                             .invalid(column.getQuality().getInvalid()) //
@@ -116,8 +115,8 @@ public class ExtractEmailDomain extends SingleColumnAction {
 
                     newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
-                            .computedId(column.getId() + "_domain") //
-                            .name(column.getName() + "_domain") //
+                            .computedId(column.getId() + _DOMAIN) //
+                            .name(column.getName() + _DOMAIN) //
                             .type(Type.get(column.getType())) //
                             .empty(column.getQuality().getEmpty()) //
                             .invalid(column.getQuality().getInvalid()) //

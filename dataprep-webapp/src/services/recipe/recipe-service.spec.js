@@ -742,7 +742,7 @@ describe('Recipe service', function () {
         expect(index).toBe(2);
     }));
 
-    it('should return -1 when no specific active step has been set', inject(function($rootScope, RecipeService) {
+    it('should return last step index when no specific active step has been set', inject(function($rootScope, RecipeService) {
         //given
         RecipeService.refresh();
         $rootScope.$digest();
@@ -751,7 +751,7 @@ describe('Recipe service', function () {
         var index = RecipeService.getActiveThresholdStepIndex();
 
         //then
-        expect(index).toBe(-1);
+        expect(index).toBe(5);
     }));
 
     it('should return the initial state if the index is 0', inject(function($rootScope, RecipeService) {
@@ -788,5 +788,65 @@ describe('Recipe service', function () {
 
         //then
         expect(step).toEqual(RecipeService.getRecipe()[1]);
+    }));
+
+    it('should return the step index', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var index = RecipeService.getStepIndex(RecipeService.getRecipe()[2]);
+
+        //then
+        expect(index).toBe(2);
+    }));
+
+    it('should return true when step is the first step', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var isFirst = RecipeService.isFirstStep(RecipeService.getRecipe()[0]);
+
+        //then
+        expect(isFirst).toBe(true);
+    }));
+
+    it('should return false when step is NOT the first step', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var isFirst = RecipeService.isFirstStep(RecipeService.getRecipe()[2]);
+
+        //then
+        expect(isFirst).toBe(false);
+    }));
+
+    it('should return true when step is the last step', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var isLast = RecipeService.isLastStep(RecipeService.getRecipe()[5]);
+
+        //then
+        expect(isLast).toBe(true);
+    }));
+
+    it('should return false when step is NOT the last step', inject(function($rootScope, RecipeService) {
+        //given
+        RecipeService.refresh();
+        $rootScope.$digest();
+
+        //when
+        var isLast = RecipeService.isLastStep(RecipeService.getRecipe()[2]);
+
+        //then
+        expect(isLast).toBe(false);
     }));
 });
