@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,42 +24,31 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
+import org.talend.dataprep.api.type.Type;
 
 /**
  * Test class for LowerCase action. Creates one consumer, and test it.
  * 
- * @see UpperCase
+ * @see LowerCase
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
-public class UpperCasetTest {
+public class LowerCasetTest {
 
     /** The row consumer to test. */
     private Consumer<DataSetRow> rowClosure;
 
     /** The action to test. */
-    @Autowired
-    private UpperCase action;
+    private LowerCase action;
 
     /**
-     * Initialization before each test.
+     * Constructor.
      */
-    @Before
-    public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("uppercase.json"));
+    public LowerCasetTest() throws IOException {
+
+        action = new LowerCase();
+
+        String actions = IOUtils.toString(LowerCasetTest.class.getResourceAsStream("lowercase.json"));
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
@@ -67,39 +57,53 @@ public class UpperCasetTest {
     }
 
     /**
-     * @see UpperCase#create(Map)
+     * @see LowerCase#create(Map)
      */
     @Test
-    public void should_uppercase() {
+    public void should_lowercase() {
         Map<String, String> values = new HashMap<>();
-        values.put("city", "Vancouver");
-        values.put("country", "Canada");
+        values.put("name", "Vincent");
+        values.put("entity", "R&D");
+        values.put("joined", "May 20th 2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("city", "VANCOUVER"); // Vancouver --> VANCOUVER
-        expectedValues.put("country", "Canada");
+        expectedValues.put("name", "Vincent");
+        expectedValues.put("entity", "r&d"); // R&D --> r&d
+        expectedValues.put("joined", "May 20th 2015");
 
         rowClosure.accept(row);
         assertEquals(expectedValues, row.values());
     }
 
     /**
-     * @see UpperCase#create(Map)
+     * @see LowerCase#create(Map)
      */
-    @Test()
+    @Test
     public void should_do_nothing_since_column_does_not_exist() {
         Map<String, String> values = new HashMap<>();
-        values.put("country", "Canada");
-        values.put("capital", "Ottawa");
+        values.put("name", "Vincent");
+        values.put("joined", "May 20th 2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("country", "Canada");
-        expectedValues.put("capital", "Ottawa");
+        expectedValues.put("name", "Vincent");
+        expectedValues.put("joined", "May 20th 2015");
 
         rowClosure.accept(row);
         assertEquals(expectedValues, row.values());
     }
 
+    @Test
+    public void should_accept_column() {
+        assertTrue(action.accept(getColumn(Type.STRING)));
+    }
+
+    @Test
+    public void should_not_accept_column() {
+        assertFalse(action.accept(getColumn(Type.NUMERIC)));
+        assertFalse(action.accept(getColumn(Type.FLOAT)));
+        assertFalse(action.accept(getColumn(Type.DATE)));
+        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
+    }
 }

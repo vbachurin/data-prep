@@ -1,11 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 
 /**
  * Delete row when value is empty.
@@ -15,12 +13,6 @@ public class DeleteEmpty extends AbstractDelete {
 
     /** The action name. */
     public static final String DELETE_EMPTY_ACTION_NAME = "delete_empty"; //$NON-NLS-1$
-
-    /**
-     * Private constructor to ensure IoC.
-     */
-    private DeleteEmpty() {
-    }
 
     /**
      * @see ActionMetadata#getName()
@@ -39,11 +31,12 @@ public class DeleteEmpty extends AbstractDelete {
     }
 
     /**
-     * @see ActionMetadata#getCompatibleColumnTypes()
+     * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.ANY);
+    public boolean accept(ColumnMetadata column) {
+        // allow on all columns
+        return true;
     }
 
 }

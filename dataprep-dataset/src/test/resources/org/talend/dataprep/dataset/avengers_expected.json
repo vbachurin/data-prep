@@ -2,13 +2,15 @@
   "metadata": null,
   "columns": [
     {
-      "id": "0000",
       "name": "nickname",
+      "headerSize": 0,
+      "type": "string",
       "quality": {
         "empty": 0,
         "invalid": 0,
         "valid": 5
       },
+      "id": "0000",
       "statistics": {
         "count": 5,
         "valid": 5,
@@ -18,9 +20,9 @@
         "min": "NaN",
         "mean": "NaN",
         "variance": "NaN",
-        "duplicate count": 0,
-        "distinct count": 5,
-        "frequency table": [
+        "duplicateCount": 0,
+        "distinctCount": 5,
+        "frequencyTable": [
           {
             "data": "Captain America",
             "occurrences": 1
@@ -42,7 +44,7 @@
             "occurrences": 1
           }
         ],
-        "pattern frequency table": [
+        "patternFrequencyTable": [
           {
             "pattern": "Aaaaaaa Aaaaaaa",
             "occurrences": 1
@@ -66,28 +68,29 @@
         ],
         "quantiles": {
           "median": "NaN",
-          "lower quantile": "NaN",
-          "upper quantile": "NaN"
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
         },
         "histogram": [],
-        "text length summary": {
-          "minimal length": 6.0,
-          "minimal length with blank": 0.0,
-          "maximal length": 15.0,
-          "average length": 9.2,
-          "average length with blank": 9.2
+        "textLengthSummary": {
+          "minimalLength": 6.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 15.0,
+          "averageLength": 9.2,
+          "averageLengthWithBlank": 9.2
         }
-      },
-      "type": "string"
+      }
     },
     {
-      "id": "0001",
       "name": "secret firstname",
+      "headerSize": 0,
+      "type": "string",
       "quality": {
         "empty": 0,
         "invalid": 0,
         "valid": 5
       },
+      "id": "0001",
       "statistics": {
         "count": 5,
         "valid": 5,
@@ -97,9 +100,9 @@
         "min": "NaN",
         "mean": "NaN",
         "variance": "NaN",
-        "duplicate count": 0,
-        "distinct count": 5,
-        "frequency table": [
+        "duplicateCount": 0,
+        "distinctCount": 5,
+        "frequencyTable": [
           {
             "data": "Clark",
             "occurrences": 1
@@ -121,7 +124,7 @@
             "occurrences": 1
           }
         ],
-        "pattern frequency table": [
+        "patternFrequencyTable": [
           {
             "pattern": "Aaaaa",
             "occurrences": 3
@@ -137,28 +140,29 @@
         ],
         "quantiles": {
           "median": "NaN",
-          "lower quantile": "NaN",
-          "upper quantile": "NaN"
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
         },
         "histogram": [],
-        "text length summary": {
-          "minimal length": 4.0,
-          "minimal length with blank": 0.0,
-          "maximal length": 7.0,
-          "average length": 5.2,
-          "average length with blank": 5.2
+        "textLengthSummary": {
+          "minimalLength": 4.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 7.0,
+          "averageLength": 5.2,
+          "averageLengthWithBlank": 5.2
         }
-      },
-      "type": "string"
+      }
     },
     {
-      "id": "0002",
       "name": "secret lastname",
+      "headerSize": 0,
+      "type": "string",
       "quality": {
         "empty": 0,
         "invalid": 0,
         "valid": 5
       },
+      "id": "0002",
       "statistics": {
         "count": 5,
         "valid": 5,
@@ -168,9 +172,9 @@
         "min": "NaN",
         "mean": "NaN",
         "variance": "NaN",
-        "duplicate count": 0,
-        "distinct count": 5,
-        "frequency table": [
+        "duplicateCount": 0,
+        "distinctCount": 5,
+        "frequencyTable": [
           {
             "data": "Parker",
             "occurrences": 1
@@ -192,7 +196,7 @@
             "occurrences": 1
           }
         ],
-        "pattern frequency table": [
+        "patternFrequencyTable": [
           {
             "pattern": "Aaaaa",
             "occurrences": 2
@@ -208,28 +212,29 @@
         ],
         "quantiles": {
           "median": "NaN",
-          "lower quantile": "NaN",
-          "upper quantile": "NaN"
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
         },
         "histogram": [],
-        "text length summary": {
-          "minimal length": 4.0,
-          "minimal length with blank": 0.0,
-          "maximal length": 6.0,
-          "average length": 5.2,
-          "average length with blank": 5.2
+        "textLengthSummary": {
+          "minimalLength": 4.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 6.0,
+          "averageLength": 5.2,
+          "averageLengthWithBlank": 5.2
         }
-      },
-      "type": "string"
+      }
     },
     {
-      "id": "0003",
       "name": "date of birth",
+      "headerSize": 0,
+      "type": "date",
       "quality": {
         "empty": 0,
         "invalid": 0,
         "valid": 5
       },
+      "id": "0003",
       "statistics": {
         "count": 5,
         "valid": 5,
@@ -239,9 +244,9 @@
         "min": "NaN",
         "mean": "NaN",
         "variance": "NaN",
-        "duplicate count": 0,
-        "distinct count": 5,
-        "frequency table": [
+        "duplicateCount": 0,
+        "distinctCount": 5,
+        "frequencyTable": [
           {
             "data": "05/15/1962",
             "occurrences": 1
@@ -263,7 +268,7 @@
             "occurrences": 1
           }
         ],
-        "pattern frequency table": [
+        "patternFrequencyTable": [
           {
             "pattern": "MM/dd/yyyy",
             "occurrences": 5
@@ -271,28 +276,29 @@
         ],
         "quantiles": {
           "median": "NaN",
-          "lower quantile": "NaN",
-          "upper quantile": "NaN"
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
         },
         "histogram": [],
-        "text length summary": {
-          "minimal length": 0.0,
-          "minimal length with blank": 0.0,
-          "maximal length": 0.0,
-          "average length": 0.0,
-          "average length with blank": 0.0
+        "textLengthSummary": {
+          "minimalLength": 0.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 0.0,
+          "averageLength": 0.0,
+          "averageLengthWithBlank": 0.0
         }
-      },
-      "type": "date"
+      }
     },
     {
-      "id": "0004",
       "name": "city",
+      "headerSize": 0,
+      "type": "string",
       "quality": {
         "empty": 0,
         "invalid": 0,
         "valid": 5
       },
+      "id": "0004",
       "statistics": {
         "count": 5,
         "valid": 5,
@@ -302,9 +308,9 @@
         "min": "NaN",
         "mean": "NaN",
         "variance": "NaN",
-        "duplicate count": 3,
-        "distinct count": 2,
-        "frequency table": [
+        "duplicateCount": 3,
+        "distinctCount": 2,
+        "frequencyTable": [
           {
             "data": "New York City",
             "occurrences": 4
@@ -314,7 +320,7 @@
             "occurrences": 1
           }
         ],
-        "pattern frequency table": [
+        "patternFrequencyTable": [
           {
             "pattern": "Aaa Aaaa Aaaa",
             "occurrences": 4
@@ -326,19 +332,18 @@
         ],
         "quantiles": {
           "median": "NaN",
-          "lower quantile": "NaN",
-          "upper quantile": "NaN"
+          "lowerQuantile": "NaN",
+          "upperQuantile": "NaN"
         },
         "histogram": [],
-        "text length summary": {
-          "minimal length": 3.0,
-          "minimal length with blank": 0.0,
-          "maximal length": 13.0,
-          "average length": 11.0,
-          "average length with blank": 11.0
+        "textLengthSummary": {
+          "minimalLength": 3.0,
+          "minimalLengthWithBlank": 0.0,
+          "maximalLength": 13.0,
+          "averageLength": 11.0,
+          "averageLengthWithBlank": 11.0
         }
-      },
-      "type": "string"
+      }
     }
   ],
   "records": [

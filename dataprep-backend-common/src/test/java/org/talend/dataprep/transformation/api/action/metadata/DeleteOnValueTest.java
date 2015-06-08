@@ -13,6 +13,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,35 +24,30 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
+import org.talend.dataprep.api.type.Type;
 
 /**
- * Test class for DeleteEmpty action. Creates one consumer, and test it.
+ * Test class for DeleteOnValue action. Creates one consumer, and test it.
+ * 
+ * @see DeleteOnValue
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
 public class DeleteOnValueTest {
 
-    private Consumer<DataSetRow> consumer;
-
-    @Autowired
+    /** The action to test. */
     DeleteOnValue deleteOnValue;
 
-    @Before
-    public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("deleteOnValueAction.json"));
+    /** the action out of the consumer. */
+    private Consumer<DataSetRow> consumer;
+
+    /**
+     * Constructor.
+     */
+    public DeleteOnValueTest() throws IOException {
+
+        deleteOnValue = new DeleteOnValue();
+        String actions = IOUtils.toString(DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
 
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
@@ -160,6 +156,20 @@ public class DeleteOnValueTest {
         // Assert that action did not change the row values
         assertEquals("David Bowie", dsr.get("name"));
         assertEquals("üBerlin", dsr.get("city"));
+    }
+
+    @Test
+    public void should_accept_column() {
+        assertTrue(deleteOnValue.accept(getColumn(Type.STRING)));
+        assertTrue(deleteOnValue.accept(getColumn(Type.NUMERIC)));
+        assertTrue(deleteOnValue.accept(getColumn(Type.FLOAT)));
+    }
+
+    @Test
+    public void should_not_accept_column() {
+        assertFalse(deleteOnValue.accept(getColumn(Type.DATE)));
+        assertFalse(deleteOnValue.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(deleteOnValue.accept(getColumn(Type.ANY)));
     }
 
 }

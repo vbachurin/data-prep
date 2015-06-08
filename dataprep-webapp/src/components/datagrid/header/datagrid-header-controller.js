@@ -6,8 +6,9 @@
      * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
      * @description Dataset Column Header controller.
      * @requires data-prep.services.transformation.service:TransformationService
+     * @requires data-prep.services.utils.service:ConverterService
      */
-    function DatagridHeaderCtrl(TransformationService) {
+    function DatagridHeaderCtrl(TransformationService, ConverterService) {
         var vm = this;
 
         /**
@@ -93,6 +94,20 @@
                     });
             }
         };
+
+        /**
+         * @ngdoc method
+         * @name setColumnSimplifiedType
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description set the column simplified, more user friendly, type.
+         */
+        var setColumnSimplifiedType = function () {
+            //if (vm.column) {
+                vm.column.simplifiedType = ConverterService.simplifyType(vm.column.type);
+            //}
+        };
+
+        setColumnSimplifiedType();
     }
 
     angular.module('data-prep.datagrid-header')

@@ -4,9 +4,9 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import org.codehaus.jackson.JsonNode;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
@@ -66,11 +66,12 @@ public interface ActionMetadata {
     Parameter[] getParameters();
 
     /**
-     * Return the list of column type that this action can applied to.
-     *
-     * @return A set of the column {@link Type types} this Action can handle.
+     * Return true if the action can be applied to the given column metadata.
+     * 
+     * @param column the column metadata to transform.
+     * @return true if the action can be applied to the given column metadata.
      */
-    Set<Type> getCompatibleColumnTypes();
+    boolean accept(ColumnMetadata column);
 
     /**
      * Create a closure to perform the transformation on a DatasetRow according to the parameter.
@@ -140,4 +141,5 @@ public interface ActionMetadata {
     default boolean isDynamic() {
         return false;
     }
+
 }

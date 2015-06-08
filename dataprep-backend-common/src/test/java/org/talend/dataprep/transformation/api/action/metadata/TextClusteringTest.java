@@ -1,5 +1,8 @@
-package org.talend.dataprep.transformation.api.action;
+package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 import static org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction.COLUMN_ID;
 
 import java.util.ArrayList;
@@ -11,7 +14,7 @@ import java.util.function.Consumer;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.metadata.TextClustering;
+import org.talend.dataprep.api.type.Type;
 
 public class TextClusteringTest {
 
@@ -72,5 +75,20 @@ public class TextClusteringTest {
         row.set(key, value);
 
         return row;
+    }
+
+    @Test
+    public void should_accept_column() {
+        assertTrue(textClustering.accept(getColumn(Type.STRING)));
+    }
+
+    @Test
+    public void should_not_accept_column() {
+        assertFalse(textClustering.accept(getColumn(Type.NUMERIC)));
+        assertFalse(textClustering.accept(getColumn(Type.DOUBLE)));
+        assertFalse(textClustering.accept(getColumn(Type.FLOAT)));
+        assertFalse(textClustering.accept(getColumn(Type.INTEGER)));
+        assertFalse(textClustering.accept(getColumn(Type.DATE)));
+        assertFalse(textClustering.accept(getColumn(Type.BOOLEAN)));
     }
 }
