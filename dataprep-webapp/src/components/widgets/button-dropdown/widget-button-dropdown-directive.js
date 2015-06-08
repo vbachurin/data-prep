@@ -49,7 +49,7 @@
                     var body = angular.element('body');
                     var windowElement = angular.element($window);
                     var container = iElement.find('.dropdown-container');
-                    var action = iElement.find('.dropdown-action');
+                    var action = iElement.find('.dropdown-button');
                     var menu = iElement.find('.dropdown-menu');
 
                     /**

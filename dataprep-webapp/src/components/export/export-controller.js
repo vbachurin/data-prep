@@ -1,13 +1,16 @@
 (function() {
     'use strict';
 
-    function ExportCtrl(PlaygroundService, PreparationService, RecipeService, RestURLs) {
+    function ExportCtrl(PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService) {
         var vm = this;
         vm.exportUrl = RestURLs.exportUrl;
         vm.preparationService = PreparationService;
         vm.recipeService = RecipeService;
         vm.playgroundService = PlaygroundService;
+        vm.exportService = ExportService;
         vm.csvSeparator = ';';
+
+        vm.exportTypes = vm.exportService.exportTypes();
     }
 
     /**
