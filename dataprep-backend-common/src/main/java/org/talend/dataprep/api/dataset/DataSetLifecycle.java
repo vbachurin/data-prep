@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class DataSetLifecycle {
 
+    @JsonProperty("importing")
+    private boolean importing;
+
     @JsonProperty("contentAnalyzed")
     private boolean contentAnalyzed;
 
@@ -67,6 +70,14 @@ public class DataSetLifecycle {
      */
     public boolean qualityAnalyzed() {
         return qualityAnalyzed;
+    }
+
+    public void importing(boolean isImporting) {
+        importing = isImporting;
+    }
+
+    public boolean importing() {
+        return importing;
     }
 
 }

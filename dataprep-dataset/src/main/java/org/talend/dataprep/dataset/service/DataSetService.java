@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 import javax.jms.Message;
@@ -113,7 +116,9 @@ public class DataSetService {
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
     @Timed
     public Iterable<DataSetMetadata> list() {
-        return dataSetMetadataRepository.list();
+        final Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
+        final Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
+        return stream.filter(metadata -> !metadata.getLifecycle().importing()).collect(Collectors.toList());
     }
 
     /**
@@ -136,6 +141,7 @@ public class DataSetService {
         final String id = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(id).name(name).author(getUserName()).created(System.currentTimeMillis())
                 .build();
+        dataSetMetadata.getLifecycle().importing(true); // Indicate data set is being imported
         // Save data set content
         contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
         // Create the new data set
