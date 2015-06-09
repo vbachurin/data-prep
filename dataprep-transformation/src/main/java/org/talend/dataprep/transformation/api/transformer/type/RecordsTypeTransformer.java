@@ -2,11 +2,12 @@ package org.talend.dataprep.transformation.api.transformer.type;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -28,11 +29,11 @@ public class RecordsTypeTransformer implements TypeTransformer {
         final TransformerWriter writer = configuration.getOutput();
         final JsonParser parser = configuration.getInput();
 
-        final List<Consumer<DataSetRow>> actions = configuration.getActions(DataSetRow.class);
+        final List<BiConsumer<DataSetRow, TransformationContext>> actions = configuration.getRecordActions();
         final List<Integer> indexes = configuration.getIndexes();
 
-        final Consumer<DataSetRow> referenceAction = configuration.isPreview() ? actions.get(0) : null;
-        final Consumer<DataSetRow> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
+        final BiConsumer<DataSetRow, TransformationContext> referenceAction = configuration.isPreview() ? actions.get(0) : null;
+        final BiConsumer<DataSetRow, TransformationContext> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
 
         final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
         final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : null;
@@ -51,18 +52,21 @@ public class RecordsTypeTransformer implements TypeTransformer {
                     row.clear();
                     break;
                 case END_OBJECT:
+
+                    TransformationContext context = configuration.getTransformationContext();
+
                     if (configuration.isPreview()) {
 
                         // compute the reference row
                         final DataSetRow referenceRow = row.clone();
-                        referenceAction.accept(referenceRow);
+                        referenceAction.accept(referenceRow, context);
 
                         if (isIndexLimited) {
                             // we only start to process at the min index
                             if (currentIndex >= minIndex) {
 
                                 // apply new actions
-                                action.accept(row);
+                                action.accept(row, context);
 
                                 // we are between the min and the max index
                                 // 1. the row has a wanted index : we write it no matter what
@@ -85,14 +89,14 @@ public class RecordsTypeTransformer implements TypeTransformer {
                             }
                         } else {
                             // apply new actions
-                            action.accept(row);
+                            action.accept(row, context);
                             row.diff(referenceRow);
 
                             // write preview. Rules are delegated to DataSetRow
                             writeRow(writer, row);
                         }
                     } else {
-                        action.accept(row);
+                        action.accept(row, context);
                         writeRow(writer, row);
                     }
 

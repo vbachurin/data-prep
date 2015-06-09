@@ -5,7 +5,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 
 public interface DataSetMetadataRepository {
 
-    public static final String DATASET_LOCK_PREFIX = "dataset#"; //$NON-NLS-1$
+    String DATASET_LOCK_PREFIX = "dataset#"; //$NON-NLS-1$
 
     /**
      * @return A {@link java.lang.Iterable iterable} of {@link DataSetMetadata data set}. Returned data set are expected

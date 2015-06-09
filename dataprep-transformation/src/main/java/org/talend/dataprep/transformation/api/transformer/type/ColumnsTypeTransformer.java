@@ -35,7 +35,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
     public void process(final TransformerConfiguration configuration) {
         final JsonParser parser = configuration.getInput();
 
-        final List<Consumer<RowMetadata>> actions = configuration.getActions(RowMetadata.class);
+        final List<Consumer<RowMetadata>> actions = configuration.getColumnActions();
 
         try {
             final StringWriter content = new StringWriter();
@@ -102,6 +102,9 @@ public class ColumnsTypeTransformer implements TypeTransformer {
 
                         // write the result
                         configuration.getOutput().write(rowMetadata);
+
+                        // store the row metadata in the configuration for RecordsTypeTransformer use
+                        configuration.getTransformationContext().setTransformedRowMetadata(rowMetadata);
                         return;
 
                     }

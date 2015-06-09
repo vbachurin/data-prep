@@ -65,6 +65,9 @@
   "SEPARATOR_SPACE": "Space",
   "SEPARATOR_COMMA": "Comma",
   "CONTENT_100_FIRST_ROWS": "Content (100 first rows)",
+  "DATASET_NAME": "Dataset Name",
+  "IMPORT_EXCEL_FILE": "Import Excel File",
+  "STYLESHEET": "Style sheet",
 
   "_comment": "Success",
   "DATASET_CREATE_SUCCESS_TITLE": "New dataset",

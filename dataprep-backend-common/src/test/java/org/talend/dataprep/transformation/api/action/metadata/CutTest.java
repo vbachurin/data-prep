@@ -6,7 +6,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -15,6 +15,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Unit test for the Cut action.
@@ -27,7 +28,7 @@ public class CutTest {
     private Cut cutAction;
 
     /** The consumer out of the action. */
-    private Consumer<DataSetRow> consumer;
+    private BiConsumer<DataSetRow, TransformationContext> consumer;
 
     /**
      * Constructor.

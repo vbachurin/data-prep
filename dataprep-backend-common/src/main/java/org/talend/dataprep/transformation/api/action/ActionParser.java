@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -17,6 +18,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 
 /**
@@ -24,7 +26,6 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
  */
 @Component
 public class ActionParser implements BeanFactoryAware {
-
 
     private BeanFactory beanFactory;
 
@@ -45,7 +46,7 @@ public class ActionParser implements BeanFactoryAware {
             // no op
             if (content.isEmpty()) {
                 //@formatter:off
-                return new ParsedActions(row -> {}, rowMetadata -> {});
+                return new ParsedActions((row, context) -> {}, rowMetadata -> {});
                 //@formatter:on
             }
             JsonNode node = mapper.readTree(content);
@@ -55,7 +56,7 @@ public class ActionParser implements BeanFactoryAware {
                 if (!root.isArray()) {
                     throw new IllegalArgumentException("'actions' element should contain an array of 'action' elements.");
                 }
-                List<Consumer<DataSetRow>> parsedRowActions = new ArrayList<>();
+                List<BiConsumer<DataSetRow, TransformationContext>> parsedRowActions = new ArrayList<>();
                 List<Consumer<RowMetadata>> parsedMetadataActions = new ArrayList<>();
 
                 Iterator<JsonNode> actionNodes = root.getElements();
@@ -77,9 +78,9 @@ public class ActionParser implements BeanFactoryAware {
                 }
 
                 // put all the row actions into a single consumer
-                Consumer<DataSetRow> rowConsumer = row -> {
-                    for (Consumer<DataSetRow> parsedAction : parsedRowActions) {
-                        parsedAction.accept(row);
+                BiConsumer<DataSetRow, TransformationContext> rowConsumer = (row, context) -> {
+                    for (BiConsumer<DataSetRow, TransformationContext> parsedAction : parsedRowActions) {
+                        parsedAction.accept(row, context);
                     }
                 };
 
@@ -95,7 +96,7 @@ public class ActionParser implements BeanFactoryAware {
             } else {
                 // Should not happen, but no action means no op.
                 //@formatter:off
-                return new ParsedActions(row -> {}, rowMetadata -> {});
+                return new ParsedActions((row, context) -> {}, rowMetadata -> {});
                 //@formatter:on
             }
         } catch (Exception e) {

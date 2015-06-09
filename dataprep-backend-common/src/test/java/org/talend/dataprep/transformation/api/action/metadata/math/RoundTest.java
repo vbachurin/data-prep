@@ -18,7 +18,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -27,6 +27,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for Round action. Creates one consumer, and test it.
@@ -39,7 +40,7 @@ public class RoundTest {
     private Round roundAction;
 
     /** The consumer out of the consumer. */
-    private Consumer<DataSetRow> consumer;
+    private BiConsumer<DataSetRow, TransformationContext> consumer;
 
     /**
      * Constructor.
@@ -61,7 +62,7 @@ public class RoundTest {
         values.put("aNumber", input);
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr);
+        consumer.accept(dsr, new TransformationContext());
         assertEquals(expected, dsr.get("aNumber"));
     }
 
