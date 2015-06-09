@@ -14,7 +14,7 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep.dataset-list'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetService, PlaygroundService, MessageService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -33,6 +33,7 @@ describe('Dataset list controller', function () {
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
         spyOn(MessageService, 'error').and.returnValue(null);
+        spyOn($state, 'go').and.returnValue(null);
     }));
 
     afterEach(inject(function($stateParams) {
@@ -104,17 +105,29 @@ describe('Dataset list controller', function () {
             expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: 'Customers (50 lines)'});
         }));
 
-        it('should init and show playground', inject(function ($rootScope, PlaygroundService) {
+        it('should redirect to dataset playground when dataset is not a draft', inject(function ($rootScope, $state) {
             //given
             var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
 
             //when
-            ctrl.open(dataset);
+            ctrl.openDataset(dataset);
             $rootScope.$apply();
 
             //then
-            expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(dataset);
-            expect(PlaygroundService.show).toHaveBeenCalled();
+            expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: dataset.id});
+        }));
+
+        it('should redirect load sheet preview when dataset is a draft', inject(function ($rootScope, DatasetSheetPreviewService) {
+            //given
+            var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2', type: 'application/vnd.ms-excel', draft: true};
+
+            //when
+            ctrl.openDataset(dataset);
+            $rootScope.$apply();
+
+            //then
+            expect(DatasetSheetPreviewService.loadPreview).toHaveBeenCalledWith(dataset);
+            expect(DatasetSheetPreviewService.display).toHaveBeenCalled();
         }));
 
         it('should bind datasets getter to DatasetService.datasetsList()', inject(function (DatasetService) {
