@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
@@ -31,6 +33,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -40,7 +43,7 @@ import org.talend.dataprep.api.type.Type;
 public class CopyColumnTest {
 
     /** The row consumer to test. */
-    private Consumer<DataSetRow> rowClosure;
+    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
 
     /** The metadata consumer to test. */
     private Consumer<RowMetadata> metadataClosure;
@@ -80,7 +83,7 @@ public class CopyColumnTest {
         expectedValues.put("steps_copy", "Bacon ipsum dolor amet swine leberkas pork belly");
         expectedValues.put("last update", "01/01/2015");
 
-        rowClosure.accept(row);
+        rowClosure.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 

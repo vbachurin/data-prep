@@ -1,12 +1,13 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Uppercase a column in a row.
@@ -37,8 +38,8 @@ public class UpperCase extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+        return (row, context) -> {
             String columnId = parameters.get(COLUMN_ID);
             String value = row.get(columnId);
             if (value == null) {

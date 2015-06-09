@@ -6,7 +6,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -15,6 +15,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for Negate action.
@@ -24,7 +25,7 @@ import org.talend.dataprep.api.type.Type;
 public class NegateTest {
 
     /** The row consumer to test. */
-    private Consumer<DataSetRow> consumer;
+    private BiConsumer<DataSetRow, TransformationContext> consumer;
 
     /** The action to test. */
     private Negate action;
@@ -56,7 +57,7 @@ public class NegateTest {
         expectedValues.put("entity", "R&D");
         expectedValues.put("active", "False"); // true -> false
 
-        consumer.accept(row);
+        consumer.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -73,7 +74,7 @@ public class NegateTest {
         expectedValues.put("entity", "R&D");
         expectedValues.put("active", "True"); // false -> true
 
-        consumer.accept(row);
+        consumer.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
