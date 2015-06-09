@@ -10,8 +10,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.stereotype.Component;
@@ -27,8 +25,6 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 @Component
 public class ActionParser implements BeanFactoryAware {
 
-    /** This class' logger. */
-    public static final Logger LOGGER = LoggerFactory.getLogger(ActionParser.class);
 
     private BeanFactory beanFactory;
 

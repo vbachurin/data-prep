@@ -4,21 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
-import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
@@ -34,15 +29,12 @@ import org.talend.dataprep.schema.SchemaParserResult;
  * @see DataSetContentStore#get(DataSetMetadata)
  */
 @Component
-public class FormatAnalysis {
+public class FormatAnalysis implements SynchronousDataSetAnalyzer {
 
     private static final Logger LOG = LoggerFactory.getLogger(FormatAnalysis.class);
 
     @Autowired
     ApplicationContext context;
-
-    @Autowired
-    JmsTemplate jmsTemplate;
 
     @Autowired
     DataSetMetadataRepository repository;
@@ -53,50 +45,40 @@ public class FormatAnalysis {
     @Autowired
     List<FormatGuesser> guessers = new LinkedList<>();
 
-    @JmsListener(destination = Destinations.FORMAT_ANALYSIS)
-    public void analyseDataSetSchema(Message message) {
+    @Override
+    public void analyze(String dataSetId) {
+        if (StringUtils.isEmpty(dataSetId)) {
+            throw new IllegalArgumentException("Data set id cannot be null or empty.");
+        }
+        DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
+        datasetLock.lock();
         try {
-            String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1
-            DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
-            datasetLock.lock();
-            try {
-                DataSetMetadata metadata = repository.get(dataSetId);
-                if (metadata != null) {
+            DataSetMetadata metadata = repository.get(dataSetId);
+            if (metadata != null) {
+                // Guess media type based on InputStream
+                Set<FormatGuesser.Result> mediaTypes = guessMediaTypes(dataSetId, metadata);
 
-                    // Guess media type based on InputStream
-                    Set<FormatGuesser.Result> mediaTypes = guessMediaTypes(dataSetId, metadata);
+                // Select best format guess
+                List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
+                Collections.sort(orderedGuess, (g1, g2) -> (int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess()
+                        .getConfidence()));
 
-                    // Select best format guess
-                    List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
-                    Collections.sort(orderedGuess, (g1, g2) -> (int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess()
-                            .getConfidence()));
+                FormatGuesser.Result bestGuessResult = orderedGuess.get(0);
+                FormatGuess bestGuess = bestGuessResult.getFormatGuess();
+                DataSetContent dataSetContent = metadata.getContent();
+                dataSetContent.setParameters(bestGuessResult.getParameters());
+                dataSetContent.setFormatGuessId(bestGuess.getBeanId());
+                dataSetContent.setMediaType(bestGuess.getMediaType());
 
-                    FormatGuesser.Result bestGuessResult = orderedGuess.get(0);
-                    FormatGuess bestGuess = bestGuessResult.getFormatGuess();
-                    DataSetContent dataSetContent = metadata.getContent();
-                    dataSetContent.setParameters(bestGuessResult.getParameters());
-                    dataSetContent.setFormatGuessId(bestGuess.getBeanId());
-                    dataSetContent.setMediaType(bestGuess.getMediaType());
+                parseColumnNameInformation(dataSetId, metadata, bestGuess);
 
-                    parseColumnNameInformation(dataSetId, metadata, bestGuess);
-
-                    repository.add(metadata);
-                    LOG.info("format analysed for dataset: '{}'", dataSetId);
-                    // Asks for a in depth schema analysis (for column type information).
-                    jmsTemplate.send(Destinations.SCHEMA_ANALYSIS, session -> {
-                        Message schemaAnalysisMessage = session.createMessage();
-                        schemaAnalysisMessage.setStringProperty("dataset.id", dataSetId); //$NON-NLS-1
-                            return schemaAnalysisMessage;
-                        });
-                } else {
-                    LOG.info("Data set #{} no longer exists.", dataSetId);
-                }
-            } finally {
-                datasetLock.unlock();
-                message.acknowledge();
+                repository.add(metadata);
+                LOG.info("format analysed for dataset: '{}'", dataSetId);
+            } else {
+                LOG.info("Data set #{} no longer exists.", dataSetId);
             }
-        } catch (JMSException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
+        } finally {
+            datasetLock.unlock();
         }
     }
 
@@ -146,5 +128,10 @@ public class FormatAnalysis {
         } catch (IOException e) {
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
         }
+    }
+
+    @Override
+    public int order() {
+        return 0;
     }
 }

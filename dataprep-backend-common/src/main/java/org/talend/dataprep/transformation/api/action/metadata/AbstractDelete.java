@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * Abstract class used as base class for delete actions.
@@ -17,14 +16,6 @@ public abstract class AbstractDelete extends SingleColumnAction {
     @Override
     public String getCategory() {
         return "cleansing"; //$NON-NLS-1$
-    }
-
-    /**
-     * @see ActionMetadata#getItems()
-     */
-    @Override
-    public Item[] getItems() {
-        return new Item[0];
     }
 
     /**

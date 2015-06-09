@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "delete_empty",
+      "parameters": {
+        "column_id": "city",
+        "column_name": "city name"
+      }
+    }
+  ]
+}

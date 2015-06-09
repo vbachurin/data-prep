@@ -150,16 +150,29 @@ public class DataSetMetadata {
     }
 
     /**
+     * @param name the dataset name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * @return the dataset author.
      */
     public String getAuthor() {
         return author;
     }
 
+    /**
+     * @return the sheet name
+     */
     public String getSheetName() {
         return sheetName;
     }
 
+    /**
+     * @param sheetName the new sheet name
+     */
     public void setSheetName(String sheetName) {
         this.sheetName = sheetName;
     }
@@ -319,15 +332,15 @@ public class DataSetMetadata {
             metadata.sheetName = this.sheetName;
             metadata.draft = this.draft;
             // Content information
-            DataSetContent content = metadata.getContent();
-            content.setNbRecords(size);
-            content.setNbLinesInHeader(headerSize);
-            content.setNbLinesInFooter(footerSize);
+            DataSetContent currentContent = metadata.getContent();
+            currentContent.setNbRecords(size);
+            currentContent.setNbLinesInHeader(headerSize);
+            currentContent.setNbLinesInFooter(footerSize);
 
             if (formatGuessId != null) {
-                content.setFormatGuessId(formatGuessId);
+                currentContent.setFormatGuessId(formatGuessId);
             }
-            content.setMediaType(mediaType);
+            currentContent.setMediaType(mediaType);
             // Lifecycle information
             DataSetLifecycle metadataLifecycle = metadata.getLifecycle();
             metadataLifecycle.contentIndexed(contentAnalyzed);

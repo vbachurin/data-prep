@@ -12,6 +12,7 @@
         return {
             restrict: 'E',
             templateUrl: 'components/dataset/list/dataset-list.html',
+            replace:true,
             bindToController: true,
             controllerAs: 'datasetListCtrl',
             controller: 'DatasetListCtrl'

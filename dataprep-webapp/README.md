@@ -118,6 +118,14 @@ when in folder _checkouts/data-prep/dataprep-webapp_ type the command
 This will precompile jade and scss templates, update the index.html with all the css, and javascript available. 
 Then it will start a web server usually on port 3000 and watch any code change to refresh the browser. 
 
+### Alternative way to launch, this does't require the prerequisites.
+
+`docker run -v /home/stef/talend/checkouts/data-prep/dataprep-webapp:/dataprep-webapp -p 3000:3000 talend-registry:5000/talend/data-prep-webapp-tools:1.0 /bin/sh -c "gulp serve"`
+
+Of course change */home/stef/talend/checkouts/data-prep/dataprep-webapp* regarding the path of your git clone.
+
+Then application is available at http://localhost:3000
+
 ### Run on your local machine
 By default, the webapp is setup to access the api hosted on `10.42.10.99`. This setting can be changed in the following file :
 
@@ -167,3 +175,9 @@ The docker image is build from the Dockerfile : [docker/Dockerfile-for-dev-tools
 The docker profile adds the build of a docker image to the packaging maven phase.
 This image is launching the nginx web server with the webapp on the port 80. It is build using the Docker file [docker/Dockerfile](docker/Dockerfile).
 You may launch the docker image manually once it is built using this command : `docker run -d -p 80:80 -e TDP_API_HOST="host_for_api_service" -e TDP_API_PORT="port_for_api_service" talend/dataprep-webapp:<pom_version>`
+
+## Known possible errors
+### Error: watch ENOSPC on `gulp serve`
+This error occurs on Browser-sync watch files. The system have a limit of number of files it can watch. We can modify it (and persist it over reboot).
+Details : https://stackoverflow.com/questions/16748737/grunt-watch-error-waiting-fatal-error-watch-enospc
+Solution : `echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p`

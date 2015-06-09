@@ -1,16 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * Lower case a column in a dataset row.
@@ -38,15 +34,6 @@ public class LowerCase extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getItems()
-     */
-    @Override
-    @Nonnull
-    public Item[] getItems() {
-        return new Item[0];
-    }
-
-    /**
      * @see ActionMetadata#create(Map)
      */
     @Override
@@ -64,10 +51,10 @@ public class LowerCase extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCompatibleColumnTypes()
+     * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.STRING);
+    public boolean accept(ColumnMetadata column) {
+        return Type.STRING.equals(Type.get(column.getType()));
     }
 }

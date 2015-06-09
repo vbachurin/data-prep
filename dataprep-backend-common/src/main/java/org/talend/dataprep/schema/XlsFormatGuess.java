@@ -11,7 +11,7 @@ public class XlsFormatGuess implements FormatGuess {
 
     public static final String MEDIA_TYPE = "application/vnd.ms-excel";
 
-    protected static final String BEAN_ID = "formatGuess#xls";
+    public static final String BEAN_ID = "formatGuess#xls";
 
     @Autowired
     private XlsSchemaParser schemaParser;

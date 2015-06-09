@@ -27,7 +27,8 @@
   }
   //////////////////////////////////////////////////////////////////////////////////
 
-  $modal-padding: 3em;
+  $modal-padding: 4em;
+  $modal-padding-top: 3em;
   $modal-background: $base-background-color;
   $modal-close-color: $light-gray;
   $modal-image-height: 135px;
@@ -60,7 +61,7 @@
     z-index: 99999;
 
     @include media($large-screen) {
-      padding-top: 9em;
+      padding-top: 8em;
     }
 
     .modal-bg {
@@ -70,8 +71,8 @@
   }
 
   .modal-close {
-    @include position(absolute, ($modal-padding /2) ($modal-padding /2) null null);
-    @include size(1.5em);
+    @include position(absolute, ($modal-padding-top /2) ($modal-padding /2) null null);
+    @include size(2em);
     background: $modal-background;
     cursor: pointer;
 
@@ -79,7 +80,7 @@
     &:before {
       @include position(absolute, 3px 3px 0 50%);
       @include transform(rotate(45deg));
-      @include size(0.15em 1.5em);
+      @include size(0.15em 2em);
       background: $modal-close-color;
       content: '';
       display: block;
@@ -100,17 +101,16 @@
     @include transition(opacity 0.25s ease);
     background: $modal-background;
     border-radius: $base-border-radius;
-    margin-top: 0;
     margin: auto;
     max-height: 95%;
     overflow: auto;
     padding: $modal-padding / 2;
+    padding-top: $modal-padding-top;
     position: relative;
     width: 95%;
 
     @include media($medium-screen) {
       max-height: 80%;
-      padding: $modal-padding;
       width: 80%;
     }
 
@@ -127,12 +127,13 @@
 
     .modal-title {
       padding: 5px 5px 0;
-      border: none;
-      font-weight: 700;
-      font-size: 1.1em;
+      margin-top: $modal-padding / 2 - $modal-padding-top;
+      border-bottom: 1px solid $medium-gray;
+      font-weight: 300;
+      font-size: 1.7em;
       text-transform: uppercase;
 
-      height: 34px;
+      height: 45px;
       overflow: hidden;
     }
 

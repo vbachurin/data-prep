@@ -18,6 +18,7 @@
         'data-prep.services.dataset',
         'data-prep.services.preparation',
         'data-prep.services.filter',
-        'data-prep.services.playground'
+        'data-prep.services.playground',
+        'data-prep.services.utils'
     ]);
 })();

@@ -38,46 +38,17 @@
 
   /*******************************Active/inactive trigger******************************/
   .step-trigger {
-    text-decoration: none;
-    color: $color;
     cursor: pointer;
     position: absolute;
-    right: 10px;
-    top: -1px;
-    padding-top: 5px;
-    height: 100%;
-
-    &::after {
-      display: inline-block;
-      vertical-align: middle;
-
-      height: 20px;
-      width: 20px;
-      border-radius: 10px;
-
-      background-color: $dark-green;
-      content: '';
-    }
-
-    &.highlight {
-      color: $medium-gray;
-    }
-  }
-
-  .step-trigger2 {
-    cursor: pointer;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    padding-top: 0px;
+    right: 0;
+    top: 0;
+    padding-top: 0;
     height: 100%;
 
     &::after {
       display: inline-block;
       vertical-align: middle;
     }
-
-
   }
 
   .inactive {

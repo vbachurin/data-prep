@@ -6,14 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.codehaus.jackson.JsonNode;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 public abstract class AbstractDynamicAction extends SingleColumnAction {
-
-    @Override
-    public Item[] getItems() {
-        return new Item[0];
-    }
 
     @Override
     public boolean isDynamic() {
