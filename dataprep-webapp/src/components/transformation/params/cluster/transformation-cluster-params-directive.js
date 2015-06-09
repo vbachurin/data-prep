@@ -69,14 +69,14 @@
                 }
 
                 $timeout(function() {
-                    var clustersRows = iElement.find('>tbody >tr');
+                    var clustersRows = iElement.find('>.cluster-body >.cluster-line');
 
                     //attach change listener on each row enable/disable checkbox
                     clustersRows.each(function(index) {
                         var row = clustersRows.eq(index);
                         var rowInputs = row.find('input:not(.cluster-activation)');
                         var rowSelects = row.find('select');
-                        var checkbox = row.find('>td:first >input.cluster-activation');
+                        var checkbox = row.find('>div:first >input.cluster-activation');
 
                         allActivationCheckboxes[index] = {
                             checkbox: checkbox,

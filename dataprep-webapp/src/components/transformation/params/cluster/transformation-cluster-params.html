@@ -1,25 +1,29 @@
-<table class="cluster param">
-    <thead>
-    <tr>
-        <th><input type="checkbox" ng-model="clusterParamsCtrl.allCheckboxState"
-                   ng-click="clusterParamsCtrl.refreshClusterState()"/></th>
-        <th ng-repeat="title in ::clusterParamsCtrl.details.titles track by $index">{{::title}}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="cluster in ::clusterParamsCtrl.details.clusters track by $index">
-        <td>
-            <input class="cluster-activation" ng-model="cluster.active" type="checkbox" ng-click="clusterParamsCtrl.refreshToggleCheckbox()"/>
-        </td>
-        <td>
-            <transform-simple-params label="false" tooltip="false"
-                                     parameters="cluster.parameters"></transform-simple-params>
-        </td>
-        <td>
-            <transform-simple-params label="false" tooltip="false"
-                                     editable-select="cluster.replace.list"
-                                     parameters="[cluster.replace]"></transform-simple-params>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div class="cluster param">
+    <div class="param-row cluster-line cluster-header">
+        <div>
+            <input type="checkbox" ng-model="clusterParamsCtrl.allCheckboxState"
+                   ng-click="clusterParamsCtrl.refreshClusterState()"/>
+        </div>
+        <div ng-repeat="title in ::clusterParamsCtrl.details.titles track by $index">{{::title}}</div>
+    </div>
+    <div class="cluster-body">
+        <div class="cluster-line" ng-repeat="cluster in ::clusterParamsCtrl.details.clusters track by $index">
+           <div>
+               <input class="cluster-activation" ng-model="cluster.active" type="checkbox" ng-click="clusterParamsCtrl.refreshToggleCheckbox()"/>
+           </div>
+            <div>
+                <transform-simple-params class="param-no-space"
+                                         label="false"
+                                         tooltip="false"
+                                         parameters="cluster.parameters"></transform-simple-params>
+            </div>
+            <div>
+                <transform-simple-params class="param-no-space"
+                                         label="false"
+                                         tooltip="false"
+                                         editable-select="cluster.replace.list"
+                                         parameters="[cluster.replace]"></transform-simple-params>
+            </div>
+        </div>
+    </div>
+</div>

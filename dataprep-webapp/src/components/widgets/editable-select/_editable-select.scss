@@ -1,8 +1,10 @@
 .editable-select {
   $width: 235px;
+  $height: 32px;
   $caret-width: 20px;
   
   position: relative;
+  height: $height;
 
   @mixin superpose {
     position: absolute;
@@ -11,7 +13,7 @@
   }
 
   @mixin size {
-    height: 32px;
+    height: $height;
     width: $width;
   }
 

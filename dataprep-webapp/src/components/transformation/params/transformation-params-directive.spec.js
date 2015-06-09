@@ -240,6 +240,6 @@ describe('Transformation params directive', function () {
         var element = createElement();
 
         //then
-        expect(element.find('table.cluster').length).toBe(1);
+        expect(element.find('.cluster').length).toBe(1);
     });
 });

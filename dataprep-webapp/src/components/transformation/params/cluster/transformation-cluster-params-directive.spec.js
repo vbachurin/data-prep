@@ -112,9 +112,9 @@ describe('Transformation simple params directive', function () {
         var element = createElement();
 
         //then
-        expect(element.find('thead > tr > th').eq(0).find('input[type="checkbox"]').length).toBe(1);
-        expect(element.find('thead > tr > th').eq(1).text().trim()).toBe('We found these values');
-        expect(element.find('thead > tr > th').eq(2).text().trim()).toBe('And we\'ll keep this value');
+        expect(element.find('.cluster-header > div').eq(0).find('input[type="checkbox"]').length).toBe(1);
+        expect(element.find('.cluster-header > div').eq(1).text().trim()).toBe('We found these values');
+        expect(element.find('.cluster-header > div').eq(2).text().trim()).toBe('And we\'ll keep this value');
     });
 
     it('should render clusters', function() {
@@ -122,26 +122,26 @@ describe('Transformation simple params directive', function () {
         var element = createElement();
 
         //then
-        var firstRow = element.find('tbody').eq(0).find('>tr').eq(0);
-        expect(firstRow.find('>td').eq(0).find('input[type="checkbox"]').length).toBe(1);
-        expect(firstRow.find('>td').eq(1).find('input[type="checkbox"]').length).toBe(3);
-        expect(firstRow.find('>td').eq(2).find('input[type="text"]').length).toBe(1);
+        var firstRow = element.find('.cluster-body > .cluster-line').eq(0);
+        expect(firstRow.find('>div').eq(0).find('input[type="checkbox"]').length).toBe(1);
+        expect(firstRow.find('>div').eq(1).find('input[type="checkbox"]').length).toBe(3);
+        expect(firstRow.find('>div').eq(2).find('input[type="text"]').length).toBe(1);
 
-        var secondRow = element.find('tbody').eq(0).find('>tr').eq(1);
-        expect(secondRow.find('>td').eq(0).find('input[type="checkbox"]').length).toBe(1);
-        expect(secondRow.find('>td').eq(1).find('input[type="checkbox"]').length).toBe(5);
-        expect(secondRow.find('>td').eq(2).find('input[type="text"]').length).toBe(1);
+        var secondRow = element.find('.cluster-body > .cluster-line').eq(1);
+        expect(secondRow.find('>div').eq(0).find('input[type="checkbox"]').length).toBe(1);
+        expect(secondRow.find('>div').eq(1).find('input[type="checkbox"]').length).toBe(5);
+        expect(secondRow.find('>div').eq(2).find('input[type="text"]').length).toBe(1);
     });
 
     it('should uncheck global activation checkbox', function() {
         //given
         var element = createElement();
-        var allCheck = element.find('thead > tr > th').eq(0).find('input[type="checkbox"]').eq(0);
+        var allCheck = element.find('.cluster-header > div').eq(0).find('input[type="checkbox"]').eq(0);
 
-        var firstRow = element.find('tbody').eq(0).find('>tr').eq(0);
-        var secondRow = element.find('tbody').eq(0).find('>tr').eq(1);
-        var firstRowCheckbox = firstRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
-        var secondRowCheckbox = secondRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
+        var firstRow = element.find('.cluster-body > .cluster-line').eq(0);
+        var secondRow = element.find('.cluster-body > .cluster-line').eq(1);
+        var firstRowCheckbox = firstRow.find('>div').eq(0).find('input[type="checkbox"]').eq(0);
+        var secondRowCheckbox = secondRow.find('>div').eq(0).find('input[type="checkbox"]').eq(0);
 
         expect(allCheck.is(':checked')).toBe(true);
         expect(firstRowCheckbox.is(':checked')).toBe(true);
@@ -160,12 +160,12 @@ describe('Transformation simple params directive', function () {
     it('should uncheck all cluster activation checkbox', function() {
         //given
         var element = createElement();
-        var allCheck = element.find('thead > tr > th').eq(0).find('input[type="checkbox"]').eq(0);
+        var allCheck = element.find('.cluster-header > div').eq(0).find('input[type="checkbox"]').eq(0);
 
-        var firstRow = element.find('tbody').eq(0).find('>tr').eq(0);
-        var secondRow = element.find('tbody').eq(0).find('>tr').eq(1);
-        var firstRowCheckbox = firstRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
-        var secondRowCheckbox = secondRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
+        var firstRow = element.find('.cluster-body > .cluster-line').eq(0);
+        var secondRow = element.find('.cluster-body > .cluster-line').eq(1);
+        var firstRowCheckbox = firstRow.find('>div').eq(0).find('input[type="checkbox"]').eq(0);
+        var secondRowCheckbox = secondRow.find('>div').eq(0).find('input[type="checkbox"]').eq(0);
 
         expect(allCheck.is(':checked')).toBe(true);
         expect(firstRowCheckbox.is(':checked')).toBe(true);
@@ -183,12 +183,12 @@ describe('Transformation simple params directive', function () {
     it('should check all cluster activation checkbox', function() {
         //given
         var element = createElement();
-        var allCheck = element.find('thead > tr > th').eq(0).find('input[type="checkbox"]').eq(0);
+        var allCheck = element.find('.cluster-header > div').eq(0).find('input[type="checkbox"]').eq(0);
 
-        var firstRow = element.find('tbody').eq(0).find('>tr').eq(0);
-        var secondRow = element.find('tbody').eq(0).find('>tr').eq(1);
-        var firstRowCheckbox = firstRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
-        var secondRowCheckbox = secondRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
+        var firstRow = element.find('.cluster-body > .cluster-line').eq(0);
+        var secondRow = element.find('.cluster-body > .cluster-line').eq(1);
+        var firstRowCheckbox = firstRow.find('>div').eq(0).find('input[type="checkbox"]').eq(0);
+        var secondRowCheckbox = secondRow.find('>div').eq(0).find('input[type="checkbox"]').eq(0);
 
         allCheck.click();
         scope.$digest();
@@ -210,8 +210,8 @@ describe('Transformation simple params directive', function () {
     it('should update style on "active --> inactive" cluster row', function() {
         //given
         var element = createElement();
-        var firstRow = element.find('tbody').eq(0).find('>tr').eq(0);
-        var firstRowCheckbox = firstRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
+        var firstRow = element.find('.cluster-body > .cluster-line').eq(0);
+        var firstRowCheckbox = firstRow.find('>div').eq(0).find('input[type="checkbox"]').eq(0);
 
         expect(firstRow.hasClass('disabled')).toBe(false);
         expect(firstRow.find('input:not(.cluster-activation)').is(':disabled')).toBe(false);
@@ -229,8 +229,8 @@ describe('Transformation simple params directive', function () {
     it('should update style on "inactive --> active" cluster row', function() {
         //given
         var element = createElement();
-        var firstRow = element.find('tbody').eq(0).find('>tr').eq(0);
-        var firstRowCheckbox = firstRow.find('>td').eq(0).find('input[type="checkbox"]').eq(0);
+        var firstRow = element.find('.cluster-body > .cluster-line').eq(0);
+        var firstRowCheckbox = firstRow.find('>div').eq(0).find('input[type="checkbox"]').eq(0);
 
         firstRowCheckbox.click();
         scope.$digest();

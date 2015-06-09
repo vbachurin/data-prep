@@ -139,7 +139,7 @@ describe('Recipe directive', function() {
 
         //then
         expect(body.find('.modal-inner').length).toBe(1);
-        expect(body.find('.modal-inner').find('table.cluster').length).toBe(1);
+        expect(body.find('.modal-inner').find('.cluster').length).toBe(1);
     }));
 
 });
