@@ -20,12 +20,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for Rename action. Creates one consumer, and test it.
@@ -35,7 +36,7 @@ import org.talend.dataprep.api.type.Type;
 public class RenameTest {
 
     /** The metadata consumer to test. */
-    private Consumer<RowMetadata> metadataClosure;
+    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
 
     /** The action to test. */
     private Rename action;
@@ -71,7 +72,7 @@ public class RenameTest {
         input.add(metadata);
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata);
+        metadataClosure.accept(rowMetadata, new TransformationContext());
 
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -82,9 +81,9 @@ public class CopyColumn extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
 
-        return rowMetadata -> {
+        return (rowMetadata, context) -> {
 
             String columnId = parameters.get(COLUMN_ID);
 

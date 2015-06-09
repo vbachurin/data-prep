@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -31,7 +30,7 @@ public class TransformerConfiguration {
     private final boolean preview;
 
     /** The list of actions to perform on columns. */
-    private final List<Consumer<RowMetadata>> columnActions;
+    private final List<BiConsumer<RowMetadata, TransformationContext>> columnActions;
 
     /** The list of actions to perform on records. */
     private final List<BiConsumer<DataSetRow, TransformationContext>> recordActions;
@@ -53,7 +52,7 @@ public class TransformerConfiguration {
             final TransformerWriter output, //
             final List<Integer> indexes, //
             final boolean preview, //
-            final List<Consumer<RowMetadata>> columnActions, //
+            final List<BiConsumer<RowMetadata, TransformationContext>> columnActions, //
             final List<BiConsumer<DataSetRow, TransformationContext>> recordActions) {
         this.input = input;
         this.output = output;
@@ -95,7 +94,7 @@ public class TransformerConfiguration {
     /**
      * @return the actions to perform on columns.
      */
-    public List<Consumer<RowMetadata>> getColumnActions() {
+    public List<BiConsumer<RowMetadata, TransformationContext>> getColumnActions() {
         return columnActions;
     }
 
@@ -138,7 +137,7 @@ public class TransformerConfiguration {
         private boolean preview;
 
         /** The list of actions to perform on columns. */
-        private List<Consumer<RowMetadata>> columnActions = new ArrayList<>(2);
+        private List<BiConsumer<RowMetadata, TransformationContext>> columnActions = new ArrayList<>(2);
 
         /** The list of actions to perform on records. */
         private List<BiConsumer<DataSetRow, TransformationContext>> recordActions = new ArrayList<>(2);
@@ -186,7 +185,7 @@ public class TransformerConfiguration {
          * @param columnActions the actions to perform on columns.
          * @return the builder to chain calls.
          */
-        public Builder columnActions(final Consumer columnActions) {
+        public Builder columnActions(final BiConsumer<RowMetadata, TransformationContext> columnActions) {
             this.columnActions.add(columnActions);
             return this;
         }
@@ -195,7 +194,7 @@ public class TransformerConfiguration {
          * @param recordActions the actions to perform on records.
          * @return the builder to chain calls.
          */
-        public Builder recordActions(final BiConsumer recordActions) {
+        public Builder recordActions(final BiConsumer<DataSetRow, TransformationContext> recordActions) {
             this.recordActions.add(recordActions);
             return this;
         }

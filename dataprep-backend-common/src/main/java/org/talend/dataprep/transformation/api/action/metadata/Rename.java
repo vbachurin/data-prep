@@ -3,7 +3,7 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -69,9 +70,9 @@ public class Rename extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
 
-        return rowMetadata -> {
+        return (rowMetadata, context) -> {
 
             String columnId = parameters.get(COLUMN_ID);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);

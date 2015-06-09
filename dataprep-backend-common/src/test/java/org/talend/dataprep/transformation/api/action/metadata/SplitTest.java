@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -41,7 +40,7 @@ public class SplitTest {
     private BiConsumer<DataSetRow, TransformationContext> rowClosure;
 
     /** The metadata consumer to test. */
-    private Consumer<RowMetadata> metadataClosure;
+    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
 
     /** The action to test. */
     private Split action;
@@ -136,7 +135,7 @@ public class SplitTest {
         input.add(createMetadata("last update", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata);
+        metadataClosure.accept(rowMetadata, new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
