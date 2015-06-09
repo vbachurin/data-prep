@@ -29,17 +29,13 @@
                             <!-- Draft actions icons -->
                             <tr ng-switch-when="true">
                                 <td class="t-right-divider">
-                                    <td><a class="t-btn t-btn-transparent t-btn-shaker" ng-click="datasetListCtrl.openDraft(dataset)"></a></td>
                                     <button class="t-btn t-btn-transparent t-btn-remove" ng-click="datasetListCtrl.delete(dataset)"></button>
                                 </td>
                             </tr>
 
                             <!-- Not draft actions icons -->
                             <tr ng-switch-when="false">
-                                <td ng-switch="!!dataset.defaultPreparation.id">
-                                    <a ng-switch-when="false" class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets({datasetid: dataset.id})"></a>
-                                    <a ng-switch-when="true" class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.preparations({prepid: dataset.defaultPreparation.id})"></a>
-                                </td>
+                                <td ng-if="!!dataset.defaultPreparation"><a class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.preparations({prepid: dataset.defaultPreparation.id})"></a></td>
                                 <td class="t-right-divider"><button class="t-btn t-btn-transparent t-btn-pushto"></button></td>
                                 <td><button class="t-btn t-btn-transparent t-btn-favorite"></button></td>
                                 <td class="t-right-divider"><button t-btn-transparent class="t-btn t-btn-transparent t-btn-share" ng-click=""></button></td>
