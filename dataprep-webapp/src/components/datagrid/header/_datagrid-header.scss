@@ -40,14 +40,7 @@
     font-size: 0.75em;
     font-weight: 300;
     text-align: right;
-  }
-
-  .grid-header-domain {
-    height: 100%;
-    text-transform: lowercase;
-    font-size: 0.75em;
-    font-weight: 300;
-    text-align: right;
+    text-overflow: ellipsis;
   }
 
   .grid-header-menu {
