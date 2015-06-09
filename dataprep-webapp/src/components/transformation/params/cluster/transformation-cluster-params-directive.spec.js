@@ -223,6 +223,7 @@ describe('Transformation simple params directive', function () {
         //then
         expect(firstRow.hasClass('disabled')).toBe(true);
         expect(firstRow.find('input:not(.cluster-activation)').is(':disabled')).toBe(true);
+        expect(firstRow.find('select:not(.cluster-activation)').is(':disabled')).toBe(true); //editable select
     });
 
     it('should update style on "inactive --> active" cluster row', function() {
@@ -244,5 +245,6 @@ describe('Transformation simple params directive', function () {
         //then
         expect(firstRow.hasClass('disabled')).toBe(false);
         expect(firstRow.find('input:not(.cluster-activation)').is(':disabled')).toBe(false);
+        expect(firstRow.find('select:not(.cluster-activation)').is(':disabled')).toBe(false); //editable select
     });
 });

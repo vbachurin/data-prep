@@ -61,6 +61,7 @@
                                     item.row.addClass('disabled');
                                 }
                                 item.inputs.prop('disabled', !checked);
+                                item.selects.prop('disabled', !checked);
                                 item.lastState = checked;
                             }
                         })
@@ -74,12 +75,14 @@
                     clustersRows.each(function(index) {
                         var row = clustersRows.eq(index);
                         var rowInputs = row.find('input:not(.cluster-activation)');
+                        var rowSelects = row.find('select');
                         var checkbox = row.find('>td:first >input.cluster-activation');
 
                         allActivationCheckboxes[index] = {
                             checkbox: checkbox,
                             row: row,
-                            inputs: rowInputs
+                            inputs: rowInputs,
+                            selects: rowSelects
                         };
                     });
 
