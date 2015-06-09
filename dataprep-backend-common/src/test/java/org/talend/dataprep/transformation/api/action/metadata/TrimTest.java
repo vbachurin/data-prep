@@ -18,7 +18,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -27,6 +27,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for Trim action. Creates one consumer, and test it.
@@ -39,7 +40,7 @@ public class TrimTest {
     private Trim action;
 
     /** The consumer out of the action. */
-    private Consumer<DataSetRow> consumer;
+    private BiConsumer<DataSetRow, TransformationContext> consumer;
 
     /**
      * Constructor.
@@ -62,7 +63,7 @@ public class TrimTest {
         values.put("band", " the beatles ");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr);
+        consumer.accept(dsr, new TransformationContext());
 
         assertEquals("the beatles", dsr.get("band"));
     }
@@ -73,7 +74,7 @@ public class TrimTest {
         values.put("band", "The  Beatles");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr);
+        consumer.accept(dsr, new TransformationContext());
 
         assertEquals("The  Beatles", dsr.get("band"));
     }
@@ -84,7 +85,7 @@ public class TrimTest {
         values.put("bando", "the beatles");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr);
+        consumer.accept(dsr, new TransformationContext());
 
         assertEquals("the beatles", dsr.get("bando"));
     }

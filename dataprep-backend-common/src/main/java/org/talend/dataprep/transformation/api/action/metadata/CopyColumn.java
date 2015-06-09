@@ -13,34 +13,26 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * Split a cell value on a separator.
  */
-@Component(ExtractEmailDomain.ACTION_BEAN_PREFIX + ExtractEmailDomain.EXTRACT_DOMAIN_ACTION_NAME)
-public class ExtractEmailDomain extends SingleColumnAction {
+@Component(CopyColumn.ACTION_BEAN_PREFIX + CopyColumn.COPY_ACTION_NAME)
+public class CopyColumn extends SingleColumnAction {
 
     /** The action name. */
-    public static final String EXTRACT_DOMAIN_ACTION_NAME = "extractemaildomain"; //$NON-NLS-1$
+    public static final String COPY_ACTION_NAME = "copy"; //$NON-NLS-1$
 
-    /** The local suffix. */
-    private static final String _LOCAL = "_local"; //$NON-NLS-1$
-
-    /** The domain suffix. */
-    private static final String _DOMAIN = "_domain"; //$NON-NLS-1$
-
-    /**
-     * Private constructor to ensure IoC use.
-     */
-    protected ExtractEmailDomain() {
-    }
+    /** The split column appendix. */
+    public static final String COPY_APPENDIX = "_copy"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
      */
     @Override
     public String getName() {
-        return EXTRACT_DOMAIN_ACTION_NAME;
+        return COPY_ACTION_NAME;
     }
 
     /**
@@ -52,11 +44,19 @@ public class ExtractEmailDomain extends SingleColumnAction {
     }
 
     /**
+     * @see ActionMetadata#getItems()@return
+     */
+    @Override
+    public Item[] getItems() {
+        return new Item[] {};
+    }
+
+    /**
      * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
     public boolean accept(ColumnMetadata column) {
-        return Type.STRING.equals(Type.get(column.getType()));
+        return true;
     }
 
     /**
@@ -66,20 +66,12 @@ public class ExtractEmailDomain extends SingleColumnAction {
      */
     @Override
     public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
-
         String columnName = parameters.get(COLUMN_ID);
-        String realSeparator = "@";
 
         return (row, context) -> {
             String originalValue = row.get(columnName);
             if (originalValue != null) {
-                String[] split = originalValue.split(realSeparator, 2);
-
-                String local_part = split.length >= 2 ? split[0] : StringUtils.EMPTY;
-                row.set(columnName + _LOCAL, local_part);
-
-                String domain_part = split.length >= 2 ? split[1] : StringUtils.EMPTY;
-                row.set(columnName + _DOMAIN, domain_part);
+                row.set(columnName + COPY_APPENDIX, originalValue);
             }
         };
     }
@@ -106,20 +98,8 @@ public class ExtractEmailDomain extends SingleColumnAction {
                 if (StringUtils.equals(columnId, column.getId())) {
                     newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
-                            .computedId(column.getId() + _LOCAL) //
-                            .name(column.getName() + _LOCAL) //
-                            .type(Type.get(column.getType())) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                    newColumns.add(newColumnMetadata);
-
-                    newColumnMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .computedId(column.getId() + _DOMAIN) //
-                            .name(column.getName() + _DOMAIN) //
+                            .computedId(column.getId() + COPY_APPENDIX) //
+                            .name(column.getName() + COPY_APPENDIX) //
                             .type(Type.get(column.getType())) //
                             .empty(column.getQuality().getEmpty()) //
                             .invalid(column.getQuality().getInvalid()) //

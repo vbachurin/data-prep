@@ -18,7 +18,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -27,6 +27,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for LowerCase action. Creates one consumer, and test it.
@@ -40,7 +41,7 @@ public class UpperCasetTest {
     private UpperCase action;
 
     /** The row consumer to test. */
-    private Consumer<DataSetRow> rowClosure;
+    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
 
     /**
      * Constructor.
@@ -70,7 +71,7 @@ public class UpperCasetTest {
         expectedValues.put("city", "VANCOUVER"); // Vancouver --> VANCOUVER
         expectedValues.put("country", "Canada");
 
-        rowClosure.accept(row);
+        rowClosure.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -88,7 +89,7 @@ public class UpperCasetTest {
         expectedValues.put("country", "Canada");
         expectedValues.put("capital", "Ottawa");
 
-        rowClosure.accept(row);
+        rowClosure.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 

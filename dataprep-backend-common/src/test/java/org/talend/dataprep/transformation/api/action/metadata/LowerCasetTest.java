@@ -18,7 +18,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -27,6 +27,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for LowerCase action. Creates one consumer, and test it.
@@ -36,7 +37,7 @@ import org.talend.dataprep.api.type.Type;
 public class LowerCasetTest {
 
     /** The row consumer to test. */
-    private Consumer<DataSetRow> rowClosure;
+    private BiConsumer<DataSetRow, TransformationContext> closure;
 
     /** The action to test. */
     private LowerCase action;
@@ -53,7 +54,7 @@ public class LowerCasetTest {
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
         Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
-        rowClosure = action.create(parameters);
+        closure = action.create(parameters);
     }
 
     /**
@@ -72,7 +73,7 @@ public class LowerCasetTest {
         expectedValues.put("entity", "r&d"); // R&D --> r&d
         expectedValues.put("joined", "May 20th 2015");
 
-        rowClosure.accept(row);
+        closure.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -90,7 +91,7 @@ public class LowerCasetTest {
         expectedValues.put("name", "Vincent");
         expectedValues.put("joined", "May 20th 2015");
 
-        rowClosure.accept(row);
+        closure.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
