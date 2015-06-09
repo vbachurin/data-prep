@@ -3,6 +3,7 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,6 +12,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Split a cell value on a separator.
@@ -63,11 +65,12 @@ public class ExtractEmailDomain extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+
         String columnName = parameters.get(COLUMN_ID);
         String realSeparator = "@";
 
-        return row -> {
+        return (row, context) -> {
             String originalValue = row.get(columnName);
             if (originalValue != null) {
                 String[] split = originalValue.split(realSeparator, 2);

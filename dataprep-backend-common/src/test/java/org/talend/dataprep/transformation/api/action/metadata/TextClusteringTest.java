@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 public class TextClusteringTest {
 
@@ -29,7 +30,7 @@ public class TextClusteringTest {
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
 
-        final Consumer<DataSetRow> consumer = textClustering.create(parameters);
+        final BiConsumer<DataSetRow, TransformationContext> consumer = textClustering.create(parameters);
 
         final List<DataSetRow> rows = new ArrayList<>();
         rows.add(createRow("uglystate", "T@T@"));
@@ -38,7 +39,7 @@ public class TextClusteringTest {
         rows.add(createRow("uglystate", "Tata"));
 
         // when
-        rows.stream().forEach((row) -> consumer.accept(row));
+        rows.stream().forEach((row) -> consumer.accept(row, new TransformationContext()));
 
         // then
         rows.stream().map((row) -> row.get("uglystate"))
@@ -54,7 +55,7 @@ public class TextClusteringTest {
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
 
-        final Consumer<DataSetRow> consumer = textClustering.create(parameters);
+        final BiConsumer<DataSetRow, TransformationContext> consumer = textClustering.create(parameters);
 
         final List<DataSetRow> rows = new ArrayList<>();
         rows.add(createRow("uglystate", "T@T@1"));
@@ -63,7 +64,7 @@ public class TextClusteringTest {
         rows.add(createRow("uglystate", "Tata1"));
 
         // when
-        rows.stream().forEach((row) -> consumer.accept(row));
+        rows.stream().forEach((row) -> consumer.accept(row, new TransformationContext()));
 
         // then
         rows.stream().map((row) -> row.get("uglystate"))
