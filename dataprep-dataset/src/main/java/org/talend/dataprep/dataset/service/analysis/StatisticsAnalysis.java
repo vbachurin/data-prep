@@ -121,7 +121,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                     generator.writeEndObject();
                     generator.flush();
                     // Compute statistics
-                    int topKfreqTable = 5;
+                    int topKfreqTable = 15;
                     String binsOrBuckets = "2"; //$NON-NLS-1$
                     statisticsClient.setSchema(schema.toString());
                     String jsonResult = statisticsClient.doStatisticsInMemory(content.toString(), topKfreqTable,
