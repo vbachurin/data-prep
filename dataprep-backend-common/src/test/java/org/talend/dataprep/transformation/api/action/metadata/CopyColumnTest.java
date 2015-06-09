@@ -24,10 +24,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -38,7 +34,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 /**
  * Test class for Split action. Creates one consumer, and test it.
  * 
- * @see Split
+ * @see CopyColumn
  */
 public class CopyColumnTest {
 
@@ -57,11 +53,10 @@ public class CopyColumnTest {
     public CopyColumnTest() throws IOException {
         action = new CopyColumn();
 
-        String actions = IOUtils.toString(CopyColumnTest.class.getResourceAsStream("copyColumnAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                CopyColumnTest.class.getResourceAsStream("copyColumnAction.json"));
+
         rowClosure = action.create(parameters);
         metadataClosure = action.createMetadataClosure(parameters);
     }

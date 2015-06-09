@@ -34,7 +34,7 @@ public class Negate extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "boolean"; //$NON-NLS-1$
+        return ActionCategory.BOOLEAN.getDisplayName();
     }
 
     /**

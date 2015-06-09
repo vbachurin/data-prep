@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "change_date_pattern",
+      "parameters": {
+        "column_id": "due_date",
+        "new_date_pattern": "dd - MMM - yyyy"
+      }
+    }
+  ]
+}

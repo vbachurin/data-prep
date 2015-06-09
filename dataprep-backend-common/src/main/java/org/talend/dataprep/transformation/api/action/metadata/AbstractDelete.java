@@ -16,7 +16,7 @@ public abstract class AbstractDelete extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "cleansing"; //$NON-NLS-1$
+        return ActionCategory.CLEANSING.getDisplayName();
     }
 
     /**

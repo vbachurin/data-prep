@@ -40,7 +40,7 @@ public class CopyColumn extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "columns"; //$NON-NLS-1$
+        return ActionCategory.COLUMNS.getDisplayName();
     }
 
     /**

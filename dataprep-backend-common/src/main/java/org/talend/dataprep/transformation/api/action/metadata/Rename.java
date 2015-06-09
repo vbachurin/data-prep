@@ -41,8 +41,7 @@ public class Rename extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        // TODO define category
-        return "columns";
+        return ActionCategory.COLUMNS.getDisplayName();
     }
 
     /**

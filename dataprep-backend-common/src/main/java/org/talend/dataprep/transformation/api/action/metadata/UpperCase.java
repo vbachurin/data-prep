@@ -31,7 +31,7 @@ public class UpperCase extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "case"; //$NON-NLS-1$
+        return ActionCategory.CASE.getDisplayName();
     }
 
     /**
