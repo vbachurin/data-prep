@@ -22,12 +22,13 @@ public enum DataSetErrorCodes implements ErrorCode {
     UNABLE_TO_ANALYZE_COLUMN_TYPES(500),
     UNABLE_TO_ANALYZE_DATASET_QUALITY(500),
     /**
-     * Error returned in case the data set is in "error" state, meaning an internal error (schema analysis, quality
-     * analysis) error prevents service to correctly serve data set's content.
+     * Error returned in case the data set is in "importing" state, meaning all mandatory analysis prevents service to
+     * correctly serve data set's content.
      * 
-     * @see DataSetLifecycle#error()
+     * @see DataSetLifecycle#importing()
      */
-    UNABLE_TO_SERVE_DATASET_CONTENT(500, "id"),
+    UNABLE_TO_SERVE_DATASET_CONTENT(400, "id"),
+
     /**
      * this one will happen when user do something on datas whereas those datas has been updated async in the backend
      * and this action is not possible anymore (i.e preview whereas this dataset do not need any preview)
