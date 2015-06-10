@@ -44,7 +44,6 @@
   @include justify-content(space-between);
 
   .content {
-    transition: 0.5s ease width;
     @include flex(1 0);
     order: 2;
     overflow: auto;

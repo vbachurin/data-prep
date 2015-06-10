@@ -1,39 +1,71 @@
-.container {
-  @include outer-container;
-}
-
-.wide-container {
-  width: 100%;
-}
-
 .flex {
   @include display(flex);
-  @include flex-flow(row wrap);
-  @include justify-content(space-between)
+  @include flex-direction(row);
+  @include flex-wrap(wrap);
+  @include justify-content(space-between);
+
+  &.col {
+    @include flex-direction(column);
+  }
+}
+
+@mixin grid-item-columns($columns) {
+  width: (100% / 12) * $columns;
+}
+
+
+@mixin flex-column() {
+  @include display(flex);
+  @include align-items(stretch);
+  @include flex-direction(column);
+}
+
+@mixin flex-row() {
+  @include display(flex);
+  @include align-items(stretch);
+  @include flex-direction(row);
 }
 
 .flex-side {
   z-index: 10;
   box-shadow: 0 2px 8px rgba(0,0,0,.5);
-  @include flex(0 300px);
+  @include flex-grow(0);
+  @include flex-shrink(0);
+  @include flex-basis(300px);
 }
 
 .flex-menu-left {
   @extend .flex-side;
-  @include flex(0 200px);
-  @include calc(height, "100vh - 160px");
-}
-
-.flex-menu-left{
+  @include flex-basis(200px);
   box-shadow: $box-shadow-to-right;
 }
 
-.flex-center {
-  @include flex(3 0);
-  height: 100%;
-  overflow: hidden;
+.flex-menu-right {
+  @extend .flex-side;
+  box-shadow: $box-shadow-to-left;
 }
 
-@mixin grid-item-columns($columns) {
-  width: (100% / 12) * $columns;
+.flex-center {
+  @include flex-grow(1);
+  @include flex-basis(500px);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.main-layout {
+  height: 100vh;
+  @include flex-column();
+
+  .header {
+    @include flex-grow(0);
+  }
+
+  .content {
+    @include flex-grow(1);
+    @include flex-column();
+  }
+
+  .footer {
+    @include flex-grow(0);
+  }
 }

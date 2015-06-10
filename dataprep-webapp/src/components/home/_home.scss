@@ -1,0 +1,15 @@
+@import "menu";
+@import "subheader";
+
+.home {
+  $header-height: 56px;
+  $footer-height: 50px;
+
+  @include calc(height, "100vh - 2 * " + $header-height + " - " + $footer-height);
+  width: 1140px;
+  margin: auto;
+
+  @include flex-row();
+  @include flex-grow(1);
+  @include justify-content(center);
+}
