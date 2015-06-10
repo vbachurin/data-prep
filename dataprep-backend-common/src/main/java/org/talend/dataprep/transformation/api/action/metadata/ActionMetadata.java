@@ -1,14 +1,15 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 import org.codehaus.jackson.JsonNode;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -66,11 +67,12 @@ public interface ActionMetadata {
     Parameter[] getParameters();
 
     /**
-     * Return the list of column type that this action can applied to.
-     *
-     * @return A set of the column {@link Type types} this Action can handle.
+     * Return true if the action can be applied to the given column metadata.
+     * 
+     * @param column the column metadata to transform.
+     * @return true if the action can be applied to the given column metadata.
      */
-    Set<Type> getCompatibleColumnTypes();
+    boolean accept(ColumnMetadata column);
 
     /**
      * Create a closure to perform the transformation on a DatasetRow according to the parameter.
@@ -78,8 +80,8 @@ public interface ActionMetadata {
      * @param parameters A key/value map holding all action dependent configuration.
      * @return A closure that accepts a DatasetRow, closures are expected to execute safely.
      */
-    default Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
+    default BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+        return (row, context) -> {
             // default empty implementation
         };
     }
@@ -92,8 +94,8 @@ public interface ActionMetadata {
      * @param parameters the parameters needed to perform the action.
      * @return A closure that accepts the dataset row metadata, closures are expected to execute safely.
      */
-    default Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
-        return rowMetadata -> {
+    default BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
+        return (rowMetadata, context) -> {
             // default empty implementation
         };
     }
@@ -105,32 +107,7 @@ public interface ActionMetadata {
      * @return the action parameters as a map<key, value>.
      */
     default Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters) {
-        List<String> paramIds = new ArrayList<>();
-        for (Parameter current : getParameters()) {
-            paramIds.add(current.getName());
-        }
-        for (Item current : getItems()) {
-            paramIds.add(current.getName());
-            for (Item.Value value : current.getValues()) {
-                for (Parameter parameter : value.getParameters()) {
-                    paramIds.add(parameter.getName());
-                }
-            }
-        }
-
-        Map<String, String> parsedParameters = new HashMap<>();
-        while (parameters.hasNext()) {
-            Map.Entry<String, JsonNode> currentParameter = parameters.next();
-
-            if (paramIds.contains(currentParameter.getKey())) {
-                parsedParameters.put(currentParameter.getKey(), currentParameter.getValue().asText());
-            } else {
-                ActionParser.LOGGER.warn("Parameter '{} is not recognized for {}", //
-                        currentParameter.getKey(), //
-                        this.getClass());
-            }
-        }
-        return parsedParameters;
+        return ActionMetadataUtils.parseParameters(parameters, this);
     }
 
     /**
@@ -140,4 +117,5 @@ public interface ActionMetadata {
     default boolean isDynamic() {
         return false;
     }
+
 }

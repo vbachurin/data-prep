@@ -185,10 +185,20 @@ public class TransformationServiceTests {
     }
 
     @Test
-    public void numericColumnSuggest() throws Exception {
-        String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column2.json"));
+    public void floatColumnSuggest() throws Exception {
+        String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column_float.json"));
         String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
-                .getResourceAsStream("suggest_numeric.json"));
+.getResourceAsStream("suggest_float.json"));
+        Response post = given().contentType(JSON).body(columnMetadata).when().post("/suggest/column");
+        String response = post.asString();
+        assertEquals(expectedSuggestions, response, false);
+    }
+
+    @Test
+    public void integerColumnSuggest() throws Exception {
+        String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("column_integer.json"));
+        String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class
+                .getResourceAsStream("suggest_integer.json"));
         Response post = given().contentType(JSON).body(columnMetadata).when().post("/suggest/column");
         String response = post.asString();
         assertEquals(expectedSuggestions, response, false);

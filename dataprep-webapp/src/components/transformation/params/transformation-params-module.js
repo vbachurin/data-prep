@@ -9,6 +9,7 @@
      * @requires data-prep.services.utils.service
      */
     angular.module('data-prep.transformation-params', [
+        'talend.widget',
         'data-prep.type-validation',
         'data-prep.services.utils'
     ]);

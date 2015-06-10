@@ -11,7 +11,6 @@
      * @requires data-prep.filter-search
      * @requires data-prep.filter-list
      * @requires data-prep.recipe
-     * @requires data-prep.recipeBullet
      * @requires data-prep.suggestions
      * @requires data-prep.services.preparation
      * @requires data-prep.services.playground
@@ -27,7 +26,6 @@
         'data-prep.recipe',
         'data-prep.horizontalBarchart',
         'data-prep.suggestions',
-        'data-prep.recipeBullet',
         'data-prep.services.preparation',
         'data-prep.services.playground'
     ]);

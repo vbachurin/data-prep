@@ -28,7 +28,16 @@ public class MongoDataSetMetadataRepository implements DataSetMetadataRepository
 
     @Override
     public void clear() {
-        repository.deleteAll();
+        // Remove all data set (but use lock for remaining asynchronous processes).
+        for (DataSetMetadata metadata : list()) {
+            final DistributedLock lock = createDatasetMetadataLock(metadata.getId());
+            try {
+                lock.lock();
+                remove(metadata.getId());
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 
     @Override

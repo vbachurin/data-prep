@@ -58,23 +58,20 @@ public class DataSetServiceTests {
 
     @Value("${local.server.port}")
     public int port;
-
     @Autowired
     DataSetMetadataRepository dataSetMetadataRepository;
-
     @Autowired
     JmsTemplate jmsTemplate;
-
     @Autowired
     DataSetContentStore contentStore;
-
     @Autowired(required = false)
     SparkContext sparkContext;
-
     @Autowired
     FormatGuess.Factory factory;
 
+    /** This class" logger. */
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
@@ -85,10 +82,7 @@ public class DataSetServiceTests {
             }
         }
         // Wait for queue messages
-        waitForQueue(Destinations.CONTENT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
-        waitForQueue(Destinations.SCHEMA_ANALYSIS, dataSetId);
-        waitForQueue(Destinations.FORMAT_ANALYSIS, dataSetId);
         waitForQueue(Destinations.STATISTICS_ANALYSIS, dataSetId);
         // Asserts on metadata status
         DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);

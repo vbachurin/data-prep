@@ -1,5 +1,9 @@
-<svg height="90" width="30" ng-class="{'maillon-circle-disabled all-svg-cls':recipeBulletCtrl.step.inactive, 'maillon-circle all-svg-cls':!recipeBulletCtrl.step.inactive}">
-    <path ng-show="recipeBulletCtrl.type === 'middleChain' || recipeBulletCtrl.type === 'endChain'" ng-attr-d={{recipeBulletCtrl.topPath}} />
-    <circle cx="15" ng-attr-cy={{recipeBulletCtrl.circleCenterY}} r=10 />
-    <path ng-show="recipeBulletCtrl.type === 'startChain' || recipeBulletCtrl.type === 'middleChain'" ng-attr-d={{recipeBulletCtrl.bottomPath}} />
+<svg height="90"
+     width="30"
+     class="all-svg-cls"
+     ng-class="{'maillon-circle-disabled': recipeBulletCtrl.step.inactive, 'maillon-circle': !recipeBulletCtrl.step.inactive}">
+
+    <path ng-show="!recipeBulletCtrl.isStartChain()"></path>
+    <circle cx="15" r=10></circle>
+    <path ng-show="!recipeBulletCtrl.isEndChain()"></path>
 </svg>

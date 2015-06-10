@@ -124,7 +124,7 @@
          * @param {boolean} excludeNumeric - filter the numeric columns
          * @param {boolean} excludeBoolean - filter the boolean columns
          * @description Filter the column ids
-         * @returns {string[]} - the column list that match the desired filters
+         * @returns {Object[]} - the column list that match the desired filters (id & name)
          */
         self.getColumns = function(excludeNumeric, excludeBoolean) {
             var numericTypes = ['numeric', 'integer', 'float', 'double'];
@@ -142,7 +142,7 @@
             }
 
             return _.map(cols, function (col) {
-                return col.id;
+                return {'id': col.id, 'name': col.name};
             });
         };
 
@@ -154,7 +154,7 @@
          * @param {boolean} canBeNumeric - filter the numeric columns
          * @param {boolean} canBeBoolean - filter the boolean columns
          * @description Return the column id list that has a value that match the regexp
-         * @returns {Object[]} - the column list that contains a value that match the regexp
+         * @returns {Object[]} - the column list that contains a value that match the regexp (col.id & col.name)
          */
         self.getColumnsContaining = function(regexp, canBeNumeric, canBeBoolean) {
             var results = [];
@@ -162,16 +162,16 @@
             var data = self.data.records;
             var potentialColumns = self.getColumns(!canBeNumeric, !canBeBoolean);
 
-            //we loop over the datas while there is data and potential columns that can contains the searched term
+            //we loop over data while there is data and potential columns that can contains the searched term
             //if a col value for a row contains the term, we add it to result
             var dataIndex = 0;
             while (dataIndex < data.length && potentialColumns.length) {
                 var record = data[dataIndex];
                 for (var colIndex in potentialColumns) {
-                    var colId = potentialColumns[colIndex];
-                    if (record[colId].toLowerCase().match(regexp)) {
+                    var col = potentialColumns[colIndex];
+                    if (record[col.id].toLowerCase().match(regexp)) {
                         potentialColumns.splice(colIndex, 1);
-                        results.push(colId);
+                        results.push(col);
                     }
                 }
 

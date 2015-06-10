@@ -11,7 +11,7 @@ public class CSVFormatGuess implements FormatGuess {
 
     public static final String SEPARATOR_PARAMETER = "SEPARATOR"; //$NON-NLS-1$
 
-    protected static final String BEAN_ID = "formatGuess#csv";
+    public static final String BEAN_ID = "formatGuess#csv";
 
     @Autowired
     private CSVSchemaParser schemaParser;

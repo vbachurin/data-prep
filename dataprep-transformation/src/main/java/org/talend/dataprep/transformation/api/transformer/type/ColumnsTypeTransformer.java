@@ -3,14 +3,16 @@ package org.talend.dataprep.transformation.api.transformer.type;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
@@ -34,7 +36,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
     public void process(final TransformerConfiguration configuration) {
         final JsonParser parser = configuration.getInput();
 
-        final List<Consumer<RowMetadata>> actions = configuration.getActions(RowMetadata.class);
+        final List<BiConsumer<RowMetadata, TransformationContext>> actions = configuration.getColumnActions();
 
         try {
             final StringWriter content = new StringWriter();
@@ -87,20 +89,26 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                         contentGenerator.flush();
 
                         RowMetadata rowMetadata = getRowMetadata(content);
-
-                        Consumer<RowMetadata> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
-                        action.accept(rowMetadata);
+                        int index = configuration.isPreview() ? 1 : 0;
+                        TransformationContext context = configuration.getTransformationContext(index);
+                        BiConsumer<RowMetadata, TransformationContext> action = actions.get(index);
+                        action.accept(rowMetadata, context);
 
                         // setup the diff in case of preview
                         if (configuration.isPreview()) {
                             RowMetadata reference = getRowMetadata(content);
-                            Consumer<RowMetadata> referenceAction = actions.get(0);
-                            referenceAction.accept(reference);
+                            BiConsumer<RowMetadata, TransformationContext> referenceAction = actions.get(0);
+                            TransformationContext referenceContext = configuration.getTransformationContext(0);
+                            referenceAction.accept(reference, referenceContext);
                             rowMetadata.diff(reference);
+                            referenceContext.setTransformedRowMetadata(reference);
                         }
 
                         // write the result
                         configuration.getOutput().write(rowMetadata);
+
+                        // store the row metadata in the configuration for RecordsTypeTransformer use
+                        context.setTransformedRowMetadata(rowMetadata);
                         return;
 
                     }
@@ -112,7 +120,7 @@ public class ColumnsTypeTransformer implements TypeTransformer {
         } catch (JsonParseException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_WRITE_JSON, e);
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
         }
     }
 

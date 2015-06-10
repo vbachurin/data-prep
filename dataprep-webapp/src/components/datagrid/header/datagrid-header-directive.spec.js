@@ -20,7 +20,7 @@ describe('Dataset column header directive', function() {
         };
     }));
     
-    it('should display column title, type and set quality bars width', function() {
+    it('should display column title, domain and set quality bars width', function() {
         //given
         scope.column = {
             'id': '0',
@@ -30,7 +30,8 @@ describe('Dataset column header directive', function() {
                 'invalid': 10,
                 'valid': 72
             },
-            'type': 'string'
+            'type': 'string',
+            'domain': 'city'
         };
 
         //when
@@ -38,7 +39,7 @@ describe('Dataset column header directive', function() {
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
-        expect(element.find('.grid-header-type').text()).toBe('string');
+        expect(element.find('.grid-header-type').text()).toBe('city');
         expect(element.find('.record-ok').css('width')).toBe('78%');
         expect(element.find('.record-empty').css('width')).toBe('10%');
         expect(element.find('.record-nok').css('width')).toBe('12%');
@@ -62,7 +63,7 @@ describe('Dataset column header directive', function() {
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
-        expect(element.find('.grid-header-type').text()).toBe('string');
+        expect(element.find('.grid-header-type').text()).toBe('text');
         expect(element.find('.record-ok').css('width')).toBe('78%');
         expect(element.find('.record-empty').css('width')).toBe('10%');
         expect(element.find('.record-nok').css('width')).toBe('12%');

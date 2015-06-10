@@ -4,13 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
@@ -23,10 +19,7 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 @Component("transformer#xls")
 @Scope("request")
-public class XlsExporter implements Transformer, Exporter
-{
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+public class XlsExporter implements Transformer, Exporter {
 
     @Autowired
     private TypeTransformerSelector typeStateSelector;
@@ -47,8 +40,9 @@ public class XlsExporter implements Transformer, Exporter
 
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null) //
                     .output(new XlsWriter(output)) //
-                    .actions(DataSetRow.class, actions.getRowTransformer()) //
-                    .actions(RowMetadata.class, actions.getMetadataTransformer()).build();
+                    .recordActions(actions.getRowTransformer()) //
+                    .columnActions(actions.getMetadataTransformer()) //
+                    .build();
 
             typeStateSelector.process(configuration);
         } catch (IOException e) {
@@ -58,8 +52,7 @@ public class XlsExporter implements Transformer, Exporter
     }
 
     @Override
-    public ExportType getExportType()
-    {
+    public ExportType getExportType() {
         return ExportType.XLS;
     }
 }

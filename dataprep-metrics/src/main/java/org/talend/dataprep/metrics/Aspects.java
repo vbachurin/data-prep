@@ -100,21 +100,22 @@ public class Aspects {
     public Object volumeMetered(ProceedingJoinPoint pjp, VolumeMetered volumeMetered) throws Throwable {
         // Find first InputStream available in arguments
         int argumentIndex = -1;
+        int inputStreamIndex = -1;
         for (Object o : pjp.getArgs()) {
             argumentIndex++;
-            if (o != null && InputStream.class.isAssignableFrom(o.getClass())) {
-                break;
+            if (o instanceof InputStream) {
+                inputStreamIndex = argumentIndex;
             }
         }
-        if (argumentIndex < 0) {
+        if (inputStreamIndex < 0) {
             LOGGER.warn("Unable to find a valid InputStream to wrap for meter in method '{}'.", //
                     pjp.getSignature().toLongString());
         }
         // Wraps InputStream (if any)
         Object[] args = pjp.getArgs();
-        if (argumentIndex >= 0) {
-            MeteredInputStream meteredInputStream = new MeteredInputStream((InputStream) args[argumentIndex]);
-            args[argumentIndex] = meteredInputStream;
+        if (inputStreamIndex >= 0) {
+            MeteredInputStream meteredInputStream = new MeteredInputStream((InputStream) args[inputStreamIndex]);
+            args[inputStreamIndex] = meteredInputStream;
             Object o = pjp.proceed(args);
             repository.set(buildVolumeMetric(pjp, meteredInputStream.getVolume()));
             return o;

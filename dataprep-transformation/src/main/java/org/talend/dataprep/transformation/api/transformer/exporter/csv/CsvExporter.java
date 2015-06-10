@@ -7,8 +7,6 @@ import java.io.OutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
@@ -21,8 +19,7 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 @Component("transformer#csv")
 @Scope("request")
-public class CsvExporter implements Transformer,Exporter
-{
+public class CsvExporter implements Transformer, Exporter {
 
     @Autowired
     private TypeTransformerSelector typeStateSelector;
@@ -40,10 +37,11 @@ public class CsvExporter implements Transformer,Exporter
     public void transform(InputStream input, OutputStream output) {
         try {
 
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
-                    .output(new CsvWriter(output, (char) exportConfiguration.getArguments().get("csvSeparator")))
-                    .actions(DataSetRow.class, actions.getRowTransformer())
-                    .actions(RowMetadata.class, actions.getMetadataTransformer()).build();
+            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null) //
+                    .output(new CsvWriter(output, (char) exportConfiguration.getArguments().get("csvSeparator"))) //
+                    .columnActions(actions.getMetadataTransformer()) //
+                    .recordActions(actions.getRowTransformer()) //
+                    .build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
@@ -51,8 +49,7 @@ public class CsvExporter implements Transformer,Exporter
     }
 
     @Override
-    public ExportType getExportType()
-    {
+    public ExportType getExportType() {
         return ExportType.CSV;
     }
 }

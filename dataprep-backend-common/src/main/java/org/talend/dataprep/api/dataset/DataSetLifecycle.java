@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class DataSetLifecycle {
 
+    @JsonProperty("importing")
+    private boolean importing;
+
     @JsonProperty("contentAnalyzed")
     private boolean contentAnalyzed;
 
@@ -15,9 +18,6 @@ public class DataSetLifecycle {
 
     @JsonProperty("qualityAnalyzed")
     private boolean qualityAnalyzed;
-
-    @JsonProperty("inError")
-    private boolean inError;
 
     /**
      * Changes the information on content indexed (is the data set content ready to be queried).
@@ -72,21 +72,12 @@ public class DataSetLifecycle {
         return qualityAnalyzed;
     }
 
-    /**
-     * Changes the information whether the data set can be served or if a unrecoverable error does not allow service to
-     * deliver its content.
-     * 
-     * @param inError <code>true</code> to indicate the content of the data set can't be delivered by service,
-     * <code>false</code> to indicate content can be served.
-     */
-    public void error(boolean inError) {
-        this.inError = inError;
+    public void importing(boolean isImporting) {
+        importing = isImporting;
     }
 
-    /**
-     * @return <code>true</code> if data set processing has met unrecoverable errors, <code>false</code> otherwise.
-     */
-    public boolean error() {
-        return inError;
+    public boolean importing() {
+        return importing;
     }
+
 }

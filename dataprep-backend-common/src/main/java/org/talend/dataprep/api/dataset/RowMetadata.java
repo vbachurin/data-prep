@@ -47,7 +47,7 @@ public class RowMetadata {
      * @param wantedId the wanted column id.
      * @return return the wanted columnMetadata or null if not found.
      */
-    protected ColumnMetadata getById(String wantedId) {
+    public ColumnMetadata getById(String wantedId) {
         // defensive programming
         if (wantedId == null) {
             return null;

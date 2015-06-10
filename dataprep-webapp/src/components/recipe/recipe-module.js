@@ -18,7 +18,7 @@
         'data-prep.services.playground',
         'data-prep.services.recipe',
         'data-prep.services.preparation',
-        'data-prep.recipeBullet',
+        'data-prep.recipe-bullet',
         'data-prep.transformation-params'
     ]);
 })();

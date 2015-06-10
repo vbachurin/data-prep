@@ -66,9 +66,6 @@
    },
    {
       "category": "columns",
-      "compatibleColumnTypes": [
-         "ANY"
-      ],
       "items": [],
       "name": "rename_column",
       "parameters": [
@@ -96,5 +93,27 @@
       ],
       "description": "Rename this column",
       "label": "Rename"
-   }
+   },
+   {
+      "label": "Copy",
+      "name":"copy",
+      "description": "Creates an exact copy of this column",
+      "category": "columns",
+      "parameters": [
+         {
+            "name": "column_id",
+            "type": "string",
+            "description": "The column on which apply this action to",
+            "label": "Column",
+            "default": ""
+         },
+         {
+            "name": "column_name",
+            "type": "string",
+            "description": "The column name on which apply this action to",
+            "label": "Column name",
+            "default": ""
+         }
+       ]
+    }
 ]

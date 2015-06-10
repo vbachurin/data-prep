@@ -16,9 +16,11 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.utils.service:ConverterService
      * @restrict E
      */
     function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService, StatisticsService) {
+
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -138,7 +140,7 @@
 
                         template = '<div class="grid-header '+ diffClass +'">' +
                             '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +
-                            '<div class="grid-header-type ng-binding">' + col.type + '</div>' +
+                            '<div class="grid-header-type ng-binding">' + ConverterService.simplifyType(col.type) + '</div>' +
                             '</div>' +
                             '<div class="quality-bar"><div  class="record-ok" style="width: 100%;"></div></div>';
                     }

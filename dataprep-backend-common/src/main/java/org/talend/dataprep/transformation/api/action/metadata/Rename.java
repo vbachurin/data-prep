@@ -1,7 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 
@@ -10,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -28,12 +30,6 @@ public class Rename extends SingleColumnAction {
     public static final String NEW_COLUMN_NAME_PARAMETER_NAME = "new_column_name"; //$NON-NLS-1$
 
     /**
-     * Private constructor to ensure IoC use.
-     */
-    private Rename() {
-    }
-
-    /**
      * @see ActionMetadata#getName()
      */
     @Override
@@ -46,17 +42,7 @@ public class Rename extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        // TODO define category
-        return "columns";
-    }
-
-    /**
-     * @see ActionMetadata#getItems()
-     */
-    @Override
-    @Nonnull
-    public Item[] getItems() {
-        return new Item[0];
+        return ActionCategory.COLUMNS.getDisplayName();
     }
 
     /**
@@ -70,11 +56,12 @@ public class Rename extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCompatibleColumnTypes()
+     * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.ANY);
+    public boolean accept(ColumnMetadata column) {
+        // allow on all columns
+        return true;
     }
 
     /**
@@ -83,9 +70,9 @@ public class Rename extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
 
-        return rowMetadata -> {
+        return (rowMetadata, context) -> {
 
             String columnId = parameters.get(COLUMN_ID);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);

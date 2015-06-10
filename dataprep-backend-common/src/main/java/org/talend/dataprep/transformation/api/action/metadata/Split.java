@@ -1,7 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -9,6 +13,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -34,11 +39,8 @@ public class Split extends SingleColumnAction {
     /** The separator manually specified by the user. Should be used only if SEPARATOR_PARAMETER value is 'other'. */
     private static final String MANUAL_SEPARATOR_PARAMETER = "manual_separator"; //$NON-NLS-1$
 
-    /**
-     * Private constructor to ensure IoC use.
-     */
-    private Split() {
-    }
+    /** Number of items produces by the split */
+    private static final String LIMIT = "limit"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -53,13 +55,20 @@ public class Split extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "columns"; //$NON-NLS-1$
+        return ActionCategory.COLUMNS.getDisplayName();
+    }
+
+    @Override
+    @Nonnull
+    public Parameter[] getParameters() {
+        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER, new Parameter(LIMIT, Type.INTEGER.getName(), "2") };
     }
 
     /**
      * @see ActionMetadata#getItems()@return
      */
     @Override
+    @Nonnull
     public Item[] getItems() {
         Value[] values = new Value[] { //
         new Value(":", true), //
@@ -70,11 +79,11 @@ public class Split extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCompatibleColumnTypes()
+     * @see ActionMetadata#accept(ColumnMetadata)
      */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.STRING);
+    public boolean accept(ColumnMetadata column) {
+        return Type.STRING.equals(Type.get(column.getType()));
     }
 
     /**
@@ -92,25 +101,19 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
 
-        return row -> {
-            String columnName = parameters.get(COLUMN_ID);
-            String realSeparator = getSeparator(parameters);
+        String columnName = parameters.get(COLUMN_ID);
+        String realSeparator = getSeparator(parameters);
+        int limit = Integer.parseInt(parameters.get(LIMIT));
 
-            String value = row.get(columnName);
-            if (value != null) {
-                int index = value.indexOf(realSeparator);
-                if (index != -1) {
-                    row.set(columnName, value.substring(0, index));
-                    if (index < value.length()) {
-                        row.set(columnName + SPLIT_APPENDIX, value.substring(index + 1));
-                    } else {
-                        row.set(columnName + SPLIT_APPENDIX, StringUtils.EMPTY);
-                    }
-                } else {
-                    row.set(columnName, value);
-                    row.set(columnName + SPLIT_APPENDIX, StringUtils.EMPTY);
+        return (row, context) -> {
+            String originalValue = row.get(columnName);
+            if (originalValue != null) {
+                String[] split = originalValue.split(realSeparator, limit);
+                for (int i = 1; i <= limit; i++) {
+                    String newValue = (i <= split.length ? split[i - 1] : StringUtils.EMPTY);
+                    row.set(columnName + SPLIT_APPENDIX + "_" + i, newValue);
                 }
             }
         };
@@ -122,9 +125,9 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
 
-        return rowMetadata -> {
+        return (rowMetadata, context) -> {
 
             String columnId = parameters.get(COLUMN_ID);
 
@@ -136,17 +139,19 @@ public class Split extends SingleColumnAction {
 
                 // append the split column
                 if (StringUtils.equals(columnId, column.getId())) {
-                    newColumnMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .computedId(column.getId() + SPLIT_APPENDIX) //
-                            .name(column.getName() + SPLIT_APPENDIX) //
-                            .type(Type.get(column.getType())) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                    newColumns.add(newColumnMetadata);
+                    for (int i = 1; i <= Integer.parseInt(parameters.get(LIMIT)); i++) {
+                        newColumnMetadata = ColumnMetadata.Builder //
+                                .column() //
+                                .computedId(column.getId() + SPLIT_APPENDIX + "_" + i) //
+                                .name(column.getName() + SPLIT_APPENDIX + "_" + i) //
+                                .type(Type.get(column.getType())) //
+                                .empty(column.getQuality().getEmpty()) //
+                                .invalid(column.getQuality().getInvalid()) //
+                                .valid(column.getQuality().getValid()) //
+                                .headerSize(column.getHeaderSize()) //
+                                .build();
+                        newColumns.add(newColumnMetadata);
+                    }
                 }
 
             }

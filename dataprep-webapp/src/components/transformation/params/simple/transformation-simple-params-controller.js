@@ -46,6 +46,12 @@
             });
         };
 
+        /**
+         * @ngdoc method
+         * @name initInputTypes
+         * @methodOf data-prep.transformation-params.controller:TransformSimpleParamsCtrl
+         * @description [PRIVATE] Init params input type, depending on param type
+         */
         var initInputTypes = function() {
             _.forEach(vm.parameters, function(param) {
                 param.inputType = ConverterService.toInputType(param.type);

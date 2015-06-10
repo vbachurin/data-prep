@@ -175,4 +175,13 @@ describe('Transform cluster params controller', function () {
         //then
         expect(ctrl.allCheckboxState).toBe(false);
     });
+
+    it('should init replace list for editable select', function () {
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.details.clusters[0].replace.list).toEqual(['Texa', 'Tixass', 'Tex@s']);
+        expect(ctrl.details.clusters[1].replace.list).toEqual(['Massachusetts', 'Masachusetts', 'Massachussetts', 'Massachusets', 'Masachussets']);
+    });
 });
