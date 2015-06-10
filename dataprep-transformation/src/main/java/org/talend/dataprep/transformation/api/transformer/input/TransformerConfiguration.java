@@ -35,8 +35,8 @@ public class TransformerConfiguration {
     /** The list of actions to perform on records. */
     private final List<BiConsumer<DataSetRow, TransformationContext>> recordActions;
 
-    /** The transformation context that may be used by ActionMetadata. */
-    private TransformationContext transformationContext;
+    /** List of transformation context, one per action. */
+    private List<TransformationContext> transformationContexts;
 
     /**
      * Constructor for the transformer configuration.
@@ -60,7 +60,17 @@ public class TransformerConfiguration {
         this.preview = preview;
         this.columnActions = columnActions == null ? Collections.emptyList() : columnActions;
         this.recordActions = recordActions == null ? Collections.emptyList() : recordActions;
-        this.transformationContext = new TransformationContext();
+        this.transformationContexts = new ArrayList<>();
+
+        int actionSize = this.recordActions.size();
+        if (this.columnActions.size() > recordActions.size()) {
+            actionSize = this.columnActions.size();
+        }
+
+        for (int i = 0; i < actionSize; i++) {
+            this.transformationContexts.add(new TransformationContext());
+        }
+
     }
 
     /**
@@ -113,10 +123,11 @@ public class TransformerConfiguration {
     }
 
     /**
-     * @return the transformation context.
+     * @param index the param index.
+     * @return the transformation context that match the given index.
      */
-    public TransformationContext getTransformationContext() {
-        return transformationContext;
+    public TransformationContext getTransformationContext(int index) {
+        return transformationContexts.get(index);
     }
 
     /**

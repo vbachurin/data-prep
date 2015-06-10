@@ -86,6 +86,11 @@ public class ChangeDatePatternTest {
         assertEquals("dd - MMM - yyyy", actualPattern);
     }
 
+    @Test
+    public void toto() {
+        action.getItems();
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void should_check_column_id_when_dealing_with_row() {
         action.createMetadataClosure(new HashMap<>());

@@ -277,7 +277,6 @@ public class DataSetServiceTests {
 
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("avengers_expected.json");
         String datasetContent = given().when().get("/datasets/{id}/content?metadata=false&columns=true", dataSetId).asString();
-        logger.error("Actual content {}", datasetContent);
 
         assertThat(datasetContent, sameJSONAsFile(expected));
     }

@@ -89,25 +89,26 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                         contentGenerator.flush();
 
                         RowMetadata rowMetadata = getRowMetadata(content);
-                        TransformationContext context = configuration.getTransformationContext();
-
-                        BiConsumer<RowMetadata, TransformationContext> action = configuration.isPreview() ? actions.get(1)
-                                : actions.get(0);
+                        int index = configuration.isPreview() ? 1 : 0;
+                        TransformationContext context = configuration.getTransformationContext(index);
+                        BiConsumer<RowMetadata, TransformationContext> action = actions.get(index);
                         action.accept(rowMetadata, context);
 
                         // setup the diff in case of preview
                         if (configuration.isPreview()) {
                             RowMetadata reference = getRowMetadata(content);
                             BiConsumer<RowMetadata, TransformationContext> referenceAction = actions.get(0);
-                            referenceAction.accept(reference, context);
+                            TransformationContext referenceContext = configuration.getTransformationContext(0);
+                            referenceAction.accept(reference, referenceContext);
                             rowMetadata.diff(reference);
+                            referenceContext.setTransformedRowMetadata(reference);
                         }
 
                         // write the result
                         configuration.getOutput().write(rowMetadata);
 
                         // store the row metadata in the configuration for RecordsTypeTransformer use
-                        configuration.getTransformationContext().setTransformedRowMetadata(rowMetadata);
+                        context.setTransformedRowMetadata(rowMetadata);
                         return;
 
                     }

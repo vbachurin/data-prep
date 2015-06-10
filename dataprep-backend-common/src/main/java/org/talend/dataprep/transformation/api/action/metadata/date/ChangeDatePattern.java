@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -36,15 +38,19 @@ public class ChangeDatePattern extends SingleColumnAction {
 
     /** Action name. */
     public static final String ACTION_NAME = "change_date_pattern"; //$NON-NLS-1$
+
     /** Name of the new date pattern parameter. */
     protected static final String NEW_PATTERN = "new_pattern"; //$NON-NLS-1$
 
-    /** The parameter object for the new date pattern. */
-    private static final Parameter NEW_PATTERN_PARAMETER = new Parameter(NEW_PATTERN, Type.STRING.getName(), StringUtils.EMPTY);
+    /** The parameter object for the custom new pattern. */
+    private static final String CUSTOM_PATTERN = "custom_date_pattern";
+
+    /** The parameter object for the custom new pattern. */
+    private static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, Type.STRING.getName(),
+            StringUtils.EMPTY);
 
     /** Name of the old pattern parameter. */
     protected static final String OLD_PATTERN = "old_pattern"; //$NON-NLS-1$
-
 
     /**
      * @see ActionMetadata#createMetadataClosure(Map)
@@ -56,8 +62,7 @@ public class ChangeDatePattern extends SingleColumnAction {
         String columnId = getColumnIdParameter(parameters);
 
         // parse and checks the new date pattern
-
-        String newPattern = getDateFormat(parameters.get(NEW_PATTERN)).toPattern();
+        String newPattern = getDateFormat(getNewPattern(parameters)).toPattern();
 
         JsonFactory jsonFactory = new JsonFactory();
         ObjectMapper mapper = new ObjectMapper(jsonFactory);
@@ -125,7 +130,7 @@ public class ChangeDatePattern extends SingleColumnAction {
     public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
 
         String columnId = getColumnIdParameter(parameters);
-        SimpleDateFormat newDateFormat = getDateFormat(parameters.get(NEW_PATTERN));
+        SimpleDateFormat newDateFormat = getDateFormat(getNewPattern(parameters));
 
         return (row, context) -> {
 
@@ -160,6 +165,10 @@ public class ChangeDatePattern extends SingleColumnAction {
 
     }
 
+    private String getNewPattern(Map<String, String> parameters) {
+        return ("custom").equals(parameters.get(NEW_PATTERN)) ? parameters.get(CUSTOM_PATTERN) : parameters.get(NEW_PATTERN);
+    }
+
     /**
      * @see ActionMetadata#getName()
      */
@@ -177,11 +186,25 @@ public class ChangeDatePattern extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getParameters()
+     * @see ActionMetadata#getItems()@return
      */
     @Override
-    public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER, NEW_PATTERN_PARAMETER };
+    @Nonnull
+    public Item[] getItems() {
+
+        ResourceBundle patterns = ResourceBundle.getBundle(
+                "org.talend.dataprep.transformation.api.action.metadata.date.date_patterns", Locale.ENGLISH);
+        Enumeration<String> keys = patterns.getKeys();
+        List<Item.Value> values = new ArrayList<>();
+        while (keys.hasMoreElements()) {
+            Item.Value currentValue = new Item.Value(patterns.getString(keys.nextElement()));
+            values.add(currentValue);
+        }
+
+        values.add(new Item.Value("custom", CUSTOM_PATTERN_PARAMETER));
+        values.get(0).setDefault(true);
+
+        return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[] {})) };
     }
 
     /**
