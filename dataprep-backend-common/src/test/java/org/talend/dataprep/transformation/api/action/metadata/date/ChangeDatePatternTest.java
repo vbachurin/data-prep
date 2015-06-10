@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -69,7 +69,7 @@ public class ChangeDatePatternTest {
     public void should_change_column_metadata() throws IOException {
         // given
         ColumnMetadata column = ColumnMetadata.Builder.column().id(1).name("due_date").type(Type.DATE).build();
-        RowMetadata rowMetadata = new RowMetadata(Arrays.asList(column));
+        RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(column));
         String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics.json"));
         column.setStatistics(statistics);
 
@@ -121,7 +121,44 @@ public class ChangeDatePatternTest {
         expectedValues.put("0002", "tata");
 
         assertEquals(expectedValues, row.values());
+    }
 
+    @Test
+    public void should_process_row_when_value_does_not_match_pattern() {
+        // given
+        Map<String, String> values = new HashMap<>();
+        values.put("0000", "toto");
+        values.put("0001", "05.28.99");
+        values.put("0002", "tata");
+        DataSetRow row = new DataSetRow(values);
+
+        TransformationContext context = new TransformationContext();
+        context.put(ChangeDatePattern.OLD_PATTERN, "MM/dd/yyyy");
+
+        // when
+        rowClosure.accept(row, context);
+
+        // then (values should be unchanged)
+        assertEquals(values, row.values());
+    }
+
+    @Test
+    public void should_process_row_when_value_is_empty() {
+        // given
+        Map<String, String> values = new HashMap<>();
+        values.put("0000", "toto");
+        values.put("0001", "");
+        values.put("0002", "tata");
+        DataSetRow row = new DataSetRow(values);
+
+        TransformationContext context = new TransformationContext();
+        context.put(ChangeDatePattern.OLD_PATTERN, "MM/dd/yyyy");
+
+        // when
+        rowClosure.accept(row, context);
+
+        // then (values should be unchanged)
+        assertEquals(values, row.values());
     }
 
     @Test
