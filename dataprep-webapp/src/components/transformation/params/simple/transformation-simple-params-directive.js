@@ -21,9 +21,10 @@
     function TransformSimpleParams() {
         return {
             restrict: 'E',
-            templateUrl: 'components/transformation/params/simple/transformation-simple-params.html',
             replace: true,
+            templateUrl: 'components/transformation/params/simple/transformation-simple-params.html',
             scope: {
+                editableSelect: '=',
                 parameters: '=',
                 label: '@',
                 tooltip: '@'

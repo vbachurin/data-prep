@@ -1,102 +1,118 @@
-.transformation-params {
+.cluster {
+  $background-color: $light-gray;
   $border-color: $medium-gray;
   $left-space: 15px;
+  $text-color: $dark-gray;
 
-  $background-color: $light-gray;
-  $column-one-width: 30px;
-  $column-two-width: 420px;
-  $column-three-width: 350px;
+  $column-one-width: 2 * $left-space + 15px;
+  $column-two-width: 300px;
+  $column-three-width: 300px;
+
   $table-width: 800px;
-  $table-height: 350px;
+  $table-height: 430px;
   $table-header-height: 30px;
   $table-body-height: $table-height - $table-header-height;
-  $text-color: $dark-gray;
 
   $disabled-background-color: $medium-gray;
   $disabled-border-color: $black;
   $disabled-text-color: $white;
 
+  min-width: $table-width;
+
   @mixin column-sizes() {
     &:nth-child(1) {
-      min-width: $column-one-width;
-      padding: 0px 5px;
+      @include flex-basis($column-one-width);
+      @include flex-grow(0);
       text-align: center;
 
       input[type="checkbox"] {
         margin: 0;
       }
     }
-    &:nth-child(2) { min-width: $column-two-width; }
-    &:nth-child(3) { width: $column-three-width; }
+    &:nth-child(2) {
+      @include flex-basis($column-two-width);
+      @include flex-grow(0);
+    }
+    &:nth-child(3) {
+      @include flex-basis($column-three-width);
+      @include flex-grow(1);
+    }
   }
 
-  table.cluster {
-    max-height: $table-height;
-    width: $table-width;
+  @mixin column-border($color, $full: false) {
+    border-bottom: 1px solid $color;
+    border-right: 1px solid $color;
+    @if $full {
+      border-top: 1px solid $color;
+    }
 
-    >thead tr {
-      display: block;
-      position: relative;
+    &:nth-child(1) {
+      border-left: 1px solid $color;
+    }
+  }
 
-      th {
-        height: $table-header-height;
-        line-height: $table-header-height;
+  .cluster-line {
+    @include display(flex);
+    @include flex-direction(row);
+    @include align-items(stretch);
 
-        background-color: $dark-gray;
-        color: $white;
+    >div {
+      @include column-sizes();
+      @include column-border($border-color);
+      padding: 10px $left-space;
 
-        border: 1px solid $border-color;
-        padding: 3px 3px 3px $left-space;
+      @include display(flex);
+      @include align-items(center);
+    }
+  }
 
-        @include column-sizes();
+  .cluster-header {
+    @include flex-basis($table-header-height);
+    @include flex-grow(0);
+
+    >div {
+      @include display(flex);
+      @include align-items(center);
+      @include column-border($border-color, true);
+
+      background-color: $dark-gray;
+      color: $white;
+      height: $table-header-height;
+
+      input {
+        margin: 0;
+      }
+    }
+  }
+
+  .cluster-body {
+    @include flex-basis($table-body-height);
+    @include flex-grow(0);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    >.cluster-line {
+      @include transition(background-color 0.3s ease-in-out);
+      color: $text-color;
+
+      &:nth-child(odd){
+        background-color: $background-color;
+      }
+
+      &.disabled {
+        background-color: $disabled-background-color;
+        color: $disabled-text-color;
+        font-style: italic;
+
+        >div {
+          @include column-border($disabled-border-color);
+        }
       }
     }
 
-    >tbody {
-      display: block;
-      width: 100%;
-      max-height: $table-body-height;
-      overflow-y: auto;
-      overflow-x: hidden;
-
-      >tr{
-        @include transition(background-color 0.3s ease-in-out);
-
-        &:nth-child(odd){
-          background-color: $background-color;
-        }
-
-        &.disabled {
-          background-color: $disabled-background-color;
-          color: $disabled-text-color;
-          font-style: italic;
-
-          >td {
-            border: 1px solid $disabled-border-color;
-          }
-        }
-
-        >td {
-          @include column-sizes();
-
-          font-size: 0.9em;
-          color: $text-color;
-
-          border: 1px solid $border-color;
-          padding: 0px $left-space;
-
-          //The cluster cell contains several tables created by simple/choice parameters
-          //The styles must be overriden to avoid too much space
-          table {
-            padding: 0;
-            margin: 0;
-
-            td {
-              padding: 5px 0px;
-            }
-          }
-        }
-      }
+    input {
+      color: $text-color;
     }
   }
 }

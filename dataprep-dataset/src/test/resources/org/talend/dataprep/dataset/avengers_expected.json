@@ -10,76 +10,7 @@
         "invalid": 0,
         "valid": 5
       },
-      "id": "0000",
-      "statistics": {
-        "count": 5,
-        "valid": 5,
-        "invalid": 0,
-        "empty": 0.0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 5,
-        "frequencyTable": [
-          {
-            "data": "Captain America",
-            "occurrences": 1
-          },
-          {
-            "data": "Superman",
-            "occurrences": 1
-          },
-          {
-            "data": "Iron Man",
-            "occurrences": 1
-          },
-          {
-            "data": "Batman",
-            "occurrences": 1
-          },
-          {
-            "data": "Spiderman",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "Aaaaaaa Aaaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaaaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaa Aaa",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 6.0,
-          "minimalLengthWithBlank": 0.0,
-          "maximalLength": 15.0,
-          "averageLength": 9.2,
-          "averageLengthWithBlank": 9.2
-        }
-      }
+      "id": "0000"
     },
     {
       "name": "secret firstname",
@@ -90,68 +21,7 @@
         "invalid": 0,
         "valid": 5
       },
-      "id": "0001",
-      "statistics": {
-        "count": 5,
-        "valid": 5,
-        "invalid": 0,
-        "empty": 0.0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 5,
-        "frequencyTable": [
-          {
-            "data": "Clark",
-            "occurrences": 1
-          },
-          {
-            "data": "Stevens",
-            "occurrences": 1
-          },
-          {
-            "data": "Tony",
-            "occurrences": 1
-          },
-          {
-            "data": "Bruce",
-            "occurrences": 1
-          },
-          {
-            "data": "Peter",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "Aaaaa",
-            "occurrences": 3
-          },
-          {
-            "pattern": "Aaaaaaa",
-            "occurrences": 1
-          },
-          {
-            "pattern": "Aaaa",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 4.0,
-          "minimalLengthWithBlank": 0.0,
-          "maximalLength": 7.0,
-          "averageLength": 5.2,
-          "averageLengthWithBlank": 5.2
-        }
-      }
+      "id": "0001"
     },
     {
       "name": "secret lastname",
@@ -162,68 +32,7 @@
         "invalid": 0,
         "valid": 5
       },
-      "id": "0002",
-      "statistics": {
-        "count": 5,
-        "valid": 5,
-        "invalid": 0,
-        "empty": 0.0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 5,
-        "frequencyTable": [
-          {
-            "data": "Parker",
-            "occurrences": 1
-          },
-          {
-            "data": "Rogers",
-            "occurrences": 1
-          },
-          {
-            "data": "Stark",
-            "occurrences": 1
-          },
-          {
-            "data": "Kent",
-            "occurrences": 1
-          },
-          {
-            "data": "Wayne",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "Aaaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaaaaa",
-            "occurrences": 2
-          },
-          {
-            "pattern": "Aaaa",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 4.0,
-          "minimalLengthWithBlank": 0.0,
-          "maximalLength": 6.0,
-          "averageLength": 5.2,
-          "averageLengthWithBlank": 5.2
-        }
-      }
+      "id": "0002"
     },
     {
       "name": "date of birth",
@@ -234,60 +43,7 @@
         "invalid": 0,
         "valid": 5
       },
-      "id": "0003",
-      "statistics": {
-        "count": 5,
-        "valid": 5,
-        "invalid": 0,
-        "empty": 0.0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 0,
-        "distinctCount": 5,
-        "frequencyTable": [
-          {
-            "data": "05/15/1962",
-            "occurrences": 1
-          },
-          {
-            "data": "03/05/1963",
-            "occurrences": 1
-          },
-          {
-            "data": "04/04/1918",
-            "occurrences": 1
-          },
-          {
-            "data": "02/28/1938",
-            "occurrences": 1
-          },
-          {
-            "data": "05/01/1939",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "MM/dd/yyyy",
-            "occurrences": 5
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 0.0,
-          "minimalLengthWithBlank": 0.0,
-          "maximalLength": 0.0,
-          "averageLength": 0.0,
-          "averageLengthWithBlank": 0.0
-        }
-      }
+      "id": "0003"
     },
     {
       "name": "city",
@@ -298,52 +54,7 @@
         "invalid": 0,
         "valid": 5
       },
-      "id": "0004",
-      "statistics": {
-        "count": 5,
-        "valid": 5,
-        "invalid": 0,
-        "empty": 0.0,
-        "max": "NaN",
-        "min": "NaN",
-        "mean": "NaN",
-        "variance": "NaN",
-        "duplicateCount": 3,
-        "distinctCount": 2,
-        "frequencyTable": [
-          {
-            "data": "New York City",
-            "occurrences": 4
-          },
-          {
-            "data": "NYC",
-            "occurrences": 1
-          }
-        ],
-        "patternFrequencyTable": [
-          {
-            "pattern": "Aaa Aaaa Aaaa",
-            "occurrences": 4
-          },
-          {
-            "pattern": "AAA",
-            "occurrences": 1
-          }
-        ],
-        "quantiles": {
-          "median": "NaN",
-          "lowerQuantile": "NaN",
-          "upperQuantile": "NaN"
-        },
-        "histogram": [],
-        "textLengthSummary": {
-          "minimalLength": 3.0,
-          "minimalLengthWithBlank": 0.0,
-          "maximalLength": 13.0,
-          "averageLength": 11.0,
-          "averageLengthWithBlank": 11.0
-        }
-      }
+      "id": "0004"
     }
   ],
   "records": [

@@ -56,7 +56,20 @@
             });
         };
 
+        /**
+         * @ngdoc method
+         * @name initInputTypes
+         * @methodOf data-prep.transformation-params.controller:TransformSimpleParamsCtrl
+         * @description [PRIVATE] Init params input type, depending on param type
+         */
+        var initReplaceList = function() {
+            _.forEach(vm.details.clusters, function(cluster) {
+                cluster.replace.list = _.map(cluster.parameters, 'name');
+            });
+        };
+
         initParamsValues();
+        initReplaceList();
         vm.refreshClusterState();
     }
 
