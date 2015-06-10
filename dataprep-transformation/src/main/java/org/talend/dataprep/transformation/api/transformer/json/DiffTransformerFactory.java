@@ -28,7 +28,7 @@ public class DiffTransformerFactory implements TransformerFactory {
 
     //@formatter:off
     /** No op parsed actions. */
-    private static final ParsedActions IDLE_CONSUMER = new ParsedActions((row, context) -> {}, rowMetadata -> {});
+    private static final ParsedActions IDLE_CONSUMER = new ParsedActions((row, context) -> {}, (rowMetadata, context) -> {});
     //@formatter:on
 
     /** The spring application context to use to get the DiffTransformer. */

@@ -21,12 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -45,7 +40,7 @@ public class SplitTest {
     private BiConsumer<DataSetRow, TransformationContext> rowClosure;
 
     /** The metadata consumer to test. */
-    private Consumer<RowMetadata> metadataClosure;
+    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
 
     /** The action to test. */
     private Split action;
@@ -55,12 +50,9 @@ public class SplitTest {
      */
     public SplitTest() throws IOException {
         action = new Split();
-
-        String actions = IOUtils.toString(SplitTest.class.getResourceAsStream("splitAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                SplitTest.class.getResourceAsStream("splitAction.json"));
         rowClosure = action.create(parameters);
         metadataClosure = action.createMetadataClosure(parameters);
     }
@@ -143,7 +135,7 @@ public class SplitTest {
         input.add(createMetadata("last update", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata);
+        metadataClosure.accept(rowMetadata, new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
