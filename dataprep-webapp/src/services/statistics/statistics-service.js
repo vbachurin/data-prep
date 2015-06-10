@@ -4,6 +4,35 @@
     function StatisticsService(DatagridService) {
         var self = this;
 
+        self.processOnColumnType = function(column){
+            if(column.type === 'numeric' || column.type === 'integer' || column.type === 'float' || column.type === 'double'){
+                self.rangeDistribution = true;
+                self.data = [
+                    {"name":"Azertuire  yrehzL","value":"4"},
+                    {"name":"AK","value":"6"},
+                    {"name":"AZ","value":"6"},
+                    {"name":"AR","value":"2"},
+                    {"name":"CA","value":"36"},
+                ];
+                return 'range';
+            }else if(column.type === 'string'){
+                self.distribution = true;
+                self.data = [{"name":"Azertuire  yrehzL","value":"4"},{"name":"AK","value":"6"},{"name":"AZ","value":"6"},{"name":"AR","value":"2"},{"name":"CA","value":"36"},{"name":"CO","value":"5"},{"name":"CT","value":"35"},{"name":"DE","value":"8"},{"name":"DC","value":"5"},{"name":"FL","value":"1"},{"name":"GA","value":"98"},{"name":"HI","value":"1"},{"name":"ID","value":"15"},{"name":"IL","value":"12"},{"name":"IN","value":"64"},{"name":"IA","value":"30"},{"name":"KS","value":"28"},{"name":"KY","value":"43"},{"name":"LA","value":"44"},{"name":"ME","value":"13"},{"name":"MD","value":"56"},{"name":"MA","value":"65"},{"name":"Mjrehe i zeorife zeiurhI","value":"99"}];
+                return 'string';
+            }else if(column.type === 'boolean'){
+                self.pieDistribution = true;
+                self.data = [
+                    {"name":"true","value":"2"},
+                    {"name":"false","value":"36"},
+                ];
+                return 'boolean';
+            }else if(column.name.toLowerCase() === 'state'){
+                self.stateDistribution = true;
+                return 'state';
+            }else {
+                return 'uNkNoWn';
+            }
+        };
         //------------------------------------------------------------------------------------------------------
         //-----------------------------------------------DISTRIBUTIONS------------------------------------------
         //------------------------------------------------------------------------------------------------------

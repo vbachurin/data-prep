@@ -106,10 +106,16 @@
                 type: 'bar'
             };
             options.tooltip = {
+                shared:true,
+                crosshairs: {
+                    width: 20,
+                    color: 'red',
+                    zIndex: 10
+                },
                 hideDelay: 0,
-                    positioner: function(boxWidth, boxHeight, point) {
+                positioner: function(boxWidth, boxHeight, point) {
                     return {
-                        x: 0,
+                        x: boxWidth,
                         y: point.plotY + 55
                     };
                 }
@@ -128,7 +134,13 @@
                 lineWidth: 0,
                 minorGridLineWidth: 0,
                 lineColor: 'transparent',
-                labels: {enabled: true},
+                labels: {
+                    x:10,
+                        style: {
+                        textAnchor:'start',
+                            color:'black'
+                    }
+                },
                 minorTickLength: 0,
                 tickLength: 0
             };
@@ -155,9 +167,31 @@
          */
         var initBarChartSize = function(nbElements) {
             return {
-                height: nbElements * 20 + 150,
-                width: 220
+                height: nbElements * 20 + 250,
+                width: 320
             };
+        };
+
+        //------------------------------------------------------------------------------------------------------
+        //------------------------------------------ SELECTED COLUMN TYPE --------------------------------------
+        //------------------------------------------------------------------------------------------------------
+        /**
+         * get the type of the selected column
+         * @param column
+         * @returns {boolean}
+         */
+        var getColumnType = function(column){
+            if(column.type === 'numeric' || column.type === 'integer' || column.type === 'float' || column.type === 'double'){
+                return 'range';
+            }else if(column.type === 'string'){
+                return 'string';
+            }else if(column.type === 'boolean'){
+                return 'boolean';
+            }else if(column.name.toLowerCase() === 'state'){
+                return 'state';
+            }else {
+                return 'uNkNoWn';
+            }
         };
 
         //------------------------------------------------------------------------------------------------------
@@ -169,7 +203,7 @@
          * @returns {boolean}
          */
         var isGeo = function(column) {
-            return column.id.toLowerCase() === 'state';
+            return column.name.toLowerCase() === 'state';
         };
 
         /**
@@ -260,7 +294,7 @@
                 size: initBarChartSize(vm.rangeDistribution.length),
                 xAxis: initBarXAxis(categories),
                 yAxis: initBarYAxis(0, max),
-                title: {text: column.id},
+                title: {text: column.name},
                 series: [{
                     id: column.id,
                     name: 'number of item',
@@ -282,19 +316,19 @@
                 console.log('Category: ' + this.category + ', value: ' + this.y);
             };
 
-            vm.distribution = StatisticsService.getDistribution(column.id);
-            var categories = _.map(vm.distribution, 'colValue');
+            vm.distribution = column.statistics.frequencyTable;//StatisticsService.getDistribution(column.id);
+            var categories = _.map(vm.distribution, 'data');
 
             vm.chartConfig = {
                 options: initBarChartOptions(barChartAction),
                 size: initBarChartSize(vm.distribution.length),
                 xAxis: initBarXAxis(categories),
-                yAxis: initBarYAxis(0, vm.distribution[0].frequency),
-                title: {text: column.id},
+                yAxis: initBarYAxis(0, vm.distribution[0].occurrences),
+                title: {text: column.name},
                 series: [{
                     id: column.id,
                     name: 'number of item',
-                    data: _.map(vm.distribution, 'frequency'),
+                    data: _.map(vm.distribution, 'occurrences'),
                     showInLegend: false
                 }],
                 loading: false
@@ -318,7 +352,7 @@
                 size: {
                     height: 300
                 },
-                title: {text: column.id},
+                title: {text: column.name},
                 series: [{
                     id: column.id,
                     name: 'number of item',
@@ -336,34 +370,36 @@
         /**
          * Init chart on column selection change
          */
-        $scope.$watch(
-            function() {
-                return DatagridService.selectedColumn;
-            },
-            function(column) {
-                vm.distribution = null;
-                vm.rangeDistribution = null;
-                vm.stateDistribution = null;
-                vm.pieDistribution = null;
-
-                if(! column) {
-                    return;
-                }
-
-                if(isGeo(column)) {
-                    buildGeoDistribution(column);
-                }
-                else if(isRange(column)) {
-                    buildRangeDistribution(column);
-                }
-                else if(isBar(column)) {
-                    buildBarDistribution(column);
-                }
-                else if(isPie(column)) {
-                    buildPieDistribution(column);
-                }
-            }
-        );
+        //$scope.$watch(
+        //    function() {
+        //        return DatagridService.selectedColumn;
+        //    },
+        //    function(column) {
+        //        vm.distribution = null;
+        //        vm.rangeDistribution = null;
+        //        vm.stateDistribution = null;
+        //        vm.pieDistribution = null;
+		//
+        //        if(! column) {
+        //            return;
+        //        }
+		//
+        //        vm.columnType = getColumnType(column);
+        //        //vm.selectedColumn = column;
+        //        //if(isGeo(column)) {
+        //        //    buildGeoDistribution(column);
+        //        //}
+        //        //else if(isRange(column)) {
+        //        //    buildRangeDistribution(column);
+        //        //}
+        //        //else if(isBar(column)) {
+        //        //    buildBarDistribution(column);
+        //        //}
+        //        //else if(isPie(column)) {
+        //        //    buildPieDistribution(column);
+        //        //}
+        //    }
+        //);
     }
 
     Object.defineProperty(ColumnProfileCtrl.prototype,

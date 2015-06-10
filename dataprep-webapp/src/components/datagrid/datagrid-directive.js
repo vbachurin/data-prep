@@ -18,7 +18,7 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService) {
+    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService, StatisticsService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -215,6 +215,7 @@
                 var updateColSelection = function (column) {
                     $timeout(function() {
                         DatagridService.setSelectedColumn(column.id);
+                        StatisticsService.processOnColumnType(DatagridService.selectedColumn);
                     });
                 };
 
