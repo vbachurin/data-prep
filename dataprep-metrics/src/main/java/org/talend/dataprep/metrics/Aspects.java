@@ -107,7 +107,7 @@ public class Aspects {
                 inputStreamIndex = argumentIndex;
             }
         }
-        if (argumentIndex < 0) {
+        if (inputStreamIndex < 0) {
             LOGGER.warn("Unable to find a valid InputStream to wrap for meter in method '{}'.", //
                     pjp.getSignature().toLongString());
         }
