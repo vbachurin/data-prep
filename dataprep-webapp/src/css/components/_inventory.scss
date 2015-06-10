@@ -49,6 +49,11 @@ $border-color: #CECECE;
         padding: 0 2px;
       }
 
+      &.no-link:hover {
+        padding: 0 5px;
+        cursor: inherit;
+      }
+
       >img {
         z-index: 0;
         width: 100%;
@@ -80,6 +85,14 @@ $border-color: #CECECE;
         text-transform: uppercase;
         overflow: hidden;
         cursor: pointer;
+
+        &.no-link {
+          cursor: inherit;
+          &:hover {
+            color: inherit;
+            text-decoration: none;
+          }
+        }
 
         &:hover {
           color: $dark-blue;
