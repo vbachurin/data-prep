@@ -12,13 +12,14 @@
         vm.exportTypes = [];
 
 
+        vm.launchExport = function(){
+            console.log('launchExport');
+        };
+
         ExportService.exportTypes()
             .then(function(response){
-                console.log("vm.exportTypes:"+vm.exportTypes.length);
                 vm.exportTypes = response.data;
-                console.log("vm.exportTypes:"+vm.exportTypes.length);
         });
-
 
     }
 

@@ -109,6 +109,7 @@
 
                     //Click : Show/focus or hide menu on action zone click
                     action.click(function () {
+                        console.log("click action");
                         var isVisible = menu.hasClass('show-menu');
                         hideAllDropDowns();
 
@@ -143,8 +144,8 @@
                     });
 
                     //make action and menu focusable
-                    action.attr('tabindex', '1');
-                    menu.attr('tabindex', '2');
+                    //action.attr('tabindex', '1');
+                    //menu.attr('tabindex', '2');
 
                     //hide menu on body mousedown
                     body.mousedown(hideMenu);

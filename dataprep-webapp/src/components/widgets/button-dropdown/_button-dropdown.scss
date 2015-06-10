@@ -24,6 +24,8 @@
     display: inline-block;
     position: relative;
     text-align: center;
+    background: #b6be00;
+    cursor: hand;
   }
 
   .dropdown-description {
@@ -46,13 +48,13 @@
   }
 
   .dropdown-button {
-    background: $dropdown-background;
+    background: #b6be00;
     border-bottom-right-radius: $base-border-radius;
     border-top-right-radius: $base-border-radius;
     border-top: $dropdown-border;
     border-right: $dropdown-border;
     border-bottom: $dropdown-border;
-    cursor: pointer;
+    cursor: hand;
     float: right;
     font-size: 0.7em;
     font-weight: 800;
@@ -69,6 +71,7 @@
 
   .dropdown-button:hover {
     background-color: $dropdown-background-hover;
+    cursor: hand;
   }
 
   .dropdown-button:after {
@@ -78,6 +81,7 @@
     position: absolute;
     right: $dropdown-padding;
     top: $dropdown-arrow-top-distance;
+    cursor: hand;
   }
 
   .dropdown-menu {

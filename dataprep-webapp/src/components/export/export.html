@@ -1,33 +1,9 @@
-<!-- TODO Styles are hard coded to get all buttons on a line (but this is temporary) -->
-<!--
-<button type="button"
-        class="t-btn t-btn-primary"
-        style="float: left;"
-        ng-click="exportCtrl.showExport = true">
-    {{ ::'EXPORT_CSV' | translate }}
-</button>
-
-<button type="button"
-        class="t-btn t-btn-primary"
-        style="float: left; margin-left: 10px"
-        ng-click="exportCtrl.export('TABLEAU')">
-    {{ ::'EXPORT_TABLEAU' | translate }}
-</button>
-
-<button type="button"
-        class="t-btn t-btn-primary"
-        style="float: left; margin-left: 10px"
-        ng-click="exportCtrl.export('XLS')">
-  {{ ::'EXPORT_XLS' | translate }}
-</button>
--->
-
-<talend-button-dropdown close-on-select="false" on-open="onOpen()">
+<talend-button-dropdown close-on-select="true" on-open="onOpen()">
   <div class="dropdown-container">
-    <p class="dropdown-description">{{ ::'EXPORT' | translate }}</p>
-    <p class="dropdown-button"></p>
+    <button class="t-btn-primary" ng-click="exportCtrl.launchExport()">{{ ::'EXPORT' | translate }}</button>
+    <button class="t-btn dropdown-button"></button>
     <ul class="dropdown-menu dropdown-select">
-      <li ng-repeat="exportType in exportCtrl.exportTypes">{{exportType.id}}</li>
+      <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.export(exportType.id)">{{exportType.id}}</li>
     </ul>
   </div>
 </talend-button-dropdown>
