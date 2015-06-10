@@ -51,28 +51,26 @@ describe('Playground directive', function() {
 
         //then
         var playground = angular.element('body').find('.playground').eq(0);
+        var playgroundModal = playground.parent();
 
         //check header is present and contains description and search filter
-        expect(playground.find('.modal-header').length).toBe(1);
-        expect(playground.find('.modal-header').eq(0).find('li').eq(1).text().trim()).toBe('File: US States (3 lines)');
-
-        //check body is present
-        expect(playground.find('.modal-body').length).toBe(1);
+        expect(playgroundModal.find('.modal-header').length).toBe(1);
+        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(1).text().trim()).toBe('File: US States (3 lines)');
 
         //check left slidable is hidden recipe with left slide action
-        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(0).hasClass('recipe')).toBe(true);
-        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(0).hasClass('slide-hide')).toBe(true);
-        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
+        expect(playground.eq(0).find('.slidable').eq(0).hasClass('recipe')).toBe(true);
+        expect(playground.eq(0).find('.slidable').eq(0).hasClass('slide-hide')).toBe(true);
+        expect(playground.eq(0).find('.slidable').eq(0).find('.action').eq(0).hasClass('right')).toBe(false);
 
         //check right slidable is displayed transformations with right slide action
-        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('suggestions')).toBe(true);
-        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).hasClass('slide-hide')).toBe(false);
-        expect(playground.find('.modal-body').eq(0).find('.slidable').eq(1).find('.action').eq(0).hasClass('right')).toBe(true);
+        expect(playground.eq(0).find('.slidable').eq(1).hasClass('suggestions')).toBe(true);
+        expect(playground.eq(0).find('.slidable').eq(1).hasClass('slide-hide')).toBe(false);
+        expect(playground.eq(0).find('.slidable').eq(1).find('.action').eq(0).hasClass('right')).toBe(true);
 
         //check datagrid and filters are present
-        expect(playground.find('.modal-body').eq(0).find('.filter-list').length).toBe(1);
-        expect(playground.find('.modal-body').eq(0).find('.filter-list').find('.filter-search').length).toBe(1);
-        expect(playground.find('.modal-body').eq(0).find('datagrid').length).toBe(1);
+        expect(playground.eq(0).find('.filter-list').length).toBe(1);
+        expect(playground.eq(0).find('.filter-list').find('.filter-search').length).toBe(1);
+        expect(playground.eq(0).find('datagrid').length).toBe(1);
     }));
 
     describe('hide playground', function() {
