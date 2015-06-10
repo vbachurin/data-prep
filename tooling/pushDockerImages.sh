@@ -23,12 +23,14 @@ registry=`more docker_images.txt | grep registry | cut --delimiter='=' --fields=
 for image in $images;
 do
   completeName=$image:$version
-  echo ========================================
-  echo $completeName
-  echo ========================================
+  echo 'docker tag --force '$completeName $registry/$completeName
   docker tag --force $completeName $registry/$completeName
+done
+
+for image in $images;
+do
+  completeName=$image:$version
+  echo 'docker push '$registry/$completeName
   docker push $registry/$completeName
-  echo ========================================
-  echo
 done
 
