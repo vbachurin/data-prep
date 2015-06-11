@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.CommonErrorCodes;
@@ -33,6 +34,7 @@ import org.talend.dataprep.transformation.api.transformer.json.DiffTransformerFa
 import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.*;
 
@@ -202,20 +204,21 @@ public class TransformationService {
     @RequestMapping(value = "/transform/suggest/{action}/params", method = POST)
     @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
     @Timed
-    public GenericParameter dynamicParams(@ApiParam(value = "Transformation name.")
-    @PathVariable("action")
-    final String action, @ApiParam(value = "The column id.")
-    @RequestParam(value = "columnId", required = true)
-    final String columnId, @ApiParam(value = "Data set content as JSON")
-    final InputStream content) {
-
+    public GenericParameter dynamicParams(@ApiParam(value = "Transformation name.") @PathVariable("action") final String action, //
+                                          @ApiParam(value = "The column id.") @RequestParam(value = "columnId", required = true) final String columnId, //
+                                          @ApiParam(value = "Data set content as JSON") final InputStream content) {
         final DynamicType actionType = DynamicType.fromAction(action);
         if (actionType == null) {
-            throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, TDPExceptionContext.build().put("name",
-                    action));
+            final TDPExceptionContext context = TDPExceptionContext.build().put("name", action);
+            throw new TDPException(TransformationErrorCodes.UNKNOWN_DYNAMIC_ACTION, context);
         }
-
-        return actionType.getGenerator(context).getParameters(columnId, content);
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(content)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            return actionType.getGenerator(context).getParameters(columnId, dataSet);
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        }
     }
 
     /**
