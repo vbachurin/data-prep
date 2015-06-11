@@ -37,7 +37,6 @@ timestamp=`date +%Y%m%d%H%M%S`
 
 tar_archive='dataprep-images_'$version'_'$timestamp'.tar'
 echo 'docker save to '$tar_archive
-echo 'tagada' > $tar_archive
 time docker save --output=$tar_archive $list
 
 echo 'gzip tar'
