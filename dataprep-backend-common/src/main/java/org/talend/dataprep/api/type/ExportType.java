@@ -11,17 +11,20 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(using = ExportType.ExportTypeSerializer.class)
 public enum ExportType {
-    CSV("text/csv", ".csv"),
-    XLS("application/vnd.ms-excel", ".xls"),
-    TABLEAU("application/tde", ".tde");
+    CSV("text/csv", ".csv", true),
+    XLS("application/vnd.ms-excel", ".xls", false),
+    TABLEAU("application/tde", ".tde", false);
 
     private final String mimeType;
 
     private final String extension;
 
-    ExportType(final String mimeType, final String extension) {
+    private final boolean needParameters;
+
+    ExportType(final String mimeType, final String extension, final boolean needParameters) {
         this.mimeType = mimeType;
         this.extension = extension;
+        this.needParameters = needParameters;
     }
 
     public String getMimeType() {
@@ -32,16 +35,19 @@ public enum ExportType {
         return extension;
     }
 
+    public boolean isNeedParameters() {
+        return needParameters;
+    }
 
-    public static class ExportTypeSerializer extends JsonSerializer<ExportType>
-    {
+    public static class ExportTypeSerializer extends JsonSerializer<ExportType> {
+
         @Override
-        public void serialize(ExportType value, JsonGenerator jgen, SerializerProvider provider) throws IOException
-        {
+        public void serialize(ExportType value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             Map<String, String> map = new HashMap<>();
             map.put("mimeType", value.getMimeType());
             map.put("extension", value.getExtension());
-            map.put( "id", value.name() );
+            map.put("id", value.name());
+            map.put("needParameters", Boolean.toString(value.isNeedParameters()));
             jgen.writeObject(map);
         }
     }

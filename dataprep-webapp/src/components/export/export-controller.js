@@ -12,21 +12,33 @@
         vm.exportTypes = [];
 
 
-        vm.launchExport = function(usedType){
-            console.log('launchExport: \'' + usedType + '\'');
-            var exportType;
-            if (usedType){
-                exportType = usedType;
+        vm.launchExport = function(exportType){
+            console.log('launchExport: \'' + (exportType?exportType.id:'null') + '\'');
+            var exportId;
+            if (exportType){
+                exportId = exportType.id;
             } else {
-                var lastType = $window.localStorage.getItem("dataprep.export.lastType");
-                exportType = lastType;
+                var lastExportId = $window.localStorage.getItem("dataprep.export.last.id");
+                exportId = lastExportId;
             }
 
-            if(!exportType){
-                // use default one
+            if(!exportId){
+                // use default one from rest api!!
             }
-            $window.localStorage.setItem("dataprep.export.lastType",exportType);
-            vm.export(exportType);
+
+            var needParameters = _.result(_.find(vm.exportTypes, function(exportType) {
+                return exportType.id == exportId;
+            }), 'needParameters');
+
+
+            $window.localStorage.setItem("dataprep.export.last.id",exportId);
+
+            if (needParameters=='true'){
+                vm.showExport=true;
+                return;
+            }
+
+            vm.export(exportId);
         };
 
         vm.export = function (type) {

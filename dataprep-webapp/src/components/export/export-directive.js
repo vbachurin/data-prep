@@ -7,7 +7,7 @@
             restrict: 'E',
             bindToController: true,
             controllerAs: 'exportCtrl',
-            controller: 'ExportCtrl',
+            controller: 'ExportCtrl'
         };
     }
 

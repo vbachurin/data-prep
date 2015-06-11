@@ -3,7 +3,7 @@
     <button class="t-btn-primary" ng-click="exportCtrl.launchExport()">{{ ::'EXPORT' | translate }}</button>
     <button class="t-btn dropdown-button"></button>
     <ul class="dropdown-menu dropdown-select">
-      <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.launchExport(exportType.id)">{{exportType.id}}</li>
+      <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.launchExport(exportType)">{{exportType.id}}</li>
     </ul>
   </div>
 </talend-button-dropdown>
