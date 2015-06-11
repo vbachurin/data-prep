@@ -31,6 +31,8 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
+import org.talend.dataprep.dataset.service.analysis.FormatAnalysis;
 import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -84,13 +86,29 @@ public class DataSetService {
         synchronousAnalyzers.sort((analyzer1, analyzer2) -> analyzer1.order() - analyzer2.order());
     }
 
-    private void queueEvents(String id) {
+    /**
+     * Performs the analysis on the given dataset id.
+     *
+     * @param id the dataset id.
+     * @param analysersToSkip the list of analysers to skip.
+     */
+    private void queueEvents(String id, Class<? extends DataSetAnalyzer>... analysersToSkip) {
+
+        List<Class<? extends DataSetAnalyzer>> toSkip = Arrays.asList(analysersToSkip);
+
         // Calls all synchronous analysis first
         for (SynchronousDataSetAnalyzer synchronousDataSetAnalyzer : synchronousAnalyzers) {
+            if (toSkip.contains(synchronousDataSetAnalyzer.getClass())) {
+                continue;
+            }
             synchronousDataSetAnalyzer.analyze(id);
         }
+
         // Then use JMS queue for all optional analysis
         for (AsynchronousDataSetAnalyzer asynchronousDataSetAnalyzer : asynchronousAnalyzers) {
+            if (toSkip.contains(asynchronousDataSetAnalyzer.getClass())) {
+                continue;
+            }
             jmsTemplate.send(asynchronousDataSetAnalyzer.destination(), session -> {
                 Message message = session.createMessage();
                 message.setStringProperty("dataset.id", id); //$NON-NLS-1
@@ -420,7 +438,7 @@ public class DataSetService {
      * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
      *
      * @param dataSetId The id of data set to be updated.
-     * @param dataSet The new content for the data set. If empty, existing content will <b>not</b> be replaced.
+     * @param dataSetMetadata The new content for the data set. If empty, existing content will <b>not</b> be replaced.
      * For delete operation, look at {@link #delete(String)}.
      */
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -429,11 +447,10 @@ public class DataSetService {
     @VolumeMetered
     public void updateDataSet(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
-            @RequestBody DataSet dataSet) {
+            @RequestBody DataSetMetadata dataSetMetadata) {
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         lock.lock();
         try {
-            final DataSetMetadata dataSetMetadata = dataSet.getMetadata();
             LOG.debug("updateDataSet: {}", dataSetMetadata);
             // we retry information we do not update
             DataSetMetadata previous = dataSetMetadataRepository.get(dataSetId);
@@ -466,7 +483,7 @@ public class DataSetService {
             dataSetMetadataRepository.add(previous); // Save it
             // all good mate!! so send that to jms
             // Asks for a in depth schema analysis (for column type information).
-            queueEvents(dataSetId);
+            queueEvents(dataSetId, FormatAnalysis.class);
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } finally {
