@@ -1,8 +1,10 @@
 package org.talend.dataprep.dataset.store.local;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.talend.dataprep.DistributedLock;
@@ -28,7 +30,17 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
 
     @Override
     public void clear() {
-        store.clear();
+        // Remove all data set (but use lock for remaining asynchronous processes).
+        final List<DataSetMetadata> list = IteratorUtils.toList(list().iterator());
+        for (DataSetMetadata metadata : list) {
+            final DistributedLock lock = createDatasetMetadataLock(metadata.getId());
+            try {
+                lock.lock();
+                remove(metadata.getId());
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 
     @Override

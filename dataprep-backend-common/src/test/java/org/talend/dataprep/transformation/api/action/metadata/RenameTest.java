@@ -21,15 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
@@ -41,11 +35,8 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
  */
 public class RenameTest {
 
-    /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
     /** The metadata consumer to test. */
-    private Consumer<RowMetadata> metadataClosure;
+    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
 
     /** The action to test. */
     private Rename action;
@@ -55,13 +46,9 @@ public class RenameTest {
      */
     public RenameTest() throws IOException {
         action = new Rename();
-
-        String actions = IOUtils.toString(RenameTest.class.getResourceAsStream("renameAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
-        rowClosure = action.create(parameters);
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                RenameTest.class.getResourceAsStream("renameAction.json"));
         metadataClosure = action.createMetadataClosure(parameters);
     }
 
@@ -85,7 +72,7 @@ public class RenameTest {
         input.add(metadata);
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata);
+        metadataClosure.accept(rowMetadata, new TransformationContext());
 
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 

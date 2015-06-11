@@ -79,6 +79,10 @@ public class Item {
             return this.isDefault;
         }
 
+        public void setDefault(boolean defaultValue) {
+            this.isDefault = defaultValue;
+        }
+
         public Parameter[] getParameters() {
             return parameters;
         }

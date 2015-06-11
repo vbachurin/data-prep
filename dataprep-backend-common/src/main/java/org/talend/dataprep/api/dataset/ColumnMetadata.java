@@ -59,6 +59,9 @@ public class ColumnMetadata {
     @JsonRawValue
     private String statistics = "{}"; //$NON-NLS-1$
 
+    @JsonProperty("domain")
+    private String domain = StringUtils.EMPTY;
+
     /**
      * Default empty constructor.
      */
@@ -241,6 +244,14 @@ public class ColumnMetadata {
                         + "' but don't know how to interpret it.");
             }
         }
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getDomain() {
+        return domain;
     }
 
     /**

@@ -5,17 +5,9 @@ import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.function.BiConsumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Unit test for the Cut action.
@@ -25,37 +17,27 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 public class CutTest {
 
     /** The action to test. */
-    private Cut cutAction;
-
-    /** The consumer out of the action. */
-    private BiConsumer<DataSetRow, TransformationContext> consumer;
+    private Cut action;
 
     /**
      * Constructor.
      */
     public CutTest() throws IOException {
-        cutAction = new Cut();
-
-        String actions = IOUtils.toString(CutTest.class.getResourceAsStream("cutAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = cutAction.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
-        consumer = cutAction.create(parameters);
+        action = new Cut();
     }
 
     @Test
     public void should_accept_column() {
-        assertTrue(cutAction.accept(getColumn(Type.STRING)));
+        assertTrue(action.accept(getColumn(Type.STRING)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(cutAction.accept(getColumn(Type.NUMERIC)));
-        assertFalse(cutAction.accept(getColumn(Type.DOUBLE)));
-        assertFalse(cutAction.accept(getColumn(Type.FLOAT)));
-        assertFalse(cutAction.accept(getColumn(Type.INTEGER)));
-        assertFalse(cutAction.accept(getColumn(Type.DATE)));
-        assertFalse(cutAction.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.accept(getColumn(Type.NUMERIC)));
+        assertFalse(action.accept(getColumn(Type.DOUBLE)));
+        assertFalse(action.accept(getColumn(Type.FLOAT)));
+        assertFalse(action.accept(getColumn(Type.INTEGER)));
+        assertFalse(action.accept(getColumn(Type.DATE)));
+        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
     }
 }

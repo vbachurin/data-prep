@@ -20,10 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -49,11 +45,10 @@ public class TrimTest {
 
         action = new Trim();
 
-        String actions = IOUtils.toString(TrimTest.class.getResourceAsStream("trimAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                TrimTest.class.getResourceAsStream("trimAction.json"));
+
         consumer = action.create(parameters);
     }
 

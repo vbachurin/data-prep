@@ -20,6 +20,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
 
@@ -39,7 +40,7 @@ public class AbsoluteInt extends SingleColumnAction {
 
     @Override
     public String getCategory() {
-        return "math"; //$NON-NLS-1$
+        return ActionCategory.MATH.getDisplayName();
     }
 
     @Override

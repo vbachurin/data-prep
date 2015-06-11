@@ -19,7 +19,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -141,14 +144,6 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                         final ColumnMetadata schemaColumn = schemaColumns.get(index);
                         // Get the statistics from the returned JSON
                         final JsonNode statistics = column.get("statistics"); //$NON-NLS-1$
-                        final int valid = statistics.get("valid").asInt();
-                        final int invalid = statistics.get("invalid").asInt();
-                        final int empty = statistics.get("empty").asInt();
-                        // Set it back to the data prep beans
-                        final Quality quality = schemaColumn.getQuality();
-                        quality.setValid(valid);
-                        quality.setInvalid(invalid);
-                        quality.setEmpty(empty);
                         // Keeps the statistics as returned by statistics library.
                         schemaColumn.setStatistics(statistics.toString());
                     }
