@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function ExportCtrl(PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService) {
+    function ExportCtrl($window,PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService) {
         var vm = this;
         vm.exportUrl = RestURLs.exportUrl;
         vm.preparationService = PreparationService;
@@ -12,8 +12,29 @@
         vm.exportTypes = [];
 
 
-        vm.launchExport = function(){
-            console.log('launchExport');
+        vm.launchExport = function(usedType){
+            console.log('launchExport: \'' + usedType + '\'');
+            var exportType;
+            if (usedType){
+                exportType = usedType;
+            } else {
+                var lastType = $window.localStorage.getItem("dataprep.export.lastType");
+                exportType = lastType;
+            }
+
+            if(!exportType){
+                // use default one
+            }
+            $window.localStorage.setItem("dataprep.export.lastType",exportType);
+            vm.export(exportType);
+        };
+
+        vm.export = function (type) {
+            console.log('export: \'' + type + '\'');
+            var form = document.getElementById('exportForm');
+            form.action = vm.exportUrl;
+            form.exportType.value = type;
+            form.submit();
         };
 
         ExportService.exportTypes()
