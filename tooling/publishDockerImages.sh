@@ -37,6 +37,7 @@ timestamp=`date +%Y%m%d%H%M%S`
 
 tar_archive='dataprep-images_'$version'_'$timestamp'.tar'
 docker pull $registry'/talend/dataprep-data:'$version
+docker pull mongo:latest
 echo 'docker save to '$tar_archive
 time docker save --output=$tar_archive $list
 
