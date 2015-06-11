@@ -22,6 +22,7 @@
     <div talend-dropdown
          class="record-ok"
          style="width: {{ datagridHeaderCtrl.column.quality.validPercentWidth }}%;"
+         ng-if="datagridHeaderCtrl.column.quality.valid > 0"
          title="{{ datagridHeaderCtrl.column.quality.valid }} valid records ({{ datagridHeaderCtrl.column.quality.validPercent }}%)">
 
         <div class="dropdown-container">
