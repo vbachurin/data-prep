@@ -12,8 +12,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = ExportType.ExportTypeSerializer.class)
 public enum ExportType {
     // take care when declaring new export type as only one can be default :-)
-    CSV("text/csv", ".csv", true, true),
-    XLS("application/vnd.ms-excel", ".xls", false, false),
+    CSV("text/csv", ".csv", true, false),
+    XLS("application/vnd.ms-excel", ".xls", false, true),
     TABLEAU("application/tde", ".tde", false, false);
 
     private final String mimeType;
