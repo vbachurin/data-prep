@@ -480,9 +480,10 @@ describe('Datagrid directive', function () {
         spyOn(DatagridService, 'setSelectedColumn').and.returnValue(null);
     }));
 
-    afterEach(function () {
+    afterEach(inject(function ($window) {
         element.remove();
-    });
+        $window.localStorage.removeItem('col_size_12ce6c32-bf80-41c8-92e5-66d70f22ec1f');
+    }));
 
     it('should render dataset values', inject(function (DatagridService) {
         //when
@@ -824,5 +825,17 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(3).element().find('> span').eq(1).text()).toBe('\n');
         expect(getDirectText(grid.row(1).cell(3).element())).toBe('AL');
+    }));
+
+    it('should save columns sizes in local storage', inject(function ($window, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, updateData);
+        scope.$digest();
+
+        //then
+        var sizes = JSON.parse($window.localStorage.getItem('col_size_12ce6c32-bf80-41c8-92e5-66d70f22ec1f'));
+        expect('0000' in sizes).toBe(true);
+        expect('0001' in sizes).toBe(true);
+        expect('0002' in sizes).toBe(true);
     }));
 });

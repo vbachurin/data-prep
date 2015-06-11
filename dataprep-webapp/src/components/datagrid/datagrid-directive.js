@@ -35,7 +35,7 @@
                 iElement.append(tooltipRuler);
 
                 //------------------------------------------------------------------------------------------------------
-                //------------------------------------------------COL UTILES--------------------------------------------
+                //------------------------------------------------CLASS UTILES------------------------------------------
                 //------------------------------------------------------------------------------------------------------
 
                 /**
@@ -60,6 +60,9 @@
                     grid.setCellCssStyles('highlight', {});
                 };
 
+                //------------------------------------------------------------------------------------------------------
+                //------------------------------------------------COL UTILES--------------------------------------------
+                //------------------------------------------------------------------------------------------------------
                 /**
                  * @ngdoc method
                  * @name formatter
@@ -122,7 +125,7 @@
                  * For preview, we inject directly a fake header
                  * @returns {object} - the adapted column item
                  */
-                var columnItem = function (col, index, preview) {
+                var columnItem = function columnItem(col, index, preview) {
                     var template;
                     if(preview) {
 
@@ -152,7 +155,8 @@
                         id: col.id,
                         field: col.id,
                         name: template,
-                        formatter: formatter
+                        formatter: formatter,
+                        minWidth: 80
                     };
                     return colItem;
                 };
@@ -219,6 +223,51 @@
                     });
                 };
 
+                /**
+                 * @ngdoc method
+                 * @name autosizeColumns
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {object[]} gridColumns The grid columns
+                 * @description [PRIVATE] Compute columns sizes and update them in the grid. The sizes are saved in
+                 * localstorage if not already saved. They are then used to set the last saved sized.
+                 */
+                var autosizeColumns = function autosizeColumns(gridColumns) {
+                    var localKey = 'col_size_' + DatagridService.metadata.id;
+                    var sizesStr = $window.localStorage.getItem(localKey);
+                    var sizes = {};
+
+                    if(sizesStr) {
+                        sizes = JSON.parse(sizesStr);
+                        _.forEach(gridColumns, function(col) {
+                            col.width = sizes[col.id] || col.minWidth;
+                        });
+                        grid.setColumns(gridColumns);
+                    }
+                    else {
+                        grid.setColumns(gridColumns);
+                        grid.autosizeColumns();
+                        saveColumnSizes();
+                    }
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name saveColumnSizes
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Save the column sized of the dataset in localstorage
+                 */
+                var saveColumnSizes = function saveColumnSizes() {
+                    var localKey = 'col_size_' + DatagridService.metadata.id;
+                    var gridColumns = grid.getColumns();
+                    var sizes = {};
+
+                    _.forEach(gridColumns, function(col) {
+                        sizes[col.id] = col.width;
+                    });
+
+                    $window.localStorage.setItem(localKey, JSON.stringify(sizes));
+                };
+
                 //------------------------------------------------------------------------------------------------------
                 //-------------------------------------------------LISTENERS--------------------------------------------
                 //------------------------------------------------------------------------------------------------------
@@ -228,7 +277,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach listeners for big table row management
                  */
-                var attachLongTableListeners = function() {
+                var attachLongTableListeners = function attachLongTableListeners() {
                     DatagridService.dataView.onRowCountChanged.subscribe(function () {
                         grid.updateRowCount();
                         grid.render();
@@ -245,12 +294,14 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach listeners for custom directives management in headers
                  */
-                var attachColumnHeaderListeners = function() {
+                var attachColumnHeaderListeners = function attachColumnHeaderListeners() {
                     //destroy old elements and insert compiled column header directives
                     grid.onColumnsReordered.subscribe(function () {
                         clearHeaders();
                         insertDatagridHeaders();
                     });
+
+                    grid.onColumnsResized.subscribe(saveColumnSizes);
 
                     //change column background and update column profil on click
                     grid.onHeaderClick.subscribe(function(e, args) {
@@ -276,7 +327,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach cell hover for tooltips listeners
                  */
-                var attachTooltipListener = function() {
+                var attachTooltipListener = function attachTooltipListener() {
                     //show tooltips only if not empty and width is bigger than cell
                     function shouldShowTooltip(item, column) {
                         var toolTipText = item[column.id];
@@ -318,7 +369,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach cell action listeners (click, active change, ...)
                  */
-                var attachCellListeners = function() {
+                var attachCellListeners = function attachCellListeners() {
                     //get clicked content and highlight cells in clicked column containing the content
                     grid.onClick.subscribe(function (e,args) {
                         var config = {};
@@ -353,7 +404,17 @@
 
                 };
 
-                var attachGridMove = function() {
+                /**
+                 * @ngdoc method
+                 * @name attachGridMove
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Attach :
+                 * <ul>
+                 *     <li> window resize event --> resize grid canvas</li>
+                 *     <li> grid scroll event --> update displayed record range</li>
+                 * </ul>
+                 */
+                var attachGridMove = function attachGridMove() {
                     grid.onScroll.subscribe(function() {
                         PreviewService.gridRangeIndex = grid.getRenderedRange();
                     });
@@ -408,7 +469,7 @@
                  * - Classic : we map each column to a header. This header can be a reused header if the column was
                  * the same as before, or a new created one otherwise.
                  */
-                var updateColumns = function (dataCols, preview) {
+                var updateColumns = function updateColumns(dataCols, preview) {
                     //save current headers elements
                     _.forEach(colHeaderElements, function(header) {
                         header.element.detach();
@@ -418,7 +479,7 @@
                     var columns = _.map(dataCols, function (col, index) {
                         return columnItem(col, index, preview);
                     });
-                    grid.setColumns(columns);
+                    autosizeColumns(columns);
 
                     //insert reused or created datagrid headers
                     if(!preview) {
@@ -448,48 +509,24 @@
                     }
                 };
 
-                /**
-                 * @ngdoc method
-                 * @name updateData
-                 * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Reset the cell styles and re render the grid
-                 */
-                var updateData = function () {
-                    resetCellStyles();
-                    grid.resetActiveCell();
-                    grid.invalidate();
-                };
-
                 //------------------------------------------------------------------------------------------------------
                 //-------------------------------------------------WATCHERS---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
-                /**
-                 * Update grid columns on backend column change
-                 */
-                scope.$watch(
-                    function () {
-                        return DatagridService.data ? DatagridService.data.columns : null;
-                    },
-                    function (cols) {
-                        if (cols) {
-                            initGridIfNeeded();
-                            updateColumns(cols, DatagridService.data.preview);
-                            grid.autosizeColumns();
-                        }
-                    }
-                );
 
                 /**
-                 * Update data on backend value change
+                 * Update grid columns and invalidate grid on data change
                  */
                 scope.$watch(
                     function () {
-                        return DatagridService.data ? DatagridService.data.records : null;
+                        return DatagridService.data;
                     },
-                    function (records) {
-                        if(records) {
+                    function (data) {
+                        if(data) {
                             initGridIfNeeded();
-                            updateData();
+                            updateColumns(data.columns, data.preview);
+                            resetCellStyles();
+                            grid.resetActiveCell();
+                            grid.invalidate();
                         }
                     }
                 );
