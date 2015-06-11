@@ -61,7 +61,7 @@ public class DataSetAPI extends APIService {
 
     @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Update a dataset.", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, //
-        notes = "Update a data set based on content provided in PUT body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    notes = "Update a data set based on content provided in POST body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
     public String update(
         @ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
         @ApiParam(value = "content") InputStream dataSetContent) {
