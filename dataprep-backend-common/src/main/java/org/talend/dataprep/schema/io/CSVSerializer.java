@@ -30,7 +30,7 @@ public class CSVSerializer implements Serializer {
             reader.readNext(); // Skip column names
 
             generator.writeStartArray();
-            writeLineContent(reader, metadata, generator);
+            writeLineContent(reader, metadata, generator, separator);
             generator.writeEndArray();
 
             generator.flush();
@@ -46,9 +46,11 @@ public class CSVSerializer implements Serializer {
      * @param reader the csv reader to use as data source.
      * @param metadata the dataset metadata to use to get the columns.
      * @param generator the json generator used to actually write the line content.
+     * @param separator the csv separator to use.
      * @throws IOException if an error occurs.
      */
-    private void writeLineContent(CSVReader reader, DataSetMetadata metadata, JsonGenerator generator) throws IOException {
+    private void writeLineContent(CSVReader reader, DataSetMetadata metadata, JsonGenerator generator, String separator)
+            throws IOException {
         String[] line;
 
         while ((line = reader.readNext()) != null) {
@@ -60,12 +62,29 @@ public class CSVSerializer implements Serializer {
 
             List<ColumnMetadata> columns = metadata.getRow().getColumns();
             generator.writeStartObject();
-            for (int i = 0; i < columns.size(); i++) {
+            int columnsSize = columns.size();
+            for (int i = 0; i < columnsSize; i++) {
                 ColumnMetadata columnMetadata = columns.get(i);
+
                 generator.writeFieldName(columnMetadata.getId());
-                if (i < line.length && line[i] != null) {
+
+                // deal with additional content (line.length > columns.size)
+                if (i == columnsSize - 1 && line.length > columnsSize) {
+                    StringBuffer buffer = new StringBuffer();
+                    for (int j = i; j < line.length; j++) {
+                        buffer.append(line[j]);
+                        if (j < line.length - 1) {
+                            buffer.append(separator);
+                        }
+                    }
+                    generator.writeString(buffer.toString());
+                }
+                // deal with fewer content (line.length < columns.size)
+                else if (i < line.length && line[i] != null) {
                     generator.writeString(line[i]);
-                } else {
+                }
+                // deal with null
+                else {
                     generator.writeNull();
                 }
             }
