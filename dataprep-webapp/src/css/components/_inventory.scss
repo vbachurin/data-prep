@@ -7,10 +7,10 @@ $border-color: #CECECE;
   font-size: 0.9em;
 
   .inventory-sort {
-    @include flex-basis(32px);
+    @include flex-basis(52px);
     border-bottom: 1px solid $border-color;
     font-weight: 300;
-    padding: 5px;
+    padding: 25px 5px 5px;
     text-align: right;
   }
 
