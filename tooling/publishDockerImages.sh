@@ -63,9 +63,9 @@ quote USER $FTP_USER
 quote PASS $FTP_PASSWD
 passive
 cd dataprep/builds
-delete $tar_archive'.md5sum'
-put $tar_archive'
-put $tar_archive'.md5sum'
+delete $tar_archive.md5sum
+put $tar_archive
+put $tar_archive.md5sum
 quit
 END_SCRIPT
 #===========================================
