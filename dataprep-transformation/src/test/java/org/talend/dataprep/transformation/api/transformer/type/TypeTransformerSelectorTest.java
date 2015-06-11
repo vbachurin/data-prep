@@ -48,7 +48,7 @@ public class TypeTransformerSelectorTest {
     private TransformerWriter transformerWriter;
 
     //@formatter:off
-    private final ParsedActions identityAction = new ParsedActions((row, context) -> {}, rowMetadata -> {});
+    private final ParsedActions identityAction = new ParsedActions((row, context) -> {}, (rowMetadata, context) -> {});
     //@formatter:on
 
     //@formatter:off
@@ -57,7 +57,7 @@ public class TypeTransformerSelectorTest {
                 final String transformedLastname = row.get("lastname").toUpperCase();
                 row.set("lastname", transformedLastname);
             },
-            rowMetadata -> {}
+            (rowMetadata, context) -> {}
     );
     //@Formatter:on
 
@@ -70,7 +70,7 @@ public class TypeTransformerSelectorTest {
                 row.set("firstname", transformedFirstname);
                 row.setDeleted(row.get("city").equals("Columbia"));
             },
-            rowMetadata -> {}
+            (rowMetadata, context) -> {}
     );
     //@formatter:on
 

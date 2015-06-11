@@ -28,7 +28,7 @@ public class TextClustering extends AbstractDynamicAction {
      */
     @Override
     public String getCategory() {
-        return "quickfix";
+        return ActionCategory.QUICKFIX.getDisplayName();
     }
 
     /**

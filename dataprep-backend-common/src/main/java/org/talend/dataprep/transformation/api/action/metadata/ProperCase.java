@@ -22,7 +22,7 @@ public class ProperCase extends SingleColumnAction {
 
     @Override
     public String getCategory() {
-        return "case";
+        return ActionCategory.CASE.getDisplayName();
     }
 
     @Override

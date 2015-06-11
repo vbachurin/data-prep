@@ -1,5 +1,6 @@
 package org.talend.dataprep.transformation.api.action.context;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -17,6 +18,16 @@ public final class TransformationContext {
     /** The row metadata. */
     private RowMetadata transformedRowMetadata;
 
+    /** The context itself. */
+    private Map<String, Object> context;
+
+    /**
+     * Default empty constructor.
+     */
+    public TransformationContext() {
+        context = new HashMap<>();
+    }
+
     /**
      * @param transformedRowMetadata the row metadata to build this context from.
      */
@@ -33,4 +44,25 @@ public final class TransformationContext {
         }
         return transformedRowMetadata;
     }
+
+    /**
+     * Put the given value at the given key in the context.
+     *
+     * @param key where to put the value.
+     * @param value the value to store.
+     */
+    public void put(String key, Object value) {
+        context.put(key, value);
+    }
+
+    /**
+     * Return the wanted value.
+     *
+     * @param key where to look for the value in the context.
+     * @return the wanted value or null if not found.
+     */
+    public Object get(String key) {
+        return context.get(key);
+    }
+
 }

@@ -26,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
@@ -70,16 +69,7 @@ public class DataSetImportTest {
 
     @After
     public void tearDown() throws Exception {
-        // Remove all data set (but use lock for remaining asynchronous processes).
-        for (DataSetMetadata metadata : dataSetMetadataRepository.list()) {
-            final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(metadata.getId());
-            try {
-                lock.lock();
-                dataSetMetadataRepository.remove(metadata.getId());
-            } finally {
-                lock.unlock();
-            }
-        }
+        dataSetMetadataRepository.clear();
     }
 
     /**

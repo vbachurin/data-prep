@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.codehaus.jackson.JsonFactory;
@@ -46,7 +45,7 @@ public class ActionParser implements BeanFactoryAware {
             // no op
             if (content.isEmpty()) {
                 //@formatter:off
-                return new ParsedActions((row, context) -> {}, rowMetadata -> {});
+                return new ParsedActions((row, context) -> {}, (rowMetadata, context) -> {});
                 //@formatter:on
             }
             JsonNode node = mapper.readTree(content);
@@ -57,7 +56,7 @@ public class ActionParser implements BeanFactoryAware {
                     throw new IllegalArgumentException("'actions' element should contain an array of 'action' elements.");
                 }
                 List<BiConsumer<DataSetRow, TransformationContext>> parsedRowActions = new ArrayList<>();
-                List<Consumer<RowMetadata>> parsedMetadataActions = new ArrayList<>();
+                List<BiConsumer<RowMetadata, TransformationContext>> parsedMetadataActions = new ArrayList<>();
 
                 Iterator<JsonNode> actionNodes = root.getElements();
                 while (actionNodes.hasNext()) {
@@ -85,9 +84,9 @@ public class ActionParser implements BeanFactoryAware {
                 };
 
                 // as well as the metadata consumers
-                Consumer<RowMetadata> metadataConsumer = rowMetadata -> {
-                    for (Consumer<RowMetadata> metadataAction : parsedMetadataActions) {
-                        metadataAction.accept(rowMetadata);
+                BiConsumer<RowMetadata, TransformationContext> metadataConsumer = (rowMetadata, context) -> {
+                    for (BiConsumer<RowMetadata, TransformationContext> metadataAction : parsedMetadataActions) {
+                        metadataAction.accept(rowMetadata, context);
                     }
                 };
 
@@ -96,7 +95,7 @@ public class ActionParser implements BeanFactoryAware {
             } else {
                 // Should not happen, but no action means no op.
                 //@formatter:off
-                return new ParsedActions((row, context) -> {}, rowMetadata -> {});
+                return new ParsedActions((row, context) -> {}, (rowMetadata, context) -> {});
                 //@formatter:on
             }
         } catch (Exception e) {
