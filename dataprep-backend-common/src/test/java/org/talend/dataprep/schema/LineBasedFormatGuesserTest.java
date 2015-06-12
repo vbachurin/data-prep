@@ -6,8 +6,6 @@ import java.io.InputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -27,8 +25,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @EnableAutoConfiguration
 public class LineBasedFormatGuesserTest {
 
-    /** This class logger. */
-    private final static Logger logger = LoggerFactory.getLogger(LineBasedFormatGuesserTest.class);
 
     /** The format guesser to test. */
     @Autowired
@@ -50,25 +46,27 @@ public class LineBasedFormatGuesserTest {
     }
 
     /**
-     * Standard text file.
-     */
-    @Test
-    public void shouldNotGuessCSV() throws IOException {
-        String fileName = "org/talend/dataprep/schema/not_a_csv.txt";
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            FormatGuesser.Result actual = guesser.guess(inputStream);
-
-            Assert.assertNotNull(actual);
-            Assert.assertTrue(actual.getFormatGuess() instanceof NoOpFormatGuess);
-        }
-    }
-
-    /**
      * csv file with 2 possible separators : ';' or '/', ';' should be selected
      */
     @Test
     public void shouldGuessBestSeparator() throws IOException {
         String fileName = "org/talend/dataprep/schema/mixed_separators.csv";
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+            FormatGuesser.Result actual = guesser.guess(inputStream);
+
+            Assert.assertNotNull(actual);
+            Assert.assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
+            Assert.assertEquals(separator, ';');
+        }
+    }
+
+    /**
+     * Have a look at https://jira.talendforge.org/browse/TDP-181
+     */
+    @Test
+    public void shouldGuessBestSeparatorOutOfTwo() throws IOException {
+        String fileName = "org/talend/dataprep/schema/tdp-181.csv";
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             FormatGuesser.Result actual = guesser.guess(inputStream);
 
