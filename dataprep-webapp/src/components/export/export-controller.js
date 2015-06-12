@@ -11,15 +11,16 @@
         vm.csvSeparator = ';';
         vm.exportTypes = [];
 
+        vm.exportIdKey = 'dataprep.export.id';
+
 
         vm.launchExport = function(exportType){
 
-            console.log('launchExport: \'' + (exportType?exportType.id:'null') + '\'');
             var exportId;
             if (exportType){
                 exportId = exportType.id;
             } else {
-                var lastExportId = $window.localStorage.getItem('dataprep.export.last.id');
+                var lastExportId = $window.localStorage.getItem(vm.exportIdKey);
                 exportId = lastExportId;
             }
 
@@ -35,7 +36,7 @@
             }), 'needParameters');
 
 
-            $window.localStorage.setItem('dataprep.export.last.id',exportId);
+            $window.localStorage.setItem(vm.exportIdKey,exportId);
 
             if (needParameters==='true'){
                 vm.showExport=true;
@@ -46,7 +47,6 @@
         };
 
         vm.export = function (type) {
-            console.log('export: \'' + type + '\'');
             var form = document.getElementById('exportForm');
             form.action = vm.exportUrl;
             form.exportType.value = type;

@@ -26,7 +26,7 @@
     </div>
 
     <form id="exportForm" target="_blank">
-        <input type="hidden" name="csvSeparator" value="{{ exportCtrl.csvSeparator }}" />
+        <input type="hidden" name="csvSeparator" value="{{ exportCtrl.csvSeparator }}" data-save-param="true"/>
         <input type="hidden" name="preparationId" value="{{ exportCtrl.preparationId }}" />
         <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
         <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
