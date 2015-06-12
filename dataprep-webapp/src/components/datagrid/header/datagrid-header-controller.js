@@ -8,8 +8,10 @@
      * @requires data-prep.services.transformation.service:TransformationService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function DatagridHeaderCtrl(TransformationService, ConverterService) {
+    function DatagridHeaderCtrl(TransformationCacheService, ConverterService) {
+        var COLUMN_CATEGORY = 'columns';
         var vm = this;
+        vm.column.simplifiedType = ConverterService.simplifyType(vm.column.type);
 
         /**
          * @ngdoc method
@@ -37,42 +39,6 @@
 
         /**
          * @ngdoc method
-         * @name insertDividers
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menuGroups - the menus grouped by category
-         * @description [PRIVATE] Insert a divider between each group of menus
-         * @returns {object[]} - each element is a group of menu or a divider
-         */
-        var insertDividers = function(menuGroups) {
-            var divider = {isDivider : true};
-            var result = [];
-            _.forEach(menuGroups, function(group) {
-                if(result.length) {
-                    result.push(divider);
-                }
-
-                result.push(group);
-            });
-
-            return result;
-        };
-
-        /**
-         * @ngdoc method
-         * @name groupMenus
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menus - the unordered menus
-         * @description [PRIVATE] Group all menus by category and insert dividers between each group
-         * @returns {object[]} - each element is a menu item or a divider
-         */
-        var groupMenus = function(menus) {
-            var groups = _.groupBy(menus, function(menuItem) { return menuItem.category; });
-            var groupsAndDividers = insertDividers(groups);
-            return _.flatten(groupsAndDividers);
-        };
-
-        /**
-         * @ngdoc method
          * @name initTransformations
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
          * @description Get transformations from REST call
@@ -82,9 +48,11 @@
                 vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
 
-                TransformationService.getTransformations(vm.column)
+                TransformationCacheService.getTransformations(vm.column)
                     .then(function(menus) {
-                        vm.transformations = groupMenus(menus);
+                        vm.transformations = _.filter(menus, function(menu) {
+                            return menu.category === COLUMN_CATEGORY;
+                        });
                     })
                     .catch(function() {
                         vm.transformationsRetrieveError = true;
@@ -94,20 +62,6 @@
                     });
             }
         };
-
-        /**
-         * @ngdoc method
-         * @name setColumnSimplifiedType
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description set the column simplified, more user friendly, type.
-         */
-        var setColumnSimplifiedType = function () {
-            //if (vm.column) {
-                vm.column.simplifiedType = ConverterService.simplifyType(vm.column.type);
-            //}
-        };
-
-        setColumnSimplifiedType();
     }
 
     angular.module('data-prep.datagrid-header')

@@ -63,9 +63,11 @@
          */
         vm.hideTooltip = function() {
             cancelTooltip();
-            tooltipHidePromise = $timeout(function() {
-                vm.showTooltip = false;
-            }, tooltipDelay / 3);
+            if(vm.showTooltip) {
+                tooltipHidePromise = $timeout(function() {
+                    vm.showTooltip = false;
+                });
+            }
         };
     }
 

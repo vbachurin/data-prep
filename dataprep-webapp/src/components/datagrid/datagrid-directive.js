@@ -16,10 +16,12 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.utils.service:ConverterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService, ConverterService) {
+    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService,
+                      ColumnSuggestionService, ConverterService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -44,7 +46,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Reset columns class
                  */
-                var resetColumnsClass = function() {
+                var resetColumnsClass = function resetColumnsClass() {
                     _.forEach(grid.getColumns(), function(column) {
                         column.cssClass = null;
                     });
@@ -56,7 +58,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Reset the cells css
                  */
-                var resetCellStyles = function() {
+                var resetCellStyles = function resetCellStyles() {
                     grid.setCellCssStyles('highlight', {});
                 };
 
@@ -69,7 +71,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
                  */
-                var formatter = function(row, cell, value, columnDef, dataContext) {
+                var formatter = function formatter(row, cell, value, columnDef, dataContext) {
 
                     var returnStr = value;
 
@@ -156,7 +158,8 @@
                         field: col.id,
                         name: template,
                         formatter: formatter,
-                        minWidth: 80
+                        minWidth: 80,
+                        tdpColMetadata: col
                     };
                     return colItem;
                 };
@@ -168,7 +171,7 @@
                  * @description [PRIVATE] Create and insert the dataset column headers (dropdown actions and quality bars).
                  The columns are from {@link data-prep.services.playground.service:DatagridService DatagridService}
                  */
-                var insertDatagridHeaders = function () {
+                var insertDatagridHeaders = function insertDatagridHeaders() {
                     _.forEach(DatagridService.data.columns, function (col, index) {
                         var header = createHeader(col);
                         iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
@@ -183,7 +186,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Create a column header object containing element, scope and column
                  */
-                var createHeader = function(col) {
+                var createHeader = function createHeader(col) {
                     var headerScope = scope.$new(true);
                     headerScope.columns = col;
                     var headerElement = angular.element('<datagrid-header column="columns"></datagrid-header>');
@@ -202,7 +205,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Remove header elements.
                  */
-                var clearHeaders = function () {
+                var clearHeaders = function clearHeaders() {
                     _.forEach(colHeaderElements, function (header) {
                         header.scope.$destroy();
                         header.element.remove();
@@ -217,10 +220,12 @@
                  * @param {string} column - the selected column
                  * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
                  */
-                var updateColSelection = function (column) {
+                var updateColSelection = function updateColSelection(column) {
                     $timeout(function() {
                         DatagridService.setSelectedColumn(column.id);
                     });
+
+                    ColumnSuggestionService.setColumn(column.tdpColMetadata);
                 };
 
                 /**
@@ -357,6 +362,7 @@
 
                         ctrl.updateTooltip(item, column.id, position);
                     });
+
                     //hide tooltip on leave
                     grid.onMouseLeave.subscribe(function() {
                         ctrl.hideTooltip();

@@ -1,4 +1,4 @@
-describe('DatasetColumnHeader controller', function () {
+describe('Datagrid header controller', function () {
     'use strict';
 
     var createController, createControllerFromColumn, scope;
@@ -12,6 +12,12 @@ describe('DatasetColumnHeader controller', function () {
             {
                 'name':'uppercase',
                 'category':'case',
+                'items':null,
+                'parameters':null
+            },
+            {
+                'name':'rename',
+                'category':'columns',
                 'items':null,
                 'parameters':null
             },
@@ -36,7 +42,7 @@ describe('DatasetColumnHeader controller', function () {
             },
             {
                 'name':'split',
-                'category':'split',
+                'category':'columns',
                 'parameters':null,
                 'items':[
                     {
@@ -108,7 +114,7 @@ describe('DatasetColumnHeader controller', function () {
 
         createControllerFromColumn = function (col) {
             var ctrlFn = $controller('DatagridHeaderCtrl', {
-                $scope: scope,
+                $scope: scope
             }, true);
 
             ctrlFn.instance.column = col;
@@ -169,11 +175,11 @@ describe('DatasetColumnHeader controller', function () {
     });
 
     describe('with transformation list success', function() {
-        beforeEach(inject(function ($q, TransformationService) {
-            spyOn(TransformationService, 'getTransformations').and.returnValue($q.when(menusMock()));
+        beforeEach(inject(function ($q, TransformationCacheService) {
+            spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(menusMock()));
         }));
 
-        it('should init grouped and divided transformation menu', inject(function($rootScope, TransformationService) {
+        it('should filter and init only "columns" category', inject(function($rootScope, TransformationCacheService) {
             //given
             var ctrl = createController();
 
@@ -182,33 +188,13 @@ describe('DatasetColumnHeader controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationService.getTransformations).toHaveBeenCalledWith(column);
-            expect(ctrl.transformations.length).toBe(5);
-            expect(ctrl.transformations[0].name).toBe('uppercase');
-            expect(ctrl.transformations[1].name).toBe('lowercase');
-            expect(ctrl.transformations[2].name).toBe('withParam');
-            expect(ctrl.transformations[3].isDivider).toBe(true);
-            expect(ctrl.transformations[4].name).toBe('split');
+            expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(column);
+            expect(ctrl.transformations.length).toBe(2);
+            expect(ctrl.transformations[0].name).toBe('rename');
+            expect(ctrl.transformations[1].name).toBe('split');
         }));
 
-        it('should adapt params types to input type', inject(function($rootScope) {
-            //given
-            var ctrl = createController();
-
-            //when
-            ctrl.initTransformations();
-            $rootScope.$digest();
-
-            //then
-            expect(ctrl.transformations[2].parameters[0].inputType).toBe('text');
-            expect(ctrl.transformations[4].items[0].values[1].parameters[0].inputType).toBe('text');
-            expect(ctrl.transformations[4].items[0].values[2].parameters[0].inputType).toBe('number');
-            expect(ctrl.transformations[4].items[0].values[3].parameters[0].inputType).toBe('number');
-            expect(ctrl.transformations[4].items[0].values[3].parameters[1].inputType).toBe('number');
-            expect(ctrl.transformations[4].items[0].values[3].parameters[2].inputType).toBe('number');
-        }));
-
-        it('should not get transformations is transformations are already initiated', inject(function($rootScope, TransformationService) {
+        it('should not get transformations if transformations are already initiated', inject(function($rootScope, TransformationCacheService) {
             //given
             var ctrl = createController();
             ctrl.initTransformations();
@@ -219,13 +205,13 @@ describe('DatasetColumnHeader controller', function () {
             $rootScope.$digest();
 
             //then
-            expect(TransformationService.getTransformations.calls.count()).toBe(1);
+            expect(TransformationCacheService.getTransformations.calls.count()).toBe(1);
         }));
     });
 
     describe('with transformation list error', function() {
-        beforeEach(inject(function ($q, TransformationService) {
-            spyOn(TransformationService, 'getTransformations').and.returnValue($q.reject('server error'));
+        beforeEach(inject(function ($q, TransformationCacheService) {
+            spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.reject('server error'));
         }));
 
         it('should change inProgress and error flags', inject(function($rootScope) {
@@ -249,7 +235,6 @@ describe('DatasetColumnHeader controller', function () {
     });
 
     it('should set the simplified column type name', function() {
-
         //given
         var stringColumn = {
             'name': 'bestColumnEver',

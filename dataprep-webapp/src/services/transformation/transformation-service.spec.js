@@ -580,11 +580,10 @@ describe('Transformation Service', function () {
 
     it('should get column transformations with adapted input types and without column_name parameter', inject(function ($rootScope, TransformationService) {
         //given
-        var column = {};
         var transformations = null;
 
         //when
-        TransformationService.getTransformations(column)
+        TransformationService.getTransformations('{}')
             .then(function(result) {
                 transformations = result;
             });

@@ -469,7 +469,7 @@ describe('Datagrid directive', function () {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function ($rootScope, $compile, $timeout, DatagridService) {
+    beforeEach(inject(function ($rootScope, $compile, $timeout, DatagridService, ColumnSuggestionService) {
         scope = $rootScope.$new();
         element = angular.element('<datagrid></datagrid>');
         $compile(element)(scope);
@@ -478,6 +478,7 @@ describe('Datagrid directive', function () {
 
         angular.element('body').append(element);
         spyOn(DatagridService, 'setSelectedColumn').and.returnValue(null);
+        spyOn(ColumnSuggestionService, 'setColumn').and.returnValue(null);
     }));
 
     afterEach(inject(function ($window) {
@@ -583,6 +584,23 @@ describe('Datagrid directive', function () {
         expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0002');
     }));
 
+    it('should set column in transfromation suggestion service on cell clicked', inject(function ($timeout, DatagridService, ColumnSuggestionService) {
+        //given
+        var colIndex = 2;
+
+        DatagridService.setDataset(metadata, data);
+        scope.$digest();
+
+        //when
+        var grid = new GridGetter(element);
+        grid.row(0).cell(colIndex).element().click();
+        scope.$digest();
+        $timeout.flush();
+
+        //then
+        expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(data.columns[colIndex]);
+    }));
+
     it('should highlight empty cells only', inject(function (DatagridService) {
         //given
         var colIndex = 2;
@@ -626,6 +644,19 @@ describe('Datagrid directive', function () {
 
         //then
         expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0001');
+    }));
+
+    it('should change selected column in transformation suggestion service on column header click', inject(function ($timeout, DatagridService, ColumnSuggestionService) {
+        //given
+        DatagridService.setDataset(metadata, dataWithEmptyCell);
+        scope.$digest();
+
+        //when
+        element.find('#datagrid-header-1').eq(0).click();
+        $timeout.flush();
+
+        //then
+        expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(dataWithEmptyCell.columns[1]);
     }));
 
     it('should do nothing on already selected column header click', inject(function ($timeout, DatagridService) {

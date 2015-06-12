@@ -100,9 +100,6 @@ describe('Recipe directive', function() {
     });
 
     it('should render recipe entries', inject(function(RecipeService) {
-        //given
-        RecipeService.reset();
-
         //when
         RecipeService.getRecipe().push(recipe[0]);
         RecipeService.getRecipe().push(recipe[1]);
@@ -116,9 +113,6 @@ describe('Recipe directive', function() {
     }));
 
     it('should render recipe params', inject(function(RecipeService) {
-        //given
-        RecipeService.reset();
-
         //when
         RecipeService.getRecipe().push(recipe[0]);
         scope.$digest();
@@ -130,7 +124,6 @@ describe('Recipe directive', function() {
 
     it('should render recipe cluster params', inject(function(RecipeService) {
         //given
-        RecipeService.reset();
         var body = angular.element('body');
 
         //when
