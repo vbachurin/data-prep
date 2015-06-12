@@ -3,7 +3,6 @@ header.navigation {
   $base-border-color: gainsboro !default;
   $base-border-radius: 3px !default;
   $base-accent-color: #477DCA !default;
-//  $dark-gray: #333 !default;
 
   $navigation-background-top: rgba(85, 89, 100, 0.8);
   $navigation-background-bottom: rgb(85, 89, 100);
@@ -19,7 +18,7 @@ header.navigation {
   $navigation-padding: 1em;
   $navigation-background: $dark-gray;
   $navigation-color-hover: white;
-  $navigation-height: 51px;
+  $navigation-height: 54px;
   $navigation-search-border: 1px solid $medium-gray;
   $navigation-active-link-color: transparentize(white, 0.5);
   $navigation-submenu-padding: 1em;
@@ -30,13 +29,11 @@ header.navigation {
   border-bottom: 1px solid darken($navigation-background, 10);
   min-height: $navigation-height;
   width: 100%;
-  z-index: 999;
 
   .navigation-wrapper {
     @include clearfix;
     @include outer-container;
     position: relative;
-    z-index: 9999;
   }
 
   .logo-wrapper {
@@ -75,7 +72,6 @@ header.navigation {
   nav {
     float: none;
     min-height: $navigation-height;
-    z-index: 9999999;
 
     @include media ($horizontal-bar-mode) {
       float: right;
@@ -90,7 +86,6 @@ header.navigation {
     overflow: visible;
     padding: 0;
     width: 100%;
-    z-index: 9999;
 
     &.show {
       display: block;
@@ -113,7 +108,6 @@ header.navigation {
     padding-right: 0.8em;
     text-align: right;
     width: 100%;
-    z-index: 9999;
 
     @include media ($horizontal-bar-mode) {
       background: transparent;
@@ -214,6 +208,7 @@ header.navigation {
   ul.submenu {
     display: none;
     padding-left: 0;
+    z-index: 100;
 
     box-shadow: 0px 6px 8px rgba(0,0,0,.4);
 

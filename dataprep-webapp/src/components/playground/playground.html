@@ -1,5 +1,4 @@
-<talend-modal class="playground"
-              fullscreen="true"
+<talend-modal fullscreen="true"
               state="playgroundCtrl.showPlayground"
               close-button="true"
               on-close="playgroundCtrl.close()">
@@ -26,12 +25,12 @@
         </div>
     </div>
 
-    <div class="modal-body flex">
+    <div class="modal-body playground">
         <talend-slidable visible="false" class="flex-side recipe">
             <recipe metadata="playgroundCtrl.metadata"></recipe>
         </talend-slidable>
 
-        <div class="flex-center">
+        <div class="playground-center">
             <filter-list></filter-list>
 
             <div class="datagrid-container">

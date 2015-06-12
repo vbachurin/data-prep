@@ -1,33 +1,79 @@
-<div>
-    <div ng-include="'components/home/home-subheader.html'"></div>
-    
-    <div class="container flex">
+<header class="subheader">
+    <div class="subheader-wrapper">
+        <ul>
+            <li class="primary">
+                <button type="button"
+                        class="t-btn t-btn-import-new-file"
+                        id="button1"
+                        onclick="document.getElementById('datasetFile').click()">
+                    {{ ::'IMPORT_FILE' | translate }}
+                </button>
+                <input type="file"
+                       id="datasetFile"
+                       name="datasetFile"
+                       class="ng-hide"
+                       ng-file-select
+                       accept="*.csv"
+                       ng-model="homeCtrl.datasetFile"
+                       ng-file-change="homeCtrl.uploadDatasetFile()"/>
+            </li>
 
-        <div class="flex-menu-left side-menu">
-            <ul>
-                <li><a ui-sref="nav.home.datasets" ui-sref-active="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
-                <li><a ui-sref="nav.home.preparations" ui-sref-active="selected">{{ ::'ALL_PREPARATIONS' | translate }}</a></li>
-                <li><a href="javascript:void(0)">{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
-                <li><a href="javascript:void(0)">{{ ::'ALL_SHAKED_FILES' | translate }}</a></li>
-                <li><a href="javascript:void(0)">{{ ::'FAVORITE_FILES' | translate }}</a></li>
-            </ul>
+
+            <!-- FOR DEMO PURPOSE ONLY -->
+            <li>
+                <img src="/assets/images/images/breadcrumb.png"
+                     alt="this is a fake breadcrumb for demo purpose" height="42"
+                     width="565">
+            </li>
+        </ul>
+        <div class="subheader-right ">
+            <button id="btn-toggle-right-panel" ng-click="homeCtrl.toggleRightPanel()" type="button" class="t-btn t-btn-expand-collapse-RHP"></button>
+            <button id="" onclick="" type="button" class="t-btn t-btn-view-mode"></button>
         </div>
-
-        <div class="flex-center">
-            <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
-            <ui-view name="home-content"></ui-view>
-        </div>
-
-        <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-side inventory-data" resizable="inventory-data">
-            <p class="title">{{ ::'INVENTORY_DATA' | translate }}</p>
-            <hr/>
-            <p class="empty">
-                <img src="/assets/images/large_folder.png"/>
-                <br/>
-                {{ ::'SELECT_DATASET_DESCRIPTION' | translate }}
-            </p>
-        </talend-slidable>
     </div>
 
-    <playground></playground>
+    <talend-modal fullscreen="false"
+                  close-button="true"
+                  state="homeCtrl.datasetNameModal">
+        {{ ::'ENTER_DATASET_NAME' | translate }}
+        <form name="homeCtrl.datasetNameForm">
+            <input type="text" ng-model="homeCtrl.datasetName" required/>
+
+            <div class="modal-buttons">
+                <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
+                <button class="talend-modal-close t-btn-primary modal-primary-button"
+                        ng-click="homeCtrl.uploadDatasetName()"
+                        ng-disabled="homeCtrl.datasetNameForm.$invalid">{{ ::'OK' | translate }}</button>
+            </div>
+        </form>
+    </talend-modal>
+</header>
+
+<div class="home">
+    <div class="flex-menu-left side-menu">
+        <ul>
+            <li><a ui-sref="nav.home.datasets" ui-sref-active="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
+            <li><a ui-sref="nav.home.preparations" ui-sref-active="selected">{{ ::'ALL_PREPARATIONS' | translate }}</a></li>
+            <li><a href="javascript:void(0)">{{ ::'MOST_RECENT_FILES' | translate }}</a></li>
+            <li><a href="javascript:void(0)">{{ ::'ALL_SHAKED_FILES' | translate }}</a></li>
+            <li><a href="javascript:void(0)">{{ ::'FAVORITE_FILES' | translate }}</a></li>
+        </ul>
+    </div>
+
+    <div class="flex-center">
+        <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
+        <ui-view name="home-content"></ui-view>
+    </div>
+
+    <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-menu-right inventory-data" resizable="inventory-data">
+        <p class="title">{{ ::'INVENTORY_DATA' | translate }}</p>
+        <hr/>
+        <p class="empty">
+            <img src="/assets/images/large_folder.png"/>
+            <br/>
+            {{ ::'SELECT_DATASET_DESCRIPTION' | translate }}
+        </p>
+    </talend-slidable>
 </div>
+
+<playground></playground>

@@ -29,39 +29,33 @@
     <!-- endbuild -->
 </head>
 <body>
-    <!--[if lt IE 10]>
-    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
-        your browser</a> to improve your experience.</p>
-    <![endif]-->
+<!--[if lt IE 10]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
 
-    <toaster-container toaster-options="{'position-class': 'toast-top-60-width', 'body-output-type': 'trustedHtml', 'close-button': true}"></toaster-container>
-    <talend-loading></talend-loading>
-    <ui-view></ui-view>
+<toaster-container
+    toaster-options="{'position-class': 'toast-top-60-width', 'body-output-type': 'trustedHtml', 'close-button': true}"></toaster-container>
+<talend-loading></talend-loading>
+<ui-view class="main-layout"></ui-view>
 
-    <footer class="footer" role="contentinfo">
-        <div class="copyright">
-            © 2015 Talend. All Rights Reserved | v1.0.m5-SNAPSHOT
-        </div>
-    </footer>
-
-
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-    <script>
-        (function (b, o, i, l, e, r) {
-            b.GoogleAnalyticsObject = l;
-            b[l] || (b[l] =
-                    function () {
-                        (b[l].q = b[l].q || []).push(arguments)
-                    });
-            b[l].l = +new Date;
-            e = o.createElement(i);
-            r = o.getElementsByTagName(i)[0];
-            e.src = '//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e, r)
-        }(window, document, 'script', 'ga'));
-        ga('create', 'UA-XXXXX-X');
-        ga('send', 'pageview');
-    </script>
+<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+<script>
+    (function (b, o, i, l, e, r) {
+        b.GoogleAnalyticsObject = l;
+        b[l] || (b[l] =
+            function () {
+                (b[l].q = b[l].q || []).push(arguments)
+            });
+        b[l].l = +new Date;
+        e = o.createElement(i);
+        r = o.getElementsByTagName(i)[0];
+        e.src = '//www.google-analytics.com/analytics.js';
+        r.parentNode.insertBefore(e, r)
+    }(window, document, 'script', 'ga'));
+    ga('create', 'UA-XXXXX-X');
+    ga('send', 'pageview');
+</script>
 
 <!-- build:js scripts/vendor.js -->
 <!-- bower:js -->
@@ -117,9 +111,6 @@
 <script src="services/playground/grid/datagrid-service.js"></script>
 <script src="services/filter/filter-module.js"></script>
 <script src="services/filter/filter-service.js"></script>
-<script src="services/export/export-module.js"></script>
-<script src="services/export/rest/export-rest-service.js"></script>
-<script src="services/export/export-service.js"></script>
 <script src="services/dataset/dataset-module.js"></script>
 <script src="services/dataset/rest/dataset-rest-service.js"></script>
 <script src="services/dataset/preview/dataset-sheet-preview-service.js"></script>
@@ -137,7 +128,6 @@
 <script src="components/widgets/confirm/widget-confirm-service.js"></script>
 <script src="components/widgets/confirm/widget-confirm-directive.js"></script>
 <script src="components/widgets/confirm/widget-confirm-controller.js"></script>
-<script src="components/widgets/button-dropdown/widget-button-dropdown-directive.js"></script>
 <script src="components/widgets/badge/widget-badge-directive.js"></script>
 <script src="components/widgets/badge/widget-badge-controller.js"></script>
 <script src="components/widgets/accordion/widget-accordion-directive.js"></script>
