@@ -70,14 +70,8 @@ public class CSVSerializer implements Serializer {
 
                 // deal with additional content (line.length > columns.size)
                 if (i == columnsSize - 1 && line.length > columnsSize) {
-                    StringBuffer buffer = new StringBuffer();
-                    for (int j = i; j < line.length; j++) {
-                        buffer.append(line[j]);
-                        if (j < line.length - 1) {
-                            buffer.append(separator);
-                        }
-                    }
-                    generator.writeString(buffer.toString());
+                    String additionalContent = getRemainingColumns(line, i, separator);
+                    generator.writeString(additionalContent);
                 }
                 // deal with fewer content (line.length < columns.size)
                 else if (i < line.length && line[i] != null) {
@@ -90,5 +84,24 @@ public class CSVSerializer implements Serializer {
             }
             generator.writeEndObject();
         }
+    }
+
+    /**
+     * Return the remaining raw (with separators) content of the column.
+     *
+     * @param line the line to parse.
+     * @param start where to start in the line.
+     * @param separator the separator to append.
+     * @return the remaining raw (with separators) content of the column.
+     */
+    private String getRemainingColumns(String[] line, int start, String separator) {
+        StringBuffer buffer = new StringBuffer();
+        for (int j = start; j < line.length; j++) {
+            buffer.append(line[j]);
+            if (j < line.length - 1) {
+                buffer.append(separator);
+            }
+        }
+        return buffer.toString();
     }
 }
