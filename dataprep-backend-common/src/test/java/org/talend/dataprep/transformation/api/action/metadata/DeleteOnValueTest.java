@@ -20,10 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -37,7 +33,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 public class DeleteOnValueTest {
 
     /** The action to test. */
-    DeleteOnValue deleteOnValue;
+    DeleteOnValue action;
 
     /** the action out of the consumer. */
     private BiConsumer<DataSetRow, TransformationContext> consumer;
@@ -47,14 +43,13 @@ public class DeleteOnValueTest {
      */
     public DeleteOnValueTest() throws IOException {
 
-        deleteOnValue = new DeleteOnValue();
-        String actions = IOUtils.toString(DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
+        action = new DeleteOnValue();
 
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = deleteOnValue.parseParameters(node.get("actions").get(0).get("parameters").getFields());
-        consumer = deleteOnValue.create(parameters);
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
+
+        consumer = action.create(parameters);
     }
 
     @Test
@@ -161,16 +156,16 @@ public class DeleteOnValueTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(deleteOnValue.accept(getColumn(Type.STRING)));
-        assertTrue(deleteOnValue.accept(getColumn(Type.NUMERIC)));
-        assertTrue(deleteOnValue.accept(getColumn(Type.FLOAT)));
+        assertTrue(action.accept(getColumn(Type.STRING)));
+        assertTrue(action.accept(getColumn(Type.NUMERIC)));
+        assertTrue(action.accept(getColumn(Type.FLOAT)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(deleteOnValue.accept(getColumn(Type.DATE)));
-        assertFalse(deleteOnValue.accept(getColumn(Type.BOOLEAN)));
-        assertFalse(deleteOnValue.accept(getColumn(Type.ANY)));
+        assertFalse(action.accept(getColumn(Type.DATE)));
+        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.accept(getColumn(Type.ANY)));
     }
 
 }

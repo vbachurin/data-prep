@@ -32,7 +32,7 @@ public class Cut extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "quickfix"; //$NON-NLS-1$
+        return ActionCategory.QUICKFIX.getDisplayName();
     }
 
     /**

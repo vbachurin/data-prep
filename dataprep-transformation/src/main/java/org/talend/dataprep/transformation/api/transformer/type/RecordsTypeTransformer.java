@@ -33,7 +33,11 @@ public class RecordsTypeTransformer implements TypeTransformer {
         final List<Integer> indexes = configuration.getIndexes();
 
         final BiConsumer<DataSetRow, TransformationContext> referenceAction = configuration.isPreview() ? actions.get(0) : null;
+        TransformationContext referenceContext = configuration.isPreview() ? configuration.getTransformationContext(0) : null;
+
         final BiConsumer<DataSetRow, TransformationContext> action = configuration.isPreview() ? actions.get(1) : actions.get(0);
+        TransformationContext context = configuration.isPreview() ? configuration.getTransformationContext(1) : configuration
+                .getTransformationContext(0);
 
         final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
         final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : null;
@@ -53,13 +57,11 @@ public class RecordsTypeTransformer implements TypeTransformer {
                     break;
                 case END_OBJECT:
 
-                    TransformationContext context = configuration.getTransformationContext();
-
                     if (configuration.isPreview()) {
 
                         // compute the reference row
                         final DataSetRow referenceRow = row.clone();
-                        referenceAction.accept(referenceRow, context);
+                        referenceAction.accept(referenceRow, referenceContext);
 
                         if (isIndexLimited) {
                             // we only start to process at the min index

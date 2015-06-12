@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
@@ -56,7 +55,7 @@ public class Split extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "columns"; //$NON-NLS-1$
+        return ActionCategory.COLUMNS.getDisplayName();
     }
 
     @Override
@@ -69,6 +68,7 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#getItems()@return
      */
     @Override
+    @Nonnull
     public Item[] getItems() {
         Value[] values = new Value[] { //
         new Value(":", true), //
@@ -125,9 +125,9 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
 
-        return rowMetadata -> {
+        return (rowMetadata, context) -> {
 
             String columnId = parameters.get(COLUMN_ID);
 

@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -55,7 +54,7 @@ public class ExtractEmailDomainTest {
     private BiConsumer<DataSetRow, TransformationContext> rowClosure;
 
     /** The metadata consumer to test. */
-    private Consumer<RowMetadata> metadataClosure;
+    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
 
     /** The action to test. */
     @Autowired
@@ -127,7 +126,7 @@ public class ExtractEmailDomainTest {
         input.add(createMetadata("last update", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata);
+        metadataClosure.accept(rowMetadata, new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
