@@ -1,35 +1,26 @@
 <div class="column-suggestions">
     <div class="title">Actions</div>
-    <ul class="menu talend-accordion">
-        <li>
-            <a class="talend-accordion-trigger">Change case</a>
-            <ul class="submenu">
-                <li>
-                    <a>Uppercase</a>
-                </li>
-                <li>
-                    <a>Lowercase</a>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <a class="talend-accordion-trigger">Fill with</a>
-            <ul class="submenu">
-                <li>
-                    Value : <input type="text" value="N/A" />
-                    <button class="t-btn-primary">Ok</button>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <a class="talend-accordion-trigger">Replace by</a>
-            <ul class="submenu">
-                <li>
-                    When this text is found : <input type="text" value="N/A" />
-                    Replace it with : <input type="text" value="N/A" />
-                    <button class="t-btn-primary">Ok</button>
-                </li>
-            </ul>
-        </li>
-    </ul>
+    <div class="Description" ng-if="! columnSuggestionsCtrl.suggestions">Select a column to display its actions</div>
+
+    <div ng-repeat="(category, transformations) in columnSuggestionsCtrl.suggestions track by category">
+        <div>{{category}}</div>
+
+        <ul class="menu talend-accordion">
+            <li ng-repeat="transfo in transformations track by $index" ng-switch="!!(transfo.parameters || transfo.items)">
+
+                <!-- no static parameters -->
+                <a ng-switch-when="false"
+                   ng-click="columnSuggestionsCtrl.select(transfo)">{{transfo.label}}</a>
+
+                <!-- with static parameters -->
+                <span ng-switch-when="true">
+                    <a class="talend-accordion-trigger">{{transfo.label}}</a>
+                    <ul class="submenu">
+                        <transform-params transformation="transfo"
+                                          on-submit="columnSuggestionsCtrl.transformClosure(transfo)(params)"></transform-params>
+                    </ul>
+                </span>
+            </li>
+        </ul>
+    </div>
 </div>

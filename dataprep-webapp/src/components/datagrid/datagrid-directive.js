@@ -20,7 +20,7 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService,
+    function Datagrid($compile, $window, DatagridService, FilterService, PreviewService,
                       ColumnSuggestionService, ConverterService) {
         return {
             restrict: 'E',
@@ -221,11 +221,8 @@
                  * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
                  */
                 var updateColSelection = function updateColSelection(column) {
-                    $timeout(function() {
-                        DatagridService.setSelectedColumn(column.id);
-                    });
-
-                    ColumnSuggestionService.setColumn(column.tdpColMetadata);
+                    DatagridService.setSelectedColumn(column.id); // this will not been taken inot account until next digest
+                    ColumnSuggestionService.setColumn(column.tdpColMetadata); // this will trigger a digest after REST call
                 };
 
                 /**

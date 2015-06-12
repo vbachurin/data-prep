@@ -10,64 +10,70 @@
     function ColumnSuggestionService(TransformationCacheService) {
         var COLUMN_CATEGORY = 'columns';
         var self = this;
+
+        /**
+         * @ngdoc property
+         * @name currentColumn
+         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @description The currently selected column
+         * @type {Object}
+         */
         self.currentColumn = null;
+
+        /**
+         * @ngdoc property
+         * @name transformations
+         * @propertyOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @description The currently selected column transformations
+         * @type {Object}
+         */
         self.transformations = null;
 
         /**
          * @ngdoc method
-         * @name insertDividers
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menuGroups - the menus grouped by category
-         * @description [PRIVATE] Insert a divider between each group of menus
-         * @returns {object[]} - each element is a group of menu or a divider
+         * @name filterAndGroup
+         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @param {object[]} transfos The transformations list
+         * @description [PRIVATE] Keep only the non 'columns' category and group them by category
+         * @returns {object} An object containing {key: value} = {category: [transformations]}
          */
-        var insertDividers = function(menuGroups) {
-            var divider = {isDivider : true};
-            var result = [];
-            _.forEach(menuGroups, function(group) {
-                if(result.length) {
-                    result.push(divider);
-                }
-
-                result.push(group);
-            });
-
-            return result;
+        var filterAndGroup = function filterAndGroup(transfos) {
+            return _.chain(transfos)
+                .filter(function(transfo) {
+                    return transfo.category !== COLUMN_CATEGORY;
+                })
+                .groupBy('category')
+                .value();
         };
 
         /**
          * @ngdoc method
-         * @name groupMenus
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menus - the unordered menus
-         * @description [PRIVATE] Group all menus by category and insert dividers between each group
-         * @returns {object[]} - each element is a menu item or a divider
+         * @name setColumn
+         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @param {object} column The new selected column
+         * @description Set the selected column and init its suggested transformations
          */
-        var groupMenus = function(menus) {
-            var groups = _.groupBy(menus, function(menuItem) { return menuItem.category; });
-            //var groupsAndDividers = insertDividers(groups);
-            //return _.flatten(groupsAndDividers);
-
-            return groups;
-        };
-
         this.setColumn = function setColumn(column) {
             if(column === self.currentColumn) {
                 return;
             }
 
             self.currentColumn = column;
+            self.transformations = null;
             TransformationCacheService.getTransformations(column)
                 .then(function(transformations) {
                     if(self.currentColumn === column) {
-                        var filteredTransfos = _.filter(transformations, function(transfo) {
-                            return transfo.category !== COLUMN_CATEGORY;
-                        });
-                        self.transformations = groupMenus(filteredTransfos);
+                        self.transformations = filterAndGroup(transformations);
                     }
                 });
         };
 
+        /**
+         * @ngdoc method
+         * @name reset
+         * @methodOf data-prep.services.transformation.service:ColumnSuggestionService
+         * @description Reset the current column and the transformations
+         */
         this.reset = function reset() {
             self.currentColumn = null;
             self.transformations = null;

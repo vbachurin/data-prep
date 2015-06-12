@@ -567,7 +567,7 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(colIndex).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should set selected column on cell clicked', inject(function ($timeout, DatagridService) {
+    it('should set selected column on cell clicked', inject(function (DatagridService) {
         //given
         var colIndex = 2;
 
@@ -578,13 +578,12 @@ describe('Datagrid directive', function () {
         var grid = new GridGetter(element);
         grid.row(0).cell(colIndex).element().click();
         scope.$digest();
-        $timeout.flush();
 
         //then
         expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0002');
     }));
 
-    it('should set column in transfromation suggestion service on cell clicked', inject(function ($timeout, DatagridService, ColumnSuggestionService) {
+    it('should set column in transfromation suggestion service on cell clicked', inject(function (DatagridService, ColumnSuggestionService) {
         //given
         var colIndex = 2;
 
@@ -595,7 +594,6 @@ describe('Datagrid directive', function () {
         var grid = new GridGetter(element);
         grid.row(0).cell(colIndex).element().click();
         scope.$digest();
-        $timeout.flush();
 
         //then
         expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(data.columns[colIndex]);
@@ -633,27 +631,25 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should change selected column on column header click', inject(function ($timeout, DatagridService) {
+    it('should change selected column on column header click', inject(function (DatagridService) {
         //given
         DatagridService.setDataset(metadata, dataWithEmptyCell);
         scope.$digest();
 
         //when
         element.find('#datagrid-header-1').eq(0).click();
-        $timeout.flush();
 
         //then
         expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0001');
     }));
 
-    it('should change selected column in transformation suggestion service on column header click', inject(function ($timeout, DatagridService, ColumnSuggestionService) {
+    it('should change selected column in transformation suggestion service on column header click', inject(function (DatagridService, ColumnSuggestionService) {
         //given
         DatagridService.setDataset(metadata, dataWithEmptyCell);
         scope.$digest();
 
         //when
         element.find('#datagrid-header-1').eq(0).click();
-        $timeout.flush();
 
         //then
         expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(dataWithEmptyCell.columns[1]);
@@ -666,7 +662,6 @@ describe('Datagrid directive', function () {
         scope.$digest();
 
         element.find('#datagrid-header-1').eq(0).click();
-        $timeout.flush();
         expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
         expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
