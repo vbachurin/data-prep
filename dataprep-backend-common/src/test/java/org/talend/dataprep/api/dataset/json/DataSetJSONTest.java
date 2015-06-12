@@ -27,7 +27,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.CSVFormatGuess;
-import org.talend.dataprep.schema.Separator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DataSetJSONTest.class)
@@ -138,7 +137,7 @@ public class DataSetJSONTest {
         RowMetadata row = new RowMetadata(columns);
         DataSetMetadata metadata = new DataSetMetadata("1234", "name", "author", 0, row);
         final DataSetContent content = metadata.getContent();
-        content.addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
+        content.addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ",");
         content.setFormatGuessId(new CSVFormatGuess().getBeanId());
         content.setMediaType("text/csv");
         metadata.getLifecycle().qualityAnalyzed(true);
@@ -155,7 +154,7 @@ public class DataSetJSONTest {
     public void testRoundTrip() throws Exception {
         DataSet dataSet = from(DataSetJSONTest.class.getResourceAsStream("test3.json"));
         final DataSetMetadata metadata = dataSet.getMetadata();
-        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
+        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ",");
         metadata.getContent().setFormatGuessId(new CSVFormatGuess().getBeanId());
         assertNotNull(metadata);
         StringWriter writer = new StringWriter();
