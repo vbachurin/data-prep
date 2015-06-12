@@ -93,10 +93,9 @@
                      */
                     var positionMenu = function() {
                         var position = action[0].getBoundingClientRect();
-                        console.log( " getBoundingClientRect().left:" + position.left);
                         menu.css('top', position.bottom + 5);
-                        menu.css('left', position.left);
-                        //menu.css('right', 'auto');
+                        menu.css('left', 5);// position.left);
+                        menu.css('right', 'auto');
                         menu.removeClass('right');
                         var menuPosition = menu[0].getBoundingClientRect();
                         if(menuPosition.right > $window.innerWidth) {
@@ -111,7 +110,6 @@
 
                     //Click : Show/focus or hide menu on action zone click
                     action.click(function (event) {
-                        console.log("x:"+event.clientX+",y:"+event.clientY);
                         var isVisible = menu.hasClass('show-menu');
 
                         hideAllDropDowns();
@@ -146,8 +144,8 @@
                     });
 
                     //make action and menu focusable
-                    //action.attr('tabindex', '1');
-                    //menu.attr('tabindex', '2');
+                    action.attr('tabindex', '1');
+                    menu.attr('tabindex', '2');
 
                     //hide menu on body mousedown
                     body.mousedown(hideMenu);
