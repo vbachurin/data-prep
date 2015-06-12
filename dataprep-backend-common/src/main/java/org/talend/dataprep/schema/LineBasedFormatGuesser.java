@@ -3,7 +3,10 @@ package org.talend.dataprep.schema;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.CommonErrorCodes;
@@ -12,9 +15,18 @@ import org.talend.dataprep.exception.TDPException;
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {
 
+    /** This class' logger. */
+    private static final Logger logger = LoggerFactory.getLogger(LineBasedFormatGuesser.class);
+
+    /** Replacement char used to replace a char that cannot be displayed, typical when you read binary files. */
+    private static final int REPLACEMENT_CHAR = 65533;
+
+    /** Threshold to detect binary stream. */
+    private static final int BINARY_DETECTION_THRESHOLD = 100;
+
+    /** The csv format guesser. */
     @Autowired
     private CSVFormatGuess csvFormatGuess;
-
     /** The fallback guess if the input is not CSV compliant. */
     @Autowired
     private NoOpFormatGuess fallbackGuess;
@@ -45,6 +57,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
             try (LineNumberReader lineNumberReader = new LineNumberReader(reader)) {
                 List<Separator> separators = new ArrayList<>();
                 Map<Character, Separator> separatorMap = new HashMap<>();
+                int replacementCharsCount = 0;
                 int totalChars = 0;
                 int lineCount = 0;
                 boolean inQuote = false;
@@ -59,6 +72,13 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                     }
                     for (int i = 0; i < s.length(); i++) {
                         char c = s.charAt(i);
+                        if (REPLACEMENT_CHAR == (int) c) {
+                            replacementCharsCount++;
+                            if (replacementCharsCount > BINARY_DETECTION_THRESHOLD) {
+                                logger.debug("binary stream, hence cannot be a CSV");
+                                return null;
+                            }
+                        }
                         if ('"' == c) {
                             inQuote = !inQuote;
                         }
@@ -107,6 +127,9 @@ public class LineBasedFormatGuesser implements FormatGuesser {
             double averagePerLine = separator.getTotalCount() / lineCount;
             separator.setAveragePerLine(averagePerLine);
         }
+
+        // remove irrelevant separators (0 as average per line that can happen when you read binary files)
+        separators = separators.stream().filter(separator -> separator.getAveragePerLine() > 0).collect(Collectors.toList());
 
         // return the separator with the highest average per line value
         Collections.sort(separators, (sep0, sep1) -> Double.compare(sep1.getAveragePerLine(), sep0.getAveragePerLine()));
