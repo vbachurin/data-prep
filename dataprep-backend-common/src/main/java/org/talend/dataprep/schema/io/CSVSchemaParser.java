@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
@@ -71,8 +73,18 @@ public class CSVSchemaParser implements SchemaParser {
                 String columnValue = line[i];
                 try {
                     Integer.parseInt(columnValue);
-                    sheetContents.stream().filter(sheetContent -> META_KEY.equals(sheetContent.getName())).findFirst() //
-                            .get().getColumnMetadatas().get(i).setType(Type.INTEGER.getName());
+                    Optional<SchemaParserResult.SheetContent> content = sheetContents.stream() //
+                            .filter(sheetContent -> META_KEY.equals(sheetContent.getName())) //
+                            .findFirst();
+
+                    if (content.isPresent()) {
+                        List<ColumnMetadata> columns = content.get().getColumnMetadatas();
+                        // in case there are more columns that in the header
+                        if (columns.size() > i) {
+                            columns.get(i).setType(Type.INTEGER.getName());
+                        }
+                    }
+
                 } catch (NumberFormatException e) {
                     // Not an number
                 }
