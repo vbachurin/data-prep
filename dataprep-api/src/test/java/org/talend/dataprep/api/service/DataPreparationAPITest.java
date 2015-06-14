@@ -622,11 +622,11 @@ public class DataPreparationAPITest {
                 .getResourceAsStream("transformation/expected_cluster_params.json"));
 
         // when
-        final String actualClusterParameters = given().formParam("datasetId", dataSetId).formParam("columnId", "uglystate")
+        final String actualClusterParameters = given().formParam("datasetId", dataSetId).formParam("columnId", "0001")
                 .when().get("/api/transform/suggest/textclustering/params").asString();
 
         // then
-        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters).allowingAnyArrayOrdering());
     }
 
     @Test
@@ -638,10 +638,10 @@ public class DataPreparationAPITest {
 
         // when
         final String actualClusterParameters = given().formParam("preparationId", preparationId)
-                .formParam("columnId", "uglystate").when().get("/api/transform/suggest/textclustering/params").asString();
+                .formParam("columnId", "0001").when().get("/api/transform/suggest/textclustering/params").asString();
 
         // then
-        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters).allowingAnyArrayOrdering());
     }
 
     @Test
@@ -654,25 +654,25 @@ public class DataPreparationAPITest {
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
 
-        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_params.json"));
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_upper_case_params.json"));
 
         // when
         final String actualClusterParameters = given()
                 .formParam("preparationId", preparationId)
                 .formParam("stepId", steps.get(1))
-                .formParam("columnId", "uglystate")
+                .formParam("columnId", "0001")
                 .when()
                 .get("/api/transform/suggest/textclustering/params")
                 .asString();
 
         // then
-        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters));
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters).allowingAnyArrayOrdering());
     }
 
     @Test
     public void testSuggestActionParams_should_return_400_with_no_preparationId_and_no_datasetId() throws Exception {
         // when
-        final Response response = given().formParam("columnId", "uglystate").when()
+        final Response response = given().formParam("columnId", "0001").when()
                 .get("/api/transform/suggest/textclustering/params");
 
         // then
