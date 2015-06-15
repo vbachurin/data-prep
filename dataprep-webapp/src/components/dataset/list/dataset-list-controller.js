@@ -17,7 +17,7 @@
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
      */
-    function DatasetListCtrl($stateParams, DatasetService, DatasetSheetPreviewService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($state, $stateParams, DatasetService, DatasetSheetPreviewService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetService = DatasetService;
 
@@ -25,10 +25,10 @@
          * @ngdoc method
          * @name open
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Initiate a new preparation from dataset
-         * @param {object} dataset - the dataset to open
+         * @description [PRIVATE] Initiate a new preparation from dataset
+         * @param {object} dataset The dataset to open
          */
-        vm.open = function(dataset) {
+        var open = function(dataset) {
             PlaygroundService.initPlayground(dataset)
                 .then(PlaygroundService.show);
         };
@@ -78,6 +78,22 @@
 
         /**
          * @ngdoc method
+         * @name openDataset
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Try to open a dataset. If it is a draft, we open the draft import wizard instead.
+         * @param {object} dataset The dataset to open
+         */
+        vm.openDataset = function(dataset) {
+            if(dataset.draft) {
+                vm.openDraft(dataset);
+            }
+            else {
+                $state.go('nav.home.datasets', {datasetid: dataset.id});
+            }
+        };
+
+        /**
+         * @ngdoc method
          * @name processCertification
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Ask certification for a dataset
@@ -99,7 +115,7 @@
                 });
 
                 if(selectedDataset) {
-                    vm.open(selectedDataset);
+                    open(selectedDataset);
                 }
                 else {
                     MessageService.error('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});

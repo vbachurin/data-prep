@@ -158,7 +158,7 @@ public class ChangeDatePattern extends SingleColumnAction {
             if (StringUtils.isEmpty(pattern)) {
                 throw new IllegalArgumentException();
             }
-            return new SimpleDateFormat(pattern);
+            return new SimpleDateFormat(pattern, Locale.ENGLISH);
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
         }

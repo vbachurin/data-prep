@@ -418,6 +418,15 @@ describe('Datagrid directive', function () {
                     'valid': 72
                 },
                 'type': 'string'
+            },
+            {
+                'id': 'col5',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
             }
         ],
         'records': [
@@ -480,9 +489,10 @@ describe('Datagrid directive', function () {
         spyOn(DatagridService, 'setSelectedColumn').and.returnValue(null);
     }));
 
-    afterEach(function () {
+    afterEach(inject(function ($window) {
         element.remove();
-    });
+        $window.localStorage.removeItem('col_size_12ce6c32-bf80-41c8-92e5-66d70f22ec1f');
+    }));
 
     it('should render dataset values', inject(function (DatagridService) {
         //when
@@ -778,6 +788,7 @@ describe('Datagrid directive', function () {
         scope.$digest();
 
         //then
+        //ROW 0
         var grid = new GridGetter(element);
         //'AL'
         expect(grid.row(0).cell(0).element().find('> span').length).toBe(0);
@@ -800,6 +811,9 @@ describe('Datagrid directive', function () {
         expect(grid.row(0).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(0).cell(3).element().find('> span').eq(1).text()).toBe(' ');
         expect(getDirectText(grid.row(0).cell(3).element())).toBe('AL');
+
+
+        //ROW 1
         //'  AL'
         expect(grid.row(1).cell(0).element().find('> span').length).toBe(1);
         expect(grid.row(1).cell(0).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
@@ -824,5 +838,17 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(3).element().find('> span').eq(1).text()).toBe('\n');
         expect(getDirectText(grid.row(1).cell(3).element())).toBe('AL');
+    }));
+
+    it('should save columns sizes in local storage', inject(function ($window, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, updateData);
+        scope.$digest();
+
+        //then
+        var sizes = JSON.parse($window.localStorage.getItem('col_size_12ce6c32-bf80-41c8-92e5-66d70f22ec1f'));
+        expect('0000' in sizes).toBe(true);
+        expect('0001' in sizes).toBe(true);
+        expect('0002' in sizes).toBe(true);
     }));
 });

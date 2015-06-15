@@ -9,158 +9,43 @@
       {
         "parameters": [
           {
-            "name": "Texa",
+            "name": "tata",
             "type": "boolean",
-            "description": "parameter.Texa.desc",
-            "label": "parameter.Texa.label"
+            "description": "parameter.tata.desc",
+            "label": "parameter.tata.label",
+            "default": null
           },
-          {
-            "name": "Tixass",
-            "type": "boolean",
-            "description": "parameter.Tixass.desc",
-            "label": "parameter.Tixass.label"
-          },
-          {
-            "name": "Tex@s",
-            "type": "boolean",
-            "description": "parameter.Tex@s.desc",
-            "label": "parameter.Tex@s.label"
-          }
-        ],
-        "replace": {
-          "name": "replaceValue",
-          "type": "string",
-          "description": "parameter.replaceValue.desc",
-          "label": "parameter.replaceValue.label",
-          "default": "Texas"
-        }
-      },
-      {
-        "parameters": [
-          {
-            "name": "Massachusetts",
-            "type": "boolean",
-            "description": "parameter.Massachusetts.desc",
-            "label": "parameter.Massachusetts.label"
-          },
-          {
-            "name": "Masachusetts",
-            "type": "boolean",
-            "description": "parameter.Masachusetts.desc",
-            "label": "parameter.Masachusetts.label"
-          },
-          {
-            "name": "Massachussetts",
-            "type": "boolean",
-            "description": "parameter.Massachussetts.desc",
-            "label": "parameter.Massachussetts.label"
-          },
-          {
-            "name": "Massachusets",
-            "type": "boolean",
-            "description": "parameter.Massachusets.desc",
-            "label": "parameter.Massachusets.label"
-          },
-          {
-            "name": "Masachussets",
-            "type": "boolean",
-            "description": "parameter.Masachussets.desc",
-            "label": "parameter.Masachussets.label"
-          }
-        ],
-        "replace": {
-          "name": "replaceValue",
-          "type": "string",
-          "description": "parameter.replaceValue.desc",
-          "label": "parameter.replaceValue.label",
-          "default": "Massachussets"
-        }
-      },
-      {
-        "parameters": [
           {
             "name": "Tata",
             "type": "boolean",
             "description": "parameter.Tata.desc",
-            "label": "parameter.Tata.label"
-          },
-          {
-            "name": "tata",
-            "type": "boolean",
-            "description": "parameter.tata.desc",
-            "label": "parameter.tata.label"
-          },
-          {
-            "name": "Tataaa",
-            "type": "boolean",
-            "description": "parameter.Tataaa.desc",
-            "label": "parameter.Tataaa.label"
-          },
-          {
-            "name": "tatoa",
-            "type": "boolean",
-            "description": "parameter.tatoa.desc",
-            "label": "parameter.tatoa.label"
-          },
-          {
-            "name": "Taatao",
-            "type": "boolean",
-            "description": "parameter.Taatao.desc",
-            "label": "parameter.Taatao.label"
-          },
-          {
-            "name": "Taatao",
-            "type": "boolean",
-            "description": "parameter.Taatao.desc",
-            "label": "parameter.Taatao.label"
-          },
-          {
-            "name": "Tootao",
-            "type": "boolean",
-            "description": "parameter.Tootao.desc",
-            "label": "parameter.Tootao.label"
-          },
-          {
-            "name": "Taotao",
-            "type": "boolean",
-            "description": "parameter.Taotao.desc",
-            "label": "parameter.Taotao.label"
-          },
-          {
-            "name": "taotao",
-            "type": "boolean",
-            "description": "parameter.taotao.desc",
-            "label": "parameter.taotao.label"
-          },
-          {
-            "name": "t@tao",
-            "type": "boolean",
-            "description": "parameter.t@tao.desc",
-            "label": "parameter.t@tao.label"
-          },
+            "label": "parameter.Tata.label",
+            "default": null
+          }
+        ],
+        "replace": {
+          "name": "replaceValue",
+          "type": "string",
+          "description": "parameter.replaceValue.desc",
+          "label": "parameter.replaceValue.label",
+          "default": "tata"
+        }
+      },
+      {
+        "parameters": [
           {
             "name": "t@t@",
             "type": "boolean",
             "description": "parameter.t@t@.desc",
-            "label": "parameter.t@t@.label"
-          },
-          {
-            "name": "t@T@",
-            "type": "boolean",
-            "description": "parameter.t@T@.desc",
-            "label": "parameter.t@T@.label"
-          },
-          {
-            "name": "t@t@@",
-            "type": "boolean",
-            "description": "parameter.t@t@@.desc",
-            "label": "parameter.t@t@@.label"
+            "label": "parameter.t@t@.label",
+            "default": null
           },
           {
             "name": "T@T@",
             "type": "boolean",
             "description": "parameter.T@T@.desc",
-            "label": "parameter.T@T@.label"
+            "label": "parameter.T@T@.label",
+            "default": null
           }
         ],
         "replace": {
@@ -168,7 +53,7 @@
           "type": "string",
           "description": "parameter.replaceValue.desc",
           "label": "parameter.replaceValue.label",
-          "default": "Tata"
+          "default": "t@t@"
         }
       }
     ]

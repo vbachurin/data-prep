@@ -1,10 +1,9 @@
 <talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
     <div class="dropdown-container grid-header">
-        <div ng-switch="datagridHeaderCtrl.column.domain" class="dropdown-action">
+        <div class="dropdown-action">
             <div class="grid-header-title dropdown-button">{{ datagridHeaderCtrl.column.name }}</div>
-            <div class="grid-header-type" ng-switch-when="undefined">{{ datagridHeaderCtrl.column.simplifiedType }}</div>
-            <div class="grid-header-type" ng-switch-when="">{{ datagridHeaderCtrl.column.simplifiedType }}</div>
-            <div class="grid-header-type" ng-switch-default>{{ datagridHeaderCtrl.column.domain }}</div>
+            <div class="grid-header-type" ng-if="::datagridHeaderCtrl.column.domain">{{ datagridHeaderCtrl.column.domain }}</div>
+            <div class="grid-header-type" ng-if="::(!datagridHeaderCtrl.column.domain)">{{ datagridHeaderCtrl.column.simplifiedType }}</div>
         </div>
         <ul class="dropdown-menu grid-header-menu">
             <li ng-if="datagridHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
@@ -22,6 +21,7 @@
     <div talend-dropdown
          class="record-ok"
          style="width: {{ datagridHeaderCtrl.column.quality.validPercentWidth }}%;"
+         ng-if="datagridHeaderCtrl.column.quality.valid > 0"
          title="{{ datagridHeaderCtrl.column.quality.valid }} valid records ({{ datagridHeaderCtrl.column.quality.validPercent }}%)">
 
         <div class="dropdown-container">
