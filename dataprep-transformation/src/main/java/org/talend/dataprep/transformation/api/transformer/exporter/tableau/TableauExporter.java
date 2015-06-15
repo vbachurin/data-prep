@@ -1,12 +1,12 @@
 package org.talend.dataprep.transformation.api.transformer.exporter.tableau;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
@@ -34,7 +34,7 @@ public class TableauExporter implements Transformer, Exporter {
     }
 
     @Override
-    public void transform(InputStream input, OutputStream output) {
+    public void transform(DataSet input, OutputStream output) {
         try {
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null)
                     .output(new TableauWriter(output)).recordActions(actions.getRowTransformer())

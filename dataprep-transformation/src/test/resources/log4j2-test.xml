@@ -6,9 +6,9 @@
         </Console>
     </appenders>
     <loggers>
-        <logger name="org.talend.dataprep.transformation.api.transformer.exporter.xls" level="debug"/>
-        <logger name="org.talend.dataprep.transformation.api.transformer.exporter.XlsExporterTest" level="debug"/>
-        <root level="error" includeLocation="true">
+        <logger name="org.talend.dataprep.transformation.api.transformer.exporter.xls" level="error"/>
+        <logger name="org.talend.dataprep.transformation.api.transformer.exporter.XlsExporterTest" level="error"/>
+        <root level="info" includeLocation="true">
             <appender-ref ref="console"/>
         </root>
     </loggers>

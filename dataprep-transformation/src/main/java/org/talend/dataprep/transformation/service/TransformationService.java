@@ -36,7 +36,9 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "transformations", basePath = "/transform", description = "Transformations on data")
@@ -63,13 +65,14 @@ public class TransformationService {
     @RequestMapping(value = "/transform", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
     @VolumeMetered
-    public void transform(
-            @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions,
+    public void transform(@ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions, //
             @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response) {
-        try {
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(content)) {
             final String decodedActions = new String(Base64.getDecoder().decode(actions));
             final Transformer transformer = simpleFactory.withActions(decodedActions).get();
-            transformer.transform(content, response.getOutputStream());
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            transformer.transform(dataSet, response.getOutputStream());
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (TDPException e) {
@@ -82,16 +85,13 @@ public class TransformationService {
     @RequestMapping(value = "/export/{format}", method = POST)
     @ApiOperation(value = "Transform input data", notes = "This operation export the input data transformed using the supplied actions in the provided format.")
     @VolumeMetered
-    public void transform(@ApiParam(value = "Output format.")
-    @PathVariable("format")
-    final ExportType format, @ApiParam(value = "Actions to perform on content (encoded in Base64).")
-    @RequestParam(value = "actions", defaultValue = "", required = false)
-    final String actions, @ApiParam(value = "CSV separator.")
-    @RequestParam(value = "separator", required = false)
-    final String csvSeparator, @ApiParam(value = "Data set content as JSON")
-    final InputStream content, final HttpServletResponse response) {
-
-        try {
+    public void transform(@ApiParam(value = "Output format.") @PathVariable("format") final ExportType format, //
+                          @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) final String actions, //
+                          @ApiParam(value = "CSV separator.") @RequestParam(value = "separator", required = false) final String csvSeparator, //
+                          @ApiParam(value = "Data set content as JSON") final InputStream content, //
+                          final HttpServletResponse response) {
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(content)) {
             final String decodedActions = new String(Base64.getDecoder().decode(actions));
             final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator))
                     .charAt(0) : au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
@@ -104,7 +104,8 @@ public class TransformationService {
             response.setContentType(format.getMimeType());
 
             final Transformer transformer = exportFactory.getExporter(configuration);
-            transformer.transform(content, response.getOutputStream());
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            transformer.transform(dataSet, response.getOutputStream());
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (UnsupportedOperationException e) {
@@ -118,22 +119,20 @@ public class TransformationService {
     @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data diff between the old and the new transformation actions")
     @VolumeMetered
-    public void transformPreview(@ApiParam(value = "Old actions to perform on content (encoded in Base64).")
-    @RequestParam(value = "oldActions", required = false)
-    final String oldActions, @ApiParam(value = "New actions to perform on content (encoded in Base64).")
-    @RequestParam(value = "newActions", required = false)
-    final String newActions, @ApiParam(value = "The row indexes to return")
-    @RequestParam(value = "indexes", required = false)
-    final String indexes, @ApiParam(value = "Data set content as JSON")
-    final InputStream content, final HttpServletResponse response) {
-        try {
+    public void transformPreview(@ApiParam(value = "Old actions to perform on content (encoded in Base64).") @RequestParam(value = "oldActions", required = false) final String oldActions, //
+                                 @ApiParam(value = "New actions to perform on content (encoded in Base64).") @RequestParam(value = "newActions", required = false) final String newActions, //
+                                 @ApiParam(value = "The row indexes to return") @RequestParam(value = "indexes", required = false) final String indexes, //
+                                 @ApiParam(value = "Data set content as JSON") final InputStream content, //
+                                 final HttpServletResponse response) {
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(content)) {
             final String decodedIndexes = indexes == null ? null : new String(Base64.getDecoder().decode(indexes));
             final String decodedOldActions = oldActions == null ? null : new String(Base64.getDecoder().decode(oldActions));
             final String decodedNewActions = newActions == null ? null : new String(Base64.getDecoder().decode(newActions));
 
-            final Transformer transformer = diffFactory.withIndexes(decodedIndexes)
-                    .withActions(decodedOldActions, decodedNewActions).get();
-            transformer.transform(content, response.getOutputStream());
+            final Transformer transformer = diffFactory.withIndexes(decodedIndexes).withActions(decodedOldActions, decodedNewActions).get();
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            transformer.transform(dataSet, response.getOutputStream());
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
@@ -141,7 +140,6 @@ public class TransformationService {
 
     @RequestMapping(value = "/suggest/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
-    @ApiResponses({ @ApiResponse(code = 500, message = "Internal error") })
     @ResponseBody
     public List<ActionMetadata> suggest(@RequestBody(required = false) ColumnMetadata column) {
         if (column == null) {
@@ -159,24 +157,12 @@ public class TransformationService {
 
     @RequestMapping(value = "/suggest/dataset", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
-    @ApiResponses({ @ApiResponse(code = 500, message = "Internal error") })
     @ResponseBody
-    public List<ActionMetadata> suggest(InputStream dataset) {
-        if (dataset == null) {
+    public List<ActionMetadata> suggest(DataSetMetadata dataSetMetadata) {
+        if (dataSetMetadata == null) {
             return Collections.emptyList();
         }
-        try {
-            ObjectMapper objectMapper = builder.build();
-            DataSetMetadata dataSetMetadata = objectMapper.reader(DataSetMetadata.class).readValue(dataset);
-            // Temporary: no data set actions at this moment
-            if (dataSetMetadata != null) {
-                return Collections.emptyList();
-            } else {
-                return Collections.emptyList();
-            }
-        } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_COMPUTE_DATASET_ACTIONS, e);
-        }
+        return Collections.emptyList();
     }
 
     /**
@@ -228,9 +214,7 @@ public class TransformationService {
     @ApiOperation(value = "Get the available export types")
     @Timed
     public void exportTypes(final HttpServletResponse response) {
-
         List<ExportType> exportTypes = exportFactory.getExportTypes();
-
         try {
             builder.build() //
                     .writer() //
@@ -238,6 +222,5 @@ public class TransformationService {
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
-
     }
 }

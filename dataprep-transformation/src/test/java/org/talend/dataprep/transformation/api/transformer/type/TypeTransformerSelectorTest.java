@@ -22,6 +22,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
@@ -31,6 +32,7 @@ import org.talend.dataprep.transformation.api.transformer.json.JsonWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -89,52 +91,55 @@ public class TypeTransformerSelectorTest {
         final String expectedContent = IOUtils.toString(TypeTransformerSelectorTest.class
                 .getResourceAsStream("nominal_result.json"));
 
-        final JsonFactory factory = new JsonFactory();
-        final JsonParser parser = factory.createParser(inputStream);
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            //@formatter:off
+            final TransformerConfiguration configuration = TransformerConfiguration.builder()
+                    .input(dataSet)
+                    .output(transformerWriter)
+                    .preview(false)
+                    .recordActions(changeLastnameAction.getRowTransformer())
+                    .columnActions(changeLastnameAction.getMetadataTransformer())
+                    .build();
+            //@formatter:on
 
-        //@formatter:off
-        final TransformerConfiguration configuration = TransformerConfiguration.builder()
-                .input(parser)
-                .output(transformerWriter)
-                .preview(false)
-                .recordActions(changeLastnameAction.getRowTransformer())
-                .columnActions(changeLastnameAction.getMetadataTransformer())
-                .build();
-        //@formatter:on
+            // when
+            transformer.process(configuration);
 
-        // when
-        transformer.process(configuration);
-
-        // then
-        assertThat(writer.toString(), sameJSONAs(expectedContent).allowingAnyArrayOrdering().allowingExtraUnexpectedFields());
+            // then
+            assertThat(writer.toString(), sameJSONAs(expectedContent).allowingAnyArrayOrdering().allowingExtraUnexpectedFields());
+        }
     }
 
     @Test
     public void process_should_throw_exception_when_json_not_valid() throws Exception {
         // given
         final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("not_valid_object.json");
-        final JsonFactory factory = new JsonFactory();
-        final JsonParser parser = factory.createParser(inputStream);
 
-        //@formatter:off
-        final TransformerConfiguration configuration = TransformerConfiguration.builder()
-                .input(parser)
-                .output(transformerWriter)
-                .preview(false)
-                .recordActions(changeLastnameAction.getRowTransformer())
-                .columnActions(changeLastnameAction.getMetadataTransformer())
-                .build();
-        //@formatter:on
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            //@formatter:off
+            final TransformerConfiguration configuration = TransformerConfiguration.builder()
+                    .input(dataSet)
+                    .output(transformerWriter)
+                    .preview(false)
+                    .recordActions(changeLastnameAction.getRowTransformer())
+                    .columnActions(changeLastnameAction.getMetadataTransformer())
+                    .build();
+            //@formatter:on
 
-        // when
-        try {
-            transformer.process(configuration);
-            fail("should have thrown UserException because input json is not valid");
-        }
+            // when
+            try {
+                transformer.process(configuration);
+                fail("should have thrown UserException because input json is not valid");
+            }
 
-        // then
-        catch (Exception e) {
-            Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            // then
+            catch (Exception e) {
+                Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            }
         }
     }
 
@@ -142,28 +147,30 @@ public class TypeTransformerSelectorTest {
     public void process_should_throw_exception_when_column_json_is_not_valid() throws Exception {
         // given
         final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("not_valid_col.json");
-        final JsonFactory factory = new JsonFactory();
-        final JsonParser parser = factory.createParser(inputStream);
 
-        //@formatter:off
-        final TransformerConfiguration configuration = TransformerConfiguration.builder()
-                .input(parser)
-                .output(transformerWriter)
-                .preview(false)
-                .recordActions(changeLastnameAction.getRowTransformer())
-                .columnActions(changeLastnameAction.getMetadataTransformer())
-                .build();
-        //@formatter:on
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            //@formatter:off
+            final TransformerConfiguration configuration = TransformerConfiguration.builder()
+                    .input(dataSet)
+                    .output(transformerWriter)
+                    .preview(false)
+                    .recordActions(changeLastnameAction.getRowTransformer())
+                    .columnActions(changeLastnameAction.getMetadataTransformer())
+                    .build();
+            //@formatter:on
 
-        // when
-        try {
-            transformer.process(configuration);
-            fail("should have thrown UserException because column json is not valid");
-        }
+            // when
+            try {
+                transformer.process(configuration);
+                fail("should have thrown UserException because column json is not valid");
+            }
 
-        // then
-        catch (Exception e) {
-            Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            // then
+            catch (Exception e) {
+                Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            }
         }
     }
 
@@ -171,28 +178,30 @@ public class TypeTransformerSelectorTest {
     public void process_should_throw_exception_when_record_json_is_not_valid() throws Exception {
         // given
         final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("not_valid_record.json");
-        final JsonFactory factory = new JsonFactory();
-        final JsonParser parser = factory.createParser(inputStream);
 
-        //@formatter:off
-        final TransformerConfiguration configuration = TransformerConfiguration.builder()
-                .input(parser)
-                .output(transformerWriter)
-                .preview(false)
-                .recordActions(changeLastnameAction.getRowTransformer())
-                .columnActions(changeLastnameAction.getMetadataTransformer())
-                .build();
-        //@formatter:on
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            //@formatter:off
+            final TransformerConfiguration configuration = TransformerConfiguration.builder()
+                    .input(dataSet)
+                    .output(transformerWriter)
+                    .preview(false)
+                    .recordActions(changeLastnameAction.getRowTransformer())
+                    .columnActions(changeLastnameAction.getMetadataTransformer())
+                    .build();
+            //@formatter:on
 
-        // when
-        try {
-            transformer.process(configuration);
-            fail("should have thrown UserException because record json is not valid");
-        }
+            // when
+            try {
+                transformer.process(configuration);
+                fail("should have thrown UserException because record json is not valid");
+            }
 
-        // then
-        catch (Exception e) {
-            Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            // then
+            catch (Exception e) {
+                Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            }
         }
     }
 
@@ -203,26 +212,27 @@ public class TypeTransformerSelectorTest {
         final String expectedContent = IOUtils.toString(TypeTransformerSelectorTest.class
                 .getResourceAsStream("preview_result.json"));
 
-        final JsonFactory factory = new JsonFactory();
-        final JsonParser parser = factory.createParser(inputStream);
-
         final List<Integer> indexes = new ArrayList<>(3);
         indexes.add(1);
         indexes.add(3);
         indexes.add(5);
 
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().input(parser) //
-                .output(transformerWriter) //
-                .indexes(indexes) //
-                .preview(true) //
-                .recordActions(identityAction.getRowTransformer()) //
-                .recordActions(getChangeNameAndDeleteAction.getRowTransformer()) //
-                .build();
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final TransformerConfiguration configuration = TransformerConfiguration.builder().input(dataSet) //
+                    .output(transformerWriter) //
+                    .indexes(indexes) //
+                    .preview(true) //
+                    .recordActions(identityAction.getRowTransformer()) //
+                    .recordActions(getChangeNameAndDeleteAction.getRowTransformer()) //
+                    .build();
 
-        // when
-        transformer.process(configuration);
+            // when
+            transformer.process(configuration);
 
-        // then
-        assertEquals(expectedContent, writer.toString(), false);
+            // then
+            assertEquals(expectedContent, writer.toString(), false);
+        }
     }
 }

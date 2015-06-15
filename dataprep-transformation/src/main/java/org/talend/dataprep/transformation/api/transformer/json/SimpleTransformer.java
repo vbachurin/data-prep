@@ -1,13 +1,13 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -43,10 +43,10 @@ class SimpleTransformer implements Transformer {
     }
 
     /**
-     * @see Transformer#transform(InputStream, OutputStream)
+     * @see Transformer#transform(DataSet, OutputStream)
      */
     @Override
-    public void transform(InputStream input, OutputStream output) {
+    public void transform(DataSet input, OutputStream output) {
         try {
             if (input == null) {
                 throw new IllegalArgumentException("Input cannot be null.");

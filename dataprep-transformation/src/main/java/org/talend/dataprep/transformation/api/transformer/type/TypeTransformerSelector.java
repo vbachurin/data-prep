@@ -9,9 +9,6 @@ import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-
 /**
  * Delegate to the correct transformer depending on the input content : {@link ColumnsTypeTransformer} for the columns
  * header. {@link RecordsTypeTransformer} for the records header.
@@ -32,31 +29,17 @@ public class TypeTransformerSelector implements TypeTransformer {
      */
     @Override
     public void process(final TransformerConfiguration configuration) {
-        final TransformerWriter writer = configuration.getOutput();
-        final JsonParser parser = configuration.getInput();
         try {
-            JsonToken nextToken;
-
+            final TransformerWriter writer = configuration.getOutput();
             writer.startObject();
-            while ((nextToken = parser.nextToken()) != null) {
-                if (nextToken == JsonToken.FIELD_NAME) {
-                    switch (parser.getText()) {
-                    case "columns":
-                        writer.fieldName("columns");
-                        columnsTransformer.process(configuration);
-                        break;
-                    case "records":
-                        writer.fieldName("records");
-                        recordsTransformer.process(configuration);
-                        break;
-                    default:
-                        break;
-                    }
-                }
+            {
+                writer.fieldName("columns");
+                columnsTransformer.process(configuration);
+                writer.fieldName("records");
+                recordsTransformer.process(configuration);
             }
             writer.endObject();
             writer.flush();
-
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }

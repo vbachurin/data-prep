@@ -1,7 +1,6 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -57,12 +57,11 @@ class DiffTransformer implements Transformer {
 
     /**
      * Starts the transformation in preview mode.
-     *
-     * @param input the dataset content.
+     *  @param input the dataset content.
      * @param output where to output the transformation.
      */
     @Override
-    public void transform(InputStream input, OutputStream output) {
+    public void transform(DataSet input, OutputStream output) {
         try {
             if (input == null) {
                 throw new IllegalArgumentException("Input cannot be null.");

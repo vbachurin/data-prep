@@ -13,16 +13,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExporter;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
 public class ExportFactoryTest {
+
+    @Autowired
+    Jackson2ObjectMapperBuilder builder;
 
     @Autowired
     private ExportFactory factory;
@@ -53,13 +61,15 @@ public class ExportFactoryTest {
         final String expectedCsv = IOUtils.toString(ExportFactory.class
                 .getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
 
+        final ObjectMapper mapper = builder.build();
         final InputStream inputStream = ExportFactory.class.getResourceAsStream("export_dataset.json");
-        final OutputStream outputStream = new ByteArrayOutputStream();
+        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final OutputStream outputStream = new ByteArrayOutputStream();
+            // when
+            exporter.transform(dataSet, outputStream);
+            // then
+            assertThat(outputStream.toString()).isEqualTo(expectedCsv);        }
 
-        // when
-        exporter.transform(inputStream, outputStream);
-
-        // then
-        assertThat(outputStream.toString()).isEqualTo(expectedCsv);
     }
 }
