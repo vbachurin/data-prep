@@ -3,6 +3,7 @@ package org.talend.dataprep.transformation.api.action.dynamic.cluster;
 import static org.talend.dataprep.api.type.Type.BOOLEAN;
 import static org.talend.dataprep.api.type.Type.STRING;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.i18n.MessagesBundle;
@@ -38,12 +39,15 @@ public class ClusterParameters implements DynamicParameters {
                 .title(MessagesBundle.getString("parameter.textclustering.title.2"));
         final StringClusters result = clusterAnalyzer.getResult().get(0);
         for (StringClusters.StringCluster cluster : result) {
-            final ClusterItem.Builder currentCluster = ClusterItem.builder();
-            for (String value : cluster.originalValues) {
-                currentCluster.parameter(new Parameter(value, BOOLEAN.getName()));
+            // String clustering may cluster null / empty values, however not interesting for data prep.
+            if (!StringUtils.isEmpty(cluster.survivedValue)) {
+                final ClusterItem.Builder currentCluster = ClusterItem.builder();
+                for (String value : cluster.originalValues) {
+                    currentCluster.parameter(new Parameter(value, BOOLEAN.getName()));
+                }
+                currentCluster.replace(new Parameter("replaceValue", STRING.getName(), cluster.survivedValue));
+                builder.cluster(currentCluster);
             }
-            currentCluster.replace(new Parameter("replaceValue", STRING.getName(), cluster.survivedValue));
-            builder.cluster(currentCluster);
         }
         return new GenericParameter("cluster", builder.build());
     }
