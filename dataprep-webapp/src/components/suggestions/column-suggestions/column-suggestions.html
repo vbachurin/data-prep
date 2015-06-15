@@ -1,5 +1,5 @@
 <div class="column-suggestions">
-    <div class="title">Actions</div>
+    <div class="title">Actions: {{ columnSuggestionsCtrl.column.name }}</div>
     <div class="Description" ng-if="! columnSuggestionsCtrl.suggestions">Select a column to display its actions</div>
 
     <div ng-repeat="(category, transformations) in columnSuggestionsCtrl.suggestions track by category">
@@ -23,4 +23,21 @@
             </li>
         </ul>
     </div>
+
+    <!-- Dynamic params  -->
+    <talend-modal fullscreen="false"
+                  state="columnSuggestionsCtrl.showDynamicModal"
+                  close-button="true">
+
+        <div class="modal-title">{{ columnSuggestionsCtrl.dynamicTransformation.label }}</div>
+        <div class="modal-subtitle">{{ columnSuggestionsCtrl.dynamicTransformation.description }}</div>
+
+        <div ng-if="columnSuggestionsCtrl.dynamicFetchInProgress">
+            <img class="continuous-rotate"
+                 style="background-color: grey"
+                 src="/components/widgets/loading/loading.png"/>
+        </div>
+        <transform-params transformation="columnSuggestionsCtrl.dynamicTransformation"
+                          on-submit="columnSuggestionsCtrl.transformClosure(columnSuggestionsCtrl.dynamicTransformation)(params)"></transform-params>
+    </talend-modal>
 </div>

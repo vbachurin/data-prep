@@ -147,7 +147,7 @@
                 return PreparationService.getContent('head')
                     .then(function(response) {
                         setName(preparation.name);
-                        reset(preparation.dataset, response.data);
+                        reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
