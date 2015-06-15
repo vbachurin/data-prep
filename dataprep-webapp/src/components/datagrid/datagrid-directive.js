@@ -19,7 +19,7 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService, StatisticsService) {
+    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService, StatisticsService, ConverterService) {
 
         return {
             restrict: 'E',
@@ -217,7 +217,8 @@
                 var updateColSelection = function (column) {
                     $timeout(function() {
                         DatagridService.setSelectedColumn(column.id);
-                        StatisticsService.processOnColumnType(DatagridService.selectedColumn);
+                        var chosenColumn = DatagridService.selectedColumn;
+                        StatisticsService.processVisuData(chosenColumn);
                     });
                 };
 

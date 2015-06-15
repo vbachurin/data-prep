@@ -12,6 +12,7 @@
      * @requires data-prep.services.filter
      * @requires data-prep.services.playground
      * @requires 'data-prep.services.statistics'
+     * @requires 'data-prep.services.utils'
      */
     angular.module('data-prep.datagrid', [
         'data-prep.datagrid-tooltip',

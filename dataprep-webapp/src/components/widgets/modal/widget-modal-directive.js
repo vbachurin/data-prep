@@ -115,10 +115,14 @@
             },
             bindToController: true,
             controllerAs: 'talendModalCtrl',
-            controller: function () {
+            controller: function (StatisticsService) {
                 var vm = this;
 
                 vm.hide = function () {
+                    //to removre the barchart or the map otherwise they'll appear
+                    //when we open a new data prepation
+                    StatisticsService.data = null;
+                    StatisticsService.stateDistribution = null;
                     vm.state = false;
                 };
             },

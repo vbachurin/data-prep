@@ -4,10 +4,10 @@
 	/**
 	 * @ngdoc object
 	 * @name data-prep.horizontalBarchart
-	 * @description This module contains the controller and directives to manage the recipe Bullets
+	 * @description This module contains the directive to render the horizontalBarchart
+	 * @requires: data-prep.services.playground
 	 */
 	angular.module('data-prep.horizontalBarchart', [
-		'data-prep.services.playground',
-		'data-prep.services.statistics'
+		'data-prep.services.playground'
 	]);
 })();
