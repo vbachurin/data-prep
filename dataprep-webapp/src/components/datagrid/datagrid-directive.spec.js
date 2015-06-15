@@ -782,7 +782,6 @@ describe('Datagrid directive', function () {
         expect(grid.row(0).cell(2).element().find('> div').eq(0).hasClass('cellUpdateValue')).toBe(true);
     }));
 
-
     it('should add "hiddenChars class when leading or trailing invisible characters are encountered"', inject(function (FilterService, DatagridService) {
         //when
         DatagridService.setDataset(metadata, hiddenCharsData);
