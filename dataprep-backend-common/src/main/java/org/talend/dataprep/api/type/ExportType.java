@@ -13,9 +13,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = ExportType.ExportTypeSerializer.class)
 public enum ExportType {
     // take care when declaring new export type as only one can be default :-)
-    CSV("text/csv", ".csv", true, false, Arrays.asList("csvSeparator")),
-    XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<String> emptyList()),
-    TABLEAU("application/tde", ".tde", false, false, Collections.<String> emptyList());
+    CSV("text/csv", ".csv", true, false, Arrays.asList(new Parameter("csvSeparator", "CHOOSE_SEPARATOR", ";", Arrays.asList("\09", " ", ",")))),
+    XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()),
+    TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList());
 
     private final String mimeType;
 
@@ -34,15 +34,15 @@ public enum ExportType {
     /**
      * list of extra parameters needed for this export (i.e separator for csv files etc...)
      */
-    private final List<String> parametersNames;
+    private final List<Parameter> parameters;
 
     ExportType(final String mimeType, final String extension, final boolean needParameters, final boolean defaultExport,
-            final List<String> parametersNames) {
+            final List<Parameter> parameters) {
         this.mimeType = mimeType;
         this.extension = extension;
         this.needParameters = needParameters;
         this.defaultExport = defaultExport;
-        this.parametersNames = parametersNames;
+        this.parameters = parameters;
     }
 
     public String getMimeType() {
@@ -61,8 +61,43 @@ public enum ExportType {
         return defaultExport;
     }
 
-    public List<String> getParametersNames() {
-        return parametersNames;
+    public List<Parameter> getParameters() {
+        return parameters;
+    }
+
+    public static class Parameter {
+
+        private final String name;
+
+        private final String labelKey;
+
+        private final String defaultValue;
+
+        private final List<String> values;
+
+        public Parameter(String name, String labelKey, String defaultValue, List<String> values) {
+            this.name = name;
+            this.labelKey = labelKey;
+            this.defaultValue = defaultValue;
+            this.values = values;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getLabelKey()
+        {
+            return labelKey;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+
+        public List<String> getValues() {
+            return values;
+        }
     }
 
     public static class ExportTypeSerializer extends JsonSerializer<ExportType> {
@@ -77,11 +112,27 @@ public enum ExportType {
             jgen.writeStringField("needParameters", Boolean.toString(value.isNeedParameters()));
             jgen.writeStringField("defaultExport", Boolean.toString(value.isDefaultExport()));
 
-            if (!value.getParametersNames().isEmpty()) {
-                jgen.writeFieldName( "parametersNames" );
-                jgen.writeStartArray(value.getParametersNames().size());
-                for (String s : value.getParametersNames()) {
-                    jgen.writeString(s);
+            if (!value.getParameters().isEmpty()) {
+                jgen.writeFieldName("parameters");
+                jgen.writeStartArray(value.getParameters().size());
+                for (Parameter parameter : value.getParameters()) {
+                    jgen.writeStartObject();
+                    jgen.writeStringField("name", parameter.getName());
+                    jgen.writeStringField( "labelKey", parameter.getLabelKey() );
+                    jgen.writeStringField("defaultValue", parameter.getDefaultValue());
+
+                    if (!parameter.getValues().isEmpty()) {
+                        jgen.writeFieldName("values");
+                        jgen.writeStartArray(parameter.getValues().size());
+                        for (String s : parameter.getValues()) {
+                            jgen.writeString(s);
+                        }
+
+                        jgen.writeEndArray();
+                        ;
+                    }
+
+                    jgen.writeEndObject();
                 }
                 jgen.writeEndArray();
             }

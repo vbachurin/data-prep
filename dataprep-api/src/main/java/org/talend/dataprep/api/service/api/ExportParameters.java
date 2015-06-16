@@ -6,7 +6,7 @@ import org.talend.dataprep.api.service.validation.OneNotBlank;
 import org.talend.dataprep.api.type.ExportType;
 
 /**
- * Parameters for dataset/preparation export
+ * Parameter for dataset/preparation export
  */
 @OneNotBlank({ "preparationId", "datasetId" })
 public class ExportParameters {
