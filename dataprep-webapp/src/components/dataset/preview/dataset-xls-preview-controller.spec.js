@@ -6,7 +6,7 @@ describe('Dataset xls preview controller', function () {
 
     beforeEach(module('data-prep.dataset-xls-preview'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetSheetPreviewService, DatasetService, DatasetRestService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, DatasetSheetPreviewService, DatasetService, DatasetRestService, PlaygroundService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -24,6 +24,8 @@ describe('Dataset xls preview controller', function () {
         spyOn(DatasetSheetPreviewService, 'setDatasetSheet').and.returnValue($q.when(true));
         spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
+        spyOn(PlaygroundService, 'initPlayground').and.callThrough();
+        spyOn(PlaygroundService, 'show').and.callThrough();
     }));
 
     afterEach(function() {
@@ -142,6 +144,22 @@ describe('Dataset xls preview controller', function () {
         //then
         expect(DatasetService.refreshDatasets).toHaveBeenCalled();
         expect(DatasetService.getContent).toHaveBeenCalledWith('mqfdg684qfg6q84g8q', false);
+    }));
+
+    it('should open dataset on selected sheet set', inject(function ($rootScope, $timeout, DatasetSheetPreviewService, PlaygroundService) {
+        //given
+        var ctrl = createController();
+        $timeout.flush();
+        ctrl.selectedSheetName = 'my sheet';
+        DatasetSheetPreviewService.currentMetadata = {id : 'mqfdg684qfg6q84g8q'};
+
+        //when
+        ctrl.setDatasetSheet();
+        $rootScope.$digest();
+
+        //then
+        expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(DatasetSheetPreviewService.currentMetadata, undefined);
+        expect(PlaygroundService.show).toHaveBeenCalled();
     }));
 
     it('should hide modal on selected sheet set', inject(function ($rootScope, $timeout, DatasetService, DatasetSheetPreviewService) {

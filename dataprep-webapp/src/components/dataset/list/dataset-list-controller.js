@@ -128,8 +128,8 @@
          * listen to open dataset event.
          */
         $rootScope.$on('talend.dataset.open', function (event, datasetId) {
-           DatasetService.getDatasetById(datasetId).then(vm.openDataset);
-        });
+            DatasetService.getDatasetById(datasetId).then(vm.openDataset);
+      });
 
 
         // load the datasets
