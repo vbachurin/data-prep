@@ -207,12 +207,43 @@ describe('Playground Service', function () {
 
             //when
             PlaygroundService.load(preparation);
-            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
             $rootScope.$apply();
 
             //then
             assertDatasetLoadInitialized(preparation.dataset, data);
+        }));
+
+        it('should manage loading spinner on preparation load', inject(function($rootScope, PlaygroundService, PreparationService) {
+            //given
+            var preparation = {
+                id: '6845521254541',
+                dataset: {id: '1'}
+            };
+            PreparationService.currentPreparationId = '5746518486846';
+
+            //when
+            PlaygroundService.load(preparation);
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+            $rootScope.$apply();
+
+            //then
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        }));
+
+        it('should load existing preparation with simulated dataset metadata when its metadata is not set yet', inject(function($rootScope, PlaygroundService, PreparationService) {
+            //given
+            var preparation = {
+                id: '6845521254541',
+                dataSetId: '1'
+            };
+            PreparationService.currentPreparationId = '5746518486846';
+
+            //when
+            PlaygroundService.load(preparation);
+            $rootScope.$apply();
+
+            //then
+            assertDatasetLoadInitialized({id: '1'}, data);
         }));
 
         it('should not change playground if the preparation to load is already loaded',

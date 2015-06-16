@@ -1,5 +1,5 @@
 <div class="column-suggestions">
-    <div class="title">Actions: {{ columnSuggestionsCtrl.column.name }}</div>
+    <div class="title">Actions {{ columnSuggestionsCtrl.column.name ? ': ' + columnSuggestionsCtrl.column.name : '' }}</div>
     <div class="Description" ng-if="! columnSuggestionsCtrl.suggestions">Select a column to display its actions</div>
 
     <div ng-repeat="(category, transformations) in columnSuggestionsCtrl.suggestions track by category">

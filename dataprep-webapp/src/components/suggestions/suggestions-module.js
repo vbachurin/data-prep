@@ -5,9 +5,6 @@
         'talend.widget',
         'data-prep.table-suggestions',
         'data-prep.column-suggestions',
-        'data-prep.column-profile',
-        'data-prep.services.playground',
-        'data-prep.services.transformation',
-        'data-prep.services.preparation'
+        'data-prep.column-profile'
     ]);
 })();
