@@ -134,6 +134,22 @@
             });
         };
 
+        /**
+         * @ngdoc method
+         * @name getDatasetById
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {string} datasetId The dataset id
+         * @description Get the dataset that has the wanted id
+         * @returns {promise} The dataset
+         */
+        self.getDatasetById = function(datasetId) {
+            return DatasetListService.getDatasetsPromise().then( function(datasetList) {
+                return _.find(datasetList, function(dataset) {
+                    return dataset.id === datasetId;
+                });
+            });
+        };
+
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Content----------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------

@@ -28,7 +28,8 @@
             <div class="dropdown-action"></div>
             <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
                 <li role="presentation">
-                    <a role="menuitem" href="#">Select Valid Records for {{ datagridHeaderCtrl.column.id | uppercase }}</a>
+                    <a role="menuitem" href="#">Select Valid Records for {{ datagridHeaderCtrl.column.name | uppercase
+                        }}</a>
                 </li>
             </ul>
         </div>
@@ -43,7 +44,8 @@
         <div class="dropdown-container">
             <div class="dropdown-action"></div>
             <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li role="presentation"><a role="menuitem" href="#">Select Empty Records for {{ datagridHeaderCtrl.column.id | uppercase }}</a></li>
+                <li role="presentation"><a role="menuitem" href="#">Select Empty Records for {{
+                    datagridHeaderCtrl.column.name | uppercase }}</a></li>
                 <li class="divider"></li>
                 <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Top adjacent value</a></li>
                 <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Bottom adjacent value</a></li>
@@ -59,7 +61,8 @@
         <div class="dropdown-container">
             <div class="dropdown-action"></div>
             <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{ datagridHeaderCtrl.column.id | uppercase }}</a></li>
+                <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{
+                    datagridHeaderCtrl.column.name | uppercase }}</a></li>
                 <li class="divider"></li>
                 <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Top adjacent value</a></li>
                 <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Bottom adjacent value</a></li>

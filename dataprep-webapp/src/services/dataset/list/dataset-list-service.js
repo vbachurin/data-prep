@@ -10,8 +10,8 @@
      * @requires data-prep.services.dataset.service:DatasetRestService
      */
     function DatasetListService($q, DatasetRestService) {
-        var self = this;
         var datasetsPromise;
+        var self = this;
 
         /**
          * @ngdoc property
@@ -19,7 +19,7 @@
          * @propertyOf data-prep.services.dataset.service:DatasetListService
          * @description the dataset list
          */
-        self.datasets = null;
+        this.datasets = null;
 
         /**
          * @ngdoc method
@@ -28,7 +28,7 @@
          * @description Refresh datasets if no refresh is pending
          * @returns {promise} - the pending GET promise
          */
-        self.refreshDatasets = function() {
+        var refreshDatasets = function refreshDatasets() {
             if(! datasetsPromise) {
                 datasetsPromise = DatasetRestService.getDatasets()
                     .then(function(res) {
@@ -49,9 +49,9 @@
          * @description Create a dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
-        self.create = function(dataset) {
+        var create = function create(dataset) {
             var promise = DatasetRestService.create(dataset);
-            promise.then(self.refreshDatasets);
+            promise.then(refreshDatasets);
             return promise;
         };
 
@@ -63,9 +63,9 @@
          * @description Update a dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
-        self.update = function(dataset) {
+        var update = function update(dataset) {
             var promise = DatasetRestService.update(dataset);
-            promise.then(self.refreshDatasets);
+            promise.then(refreshDatasets);
             return promise;
         };
 
@@ -77,9 +77,9 @@
          * @description Ask certification for a dataset and refresh its internal list
          * @returns {promise} The pending PUT promise
          */
-        self.processCertification = function(dataset) {
+        var processCertification = function processCertification(dataset) {
             return DatasetRestService.processCertification(dataset.id)
-                .then(self.refreshDatasets);
+                .then(refreshDatasets);
         };
 
         /**
@@ -90,7 +90,7 @@
          * @description Delete a dataset from backend and from its internal list
          * @returns {promise} The pending DELETE promise
          */
-        self.delete = function(dataset) {
+        var deleteDataset = function deleteDataset(dataset) {
             return DatasetRestService.delete(dataset)
                 .then(function() {
                     var index = self.datasets.indexOf(dataset);
@@ -106,7 +106,7 @@
          * @description [PRIVATE] Set the default preparation to each dataset
          * @returns {promise} The process promise
          */
-        self.refreshDefaultPreparation = function(preparations) {
+        var refreshDefaultPreparation = function refreshDefaultPreparation(preparations) {
             return getDatasetsPromise()
                 .then(function(datasets) {
                     // group preparation per dataset
@@ -131,9 +131,17 @@
          * @description [PRIVATE] Return a promise that resolves the datasets list
          * @returns {promise} The pending GET or resolved promise
          */
-        var getDatasetsPromise = function() {
-            return self.datasets === null ? self.refreshDatasets() : $q.when(self.datasets);
+        var getDatasetsPromise = function getDatasetsPromise() {
+            return self.datasets === null || datasetsPromise ? refreshDatasets() : $q.when(self.datasets);
         };
+
+        this.refreshDatasets = refreshDatasets;
+        this.create = create;
+        this.update = update;
+        this.processCertification = processCertification;
+        this.delete = deleteDataset;
+        this.refreshDefaultPreparation = refreshDefaultPreparation;
+        this.getDatasetsPromise = getDatasetsPromise;
     }
 
     angular.module('data-prep.services.dataset')

@@ -7,8 +7,9 @@
      * @description Dataset preview grid controller.
      * @requires data-prep.services.dataset.service:DatasetSheetPreviewService
      * @requires data-prep.services.dataset.service:DatasetService
+     * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function DatasetXlsPreviewCtrl($timeout, DatasetSheetPreviewService, DatasetService) {
+    function DatasetXlsPreviewCtrl($timeout, DatasetSheetPreviewService, DatasetService, PlaygroundService) {
         var vm = this;
         vm.datasetSheetPreviewService = DatasetSheetPreviewService;
 
@@ -53,7 +54,9 @@
                 .then(DatasetService.refreshDatasets)
                 .then(function(){
                     vm.state = false;
-                });
+                })
+                .then(PlaygroundService.initPlayground.bind(null, vm.metadata))
+                .then(PlaygroundService.show);
         };
 
         $timeout(initGrid);
