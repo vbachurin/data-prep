@@ -25,23 +25,31 @@
 		};
 
 		/**
+		 * extracts and builds the data for numeric column, from the histogram of the statistics
+		 * @param column.statistics.histogram
+		 */
+		self.extractNumericData = function(histoData){
+			var concatData         = [];
+			_.each(histoData, function (histDatum) {
+				concatData.push({
+					'data': histDatum.range.min + ' -> ' + histDatum.range.max,
+					'occurrences': histDatum.occurrences
+				});
+			});
+			return concatData;
+		};
+
+		/**
 		 * calculates the barchart data according to the column types
 		 * @param column
+		 * @returns [{"data":" 0-> 10", "occurences":11}, {"data":" 10 -> 20", "occurences":11}, ...]
 		 */
 		self.processBarchartData = function (column) {
 			self.selectedColumn = column;
 			//hide the map if the previous column was a state
 			self.stateDistribution = null;
 			if (column.type === 'numeric' || column.type === 'integer' || column.type === 'float' || column.type === 'double') {
-				var _histoData         = column.statistics.histogram;
-				var concatData         = [];
-				_.each(_histoData, function (histDatum) {
-					concatData.push({
-						'data': histDatum.range.min + ' - ' + histDatum.range.max,
-						'occurrences': histDatum.occurrences
-					});
-				});
-				self.data              = concatData;
+				self.data = self.extractNumericData(column.statistics.histogram);
 			} else if (column.type === 'string') {
 				self.data         = column.statistics.frequencyTable;
 			} else if (column.type === 'boolean') {

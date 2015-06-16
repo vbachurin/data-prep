@@ -36,7 +36,7 @@
 						h = height - m[0] - m[2];
 
 					var x = d3.scale.linear().range([0, w]),
-						y = d3.scale.ordinal().rangeRoundBands([0, h], .18);
+						y = d3.scale.ordinal().rangeRoundBands([0, h], 0.18);
 
 					var xAxis = d3.svg.axis().scale(x).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
 						yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
@@ -45,7 +45,7 @@
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
-							return "<strong>Occurences:</strong> <span style='color:yellow'>" + d.occurrences + "</span>";
+							return '<strong>Occurences:</strong> <span style="color:yellow">' + d.occurrences + '</span>';
 						});
 
 					var svg = d3.select('#'+container).append('svg')
@@ -99,7 +99,6 @@
 					var bgBar = svg.selectAll('g.bg-rect')
 						.data(statData)
 						.enter().append('g')
-						.attr('class', 'bg-rect')
 						.attr('transform', function(d) { return 'translate(0,' + (y(d.data)-2) + ')'; });
 
 					bgBar.append('rect')
@@ -109,7 +108,7 @@
 						.style('opacity',0)
 						.attr('z-index',100)
 						.on('mouseenter',function(d){
-							d3.select(this).style('opacity',.4);
+							d3.select(this).style('opacity',0.4);
 							tip.show(d);
 						})
 						.on('mouseleave',function(d){
