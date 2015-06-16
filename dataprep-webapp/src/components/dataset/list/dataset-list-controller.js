@@ -17,7 +17,7 @@
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
      */
-    function DatasetListCtrl($state, $stateParams, DatasetService, DatasetSheetPreviewService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($rootScope, $state, $stateParams, DatasetService, DatasetSheetPreviewService, PlaygroundService, TalendConfirmService, MessageService) {
         var vm = this;
         vm.datasetService = DatasetService;
 
@@ -122,6 +122,15 @@
                 }
             }
         };
+
+
+        /*
+         * listen to open dataset event.
+         */
+        $rootScope.$on('talend.dataset.open', function (event, datasetId) {
+            DatasetService.getDatasetById(datasetId).then(vm.openDataset);
+      });
+
 
         // load the datasets
         DatasetService

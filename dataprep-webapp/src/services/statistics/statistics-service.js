@@ -1,129 +1,135 @@
-(function() {
-    'use strict';
+(function () {
+	'use strict';
 
-    function StatisticsService(DatagridService) {
-        var self = this;
+	function StatisticsService (DatagridService, FilterService, $timeout) {
+		var self = this;
 
-        //------------------------------------------------------------------------------------------------------
-        //-----------------------------------------------DISTRIBUTIONS------------------------------------------
-        //------------------------------------------------------------------------------------------------------
-        /**
-         * Calculate column value distribution
-         * @param columnId
-         * @param keyName - distribution key name (default : 'colValue');
-         * @param valueName - distribution value name (default : 'frequency')
-         * @param keyTransformer - transformer applied to the distribution key
-         * @returns [{colValue: string, frequency: integer}} - colValue (or specified) : the grouped value, frequency (or specified) : the nb of time the value appears
-         */
-        self.getDistribution = function(columnId, keyName, valueName, keyTransformer) {
-            keyName = keyName || 'colValue';
-            valueName = valueName || 'frequency';
+		/**
+		 * Add a 'contains' filter in the angular context
+		 * @param value - the phrase
+		 */
+		self.addFilter = function (value) {
+			$timeout(FilterService.addFilter.bind(null,'contains',self.selectedColumn.id,self.selectedColumn.name,{phrase: 			value}));
+		};
 
-            var records = DatagridService.data.records;
+		/**
+		 * removes the previous barchart and sets the map chart
+		 * @param column
+		 */
+		self.processMapData = function (column) {
+			self.selectedColumn = column;
+			//remove the barchart
+			self.data = null;
+			//show the map
+			self.stateDistribution = column;
+		};
 
-            var result = _.chain(records)
-                .groupBy(function(item) {
-                    return item[columnId];
-                })
-                .map(function(val, index) {
-                    var item = {};
-                    item[keyName] = keyTransformer ? keyTransformer(index) : index;
-                    item[valueName] = val.length;
-                    return item;
-                })
-                .sortBy(valueName)
-                .reverse()
-                .value();
+		/**
+		 * extracts and builds the data for numeric column, from the histogram of the statistics
+		 * @param column.statistics.histogram
+		 */
+		self.extractNumericData = function(histoData){
+			var concatData         = [];
+			_.each(histoData, function (histDatum) {
+				concatData.push({
+					'data': histDatum.range.min + ' -> ' + histDatum.range.max,
+					'occurrences': histDatum.occurrences
+				});
+			});
+			return concatData;
+		};
 
-            return result;
-        };
+		/**
+		 * calculates the barchart data according to the column types
+		 * @param column
+		 * @returns [{"data":" 0-> 10", "occurences":11}, {"data":" 10 -> 20", "occurences":11}, ...]
+		 */
+		self.processBarchartData = function (column) {
+			self.selectedColumn = column;
+			//hide the map if the previous column was a state
+			self.stateDistribution = null;
+			if (column.type === 'numeric' || column.type === 'integer' || column.type === 'float' || column.type === 'double') {
+				self.data = self.extractNumericData(column.statistics.histogram);
+			} else if (column.type === 'string') {
+				self.data         = column.statistics.frequencyTable;
+			} else if (column.type === 'boolean') {
+				self.data            = column.statistics.frequencyTable;
+			} else {
+				console.log('not a number neither a stater neither a string');
+			}
+		};
 
-        /**
-         * Calculate range distribution
-         * @param column
-         * @returns {*}
-         */
-        self.getRangeDistribution = function (column) {
-            //Get all values, casted in number
-            var records = DatagridService.data.records;
-            var values = _.chain(records)
-                .map(function(item) {
-                    return parseFloat(item[column.id]);
-                })
-                .filter(function(item) {
-                    return !isNaN(item);
-                })
-                .sortBy(function(value) {return value;})
-                .value();
+		/**
+		 * checks what to draw a barchart or a map according to the column.domain field
+		 * @param column
+		 */
+		self.processVisuData = function (column) {
+			if (column.domain.indexOf('STATE_CODE_') !== -1) {
+				self.processMapData(column);
+			} else {
+				self.processBarchartData(column);
+			}
+		};
 
-            //determine the step
-            var min = values[0];
-            var max = values[values.length - 1];
-            var step = getStep(max - min);
+		/**
+		 * empties the map chart/barchart, called on a new opened dataset or preparation
+		 */
+		self.resetCharts = function(){
+			self.data = null;
+			self.stateDistribution = null;
+		};
 
-            //repartition
-            return _.chain(values)
-                .groupBy(function(item) {
-                    return Math.floor(item / step) * step;
-                })
-                .mapValues(function(value, key) {
-                    return {
-                        min: parseFloat(key),
-                        max: parseFloat(key) + step,
-                        key: key + ' - ' + (parseInt(key) + step),
-                        frequency: value.length
-                    };
-                })
-                .sortBy('min')
-                .value();
-        };
+		//------------------------------------------------------------------------------------------------------
+		//-----------------------------------------------DISTRIBUTIONS------------------------------------------
+		//------------------------------------------------------------------------------------------------------
+		/**
+		 * Calculate column value distribution
+		 * @param columnId
+		 * @param keyName - distribution key name (default : 'colValue');
+		 * @param valueName - distribution value name (default : 'frequency')
+		 * @param keyTransformer - transformer applied to the distribution key
+		 * @returns [{colValue: string, frequency: integer}} - colValue (or specified) : the grouped value, frequency
+		 *     (or specified) : the nb of time the value appears
+		 */
+		self.getDistribution = function (columnId, keyName, valueName, keyTransformer) {
+			keyName   = keyName || 'colValue';
+			valueName = valueName || 'frequency';
 
-        /**
-         * Calculate geo distribution, and targeted map
-         * @param column
-         * @returns {{map: string, data: [{}]}}
-         */
-        self.getGeoDistribution = function(column) {
-            var keyPrefix = 'us-';
-            var map = 'countries/us/us-all';
+			var records = DatagridService.data.records;
 
-            return {
-                map : map,
-                data : self.getDistribution(column.id, 'hc-key', 'value', function(key) {return keyPrefix + key.toLowerCase();})
-            };
-        };
+			var result = _.chain(records)
+				.groupBy(function (item) {
+					return item[columnId];
+				})
+				.map(function (val, index) {
+					var item        = {};
+					item[keyName]   = keyTransformer ? keyTransformer(index) : index;
+					item[valueName] = val.length;
+					return item;
+				})
+				.sortBy(valueName)
+				.reverse()
+				.value();
 
-        //------------------------------------------------------------------------------------------------------
-        //--------------------------------------------------UTILES----------------------------------------------
-        //------------------------------------------------------------------------------------------------------
-        /**
-         * Get range step
-         * @param diff - the diff between the max and min element
-         * @returns {int} - the step
-         */
-        var getStep = function(diff) {
-            //if the dumb step is too low, we return this dumb step
-            var averagePace = diff / 5;
-            if(averagePace < 10) {
-                return Math.floor(averagePace);
-            }
+			return result;
+		};
 
-            //we search for the multiplum of 10 so we can have 5-6 ranges
-            var quotient = averagePace;
-            var tmpDivider = 1;
-            var realDivider = 1;
+		/**
+		 * Calculate geo distribution, and targeted map
+		 * @param column
+		 * @returns {{map: string, data: [{}]}}
+		 */
+		self.getGeoDistribution = function (column) {
+			var keyPrefix = 'us-';
+			var map       = 'countries/us/us-all';
 
-            while(quotient >= 1) {
-                realDivider = tmpDivider;
+			return {
+				map: map,
+				data: self.getDistribution(column.id, 'hc-key', 'value', function (key) {return keyPrefix + key.toLowerCase();})
+			};
+		};
+	}
 
-                tmpDivider *= 10;
-                quotient = averagePace / tmpDivider;
-            }
-
-            return parseInt(averagePace / realDivider) * realDivider;
-        };
-    }
-
-    angular.module('data-prep.services.statistics')
-        .service('StatisticsService', StatisticsService);
+	angular.module('data-prep.services.statistics')
+		.service('StatisticsService', StatisticsService);
 })();

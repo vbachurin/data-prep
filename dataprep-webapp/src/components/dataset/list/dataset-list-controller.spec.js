@@ -186,4 +186,62 @@ describe('Dataset list controller', function () {
             expect(DatasetService.refreshDatasets).toHaveBeenCalled();
         }));
     });
+
+
+    describe('event "talend.dataset.open" received for a finished dataset', function () {
+        var ctrl;
+        var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
+
+        beforeEach(inject(function ($q, DatasetService) {
+            ctrl = createController();
+            scope.$digest();
+            spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
+        }));
+
+        it('should open dataset when "talend.dataset.open" event is received for a finished dataset', inject(function ($rootScope, $state, DatasetService) {
+
+
+            //given
+            createController();
+            //scope.$digest();
+
+            //when
+            $rootScope.$emit('talend.dataset.open', dataset.id);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetService.getDatasetById).toHaveBeenCalledWith(dataset.id);
+            expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: dataset.id});
+        }));
+    });
+
+
+    describe('event "talend.dataset.open" received for a draft dataset', function () {
+        var ctrl;
+        var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: true, type: 'application/vnd.ms-excel'};
+
+        beforeEach(inject(function ($q, DatasetService, DatasetSheetPreviewService) {
+            ctrl = createController();
+            scope.$digest();
+            spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
+            spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when({}));
+        }));
+
+        it('should open dataset when "talend.dataset.open" event is received for a draft dataset', inject(function ($rootScope, DatasetService, DatasetSheetPreviewService) {
+
+
+            //given
+            createController();
+            //scope.$digest();
+
+            //when
+            $rootScope.$emit('talend.dataset.open', dataset.id);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetService.getDatasetById).toHaveBeenCalledWith(dataset.id);
+            expect(DatasetSheetPreviewService.loadPreview).toHaveBeenCalledWith(dataset);
+        }));
+    });
+
 });

@@ -44,6 +44,7 @@
     //Export
     "Blob": false,
     // Highcharts
-    "Highcharts": false
+    "Highcharts": false,
+    "d3":false
   }
 }

@@ -11,8 +11,9 @@
      * @requires data-prep.services.recipe.service:RecipeService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:MessageService
+     * @requires data-prep.services.statistics:StatisticsService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService, PreparationService, MessageService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService, PreparationService, MessageService, StatisticsService) {
         var self = this;
 
         /**
@@ -111,6 +112,7 @@
 
                         FilterService.removeAllFilters();
                         RecipeService.reset();
+                        StatisticsService.resetCharts();
                         DatagridService.setDataset(dataset, data);
                     });
             }
@@ -147,6 +149,7 @@
 
                         FilterService.removeAllFilters();
                         RecipeService.refresh();
+                        StatisticsService.resetCharts();
                         DatagridService.setDataset(preparation.dataset, response.data);
                     })
                     .finally(function() {

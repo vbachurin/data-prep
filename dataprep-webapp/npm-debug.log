@@ -1,0 +1,240 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'install' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.36
+4 verbose readDependencies using package.json deps
+5 verbose install where, deps [ '/home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp',
+5 verbose install   [ 'time-require',
+5 verbose install     'ansi-regex',
+5 verbose install     'bower',
+5 verbose install     'browser-sync',
+5 verbose install     'chalk',
+5 verbose install     'clone',
+5 verbose install     'clone-stats',
+5 verbose install     'del',
+5 verbose install     'find-index',
+5 verbose install     'glob',
+5 verbose install     'gulp',
+5 verbose install     'gulp-angular-filesort',
+5 verbose install     'gulp-angular-templatecache',
+5 verbose install     'gulp-autoprefixer',
+5 verbose install     'gulp-consolidate',
+5 verbose install     'gulp-csso',
+5 verbose install     'gulp-debug',
+5 verbose install     'gulp-filter',
+5 verbose install     'gulp-flatten',
+5 verbose install     'gulp-imagemin',
+5 verbose install     'gulp-inject',
+5 verbose install     'gulp-jshint',
+5 verbose install     'gulp-karma',
+5 verbose install     'gulp-load-plugins',
+5 verbose install     'gulp-minify-html',
+5 verbose install     'gulp-natural-sort',
+5 verbose install     'gulp-ng-annotate',
+5 verbose install     'gulp-ngdocs',
+5 verbose install     'gulp-protractor',
+5 verbose install     'gulp-rename',
+5 verbose install     'gulp-replace',
+5 verbose install     'gulp-rev',
+5 verbose install     'gulp-rev-replace',
+5 verbose install     'gulp-ruby-sass',
+5 verbose install     'gulp-size',
+5 verbose install     'gulp-uglify',
+5 verbose install     'gulp-useref',
+5 verbose install     'gulp-util',
+5 verbose install     'http-proxy',
+5 verbose install     'jade',
+5 verbose install     'jshint-stylish',
+5 verbose install     'karma-coverage',
+5 verbose install     'karma-jasmine',
+5 verbose install     'karma-junit-reporter',
+5 verbose install     'karma-ng-html2js-preprocessor',
+5 verbose install     'karma-phantomjs-launcher',
+5 verbose install     'main-bower-files',
+5 verbose install     'minimatch',
+5 verbose install     'protractor',
+5 verbose install     'require-dir',
+5 verbose install     'through2',
+5 verbose install     'uglify-save-license',
+5 verbose install     'wiredep' ] ]
+6 info preinstall data-prep@1.0.0
+7 verbose readDependencies using package.json deps
+8 verbose already installed skipping time-require@^0.1.2 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+9 verbose already installed skipping ansi-regex@^1.1.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+10 verbose already installed skipping bower@^1.3.12 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+11 verbose already installed skipping browser-sync@~2.7.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+12 verbose already installed skipping chalk@~0.5.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+13 verbose already installed skipping clone@^1.0.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+14 verbose already installed skipping clone-stats@0.0.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+15 verbose already installed skipping del@~0.1.3 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+16 verbose already installed skipping find-index@^0.1.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+17 verbose already installed skipping glob@^4.3.5 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+18 verbose already installed skipping gulp@~3.8.10 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+19 verbose already installed skipping gulp-angular-filesort@~1.0.4 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+20 verbose already installed skipping gulp-angular-templatecache@~1.4.2 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+21 verbose already installed skipping gulp-autoprefixer@~2.0.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+22 verbose already installed skipping gulp-consolidate@~0.1.2 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+23 verbose already installed skipping gulp-csso@~0.2.9 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+24 verbose already installed skipping gulp-debug@^2.0.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+25 verbose already installed skipping gulp-filter@~1.0.2 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+26 verbose already installed skipping gulp-flatten@~0.0.4 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+27 verbose already installed skipping gulp-imagemin@~2.0.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+28 verbose already installed skipping gulp-inject@~1.0.2 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+29 verbose already installed skipping gulp-jshint@~1.9.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+30 verbose already installed skipping gulp-karma@~0.0.4 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+31 verbose already installed skipping gulp-load-plugins@~0.7.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+32 verbose already installed skipping gulp-minify-html@~0.1.7 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+33 verbose already installed skipping gulp-natural-sort@^0.1.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+34 verbose already installed skipping gulp-ng-annotate@~0.5.3 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+35 verbose already installed skipping gulp-ngdocs@~0.2.10 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+36 verbose already installed skipping gulp-protractor@~0.0.11 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+37 verbose already installed skipping gulp-rename@~1.2.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+38 verbose already installed skipping gulp-replace@~0.5.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+39 verbose already installed skipping gulp-rev@~2.0.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+40 verbose already installed skipping gulp-rev-replace@~0.3.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+41 verbose already installed skipping gulp-ruby-sass@* /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+42 verbose already installed skipping gulp-size@~1.1.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+43 verbose already installed skipping gulp-uglify@~1.0.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+44 verbose already installed skipping gulp-useref@~1.0.2 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+45 verbose already installed skipping gulp-util@^3.0.3 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+46 verbose already installed skipping http-proxy@~1.7.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+47 verbose already installed skipping jade@~1.8.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+48 verbose already installed skipping jshint-stylish@~1.0.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+49 verbose already installed skipping karma-coverage@~0.2.7 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+50 verbose already installed skipping karma-jasmine@~0.3.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+51 verbose already installed skipping karma-junit-reporter@^0.2.2 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+52 verbose already installed skipping karma-ng-html2js-preprocessor@~0.1.2 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+53 verbose already installed skipping karma-phantomjs-launcher@~0.1.4 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+54 verbose already installed skipping main-bower-files@~2.4.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+55 verbose already installed skipping minimatch@^2.0.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+56 verbose already installed skipping protractor@~1.4.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+57 verbose already installed skipping require-dir@~0.1.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+58 verbose already installed skipping through2@^0.6.3 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+59 verbose already installed skipping uglify-save-license@~0.4.1 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+60 verbose already installed skipping wiredep@~2.2.0 /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+61 silly resolved []
+62 info build /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+63 verbose linkStuff [ false,
+63 verbose linkStuff   false,
+63 verbose linkStuff   false,
+63 verbose linkStuff   '/home/amaalej/Bureau/tmp/data-prep2/data-prep' ]
+64 info linkStuff data-prep@1.0.0
+65 verbose linkBins data-prep@1.0.0
+66 verbose linkMans data-prep@1.0.0
+67 verbose rebuildBundles data-prep@1.0.0
+68 verbose rebuildBundles [ '.bin',
+68 verbose rebuildBundles   'ansi-regex',
+68 verbose rebuildBundles   'bower',
+68 verbose rebuildBundles   'browser-sync',
+68 verbose rebuildBundles   'chalk',
+68 verbose rebuildBundles   'clone',
+68 verbose rebuildBundles   'clone-stats',
+68 verbose rebuildBundles   'del',
+68 verbose rebuildBundles   'find-index',
+68 verbose rebuildBundles   'glob',
+68 verbose rebuildBundles   'gulp',
+68 verbose rebuildBundles   'gulp-angular-filesort',
+68 verbose rebuildBundles   'gulp-angular-templatecache',
+68 verbose rebuildBundles   'gulp-autoprefixer',
+68 verbose rebuildBundles   'gulp-consolidate',
+68 verbose rebuildBundles   'gulp-csso',
+68 verbose rebuildBundles   'gulp-debug',
+68 verbose rebuildBundles   'gulp-filter',
+68 verbose rebuildBundles   'gulp-flatten',
+68 verbose rebuildBundles   'gulp-imagemin',
+68 verbose rebuildBundles   'gulp-inject',
+68 verbose rebuildBundles   'gulp-jshint',
+68 verbose rebuildBundles   'gulp-karma',
+68 verbose rebuildBundles   'gulp-load-plugins',
+68 verbose rebuildBundles   'gulp-minify-html',
+68 verbose rebuildBundles   'gulp-natural-sort',
+68 verbose rebuildBundles   'gulp-ng-annotate',
+68 verbose rebuildBundles   'gulp-ngdocs',
+68 verbose rebuildBundles   'gulp-protractor',
+68 verbose rebuildBundles   'gulp-rename',
+68 verbose rebuildBundles   'gulp-replace',
+68 verbose rebuildBundles   'gulp-rev',
+68 verbose rebuildBundles   'gulp-rev-replace',
+68 verbose rebuildBundles   'gulp-ruby-sass',
+68 verbose rebuildBundles   'gulp-size',
+68 verbose rebuildBundles   'gulp-uglify',
+68 verbose rebuildBundles   'gulp-useref',
+68 verbose rebuildBundles   'gulp-util',
+68 verbose rebuildBundles   'http-proxy',
+68 verbose rebuildBundles   'jade',
+68 verbose rebuildBundles   'jasmine-core',
+68 verbose rebuildBundles   'jshint-stylish',
+68 verbose rebuildBundles   'karma',
+68 verbose rebuildBundles   'karma-coverage',
+68 verbose rebuildBundles   'karma-jasmine',
+68 verbose rebuildBundles   'karma-junit-reporter',
+68 verbose rebuildBundles   'karma-ng-html2js-preprocessor',
+68 verbose rebuildBundles   'karma-phantomjs-launcher',
+68 verbose rebuildBundles   'main-bower-files',
+68 verbose rebuildBundles   'minimatch',
+68 verbose rebuildBundles   'protractor',
+68 verbose rebuildBundles   'require-dir',
+68 verbose rebuildBundles   'through2',
+68 verbose rebuildBundles   'time-require',
+68 verbose rebuildBundles   'uglify-save-license',
+68 verbose rebuildBundles   'wiredep' ]
+69 verbose rebuild bundle /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/jasmine-core
+70 info build /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/jasmine-core
+71 info preinstall jasmine-core@2.3.4
+72 verbose linkStuff [ false,
+72 verbose linkStuff   false,
+72 verbose linkStuff   false,
+72 verbose linkStuff   '/home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules' ]
+73 info linkStuff jasmine-core@2.3.4
+74 verbose linkBins jasmine-core@2.3.4
+75 verbose linkMans jasmine-core@2.3.4
+76 verbose rebuildBundles jasmine-core@2.3.4
+77 info install jasmine-core@2.3.4
+78 info postinstall jasmine-core@2.3.4
+79 verbose rebuild bundle /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/karma
+80 info build /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/karma
+81 info preinstall karma@0.12.35
+82 verbose linkStuff [ false,
+82 verbose linkStuff   false,
+82 verbose linkStuff   false,
+82 verbose linkStuff   '/home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules' ]
+83 info linkStuff karma@0.12.35
+84 verbose linkBins karma@0.12.35
+85 verbose link bins [ { karma: './bin/karma' },
+85 verbose link bins   '/home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/.bin',
+85 verbose link bins   false ]
+86 verbose linkMans karma@0.12.35
+87 verbose rebuildBundles karma@0.12.35
+88 verbose rebuildBundles [ '.bin',
+88 verbose rebuildBundles   'chokidar',
+88 verbose rebuildBundles   'colors',
+88 verbose rebuildBundles   'connect',
+88 verbose rebuildBundles   'di',
+88 verbose rebuildBundles   'glob',
+88 verbose rebuildBundles   'graceful-fs',
+88 verbose rebuildBundles   'http-proxy',
+88 verbose rebuildBundles   'lodash',
+88 verbose rebuildBundles   'log4js',
+88 verbose rebuildBundles   'mime',
+88 verbose rebuildBundles   'optimist',
+88 verbose rebuildBundles   'q',
+88 verbose rebuildBundles   'rimraf',
+88 verbose rebuildBundles   'socket.io',
+88 verbose rebuildBundles   'source-map',
+88 verbose rebuildBundles   'useragent' ]
+89 error Error: EACCES, unlink '/home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/.bin/karma'
+89 error  { [Error: EACCES, unlink '/home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/.bin/karma']
+89 error   errno: 3,
+89 error   code: 'EACCES',
+89 error   path: '/home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/.bin/karma' }
+90 error Please try running this command again as root/Administrator.
+91 error System Linux 3.13.0-54-generic
+92 error command "/usr/local/bin/node" "/usr/local/bin/npm" "install"
+93 error cwd /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp
+94 error node -v v0.10.36
+95 error npm -v 1.4.28
+96 error path /home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/.bin/karma
+97 error code EACCES
+98 error errno 3
+99 error stack Error: EACCES, unlink '/home/amaalej/Bureau/tmp/data-prep2/data-prep/dataprep-webapp/node_modules/.bin/karma'
+100 verbose exit [ 3, true ]

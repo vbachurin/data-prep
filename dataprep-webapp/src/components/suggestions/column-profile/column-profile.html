@@ -1,19 +1,12 @@
 <div class="column-profile">
     <ul class="menu talend-accordion">
-        <li>Selected col : {{columnProfileCtrl.selectedColumn.id}}</li>
+        <li>Selected col : {{columnProfileCtrl.selectedColumn.name}}</li>
     </ul>
 
-    <highchart id="barChart"
-               ng-if="columnProfileCtrl.distribution"
-               config="columnProfileCtrl.chartConfig"></highchart>
-
-    <highchart id="pieChart"
-               ng-if="columnProfileCtrl.pieDistribution"
-               config="columnProfileCtrl.chartConfig"></highchart>
-
-    <highchart id="rangeChart"
-               ng-if="columnProfileCtrl.rangeDistribution"
-               config="columnProfileCtrl.chartConfig"></highchart>
+    <horizontal-barchart id="barChart"
+                width="250"
+                height="600"
+               ></horizontal-barchart>
 
     <highchart id="geochart"
                ng-if="columnProfileCtrl.stateDistribution"
