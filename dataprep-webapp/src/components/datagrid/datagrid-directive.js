@@ -33,7 +33,7 @@
 
                 // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
                 // To do so, the text is put into an invisible span so that the span can be measured.
-                var tooltipRuler = angular.element('<span id="tooltip-ruler" style="display:none"></span>');
+                var tooltipRuler = angular.element('<span id="tooltip-ruler" class="tooltip-ruler" style="display:none;white-space:pre;"></span>');
                 iElement.append(tooltipRuler);
 
                 //------------------------------------------------------------------------------------------------------
@@ -62,9 +62,6 @@
                     grid.setCellCssStyles('highlight', {});
                 };
 
-                //------------------------------------------------------------------------------------------------------
-                //------------------------------------------------COL UTILES--------------------------------------------
-                //------------------------------------------------------------------------------------------------------
                 /**
                  * @ngdoc method
                  * @name formatter
@@ -77,15 +74,7 @@
 
                     //hidden characters need to be shown
                     if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
-                        var hiddenCharsRegExpMatch = value.match(/(^\s\s*)?(\S*)(\s\s*$)?/);
-                        if (hiddenCharsRegExpMatch[1]){
-                            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>' + hiddenCharsRegExpMatch[2];
-                        }else{
-                            returnStr = hiddenCharsRegExpMatch[2] ;
-                        }
-                        if (hiddenCharsRegExpMatch[3]){
-                            returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
-                        }
+                        returnStr = ctrl.computeHTMLForLeadingOrTrailingHiddenChars(value);
                     }
                     //deleted row preview
                     if(dataContext.__tdpRowDiff === 'delete') {
@@ -331,14 +320,18 @@
                  */
                 var attachTooltipListener = function attachTooltipListener() {
                     //show tooltips only if not empty and width is bigger than cell
-                    function shouldShowTooltip(item, column) {
-                        var toolTipText = item[column.id];
-                        if(toolTipText === '') {
+                    function shouldShowTooltip(text, cell) {
+                        if(text === '') {
                             return false;
                         }
 
-                        tooltipRuler.text(toolTipText);
-                        return column.width <= tooltipRuler.width();
+                        tooltipRuler.text(text);
+                        var box = grid.getCellNodeBox(cell.row, cell.cell);
+                        if (box === null){//not in a cell so no tooltip to be displayed
+                            return false;
+                        }//else return if the content is bigger than the displayed box
+                        //compute the diff between the displayed box and the hidden tooltip ruler size minus the cell padding
+                        return (box.right - box.left - 11 ) <= tooltipRuler.width() || (box.bottom - box.top) < tooltipRuler.height();
                     }
 
                     //show tooltip on hover
@@ -348,7 +341,7 @@
                         var column = grid.getColumns()[cell.cell];
                         var item = DatagridService.dataView.getItem(row);
 
-                        if (!shouldShowTooltip(item, column)) {
+                        if (!shouldShowTooltip(item[column.id], cell)) {
                             return;
                         }
                         
@@ -357,7 +350,7 @@
                             y: e.clientY
                         };
 
-                        ctrl.updateTooltip(item, column.id, position);
+                        ctrl.updateTooltip(item, column.id, position, ctrl.computeHTMLForLeadingOrTrailingHiddenChars(item[column.id]));
                     });
 
                     //hide tooltip on leave

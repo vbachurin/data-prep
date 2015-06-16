@@ -54,4 +54,18 @@ public class CSVSerializerTest {
                 .getResourceAsStream("org/talend/dataprep/schema/missing_values.csv_expected.json");
         Assert.assertThat(actual, sameJSONAsFile(expected));
     }
+
+    @Test
+    public void should_serialize_csv_with_additional_values() throws IOException {
+        String fileName = "org/talend/dataprep/schema/additional_values.csv";
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
+        DataSetMetadata datasetMetadata = IoTestUtils.getSimpleDataSetMetadata("name", "email");
+
+        InputStream input = serializer.serialize(inputStream, datasetMetadata);
+        String actual = IOUtils.toString(input);
+
+        InputStream expected = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("org/talend/dataprep/schema/additional_values.csv_expected.json");
+        Assert.assertThat(actual, sameJSONAsFile(expected));
+    }
 }

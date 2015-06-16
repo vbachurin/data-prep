@@ -19,6 +19,10 @@ fi
 images='talend/dataprep-api talend/dataprep-dataset talend/dataprep-transformation talend/dataprep-preparation talend/dataprep-webapp'
 registry=talend-registry:5000
 
+FTP_HOST='ftp.talend.com'
+FTP_USER='dataprep'
+FTP_PASSWD='-_V 8bS){'
+
 for image in $images;
 do
   completeName=$image:$version
@@ -33,10 +37,9 @@ do
 done
 list+=$registry'/talend/dataprep-data:'$version' mongo:latest'
 
-timestamp=`date +%Y%m%d%H%M%S`
-
-tar_archive='dataprep-images_'$version'_'$timestamp'.tar'
+tar_archive='dataprep-images_'$version'.tar'
 docker pull $registry'/talend/dataprep-data:'$version
+docker pull mongo:latest
 echo 'docker save to '$tar_archive
 time docker save --output=$tar_archive $list
 
@@ -44,10 +47,28 @@ echo 'gzip tar'
 time gzip $tar_archive
 
 tar_archive=$tar_archive'.gz'
+#===========================================
+#  _____ _____ ____  
+# |  ___|_   _|  _ \ 
+# | |_    | | | |_) |
+# |  _|   | | |  __/ 
+# |_|     |_| |_|    
+#                   
+#===========================================
 echo 'upload to ftp'
 md5sum $tar_archive > $tar_archive'.md5sum'
-time ./ftp_put.sh $tar_archive dataprep/builds
-./ftp_put.sh $tar_archive'.md5sum' dataprep/builds
+
+ftp -n $FTP_HOST <<END_SCRIPT
+quote USER $FTP_USER
+quote PASS $FTP_PASSWD
+passive
+cd dataprep/builds
+delete $tar_archive.md5sum
+put $tar_archive
+put $tar_archive.md5sum
+quit
+END_SCRIPT
+#===========================================
 
 echo 'remove temp files'
 rm $tar_archive*
