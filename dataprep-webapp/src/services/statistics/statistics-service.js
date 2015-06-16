@@ -33,7 +33,6 @@
 			//hide the map if the previous column was a state
 			self.stateDistribution = null;
 			if (column.type === 'numeric' || column.type === 'integer' || column.type === 'float' || column.type === 'double') {
-				self.rangeDistribution = true;
 				var _histoData         = column.statistics.histogram;
 				var concatData         = [];
 				_.each(_histoData, function (histDatum) {
@@ -44,10 +43,8 @@
 				});
 				self.data              = concatData;
 			} else if (column.type === 'string') {
-				self.distribution = true;
 				self.data         = column.statistics.frequencyTable;
 			} else if (column.type === 'boolean') {
-				self.pieDistribution = true;
 				self.data            = column.statistics.frequencyTable;
 			} else {
 				console.log('not a number neither a stater neither a string');
@@ -64,6 +61,14 @@
 			} else {
 				self.processBarchartData(column);
 			}
+		};
+
+		/**
+		 * empties the map chart/barchart, called on a new opened dataset or preparation
+		 */
+		self.resetCharts = function(){
+			self.data = null;
+			self.stateDistribution = null;
 		};
 
 		//------------------------------------------------------------------------------------------------------

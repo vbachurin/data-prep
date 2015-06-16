@@ -146,7 +146,8 @@
                         field: col.id,
                         name: template,
                         formatter: formatter,
-                        minWidth: 80
+                        minWidth: 80,
+                        tdpColMetadata: col
                     };
                     return colItem;
                 };
@@ -210,8 +211,7 @@
                 var updateColSelection = function (column) {
                     $timeout(function() {
                         DatagridService.setSelectedColumn(column.id);
-                        var chosenColumn = DatagridService.selectedColumn;
-                        StatisticsService.processVisuData(chosenColumn);
+                        StatisticsService.processVisuData(column.tdpColMetadata);
                     });
                 };
 
