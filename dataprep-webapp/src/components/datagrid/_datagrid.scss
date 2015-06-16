@@ -7,6 +7,15 @@
   padding: 1px 4px 2px;
 }
 
+
+.tooltip-ruler{
+
+  $datagrid-cell-font-size: .80em;
+  font-size: $datagrid-cell-font-size;
+  font-family: $monospace;
+}
+
+
 .datagrid {
   $datagrid-line-odd: #f9f9f9;
   $datagrid-line-border: #ddd;

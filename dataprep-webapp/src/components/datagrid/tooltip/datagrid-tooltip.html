@@ -6,7 +6,7 @@
 
      <div ng-show="!tooltipCtrl.editMode"
           ng-click="tooltipCtrl.edit()"
-          class="datagrid-tooltip-content">{{tooltipCtrl.record[tooltipCtrl.key]}}</div>
+          class="datagrid-tooltip-content"><div ng-bind-html="tooltipCtrl.htmlStr"></div></div>
 
     <div ng-show="tooltipCtrl.editMode">
         <textarea cols="{{tooltipCtrl.inputValue.length}}"

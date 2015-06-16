@@ -654,8 +654,6 @@ public class DataPreparationAPITest {
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
 
-        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/expected_cluster_upper_case_params.json"));
-
         // when
         final String actualClusterParameters = given()
                 .formParam("preparationId", preparationId)
@@ -665,8 +663,8 @@ public class DataPreparationAPITest {
                 .get("/api/transform/suggest/textclustering/params")
                 .asString();
 
-        // then
-        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters).allowingAnyArrayOrdering());
+        // then (actions have normalized all cluster values, so no more clusters to be returned).
+        assertThat(actualClusterParameters, sameJSONAs("{\"details\":{\"titles\":[\"We found these values\",\"And we'll keep this value\"],\"clusters\":[]},\"type\":\"cluster\"}"));
     }
 
     @Test
