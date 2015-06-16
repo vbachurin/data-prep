@@ -2,6 +2,7 @@ package org.talend.dataprep.transformation.api.transformer.type;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
@@ -38,31 +39,47 @@ public class RecordsTypeTransformer implements TypeTransformer {
                 .getTransformationContext(0);
 
         final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
-        final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : null;
+        final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : 0;
         final Integer maxIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).max().getAsInt() : Integer.MAX_VALUE;
 
-        final Stream<DataSetRow> records = dataSet.getRecords();
+        Stream<DataSetRow> records = dataSet.getRecords();
         try {
             writer.startArray();
+            AtomicInteger index = new AtomicInteger(0);
             if (!configuration.isPreview()) {
                 // No preview (no 'old row' and 'new row' to compare when writing results).
-                records.map(row -> {
-                    action.accept(row, context);
-                    return row;
-                }).forEach(row -> writeRow(writer, row));
+                Stream<Processing> process = records.map(row -> new Processing(row, index.getAndIncrement())) //
+                        .map(p -> {
+                            action.accept(p.row, context);
+                            return p;
+                        }) //
+                        .skip(minIndex) //
+                        .limit(maxIndex);
+                if (indexes != null) {
+                    process = process.filter(p -> indexes.contains(p.index));
+                }
+                process.forEach(row -> writeRow(writer, row.row));
             } else {
                 if (referenceAction == null) {
                     throw new IllegalStateException("No old action to perform for preview.");
                 }
                 TransformationContext referenceContext = configuration.isPreview() ? configuration.getTransformationContext(0) : null;
                 // With preview (no 'old row' and 'new row' to compare when writing results).
-                records.map(row -> new DataSetRow[]{row, row.clone()}).map(rows -> {
-                    referenceAction.accept(rows[0], referenceContext);
-                    action.accept(rows[1], context);
-                    return rows;
-                }).forEach(rows -> {
-                    rows[0].diff(rows[1]);
-                    writeRow(writer, rows[0]);
+                Stream<Processing[]> process = records.map(row -> new Processing(row, index.getAndIncrement())) //
+                        .map(p -> new Processing[]{new Processing(p.row.clone(), p.index), p}) //
+                        .map(p -> {
+                            referenceAction.accept(p[0].row, referenceContext);
+                            action.accept(p[1].row, context);
+                            return p;
+                        }) //
+                        .skip(minIndex) //
+                        .limit(maxIndex);
+                if (indexes != null) {
+                    process = process.filter(p -> indexes.contains(p[1].index) || (p[0].row.isDeleted() && !p[1].row.isDeleted()));
+                }
+                process.forEach(p -> {
+                    p[1].row.diff(p[0].row);
+                    writeRow(writer, p[1].row);
                 });
             }
                 writer.endArray();
@@ -76,7 +93,6 @@ public class RecordsTypeTransformer implements TypeTransformer {
      *
      * @param writer the writer to use.
      * @param row the row to write.
-     * @throws IOException if an error occurs.
      */
     private void writeRow(TransformerWriter writer, DataSetRow row) {
         try {
@@ -85,6 +101,16 @@ public class RecordsTypeTransformer implements TypeTransformer {
             }
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+        }
+    }
+
+    public static class Processing {
+        DataSetRow row;
+        int index;
+
+        public Processing(DataSetRow row, int index) {
+            this.row = row;
+            this.index = index;
         }
     }
 
