@@ -32,6 +32,7 @@ import org.talend.dataprep.transformation.api.transformer.json.JsonWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -119,26 +120,15 @@ public class TypeTransformerSelectorTest {
 
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            //@formatter:off
-            final TransformerConfiguration configuration = TransformerConfiguration.builder()
-                    .input(dataSet)
-                    .output(transformerWriter)
-                    .preview(false)
-                    .recordActions(changeLastnameAction.getRowTransformer())
-                    .columnActions(changeLastnameAction.getMetadataTransformer())
-                    .build();
-            //@formatter:on
-
             // when
             try {
-                transformer.process(configuration);
+                mapper.reader(DataSet.class).readValue(parser);
                 fail("should have thrown UserException because input json is not valid");
             }
 
             // then
-            catch (Exception e) {
-                Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            catch (JsonMappingException e) {
+                // Expected
             }
         }
     }
@@ -150,26 +140,15 @@ public class TypeTransformerSelectorTest {
 
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            //@formatter:off
-            final TransformerConfiguration configuration = TransformerConfiguration.builder()
-                    .input(dataSet)
-                    .output(transformerWriter)
-                    .preview(false)
-                    .recordActions(changeLastnameAction.getRowTransformer())
-                    .columnActions(changeLastnameAction.getMetadataTransformer())
-                    .build();
-            //@formatter:on
-
             // when
             try {
-                transformer.process(configuration);
+                mapper.reader(DataSet.class).readValue(parser);
                 fail("should have thrown UserException because column json is not valid");
             }
 
             // then
-            catch (Exception e) {
-                Assert.assertEquals(UNABLE_TO_PARSE_JSON.toString(), e.getMessage());
+            catch (JsonMappingException e) {
+                // Expected
             }
         }
     }

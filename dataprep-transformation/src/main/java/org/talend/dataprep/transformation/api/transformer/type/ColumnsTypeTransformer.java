@@ -30,20 +30,22 @@ public class ColumnsTypeTransformer implements TypeTransformer {
     @Override
     public void process(final TransformerConfiguration configuration) {
         final DataSet dataSet = configuration.getInput();
-        final List<BiConsumer<RowMetadata, TransformationContext>> actions = configuration.getColumnActions();
         RowMetadata reference = new RowMetadata(dataSet.getColumns());
         RowMetadata rowMetadata = new RowMetadata(dataSet.getColumns());
         int index = configuration.isPreview() ? 1 : 0;
+        final List<BiConsumer<RowMetadata, TransformationContext>> actions = configuration.getColumnActions();
         TransformationContext context = configuration.getTransformationContext(index);
-        BiConsumer<RowMetadata, TransformationContext> action = actions.get(index);
-        action.accept(rowMetadata, context);
-        // setup the diff in case of preview
-        if (configuration.isPreview()) {
-            BiConsumer<RowMetadata, TransformationContext> referenceAction = actions.get(0);
-            TransformationContext referenceContext = configuration.getTransformationContext(0);
-            referenceAction.accept(reference, referenceContext);
-            rowMetadata.diff(reference);
-            referenceContext.setTransformedRowMetadata(reference);
+        if (!actions.isEmpty()) {
+            BiConsumer<RowMetadata, TransformationContext> action = actions.get(index);
+            action.accept(rowMetadata, context);
+            // setup the diff in case of preview
+            if (configuration.isPreview()) {
+                BiConsumer<RowMetadata, TransformationContext> referenceAction = actions.get(0);
+                TransformationContext referenceContext = configuration.getTransformationContext(0);
+                referenceAction.accept(reference, referenceContext);
+                rowMetadata.diff(reference);
+                referenceContext.setTransformedRowMetadata(reference);
+            }
         }
         // write the result
         try {

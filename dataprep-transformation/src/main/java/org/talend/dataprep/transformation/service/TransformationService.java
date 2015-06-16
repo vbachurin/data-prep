@@ -35,6 +35,7 @@ import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformer
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -73,6 +74,8 @@ public class TransformationService {
             final Transformer transformer = simpleFactory.withActions(decodedActions).get();
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             transformer.transform(dataSet, response.getOutputStream());
+        } catch(JsonMappingException e) {
+            // Ignore (end of input)
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (TDPException e) {

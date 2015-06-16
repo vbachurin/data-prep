@@ -65,7 +65,7 @@ public class RecordsTypeTransformer implements TypeTransformer {
                     writeRow(writer, rows[0]);
                 });
             }
-            writer.endArray();
+                writer.endArray();
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         }
