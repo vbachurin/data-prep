@@ -30,7 +30,6 @@ import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.quality.ValueQuality;
 import org.talend.datascience.common.inference.quality.ValueQualityAnalyzer;
 import org.talend.datascience.common.inference.type.DataType;
@@ -53,7 +52,7 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
     Jackson2ObjectMapperBuilder builder;
 
     /**
-     * Compute the dataset metadata columns valid/invalid, empty/count values.
+     * Compute data type for each column.
      *
      * @param metadata the dataset metadata to analyse.
      * @return the dataset columns.
@@ -132,12 +131,13 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
                     return; // no acknowledge to allow re-poll.
                 }
 
-                // Compute valid / invalid / empty count, need data types for analyzer first
+                // Compute data type for each column
                 DataType.Type[] types = computeDataTypes(metadata);
 
                 // Run analysis
                 LOGGER.info("Analyzing quality of dataset #{}...", dataSetId);
-                Analyzer<ValueQuality> analyzer = new ValueQualityAnalyzer(types);
+                ValueQualityAnalyzer analyzer = new ValueQualityAnalyzer(types);
+                analyzer.setStoreInvalidValues(true);
                 stream.map(row -> {
                     final Map<String, Object> rowValues = row.values();
                     final List<String> strings = stream(rowValues.values().spliterator(), false) //
@@ -158,6 +158,7 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
                     quality.setEmpty((int) valueQuality.getEmptyCount());
                     quality.setValid((int) valueQuality.getValidCount());
                     quality.setInvalid((int) valueQuality.getInvalidCount());
+                    quality.setInvalidValues(valueQuality.getInvalidValues());
                     metadata.getContent().setNbRecords((int) valueQuality.getCount());
                 }
 

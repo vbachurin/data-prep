@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -44,7 +45,9 @@ public class JsonWriterTest {
         columns.add(column1);
         columns.add(column2);
 
-        final String expectedOutput = "[{\"name\":\"id\",\"headerSize\":0,\"type\":\"string\",\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"0001\",\"statistics\":{},\"domain\":\"\"},{\"name\":\"firstname\",\"headerSize\":0,\"type\":\"string\",\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"0002\",\"statistics\":{},\"domain\":\"\"}]";
+        String expectedOutput = IOUtils.toString(JsonWriterTest.class.getResourceAsStream("expected_columns.json"));
+        // final String expectedOutput =
+        // "[{\"name\":\"id\",\"headerSize\":0,\"type\":\"string\",\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"0001\",\"statistics\":{},\"domain\":\"\"},{\"name\":\"firstname\",\"headerSize\":0,\"type\":\"string\",\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"0002\",\"statistics\":{},\"domain\":\"\"}]";
 
         // when
         writer.write(new RowMetadata(columns));

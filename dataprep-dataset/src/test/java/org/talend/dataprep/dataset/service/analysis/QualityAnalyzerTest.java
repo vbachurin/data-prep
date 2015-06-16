@@ -5,6 +5,9 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,4 +76,28 @@ public class QualityAnalyzerTest {
         }
     }
 
+    @Test
+    public void testAnalysisWithInvalidValues() throws Exception {
+        String dsId = "4321";
+        final DataSetMetadata metadata = metadata().id(dsId).build();
+        repository.add(metadata);
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("dataset_with_invalid_records.csv"));
+        formatAnalysis.analyze(dsId);
+        schemaAnalysis.analyze(dsId);
+        // Analyze quality
+        qualityAnalysis.analyze(dsId);
+        assertThat(metadata.getLifecycle().qualityAnalyzed(), is(true));
+        assertThat(metadata.getContent().getNbRecords(), is(9));
+        assertThat(metadata.getRow().getColumns().size(), is(2));
+        ColumnMetadata secondColumn = metadata.getRow().getColumns().get(1);
+        Quality quality = secondColumn.getQuality();
+        assertThat(quality.getValid(), is(6));
+        assertThat(quality.getInvalid(), is(2));
+        assertThat(quality.getEmpty(), is(1));
+
+        Set<String> expectedInvalidValues = new HashSet<>(1);
+        expectedInvalidValues.add("N/A");
+        assertThat(quality.getInvalidValues(), is(expectedInvalidValues));
+
+    }
 }
