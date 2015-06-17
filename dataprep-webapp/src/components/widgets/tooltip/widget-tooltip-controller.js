@@ -1,20 +1,31 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc controller
+     * @name talend.widget.controller:TalendTooltipCtrl
+     * @description Tooltip directive
+     */
     function TalendTooltipCtrl($scope) {
         var vm = this;
         var blocked = false;
         vm.innerState = vm.requestedState;
 
         /**
-         * Block visibility change
+         * @ngdoc method
+         * @name blockState
+         * @methodOf talend.widget.controller:TalendTooltipCtrl
+         * @description Block the display
          */
         vm.blockState = function() {
             blocked = true;
         };
 
         /**
-         * Unblock visibility change and update state to the last requested state
+         * @ngdoc method
+         * @name unblockState
+         * @methodOf talend.widget.controller:TalendTooltipCtrl
+         * @description Unblock the display
          */
         vm.unblockState = function() {
             blocked = false;
@@ -22,9 +33,12 @@
         };
 
         /**
-         * Update tooltip position
+         * @ngdoc method
+         * @name updatePosition
+         * @methodOf talend.widget.controller:TalendTooltipCtrl
          * @param horizontalPosition - {left: (number | string); right: (number | string)}
          * @param verticalPosition - {top: (number | string); bottom: (number | string)}
+         * @description Change the position of the tooltip
          */
         vm.updatePosition = function(horizontalPosition, verticalPosition) {
             vm.style = {

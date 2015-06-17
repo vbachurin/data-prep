@@ -380,8 +380,6 @@
 
                         grid.setCellCssStyles('highlight', config);
                         grid.invalidate();
-
-                        updateColSelection(column);
                     });
 
                     //change selected cell column background
@@ -395,6 +393,7 @@
                                 grid.invalidate();
                             }
 
+                            updateColSelection(column);
                         }
                     });
 
@@ -454,6 +453,7 @@
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------UPDATE----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
+                var renewAllColumns = false;
                 /**
                  * @ngdoc method
                  * @name updateColumns
@@ -482,11 +482,14 @@
                         //map every column to a header
                         var finalColHeaderElements = _.map(dataCols, function (col, index) {
                             //find saved header corresponding to column
-                            var header = _.find(colHeaderElements, function (colHeader) {
-                                return colHeader.column === col;
+                            var header = renewAllColumns ? null : _.find(colHeaderElements, function (colHeader) {
+                                return colHeader.column.id === col.id;
                             });
+                            if (header) {
+                                header.scope.columns = col;
+                            }
                             //or create a new one if no corresponding one
-                            if (!header) {
+                            else {
                                 header = createHeader(col);
                             }
 
@@ -503,11 +506,30 @@
                         });
                         colHeaderElements = finalColHeaderElements;
                     }
+
+                    renewAllColumns = false;
                 };
 
                 //------------------------------------------------------------------------------------------------------
                 //-------------------------------------------------WATCHERS---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
+
+                /**
+                 * Scroll to top when loaded dataset change
+                 */
+                scope.$watch(
+                    function () {
+                        return DatagridService.metadata;
+                    },
+                    function (metadata) {
+                        if(metadata) {
+                            if(grid) {
+                                grid.scrollRowToTop(0);
+                            }
+                            renewAllColumns = true;
+                        }
+                    }
+                );
 
                 /**
                  * Update grid columns and invalidate grid on data change
@@ -523,20 +545,6 @@
                             resetCellStyles();
                             grid.resetActiveCell();
                             grid.invalidate();
-                        }
-                    }
-                );
-
-                /**
-                 * Scroll to top when loaded dataset change
-                 */
-                scope.$watch(
-                    function () {
-                        return DatagridService.metadata;
-                    },
-                    function (metadata) {
-                        if(metadata) {
-                            grid.scrollRowToTop(0);
                         }
                     }
                 );

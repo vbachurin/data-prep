@@ -677,19 +677,12 @@ describe('Datagrid directive', function () {
 
         //when
         element.find('#datagrid-header-1').eq(0).click();
-        try {
-            $timeout.flush();
-        }
+        $timeout.flush();
 
-            //then
-        catch (e) {
-            expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
-            expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
-            expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
-            return;
-        }
-
-        throw Error('should have thrown exception because no deferred task to flush');
+        //then
+        expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
+        expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
     }));
 
     it('should reset line style and reset active cell, but keep column selection when filter change', inject(function (FilterService, DatagridService) {

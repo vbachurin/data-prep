@@ -122,58 +122,6 @@ describe('Datagrid header controller', function () {
         };
     }));
 
-    it('should calculate column quality', function() {
-        //given
-        var ctrl = createController();
-        ctrl.column = {
-            'id': 'MostPopulousCity',
-            'quality': {
-                'empty': 5,
-                'invalid': 10,
-                'valid': 72
-            },
-            'type': 'string'
-        };
-
-        //when
-        ctrl.refreshQualityBar();
-
-        //then
-        expect(ctrl.column.total).toBe(87);
-        expect(ctrl.column.quality.emptyPercent).toBe(6);
-        expect(ctrl.column.quality.emptyPercentWidth).toBe(10);
-        expect(ctrl.column.quality.invalidPercent).toBe(12);
-        expect(ctrl.column.quality.invalidPercentWidth).toBe(12);
-        expect(ctrl.column.quality.validPercent).toBe(82);
-        expect(ctrl.column.quality.validPercentWidth).toBe(78);
-    });
-
-    it('should calculate column quality with 0 values', function() {
-        //given
-        var ctrl = createController();
-        ctrl.column = {
-            'id': 'MostPopulousCity',
-            'quality': {
-                'empty': 0,
-                'invalid': 0,
-                'valid': 100
-            },
-            'type': 'string'
-        };
-
-        //when
-        ctrl.refreshQualityBar();
-
-        //then
-        expect(ctrl.column.total).toBe(100);
-        expect(ctrl.column.quality.emptyPercent).toBe(0);
-        expect(ctrl.column.quality.emptyPercentWidth).toBe(0);
-        expect(ctrl.column.quality.invalidPercent).toBe(0);
-        expect(ctrl.column.quality.invalidPercentWidth).toBe(0);
-        expect(ctrl.column.quality.validPercent).toBe(100);
-        expect(ctrl.column.quality.validPercentWidth).toBe(100);
-    });
-
     describe('with transformation list success', function() {
         beforeEach(inject(function ($q, TransformationCacheService) {
             spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(menusMock()));
@@ -232,19 +180,5 @@ describe('Datagrid header controller', function () {
             expect(ctrl.transformationsRetrieveError).toBeTruthy();
             expect(ctrl.initTransformationsInProgress).toBeFalsy();
         }));
-    });
-
-    it('should set the simplified column type name', function() {
-        //given
-        var stringColumn = {
-            'name': 'bestColumnEver',
-            'type': 'string'
-        };
-
-        //when
-        var ctrl = createControllerFromColumn(stringColumn);
-
-        //then
-        expect(ctrl.column.simplifiedType).toBe('text');
     });
 });
