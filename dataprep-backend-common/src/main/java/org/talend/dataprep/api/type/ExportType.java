@@ -13,7 +13,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = ExportType.ExportTypeSerializer.class)
 public enum ExportType {
     // take care when declaring new export type as only one can be default :-)
-    CSV("text/csv", ".csv", true, false, Arrays.asList(new Parameter("csvSeparator", "CHOOSE_SEPARATOR", ";", Arrays.asList("\09", " ", ",")))),
+    CSV("text/csv", ".csv", true, false, Arrays.asList(new Parameter("csvSeparator", "CHOOSE_SEPARATOR", ";", "radio", //
+            Arrays.asList("\09", " ", ",")))),
     XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()),
     TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList());
 
@@ -67,27 +68,44 @@ public enum ExportType {
 
     public static class Parameter {
 
+        /**
+         * parameter name
+         */
         private final String name;
 
+        /**
+         * can be used as a label key in the ui
+         */
         private final String labelKey;
 
+        /**
+         * the default value for the parameter must not be in values
+         */
         private final String defaultValue;
 
+        /**
+         * all possible values for the parameter
+         */
         private final List<String> values;
 
-        public Parameter(String name, String labelKey, String defaultValue, List<String> values) {
+        /**
+         * html type (input type: radio, text)
+         */
+        private final String type;
+
+        public Parameter(String name, String labelKey, String defaultValue, String type, List<String> values) {
             this.name = name;
             this.labelKey = labelKey;
             this.defaultValue = defaultValue;
             this.values = values;
+            this.type = type;
         }
 
         public String getName() {
             return name;
         }
 
-        public String getLabelKey()
-        {
+        public String getLabelKey() {
             return labelKey;
         }
 
@@ -97,6 +115,10 @@ public enum ExportType {
 
         public List<String> getValues() {
             return values;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 
@@ -118,7 +140,7 @@ public enum ExportType {
                 for (Parameter parameter : value.getParameters()) {
                     jgen.writeStartObject();
                     jgen.writeStringField("name", parameter.getName());
-                    jgen.writeStringField( "labelKey", parameter.getLabelKey() );
+                    jgen.writeStringField("labelKey", parameter.getLabelKey());
                     jgen.writeStringField("defaultValue", parameter.getDefaultValue());
 
                     if (!parameter.getValues().isEmpty()) {

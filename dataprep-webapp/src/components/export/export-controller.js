@@ -13,9 +13,11 @@
 
         vm.exportIdKey = 'dataprep.export.id';
 
+        vm.currentExportType = {};
 
         vm.launchExport = function(exportType){
 
+            vm.currentExportType=exportType;
             var exportId;
             if (exportType){
                 exportId = exportType.id;

@@ -12,6 +12,12 @@
               state="exportCtrl.showExport"
               close-button="true">
 
+    <p>{{ exportCtrl.currentExportType.id }}</p>
+
+    <div ng-repeat="parameter in exportCtrl.currentExportType.parameters">
+      <p>{{ parameter.name }}</p>
+    </div>
+
     <p>{{ ::'CHOOSE_SEPARATOR' | translate }}</p>
 
     <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="';'"/>{{ :: 'SEPARATOR_SEMI_COLON' | translate }}
