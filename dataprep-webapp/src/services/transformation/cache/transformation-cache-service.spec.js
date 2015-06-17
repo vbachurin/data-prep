@@ -1,13 +1,7 @@
-describe('Datagrid header controller', function () {
+describe('Transformation cache service', function() {
     'use strict';
 
-    var createController, createControllerFromColumn, scope;
-    var column = {
-        id: '8c083df4ef4509c',
-        type: 'string'
-    };
-
-    var menusMock = function() {
+    var transformationsMock = function() {
         return [
             {
                 'name':'uppercase',
@@ -102,83 +96,68 @@ describe('Datagrid header controller', function () {
             }
         ];
     };
+    var column = {id: '0002', name: 'Firstname'};
 
-    beforeEach(module('data-prep.datagrid-header'));
+    beforeEach(module('data-prep.services.transformation'));
 
-    beforeEach(inject(function($rootScope, $controller) {
-        scope = $rootScope.$new();
-
-        createController = function () {
-            return createControllerFromColumn(column);
-        };
-
-        createControllerFromColumn = function (col) {
-            var ctrlFn = $controller('DatagridHeaderCtrl', {
-                $scope: scope
-            }, true);
-
-            ctrlFn.instance.column = col;
-            return ctrlFn();
-        };
+    beforeEach(inject(function($q, TransformationService) {
+        spyOn(TransformationService, 'getTransformations').and.returnValue($q.when(transformationsMock()));
     }));
 
-    describe('with transformation list success', function() {
-        beforeEach(inject(function ($q, TransformationCacheService) {
-            spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(menusMock()));
-        }));
+    it('should call TransformationService when column is not in cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        //given
+        var result = null;
+        var stringifiedColumn = JSON.stringify(column);
 
-        it('should filter and init only "columns" category', inject(function($rootScope, TransformationCacheService) {
-            //given
-            var ctrl = createController();
+        //when
+        TransformationCacheService.getTransformations(column)
+            .then(function(transformations) {
+                result = transformations;
+            });
+        $rootScope.$digest();
 
-            //when
-            ctrl.initTransformations();
-            $rootScope.$digest();
+        //then
+        expect(TransformationService.getTransformations).toHaveBeenCalledWith(stringifiedColumn);
+        expect(result).toEqual(transformationsMock());
+    }));
 
-            //then
-            expect(TransformationCacheService.getTransformations).toHaveBeenCalledWith(column);
-            expect(ctrl.transformations.length).toBe(2);
-            expect(ctrl.transformations[0].name).toBe('rename');
-            expect(ctrl.transformations[1].name).toBe('split');
-        }));
+    it('should return the same result from cache', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        //given
+        var oldResult = null;
+        var newResult = null;
+        TransformationCacheService.getTransformations(column)
+            .then(function(transformations) {
+                oldResult = transformations;
+            });
 
-        it('should not get transformations if transformations are already initiated', inject(function($rootScope, TransformationCacheService) {
-            //given
-            var ctrl = createController();
-            ctrl.initTransformations();
-            $rootScope.$digest();
+        expect(TransformationService.getTransformations.calls.count()).toBe(1);
 
-            //when
-            ctrl.initTransformations();
-            $rootScope.$digest();
+        //when
+        TransformationCacheService.getTransformations(column)
+            .then(function(transformations) {
+                newResult = transformations;
+            });
+        $rootScope.$digest();
 
-            //then
-            expect(TransformationCacheService.getTransformations.calls.count()).toBe(1);
-        }));
-    });
+        //then
+        expect(newResult).toBe(oldResult);
+        expect(TransformationService.getTransformations.calls.count()).toBe(1);
+    }));
 
-    describe('with transformation list error', function() {
-        beforeEach(inject(function ($q, TransformationCacheService) {
-            spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.reject('server error'));
-        }));
+    it('should remove all cache entries', inject(function($rootScope, TransformationCacheService, TransformationService) {
+        //given
+        TransformationCacheService.getTransformations(column);
+        $rootScope.$digest();
 
-        it('should change inProgress and error flags', inject(function($rootScope) {
-            //given
-            var ctrl = createController();
-            expect(ctrl.transformationsRetrieveError).toBeFalsy();
-            expect(ctrl.initTransformationsInProgress).toBeFalsy();
+        expect(TransformationService.getTransformations.calls.count()).toBe(1);
 
-            ctrl.transformationsRetrieveError = true;
+        //when
+        TransformationCacheService.invalidateCache();
 
-            //when
-            ctrl.initTransformations();
-            expect(ctrl.initTransformationsInProgress).toBeTruthy();
-            expect(ctrl.transformationsRetrieveError).toBeFalsy();
-            $rootScope.$digest();
+        TransformationCacheService.getTransformations(column);
+        $rootScope.$digest();
 
-            //then
-            expect(ctrl.transformationsRetrieveError).toBeTruthy();
-            expect(ctrl.initTransformationsInProgress).toBeFalsy();
-        }));
-    });
+        //then
+        expect(TransformationService.getTransformations.calls.count()).toBe(2);
+    }));
 });

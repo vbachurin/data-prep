@@ -31,8 +31,6 @@
             controller: 'DatagridHeaderCtrl',
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
-                    ctrl.refreshQualityBar();
-
                     /**
                      * Close transformation menu on retrieve error
                      */

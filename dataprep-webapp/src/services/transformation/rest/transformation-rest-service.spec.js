@@ -20,7 +20,7 @@ describe('Transformation Rest Service', function() {
             .respond(200, result);
 
         //when
-        TransformationRestService.getTransformations(column).then(function (resp) {
+        TransformationRestService.getTransformations(JSON.stringify(column)).then(function (resp) {
             response = resp.data;
         });
         $httpBackend.flush();
