@@ -13,6 +13,7 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.exporter.json.JsonWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -31,7 +32,7 @@ class DiffTransformer implements Transformer {
 
     /** The transformer selector that routes transformation according the content to transform. */
     @Autowired
-    private TypeTransformerSelector tranformerSelector;
+    private TypeTransformerSelector transformerSelector;
 
     /** The previous action. */
     private final ParsedActions previousAction;
@@ -71,7 +72,8 @@ class DiffTransformer implements Transformer {
             }
 
             //@formatter:off
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
+            final TransformerConfiguration configuration = from(input)
+                    .output(JsonWriter.create(builder, output))
                     .indexes(indexes)
                     .preview(true)
                     .recordActions(previousAction.getRowTransformer())
@@ -81,7 +83,7 @@ class DiffTransformer implements Transformer {
                     .build();
             //@formatter:on
 
-            tranformerSelector.process(configuration);
+            transformerSelector.process(configuration);
 
             output.flush();
 

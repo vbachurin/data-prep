@@ -1,10 +1,11 @@
-package org.talend.dataprep.transformation.api.transformer.exporter.csv;
+package org.talend.dataprep.transformation.api.transformer.exporter.json;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.type.ExportType;
@@ -17,18 +18,21 @@ import org.talend.dataprep.transformation.api.transformer.input.TransformerConfi
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
-@Component("transformer#csv")
+@Component("transformer#json")
 @Scope("request")
-public class CsvExporter implements Transformer, Exporter {
-
-    @Autowired
-    private TypeTransformerSelector typeStateSelector;
+public class JsonExporter implements Transformer, Exporter {
 
     private final ParsedActions actions;
 
     private final ExportConfiguration exportConfiguration;
 
-    public CsvExporter(final ParsedActions actions, final ExportConfiguration configuration) {
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
+
+    @Autowired
+    private TypeTransformerSelector typeStateSelector;
+
+    public JsonExporter(final ParsedActions actions, final ExportConfiguration configuration) {
         this.actions = actions;
         this.exportConfiguration = configuration;
     }
@@ -36,10 +40,11 @@ public class CsvExporter implements Transformer, Exporter {
     @Override
     public void transform(DataSet input, OutputStream output) {
         try {
+            // Create configuration
             final TransformerConfiguration configuration = from(input) //
-                    .output(new CsvWriter(output, (char) exportConfiguration.getArguments().get("csvSeparator"))) //
-                    .columnActions(actions.getMetadataTransformer()) //
+                    .output(JsonWriter.create(builder, output)) //
                     .recordActions(actions.getRowTransformer()) //
+                    .columnActions(actions.getMetadataTransformer()) //
                     .build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {
@@ -49,6 +54,6 @@ public class CsvExporter implements Transformer, Exporter {
 
     @Override
     public ExportType getExportType() {
-        return ExportType.CSV;
+        return ExportType.JSON;
     }
 }

@@ -11,6 +11,7 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.exporter.json.JsonWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -56,7 +57,8 @@ class SimpleTransformer implements Transformer {
             }
 
             //@formatter:off
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
+            final TransformerConfiguration configuration = from(input)
+                    .output(JsonWriter.create(builder, output))
                     .preview(false)
                     .recordActions(actions.getRowTransformer())
                     .columnActions(actions.getMetadataTransformer())

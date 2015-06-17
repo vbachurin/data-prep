@@ -68,21 +68,8 @@ public class TransformationService {
     @VolumeMetered
     public void transform(@ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions, //
             @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response) {
-        final ObjectMapper mapper = builder.build();
-        try (JsonParser parser = mapper.getFactory().createParser(content)) {
-            final String decodedActions = new String(Base64.getDecoder().decode(actions));
-            final Transformer transformer = simpleFactory.withActions(decodedActions).get();
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            transformer.transform(dataSet, response.getOutputStream());
-        } catch(JsonMappingException e) {
-            // Ignore (end of input)
-        } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
-        } catch (TDPException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
-        }
+        // A transformation is an export to JSON
+        transform(ExportType.JSON, actions, null, content, response);
     }
 
     @RequestMapping(value = "/export/{format}", method = POST)
@@ -109,6 +96,8 @@ public class TransformationService {
             final Transformer transformer = exportFactory.getExporter(configuration);
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             transformer.transform(dataSet, response.getOutputStream());
+        } catch(JsonMappingException e) {
+            // Ignore (end of input)
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } catch (UnsupportedOperationException e) {
@@ -218,6 +207,7 @@ public class TransformationService {
     @Timed
     public void exportTypes(final HttpServletResponse response) {
         List<ExportType> exportTypes = exportFactory.getExportTypes();
+        exportTypes.remove(ExportType.JSON);
         try {
             builder.build() //
                     .writer() //

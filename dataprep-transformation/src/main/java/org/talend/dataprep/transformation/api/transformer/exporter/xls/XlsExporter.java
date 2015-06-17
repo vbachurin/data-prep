@@ -21,12 +21,12 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 @Scope("request")
 public class XlsExporter implements Transformer, Exporter {
 
-    @Autowired
-    private TypeTransformerSelector typeStateSelector;
-
     private final ParsedActions actions;
 
     private final ExportConfiguration exportConfiguration;
+
+    @Autowired
+    private TypeTransformerSelector typeStateSelector;
 
     public XlsExporter(final ParsedActions actions, final ExportConfiguration configuration) {
         this.actions = actions;
@@ -35,20 +35,16 @@ public class XlsExporter implements Transformer, Exporter {
 
     @Override
     public void transform(DataSet input, OutputStream output) {
-
         try {
-
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, null) //
+            final TransformerConfiguration configuration = from(input) //
                     .output(new XlsWriter(output)) //
                     .recordActions(actions.getRowTransformer()) //
                     .columnActions(actions.getMetadataTransformer()) //
                     .build();
-
             typeStateSelector.process(configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
-
     }
 
     @Override
