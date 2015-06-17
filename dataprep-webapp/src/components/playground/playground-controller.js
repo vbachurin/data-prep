@@ -13,6 +13,19 @@
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
+        vm.editionMode = false;
+        vm.editionModeFn = function(){
+            vm.editionMode?vm.editionMode = false:vm.editionMode = true;
+        };
+
+        vm.confirmNewPrepName = function(){
+            vm.changeName();
+            vm.editionModeFn();
+        };
+        vm.cancelPrepNameEdition = function(){
+            vm.preparationName = PlaygroundService.originalPreparationName;
+            vm.editionModeFn();
+        };
 
         /**
          * @ngdoc method

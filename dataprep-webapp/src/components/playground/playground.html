@@ -8,15 +8,6 @@
                 <export></export>
             </li>
             <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
-            <li>
-                <span class="title">{{::'PREPARATION' | translate}} :</span>
-                <input type="text"
-                       class="discret-input"
-                       placeholder="{{::'ENTER_PREPARATION_NAME' | translate}}"
-                       ng-model="playgroundCtrl.preparationName"
-                       ng-model-options="{updateOn: 'default blur'}"
-                       ng-blur="playgroundCtrl.changeName()"/>
-            </li>
         </ul>
 
         <div class="previewBadge" ng-show="playgroundCtrl.previewInProgress">
@@ -27,6 +18,26 @@
 
     <div class="modal-body playground">
         <talend-slidable visible="false" class="flex-side recipe">
+            <div style="margin-bottom: 20px">
+                <span class="title" ng-show="!playgroundCtrl.editionMode" style="font-size: 1.2em; padding-left: 5px;">{{playgroundCtrl.preparationName}}</span>
+                <button ng-show="!playgroundCtrl.editionMode" ng-click="playgroundCtrl.editionModeFn()" style="font-size: 28px; padding:0px;">&#9997;</button>
+                <label ng-show="!playgroundCtrl.editionMode"  class="label-switch">
+                    <input type="checkbox" checked id="onOffAllStepsId"/>
+                    <div class="checkbox"></div>
+                </label>
+
+                <input type="text"
+                       class="discret-input"
+                       id="prepEditionInputId"
+                       style="float: left; width:210px; margin-bottom:0px;"
+                       ng-show="playgroundCtrl.editionMode"
+                       placeholder="{{::'ENTER_PREPARATION_NAME' | translate}}"
+                       ng-model="playgroundCtrl.preparationName"
+                       ng-model-options="{updateOn: 'default blur'}"
+                    />
+                <button ng-show="playgroundCtrl.editionMode" ng-click="playgroundCtrl.confirmNewPrepName()" style="font-size: 2em; padding:2px; margin-left: 5px;">&#10004;</button>
+                <button ng-show="playgroundCtrl.editionMode" ng-click="playgroundCtrl.cancelPrepNameEdition()" style="font-size: 2em; padding:2px;">&#x2718;</button>
+            </div>
             <recipe metadata="playgroundCtrl.metadata"></recipe>
         </talend-slidable>
 
