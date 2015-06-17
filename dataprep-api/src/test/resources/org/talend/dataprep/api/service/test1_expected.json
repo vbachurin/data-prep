@@ -9,9 +9,7 @@
         "invalid": 0,
         "valid": 2
       },
-      "id": "0000",
-      "statistics": {},
-      "domain": ""
+      "id": "0000"
     },
     {
       "name": "firstname",
@@ -22,9 +20,7 @@
         "invalid": 0,
         "valid": 2
       },
-      "id": "0001",
-      "statistics": {},
-      "domain": ""
+      "id": "0001"
     },
     {
       "name": "lastname",
@@ -35,9 +31,7 @@
         "invalid": 0,
         "valid": 2
       },
-      "id": "0002",
-      "statistics": {},
-      "domain": ""
+      "id": "0002"
     },
     {
       "name": "age",
@@ -48,9 +42,7 @@
         "invalid": 0,
         "valid": 2
       },
-      "id": "0003",
-      "statistics": {},
-      "domain": ""
+      "id": "0003"
     },
     {
       "name": "date-of-birth",
@@ -61,9 +53,7 @@
         "invalid": 0,
         "valid": 2
       },
-      "id": "0004",
-      "statistics": {},
-      "domain": "DATE"
+      "id": "0004"
     },
     {
       "name": "alive",
@@ -74,9 +64,7 @@
         "invalid": 0,
         "valid": 2
       },
-      "id": "0005",
-      "statistics": {},
-      "domain": ""
+      "id": "0005"
     }
   ],
   "records": [
