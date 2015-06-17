@@ -13,8 +13,10 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
@@ -73,15 +75,18 @@ public class RecordsTransformerStep implements TransformerStep {
                     process = process.filter(p -> indexes.contains(p.index));
                 }
                 // Configure quality analysis (if column metadata information is present in stream).
-                final DataType.Type[] types = TypeUtils.convert(context.getTransformedRowMetadata().getColumns());
+                final List<ColumnMetadata> columns = context.getTransformedRowMetadata().getColumns();
+                final DataType.Type[] types = TypeUtils.convert(columns);
                 ValueQualityAnalyzer qualityAnalyzer = new ValueQualityAnalyzer(types);
                 if (types.length > 0) {
                     process = process.map(p -> {
-                        final Map<String, Object> rowValues = p.row.values();
-                        final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                .map(String::valueOf) //
-                                .collect(Collectors.<String>toList());
-                        qualityAnalyzer.analyze(strings.toArray(new String[strings.size()]));
+                        if (!p.row.isDeleted()) {
+                            final Map<String, Object> rowValues = p.row.values();
+                            final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                                    .map(String::valueOf) //
+                                    .collect(Collectors.<String>toList());
+                            qualityAnalyzer.analyze(strings.toArray(new String[strings.size()]));
+                        }
                         return p;
                     });
                 }
@@ -95,6 +100,15 @@ public class RecordsTransformerStep implements TransformerStep {
                         builder.append("Quality #").append(i).append(": ").append(result.get(i));
                     }
                     LOGGER.debug(builder.toString());
+                }
+                // Set new quality information in transformed column metadata
+                final List<ValueQuality> result = qualityAnalyzer.getResult();
+                for (int i = 0; i < result.size(); i++) {
+                    final ValueQuality column = result.get(i);
+                    final Quality quality = columns.get(i).getQuality();
+                    quality.setEmpty((int) column.getEmptyCount());
+                    quality.setInvalid((int) column.getInvalidCount());
+                    quality.setValid((int) column.getValidCount());
                 }
             } else {
                 if (referenceAction == null) {

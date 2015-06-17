@@ -3,72 +3,72 @@
     {
       "id": "id",
       "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
       },
       "type": "string"
     },
     {
       "id": "avgAmount",
       "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+        "empty": 0,
+        "invalid": 2,
+        "valid": 0
       },
       "type": "double"
     },
     {
       "id": "birth",
       "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
       },
       "type": "string"
     },
     {
       "id": "city",
       "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
       },
       "type": "string"
     },
     {
       "id": "firstname",
       "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
       },
       "type": "string"
     },
     {
       "id": "lastname",
       "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
       },
       "type": "string"
     },
     {
       "id": "nbCommands",
       "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
       },
       "type": "integer"
     },
     {
       "id": "state",
       "quality": {
-        "empty": 5,
-        "invalid": 10,
-        "valid": 72
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
       },
       "type": "string"
     }
