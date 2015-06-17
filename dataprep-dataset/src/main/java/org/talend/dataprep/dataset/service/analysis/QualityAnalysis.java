@@ -24,7 +24,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.Quality;
-import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -51,48 +51,6 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Autowired
     Jackson2ObjectMapperBuilder builder;
-
-    /**
-     * Compute the dataset metadata columns valid/invalid, empty/count values.
-     *
-     * @param metadata the dataset metadata to analyse.
-     * @return the dataset columns.
-     */
-    private static DataType.Type[] computeDataTypes(DataSetMetadata metadata) {
-        final List<ColumnMetadata> columns = metadata.getRow().getColumns();
-        DataType.Type[] types = new DataType.Type[columns.size()];
-        for (int i = 0; i < columns.size(); i++) {
-            final String type = columns.get(i).getType();
-            switch (Type.get(type)) {
-            case ANY:
-            case STRING:
-                types[i] = DataType.Type.STRING;
-                break;
-            case NUMERIC:
-                types[i] = DataType.Type.INTEGER;
-                break;
-            case INTEGER:
-                types[i] = DataType.Type.INTEGER;
-                break;
-            case DOUBLE:
-            case FLOAT:
-                types[i] = DataType.Type.DOUBLE;
-                break;
-            case BOOLEAN:
-                types[i] = DataType.Type.BOOLEAN;
-                break;
-            case DATE:
-                types[i] = DataType.Type.DATE;
-                break;
-            case CHAR:
-                types[i] = DataType.Type.CHAR;
-                break;
-            default:
-                types[i] = DataType.Type.STRING;
-            }
-        }
-        return types;
-    }
 
     @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
     public void analyzeQuality(Message message) {
@@ -133,8 +91,7 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
                 }
 
                 // Compute valid / invalid / empty count, need data types for analyzer first
-                DataType.Type[] types = computeDataTypes(metadata);
-
+                DataType.Type[] types = TypeUtils.convert(metadata.getRow().getColumns());
                 // Run analysis
                 LOGGER.info("Analyzing quality of dataset #{}...", dataSetId);
                 Analyzer<ValueQuality> analyzer = new ValueQualityAnalyzer(types);

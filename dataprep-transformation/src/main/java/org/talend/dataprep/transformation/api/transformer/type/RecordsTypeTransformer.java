@@ -1,25 +1,37 @@
 package org.talend.dataprep.transformation.api.transformer.type;
 
+import static java.util.stream.StreamSupport.stream;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
+import org.talend.datascience.common.inference.quality.ValueQuality;
+import org.talend.datascience.common.inference.quality.ValueQualityAnalyzer;
+import org.talend.datascience.common.inference.type.DataType;
 
 /**
  * Transforms dataset rows.
  */
 @Component
 public class RecordsTypeTransformer implements TypeTransformer {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(RecordsTypeTransformer.class);
 
     /**
      * @see TypeTransformer#process(TransformerConfiguration)
@@ -55,10 +67,35 @@ public class RecordsTypeTransformer implements TypeTransformer {
                         }) //
                         .skip(minIndex) //
                         .limit(maxIndex);
+                // Filter by indexes (if any specified in configuration).
                 if (indexes != null) {
                     process = process.filter(p -> indexes.contains(p.index));
                 }
+                // Configure quality analysis (if column metadata information is present in stream).
+                final DataType.Type[] types = TypeUtils.convert(dataSet.getColumns());
+                ValueQualityAnalyzer qualityAnalyzer = new ValueQualityAnalyzer(types);
+                if (types.length > 0) {
+                    process = process.map(p -> {
+                        final Map<String, Object> rowValues = p.row.values();
+                        final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                                .map(String::valueOf) //
+                                .limit(dataSet.getColumns().size()) // TODO Temp!
+                                .collect(Collectors.<String>toList());
+                        qualityAnalyzer.analyze(strings.toArray(new String[strings.size()]));
+                        return p;
+                    });
+                }
+                // Write transformed records to stream
                 process.forEach(row -> writeRow(writer, row.row));
+                // Debug information about quality analysis
+                if (LOGGER.isDebugEnabled()) {
+                    StringBuilder builder = new StringBuilder();
+                    final List<ValueQuality> result = qualityAnalyzer.getResult();
+                    for (int i = 0; i < result.size(); i++) {
+                        builder.append("Quality #").append(i).append(": ").append(result.get(i));
+                    }
+                    LOGGER.debug(builder.toString());
+                }
             } else {
                 if (referenceAction == null) {
                     throw new IllegalStateException("No old action to perform for preview.");
