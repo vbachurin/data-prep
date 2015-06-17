@@ -1,13 +1,14 @@
 (function() {
     'use strict';
 
-    function ExportCtrl($window,PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService) {
+    function ExportCtrl($window,PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService,$translate) {
         var vm = this;
         vm.exportUrl = RestURLs.exportUrl;
         vm.preparationService = PreparationService;
         vm.recipeService = RecipeService;
         vm.playgroundService = PlaygroundService;
         vm.exportService = ExportService;
+        vm.translateService = $translate;
         vm.csvSeparator = ';';
         vm.exportTypes = [];
 

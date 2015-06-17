@@ -13,8 +13,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = ExportType.ExportTypeSerializer.class)
 public enum ExportType {
     // take care when declaring new export type as only one can be default :-)
-    CSV("text/csv", ".csv", true, false, Arrays.asList(new Parameter("csvSeparator", "CHOOSE_SEPARATOR", ";", "radio", //
-            Arrays.asList("\09", " ", ",")))),
+    CSV("text/csv", ".csv", true, false, Arrays.asList(new Parameter("csvSeparator", "CHOOSE_SEPARATOR", "radio",
+            new ParameterValue(";", "SEPARATOR_SEMI_COLON"), //
+            Arrays.asList(new ParameterValue("&#09;", "SEPARATOR_TAB"), //
+                    new ParameterValue(" ", "SEPARATOR_SPACE"), //
+                    new ParameterValue(",", "SEPARATOR_COMMA"))))),
     XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()),
     TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList());
 
@@ -81,19 +84,19 @@ public enum ExportType {
         /**
          * the default value for the parameter must not be in values
          */
-        private final String defaultValue;
+        private final ParameterValue defaultValue;
 
         /**
          * all possible values for the parameter
          */
-        private final List<String> values;
+        private final List<ParameterValue> values;
 
         /**
          * html type (input type: radio, text)
          */
         private final String type;
 
-        public Parameter(String name, String labelKey, String defaultValue, String type, List<String> values) {
+        public Parameter(String name, String labelKey, String type, ParameterValue defaultValue, List<ParameterValue> values) {
             this.name = name;
             this.labelKey = labelKey;
             this.defaultValue = defaultValue;
@@ -109,16 +112,36 @@ public enum ExportType {
             return labelKey;
         }
 
-        public String getDefaultValue() {
+        public ParameterValue getDefaultValue() {
             return defaultValue;
         }
 
-        public List<String> getValues() {
+        public List<ParameterValue> getValues() {
             return values;
         }
 
         public String getType() {
             return type;
+        }
+    }
+
+    private static class ParameterValue {
+
+        private final String value;
+
+        private final String labelKey;
+
+        public ParameterValue(String value, String labelKey) {
+            this.value = value;
+            this.labelKey = labelKey;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getLabelKey() {
+            return labelKey;
         }
     }
 
@@ -141,17 +164,27 @@ public enum ExportType {
                     jgen.writeStartObject();
                     jgen.writeStringField("name", parameter.getName());
                     jgen.writeStringField("labelKey", parameter.getLabelKey());
-                    jgen.writeStringField("defaultValue", parameter.getDefaultValue());
+
+                    jgen.writeFieldName("defaultValue");
+                    jgen.writeStartObject();
+                    jgen.writeStringField("value", parameter.getDefaultValue().getValue());
+                    jgen.writeStringField("labelKey", parameter.getDefaultValue().getLabelKey());
+
+                    jgen.writeEndObject();
 
                     if (!parameter.getValues().isEmpty()) {
                         jgen.writeFieldName("values");
                         jgen.writeStartArray(parameter.getValues().size());
-                        for (String s : parameter.getValues()) {
-                            jgen.writeString(s);
+                        for (ParameterValue parameterValue : parameter.getValues()) {
+                            jgen.writeStartObject();
+                            jgen.writeStringField("value", parameterValue.getValue());
+                            jgen.writeStringField("labelKey", parameterValue.getLabelKey());
+
+                            jgen.writeEndObject();
                         }
 
                         jgen.writeEndArray();
-                        ;
+
                     }
 
                     jgen.writeEndObject();

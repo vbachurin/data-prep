@@ -12,10 +12,13 @@
               state="exportCtrl.showExport"
               close-button="true">
 
-    <p>{{ exportCtrl.currentExportType.id }}</p>
-
     <div ng-repeat="parameter in exportCtrl.currentExportType.parameters">
-      <p>{{ parameter.name }}</p>
+      <p>{{::parameter.labelKey}}</p>
+      <p>{{::parameter.name}}</p>
+      <div ng-if="parameter.type == radio">
+        <input ng-model="exportCtrl[parameter.name]" type="radio" value="{{::parameter.defaultValue}}"/>({{::parameter.defaultValue}})
+        <input ng-repeat="parameterValue in parameter.values" ng-model="exportCtrl[parameter.name]" type="radio" value="{{::parameterValue}}">({{::parameterValue}})
+      </div>
     </div>
 
     <p>{{ ::'CHOOSE_SEPARATOR' | translate }}</p>
