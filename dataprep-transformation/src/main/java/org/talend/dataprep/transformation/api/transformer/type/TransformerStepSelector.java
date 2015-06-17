@@ -10,22 +10,25 @@ import org.talend.dataprep.transformation.api.transformer.input.TransformerConfi
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 /**
- * Delegate to the correct transformer depending on the input content : {@link ColumnsTypeTransformer} for the columns
- * header. {@link RecordsTypeTransformer} for the records header.
+ * Delegate to the correct transformer depending on the input content : {@link ColumnsTransformerStep} for the columns
+ * header. {@link RecordsTransformerStep} for the records header.
  */
 @Component
-public class TypeTransformerSelector implements TypeTransformer {
+public class TransformerStepSelector implements TransformerStep {
 
     /** The columns transformer that transforms RowMetadata. */
     @Autowired
-    private ColumnsTypeTransformer columnsTransformer;
+    private ColumnsTransformerStep columnsTransformer;
+
+    @Autowired
+    private ColumnWriteStep columnWriteStep;
 
     /** The records transformer that works on dataset rows. */
     @Autowired
-    private RecordsTypeTransformer recordsTransformer;
+    private RecordsTransformerStep recordsTransformer;
 
     /**
-     * @see TypeTransformer#process(TransformerConfiguration)
+     * @see TransformerStep#process(TransformerConfiguration)
      */
     @Override
     public void process(final TransformerConfiguration configuration) {
@@ -33,10 +36,14 @@ public class TypeTransformerSelector implements TypeTransformer {
             final TransformerWriter writer = configuration.getOutput();
             writer.startObject();
             {
-                writer.fieldName("columns");
                 columnsTransformer.process(configuration);
-                writer.fieldName("records");
-                recordsTransformer.process(configuration);
+                if (writer.requireMetadataForHeader()) {
+                    columnWriteStep.process(configuration);
+                    recordsTransformer.process(configuration);
+                } else {
+                    recordsTransformer.process(configuration);
+                    columnWriteStep.process(configuration);
+                }
             }
             writer.endObject();
             writer.flush();

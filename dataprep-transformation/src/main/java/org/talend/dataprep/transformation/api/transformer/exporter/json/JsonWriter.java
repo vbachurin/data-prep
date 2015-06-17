@@ -79,4 +79,9 @@ public class JsonWriter implements TransformerWriter {
     public void flush() throws IOException {
         generator.flush();
     }
+
+    @Override
+    public boolean requireMetadataForHeader() {
+        return false;
+    }
 }

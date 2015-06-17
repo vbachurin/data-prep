@@ -14,7 +14,7 @@ import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.exporter.Exporter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
-import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
+import org.talend.dataprep.transformation.api.transformer.type.TransformerStepSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 @Component("transformer#tableau")
@@ -26,7 +26,7 @@ public class TableauExporter implements Transformer, Exporter {
     private final ExportConfiguration exportConfiguration;
 
     @Autowired
-    private TypeTransformerSelector typeStateSelector;
+    private TransformerStepSelector typeStateSelector;
 
     public TableauExporter(final ParsedActions actions, final ExportConfiguration configuration) {
         this.actions = actions;

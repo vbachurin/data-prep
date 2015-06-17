@@ -38,10 +38,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-public class TypeTransformerSelectorTest {
+public class TransformerStepSelectorTest {
 
     @Autowired
-    private TypeTransformerSelector transformer;
+    private TransformerStepSelector transformer;
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
@@ -88,8 +88,8 @@ public class TypeTransformerSelectorTest {
     @Test
     public void process_should_transform_records() throws Exception {
         // given
-        final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("nominal.json");
-        final String expectedContent = IOUtils.toString(TypeTransformerSelectorTest.class
+        final InputStream inputStream = TransformerStepSelectorTest.class.getResourceAsStream("nominal.json");
+        final String expectedContent = IOUtils.toString(TransformerStepSelectorTest.class
                 .getResourceAsStream("nominal_result.json"));
 
         final ObjectMapper mapper = builder.build();
@@ -116,7 +116,7 @@ public class TypeTransformerSelectorTest {
     @Test
     public void process_should_throw_exception_when_json_not_valid() throws Exception {
         // given
-        final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("not_valid_object.json");
+        final InputStream inputStream = TransformerStepSelectorTest.class.getResourceAsStream("not_valid_object.json");
 
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
@@ -136,7 +136,7 @@ public class TypeTransformerSelectorTest {
     @Test
     public void process_should_throw_exception_when_column_json_is_not_valid() throws Exception {
         // given
-        final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("not_valid_col.json");
+        final InputStream inputStream = TransformerStepSelectorTest.class.getResourceAsStream("not_valid_col.json");
 
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
@@ -156,7 +156,7 @@ public class TypeTransformerSelectorTest {
     @Test
     public void process_should_throw_exception_when_record_json_is_not_valid() throws Exception {
         // given
-        final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("not_valid_record.json");
+        final InputStream inputStream = TransformerStepSelectorTest.class.getResourceAsStream("not_valid_record.json");
 
         final ObjectMapper mapper = builder.build();
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
@@ -187,8 +187,8 @@ public class TypeTransformerSelectorTest {
     @Test
     public void process_should_write_preview_for_the_given_indexes() throws Exception {
         // given
-        final InputStream inputStream = TypeTransformerSelectorTest.class.getResourceAsStream("preview.json");
-        final String expectedContent = IOUtils.toString(TypeTransformerSelectorTest.class
+        final InputStream inputStream = TransformerStepSelectorTest.class.getResourceAsStream("preview.json");
+        final String expectedContent = IOUtils.toString(TransformerStepSelectorTest.class
                 .getResourceAsStream("preview_result.json"));
 
         final List<Integer> indexes = new ArrayList<>(3);

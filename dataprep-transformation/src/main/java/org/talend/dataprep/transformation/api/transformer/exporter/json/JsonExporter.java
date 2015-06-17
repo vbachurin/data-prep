@@ -15,7 +15,7 @@ import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
 import org.talend.dataprep.transformation.api.transformer.exporter.Exporter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
-import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
+import org.talend.dataprep.transformation.api.transformer.type.TransformerStepSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 @Component("transformer#json")
@@ -30,7 +30,7 @@ public class JsonExporter implements Transformer, Exporter {
     private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
-    private TypeTransformerSelector typeStateSelector;
+    private TransformerStepSelector typeStateSelector;
 
     public JsonExporter(final ParsedActions actions, final ExportConfiguration configuration) {
         this.actions = actions;

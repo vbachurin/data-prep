@@ -71,7 +71,7 @@
         "valid": 72
       },
       "type": "string"
-    },
+    }
   ],
   "records":[
     {
@@ -92,7 +92,6 @@
       "id":"2",
       "lastname":"JEFFERSON",
       "nbCommands":"13",
-      "registration":"25-08-2008",
       "state":"TN"
     }
   ]

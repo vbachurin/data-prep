@@ -13,7 +13,7 @@ import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.json.JsonWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
-import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
+import org.talend.dataprep.transformation.api.transformer.type.TransformerStepSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 /**
@@ -29,7 +29,7 @@ class SimpleTransformer implements Transformer {
 
     /** The transformer selector that selects which transformer to use depending on the input content. */
     @Autowired
-    private TypeTransformerSelector typeStateSelector;
+    private TransformerStepSelector typeStateSelector;
 
     /** The parsed actions ready to be applied to a dataset. */
     private final ParsedActions actions;

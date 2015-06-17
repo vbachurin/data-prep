@@ -29,12 +29,12 @@ import org.talend.datascience.common.inference.type.DataType;
  * Transforms dataset rows.
  */
 @Component
-public class RecordsTypeTransformer implements TypeTransformer {
+public class RecordsTransformerStep implements TransformerStep {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(RecordsTypeTransformer.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(RecordsTransformerStep.class);
 
     /**
-     * @see TypeTransformer#process(TransformerConfiguration)
+     * @see TransformerStep#process(TransformerConfiguration)
      */
     @Override
     public void process(final TransformerConfiguration configuration) {
@@ -56,6 +56,7 @@ public class RecordsTypeTransformer implements TypeTransformer {
 
         Stream<DataSetRow> records = dataSet.getRecords();
         try {
+            writer.fieldName("records");
             writer.startArray();
             AtomicInteger index = new AtomicInteger(0);
             if (!configuration.isPreview()) {
@@ -72,14 +73,13 @@ public class RecordsTypeTransformer implements TypeTransformer {
                     process = process.filter(p -> indexes.contains(p.index));
                 }
                 // Configure quality analysis (if column metadata information is present in stream).
-                final DataType.Type[] types = TypeUtils.convert(dataSet.getColumns());
+                final DataType.Type[] types = TypeUtils.convert(context.getTransformedRowMetadata().getColumns());
                 ValueQualityAnalyzer qualityAnalyzer = new ValueQualityAnalyzer(types);
                 if (types.length > 0) {
                     process = process.map(p -> {
                         final Map<String, Object> rowValues = p.row.values();
                         final List<String> strings = stream(rowValues.values().spliterator(), false) //
                                 .map(String::valueOf) //
-                                .limit(dataSet.getColumns().size()) // TODO Temp!
                                 .collect(Collectors.<String>toList());
                         qualityAnalyzer.analyze(strings.toArray(new String[strings.size()]));
                         return p;

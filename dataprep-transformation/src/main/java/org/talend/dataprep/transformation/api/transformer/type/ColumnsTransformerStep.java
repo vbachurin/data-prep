@@ -1,6 +1,5 @@
 package org.talend.dataprep.transformation.api.transformer.type;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -9,8 +8,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 
@@ -18,14 +15,14 @@ import org.talend.dataprep.transformation.api.transformer.input.TransformerConfi
  * Transformer that works on RowMetadata.
  */
 @Component
-public class ColumnsTypeTransformer implements TypeTransformer {
+public class ColumnsTransformerStep implements TransformerStep {
 
     /** The data-prep ready json module. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
     /**
-     * @see TypeTransformer#process(TransformerConfiguration)
+     * @see TransformerStep#process(TransformerConfiguration)
      */
     @Override
     public void process(final TransformerConfiguration configuration) {
@@ -46,12 +43,6 @@ public class ColumnsTypeTransformer implements TypeTransformer {
                 rowMetadata.diff(reference);
                 referenceContext.setTransformedRowMetadata(reference);
             }
-        }
-        // write the result
-        try {
-            configuration.getOutput().write(rowMetadata);
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
         }
         // store the row metadata in the configuration for RecordsTypeTransformer use
         context.setTransformedRowMetadata(rowMetadata);

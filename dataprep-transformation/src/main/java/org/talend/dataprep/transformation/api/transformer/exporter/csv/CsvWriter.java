@@ -66,4 +66,9 @@ public class CsvWriter implements TransformerWriter {
     public void flush() throws IOException {
         writer.flush();
     }
+
+    @Override
+    public boolean requireMetadataForHeader() {
+        return true;
+    }
 }
