@@ -1,4 +1,4 @@
-describe('Recipe Bullet controller', function() {
+describe('Recipe Bullet service', function() {
 	'use strict';
 
 	var createController, scope;

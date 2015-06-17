@@ -17,7 +17,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'number'
+                'type': 'number',
+                'domain': 'STATE_CODE_'
             },
             {
                 'id': '0001',
@@ -27,7 +28,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'string'
+                'type': 'string',
+                'domain': 'STATE_CODE_'
             },
             {
                 'id': '0002',
@@ -37,7 +39,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'string'
+                'type': 'string',
+                'domain': 'STATE_CODE_'
             },
             {
                 'id': '0003', 
@@ -47,7 +50,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'string'
+                'type': 'string',
+                'domain': 'STATE_CODE_'
             },
             {
                 'id': '0004', 
@@ -57,7 +61,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'string'
+                'type': 'string',
+                'domain': 'STATE_CODE_'
             }
         ],
         'records': [
@@ -478,7 +483,7 @@ describe('Datagrid directive', function () {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function ($rootScope, $compile, $timeout, DatagridService) {
+    beforeEach(inject(function ($rootScope, $compile, $timeout, DatagridService, StatisticsService) {
         scope = $rootScope.$new();
         element = angular.element('<datagrid></datagrid>');
         $compile(element)(scope);
@@ -486,7 +491,8 @@ describe('Datagrid directive', function () {
         scope.$digest();
 
         angular.element('body').append(element);
-        spyOn(DatagridService, 'setSelectedColumn').and.returnValue(null);
+        spyOn(DatagridService, 'setSelectedColumn').and.returnValue();
+        spyOn(StatisticsService, 'processVisuData').and.returnValue();
     }));
 
     afterEach(inject(function ($window) {
@@ -590,6 +596,23 @@ describe('Datagrid directive', function () {
 
         //then
         expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0002');
+    }));
+
+    it('should trigger chart rendering according to the column domain', inject(function ($timeout, DatagridService, StatisticsService) {
+        //given
+        var colIndex = 2;
+
+        DatagridService.setDataset(metadata, data);
+        scope.$digest();
+
+        //when
+        var grid = new GridGetter(element);
+        grid.row(0).cell(colIndex).element().click();
+        scope.$digest();
+        $timeout.flush();
+
+        //then
+        expect(StatisticsService.processVisuData).toHaveBeenCalledWith(data.columns[colIndex]);
     }));
 
     it('should highlight empty cells only', inject(function (DatagridService) {

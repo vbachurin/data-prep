@@ -19,7 +19,8 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService, ConverterService) {
+    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService, StatisticsService, ConverterService) {
+
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -145,7 +146,8 @@
                         field: col.id,
                         name: template,
                         formatter: formatter,
-                        minWidth: 80
+                        minWidth: 80,
+                        tdpColMetadata: col
                     };
                     return colItem;
                 };
@@ -209,6 +211,7 @@
                 var updateColSelection = function (column) {
                     $timeout(function() {
                         DatagridService.setSelectedColumn(column.id);
+                        StatisticsService.processVisuData(column.tdpColMetadata);
                     });
                 };
 
