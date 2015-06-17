@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,11 +71,6 @@ public class DataPreparationAPITest {
         environment.getPropertySources().addFirst(connectionInformation);
     }
 
-    @BeforeClass
-    public static void startBootApp() {
-
-    }
-
     @org.junit.After
     public void tearDown() {
         dataSetMetadataRepository.clear();
@@ -111,7 +105,7 @@ public class DataPreparationAPITest {
                 .asString();
 
         // then
-        assertThat(expectedContent, sameJSONAs(transformed));
+        assertThat(transformed, sameJSONAs(expectedContent));
     }
 
     @Test
