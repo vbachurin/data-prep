@@ -293,6 +293,28 @@ describe('DatasetColumnHeader controller', function () {
             //then
             expect(FilterService.addFilter).toHaveBeenCalledWith('invalid_records', col.id, col.name, {values: col.quality.invalidValues});
         }));
+
+        it('should set filter on empty records', inject(function(FilterService) {
+
+            //given
+            var ctrl = createController();
+            var col = {
+                'id': '0001',
+                'name': 'age',
+                'quality': {
+                    'empty': 10,
+                    'invalid': 0,
+                    'valid': 90
+                },
+                'type': 'integer'
+            };
+
+            //when
+            ctrl.filterEmptyRecords(col);
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalledWith('empty_records', col.id, col.name, {});
+        }));
     });
 
 });

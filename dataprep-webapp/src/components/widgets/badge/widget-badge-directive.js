@@ -37,7 +37,8 @@
                 onChange: '&',
                 text: '@',
                 obj: '=',
-                editable: '='
+                editable: '=',
+                type :'='
             },
             bindToController: true,
             controllerAs: 'badgeCtrl',

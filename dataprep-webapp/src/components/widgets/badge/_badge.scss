@@ -4,7 +4,11 @@ $alert-color: #fff6bf !default;
 $error-color: #fbe3e4 !default;
 $success-color: #e6efc2 !default;
 
-@mixin badge($color: $dark-blue) {
+$custom-color: $dark-blue;
+$empty-color: $white;
+$invalid-color: rgb(247, 168, 0);
+
+@mixin badge($color: $custom-color) {
   background-color: $color;
   font-family: $base-font-family;
   border-radius: 3px;
@@ -17,38 +21,63 @@ $success-color: #e6efc2 !default;
   border: 2px solid $white;
 }
 
+@mixin badge-description() {
+  font-weight: 500;
+}
+
 .badge {
   @include badge;
 }
 
+
 .badge-notice {
 
-  &.read-only {
-    @include badge($orange);
+  &.invalid {
+    @include badge($invalid-color);
 
     .description {
-      font-weight: 500;
+      @include badge-description;
+    }
+
+    .badge-close {
+      color: $white;
+    }
+
+}
+
+  &.empty {
+
+    @include badge($empty-color);
+    color: $black;
+    border: 2px solid #8C8C8C;
+
+    .description {
+      @include badge-description;
+    }
+
+    .badge-close {
+      color: $black;
     }
 
   }
 
-  &.editable {
-    @include badge($dark-blue);
+  &.custom {
+    @include badge($custom-color);
+
+    .badge-close {
+      color: $white;
+    }
+
   }
 }
 
 
-
 .badge-close {
   cursor: pointer;
-  background-image: url('/assets/images/small_close.png');
-  background-color: transparent;
   background-repeat: no-repeat;
-  height: 9px;
   width: 9px;
-  color: transparent;
-  &:active {
-  }
+  font-size: large;
+  font-weight: bolder;
 }
 
 .badge-item {

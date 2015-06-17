@@ -118,6 +118,17 @@
             FilterService.addFilter('invalid_records', column.id, column.name, {values: column.quality.invalidValues});
         };
 
+        /**
+         * @ngdoc method
+         * @name filterEmptyRecords
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description Create a filter for empty records on the given column.
+         * @param {object} column - the column to filter
+         */
+        vm.filterEmptyRecords = function(column) {
+            FilterService.addFilter('empty_records', column.id, column.name, {});
+        };
+
         setColumnSimplifiedType();
     }
 

@@ -150,4 +150,27 @@ describe('Filter service', function() {
         expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
     }));
 
+    it('should add "empty records" filter and add datagrid filter', inject(function(FilterService, DatagridService) {
+        //given
+        expect(FilterService.filters.length).toBe(0);
+
+        //when
+        FilterService.addFilter('empty_records', 'col1', 'column name', {});
+
+        //then
+        expect(FilterService.filters.length).toBe(1);
+
+        var filterInfo = FilterService.filters[0];
+        expect(filterInfo.type).toBe('empty_records');
+        expect(filterInfo.colId).toBe('col1');
+        expect(filterInfo.colName).toBe('column name');
+        expect(filterInfo.value).toBe('empty records');
+        expect(filterInfo.editable).toBe(false);
+        expect(filterInfo.args).toEqual({});
+        expect(filterInfo.filterFn({col1: ''})).toBeTruthy();
+        expect(filterInfo.filterFn({col1: ' tata est ici'})).toBeFalsy();
+
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
+    }));
+
 });
