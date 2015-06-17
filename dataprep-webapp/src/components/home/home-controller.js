@@ -9,7 +9,7 @@
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires talend.widget.service:TalendConfirmService
      */
-    function HomeCtrl(MessageService, DatasetService, TalendConfirmService) {
+    function HomeCtrl($rootScope, MessageService, DatasetService, TalendConfirmService) {
         var vm = this;
 
         /**
@@ -132,9 +132,9 @@
                 .progress(function(event) {
                     dataset.progress = parseInt(100.0 * event.loaded / event.total);
                 })
-                .then(function() {
+                .then(function(event) {
                     vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
-                    MessageService.success('DATASET_CREATE_SUCCESS_TITLE', 'DATASET_CREATE_SUCCESS', {dataset: dataset.name});
+                    $rootScope.$emit('talend.dataset.open', event.data);
                 })
                 .catch(function() {
                     dataset.error = true;

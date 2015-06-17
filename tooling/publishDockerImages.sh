@@ -37,7 +37,8 @@ do
 done
 list+=$registry'/talend/dataprep-data:'$version' mongo:latest'
 
-tar_archive='dataprep-images_'$version'.tar'
+timestamp=`date +%Y%m%d%H%M%S`
+tar_archive='dataprep-images_'$version'_'$timestamp'.tar'
 docker pull $registry'/talend/dataprep-data:'$version
 docker pull mongo:latest
 echo 'docker save to '$tar_archive
@@ -63,7 +64,6 @@ quote USER $FTP_USER
 quote PASS $FTP_PASSWD
 passive
 cd dataprep/builds
-delete $tar_archive.md5sum
 put $tar_archive
 put $tar_archive.md5sum
 quit

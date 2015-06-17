@@ -13,9 +13,10 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:MessageService
+     * @requires data-prep.services.statistics:StatisticsService
      */
     function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService,
-                               TransformationCacheService, ColumnSuggestionService, PreparationService, MessageService) {
+                               TransformationCacheService, ColumnSuggestionService, PreparationService, MessageService, StatisticsService) {
         var self = this;
 
         /**
@@ -81,6 +82,7 @@
 
             FilterService.removeAllFilters();
             RecipeService.refresh();
+            StatisticsService.resetCharts();
             DatagridService.setDataset(dataset, data);
             TransformationCacheService.invalidateCache();
             ColumnSuggestionService.reset();
