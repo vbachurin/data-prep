@@ -63,19 +63,25 @@ public class RecordsTypeTransformer implements TypeTransformer {
                 if (referenceAction == null) {
                     throw new IllegalStateException("No old action to perform for preview.");
                 }
-                TransformationContext referenceContext = configuration.isPreview() ? configuration.getTransformationContext(0) : null;
+                TransformationContext referenceContext = configuration.getTransformationContext(0);
+                final AtomicInteger resultIndexShift = new AtomicInteger();
                 // With preview (no 'old row' and 'new row' to compare when writing results).
-                Stream<Processing[]> process = records.map(row -> new Processing(row, index.getAndIncrement())) //
+                Stream<Processing[]> process = records.map(row -> new Processing(row, index.getAndIncrement() - resultIndexShift.get())) //
                         .map(p -> new Processing[]{new Processing(p.row.clone(), p.index), p}) //
                         .map(p -> {
                             referenceAction.accept(p[0].row, referenceContext);
+                            if (p[0].row.isDeleted()) {
+                                resultIndexShift.incrementAndGet();
+                            }
                             action.accept(p[1].row, context);
                             return p;
-                        }) //
-                        .skip(minIndex) //
-                        .limit(maxIndex);
+                        }); //
                 if (indexes != null) {
-                    process = process.filter(p -> indexes.contains(p[1].index) || (p[0].row.isDeleted() && !p[1].row.isDeleted()));
+                    process = process.filter(p -> {
+                        final boolean inRange = p[1].index >= minIndex && p[1].index <= maxIndex;
+                        final boolean include = indexes.contains(p[1].index) || (p[0].row.isDeleted() && !p[1].row.isDeleted());
+                        return inRange && include;
+                    });
                 }
                 process.forEach(p -> {
                     p[1].row.diff(p[0].row);
