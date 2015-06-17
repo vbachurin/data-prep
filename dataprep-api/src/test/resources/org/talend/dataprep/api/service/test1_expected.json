@@ -1,5 +1,84 @@
 {
-  "columns": [],
+  "columns": [
+    {
+      "name": "id",
+      "headerSize": 0,
+      "type": "integer",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0000",
+      "statistics": {},
+      "domain": ""
+    },
+    {
+      "name": "firstname",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0001",
+      "statistics": {},
+      "domain": ""
+    },
+    {
+      "name": "lastname",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0002",
+      "statistics": {},
+      "domain": ""
+    },
+    {
+      "name": "age",
+      "headerSize": 0,
+      "type": "integer",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0003",
+      "statistics": {},
+      "domain": ""
+    },
+    {
+      "name": "date-of-birth",
+      "headerSize": 0,
+      "type": "date",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0004",
+      "statistics": {},
+      "domain": "DATE"
+    },
+    {
+      "name": "alive",
+      "headerSize": 0,
+      "type": "boolean",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0005",
+      "statistics": {},
+      "domain": ""
+    }
+  ],
   "records": [
     {
       "0000": "1",
