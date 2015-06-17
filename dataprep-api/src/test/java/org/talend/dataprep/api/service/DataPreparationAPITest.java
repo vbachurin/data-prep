@@ -105,7 +105,7 @@ public class DataPreparationAPITest {
                 .asString();
 
         // then
-        assertThat(transformed, sameJSONAs(expectedContent));
+        assertThat(transformed, sameJSONAs(expectedContent).allowingExtraUnexpectedFields());
     }
 
     @Test
