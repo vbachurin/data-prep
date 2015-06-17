@@ -22,8 +22,22 @@ $success-color: #e6efc2 !default;
 }
 
 .badge-notice {
-  @include badge($dark-blue);
+
+  &.read-only {
+    @include badge($orange);
+
+    .description {
+      font-weight: 500;
+    }
+
+  }
+
+  &.editable {
+    @include badge($dark-blue);
+  }
 }
+
+
 
 .badge-close {
   cursor: pointer;

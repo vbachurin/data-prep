@@ -61,8 +61,9 @@
         <div class="dropdown-container">
             <div class="dropdown-action"></div>
             <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{
-                    datagridHeaderCtrl.column.name | uppercase }}</a></li>
+                <li role="presentation" ng-click="datagridHeaderCtrl.filterInvalidRecords(datagridHeaderCtrl.column)">
+                    <a role="menuitem">Select Invalid Records for {{datagridHeaderCtrl.column.name | uppercase }}</a>
+                </li>
                 <li class="divider"></li>
                 <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Top adjacent value</a></li>
                 <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Bottom adjacent value</a></li>

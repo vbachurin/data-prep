@@ -1,8 +1,11 @@
-<span class="badge-notice">
+<span class="badge-notice" ng-class="badgeCtrl.editable === true ? 'editable' : 'read-only'">
     <span class="badge-item text">{{badgeCtrl.text}}</span>
     <span ng-if="badgeCtrl.obj.value">
         <span class="badge-item"> : </span>
-        <span class="badge-item"><input class="editable-input" type="text" ng-model="badgeCtrl.value" /></span>
+        <span class="badge-item">
+            <input ng-if="badgeCtrl.editable === true" class="editable-input" type="text" ng-model="badgeCtrl.value"/>
+            <span class="description" ng-if="badgeCtrl.editable === false">{{badgeCtrl.value}}</span>
+        </span>
     </span>
 
     <a class="badge-close badge-item" ng-click="badgeCtrl.close()">&times;</a>
