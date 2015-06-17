@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -77,10 +75,10 @@ class DiffTransformer implements Transformer {
             final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
                     .indexes(indexes)
                     .preview(true)
-                    .actions(DataSetRow.class, previousAction.getRowTransformer())
-                    .actions(DataSetRow.class, newAction.getRowTransformer())
-                    .actions(RowMetadata.class, previousAction.getMetadataTransformer())
-                    .actions(RowMetadata.class, newAction.getMetadataTransformer())
+                    .recordActions(previousAction.getRowTransformer())
+                    .recordActions(newAction.getRowTransformer())
+                    .columnActions(previousAction.getMetadataTransformer())
+                    .columnActions(newAction.getMetadataTransformer())
                     .build();
             //@formatter:on
 

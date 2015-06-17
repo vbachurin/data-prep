@@ -3,7 +3,7 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 
@@ -13,6 +13,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -54,7 +55,7 @@ public class Split extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "columns"; //$NON-NLS-1$
+        return ActionCategory.COLUMNS.getDisplayName();
     }
 
     @Override
@@ -67,6 +68,7 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#getItems()@return
      */
     @Override
+    @Nonnull
     public Item[] getItems() {
         Value[] values = new Value[] { //
         new Value(":", true), //
@@ -99,12 +101,13 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+
         String columnName = parameters.get(COLUMN_ID);
         String realSeparator = getSeparator(parameters);
         int limit = Integer.parseInt(parameters.get(LIMIT));
 
-        return row -> {
+        return (row, context) -> {
             String originalValue = row.get(columnName);
             if (originalValue != null) {
                 String[] split = originalValue.split(realSeparator, limit);
@@ -122,9 +125,9 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
+    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
 
-        return rowMetadata -> {
+        return (rowMetadata, context) -> {
 
             String columnId = parameters.get(COLUMN_ID);
 

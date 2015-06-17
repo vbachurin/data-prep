@@ -6,7 +6,7 @@ $subheader-background: $light-gray;
   background-color: $subheader-background;
   border-bottom: 1px solid $light-gray;
   box-shadow: $box-shadow;
-  z-index: 10;
+  z-index: 20;
   
   .subheader-wrapper {
     @include outer-container;

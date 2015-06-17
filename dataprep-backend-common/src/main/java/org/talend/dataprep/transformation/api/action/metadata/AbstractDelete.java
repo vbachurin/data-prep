@@ -1,9 +1,10 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Abstract class used as base class for delete actions.
@@ -15,15 +16,15 @@ public abstract class AbstractDelete extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "cleansing"; //$NON-NLS-1$
+        return ActionCategory.CLEANSING.getDisplayName();
     }
 
     /**
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+        return (row, context) -> {
             String columnId = parameters.get(COLUMN_ID);
             String value = row.get(columnId);
             if (toDelete(parameters, value)) {

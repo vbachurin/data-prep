@@ -17,7 +17,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'number'
+                'type': 'number',
+                'domain': 'STATE_CODE_'
             },
             {
                 'id': '0001',
@@ -27,7 +28,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'string'
+                'type': 'string',
+                'domain': 'STATE_CODE_'
             },
             {
                 'id': '0002',
@@ -37,7 +39,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'string'
+                'type': 'string',
+                'domain': 'STATE_CODE_'
             },
             {
                 'id': '0003', 
@@ -47,7 +50,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'string'
+                'type': 'string',
+                'domain': 'STATE_CODE_'
             },
             {
                 'id': '0004', 
@@ -57,7 +61,8 @@ describe('Datagrid directive', function () {
                     'invalid': 10,
                     'valid': 72
                 },
-                'type': 'string'
+                'type': 'string',
+                'domain': 'STATE_CODE_'
             }
         ],
         'records': [
@@ -418,6 +423,15 @@ describe('Datagrid directive', function () {
                     'valid': 72
                 },
                 'type': 'string'
+            },
+            {
+                'id': 'col5',
+                'quality': {
+                    'empty': 5,
+                    'invalid': 10,
+                    'valid': 72
+                },
+                'type': 'string'
             }
         ],
         'records': [
@@ -469,7 +483,7 @@ describe('Datagrid directive', function () {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function ($rootScope, $compile, $timeout, DatagridService) {
+    beforeEach(inject(function ($rootScope, $compile, $timeout, DatagridService, StatisticsService) {
         scope = $rootScope.$new();
         element = angular.element('<datagrid></datagrid>');
         $compile(element)(scope);
@@ -477,12 +491,14 @@ describe('Datagrid directive', function () {
         scope.$digest();
 
         angular.element('body').append(element);
-        spyOn(DatagridService, 'setSelectedColumn').and.returnValue(null);
+        spyOn(DatagridService, 'setSelectedColumn').and.returnValue();
+        spyOn(StatisticsService, 'processVisuData').and.returnValue();
     }));
 
-    afterEach(function () {
+    afterEach(inject(function ($window) {
         element.remove();
-    });
+        $window.localStorage.removeItem('col_size_12ce6c32-bf80-41c8-92e5-66d70f22ec1f');
+    }));
 
     it('should render dataset values', inject(function (DatagridService) {
         //when
@@ -580,6 +596,23 @@ describe('Datagrid directive', function () {
 
         //then
         expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0002');
+    }));
+
+    it('should trigger chart rendering according to the column domain', inject(function ($timeout, DatagridService, StatisticsService) {
+        //given
+        var colIndex = 2;
+
+        DatagridService.setDataset(metadata, data);
+        scope.$digest();
+
+        //when
+        var grid = new GridGetter(element);
+        grid.row(0).cell(colIndex).element().click();
+        scope.$digest();
+        $timeout.flush();
+
+        //then
+        expect(StatisticsService.processVisuData).toHaveBeenCalledWith(data.columns[colIndex]);
     }));
 
     it('should highlight empty cells only', inject(function (DatagridService) {
@@ -778,6 +811,7 @@ describe('Datagrid directive', function () {
         scope.$digest();
 
         //then
+        //ROW 0
         var grid = new GridGetter(element);
         //'AL'
         expect(grid.row(0).cell(0).element().find('> span').length).toBe(0);
@@ -800,6 +834,9 @@ describe('Datagrid directive', function () {
         expect(grid.row(0).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(0).cell(3).element().find('> span').eq(1).text()).toBe(' ');
         expect(getDirectText(grid.row(0).cell(3).element())).toBe('AL');
+
+
+        //ROW 1
         //'  AL'
         expect(grid.row(1).cell(0).element().find('> span').length).toBe(1);
         expect(grid.row(1).cell(0).element().find('> span').eq(0).hasClass('hiddenChars')).toBe(true);
@@ -824,5 +861,17 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(3).element().find('> span').eq(1).hasClass('hiddenChars')).toBe(true);
         expect(grid.row(1).cell(3).element().find('> span').eq(1).text()).toBe('\n');
         expect(getDirectText(grid.row(1).cell(3).element())).toBe('AL');
+    }));
+
+    it('should save columns sizes in local storage', inject(function ($window, DatagridService) {
+        //when
+        DatagridService.setDataset(metadata, updateData);
+        scope.$digest();
+
+        //then
+        var sizes = JSON.parse($window.localStorage.getItem('col_size_12ce6c32-bf80-41c8-92e5-66d70f22ec1f'));
+        expect('0000' in sizes).toBe(true);
+        expect('0001' in sizes).toBe(true);
+        expect('0002' in sizes).toBe(true);
     }));
 });

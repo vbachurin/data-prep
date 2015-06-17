@@ -2,6 +2,7 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.jms.JMSException;
@@ -18,7 +19,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
@@ -121,37 +125,27 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
                     generator.writeEndObject();
                     generator.flush();
                     // Compute statistics
-                    int topKfreqTable = 5;
-                    String binsOrBuckets = "2"; //$NON-NLS-1$
+                    int topKfreqTable = 15;
+                    String binsOrBuckets = "8"; //$NON-NLS-1$
                     statisticsClient.setSchema(schema.toString());
                     String jsonResult = statisticsClient.doStatisticsInMemory(content.toString(), topKfreqTable,
                             binsOrBuckets);
                     LOGGER.debug("Quality results: {}", jsonResult);
                     // Use result from quality analysis
                     final Iterator<JsonNode> columns = builder.build().readTree(jsonResult).get("column").elements(); //$NON-NLS-1$
-                    final Iterator<ColumnMetadata> schemaColumns = metadata.getRow().getColumns().iterator();
-                    for (; columns.hasNext() && schemaColumns.hasNext();) {
+                    final List<ColumnMetadata> schemaColumns = metadata.getRow().getColumns();
+                    while (columns.hasNext()) {
                         final JsonNode column = columns.next();
-                        final ColumnMetadata schemaColumn = schemaColumns.next();
+                        final int index = column.get("index").asInt();
+                        if (index >= schemaColumns.size()) {
+                            LOGGER.error("No column found at index {}, ignoring result", index);
+                            continue;
+                        }
+                        final ColumnMetadata schemaColumn = schemaColumns.get(index);
                         // Get the statistics from the returned JSON
                         final JsonNode statistics = column.get("statistics"); //$NON-NLS-1$
-                        final int valid = statistics.get("valid").asInt();
-                        final int invalid = statistics.get("invalid").asInt();
-                        final int empty = statistics.get("empty").asInt();
-                        // Set it back to the data prep beans
-                        final Quality quality = schemaColumn.getQuality();
-                        quality.setValid(valid);
-                        quality.setInvalid(invalid);
-                        quality.setEmpty(empty);
                         // Keeps the statistics as returned by statistics library.
                         schemaColumn.setStatistics(statistics.toString());
-                    }
-                    if (columns.hasNext() || schemaColumns.hasNext()) {
-                        // Awkward situation: analysis code and parsed content information did not find same number
-                        // of columns
-                        LOGGER.warn(
-                                "Quality analysis and parsed columns for #{} do not yield same number of columns (content parsed: {} / analysis: {}).",
-                                dataSetId, schemaColumns.hasNext(), columns.hasNext());
                     }
                     metadata.getLifecycle().qualityAnalyzed(true);
                     repository.add(metadata);

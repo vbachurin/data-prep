@@ -1,7 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
@@ -33,7 +34,7 @@ public class Trim extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return "quickfix"; //$NON-NLS-1$
+        return ActionCategory.QUICKFIX.getDisplayName();
     }
 
     /**
@@ -49,8 +50,8 @@ public class Trim extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public Consumer<DataSetRow> create(Map<String, String> parsedParameters) {
-        return row -> {
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parsedParameters) {
+        return (row, context) -> {
             String columnName = parsedParameters.get(COLUMN_ID);
             String value = row.get(columnName);
 

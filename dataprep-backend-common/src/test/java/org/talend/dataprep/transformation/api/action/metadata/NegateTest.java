@@ -6,15 +6,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for Negate action.
@@ -24,7 +21,7 @@ import org.talend.dataprep.api.type.Type;
 public class NegateTest {
 
     /** The row consumer to test. */
-    private Consumer<DataSetRow> consumer;
+    private BiConsumer<DataSetRow, TransformationContext> consumer;
 
     /** The action to test. */
     private Negate action;
@@ -35,11 +32,10 @@ public class NegateTest {
     public NegateTest() throws IOException {
         action = new Negate();
 
-        String actions = IOUtils.toString(CutTest.class.getResourceAsStream("negateAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                NegateTest.class.getResourceAsStream("negateAction.json"));
+
         consumer = action.create(parameters);
     }
 
@@ -56,7 +52,7 @@ public class NegateTest {
         expectedValues.put("entity", "R&D");
         expectedValues.put("active", "False"); // true -> false
 
-        consumer.accept(row);
+        consumer.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -73,7 +69,7 @@ public class NegateTest {
         expectedValues.put("entity", "R&D");
         expectedValues.put("active", "True"); // false -> true
 
-        consumer.accept(row);
+        consumer.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 

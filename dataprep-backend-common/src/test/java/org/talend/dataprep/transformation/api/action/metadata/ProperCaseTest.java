@@ -18,15 +18,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for ProperCase action. Creates one consumer, and test it.
@@ -39,7 +36,7 @@ public class ProperCaseTest {
     private ProperCase action;
 
     /** The consumer out of the action. */
-    private Consumer<DataSetRow> consumer;
+    private BiConsumer<DataSetRow, TransformationContext> consumer;
 
     /**
      * Constructor.
@@ -47,11 +44,10 @@ public class ProperCaseTest {
     public ProperCaseTest() throws IOException {
         action = new ProperCase();
 
-        String actions = IOUtils.toString(ProperCaseTest.class.getResourceAsStream("properCaseAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                ProperCaseTest.class.getResourceAsStream("properCaseAction.json"));
+
         consumer = action.create(parameters);
     }
 
@@ -61,7 +57,7 @@ public class ProperCaseTest {
         values.put("band", "the beatles");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr);
+        consumer.accept(dsr, new TransformationContext());
 
         assertEquals("The Beatles", dsr.get("band"));
     }
@@ -72,7 +68,7 @@ public class ProperCaseTest {
         values.put("band", "THE BEATLES");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr);
+        consumer.accept(dsr, new TransformationContext());
 
         assertEquals("The Beatles", dsr.get("band"));
     }
@@ -83,7 +79,7 @@ public class ProperCaseTest {
         values.put("bando", "the beatles");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr);
+        consumer.accept(dsr, new TransformationContext());
 
         assertEquals("the beatles", dsr.get("bando"));
     }

@@ -33,7 +33,8 @@
                 record: '=',
                 key: '=',
                 position: '=',
-                requestedState: '='
+                requestedState: '=',
+                htmlStr: '='
             },
             bindToController: true,
             controller: 'DatagridTooltipCtrl',

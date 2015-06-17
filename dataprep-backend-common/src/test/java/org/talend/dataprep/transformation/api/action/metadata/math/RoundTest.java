@@ -18,15 +18,13 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
 /**
  * Test class for Round action. Creates one consumer, and test it.
@@ -39,7 +37,7 @@ public class RoundTest {
     private Round roundAction;
 
     /** The consumer out of the consumer. */
-    private Consumer<DataSetRow> consumer;
+    private BiConsumer<DataSetRow, TransformationContext> consumer;
 
     /**
      * Constructor.
@@ -48,11 +46,10 @@ public class RoundTest {
 
         roundAction = new Round();
 
-        String actions = IOUtils.toString(RoundTest.class.getResourceAsStream("roundAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
-        Map<String, String> parameters = roundAction.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                roundAction, //
+                RoundTest.class.getResourceAsStream("roundAction.json"));
+
         consumer = roundAction.create(parameters);
     }
 
@@ -61,7 +58,7 @@ public class RoundTest {
         values.put("aNumber", input);
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr);
+        consumer.accept(dsr, new TransformationContext());
         assertEquals(expected, dsr.get("aNumber"));
     }
 

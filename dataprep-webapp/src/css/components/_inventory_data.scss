@@ -2,7 +2,6 @@
   $width: 240px;
 
   @include slidable-size($width, 0px);
-  box-shadow: $box-shadow-to-left;
 
   .content {
     .content-container {

@@ -44,7 +44,6 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.schema.Separator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,23 +57,20 @@ public class DataSetServiceTests {
 
     @Value("${local.server.port}")
     public int port;
-
     @Autowired
     DataSetMetadataRepository dataSetMetadataRepository;
-
     @Autowired
     JmsTemplate jmsTemplate;
-
     @Autowired
     DataSetContentStore contentStore;
-
     @Autowired(required = false)
     SparkContext sparkContext;
-
     @Autowired
     FormatGuess.Factory factory;
 
+    /** This class" logger. */
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
@@ -143,7 +139,7 @@ public class DataSetServiceTests {
         final DataSetMetadata metadata = metadata().id(id1).name("name1").author("anonymous").created(0)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
 
-        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
+        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(metadata);
 
         String expected = "[{\"id\":\""
@@ -159,7 +155,7 @@ public class DataSetServiceTests {
         String id2 = UUID.randomUUID().toString();
         DataSetMetadata metadata2 = metadata().id(id2).name("name2").author("anonymous").created(0)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
-        metadata2.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
+        metadata2.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(metadata2);
         when().get("/datasets").then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
@@ -196,8 +192,7 @@ public class DataSetServiceTests {
 
         DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
 
-        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER,
-                Character.toString(new Separator().separator));
+        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
         dataSetMetadataRepository.add(dataSetMetadata);
 
         List<String> ids = from(when().get("/datasets").asString()).get("");
@@ -394,7 +389,7 @@ public class DataSetServiceTests {
                 .mediaType("text/csv");
 
         DataSetMetadata metadata = builder.build();
-        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, Character.toString(new Separator().separator));
+        metadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
 
         dataSetMetadataRepository.add(metadata);
         String contentAsString = when().get("/datasets/{id}/metadata", "1234").asString();

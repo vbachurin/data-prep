@@ -2,13 +2,14 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.i18n.MessagesBundle;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -79,8 +80,8 @@ public interface ActionMetadata {
      * @param parameters A key/value map holding all action dependent configuration.
      * @return A closure that accepts a DatasetRow, closures are expected to execute safely.
      */
-    default Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
+    default BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+        return (row, context) -> {
             // default empty implementation
         };
     }
@@ -93,8 +94,8 @@ public interface ActionMetadata {
      * @param parameters the parameters needed to perform the action.
      * @return A closure that accepts the dataset row metadata, closures are expected to execute safely.
      */
-    default Consumer<RowMetadata> createMetadataClosure(Map<String, String> parameters) {
-        return rowMetadata -> {
+    default BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
+        return (rowMetadata, context) -> {
             // default empty implementation
         };
     }

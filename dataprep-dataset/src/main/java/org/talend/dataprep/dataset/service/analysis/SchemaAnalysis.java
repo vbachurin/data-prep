@@ -2,6 +2,7 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import static java.util.stream.StreamSupport.stream;
 
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,11 @@ import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.Analyzers;
+import org.talend.datascience.common.inference.semantic.SemanticAnalyzer;
+import org.talend.datascience.common.inference.semantic.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 import org.talend.datascience.common.inference.type.DataTypeAnalyzer;
 
@@ -51,37 +56,48 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
         try {
             DataSetMetadata metadata = repository.get(dataSetId);
             if (metadata == null) {
-                LOGGER.info("Unable to analyze quality of data set #{}: seems to be removed.", dataSetId);
+                LOGGER.info("Unable to analyze schema of data set #{}: seems to be removed.", dataSetId);
                 return;
             }
-            try {
-                // Schema analysis
-                final List<DataType> columnTypes;
-                try (Stream<DataSetRow> stream = store.stream(metadata)) {
-                    LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
-                    // Determine schema for the content (on the 20 first rows).
-                    Analyzer<DataType> analyzer = new DataTypeAnalyzer();
-                    stream.limit(20).map(row -> {
-                        final Map<String, Object> rowValues = row.values();
-                        final List<String> strings = stream(rowValues.values().spliterator(), false) //
-                                .map(String::valueOf) //
-                                .collect(Collectors.<String> toList());
-                        return strings.toArray(new String[strings.size()]);
-                    }).forEach(analyzer::analyze);
-                    // Find the best suitable type
-                    columnTypes = analyzer.getResult();
-                    final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
-                    columnTypes.forEach(columnResult -> {
-                        final Type type = Type.get(columnResult.getSuggestedType().name());
-                        if (columns.hasNext()) {
-                            final ColumnMetadata nextColumn = columns.next();
-                            LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
-                            nextColumn.setType(type.getName());
-                        } else {
-                            LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
-                        }
-                    });
-                }
+            // Schema analysis
+            try (Stream<DataSetRow> stream = store.stream(metadata)) {
+                LOGGER.info("Analyzing schema in dataset #{}...", dataSetId);
+                // Configure analyzers
+                final URI ddPath = this.getClass().getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
+                final URI kwPath = this.getClass().getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
+                final CategoryRecognizerBuilder builder = CategoryRecognizerBuilder.newBuilder() //
+                        .ddPath(ddPath) //
+                        .kwPath(kwPath) //
+                        .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
+                final DataTypeAnalyzer dataTypeAnalyzer = new DataTypeAnalyzer();
+                final SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(builder);
+                final Analyzer<Analyzers.Result> analyzer = Analyzers.with(dataTypeAnalyzer, semanticAnalyzer);
+                // Determine schema for the content (on the 20 first rows).
+                stream.limit(20).map(row -> {
+                    final Map<String, Object> rowValues = row.values();
+                    final List<String> strings = stream(rowValues.values().spliterator(), false) //
+                            .map(String::valueOf) //
+                            .collect(Collectors.<String> toList());
+                    return strings.toArray(new String[strings.size()]);
+                }).forEach(analyzer::analyze);
+                // Find the best suitable type
+                List<Analyzers.Result> columnTypes = analyzer.getResult();
+                final Iterator<ColumnMetadata> columns = metadata.getRow().getColumns().iterator();
+                columnTypes.forEach(columnResult -> {
+                    // Column data type
+                    final DataType dataType = columnResult.get(DataType.class);
+                    final Type type = Type.get(dataType.getSuggestedType().name());
+                    // Semantic type
+                    final SemanticType semanticType = columnResult.get(SemanticType.class);
+                    if (columns.hasNext()) {
+                        final ColumnMetadata nextColumn = columns.next();
+                        LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
+                        nextColumn.setType(type.getName());
+                        nextColumn.setDomain(semanticType.getSuggestedCategory());
+                    } else {
+                        LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
+                    }
+                });
                 LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                 metadata.getLifecycle().schemaAnalyzed(true);
                 repository.add(metadata);

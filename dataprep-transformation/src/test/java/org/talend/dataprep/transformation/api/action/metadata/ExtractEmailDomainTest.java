@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -39,6 +39,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.TransformationServiceTests;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -50,10 +51,10 @@ import org.talend.dataprep.transformation.TransformationServiceTests;
 public class ExtractEmailDomainTest {
 
     /** The row consumer to test. */
-    private Consumer<DataSetRow> rowClosure;
+    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
 
     /** The metadata consumer to test. */
-    private Consumer<RowMetadata> metadataClosure;
+    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
 
     /** The action to test. */
     @Autowired
@@ -91,7 +92,7 @@ public class ExtractEmailDomainTest {
         expectedValues.put("email_domain", "yopmail.com");
         expectedValues.put("last update", "01/01/2015");
 
-        rowClosure.accept(row);
+        rowClosure.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -110,7 +111,7 @@ public class ExtractEmailDomainTest {
         expectedValues.put("email_domain", "");
         expectedValues.put("last update", "01/01/2015");
 
-        rowClosure.accept(row);
+        rowClosure.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -125,7 +126,7 @@ public class ExtractEmailDomainTest {
         input.add(createMetadata("last update", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata);
+        metadataClosure.accept(rowMetadata, new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();

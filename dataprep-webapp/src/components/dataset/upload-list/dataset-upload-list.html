@@ -1,18 +1,23 @@
-<table class="inventory">
-    <tbody >
-    <tr data-ng-repeat-start="dataset in uploadListCtrl.datasets track by $index">
-        <td rowspan="2" class="inventory-icon">
-            <img src="/assets/images/inventory/csv_file.png"/>
-        </td>
-        <td class="inventory-title">{{dataset.name}}</td>
-    </tr>
-    <tr data-ng-repeat-end data-ng-switch="dataset.error">
-        <td data-ng-switch-when="false" class="inventory-description">
-            {{ dataset.progress }} %
-        </td>
-        <td data-ng-switch-when="true" class="inventory-description error">
-            {{ ::'UPLOAD_ERROR' | translate }}
-        </td>
-    </tr>
-    </tbody>
-</table>
+<div class="inventory">
+    <div class="inventory-entry" data-ng-repeat="dataset in uploadListCtrl.datasets track by $index">
+        <div class="inventory-icon no-link">
+            <img src="/assets/images/inventory/generic_file.png"/>
+        </div>
+
+        <div class="inventory-text" ng-switch="dataset.error">
+            <div class="inventory-title no-link">{{dataset.name}}</div>
+
+            <div class="inventory-progress" ng-switch-when="false">
+                <div class="progress-bar">
+                    <span class="meter" style="width: {{ dataset.progress }}%" ng-switch="dataset.progress">
+                        <p ng-switch-when="100">Processing...</p>
+                        <p ng-switch-default="">{{ dataset.progress }} %</p>
+                    </span>
+                </div>
+            </div>
+            <div class="inventory-progress error" ng-switch-when="true">
+                {{ ::'UPLOAD_ERROR' | translate }}
+            </div>
+        </div>
+    </div>
+</div>

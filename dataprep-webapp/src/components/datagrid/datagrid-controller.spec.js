@@ -85,4 +85,23 @@ describe('Datagrid controller', function () {
         expect(ctrl.position).toBeFalsy();
         expect(ctrl.showTooltip).toBe(false);
     }));
+
+    it('should compute hidden chars html code', inject(function () {
+        //given
+        var ctrl = createController();
+
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars('')).toBe('');
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars('AL')).toBe('AL');
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars(' AL')).toBe('<span class=\"hiddenChars\"> </span>AL');
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars(' AL ')).toBe('<span class=\"hiddenChars\"> </span>AL<span class=\"hiddenChars\"> </span>');
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars('AL ')).toBe('AL<span class=\"hiddenChars\"> </span>');
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars('\tAL\n')).toBe('<span class=\"hiddenChars\">\t</span>AL<span class=\"hiddenChars\">\n</span>');
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars('  AL\nfoo')).toBe('<span class=\"hiddenChars\">  </span>AL\nfoo');
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars('AL\n\rbar   ')).toBe('AL\n\rbar<span class=\"hiddenChars\">   </span>');
+        expect(ctrl.computeHTMLForLeadingOrTrailingHiddenChars('    AL\n\rbar   ')).toBe('<span class=\"hiddenChars\">    </span>AL\n\rbar<span class=\"hiddenChars\">   </span>');
+
+    }));
+
+
+
 });

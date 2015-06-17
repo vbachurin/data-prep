@@ -44,6 +44,7 @@
     function TalendNavbar (){
         return {
             restrict: 'EA',
+            replace: true,
             transclude: true,
             templateUrl: 'components/widgets/navbar/navbar.html',
             link: {
