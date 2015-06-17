@@ -1,11 +1,18 @@
 package org.talend.dataprep.dataset.service;
 
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.TimeZone;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -22,13 +29,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
@@ -45,8 +59,13 @@ import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.schema.DraftValidator;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
+import org.talend.dataprep.store.UserDataRepository;
 
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -74,6 +93,9 @@ public class DataSetService {
 
     @Autowired
     private DataSetContentStore contentStore;
+
+    @Autowired
+    private UserDataRepository userDataRepository;
 
     @Autowired
     private FormatGuess.Factory formatGuessFactory;
@@ -112,15 +134,16 @@ public class DataSetService {
             jmsTemplate.send(asynchronousDataSetAnalyzer.destination(), session -> {
                 Message message = session.createMessage();
                 message.setStringProperty("dataset.id", id); //$NON-NLS-1
-                return message;
-            });
+                    return message;
+                });
         }
     }
 
     /**
-     * @return Get user name from Spring Security context, return "anonymous" if no user is currently logged in.
+     * @return Get user id based on the user name from Spring Security context, return "anonymous" if no user is
+     * currently logged in.
      */
-    private static String getUserName() {
+    private static String getUserId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String author;
         if (principal != null) {
@@ -158,7 +181,7 @@ public class DataSetService {
             @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE); //$NON-NLS-1$
         final String id = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(id).name(name).author(getUserName()).created(System.currentTimeMillis())
+        DataSetMetadata dataSetMetadata = metadata().id(id).name(name).author(getUserId()).created(System.currentTimeMillis())
                 .build();
         dataSetMetadata.getLifecycle().importing(true); // Indicate data set is being imported
         // Save data set content
@@ -498,6 +521,14 @@ public class DataSetService {
         } finally {
             lock.unlock();
         }
+    }
+
+    @RequestMapping(value = "/favorites", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "return all favorites datasets of the current user", notes = "Returns the list of favorites datasets.")
+    public Iterable<DataSet> favorites() {
+        String userId = getUserId();
+        UserData userData = userDataRepository.getUserData(userId);
+        return userData != null ? userData.getFavoritesDatasets() : Collections.EMPTY_LIST;
     }
 
 }

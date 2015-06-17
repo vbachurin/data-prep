@@ -45,6 +45,7 @@ import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.FormatGuess;
+import org.talend.dataprep.store.UserDataRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,20 +60,27 @@ public class DataSetServiceTests {
 
     @Value("${local.server.port}")
     public int port;
+
     @Autowired
     DataSetMetadataRepository dataSetMetadataRepository;
+
+    @Autowired
+    UserDataRepository userDataRepository;
+
     @Autowired
     JmsTemplate jmsTemplate;
+
     @Autowired
     DataSetContentStore contentStore;
+
     @Autowired(required = false)
     SparkContext sparkContext;
+
     @Autowired
     FormatGuess.Factory factory;
 
     /** This class" logger. */
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
 
     private void assertQueueMessages(String dataSetId) throws Exception {
         // Wait for Spark jobs to finish
@@ -117,6 +125,7 @@ public class DataSetServiceTests {
         RestAssured.port = port;
         dataSetMetadataRepository.clear();
         contentStore.clear();
+        userDataRepository.clear();
     }
 
     @org.junit.After
@@ -517,6 +526,11 @@ public class DataSetServiceTests {
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
         assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+    }
+
+    @Test
+    public void testFavorites() {
+        when().get("/favorites").then().statusCode(HttpStatus.OK.value()).body(equalTo("[]"));
     }
 
 }
