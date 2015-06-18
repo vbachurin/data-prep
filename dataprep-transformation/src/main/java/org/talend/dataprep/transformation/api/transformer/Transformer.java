@@ -13,7 +13,7 @@ public interface Transformer {
 
     /**
      * Transform (apply preparations to) data content.
-     *  @param input the dataset content.
+     * @param input the dataset content.
      * @param output where to output the transformation.
      */
     void transform(DataSet input, OutputStream output);
