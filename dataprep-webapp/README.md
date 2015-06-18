@@ -17,6 +17,7 @@
 6. go to _checkouts/data-prep/dataprep-webapp_ and type the following command
 
 `npm install`
+`bower install`
 
 This will install all the dev package for dataprep as well as third party libraries required by this application.
 
