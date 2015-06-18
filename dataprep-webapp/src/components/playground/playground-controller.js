@@ -9,12 +9,12 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService) {
+    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService, RecipeService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
         vm.editionMode = false;
-
+        vm.recipeService = RecipeService;
         /**
          * @ngdoc method
          * @name editionModeFn
@@ -147,6 +147,23 @@
             configurable: false,
             get: function () {
                 return this.previewService.previewInProgress();
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name isThereRecipe
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description checks if there are steps in the preparation
+     * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} property
+     * @type boolean
+     */
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'isThereRecipe', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.recipeService.getRecipe().length?true:false;
             }
         });
 

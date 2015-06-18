@@ -32,7 +32,7 @@
 			var concatData         = [];
 			_.each(histoData, function (histDatum) {
 				concatData.push({
-					'data': histDatum.range.min + ' -> ' + histDatum.range.max,
+					'data': histDatum.range.min + ' ... ' + histDatum.range.max,
 					'occurrences': histDatum.occurrences
 				});
 			});

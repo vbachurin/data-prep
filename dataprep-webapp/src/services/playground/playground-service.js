@@ -183,7 +183,7 @@
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
-                    self.toggleHappened = self.toggleHappened ? false:true;
+                    self.toggleHappened = !self.toggleHappened;
                 });
         };
 

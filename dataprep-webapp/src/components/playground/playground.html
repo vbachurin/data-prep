@@ -18,11 +18,11 @@
 
     <div class="modal-body playground">
         <talend-slidable visible="false" class="flex-side recipe">
-            <div id="stepsHeader">
+            <div id="stepsHeaderId">
                 <span class="title" ng-show="!playgroundCtrl.editionMode">{{playgroundCtrl.preparationName}}</span>
                 <button ng-show="!playgroundCtrl.editionMode" ng-click="playgroundCtrl.editionModeFn()" style="padding:0px;">&#9997;</button>
 
-                <label class="label-switch">
+                <label class="label-switch" ng-show="playgroundCtrl.isThereRecipe">
                     <input type="checkbox" checked id="onOffAllStepsId"/>
                     <div class="checkbox"></div>
                 </label>
