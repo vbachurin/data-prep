@@ -12,6 +12,7 @@
         vm.exportTypes = [];
         vm.exportParameters = {};
 
+        vm.exportParamKey = "datarep.export.param";
         vm.exportIdKey = 'dataprep.export.id';
 
         vm.currentExportType = {};
@@ -42,14 +43,19 @@
             $window.localStorage.setItem(vm.exportIdKey,exportId);
 
             if (needParameters==='true'){
+
+                var needToShowForm = true;
                 _.each(exportType.parameters,function(val){
                     if (val.type==='radio'){
-                        console.log("val.defaultValue.value:"+val.defaultValue.value);
                         vm.exportParameters[val.name]=val.defaultValue.value;
+                    }
+                    var paramValue = $window.localStorage.getItem(vm.exportParamKey+"."+val.name);
+                    if (paramValue){
+                        needToShowForm=false;
                     }
                 });
 
-                vm.showExport=true;
+                vm.showExport=needToShowForm;
                 return;
             }
 
@@ -65,6 +71,7 @@
 
             _.each(Object.keys(vm.exportParameters),function(val){
                 form[val]= vm.exportParameters[val];
+                $window.localStorage.setItem(vm.exportParamKey+"."+val,vm.exportParameters[val]);
             });
 
 
