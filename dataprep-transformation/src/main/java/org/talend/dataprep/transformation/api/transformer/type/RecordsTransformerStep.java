@@ -96,7 +96,10 @@ public class RecordsTransformerStep implements TransformerStep {
                 // Write transformed records to stream
                 List<DataSetRow> transformedRows = new ArrayList<>();
                 process.forEach(row -> {
-                    transformedRows.add(row.row);
+                    if (!row.row.isDeleted()) {
+                        // Clone original value since row instance is reused.
+                        transformedRows.add(row.row.clone());
+                    }
                     writeRow(writer, row.row);
                 });
                 // Column statistics
@@ -108,6 +111,7 @@ public class RecordsTransformerStep implements TransformerStep {
                             "", //
                             0, //
                             context.getTransformedRowMetadata());
+                    transformedMetadata.getContent().setNbRecords(transformedRows.size());
                     statisticsDataSet.setMetadata(transformedMetadata);
                     statisticsDataSet.setRecords(transformedRows.stream());
                     DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
