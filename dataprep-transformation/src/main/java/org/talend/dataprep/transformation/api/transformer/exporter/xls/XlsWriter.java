@@ -109,4 +109,9 @@ public class XlsWriter implements TransformerWriter {
         this.workbook.write(outputStream);
     }
 
+    @Override
+    public boolean requireMetadataForHeader() {
+        return true;
+    }
+
 }

@@ -1,4 +1,72 @@
 {
+  "columns": [
+    {
+      "name": "id",
+      "headerSize": 0,
+      "type": "integer",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0000"
+    },
+    {
+      "name": "firstname",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0001"
+    },
+    {
+      "name": "lastname",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0002"
+    },
+    {
+      "name": "age",
+      "headerSize": 0,
+      "type": "integer",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0003"
+    },
+    {
+      "name": "date-of-birth",
+      "headerSize": 0,
+      "type": "date",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0004"
+    },
+    {
+      "name": "alive",
+      "headerSize": 0,
+      "type": "boolean",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2
+      },
+      "id": "0005"
+    }
+  ],
   "records": [
     {
       "0000": "1",

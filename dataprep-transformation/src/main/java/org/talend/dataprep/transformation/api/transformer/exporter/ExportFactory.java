@@ -11,6 +11,7 @@ import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvExporter;
+import org.talend.dataprep.transformation.api.transformer.exporter.json.JsonExporter;
 import org.talend.dataprep.transformation.api.transformer.exporter.tableau.TableauExporter;
 import org.talend.dataprep.transformation.api.transformer.exporter.xls.XlsExporter;
 
@@ -27,6 +28,8 @@ public class ExportFactory {
         final ParsedActions actionConsumer = parser.parse(configuration.getActions());
 
         switch (configuration.getFormat()) {
+        case JSON:
+            return get(JsonExporter.class, actionConsumer, configuration);
         case CSV:
             return get(CsvExporter.class, actionConsumer, configuration);
         case XLS:

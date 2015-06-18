@@ -24,6 +24,7 @@
         'data-prep.filter-search',
         'data-prep.filter-list',
         'data-prep.recipe',
+        'data-prep.horizontalBarchart',
         'data-prep.suggestions',
         'data-prep.services.preparation',
         'data-prep.services.playground'

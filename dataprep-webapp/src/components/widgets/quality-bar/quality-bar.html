@@ -1,0 +1,53 @@
+<div class="quality-bar">
+    <div talend-dropdown
+         class="record-ok"
+         style="width: {{ qualityBarCtrl.width.valid }}%;"
+         ng-class="{'no-transition' : qualityBarCtrl.blockTransition}"
+         ng-if="qualityBarCtrl.quality.valid > 0"
+         title="{{ qualityBarCtrl.quality.valid }} valid records ({{ qualityBarCtrl.percent.valid }}%)">
+
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
+                <li role="presentation">
+                    <a role="menuitem" href="#">Select Valid Records for {{ qualityBarCtrl.column.name | uppercase }}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div talend-dropdown
+         class="record-empty"
+         style="width: {{ qualityBarCtrl.width.empty }}%;"
+         ng-class="{'no-transition' : qualityBarCtrl.blockTransition}"
+         ng-if="qualityBarCtrl.quality.empty > 0"
+         title="{{ qualityBarCtrl.quality.empty }} empty records ({{ qualityBarCtrl.percent.empty }}%)">
+
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
+                <li role="presentation"><a role="menuitem" href="#">Select Empty Records for {{ qualityBarCtrl.column.name | uppercase }}</a></li>
+                <li class="divider"></li>
+                <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Top adjacent value</a></li>
+                <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Bottom adjacent value</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="record-nok" talend-dropdown
+         style="width: {{ qualityBarCtrl.width.invalid }}%;"
+         ng-class="{'no-transition' : qualityBarCtrl.blockTransition}"
+         ng-if="qualityBarCtrl.quality.invalid > 0"
+         title="{{ qualityBarCtrl.quality.invalid }} invalid records ({{ qualityBarCtrl.percent.invalid }}%)">
+
+        <div class="dropdown-container">
+            <div class="dropdown-action"></div>
+            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
+                <li role="presentation"><a role="menuitem" href="#">Select Invalid Records for {{ qualityBarCtrl.column.name | uppercase }}</a></li>
+                <li class="divider"></li>
+                <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Top adjacent value</a></li>
+                <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Bottom adjacent value</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

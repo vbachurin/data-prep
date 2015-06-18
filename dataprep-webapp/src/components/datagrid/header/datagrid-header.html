@@ -2,8 +2,8 @@
     <div class="dropdown-container grid-header">
         <div class="dropdown-action">
             <div class="grid-header-title dropdown-button">{{ datagridHeaderCtrl.column.name }}</div>
-            <div class="grid-header-type" ng-if="::datagridHeaderCtrl.column.domain">{{ datagridHeaderCtrl.column.domain }}</div>
-            <div class="grid-header-type" ng-if="::(!datagridHeaderCtrl.column.domain)">{{ datagridHeaderCtrl.column.simplifiedType }}</div>
+            <div class="grid-header-type" ng-if="datagridHeaderCtrl.column.domain">{{ datagridHeaderCtrl.column.domain }}</div>
+            <div class="grid-header-type" ng-if="(!datagridHeaderCtrl.column.domain)">{{ datagridHeaderCtrl.converterService.simplifyType(datagridHeaderCtrl.column.type) }}</div>
         </div>
         <ul class="dropdown-menu grid-header-menu">
             <li ng-if="datagridHeaderCtrl.initTransformationsInProgress">{{ ::'LOADING' | translate }}...</li>
@@ -17,58 +17,6 @@
     </div>
 </talend-dropdown>
 
-<div class="quality-bar">
-    <div talend-dropdown
-         class="record-ok"
-         style="width: {{ datagridHeaderCtrl.column.quality.validPercentWidth }}%;"
-         ng-if="datagridHeaderCtrl.column.quality.valid > 0"
-         title="{{ datagridHeaderCtrl.column.quality.valid }} valid records ({{ datagridHeaderCtrl.column.quality.validPercent }}%)">
-
-        <div class="dropdown-container">
-            <div class="dropdown-action"></div>
-            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
-                <li role="presentation">
-                    <a role="menuitem" href="#">Select Valid Records for {{ datagridHeaderCtrl.column.name | uppercase
-                        }}</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <div talend-dropdown
-         class="record-empty"
-         style="width: {{ datagridHeaderCtrl.column.quality.emptyPercentWidth }}%;"
-         ng-if="datagridHeaderCtrl.column.quality.empty > 0"
-         title="{{ datagridHeaderCtrl.column.quality.empty }} empty records ({{ datagridHeaderCtrl.column.quality.emptyPercent }}%)">
-
-        <div class="dropdown-container">
-            <div class="dropdown-action"></div>
-            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li role="presentation" ng-click="datagridHeaderCtrl.filterEmptyRecords(datagridHeaderCtrl.column)">
-                    <a role="menuitem">Select Empty Records for {{datagridHeaderCtrl.column.name | uppercase }}</a>
-                </li>
-                <li class="divider"></li>
-                <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Top adjacent value</a></li>
-                <li role="presentation"><a role="menuitem" href="#">Fill Empty records with Bottom adjacent value</a></li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="record-nok" talend-dropdown
-         style="width: {{ datagridHeaderCtrl.column.quality.invalidPercentWidth }}%;"
-         ng-if="datagridHeaderCtrl.column.quality.invalid > 0"
-         title="{{ datagridHeaderCtrl.column.quality.invalid }} invalid records ({{ datagridHeaderCtrl.column.quality.invalidPercent }}%)">
-
-        <div class="dropdown-container">
-            <div class="dropdown-action"></div>
-            <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu" >
-                <li role="presentation" ng-click="datagridHeaderCtrl.filterInvalidRecords(datagridHeaderCtrl.column)">
-                    <a role="menuitem">Select Invalid Records for {{datagridHeaderCtrl.column.name | uppercase }}</a>
-                </li>
-                <li class="divider"></li>
-                <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Top adjacent value</a></li>
-                <li role="presentation"><a role="menuitem" href="#">Replace Invalid Records with Bottom adjacent value</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
+<talend-quality-bar
+        quality="datagridHeaderCtrl.column.quality"
+        column="datagridHeaderCtrl.column"></talend-quality-bar>

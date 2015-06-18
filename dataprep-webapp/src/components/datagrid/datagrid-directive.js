@@ -16,10 +16,12 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.utils.service:ConverterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService, ConverterService) {
+    function Datagrid($compile, $window, DatagridService, FilterService, PreviewService,
+                      ColumnSuggestionService, StatisticsService, ConverterService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -44,7 +46,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Reset columns class
                  */
-                var resetColumnsClass = function() {
+                var resetColumnsClass = function resetColumnsClass() {
                     _.forEach(grid.getColumns(), function(column) {
                         column.cssClass = null;
                     });
@@ -56,7 +58,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Reset the cells css
                  */
-                var resetCellStyles = function() {
+                var resetCellStyles = function resetCellStyles() {
                     grid.setCellCssStyles('highlight', {});
                 };
 
@@ -66,7 +68,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
                  */
-                var formatter = function(row, cell, value, columnDef, dataContext) {
+                var formatter = function formatter(row, cell, value, columnDef, dataContext) {
 
                     var returnStr = value;
 
@@ -145,7 +147,8 @@
                         field: col.id,
                         name: template,
                         formatter: formatter,
-                        minWidth: 80
+                        minWidth: 80,
+                        tdpColMetadata: col
                     };
                     return colItem;
                 };
@@ -157,7 +160,7 @@
                  * @description [PRIVATE] Create and insert the dataset column headers (dropdown actions and quality bars).
                  The columns are from {@link data-prep.services.playground.service:DatagridService DatagridService}
                  */
-                var insertDatagridHeaders = function () {
+                var insertDatagridHeaders = function insertDatagridHeaders() {
                     _.forEach(DatagridService.data.columns, function (col, index) {
                         var header = createHeader(col);
                         iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
@@ -172,7 +175,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Create a column header object containing element, scope and column
                  */
-                var createHeader = function(col) {
+                var createHeader = function createHeader(col) {
                     var headerScope = scope.$new(true);
                     headerScope.columns = col;
                     var headerElement = angular.element('<datagrid-header column="columns"></datagrid-header>');
@@ -191,7 +194,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Remove header elements.
                  */
-                var clearHeaders = function () {
+                var clearHeaders = function clearHeaders() {
                     _.forEach(colHeaderElements, function (header) {
                         header.scope.$destroy();
                         header.element.remove();
@@ -207,9 +210,9 @@
                  * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
                  */
                 var updateColSelection = function (column) {
-                    $timeout(function() {
-                        DatagridService.setSelectedColumn(column.id);
-                    });
+                    DatagridService.setSelectedColumn(column.id);
+                    StatisticsService.processVisuData(column.tdpColMetadata);
+                    ColumnSuggestionService.setColumn(column.tdpColMetadata); // this will trigger a digest after REST call
                 };
 
                 /**
@@ -350,6 +353,7 @@
 
                         ctrl.updateTooltip(item, column.id, position, ctrl.computeHTMLForLeadingOrTrailingHiddenChars(item[column.id]));
                     });
+
                     //hide tooltip on leave
                     grid.onMouseLeave.subscribe(function() {
                         ctrl.hideTooltip();
@@ -377,8 +381,6 @@
 
                         grid.setCellCssStyles('highlight', config);
                         grid.invalidate();
-
-                        updateColSelection(column);
                     });
 
                     //change selected cell column background
@@ -392,6 +394,7 @@
                                 grid.invalidate();
                             }
 
+                            updateColSelection(column);
                         }
                     });
 
@@ -451,6 +454,7 @@
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------UPDATE----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
+                var renewAllColumns = false;
                 /**
                  * @ngdoc method
                  * @name updateColumns
@@ -479,11 +483,14 @@
                         //map every column to a header
                         var finalColHeaderElements = _.map(dataCols, function (col, index) {
                             //find saved header corresponding to column
-                            var header = _.find(colHeaderElements, function (colHeader) {
-                                return colHeader.column === col;
+                            var header = renewAllColumns ? null : _.find(colHeaderElements, function (colHeader) {
+                                return colHeader.column.id === col.id;
                             });
+                            if (header) {
+                                header.scope.columns = col;
+                            }
                             //or create a new one if no corresponding one
-                            if (!header) {
+                            else {
                                 header = createHeader(col);
                             }
 
@@ -500,11 +507,30 @@
                         });
                         colHeaderElements = finalColHeaderElements;
                     }
+
+                    renewAllColumns = false;
                 };
 
                 //------------------------------------------------------------------------------------------------------
                 //-------------------------------------------------WATCHERS---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
+
+                /**
+                 * Scroll to top when loaded dataset change
+                 */
+                scope.$watch(
+                    function () {
+                        return DatagridService.metadata;
+                    },
+                    function (metadata) {
+                        if(metadata) {
+                            if(grid) {
+                                grid.scrollRowToTop(0);
+                            }
+                            renewAllColumns = true;
+                        }
+                    }
+                );
 
                 /**
                  * Update grid columns and invalidate grid on data change
@@ -520,20 +546,6 @@
                             resetCellStyles();
                             grid.resetActiveCell();
                             grid.invalidate();
-                        }
-                    }
-                );
-
-                /**
-                 * Scroll to top when loaded dataset change
-                 */
-                scope.$watch(
-                    function () {
-                        return DatagridService.metadata;
-                    },
-                    function (metadata) {
-                        if(metadata) {
-                            grid.scrollRowToTop(0);
                         }
                     }
                 );

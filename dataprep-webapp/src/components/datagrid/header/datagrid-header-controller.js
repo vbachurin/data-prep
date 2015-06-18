@@ -5,72 +5,13 @@
      * @ngdoc controller
      * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
      * @description Dataset Column Header controller.
-     * @requires data-prep.services.transformation.service:TransformationService
+     * @requires data-prep.services.transformation.service:TransformationCacheService
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.filter.service:FilterService
      */
-    function DatagridHeaderCtrl(TransformationService, ConverterService, FilterService) {
+    function DatagridHeaderCtrl(TransformationCacheService, ConverterService, FilterService) {
         var vm = this;
-
-        /**
-         * @ngdoc method
-         * @name refreshQualityBar
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description [PRIVATE] Compute quality bars percentage
-         */
-        vm.refreshQualityBar = function () {
-            var MIN_PERCENT = 10;
-            var column = vm.column;
-
-            column.total = column.quality.valid + column.quality.empty + column.quality.invalid;
-
-            // *_percent is the real % of empty/valid/invalid records, while *_percent_width is the width % of the bar.
-            // They can be different if less than MIN_PERCENT are valid/invalid/empty, to assure a min width of each bar. To be usable by the user.
-            column.quality.emptyPercent = column.quality.empty <= 0 ? 0 : Math.ceil(column.quality.empty * 100 / column.total);
-            column.quality.emptyPercentWidth = column.quality.empty <= 0 ? 0 : Math.max(column.quality.emptyPercent, MIN_PERCENT);
-
-            column.quality.invalidPercent = column.quality.invalid <= 0 ? 0 : Math.ceil(column.quality.invalid * 100 / column.total);
-            column.quality.invalidPercentWidth = column.quality.invalid <= 0 ? 0 : Math.max(column.quality.invalidPercent, MIN_PERCENT);
-
-            column.quality.validPercent = 100 - column.quality.emptyPercent - column.quality.invalidPercent;
-            column.quality.validPercentWidth = 100 - column.quality.emptyPercentWidth - column.quality.invalidPercentWidth;
-        };
-
-        /**
-         * @ngdoc method
-         * @name insertDividers
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menuGroups - the menus grouped by category
-         * @description [PRIVATE] Insert a divider between each group of menus
-         * @returns {object[]} - each element is a group of menu or a divider
-         */
-        var insertDividers = function(menuGroups) {
-            var divider = {isDivider : true};
-            var result = [];
-            _.forEach(menuGroups, function(group) {
-                if(result.length) {
-                    result.push(divider);
-                }
-
-                result.push(group);
-            });
-
-            return result;
-        };
-
-        /**
-         * @ngdoc method
-         * @name groupMenus
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @param {object[]} menus - the unordered menus
-         * @description [PRIVATE] Group all menus by category and insert dividers between each group
-         * @returns {object[]} - each element is a menu item or a divider
-         */
-        var groupMenus = function(menus) {
-            var groups = _.groupBy(menus, function(menuItem) { return menuItem.category; });
-            var groupsAndDividers = insertDividers(groups);
-            return _.flatten(groupsAndDividers);
-        };
+        vm.converterService = ConverterService;
 
         /**
          * @ngdoc method
@@ -83,9 +24,11 @@
                 vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
 
-                TransformationService.getTransformations(vm.column)
+                TransformationCacheService.getTransformations(vm.column)
                     .then(function(menus) {
-                        vm.transformations = groupMenus(menus);
+                        vm.transformations = _.filter(menus, function(menu) {
+                            return menu.category === COLUMN_CATEGORY;
+                        });
                     })
                     .catch(function() {
                         vm.transformationsRetrieveError = true;
@@ -95,17 +38,6 @@
                     });
             }
         };
-
-        /**
-         * @ngdoc method
-         * @name setColumnSimplifiedType
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description set the column simplified, more user friendly, type.
-         */
-        var setColumnSimplifiedType = function () {
-            vm.column.simplifiedType = ConverterService.simplifyType(vm.column.type);
-        };
-
 
         /**
          * @ngdoc method
@@ -129,7 +61,6 @@
             FilterService.addFilter('empty_records', column.id, column.name, {});
         };
 
-        setColumnSimplifiedType();
     }
 
     angular.module('data-prep.datagrid-header')

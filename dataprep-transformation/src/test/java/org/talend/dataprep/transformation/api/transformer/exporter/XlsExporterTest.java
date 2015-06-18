@@ -15,12 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.schema.io.XlsUtils;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -28,6 +33,9 @@ import org.talend.dataprep.transformation.api.transformer.Transformer;
 public class XlsExporterTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
     private ExportFactory factory;
@@ -44,13 +52,14 @@ public class XlsExporterTest {
         Path path = Files.createTempFile("datarep-foo", "xls");
 
         Files.deleteIfExists(path);
-
-        try (final OutputStream outputStream = Files.newOutputStream(path)) {
-
-            // when
-            exporter.transform(inputStream, outputStream);
-
-            outputStream.flush();
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            try (final OutputStream outputStream = Files.newOutputStream(path)) {
+                // when
+                exporter.transform(dataSet, outputStream);
+                outputStream.flush();
+            }
         }
 
         Workbook workbook = XlsUtils.getWorkbook(Files.newInputStream(path));

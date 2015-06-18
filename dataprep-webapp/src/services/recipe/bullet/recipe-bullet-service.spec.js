@@ -1,4 +1,4 @@
-describe('Recipe Bullet controller', function() {
+describe('Recipe Bullet service', function() {
 	'use strict';
 
 	var createController, scope;
@@ -30,10 +30,6 @@ describe('Recipe Bullet controller', function() {
 		spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
 		spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
 		spyOn($timeout, 'cancel').and.callThrough();
-	}));
-
-	afterEach(inject(function(RecipeService) {
-		RecipeService.reset();
 	}));
 
 	it('should highlight active steps after the targeted one (included)', inject(function(RecipeService, RecipeBulletService) {
