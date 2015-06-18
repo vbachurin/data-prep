@@ -38,7 +38,6 @@
                 var previousStep = RecipeService.getPreviousStep(step);
                 PlaygroundService.loadStep(previousStep);
             }
-                self.allToggledSteps.push(RecipeService.getLastActiveStep());
         };
 
         /**
@@ -50,11 +49,10 @@
         this.toggleAllSteps = function() {
             var firstStep = RecipeService.getRecipe()[0];
             if(!firstStep.inactive){
+                self.lastToggled = RecipeService.getLastActiveStep();
                 self.toggleStep(firstStep);
             }else{
-                var lastToggledStep = self.allToggledSteps[self.allToggledSteps.length-1];
-                var stepToToggle = RecipeService.isFirstStep(lastToggledStep)?self.allToggledSteps[self.allToggledSteps.length - 2]:lastToggledStep;
-                self.toggleStep(stepToToggle);
+                self.toggleStep(self.lastToggled);
             }
         };
 

@@ -22,7 +22,7 @@
          * @description just changes the editionMode variable
          */
         vm.editionModeFn = function(){
-            vm.editionMode = vm.editionMode?false:true;
+            vm.editionMode = !vm.editionMode;
         };
 
         /**
