@@ -55,10 +55,7 @@
                 var lastToggledStep = self.allToggledSteps[self.allToggledSteps.length-1];
                 var stepToToggle = RecipeService.isFirstStep(lastToggledStep)?self.allToggledSteps[self.allToggledSteps.length - 2]:lastToggledStep;
                 self.toggleStep(stepToToggle);
-                //var lastStepIndex = RecipeService.getRecipe().length - 1;
-                //self.toggleStep(RecipeService.getRecipe()[lastStepIndex]);
             }
-
         };
 
         /**

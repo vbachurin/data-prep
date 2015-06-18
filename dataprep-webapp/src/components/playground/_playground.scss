@@ -16,6 +16,21 @@
   }
 }
 
+#stepsHeader{
+  margin-bottom: 20px;
+  .title{
+    font-size: 1.2em;
+    padding-left: 5px;
+  }
+  input{
+    float: left;
+    width:170px;
+    margin-bottom:0px;
+  }
+  button{
+    font-size: 2em;
+  }
+}
 
 .label-switch {
   $action-color: #b6be00 !important;

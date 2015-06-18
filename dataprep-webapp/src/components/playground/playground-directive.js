@@ -8,7 +8,7 @@
      * It only consumes {@link data-prep.services.playground.service:PlaygroundService PlaygroundService}
      * @restrict E
      */
-    function Playground($timeout, RecipeBulletService) {
+    function Playground($timeout, RecipeBulletService, PlaygroundService, RecipeService) {
         return {
             restrict: 'E',
             templateUrl: 'components/playground/playground.html',
@@ -17,8 +17,8 @@
             controller: 'PlaygroundCtrl',
             link:function(scope, iElement, iAttrs, ctrl){
                 $timeout(function(){
-                    var prepEditionInput = document.getElementById("prepEditionInputId");
-                    var onOffAllSteps = document.getElementById("onOffAllStepsId");
+                    var prepEditionInput = document.getElementById('prepEditionInputId');
+                    var onOffAllSteps = document.getElementById('onOffAllStepsId');
 
                     prepEditionInput.onkeydown = function(e){
                         if(e.keyCode === 13){
@@ -32,6 +32,23 @@
                     onOffAllSteps.onchange = function(){
                         $timeout(RecipeBulletService.toggleAllSteps);
                     };
+
+                    scope.$watch(
+                        function(){
+                            return PlaygroundService.toggleHappened;
+                        },
+                        function(newVal){
+                            if(newVal !== null){
+                                var firstStep = RecipeService.getStep(0);
+                                if(!firstStep.inactive){
+                                    onOffAllSteps.checked = true;
+                                } else {
+                                    onOffAllSteps.checked = false;
+                                }
+                            }
+                        }
+                    );
+
                 });
             }
         };

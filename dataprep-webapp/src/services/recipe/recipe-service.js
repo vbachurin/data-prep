@@ -50,7 +50,7 @@
          * @description Return recipe step list
          * @returns {object[]} The recipe step list
          */
-        this.getRecipe = function() {
+        this.getRecipe = function getRecipe() {
             return recipe;
         };
 

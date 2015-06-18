@@ -14,14 +14,34 @@
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
         vm.editionMode = false;
+
+        /**
+         * @ngdoc method
+         * @name editionModeFn
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description just changes the editionMode variable
+         */
         vm.editionModeFn = function(){
-            vm.editionMode?vm.editionMode = false:vm.editionMode = true;
+            vm.editionMode = vm.editionMode?false:true;
         };
 
+        /**
+         * @ngdoc method
+         * @name confirmNewPrepName
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description confirms the new preparation name
+         */
         vm.confirmNewPrepName = function(){
             vm.changeName();
             vm.editionModeFn();
         };
+
+        /**
+         * @ngdoc method
+         * @name cancelPrepNameEdition
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description cancels the new preparation name and sets the preparation name to the original one
+         */
         vm.cancelPrepNameEdition = function(){
             vm.preparationName = PlaygroundService.originalPreparationName;
             vm.editionModeFn();

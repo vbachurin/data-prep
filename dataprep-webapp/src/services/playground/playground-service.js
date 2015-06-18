@@ -15,6 +15,7 @@
      */
     function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService, PreparationService, MessageService, StatisticsService) {
         var self = this;
+        self.toggleHappened = null;
 
         /**
          * @ngdoc property
@@ -184,6 +185,7 @@
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
+                    self.toggleHappened = self.toggleHappened ? false:true;
                 });
         };
 
