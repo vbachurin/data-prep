@@ -3,6 +3,7 @@ package org.talend.dataprep.transformation.api.transformer.type;
 import static java.util.stream.StreamSupport.stream;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,13 +11,11 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.spark.SparkContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.Quality;
+import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
@@ -33,7 +32,11 @@ import org.talend.datascience.common.inference.type.DataType;
 @Component
 public class RecordsTransformerStep implements TransformerStep {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(RecordsTransformerStep.class);
+    @Autowired
+    SparkContext sparkContext;
+
+    @Autowired
+    Jackson2ObjectMapperBuilder builder;
 
     /**
      * @see TransformerStep#process(TransformerConfiguration)
@@ -91,24 +94,32 @@ public class RecordsTransformerStep implements TransformerStep {
                     });
                 }
                 // Write transformed records to stream
-                process.forEach(row -> writeRow(writer, row.row));
-                // Debug information about quality analysis
-                if (LOGGER.isDebugEnabled()) {
-                    StringBuilder builder = new StringBuilder();
+                List<DataSetRow> transformedRows = new ArrayList<>();
+                process.forEach(row -> {
+                    transformedRows.add(row.row);
+                    writeRow(writer, row.row);
+                });
+                // Column statistics
+                if (!context.getTransformedRowMetadata().getColumns().isEmpty()) {
+                    // Spark statistics
+                    final DataSet statisticsDataSet = new DataSet();
+                    final DataSetMetadata transformedMetadata = new DataSetMetadata("", //
+                            "", //
+                            "", //
+                            0, //
+                            context.getTransformedRowMetadata());
+                    statisticsDataSet.setMetadata(transformedMetadata);
+                    statisticsDataSet.setRecords(transformedRows.stream());
+                    DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
+                    // Set new quality information in transformed column metadata
                     final List<ValueQuality> result = qualityAnalyzer.getResult();
                     for (int i = 0; i < result.size(); i++) {
-                        builder.append("Quality #").append(i).append(": ").append(result.get(i));
+                        final ValueQuality column = result.get(i);
+                        final Quality quality = columns.get(i).getQuality();
+                        quality.setEmpty((int) column.getEmptyCount());
+                        quality.setInvalid((int) column.getInvalidCount());
+                        quality.setValid((int) column.getValidCount());
                     }
-                    LOGGER.debug(builder.toString());
-                }
-                // Set new quality information in transformed column metadata
-                final List<ValueQuality> result = qualityAnalyzer.getResult();
-                for (int i = 0; i < result.size(); i++) {
-                    final ValueQuality column = result.get(i);
-                    final Quality quality = columns.get(i).getQuality();
-                    quality.setEmpty((int) column.getEmptyCount());
-                    quality.setInvalid((int) column.getInvalidCount());
-                    quality.setValid((int) column.getValidCount());
                 }
             } else {
                 if (referenceAction == null) {
