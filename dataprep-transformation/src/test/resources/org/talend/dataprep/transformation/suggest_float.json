@@ -99,7 +99,7 @@
     "label": "Rename"
   },
   {
-      "label": "Copy",
+      "label": "Duplicate",
       "name":"copy",
       "description": "Creates an exact copy of this column",
       "category": "columns",
