@@ -164,7 +164,7 @@ public enum ExportType {
                     jgen.writeStartObject();
                     jgen.writeStringField("name", parameter.getName());
                     jgen.writeStringField("labelKey", parameter.getLabelKey());
-
+                    jgen.writeStringField( "type", parameter.getType() );
                     jgen.writeFieldName("defaultValue");
                     jgen.writeStartObject();
                     jgen.writeStringField("value", parameter.getDefaultValue().getValue());
