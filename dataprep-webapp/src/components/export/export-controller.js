@@ -42,28 +42,35 @@
 
             $window.localStorage.setItem(vm.exportIdKey,exportId);
 
-            if (needParameters==='true'){
-
-                var needToShowForm = true;
-                _.each(exportType.parameters,function(val){
-                    if (val.type==='radio'){
-                        vm.exportParameters[val.name]=val.defaultValue.value;
-                    }
-                    var paramValue = $window.localStorage.getItem(vm.exportParamKey+"."+val.name);
-                    if (paramValue){
-                        needToShowForm=false;
-                    }
-                });
-
-                vm.showExport=needToShowForm;
+            if (needParameters==='true' && exportType){
+                vm.setupParametersModal(exportType);
                 return;
             }
 
             vm.export(exportId);
         };
 
-        vm.export = function (type) {
-            var type = vm.currentExportType.id;
+        vm.export = function () {
+
+            // search in local storage
+            var type = $window.localStorage.getItem(vm.exportIdKey);
+
+            // if not use the default one
+            if(!type){
+                var needParameters = false;
+                _.each(vm.exportType,function(val){
+                   if (val.defaultExport==='true'){
+                       type=val.id;
+                       needParameters=val.needParameters;
+                       vm.currentExportType=val;
+                   }
+                });
+                // if this default need parameters open modal to ask
+                if(needParameters==='true'){
+                    vm.setupParametersModal(vm.currentExportType);
+                    return;
+                }
+            }
 
             var form = document.getElementById('exportForm');
             form.action = vm.exportUrl;
@@ -77,6 +84,19 @@
 
             form.submit();
 
+        };
+
+        vm.setupParametersModal = function(exportType) {
+            _.each( exportType.parameters, function ( val )
+            {
+                if ( val.type === 'radio' )
+                {
+                    vm.exportParameters[val.name] = val.defaultValue.value;
+                }
+                var paramValue = $window.localStorage.getItem( vm.exportParamKey + "." + val.name );
+
+            } );
+            vm.showExport = true;
         };
 
         ExportService.exportTypes()
