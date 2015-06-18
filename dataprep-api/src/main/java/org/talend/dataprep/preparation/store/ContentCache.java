@@ -3,7 +3,7 @@ package org.talend.dataprep.preparation.store;
 import java.io.InputStream;
 
 /**
- * A component to holds versions of a preparation at different steps. Each implementation may implement different
+ * A component to hold versions of a preparation at different steps. Each implementation may implement different
  * eviction strategies that do not need to surface here.
  */
 public interface ContentCache {
