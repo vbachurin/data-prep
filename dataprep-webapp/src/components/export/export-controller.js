@@ -9,8 +9,8 @@
         vm.playgroundService = PlaygroundService;
         vm.exportService = ExportService;
         vm.translateService = $translate;
-        vm.csvSeparator = ';';
         vm.exportTypes = [];
+        vm.exportParameters = {};
 
         vm.exportIdKey = 'dataprep.export.id';
 
@@ -42,6 +42,13 @@
             $window.localStorage.setItem(vm.exportIdKey,exportId);
 
             if (needParameters==='true'){
+                _.each(exportType.parameters,function(val){
+                    if (val.type==='radio'){
+                        console.log("val.defaultValue.value:"+val.defaultValue.value);
+                        vm.exportParameters[val.name]=val.defaultValue.value;
+                    }
+                });
+
                 vm.showExport=true;
                 return;
             }
@@ -50,10 +57,19 @@
         };
 
         vm.export = function (type) {
+            var type = vm.currentExportType.id;
+
             var form = document.getElementById('exportForm');
             form.action = vm.exportUrl;
             form.exportType.value = type;
+
+            _.each(Object.keys(vm.exportParameters),function(val){
+                form[val]= vm.exportParameters[val];
+            });
+
+
             form.submit();
+
         };
 
         ExportService.exportTypes()
