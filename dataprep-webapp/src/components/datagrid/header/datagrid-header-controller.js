@@ -5,7 +5,7 @@
      * @ngdoc controller
      * @name data-prep.datagrid-header.controller:DatagridHeaderCtrl
      * @description Dataset Column Header controller.
-     * @requires data-prep.services.transformation.service:TransformationService
+     * @requires data-prep.services.transformation.service:TransformationCacheService
      * @requires data-prep.services.utils.service:ConverterService
      */
     function DatagridHeaderCtrl(TransformationCacheService, ConverterService) {
@@ -39,6 +39,7 @@
                     });
             }
         };
+
     }
 
     angular.module('data-prep.datagrid-header')

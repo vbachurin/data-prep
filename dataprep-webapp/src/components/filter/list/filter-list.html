@@ -4,11 +4,14 @@
         <li>
             <filter-search></filter-search>
         </li>
-        <li ng-repeat="filter in filterCtrl.filters track by $index">
+        <li ng-repeat="filter in filterCtrl.filters">
             <talend-badge text="{{filter.colName}}"
                           obj="filter"
                           on-change="filterCtrl.update(obj, newValue)"
-                          on-close="filterCtrl.delete(obj)"></talend-badge>
+                          on-close="filterCtrl.delete(obj)"
+                          editable="filter.editable"
+                          type="filter.type">
+            </talend-badge>
         </li>
     </ul>
 </div>

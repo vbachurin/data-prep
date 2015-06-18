@@ -181,4 +181,5 @@ describe('Datagrid header controller', function () {
             expect(ctrl.initTransformationsInProgress).toBeFalsy();
         }));
     });
+
 });

@@ -3,7 +3,7 @@ describe('Quality bar directive', function() {
 
     var scope, element, createElement, controller;
 
-    beforeEach(module('talend.widget'));
+    beforeEach(module('data-prep.quality-bar'));
     beforeEach(module('htmlTemplates'));
 
     beforeEach(inject(function ($rootScope) {
@@ -18,11 +18,11 @@ describe('Quality bar directive', function() {
     describe('with enter animation', function() {
         beforeEach(inject(function($compile) {
             createElement = function () {
-                var html = '<talend-quality-bar quality="quality" column="column" ></talend-quality-bar>';
+                var html = '<quality-bar quality="quality" column="column" ></quality-bar>';
                 element = $compile(html)(scope);
                 scope.$digest();
 
-                controller = element.controller('talendQualityBar');
+                controller = element.controller('qualityBar');
             };
         }));
 

@@ -30,8 +30,8 @@ describe('Editable select directive', function() {
 
         var select = element.find('select').eq(0)[0];
         expect(select.options.length).toBe(3);
-        expect(select.options[0].value).toBe('val1');
-        expect(select.options[1].value).toBe('val2');
-        expect(select.options[2].value).toBe('val3');
+        expect(select.options[0].value).toBe('0');
+        expect(select.options[1].value).toBe('1');
+        expect(select.options[2].value).toBe('2');
     });
 });

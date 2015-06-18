@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.dataset;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -29,10 +30,6 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.dataset.store.local.InMemoryDataSetMetadataRepository;
 
-/**
- * created by sgandon on 9 avr. 2015 Detailled comment
- *
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
@@ -50,41 +47,33 @@ public class MetadataRepositoryLockTest {
         DataSetMetadata dsm1 = new DataSetMetadata("1", "one", "jim", 12, null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         DataSetMetadata dsm2 = new DataSetMetadata("1", "theone", "jimmy", 12, null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         final AtomicLong threadCount = new AtomicLong(2);
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    DistributedLock datasetLock = metadataRepository.createDatasetMetadataLock("1"); //$NON-NLS-1$
-                    datasetLock.lock();
-                    try {
-                        Thread.sleep(1000);
-                        metadataRepository.add(dsm1);
-                        threadCount.decrementAndGet();
-                    } finally {
-                        datasetLock.unlock();
-                    }
-                } catch (InterruptedException e) {
-                    // should never be interrupted
-                }
-
-            }
-        }, "Test Lock DatasetMetadata 1").start(); //$NON-NLS-1$
-        Thread.sleep(500);// let the previous thread start.
-        // the second thread should add dsm2 first without lock implementation but be second with the lock
-        // implementation
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
+        new Thread(() -> {
+            try {
                 DistributedLock datasetLock = metadataRepository.createDatasetMetadataLock("1"); //$NON-NLS-1$
                 datasetLock.lock();
                 try {
-                    metadataRepository.add(dsm2);
+                    Thread.sleep(1000);
+                    metadataRepository.add(dsm1);
                     threadCount.decrementAndGet();
                 } finally {
                     datasetLock.unlock();
                 }
+            } catch (InterruptedException e) {
+                // should never be interrupted
+            }
+
+        }, "Test Lock DatasetMetadata 1").start(); //$NON-NLS-1$
+        Thread.sleep(500);// let the previous thread start.
+        // the second thread should add dsm2 first without lock implementation but be second with the lock
+        // implementation
+        new Thread(() -> {
+            DistributedLock datasetLock = metadataRepository.createDatasetMetadataLock("1"); //$NON-NLS-1$
+            datasetLock.lock();
+            try {
+                metadataRepository.add(dsm2);
+                threadCount.decrementAndGet();
+            } finally {
+                datasetLock.unlock();
             }
         }, "Test Lock DatasetMetadata 2").start(); //$NON-NLS-1$
 

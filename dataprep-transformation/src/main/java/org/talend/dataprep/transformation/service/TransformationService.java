@@ -7,6 +7,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,6 +65,13 @@ public class TransformationService {
     @Autowired
     private ExportFactory exportFactory;
 
+    /**
+     * Apply all <code>actions</code> to <code>content</code>. Actions is a Base64-encoded JSON list of {@link ActionMetadata} with parameters.
+     *
+     * @param actions A Base64-encoded list of actions.
+     * @param content A JSON input that complies with {@link DataSet} bean.
+     * @param response The response used to send transformation result back to client.
+     */
     @RequestMapping(value = "/transform", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
     @VolumeMetered
@@ -72,6 +81,16 @@ public class TransformationService {
         transform(ExportType.JSON, actions, null, content, response);
     }
 
+    /**
+     * Similar to {@link #transform(String, InputStream, HttpServletResponse)} except this method allows client to
+     * customize the output format (see {@link ExportType available export types}).
+     *
+     * @param format The output {@link ExportType format}. This format also set the MIME response type.
+     * @param actions A Base64-encoded list of actions.
+     * @param csvSeparator The CSV separator (for {@link ExportType#CSV}), might be <code>null</code> for other export types.
+     * @param content A JSON input that complies with {@link DataSet} bean.
+     * @param response The response used to send transformation result back to client.
+     */
     @RequestMapping(value = "/export/{format}", method = POST)
     @ApiOperation(value = "Transform input data", notes = "This operation export the input data transformed using the supplied actions in the provided format.")
     @VolumeMetered
@@ -108,6 +127,19 @@ public class TransformationService {
         }
     }
 
+    /**
+     * This operation allow client to create a diff between 2 list of actions starting from the same data. For example, sending:
+     * <ul>
+     * <li>{a1, a2} as old actions</li>
+     * <li>{a1, a2, a3} as new actions</li>
+     * </ul>
+     * ... will highlight changes done by a3.
+     * @param oldActions A Base64-encoded list of actions.
+     * @param newActions A Base64-encoded list of actions.
+     * @param indexes Allows client to indicates specific line numbers to focus on.
+     * @param content A JSON input that complies with {@link DataSet} bean.
+     * @param response The response used to send transformation result back to client.
+     */
     @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data diff between the old and the new transformation actions")
     @VolumeMetered
@@ -130,6 +162,12 @@ public class TransformationService {
         }
     }
 
+    /**
+     * Suggest what {@link ActionMetadata actions} can be applied to <code>column</code>.
+     * @param column A {@link ColumnMetadata column} definition.
+     * @return A list of {@link ActionMetadata} that can be applied to this column.
+     * @see #suggest(DataSetMetadata)
+     */
     @RequestMapping(value = "/suggest/column", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given column metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ResponseBody
@@ -137,16 +175,16 @@ public class TransformationService {
         if (column == null) {
             return Collections.emptyList();
         }
-        List<ActionMetadata> suggestedActions = new ArrayList<>();
         // look for all actions applicable to the column type
-        for (ActionMetadata am : allActions) {
-            if (am.accept(column)) {
-                suggestedActions.add(am);
-            }
-        }
-        return suggestedActions;
+        return Stream.of(allActions).filter(am -> am.accept(column)).collect(Collectors.toList());
     }
 
+    /**
+     * Suggest what {@link ActionMetadata actions} can be applied to <code>dataSetMetadata</code>.
+     * @param dataSetMetadata A {@link DataSetMetadata dataset} definition.
+     * @return A list of {@link ActionMetadata} that can be applied to this data set.
+     * @see #suggest(ColumnMetadata)
+     */
     @RequestMapping(value = "/suggest/dataset", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Suggest actions for a given data set metadata", notes = "This operation returns an array of suggested actions in decreasing order of importance.")
     @ResponseBody

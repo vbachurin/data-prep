@@ -94,7 +94,8 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
                 DataType.Type[] types = TypeUtils.convert(metadata.getRow().getColumns());
                 // Run analysis
                 LOGGER.info("Analyzing quality of dataset #{}...", dataSetId);
-                Analyzer<ValueQuality> analyzer = new ValueQualityAnalyzer(types);
+                ValueQualityAnalyzer analyzer = new ValueQualityAnalyzer(types);
+                analyzer.setStoreInvalidValues(true);
                 stream.map(row -> {
                     final Map<String, Object> rowValues = row.values();
                     final List<String> strings = stream(rowValues.values().spliterator(), false) //
@@ -115,6 +116,7 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
                     quality.setEmpty((int) valueQuality.getEmptyCount());
                     quality.setValid((int) valueQuality.getValidCount());
                     quality.setInvalid((int) valueQuality.getInvalidCount());
+                    quality.setInvalidValues(valueQuality.getInvalidValues());
                     metadata.getContent().setNbRecords((int) valueQuality.getCount());
                 }
 
