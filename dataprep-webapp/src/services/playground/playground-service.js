@@ -9,11 +9,14 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.transformation.service:TransformationCacheService
+     * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.statistics:StatisticsService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService, PreparationService, MessageService, StatisticsService) {
+    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService,
+                               TransformationCacheService, ColumnSuggestionService, PreparationService, MessageService, StatisticsService) {
         var self = this;
         self.toggleHappened = null;
 
@@ -24,14 +27,6 @@
          * @description the visibility control
          */
         self.visible = false;
-
-        /**
-         * @ngdoc property
-         * @name currentData
-         * @propertyOf data-prep.services.playground.service:PlaygroundService
-         * @description the loaded data
-         */
-        self.currentData = null;
 
         /**
          * @ngdoc property
@@ -66,7 +61,7 @@
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @description Display the playground
          */
-        self.show = function () {
+        self.show = function show() {
             self.visible = true;
         };
 
@@ -76,25 +71,43 @@
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @description Hide the playground
          */
-        self.hide = function () {
+        self.hide = function hide() {
             self.visible = false;
         };
 
         //------------------------------------------------------------------------------------------------------
         //-------------------------------------------------INIT/LOAD--------------------------------------------
         //------------------------------------------------------------------------------------------------------
+        var reset = function reset(dataset, data) {
+            self.currentMetadata = dataset;
+
+            FilterService.removeAllFilters();
+            RecipeService.refresh();
+            StatisticsService.resetCharts();
+            DatagridService.setDataset(dataset, data);
+            TransformationCacheService.invalidateCache();
+            ColumnSuggestionService.reset();
+        };
+
+        var setName = function setName(name) {
+            self.preparationName = name;
+            self.originalPreparationName = name;
+        };
+
         /**
          * @ngdoc method
          * @name initPlayground
          * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @param {object} dataset - the dataset to load
+         * @param {object} dataset The dataset to load
          * @description Initiate a new preparation from dataset.
          - If there is no preparation yet and the dataset to load is still the last loaded, the playground is not changed.
          - Otherwise, the playground is reset with the wanted dataset
-         * @returns {Promise} - the process promise
+         * @returns {Promise} The process promise
          */
-        self.initPlayground = function(dataset) {
+        self.initPlayground = function initPlayground(dataset) {
             if(!self.currentMetadata || PreparationService.currentPreparationId || dataset.id !== self.currentMetadata.id) {
+                PreparationService.currentPreparationId = null;
+
                 return DatasetService.getContent(dataset.id, false)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
@@ -105,16 +118,8 @@
                             throw Error('Empty data');
                         }
 
-                        self.currentMetadata = dataset;
-                        self.currentData = data;
-                        self.preparationName = '';
-                        self.originalPreparationName = '';
-                        PreparationService.currentPreparationId = null;
-
-                        FilterService.removeAllFilters();
-                        RecipeService.reset();
-                        StatisticsService.resetCharts();
-                        DatagridService.setDataset(dataset, data);
+                        setName('');
+                        reset(dataset, data);
                     });
             }
             else {
@@ -128,30 +133,24 @@
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {object} preparation - the preparation to load
          * @description Load an existing preparation in the playground :
-          - set name,
-          - set current preparation before any preparation request
-          - load grid with 'head' version content,
-          - reinit recipe panel with preparation steps
+         <ul>
+            <li>set name</li>
+            <li>set current preparation before any preparation request</li>
+            <li>load grid with 'head' version content</li>
+            <li>reinit recipe panel with preparation steps</li>
+         </ul>
          * @returns {Promise} - the process promise
          */
-        self.load = function(preparation) {
+        self.load = function load(preparation) {
             if(PreparationService.currentPreparationId !== preparation.id) {
-                self.preparationName = preparation.name;
-                self.originalPreparationName = preparation.name;
-
                 // Update current preparation id before preparation operations
                 PreparationService.currentPreparationId = preparation.id;
 
                 $rootScope.$emit('talend.loading.start');
                 return PreparationService.getContent('head')
                     .then(function(response) {
-                        self.currentMetadata = {id: preparation.datasetId};
-                        self.currentData = response.data;
-
-                        FilterService.removeAllFilters();
-                        RecipeService.refresh();
-                        StatisticsService.resetCharts();
-                        DatagridService.setDataset(preparation.dataset, response.data);
+                        setName(preparation.name);
+                        reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
@@ -170,7 +169,7 @@
          * @description Load a specific step content in the current preparation, and update the recipe
          * @returns {promise} - the process promise
          */
-        self.loadStep = function(step) {
+        self.loadStep = function loadStep(step) {
             //step already loaded
             if(RecipeService.getActiveThresholdStep() === step) {
                 return;
@@ -179,7 +178,6 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(step.transformation.stepId)
                 .then(function(response) {
-                    self.currentData = response.data;
                     DatagridService.setDataset(self.currentMetadata, response.data);
                     RecipeService.disableStepsAfter(step);
                 })
@@ -200,7 +198,7 @@
          * @description Create a new preparation or change its name if it already exists
          * @returns {Promise} The process promise
          */
-        self.createOrUpdatePreparation = function(name) {
+        self.createOrUpdatePreparation = function createOrUpdatePreparation(name) {
             if(self.originalPreparationName !== name) {
                 return PreparationService.setName(self.currentMetadata, name)
                     .then(function() {
@@ -223,7 +221,7 @@
          * @description Perform a transformation on the column in the current preparation, refresh the recipe and the
          * data. If there is no preparation yet, PreparationService create it.
          */
-        self.appendStep = function(action, column, params) {
+        self.appendStep = function appendStep(action, column, params) {
             $rootScope.$emit('talend.loading.start');
             return PreparationService.appendStep(self.currentMetadata, action, column, params)
                 .then(function() {

@@ -9,11 +9,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+
 @SpringBootApplication
 @ComponentScan(basePackages = "org.talend.dataprep")
 public class Application implements DisposableBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+
+    @Autowired(required = false)
+    private HazelcastInstance hazelcastInstance;
 
     @Autowired(required = false)
     private SparkContext context;
@@ -24,6 +30,7 @@ public class Application implements DisposableBean {
 
     @Override
     public void destroy() throws Exception {
+        // Spark shutdown
         if (context != null) {
             LOGGER.info("Stopping Spark context...");
             context.stop();
@@ -31,5 +38,15 @@ public class Application implements DisposableBean {
         } else {
             LOGGER.info("No Spark context to stop.");
         }
+        // Hazelcast shutdown
+        if (hazelcastInstance != null) {
+            LOGGER.info("Stopping Hazelcast...");
+            hazelcastInstance.shutdown();
+            Hazelcast.shutdownAll();
+            LOGGER.info("Stopped Hazelcast.");
+        } else {
+            LOGGER.info("No Hazelcast to stop.");
+        }
+
     }
 }

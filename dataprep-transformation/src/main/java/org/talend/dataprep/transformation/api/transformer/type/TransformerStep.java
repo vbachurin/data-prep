@@ -5,7 +5,7 @@ import org.talend.dataprep.transformation.api.transformer.input.TransformerConfi
 /**
  * Definition of a Dataset content Type (column, records, ...) transformer/serializer.
  */
-public interface TypeTransformer {
+public interface TransformerStep {
 
     /**
      * Apply the transformation.

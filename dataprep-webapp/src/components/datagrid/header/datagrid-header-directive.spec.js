@@ -20,7 +20,7 @@ describe('Dataset column header directive', function() {
         };
     }));
     
-    it('should display column title, domain and set quality bars width', function() {
+    it('should display column title and domain', function() {
         //given
         scope.column = {
             'id': '0',
@@ -40,12 +40,9 @@ describe('Dataset column header directive', function() {
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
         expect(element.find('.grid-header-type').text()).toBe('city');
-        expect(element.find('.record-ok').css('width')).toBe('78%');
-        expect(element.find('.record-empty').css('width')).toBe('10%');
-        expect(element.find('.record-nok').css('width')).toBe('12%');
     });
 
-    it('should display column title, type and set quality bars width', function() {
+    it('should display column title and type', function() {
         //given
         scope.column = {
             'id': '0',
@@ -64,9 +61,6 @@ describe('Dataset column header directive', function() {
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
         expect(element.find('.grid-header-type').text()).toBe('text');
-        expect(element.find('.record-ok').css('width')).toBe('78%');
-        expect(element.find('.record-empty').css('width')).toBe('10%');
-        expect(element.find('.record-nok').css('width')).toBe('12%');
     });
 
     it('should close dropdown on get transform list error', function() {
