@@ -118,11 +118,10 @@ describe('recipeBullet directive', function () {
         spyOn(RecipeBulletService, 'toggleStep').and.returnValue();
     }));
 
-    afterEach(inject(function (RecipeService) {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
-        RecipeService.reset();
-    }));
+    });
 
     it('should render all bullets', function () {
         //when

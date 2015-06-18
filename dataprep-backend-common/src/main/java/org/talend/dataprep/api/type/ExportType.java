@@ -19,7 +19,9 @@ public enum ExportType {
                     new ParameterValue(" ", "SEPARATOR_SPACE"), //
                     new ParameterValue(",", "SEPARATOR_COMMA"))))),
     XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()),
-    TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList());
+    TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList()),
+    JSON("application.json", ".json", false, false, Collections.<Parameter> emptyList());
+
 
     private final String mimeType;
 

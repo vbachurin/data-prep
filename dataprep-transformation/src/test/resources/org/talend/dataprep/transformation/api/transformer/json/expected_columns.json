@@ -1,0 +1,30 @@
+[
+  {
+    "name": "id",
+    "headerSize": 0,
+    "type": "string",
+    "quality": {
+      "empty": 0,
+      "invalid": 0,
+      "valid": 0,
+      "invalidValues": []
+    },
+    "id": "0001",
+    "statistics": {},
+    "domain": ""
+  },
+  {
+    "name": "firstname",
+    "headerSize": 0,
+    "type": "string",
+    "quality": {
+      "empty": 0,
+      "invalid": 0,
+      "valid": 0,
+      "invalidValues": []
+    },
+    "id": "0002",
+    "statistics": {},
+    "domain": ""
+  }
+]

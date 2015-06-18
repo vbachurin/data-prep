@@ -204,4 +204,9 @@ public class TableauWriter implements TransformerWriter {
         file.delete();
     }
 
+    @Override
+    public boolean requireMetadataForHeader() {
+        return true;
+    }
+
 }

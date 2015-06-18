@@ -5,12 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
-
-import com.fasterxml.jackson.core.JsonParser;
 
 /**
  * Full configuration for a transformation.
@@ -18,7 +17,7 @@ import com.fasterxml.jackson.core.JsonParser;
 public class TransformerConfiguration {
 
     /** The dataset input to transform. */
-    private final JsonParser input;
+    private final DataSet input;
 
     /** Where to write the transformed content. */
     private final TransformerWriter output;
@@ -48,7 +47,7 @@ public class TransformerConfiguration {
      * @param columnActions the actions to perform on columns.
      * @param recordActions the actions to perform on records.
      */
-    private TransformerConfiguration(final JsonParser input, //
+    private TransformerConfiguration(final DataSet input, //
             final TransformerWriter output, //
             final List<Integer> indexes, //
             final boolean preview, //
@@ -76,7 +75,7 @@ public class TransformerConfiguration {
     /**
      * @return the dataset to transform as json parser.
      */
-    public JsonParser getInput() {
+    public DataSet getInput() {
         return input;
     }
 
@@ -136,7 +135,7 @@ public class TransformerConfiguration {
     public static class Builder {
 
         /** The dataset input to transform. */
-        private JsonParser input;
+        private DataSet input;
 
         /** Where to write the transformed content. */
         private TransformerWriter output;
@@ -157,7 +156,7 @@ public class TransformerConfiguration {
          * @param input the dataset input to set.
          * @return the builder to chain calls.
          */
-        public Builder input(final JsonParser input) {
+        public Builder input(final DataSet input) {
             this.input = input;
             return this;
         }

@@ -23,8 +23,9 @@ describe('Recipe controller', function() {
         spyOn(RecipeService, 'getPreviousStep').and.returnValue(previousStep);
         spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(3);
         spyOn(RecipeService, 'refresh').and.callFake(function() {
-            RecipeService.reset();
-            RecipeService.getRecipe().push(lastActiveStep);
+            var recipe = RecipeService.getRecipe();
+            recipe.splice(0, recipe.length);
+            recipe.push(lastActiveStep);
         });
         spyOn(PreparationService, 'updateStep').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'loadStep').and.returnValue($q.when(true));
@@ -32,12 +33,6 @@ describe('Recipe controller', function() {
         spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
         spyOn($timeout, 'cancel').and.callThrough();
-    }));
-
-    afterEach(inject(function(RecipeService) {
-        RecipeService.reset();
-        //var recipe = RecipeService.getRecipe();
-        //recipe.splice(0, recipe.length);
     }));
 
     it('should bind recipe getter with RecipeService', inject(function(RecipeService) {

@@ -32,10 +32,6 @@ describe('Recipe Bullet service', function() {
 		spyOn($timeout, 'cancel').and.callThrough();
 	}));
 
-	afterEach(inject(function(RecipeService) {
-		RecipeService.reset();
-	}));
-
 	it('should highlight active steps after the targeted one (included)', inject(function(RecipeService, RecipeBulletService) {
 		//given
 		var recipe = RecipeService.getRecipe();

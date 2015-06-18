@@ -50,7 +50,7 @@
          * @description Return recipe step list
          * @returns {object[]} The recipe step list
          */
-        this.getRecipe = function() {
+        this.getRecipe = function getRecipe() {
             return recipe;
         };
 
@@ -63,7 +63,7 @@
          * @description Return a recipe step identified by index
          * @returns {object} The recipe step
          */
-        this.getStep = function(index, defaultLast) {
+        this.getStep = function getStep(index, defaultLast) {
             if(index >= recipe.length || index < 0) {
                 return defaultLast ? recipe[recipe.length - 1] : null;
             }
@@ -78,7 +78,7 @@
          * @description Return the step just before the provided index
          * @returns {object} The recipe step
          */
-        this.getStepBefore = function(index) {
+        this.getStepBefore = function getStepBefore(index) {
             if(index <= 0) {
                 return initialState;
             }
@@ -96,26 +96,18 @@
          * @param {object} step The given step
          * @description Get the step before the given one
          */
-        this.getPreviousStep = function(step) {
-            var previousStep = initialState;
-            for(var i in recipe) {
-                var currentStep = recipe[i];
-                if(currentStep === step) {
-                    return previousStep;
-                }
-                else {
-                    previousStep = currentStep;
-                }
-            }
+        this.getPreviousStep = function getPreviousStep(step) {
+            var index = recipe.indexOf(step);
+            return self.getStepBefore(index);
         };
 
         /**
          * @ngdoc method
          * @name reset
          * @methodOf data-prep.services.recipe.service:RecipeService
-         * @description Reset the current recipe
+         * @description [PRIVATE] Reset the current recipe
          */
-        this.reset = function() {
+        var reset = function reset() {
             initialState = null;
             recipe = [];
             activeThresholdStep = null;
@@ -128,7 +120,7 @@
          * @description Get the last active step
          * @returns {object} - the last active step
          */
-        this.getActiveThresholdStep = function() {
+        this.getActiveThresholdStep = function getActiveThresholdStep() {
             return activeThresholdStep;
         };
 
@@ -139,7 +131,7 @@
          * @description Get the last active step index
          * @returns {number} The last active step index
          */
-        this.getActiveThresholdStepIndex = function() {
+        this.getActiveThresholdStepIndex = function getActiveThresholdStepIndex() {
             return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : recipe.length -1;
         };
 
@@ -151,7 +143,7 @@
          * @description Get the current clicked step index
          * @returns {number} The current step index
          */
-        this.getStepIndex = function(step) {
+        this.getStepIndex = function getStepIndex(step) {
             return recipe.indexOf(step);
         };
 
@@ -162,7 +154,7 @@
          * @description Get the last active step (last step if activeThresholdStep var is not set)
          * @returns {object} The last active step
          */
-        this.getLastActiveStep = function() {
+        this.getLastActiveStep = function getLastActiveStep() {
             return activeThresholdStep ? activeThresholdStep : recipe[recipe.length - 1];
         };
 
@@ -174,7 +166,7 @@
          * @description Test if the provided step is the first step of the recipe
          * @returns {object} The step to test
          */
-        this.isFirstStep = function(step) {
+        this.isFirstStep = function isFirstStep(step) {
             return  self.getStepIndex(step) === 0;
         };
 
@@ -186,7 +178,7 @@
          * @description Test if the provided step is the last step of the recipe
          * @returns {object} The step to test
          */
-        this.isLastStep = function(step) {
+        this.isLastStep = function isLastStep(step) {
             return  self.getStepIndex(step) === recipe.length - 1;
         };
 
@@ -201,7 +193,7 @@
          * @param {object} recipeItem The item to reset
          * @description Reset all params of the recipe item, with saved values (param.initialValue)
          */
-        this.resetParams = function(recipeItem) {
+        this.resetParams = function resetParams(recipeItem) {
             //simple parameters
             TransformationService.resetParamValue(recipeItem.transformation.parameters, null);
 
@@ -221,7 +213,7 @@
          * If a step exists in the old recipe (same stepId == same parent + same content), we reuse them
          * Otherwise, we call the backend
          */
-        var initDynamicParams = function(recipes) {
+        var initDynamicParams = function initDynamicParams(recipes) {
             var getOldStepById = function(step) {
                 return _.find(recipes.old, function(oldStep) {
                     return oldStep.transformation.stepId === step.transformation.stepId;
@@ -267,7 +259,7 @@
          * @description [PRIVATE] Create a recipe item from Preparation step
          * @returns {object} - the adapted recipe item
          */
-        var createItem = function(actionStep) {
+        var createItem = function createItem(actionStep) {
             var stepId = actionStep[0];
             var actionValues = actionStep[1];
             var metadata = actionStep[2];
@@ -301,7 +293,11 @@
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @description Refresh recipe items with current preparation steps
          */
-        this.refresh = function() {
+        this.refresh = function refresh() {
+            if(!PreparationService.currentPreparationId) {
+                return reset();
+            }
+
             return PreparationService.getDetails()
                 .then(function(resp) {
                     //steps ids are in reverse order and the last is the 'no-transformation' id
@@ -335,7 +331,7 @@
          * @param {object} step - the limit between active and inactive
          * @description Disable all steps after the given one
          */
-        this.disableStepsAfter = function(step) {
+        this.disableStepsAfter = function disableStepsAfter(step) {
             var stepFound = step === initialState;
             _.forEach(recipe, function(nextStep) {
                 if(stepFound) {
