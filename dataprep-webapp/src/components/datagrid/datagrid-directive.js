@@ -210,7 +210,6 @@
                  * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
                  */
                 var updateColSelection = function (column) {
-                    DatagridService.setSelectedColumn(column.id);
                     StatisticsService.processVisuData(column.tdpColMetadata);
                     ColumnSuggestionService.setColumn(column.tdpColMetadata); // this will trigger a digest after REST call
                 };

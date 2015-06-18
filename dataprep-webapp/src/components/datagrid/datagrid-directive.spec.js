@@ -491,7 +491,6 @@ describe('Datagrid directive', function () {
         scope.$digest();
 
         angular.element('body').append(element);
-        spyOn(DatagridService, 'setSelectedColumn').and.returnValue(null);
         spyOn(ColumnSuggestionService, 'setColumn').and.returnValue(null);
         spyOn(StatisticsService, 'processVisuData').and.returnValue();
     }));
@@ -582,22 +581,6 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(colIndex).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should set selected column on cell clicked', inject(function (DatagridService) {
-        //given
-        var colIndex = 2;
-
-        DatagridService.setDataset(metadata, data);
-        scope.$digest();
-
-        //when
-        var grid = new GridGetter(element);
-        grid.row(0).cell(colIndex).element().click();
-        scope.$digest();
-
-        //then
-        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0002');
-    }));
-
     it('should trigger chart rendering according to the column domain', inject(function ($timeout, DatagridService, StatisticsService) {
         //given
         var colIndex = 2;
@@ -615,7 +598,7 @@ describe('Datagrid directive', function () {
         expect(StatisticsService.processVisuData).toHaveBeenCalledWith(data.columns[colIndex]);
     }));
 
-    it('should set column in transfromation suggestion service on cell clicked', inject(function (DatagridService, ColumnSuggestionService) {
+    it('should set column in transformation suggestion service on cell clicked', inject(function (DatagridService, ColumnSuggestionService) {
         //given
         var colIndex = 2;
 
@@ -663,18 +646,6 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should change selected column on column header click', inject(function (DatagridService) {
-        //given
-        DatagridService.setDataset(metadata, dataWithEmptyCell);
-        scope.$digest();
-
-        //when
-        element.find('#datagrid-header-1').eq(0).click();
-
-        //then
-        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0001');
-    }));
-
     it('should change selected column in transformation suggestion service on column header click', inject(function (DatagridService, ColumnSuggestionService) {
         //given
         DatagridService.setDataset(metadata, dataWithEmptyCell);
@@ -687,14 +658,14 @@ describe('Datagrid directive', function () {
         expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(dataWithEmptyCell.columns[1]);
     }));
 
-    it('should do nothing on already selected column header click', inject(function ($timeout, DatagridService) {
+    it('should do nothing on already selected column header click', inject(function ($timeout, DatagridService, ColumnSuggestionService) {
         //given
         var grid = new GridGetter(element);
         DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         element.find('#datagrid-header-1').eq(0).click();
-        expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
+        expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
         expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
 
@@ -703,7 +674,7 @@ describe('Datagrid directive', function () {
         $timeout.flush();
 
         //then
-        expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
+        expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
         expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
     }));
