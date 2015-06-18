@@ -3,17 +3,18 @@
 
     /**
      * @ngdoc controller
-     * @name talend.widget.controller:TalendQualityBarCtrl
+     * @name data-prep.quality-bar.controller:QualityBarCtrl
      * @description Quality bar controller
+     * @requires data-prep.services.filter.service:FilterService
      */
-    function TalendQualityBarCtrl() {
+    function QualityBarCtrl(FilterService) {
         var MIN_QUALITY_WIDTH = 10;
         var vm = this;
 
         /**
          * @ngdoc method
          * @name getMinimalPercent
-         * @methodOf talend.widget.controller:TalendQualityBarCtrl
+         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
          * @param {number} percent The real width
          * @description [PRIVATE] Return the adapted width to have a min value if the real value is greater than 0
          */
@@ -32,7 +33,7 @@
         /**
          * @ngdoc method
          * @name reduce
-         * @methodOf talend.widget.controller:TalendQualityBarCtrl
+         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
          * @param {object} widthObject Object containing the 3 bars width
          * @description [PRIVATE] Return the modifiable object keys sorted by object value desc.
          * An entry is modifiable if the value is greater than the minimum width
@@ -55,7 +56,7 @@
         /**
          * @ngdoc method
          * @name reduce
-         * @methodOf talend.widget.controller:TalendQualityBarCtrl
+         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
          * @param {object} widthObject Object containing the 3 bars width
          * @param {number} amount The amount to remove from the bars
          * @description [PRIVATE] Reduce the bars width to fit 100%. The amount value is removed.
@@ -82,7 +83,7 @@
         /**
          * @ngdoc method
          * @name computeWidth
-         * @methodOf talend.widget.controller:TalendQualityBarCtrl
+         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
          * @description [PRIVATE] Compute quality bars width
          * WARNING : the percentages must be computed before this function call
          */
@@ -104,7 +105,7 @@
         /**
          * @ngdoc method
          * @name computePercent
-         * @methodOf talend.widget.controller:TalendQualityBarCtrl
+         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
          * @description [PRIVATE] Compute quality bars percentage
          */
         vm.computePercent = function computePercent() {
@@ -120,14 +121,36 @@
         /**
          * @ngdoc method
          * @name hashQuality
-         * @methodOf talend.widget.controller:TalendQualityBarCtrl
+         * @methodOf data-prep.quality-bar.controller:QualityBarCtrl
          * @description [PRIVATE] Calculate a simple hash from concatenating values
          */
         vm.hashQuality = function hashQuality() {
             return vm.quality.empty + '' + vm.quality.invalid + '' + vm.quality.valid;
         };
+
+        /**
+         * @ngdoc method
+         * @name filterInvalidRecords
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description Create a filter for invalid records on the given column.
+         * @param {object} column - the column to filter
+         */
+        vm.filterInvalidRecords = function(column) {
+            FilterService.addFilter('invalid_records', column.id, column.name, {values: column.quality.invalidValues});
+        };
+
+        /**
+         * @ngdoc method
+         * @name filterEmptyRecords
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description Create a filter for empty records on the given column.
+         * @param {object} column - the column to filter
+         */
+        vm.filterEmptyRecords = function(column) {
+            FilterService.addFilter('empty_records', column.id, column.name, {});
+        };
     }
 
-    angular.module('talend.widget')
-        .controller('TalendQualityBarCtrl', TalendQualityBarCtrl);
+    angular.module('data-prep.quality-bar')
+        .controller('QualityBarCtrl', QualityBarCtrl);
 })();

@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc directive
-     * @name talend.widget.directive:TalendQualityBar
+     * @name data-prep.quality-bar.directive:QualityBar
      * @description Quality bar tooltip
      * @restrict E
      * @usage
@@ -16,10 +16,10 @@
      * @param {object} column The quality target column
      * @param {string} enterAnimation Do not animate on enter if this flag === 'false'
      */
-    function TalendQualityBar($timeout) {
+    function QualityBar($timeout) {
         return {
             restrict: 'E',
-            templateUrl: 'components/widgets/quality-bar/quality-bar.html',
+            templateUrl: 'components/datagrid/quality-bar/quality-bar.html',
             replace: true,
             scope: {
                 quality: '=',
@@ -27,7 +27,7 @@
                 enterAnimation: '@'
             },
             bindToController: true,
-            controller: 'TalendQualityBarCtrl',
+            controller: 'QualityBarCtrl',
             controllerAs: 'qualityBarCtrl',
             link: function(scope, iElement, iAttrs, ctrl) {
                 var initializing = true;
@@ -35,7 +35,7 @@
                 /**
                  * @ngdoc method
                  * @name enableTransition
-                 * @methodOf talend.widget.directive:TalendQualityBar
+                 * @methodOf data-prep.quality-bar.directive:QualityBar
                  * @description [PRIVATE] Enable animation
                  */
                 var enableTransition = function enableTransition() {
@@ -45,7 +45,7 @@
                 /**
                  * @ngdoc method
                  * @name refreshBarsWithAnimation
-                 * @methodOf talend.widget.directive:TalendTooltip
+                 * @methodOf data-prep.quality-bar.directive:QualityBar
                  * @description [PRIVATE] Block animation, reset width to 0 and calculate the new width with animation enabling
                  */
                 var refreshBarsWithAnimation = function refreshBarsWithAnimation() {
@@ -67,7 +67,7 @@
                 /**
                  * @ngdoc method
                  * @name refreshBars
-                 * @methodOf talend.widget.directive:TalendTooltip
+                 * @methodOf data-prep.quality-bar.directive:QualityBar
                  * @description [PRIVATE] Refresh the quality bars infos (percent and width)
                  * When enterAnimation === 'false', we do NOT animate on first render
                  */
@@ -88,6 +88,6 @@
         };
     }
 
-    angular.module('talend.widget')
-        .directive('talendQualityBar', TalendQualityBar);
+    angular.module('data-prep.quality-bar')
+        .directive('qualityBar', QualityBar);
 })();

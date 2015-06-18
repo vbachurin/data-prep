@@ -3,13 +3,13 @@ describe('Quality bar controller', function () {
 
     var createController, scope;
 
-    beforeEach(module('talend.widget'));
+    beforeEach(module('data-prep.quality-bar'));
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
 
         createController = function () {
-            var ctrl = $controller('TalendQualityBarCtrl', {
+            var ctrl = $controller('QualityBarCtrl', {
                 $scope: scope
             });
             return ctrl;
@@ -201,4 +201,58 @@ describe('Quality bar controller', function () {
         expect(ctrl.width.invalid).toBe(80);
         expect(ctrl.width.valid).toBe(10);
     });
+
+
+    describe('when dealing with filters', function() {
+
+        beforeEach(inject(function(FilterService) {
+            spyOn(FilterService, 'addFilter').and.returnValue();
+        }));
+
+        it('should set filter on invalid records', inject(function(FilterService) {
+
+            //given
+            var ctrl = createController();
+            var col = {
+                'id': '0000',
+                'name': 'MostPopulousCity',
+                'quality': {
+                    'empty': 0,
+                    'invalid': 10,
+                    'valid': 90,
+                    'invalidValues': ['AA', 'AB', 'BA']
+                },
+                'type': 'string'
+            };
+
+            //when
+            ctrl.filterInvalidRecords(col);
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalledWith('invalid_records', col.id, col.name, {values: col.quality.invalidValues});
+        }));
+
+        it('should set filter on empty records', inject(function(FilterService) {
+
+            //given
+            var ctrl = createController();
+            var col = {
+                'id': '0001',
+                'name': 'age',
+                'quality': {
+                    'empty': 10,
+                    'invalid': 0,
+                    'valid': 90
+                },
+                'type': 'integer'
+            };
+
+            //when
+            ctrl.filterEmptyRecords(col);
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalledWith('empty_records', col.id, col.name, {});
+        }));
+    });
+
 });

@@ -7,9 +7,10 @@
      * @description Dataset Column Header controller.
      * @requires data-prep.services.transformation.service:TransformationCacheService
      * @requires data-prep.services.utils.service:ConverterService
-     * @requires data-prep.services.filter.service:FilterService
      */
-    function DatagridHeaderCtrl(TransformationCacheService, ConverterService, FilterService) {
+    function DatagridHeaderCtrl(TransformationCacheService, ConverterService) {
+        var COLUMN_CATEGORY = 'columns';
+
         var vm = this;
         vm.converterService = ConverterService;
 
@@ -37,28 +38,6 @@
                         vm.initTransformationsInProgress = false;
                     });
             }
-        };
-
-        /**
-         * @ngdoc method
-         * @name filterInvalidRecords
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description Create a filter for invalid records on the given column.
-         * @param {object} column - the column to filter
-         */
-        vm.filterInvalidRecords = function(column) {
-            FilterService.addFilter('invalid_records', column.id, column.name, {values: column.quality.invalidValues});
-        };
-
-        /**
-         * @ngdoc method
-         * @name filterEmptyRecords
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description Create a filter for empty records on the given column.
-         * @param {object} column - the column to filter
-         */
-        vm.filterEmptyRecords = function(column) {
-            FilterService.addFilter('empty_records', column.id, column.name, {});
         };
 
     }
