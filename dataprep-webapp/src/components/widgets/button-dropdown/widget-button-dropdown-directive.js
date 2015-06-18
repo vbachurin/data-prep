@@ -11,20 +11,15 @@
      * </ul>
      * @restrict EA
      * @usage
-     <talend-button-dropdown close-on-select="false" on-open="onOpen()">
-      <div class="button-dropdown-container">
-           <div class="button-dropdown-action">
-               <div class="button-dropdown-button">{{ column.id }}</div>
-               <div>{{ column.type }}</div>
-           </div>
-           <ul class="button-dropdown-menu">
-               <li><a href="#">Hide Column {{ column.id | uppercase }}</a></li>
-               <li class="divider"></li>
-               <li<a href="#">Split first Space</a></li>
-               <li><a href="#">Uppercase</a></li>
-           </ul>
-      </div>
-      </talend-button-dropdown>
+     <talend-button-dropdown close-on-select="true" on-open="onOpen()">
+        <div class="dropdown-container">
+            <button class="t-btn-primary" ng-click="exportCtrl.launchExport()">{{ ::'EXPORT' | translate }}</button>
+            <button class="t-btn dropdown-button"></button>
+                <ul class="dropdown-menu dropdown-select">
+                    <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.launchExport(exportType)">{{exportType.id}}</li>
+                </ul>
+            </div>
+     </talend-button-dropdown>
      * @param {boolean} closeOnSelect Default `true`. If set to false, dropdown will not close on inner item click
      * @param {function} onOpen The callback to execute on dropdown open
      * @param {class} dropdown-action Action zone that trigger menu toggle

@@ -1,22 +1,42 @@
 (function() {
     'use strict';
 
-    function ExportCtrl($window,PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService,$translate) {
+    /**
+     * @ngdoc controller
+     * @name data-prep.export.controller:ExportCtrl
+     * @description Export controller.
+     * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.preparation.service:PreparationService
+     * @requires data-prep.services.recipe.service:RecipeService
+     * @requires data-prep.services.utils.service:RestURLs
+     * @requires data-prep.services.export.service:ExportService
+     */
+    function ExportCtrl($window,PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService) {
         var vm = this;
         vm.exportUrl = RestURLs.exportUrl;
         vm.preparationService = PreparationService;
         vm.recipeService = RecipeService;
         vm.playgroundService = PlaygroundService;
         vm.exportService = ExportService;
-        vm.translateService = $translate;
+
+        // all export types
         vm.exportTypes = [];
+        // dynamic object populated by reflection
         vm.exportParameters = {};
 
+        // constantes for localStorage keys
         vm.exportParamKey = "datarep.export.param";
         vm.exportIdKey = 'dataprep.export.id';
 
         vm.currentExportType = {};
 
+
+        /**
+         * @ngdoc method
+         * @name launchExport
+         * @methodOf data-prep.export.controller:ExportCtrl
+         * @description use by dropdown button list to change default export and define parameters
+         */
         vm.launchExport = function(exportType){
 
             vm.currentExportType=exportType;
@@ -50,6 +70,12 @@
             vm.export(exportId);
         };
 
+        /**
+         * @ngdoc method
+         * @name export
+         * @methodOf data-prep.export.controller:ExportCtrl
+         * @description start the export
+         */
         vm.export = function () {
 
             // search in local storage
@@ -86,6 +112,12 @@
 
         };
 
+        /**
+         * @ngdoc method
+         * @name setupParametersModal
+         * @methodOf data-prep.export.controller:ExportCtrl
+         * @description prepare dynamic objects with new fields corresponding to export parameters
+         */
         vm.setupParametersModal = function(exportType) {
             _.each( exportType.parameters, function ( val )
             {
@@ -99,6 +131,8 @@
             vm.showExport = true;
         };
 
+
+        // setup export types on start
         ExportService.exportTypes()
             .then(function(response){
                 vm.exportTypes = response.data;
