@@ -84,14 +84,13 @@ describe('Playground directive', function() {
         var stepsHeader = angular.element('body').find('#stepsHeaderId');
         //console.log(stepsHeader.length);
         //var stepsHeader = playground.find('#stepsHeaderId').eq(0);
-        var editionBtn = stepsHeader.find('button').eq(0)[0];
-        //console.log(editionBtn.length);
-        //console.log(editionBtn);
+        var editionBtn = stepsHeader.find('button').eq(0);
+        var confirmBtn = stepsHeader.find('button').eq(1);
+        console.log(editionBtn.length);
         var event = new angular.element.Event('click');
-		//
-        ////when
+        //when
         editionBtn.trigger(event);
-        expect(editionBtn.hasClass('ng-hide').toBe(true));
+        expect(confirmBtn.hasClass('ng-hide')).toBe(true);
     }));
 
     describe('hide playground', function() {

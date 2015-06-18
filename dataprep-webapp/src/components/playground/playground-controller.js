@@ -13,7 +13,7 @@
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
-        vm.editionMode = false;
+        vm.editionMode = true;
         vm.recipeService = RecipeService;
         /**
          * @ngdoc method
@@ -163,7 +163,7 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.recipeService.getRecipe().length?true:false;
+                return this.recipeService.getRecipe().length;
             }
         });
 
