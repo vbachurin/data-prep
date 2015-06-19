@@ -23,13 +23,22 @@ FTP_HOST='ftp.talend.com'
 FTP_USER='dataprep'
 FTP_PASSWD='-_V 8bS){'
 
+
+#===========================================
+docker run -t mribeiro/figlet docker tag
+#===========================================
 for image in $images;
 do
   completeName=$image:$version
   echo 'docker tag --force '$completeName $registry/$completeName
   docker tag --force $completeName $registry/$completeName
 done
+#===========================================
 
+
+#===========================================
+docker run -t mribeiro/figlet archive images (docker save + gzip)
+#===========================================
 for image in $images;
 do
   list+=$registry/$image:$version
@@ -46,12 +55,13 @@ time docker save --output=$tar_archive $list
 
 echo 'gzip tar'
 time gzip $tar_archive
+#===========================================
 
+
+#===========================================
+docker run -t mribeiro/figlet FTP upload
+#===========================================
 tar_archive=$tar_archive'.gz'
-#===========================================
-figlet FTP upload
-#===========================================
-echo 'upload to ftp'
 md5sum $tar_archive > $tar_archive'.md5sum'
 
 ftp -n $FTP_HOST <<END_SCRIPT
@@ -67,7 +77,7 @@ END_SCRIPT
 
 
 #===========================================
-figlet docker push
+docker run -t mribeiro/figlet docker push
 #===========================================
 echo 'remove temp files'
 rm $tar_archive*
@@ -82,7 +92,7 @@ done
 
 
 #===========================================
-figlet notify dev server
+docker run -t mribeiro/figlet notify dev server
 #===========================================
 ssh talend@dev.data-prep.talend.lan 'bash -s' < notifyRemote.sh $version
 #===========================================
