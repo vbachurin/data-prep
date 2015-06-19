@@ -93,5 +93,25 @@ public class SchemaAnalyzerTest {
         }
     }
 
-
+    @Test
+    public void testGenderAnalysis() throws Exception {
+        final DataSetMetadata metadata = metadata().id("1234").build();
+        repository.add(metadata);
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("gender.csv"));
+        formatAnalysis.analyze("1234");
+        // Analyze schema
+        schemaAnalysis.analyze("1234");
+        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        // Gender must be a String with Gender domain
+        String[] expectedNames = { "name", "bounty", "gender" };
+        Type[] expectedTypes = {Type.STRING, Type.INTEGER, Type.STRING};
+        String[] expectedDomains = {"", "", "GENDER"};
+        int i = 0;
+        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+            assertThat(column.getName(), is(expectedNames[i]));
+            assertThat(column.getType(), is(expectedTypes[i].getName()));
+            assertThat(column.getDomain(), is(expectedDomains[i]));
+            i++;
+        }
+    }
 }
