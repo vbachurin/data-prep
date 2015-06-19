@@ -24,21 +24,21 @@ FTP_USER='dataprep'
 FTP_PASSWD='-_V 8bS){'
 
 
-#===========================================
-docker run -t mribeiro/figlet docker tag
-#===========================================
+echo '==========================================='
+echo 'docker tag'
+echo '==========================================='
 for image in $images;
 do
   completeName=$image:$version
   echo 'docker tag --force '$completeName $registry/$completeName
   docker tag --force $completeName $registry/$completeName
 done
-#===========================================
+echo '==========================================='
 
 
-#===========================================
-docker run -t mribeiro/figlet archive images
-#===========================================
+echo '==========================================='
+echo archive images
+echo '==========================================='
 for image in $images;
 do
   list+=$registry/$image:$version
@@ -55,12 +55,12 @@ time docker save --output=$tar_archive $list
 
 echo 'gzip tar'
 time gzip $tar_archive
-#===========================================
+echo '==========================================='
 
 
-#===========================================
-docker run -t mribeiro/figlet FTP upload
-#===========================================
+echo '==========================================='
+echo 'FTP upload'
+echo '==========================================='
 tar_archive=$tar_archive'.gz'
 md5sum $tar_archive > $tar_archive'.md5sum'
 
@@ -73,12 +73,12 @@ put $tar_archive
 put $tar_archive.md5sum
 quit
 END_SCRIPT
-#===========================================
+echo '==========================================='
 
 
-#===========================================
-docker run -t mribeiro/figlet docker push
-#===========================================
+echo '==========================================='
+echo 'docker push'
+echo '==========================================='
 echo 'remove temp files'
 rm $tar_archive*
 
@@ -88,12 +88,12 @@ do
   docker push $registry/$completeName
   docker rmi $registry/$completeName
 done
-#===========================================
+echo '==========================================='
 
 
-#===========================================
-docker run -t mribeiro/figlet notify dev server
-#===========================================
+echo '==========================================='
+echo 'notify dev server'
+echo '==========================================='
 ssh talend@dev.data-prep.talend.lan 'bash -s' < notifyRemote.sh $version
-#===========================================
+echo '==========================================='
 
