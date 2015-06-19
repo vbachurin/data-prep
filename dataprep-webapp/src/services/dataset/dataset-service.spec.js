@@ -1,7 +1,11 @@
 describe('Dataset Service', function () {
     'use strict';
 
-    var datasets = [{name: 'my dataset'}, {name: 'my second dataset'}, {name: 'my second dataset (1)'}, {name: 'my second dataset (2)'}];
+    var datasets = [{id:'11', name: 'my dataset'},
+                    {id:'22', name: 'my second dataset'},
+                    {id:'33', name: 'my second dataset (1)'},
+                    {id:'44', name: 'my second dataset (2)'}];
+
     var preparationConsolidation, datasetConsolidation;
     var promiseWithProgress;
     var preparations = [{id: '4385fa764bce39593a405d91bc23'}];
@@ -305,4 +309,60 @@ describe('Dataset Service', function () {
         expect(metadata.sheetName).toBe(sheetName);
         expect(DatasetRestService.updateMetadata).toHaveBeenCalledWith(metadata);
     }));
+
+
+    it('should find dataset by name', inject(function (DatasetService, DatasetListService) {
+        //given
+        DatasetListService.datasets = datasets;
+
+        //when
+        var actual = DatasetService.getDatasetByName(datasets[1].name);
+
+        //then
+        expect(actual).toBe(datasets[1]);
+    }));
+
+    it('should not find dataset by name', inject(function (DatasetService, DatasetListService) {
+        //given
+        DatasetListService.datasets = datasets;
+
+        //when
+        var actual = DatasetService.getDatasetByName('unknown');
+
+        //then
+        expect(actual).toBeUndefined();
+    }));
+
+    it('should find dataset by id', inject(function ($rootScope, DatasetService, DatasetListService) {
+        //given
+        DatasetListService.datasets = datasets;
+
+        var actual;
+
+        //when
+        DatasetService.getDatasetById(datasets[2].id).then(function(dataset) {
+                                                        actual = dataset;
+                                                      });
+        $rootScope.$digest();
+
+        //then
+        expect(actual).toBe(datasets[2]);
+    }));
+
+    it('should not find dataset by id', inject(function ($rootScope, DatasetService, DatasetListService) {
+        //given
+        DatasetListService.datasets = datasets;
+
+        var actual;
+
+        //when
+        DatasetService.getDatasetById('not to be found').then(function(dataset) {
+                                                        actual = dataset;
+                                                      });
+        $rootScope.$digest();
+
+        //then
+        expect(actual).toBeUndefined();
+    }));
+
 });
