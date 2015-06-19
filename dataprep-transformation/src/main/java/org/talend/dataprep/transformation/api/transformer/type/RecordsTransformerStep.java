@@ -3,6 +3,8 @@ package org.talend.dataprep.transformation.api.transformer.type;
 import static java.util.stream.StreamSupport.stream;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +24,13 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
+import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
+import org.talend.datascience.common.inference.Analyzer;
+import org.talend.datascience.common.inference.Analyzers;
 import org.talend.datascience.common.inference.quality.ValueQuality;
 import org.talend.datascience.common.inference.quality.ValueQualityAnalyzer;
+import org.talend.datascience.common.inference.semantic.SemanticAnalyzer;
+import org.talend.datascience.common.inference.semantic.SemanticType;
 import org.talend.datascience.common.inference.type.DataType;
 
 /**
@@ -77,10 +84,19 @@ public class RecordsTransformerStep implements TransformerStep {
                 if (indexes != null) {
                     process = process.filter(p -> indexes.contains(p.index));
                 }
-                // Configure quality analysis (if column metadata information is present in stream).
+                // Configure quality & semantic analysis (if column metadata information is present in stream).
                 final List<ColumnMetadata> columns = context.getTransformedRowMetadata().getColumns();
                 final DataType.Type[] types = TypeUtils.convert(columns);
-                ValueQualityAnalyzer qualityAnalyzer = new ValueQualityAnalyzer(types);
+                final URI ddPath = this.getClass().getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
+                final URI kwPath = this.getClass().getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
+                final CategoryRecognizerBuilder categoryBuilder = CategoryRecognizerBuilder.newBuilder() //
+                        .ddPath(ddPath) //
+                        .kwPath(kwPath) //
+                        .setMode(CategoryRecognizerBuilder.Mode.LUCENE);
+                final Analyzer<Analyzers.Result> analyzer = Analyzers.with(
+                        new ValueQualityAnalyzer(types),
+                        new SemanticAnalyzer(categoryBuilder)
+                );
                 if (types.length > 0) {
                     process = process.map(p -> {
                         if (!p.row.isDeleted()) {
@@ -88,7 +104,7 @@ public class RecordsTransformerStep implements TransformerStep {
                             final List<String> strings = stream(rowValues.values().spliterator(), false) //
                                     .map(String::valueOf) //
                                     .collect(Collectors.<String>toList());
-                            qualityAnalyzer.analyze(strings.toArray(new String[strings.size()]));
+                            analyzer.analyze(strings.toArray(new String[strings.size()]));
                         }
                         return p;
                     });
@@ -116,13 +132,19 @@ public class RecordsTransformerStep implements TransformerStep {
                     statisticsDataSet.setRecords(transformedRows.stream());
                     DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
                     // Set new quality information in transformed column metadata
-                    final List<ValueQuality> result = qualityAnalyzer.getResult();
-                    for (int i = 0; i < result.size(); i++) {
-                        final ValueQuality column = result.get(i);
-                        final Quality quality = columns.get(i).getQuality();
+                    final List<Analyzers.Result> results = analyzer.getResult();
+                    for (int i = 0; i < results.size(); i++) {
+                        final Analyzers.Result result = results.get(i);
+                        final ColumnMetadata metadata = columns.get(i);
+                        // Value quality
+                        final ValueQuality column = result.get(ValueQuality.class);
+                        final Quality quality = metadata.getQuality();
                         quality.setEmpty((int) column.getEmptyCount());
                         quality.setInvalid((int) column.getInvalidCount());
                         quality.setValid((int) column.getValidCount());
+                        // Semantic types
+                        final SemanticType semanticType = result.get(SemanticType.class);
+                        metadata.setDomain(semanticType.getSuggestedCategory());
                     }
                 }
             } else {
@@ -154,8 +176,8 @@ public class RecordsTransformerStep implements TransformerStep {
                     writeRow(writer, p[1].row);
                 });
             }
-                writer.endArray();
-        } catch (IOException e) {
+            writer.endArray();
+        } catch (IOException | URISyntaxException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         }
     }
