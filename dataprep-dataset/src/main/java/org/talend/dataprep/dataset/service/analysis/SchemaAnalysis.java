@@ -100,7 +100,15 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                     if (stdDev < 1 && frequencies.size() > 1) {
                         type = Type.STRING;
                     } else {
-                        type = Type.get(dataType.getSuggestedType().name());
+                        final DataType.Type suggestedType = dataType.getSuggestedType();
+                        switch (suggestedType) {
+                            case CHAR:
+                                // Consider DQ's char type as string in data prep
+                                type = Type.STRING;
+                                break;
+                            default:
+                                type = Type.get(suggestedType.name());
+                        }
                     }
                     // Semantic type
                     final SemanticType semanticType = columnResult.get(SemanticType.class);
