@@ -237,8 +237,6 @@ public class DataPreparationAPITest {
     public void testAskCertification() throws Exception {
         // given
         final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
-        // TODO remove this when a better solution is available
-        Thread.sleep(200);
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified

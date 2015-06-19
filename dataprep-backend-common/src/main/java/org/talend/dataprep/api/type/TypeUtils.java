@@ -14,7 +14,7 @@ public class TypeUtils {
      * Compute the dataset metadata columns valid/invalid, empty/count values.
      *
      * @return the dataset column types in DQ libraries.
-     * @param columns
+     * @param columns The Data Prep {@link ColumnMetadata columns} to convert to DQ library's types.
      */
     public static DataType.Type[] convert(List<ColumnMetadata> columns) {
         DataType.Type[] types = new DataType.Type[columns.size()];
@@ -40,9 +40,6 @@ public class TypeUtils {
                 break;
             case DATE:
                 types[i] = DataType.Type.DATE;
-                break;
-            case CHAR:
-                types[i] = DataType.Type.CHAR;
                 break;
             default:
                 types[i] = DataType.Type.STRING;

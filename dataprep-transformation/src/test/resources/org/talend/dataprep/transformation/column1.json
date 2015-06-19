@@ -6,5 +6,6 @@
     "invalid": 10,
     "valid": 72
   },
-  "type": "string"
+  "type": "string",
+  "domain": "EMAIL"
 }
