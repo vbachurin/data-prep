@@ -1,18 +1,19 @@
 svg{
-  font: 10px sans-serif;
+  font-family: $inconsolota;
 }
 
 .bg-rect{
-  fill:#000000;
+  fill:$medium-gray;
   cursor:pointer
 }
 
 .bar rect {
-  fill: #99CCFF;
+  fill: $dark-blue;
 }
 
 .bar text.value {
-  fill: black;
+  font-size: .8em;
+  fill: $shadow-gray;
 }
 
 .axis {
@@ -28,8 +29,13 @@ svg{
   stroke-opacity: .2;
 }
 
+.x.axis text {
+  font-size: .8em;
+  fill: $medium-gray;
+}
+
 .y.axis path {
-  stroke: black;
+  stroke: $shadow-gray;
 }
 
 .y.axis text {
@@ -38,10 +44,12 @@ svg{
 
 .d3-tip {
   line-height: 1;
-  font-weight: bold;
+  font-family: $inconsolota;
+  font-size: .8em;
+  font-weight: 400;
   padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  color: $white;
   border-radius: 2px;
   z-index: 100000;
 }
@@ -50,7 +58,6 @@ svg{
 .d3-tip:after {
   box-sizing: border-box;
   display: inline;
-  font-size: 10px;
   width: 100%;
   line-height: 1;
   color: rgba(0, 0, 0, 0.8);

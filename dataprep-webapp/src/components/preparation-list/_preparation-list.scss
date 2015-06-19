@@ -5,23 +5,23 @@
 .preparation-list {
   $grid-item-columns: 4;
   $grid-item-border-size: 15px;
-  $grid-item-border-color: white;
-  $grid-items-background: white;
-  $grid-items-shadow: rgba(0, 0, 0, 0.1);
+  $grid-item-border-color: $white;
+  $grid-items-background: $super-light-gray;
+  $grid-items-shadow: $shadow-gray;
 
-  $title-color: black;
+  $title-color: $black;
   $important-color: $dark-blue;
 
   width: 100%;
-  padding-top: 10px;
+  padding: 10px 10px 10px 10px;
 
   .preparation {
     @include transition(all 0.2s ease-in-out);
     text-align: left;
-    min-width: 310px;
+    min-width: 300px;
     float: left;
-    padding: 5px 15px 5px 15px;
-    box-shadow: inset 0px 0px 1px 2px $grid-items-shadow;
+    padding: 12px;
+    box-shadow: inset 0px 0px 1px 1px $shadow-gray;
     border: ($grid-item-border-size / 2) solid $grid-item-border-color;
     background-color: $grid-items-background;
 
@@ -33,16 +33,29 @@
     }
 
     .title {
+      font-size: 1.1em;
+      font-weight: 700;
+      text-transform: uppercase;
+      overflow: hidden;
+      cursor: pointer;
       margin: 0;
+      max-height: 25px;
+
 
       a {
-        font-weight: bold;
+        text-overflow: ellipsis;
         color: $title-color;
-        font-size: 1.2em;
+
+        &:hover{
+          text-decoration: underline;
+          color: $dark-blue;
+          cursor: pointer;
+        }
 
         &.favorite {
+          font-size: 1.2em;
           float: right;
-          color: $medium-gray;
+          color: $light-gray;
 
           &.selected {
             color: $orange;
@@ -56,12 +69,17 @@
     }
 
     .details {
-      padding-left: 20px;
+      padding-left: 10px;
+      font-size: 0.8em;
     }
 
     .important {
       color: $important-color;
-      font-weight: bold;
+      font-size: 0.9em;
+      &:hover{
+        text-decoration: underline;
+        cursor: pointer;
+      }
     }
   }
 }
