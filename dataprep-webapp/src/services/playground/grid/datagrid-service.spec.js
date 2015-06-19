@@ -275,19 +275,4 @@ describe('Datagrid service', function() {
         expect(DatagridService.filters[0]).toBe(filterFnCol1);
         expect(DatagridService.filters[1]).toBe(newFilterFnCol2);
     }));
-
-    it('should set selected column from column id', inject(function(DatagridService) {
-        //given
-        var colId = 'state';
-        var data = {
-            columns : [{id: 'firstname'}, {id: 'state'}]
-        };
-        DatagridService.data = data;
-
-        //when
-        DatagridService.setSelectedColumn(colId);
-
-        //then
-        expect(DatagridService.selectedColumn).toBe(data.columns[1]);
-    }));
 });

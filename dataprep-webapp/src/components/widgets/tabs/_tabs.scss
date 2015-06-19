@@ -1,0 +1,39 @@
+talend-tabs {
+  @include flex-column();
+  padding-bottom: 20px;
+
+  >.tabs {
+    @include flex-row();
+
+    border-bottom: 1px solid $light-gray;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5em;
+
+    >.tabs-item {
+      color: $medium-gray;
+      cursor: pointer;
+      font-size: 0.95em;
+      text-transform: capitalize;
+
+      width: auto;
+      padding: 5px 10px;
+      position: relative;
+
+      &.active {
+        font-weight: 600;
+        color: $black;
+
+        &:after {
+          position: absolute;
+          color: $white;
+          content: "\25bc";
+          font-size: 1.4em;
+          pointer-events: none;
+          text-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+          top: 1em;
+          left: calc(50% - 10px);
+        }
+      }
+    }
+  }
+}
