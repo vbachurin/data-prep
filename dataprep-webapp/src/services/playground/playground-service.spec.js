@@ -8,7 +8,7 @@ describe('Playground Service', function () {
     beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatagridService, PreparationService, TransformationCacheService, ColumnSuggestionService) {
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
         spyOn(FilterService, 'removeAllFilters').and.returnValue();
-        spyOn(RecipeService, 'refresh').and.returnValue();
+        spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
         spyOn(DatagridService, 'setDataset').and.returnValue();
         spyOn(PreparationService, 'create').and.returnValue($q.when(true));
         spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
@@ -41,6 +41,52 @@ describe('Playground Service', function () {
 
         //then
         expect(PlaygroundService.visible).toBe(false);
+    }));
+
+    it('should set new name to a new to the preparation', inject(function($rootScope, PlaygroundService, PreparationService) {
+        //given
+        var name = 'My preparation';
+        var newName = 'My new preparation name';
+        PreparationService.currentPreparationId = 'e85afAa78556d5425bc2';
+
+        PlaygroundService.preparationName = name;
+        PlaygroundService.originalPreparationName = name;
+        PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
+
+        //when
+        PlaygroundService.preparationName = newName;
+        PlaygroundService.createOrUpdatePreparation(newName);
+        $rootScope.$digest();
+
+        //then
+        expect(PreparationService.create).not.toHaveBeenCalled();
+        expect(PreparationService.setName).toHaveBeenCalledWith({id: '123d120394ab0c53'}, newName);
+        expect(PlaygroundService.preparationName).toBe(newName);
+        expect(PlaygroundService.originalPreparationName).toBe(newName);
+    }));
+
+    it('should reject when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationService) {
+        //given
+        var name = 'My preparation';
+        var newName = name;
+        var rejected = false;
+
+        PlaygroundService.originalPreparationName = name;
+        PlaygroundService.preparationName = newName;
+
+        //when
+        PlaygroundService.createOrUpdatePreparation(newName)
+            .catch(function() {
+                rejected = true;
+            });
+        $rootScope.$digest();
+
+        //then
+        expect(rejected).toBe(true);
+        expect(PreparationService.create).not.toHaveBeenCalled();
+        expect(PreparationService.setName).not.toHaveBeenCalled();
+        expect(PlaygroundService.preparationName).toBe(name);
+        expect(PlaygroundService.originalPreparationName).toBe(name);
     }));
 
     describe('init new preparation', function() {
@@ -145,28 +191,6 @@ describe('Playground Service', function () {
             assertNewPreparationNotInitialized();
         }));
     });
-
-    it('should set new name to a new to the preparation', inject(function($rootScope, PlaygroundService, PreparationService) {
-        //given
-        var name = 'My preparation';
-        var newName = 'My new preparation name';
-        PreparationService.currentPreparationId = 'e85afAa78556d5425bc2';
-
-        PlaygroundService.preparationName = name;
-        PlaygroundService.originalPreparationName = name;
-        PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
-
-        //when
-        PlaygroundService.preparationName = newName;
-        PlaygroundService.createOrUpdatePreparation(newName);
-        $rootScope.$digest();
-
-        //then
-        expect(PreparationService.create).not.toHaveBeenCalled();
-        expect(PreparationService.setName).toHaveBeenCalledWith({id: '123d120394ab0c53'}, newName);
-        expect(PlaygroundService.preparationName).toBe(newName);
-        expect(PlaygroundService.originalPreparationName).toBe(newName);
-    }));
 
     describe('load existing dataset', function() {
         var data = {
@@ -306,30 +330,6 @@ describe('Playground Service', function () {
         }));
     });
 
-    it('should reject when provided name is the original name', inject(function($rootScope, PlaygroundService, PreparationService) {
-        //given
-        var name = 'My preparation';
-        var newName = name;
-        var rejected = false;
-
-        PlaygroundService.originalPreparationName = name;
-        PlaygroundService.preparationName = newName;
-
-        //when
-        PlaygroundService.createOrUpdatePreparation(newName)
-            .catch(function() {
-                rejected = true;
-            });
-        $rootScope.$digest();
-
-        //then
-        expect(rejected).toBe(true);
-        expect(PreparationService.create).not.toHaveBeenCalled();
-        expect(PreparationService.setName).not.toHaveBeenCalled();
-        expect(PlaygroundService.preparationName).toBe(name);
-        expect(PlaygroundService.originalPreparationName).toBe(name);
-    }));
-
     describe('transformation', function() {
         var result, metadata;
         beforeEach(inject(function($rootScope, $q, PlaygroundService, PreparationService, DatagridService) {
@@ -385,6 +385,80 @@ describe('Playground Service', function () {
                 parameters
                 );
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        }));
+    });
+
+    describe('recipe panel display management', function() {
+
+        beforeEach(inject(function($q, PreparationService, DatagridService, RecipeService) {
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: {}}));
+            spyOn(PreparationService, 'appendStep').and.callFake(function() {
+                RecipeService.getRecipe().push({});
+                return $q.when(true);
+            });
+            spyOn(DatagridService, 'updateData').and.returnValue();
+        }));
+
+        it('should hide recipe on dataset playground init', inject(function($rootScope, PlaygroundService) {
+            //given
+            PlaygroundService.showRecipe = true;
+            var dataset = {id: '1'};
+
+            //when
+            PlaygroundService.initPlayground(dataset);
+            $rootScope.$digest();
+
+            //then
+            expect(PlaygroundService.showRecipe).toBe(false);
+        }));
+
+        it('should show recipe on preparation playground init', inject(function($rootScope, PlaygroundService) {
+            //given
+            PlaygroundService.showRecipe = false;
+            var preparation = {
+                id: '6845521254541',
+                dataset: {id: '1'}
+            };
+
+            //when
+            PlaygroundService.load(preparation);
+            $rootScope.$digest();
+
+            //then
+            expect(PlaygroundService.showRecipe).toBe(true);
+        }));
+
+        it('should show recipe on first step append', inject(function($rootScope, PlaygroundService) {
+            //given
+            PlaygroundService.showRecipe = false;
+
+            var action = 'uppercase';
+            var column = {id: 'firstname'};
+            var parameters = {param1: 'param1Value', param2: 4};
+
+            //when
+            PlaygroundService.appendStep(action, column, parameters);
+            $rootScope.$digest();
+
+            //then
+            expect(PlaygroundService.showRecipe).toBe(true);
+        }));
+
+        it('should NOT force recipe display on second step append', inject(function($rootScope, PlaygroundService, RecipeService) {
+            //given
+            PlaygroundService.showRecipe = false;
+            RecipeService.getRecipe().push({});
+
+            var action = 'uppercase';
+            var column = {id: 'firstname'};
+            var parameters = {param1: 'param1Value', param2: 4};
+
+            //when
+            PlaygroundService.appendStep(action, column, parameters);
+            $rootScope.$digest();
+
+            //then
+            expect(PlaygroundService.showRecipe).toBe(false);
         }));
     });
 });

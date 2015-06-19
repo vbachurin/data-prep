@@ -12,9 +12,8 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
-     * @requires data-prep.services.recipe.service:RecipeService
      */
-    function PlaygroundCtrl($scope, $state, $stateParams, PlaygroundService, PreparationService, PreviewService, RecipeService) {
+    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
@@ -50,18 +49,6 @@
                 $state.go('nav.home.datasets', {datasetid: null});
             }
         };
-
-        //Display recipe panel when first step is applied
-        $scope.$watch(
-            function () {
-                return RecipeService.getRecipe().length;
-            },
-            function (newLength, oldLengh) {
-                if(!vm.showRecipe && newLength === 1 && oldLengh === 0) {
-                    vm.showRecipe = true;
-                }
-            }
-        );
     }
 
     /**
@@ -131,6 +118,25 @@
             configurable: false,
             get: function () {
                 return this.previewService.previewInProgress();
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name showRecipe
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description The flag that pilots the recipe panel display
+     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
+     */
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'showRecipe', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.playgroundService.showRecipe;
+            },
+            set: function(value) {
+                this.playgroundService.showRecipe = value;
             }
         });
 

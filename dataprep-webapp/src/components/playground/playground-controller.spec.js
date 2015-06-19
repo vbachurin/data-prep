@@ -130,33 +130,27 @@ describe('Playground controller', function() {
         expect(ctrl.previewInProgress).toBe(true);
     }));
 
-    it('should open recipePanel on first step application', inject(function($rootScope, RecipeService) {
+    it('should bind showRecipe getter to PlaygroundService', inject(function(PlaygroundService) {
         //given
         var ctrl = createController();
-        scope.$digest();
         expect(ctrl.showRecipe).toBeFalsy();
 
         //when
-        RecipeService.getRecipe().push({});
-        scope.$digest();
+        PlaygroundService.showRecipe = true;
 
         //then
         expect(ctrl.showRecipe).toBe(true);
     }));
 
-    it('should open recipePanel on second step application', inject(function($rootScope, RecipeService) {
+    it('should bind showRecipe setter to PlaygroundService', inject(function(PlaygroundService) {
         //given
         var ctrl = createController();
-        RecipeService.getRecipe().push({});
-        scope.$digest();
-
-        ctrl.showRecipe = false;
+        expect(PlaygroundService.showRecipe).toBeFalsy();
 
         //when
-        RecipeService.getRecipe().push({});
-        scope.$digest();
+        ctrl.showRecipe = true;
 
         //then
-        expect(ctrl.showRecipe).toBe(false);
+        expect(PlaygroundService.showRecipe).toBe(true);
     }));
 });
