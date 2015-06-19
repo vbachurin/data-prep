@@ -37,7 +37,7 @@ done
 
 
 #===========================================
-docker run -t mribeiro/figlet archive images (docker save + gzip)
+docker run -t mribeiro/figlet archive images
 #===========================================
 for image in $images;
 do
