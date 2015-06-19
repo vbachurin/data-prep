@@ -27,14 +27,14 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
 /**
- * Test class for Round action. Creates one consumer, and test it.
+ * Test class for Floor action. Creates one consumer, and test it.
  * 
- * @see Round
+ * @see Floor
  */
-public class RoundTest {
+public class FloorTest {
 
     /** The action ton test. */
-    private Round roundAction;
+    private Floor action;
 
     /** The consumer out of the consumer. */
     private BiConsumer<DataSetRow, TransformationContext> consumer;
@@ -42,11 +42,11 @@ public class RoundTest {
     /**
      * Constructor.
      */
-    public RoundTest() throws IOException {
-        roundAction = new Round();
+    public FloorTest() throws IOException {
+        action = new Floor();
         Map<String, String> parameters = ActionMetadataTestUtils //
-                .parseParameters(roundAction, RoundTest.class.getResourceAsStream("roundAction.json"));
-        consumer = roundAction.create(parameters);
+                .parseParameters(action, FloorTest.class.getResourceAsStream("floorAction.json"));
+        consumer = action.create(parameters);
     }
 
     public void testCommon(String input, String expected) {
@@ -62,14 +62,14 @@ public class RoundTest {
     public void testPositive() {
         testCommon("5.0", "5");
         testCommon("5.1", "5");
-        testCommon("5.5", "6");
-        testCommon("5.8", "6");
+        testCommon("5.5", "5");
+        testCommon("5.8", "5");
     }
 
     @Test
     public void testNegative() {
         testCommon("-5.0", "-5");
-        testCommon("-5.4", "-5");
+        testCommon("-5.4", "-6");
         testCommon("-5.6", "-6");
     }
 
@@ -88,16 +88,16 @@ public class RoundTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(roundAction.accept(getColumn(Type.NUMERIC)));
-        assertTrue(roundAction.accept(getColumn(Type.INTEGER)));
-        assertTrue(roundAction.accept(getColumn(Type.DOUBLE)));
-        assertTrue(roundAction.accept(getColumn(Type.FLOAT)));
+        assertTrue(action.accept(getColumn(Type.NUMERIC)));
+        assertTrue(action.accept(getColumn(Type.INTEGER)));
+        assertTrue(action.accept(getColumn(Type.DOUBLE)));
+        assertTrue(action.accept(getColumn(Type.FLOAT)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(roundAction.accept(getColumn(Type.STRING)));
-        assertFalse(roundAction.accept(getColumn(Type.DATE)));
-        assertFalse(roundAction.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.accept(getColumn(Type.STRING)));
+        assertFalse(action.accept(getColumn(Type.DATE)));
+        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
     }
 }

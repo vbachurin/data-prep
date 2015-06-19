@@ -25,20 +25,23 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
 
 /**
- * This will compute the absolute value for numerical columns.
+ * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
+ * is equal to a mathematical integer.
+ * 
+ * @see Math#floor(double)
  */
-@Component(Round.ACTION_BEAN_PREFIX + Round.ROUND_ACTION_NAME)
-public class Round extends SingleColumnAction {
+@Component(Floor.ACTION_BEAN_PREFIX + Floor.FLOOR_ACTION_NAME)
+public class Floor extends SingleColumnAction {
 
     /** The action name. */
-    public static final String ROUND_ACTION_NAME = "round"; //$NON-NLS-1$
+    public static final String FLOOR_ACTION_NAME = "floor"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
      */
     @Override
     public String getName() {
-        return ROUND_ACTION_NAME;
+        return FLOOR_ACTION_NAME;
     }
 
     /**
@@ -55,24 +58,15 @@ public class Round extends SingleColumnAction {
     @Override
     public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
         return (row, context) -> {
-
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
-            if (value == null) {
-                return;
-            }
-
-            String absValueStr = null;
-            try {
-                double doubleValue = Double.parseDouble(value);
-                long roundedValue = Math.round(doubleValue);
-                absValueStr = String.format("%s", roundedValue); //$NON-NLS-1$
-            } catch (NumberFormatException nfe2) {
-                // Nan: nothing to do, but fail silently (no change in value)
-            }
-
-            if (absValueStr != null) {
-                row.set(columnName, absValueStr);
+            if (value != null) {
+                try {
+                    int result = (int) Math.floor(Double.valueOf(value));
+                    row.set(columnName, String.valueOf(result));
+                } catch (NumberFormatException nfe2) {
+                    // Nan: nothing to do, but fail silently (no change in value)
+                }
             }
         };
     }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +87,21 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                 columnTypes.forEach(columnResult -> {
                     // Column data type
                     final DataType dataType = columnResult.get(DataType.class);
-                    final Type type = Type.get(dataType.getSuggestedType().name());
+                    final Map<DataType.Type, Long> frequencies = dataType.getTypeFrequencies();
+                    // Look at type frequencies distribution (if not spread enough, fall back to STRING).
+                    StandardDeviation standardDeviation = new StandardDeviation();
+                    double[] values = new double[frequencies.size()];
+                    int i = 0;
+                    for (Long frequency : frequencies.values()) {
+                        values[i++] = frequency;
+                    }
+                    final double stdDev = standardDeviation.evaluate(values);
+                    final Type type;
+                    if (stdDev < 1 && frequencies.size() > 1) {
+                        type = Type.STRING;
+                    } else {
+                        type = Type.get(dataType.getSuggestedType().name());
+                    }
                     // Semantic type
                     final SemanticType semanticType = columnResult.get(SemanticType.class);
                     if (columns.hasNext()) {
