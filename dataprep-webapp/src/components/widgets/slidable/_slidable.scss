@@ -18,7 +18,7 @@
   }
 
   .content {
-    @include transition(0.5s ease width);
+    @include transition(0.25s ease width);
     width: $width;
 
     .content-container {
@@ -34,7 +34,7 @@
 .slidable {
   @include slidable-size(300px, 20px);
 
-  @include transition(0.5s ease flex);
+  @include transition(0.25s ease flex);
 
   @include display(flex);
   @include flex-flow(row wrap);
@@ -42,7 +42,8 @@
 
   .content {
     order: 2;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .action {
