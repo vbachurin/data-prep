@@ -49,12 +49,7 @@ time gzip $tar_archive
 
 tar_archive=$tar_archive'.gz'
 #===========================================
-#  _____ _____ ____  
-# |  ___|_   _|  _ \ 
-# | |_    | | | |_) |
-# |  _|   | | |  __/ 
-# |_|     |_| |_|    
-#                   
+figlet FTP upload
 #===========================================
 echo 'upload to ftp'
 md5sum $tar_archive > $tar_archive'.md5sum'
@@ -70,6 +65,10 @@ quit
 END_SCRIPT
 #===========================================
 
+
+#===========================================
+figlet docker push
+#===========================================
 echo 'remove temp files'
 rm $tar_archive*
 
@@ -79,4 +78,12 @@ do
   docker push $registry/$completeName
   docker rmi $registry/$completeName
 done
+#===========================================
+
+
+#===========================================
+figlet notify dev server
+#===========================================
+ssh talend@dev.data-prep.talend.lan 'bash -s' < notifyRemote.sh $version
+#===========================================
 
