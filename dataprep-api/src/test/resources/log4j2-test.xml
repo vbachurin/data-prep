@@ -6,7 +6,7 @@
         </Console>
     </appenders>
     <loggers>
-        <logger name="org.talend.dataprep.api.service.ExportAPITest" level="debug"/>
+        <logger name="org.talend.dataprep.api.service.ExportAPITest" level="error"/>
         <root level="error" includeLocation="true">
             <appender-ref ref="console"/>
         </root>

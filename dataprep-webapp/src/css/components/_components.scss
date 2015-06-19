@@ -8,6 +8,7 @@
 @import "../../components/widgets/modal/modal";
 @import "../../components/widgets/navbar/navigation";
 @import "../../components/widgets/slidable/slidable";
+@import "../../components/widgets/tabs/tabs";
 @import "../../components/widgets/tooltip/tooltip";
 
 @import "../../components/recipe/bullet/bullet-recipe";
@@ -16,6 +17,7 @@
 @import "../../components/datagrid/datagrid";
 @import "../../components/datagrid/tooltip/datagrid-tooltip";
 @import "../../components/datagrid/header/datagrid-header";
+@import "../../components/datagrid/quality-bar/quality-bar";
 @import "../../components/dataset/preview/dataset-xls-preview";
 @import "../../components/preparation-list/preparation-list";
 @import "../../components/home/home";
@@ -28,6 +30,5 @@
 @import "button";
 @import "inventory";
 @import "inventory_data";
-@import "quality_bar";
 @import "progress_bar";
 @import "toaster";

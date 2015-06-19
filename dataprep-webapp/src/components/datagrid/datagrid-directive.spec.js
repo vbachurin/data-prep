@@ -483,7 +483,7 @@ describe('Datagrid directive', function () {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function ($rootScope, $compile, $timeout, DatagridService, StatisticsService) {
+    beforeEach(inject(function ($rootScope, $compile, $timeout, DatagridService, ColumnSuggestionService, StatisticsService) {
         scope = $rootScope.$new();
         element = angular.element('<datagrid></datagrid>');
         $compile(element)(scope);
@@ -491,7 +491,7 @@ describe('Datagrid directive', function () {
         scope.$digest();
 
         angular.element('body').append(element);
-        spyOn(DatagridService, 'setSelectedColumn').and.returnValue();
+        spyOn(ColumnSuggestionService, 'setColumn').and.returnValue(null);
         spyOn(StatisticsService, 'processVisuData').and.returnValue();
     }));
 
@@ -581,23 +581,6 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(colIndex).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should set selected column on cell clicked', inject(function ($timeout, DatagridService) {
-        //given
-        var colIndex = 2;
-
-        DatagridService.setDataset(metadata, data);
-        scope.$digest();
-
-        //when
-        var grid = new GridGetter(element);
-        grid.row(0).cell(colIndex).element().click();
-        scope.$digest();
-        $timeout.flush();
-
-        //then
-        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0002');
-    }));
-
     it('should trigger chart rendering according to the column domain', inject(function ($timeout, DatagridService, StatisticsService) {
         //given
         var colIndex = 2;
@@ -613,6 +596,22 @@ describe('Datagrid directive', function () {
 
         //then
         expect(StatisticsService.processVisuData).toHaveBeenCalledWith(data.columns[colIndex]);
+    }));
+
+    it('should set column in transformation suggestion service on cell clicked', inject(function (DatagridService, ColumnSuggestionService) {
+        //given
+        var colIndex = 2;
+
+        DatagridService.setDataset(metadata, data);
+        scope.$digest();
+
+        //when
+        var grid = new GridGetter(element);
+        grid.row(0).cell(colIndex).element().click();
+        scope.$digest();
+
+        //then
+        expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(data.columns[colIndex]);
     }));
 
     it('should highlight empty cells only', inject(function (DatagridService) {
@@ -647,46 +646,37 @@ describe('Datagrid directive', function () {
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
     }));
 
-    it('should change selected column on column header click', inject(function ($timeout, DatagridService) {
+    it('should change selected column in transformation suggestion service on column header click', inject(function (DatagridService, ColumnSuggestionService) {
         //given
         DatagridService.setDataset(metadata, dataWithEmptyCell);
         scope.$digest();
 
         //when
         element.find('#datagrid-header-1').eq(0).click();
-        $timeout.flush();
 
         //then
-        expect(DatagridService.setSelectedColumn).toHaveBeenCalledWith('0001');
+        expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(dataWithEmptyCell.columns[1]);
     }));
 
-    it('should do nothing on already selected column header click', inject(function ($timeout, DatagridService) {
+    it('should do nothing on already selected column header click', inject(function ($timeout, DatagridService, ColumnSuggestionService) {
         //given
         var grid = new GridGetter(element);
         DatagridService.setDataset(metadata, data);
         scope.$digest();
 
         element.find('#datagrid-header-1').eq(0).click();
-        $timeout.flush();
-        expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
+        expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
         expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
         expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
 
         //when
         element.find('#datagrid-header-1').eq(0).click();
-        try {
-            $timeout.flush();
-        }
+        $timeout.flush();
 
-            //then
-        catch (e) {
-            expect(DatagridService.setSelectedColumn.calls.count()).toBe(1);
-            expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
-            expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
-            return;
-        }
-
-        throw Error('should have thrown exception because no deferred task to flush');
+        //then
+        expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+        expect(grid.row(0).cell(1).element().hasClass('selected')).toBe(true);
+        expect(grid.row(1).cell(1).element().hasClass('selected')).toBe(true);
     }));
 
     it('should reset line style and reset active cell, but keep column selection when filter change', inject(function (FilterService, DatagridService) {

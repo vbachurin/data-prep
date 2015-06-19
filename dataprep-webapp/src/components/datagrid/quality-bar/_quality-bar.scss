@@ -3,8 +3,12 @@
   $empty-color: $white;
   $nok-color: rgb(247, 168, 0);
 
-  height: 14px;
   box-sizing: border-box;
+  position:relative;
+  height: 14px;
+  line-height: 14px;
+  white-space: nowrap;
+  overflow: hidden;
 
   &.border {
     border: 1px solid white;
@@ -23,9 +27,15 @@
   }
 
   .sub-bar {
+    @include transition(width .75s ease-out);
     border: 1px solid transparent;
     height: 100%;
+    display: inline-block;
     float: left;
+
+    &.no-transition {
+      @include transition(none);
+    }
 
     &:hover {
       border: 1px solid grey;
@@ -35,16 +45,16 @@
       @include menu-list;
     }
   }
-  
+
   .record-ok {
     @extend .sub-bar;
     background-color: $ok-color;
-    
+
     &:hover {
       background-color: $ok-color;
     }
   }
-  
+
   .record-empty {
     @extend .sub-bar;
     background-color: $empty-color;
@@ -53,7 +63,7 @@
       background-color: $empty-color;
     }
   }
-  
+
   .record-nok {
     @extend .sub-bar;
     background-color: $nok-color;

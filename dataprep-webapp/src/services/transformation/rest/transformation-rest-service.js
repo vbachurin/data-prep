@@ -14,13 +14,12 @@
          * @ngdoc method
          * @name getTransformations
          * @methodOf data-prep.services.transformation.service:TransformationRestService
-         * @param {string} column The column metadata
+         * @param {string} stringifiedColumn The column metadata
          * @description Fetch the transformations suggestions on a column of the dataset
          * @returns {HttpPromise} The POST promise
          */
-        this.getTransformations = function(column) {
-            var columnDescription = JSON.stringify(column);
-            return $http.post(RestURLs.transformUrl + '/suggest/column', columnDescription);
+        this.getTransformations = function(stringifiedColumn) {
+            return $http.post(RestURLs.transformUrl + '/suggest/column', stringifiedColumn);
         };
 
         /**

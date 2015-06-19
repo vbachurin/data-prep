@@ -15,11 +15,11 @@
         /**
          * @ngdoc method
          * @name isColumnInfo
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object} param - the paramters to check
          * @description [PRIVATE] Return true if the parameter is 'column_id' or 'column_name'
          */
-        var isColumnInfo = function(param) {
+        var isColumnInfo = function isColumnInfo(param) {
             return param.name === 'column_id' || param.name === 'column_name';
         };
 
@@ -29,11 +29,11 @@
         /**
          * @ngdoc method
          * @name cleanParamsAndItems
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object[]} menus - the menus to clean
          * @description [PRIVATE] Remove 'column_id' and 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
          */
-        var cleanParamsAndItems = function(menus) {
+        var cleanParamsAndItems = function cleanParamsAndItems(menus) {
             return _.forEach(menus, function(menu) {
                 //params
                 var filteredParameters = _.filter(menu.parameters, function(param) {
@@ -49,11 +49,11 @@
         /**
          * @ngdoc method
          * @name insertType
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object[]} menu - the menu item with parameters to adapt
          * @description [PRIVATE] Insert adapted html input type in each parameter in the menu
          */
-        var insertType = function(menu) {
+        var insertType = function insertType(menu) {
             if(menu.parameters) {
                 _.forEach(menu.parameters, function(param) {
                     param.inputType = ConverterService.toInputType(param.type);
@@ -64,11 +64,11 @@
         /**
          * @ngdoc method
          * @name adaptInputTypes
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object[]} menus - the menus with parameters to adapt
          * @description [PRIVATE] Adapt each parameter type to HTML input type
          */
-        var adaptInputTypes = function(menus) {
+        var adaptInputTypes = function adaptInputTypes(menus) {
             _.forEach(menus, function(menu) {
                 insertType(menu);
 
@@ -85,18 +85,17 @@
         /**
          * @ngdoc method
          * @name getTransformations
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @methodOf data-prep.services.transformation.service:TransformationService
+         * @param {object} stringifiedColumn The transformations target column as string
          * @description Get transformations from REST call, clean and adapt them
          */
-        this.getTransformations = function(column) {
-            return TransformationRestService.getTransformations(column)
+        this.getTransformations = function getTransformations(stringifiedColumn) {
+            return TransformationRestService.getTransformations(stringifiedColumn)
                 .then(function(response) {
                     var menus = cleanParamsAndItems(response.data);
                     return adaptInputTypes(menus);
                 });
         };
-
-
 
         //--------------------------------------------------------------------------------------------------------------
         //------------------------------------------Transformation parameters-------------------------------------------
@@ -105,12 +104,12 @@
         /**
          * @ngdoc method
          * @name resetParamValue
-         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object} params The params to reset
          * @param {string} type The param type
          * @description [PRIVATE] Reset params values with saved initial values
          */
-        this.resetParamValue = function(params, type) {
+        this.resetParamValue = function resetParamValue(params, type) {
             if(!params) {
                 return;
             }
@@ -154,7 +153,7 @@
          * @description [PRIVATE] Init parameters initial value and type
          * @returns {object[]} The parameters with initialized values
          */
-        var initParameters = function(parameters, paramValues) {
+        var initParameters = function initParameters(parameters, paramValues) {
             return _.chain(parameters)
                 .filter(function(param) {
                     return !isColumnInfo(param);
@@ -175,7 +174,7 @@
          * @description [PRIVATE] Init choice initial value, including each choice params initial value and type
          * @returns {object} The choices with initialized values
          */
-        var initChoices = function(choices, paramValues) {
+        var initChoices = function initChoices(choices, paramValues) {
             _.forEach(choices, function(choice) {
                 choice.selectedValue = choice.initialValue = _.find(choice.values, function(choiceItem) {
                     return choiceItem.name === paramValues[choice.name];
@@ -198,7 +197,7 @@
          * @description [PRIVATE] Init Clusters initial value
          * @returns {object} The Cluster with initialized values
          */
-        var initCluster = function(cluster, paramValues) {
+        var initCluster = function initCluster(cluster, paramValues) {
             _.forEach(cluster.clusters, function(clusterItem) {
                 var firstActiveParam = _.chain(clusterItem.parameters)
                     .forEach(function(param) {
@@ -226,7 +225,7 @@
          * @param {object} paramValues The transformation parameters initial values
          * @description Init parameters values and save them as initial values
          */
-        this.initParamsValues = function(transformation, paramValues) {
+        this.initParamsValues = function initParamsValues(transformation, paramValues) {
             if(transformation.parameters) {
                 transformation.parameters = initParameters(transformation.parameters, paramValues);
             }
@@ -247,7 +246,7 @@
          * @methodOf data-prep.services.transformation.service:TransformationService
          * @description [PRIVATE] Reset all the transformation parameters
          */
-        var resetParameters = function(transformation) {
+        var resetParameters = function resetParameters(transformation) {
             transformation.parameters = null;
             transformation.items = null;
             transformation.cluster = null;
@@ -259,7 +258,7 @@
          * @methodOf data-prep.services.transformation.service:TransformationService
          * @description Fetch the dynamic parameter and set them in transformation
          */
-        this.initDynamicParameters = function(transformation, infos) {
+        this.initDynamicParameters = function initDynamicParameters(transformation, infos) {
             resetParameters(transformation);
 
             var action = transformation.name;

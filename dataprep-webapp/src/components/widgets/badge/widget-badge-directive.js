@@ -36,7 +36,9 @@
                 onClose: '&',
                 onChange: '&',
                 text: '@',
-                obj: '='
+                obj: '=',
+                editable: '=',
+                type :'='
             },
             bindToController: true,
             controllerAs: 'badgeCtrl',

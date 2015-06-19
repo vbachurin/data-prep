@@ -68,7 +68,7 @@
         self.getPreparations = function() {
             return self.preparationsList() !== null ?
                 $q.when(self.preparationsList()) :
-                PreparationListService.refreshPreparations().then(consolidatePreparationsAndDatasets);
+                self.refreshPreparations();
         };
 
         //---------------------------------------------------------------------------------
