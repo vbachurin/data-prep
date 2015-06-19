@@ -118,7 +118,7 @@ describe('Playground controller', function() {
         expect(PlaygroundService.createOrUpdatePreparation).not.toHaveBeenCalled();
     }));
 
-    it('should bind previewInProgress getter with PreviewService', inject(function(PlaygroundService, PreviewService) {
+    it('should bind previewInProgress getter with PreviewService', inject(function(PreviewService) {
         //given
         var ctrl = createController();
         expect(ctrl.previewInProgress).toBeFalsy();
@@ -128,5 +128,35 @@ describe('Playground controller', function() {
 
         //then
         expect(ctrl.previewInProgress).toBe(true);
+    }));
+
+    it('should open recipePanel on first step application', inject(function($rootScope, RecipeService) {
+        //given
+        var ctrl = createController();
+        scope.$digest();
+        expect(ctrl.showRecipe).toBeFalsy();
+
+        //when
+        RecipeService.getRecipe().push({});
+        scope.$digest();
+
+        //then
+        expect(ctrl.showRecipe).toBe(true);
+    }));
+
+    it('should open recipePanel on second step application', inject(function($rootScope, RecipeService) {
+        //given
+        var ctrl = createController();
+        RecipeService.getRecipe().push({});
+        scope.$digest();
+
+        ctrl.showRecipe = false;
+
+        //when
+        RecipeService.getRecipe().push({});
+        scope.$digest();
+
+        //then
+        expect(ctrl.showRecipe).toBe(false);
     }));
 });

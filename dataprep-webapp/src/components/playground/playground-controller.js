@@ -4,12 +4,17 @@
     /**
      * @ngdoc controller
      * @name data-prep.playground.controller:PlaygroundCtrl
-     * @description Playground controller.
+     * @description Playground controller.<br/>
+     * Watchers :
+     * <ul>
+     *     <li>Recipe length : display recipe panel on first step application</li>
+     * </ul>
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.recipe.service:RecipeService
      */
-    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService) {
+    function PlaygroundCtrl($scope, $state, $stateParams, PlaygroundService, PreparationService, PreviewService, RecipeService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
@@ -45,6 +50,18 @@
                 $state.go('nav.home.datasets', {datasetid: null});
             }
         };
+
+        //Display recipe panel when first step is applied
+        $scope.$watch(
+            function () {
+                return RecipeService.getRecipe().length;
+            },
+            function (newLength, oldLengh) {
+                if(!vm.showRecipe && newLength === 1 && oldLengh === 0) {
+                    vm.showRecipe = true;
+                }
+            }
+        );
     }
 
     /**
