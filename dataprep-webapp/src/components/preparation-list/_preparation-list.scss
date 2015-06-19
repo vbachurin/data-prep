@@ -18,11 +18,12 @@
   .preparation {
     @include transition(all 0.2s ease-in-out);
     text-align: left;
-    min-width: 300px;
+    max-width: 290px;
     float: left;
     padding: 12px;
     box-shadow: inset 0px 0px 1px 1px $shadow-gray;
-    border: ($grid-item-border-size / 2) solid $grid-item-border-color;
+    //border: ($grid-item-border-size / 2) solid $grid-item-border-color;
+    margin: 5px;
     background-color: $grid-items-background;
 
     @include grid-item-columns($grid-item-columns);
@@ -30,6 +31,7 @@
     &:focus,
     &:hover {
       background-color: darken($grid-items-background, 5%);
+      box-shadow: 5px 4px 6px -4px $dark-gray;
     }
 
     .title {
