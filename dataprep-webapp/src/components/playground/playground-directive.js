@@ -8,7 +8,7 @@
      * It only consumes {@link data-prep.services.playground.service:PlaygroundService PlaygroundService}
      * @restrict E
      */
-    function Playground($timeout, RecipeBulletService, PlaygroundService, RecipeService) {
+    function Playground($timeout, RecipeBulletService) {
         return {
             restrict: 'E',
             templateUrl: 'components/playground/playground.html',
@@ -32,23 +32,6 @@
                     onOffAllSteps.onchange = function(){
                         $timeout(RecipeBulletService.toggleAllSteps);
                     };
-
-                    scope.$watch(
-                        function(){
-                            return PlaygroundService.toggleHappened;
-                        },
-                        function(newVal){
-                            if(newVal !== null){
-                                var firstStep = RecipeService.getStep(0);
-                                if(!firstStep.inactive){
-                                    onOffAllSteps.checked = true;
-                                } else {
-                                    onOffAllSteps.checked = false;
-                                }
-                            }
-                        }
-                    );
-
                 });
             }
         };

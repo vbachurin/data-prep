@@ -15,6 +15,7 @@
         vm.previewService = PreviewService;
         vm.editionMode = true;
         vm.recipeService = RecipeService;
+        vm.activeStepExist = null;
         /**
          * @ngdoc method
          * @name editionModeFn
@@ -155,7 +156,7 @@
      * @name isThereRecipe
      * @propertyOf data-prep.playground.controller:PlaygroundCtrl
      * @description checks if there are steps in the preparation
-     * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} property
+     * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} property length of the returned recipe by getRecipe() function
      * @type boolean
      */
     Object.defineProperty(PlaygroundCtrl.prototype,
@@ -164,6 +165,29 @@
             configurable: false,
             get: function () {
                 return this.recipeService.getRecipe().length;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name hasActiveStep
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description checks if there is at least 1 active step, by checking the 1st step in the recipe
+     * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} status of the 1st step in the returned recipe array by the getRecipe() function
+     * @type boolean
+     */
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'hasActiveStep', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                var firstStep = this.recipeService.getRecipe()[0];
+                if(firstStep){
+                    return !firstStep.inactive?true:false;
+                }else{
+                    return null;
+                }
+
             }
         });
 

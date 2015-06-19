@@ -20,10 +20,10 @@
         <talend-slidable visible="false" class="flex-side recipe">
             <div id="stepsHeaderId">
                 <span class="title" ng-show="!playgroundCtrl.editionMode">{{playgroundCtrl.preparationName}}</span>
-                <button ng-show="!playgroundCtrl.editionMode" ng-click="playgroundCtrl.editionModeFn()" style="padding:0px;">&#9997;</button>
+                <button ng-show="!playgroundCtrl.editionMode" ng-click="playgroundCtrl.editionModeFn()" style="padding:0px;" title="Edit Preparation Name">&#9997;</button>
 
                 <label class="label-switch" ng-show="playgroundCtrl.isThereRecipe">
-                    <input type="checkbox" checked id="onOffAllStepsId"/>
+                    <input type="checkbox" ng-checked="playgroundCtrl.hasActiveStep" id="onOffAllStepsId"/>
                     <div class="checkbox"></div>
                 </label>
 
@@ -35,8 +35,8 @@
                        ng-model="playgroundCtrl.preparationName"
                        ng-model-options="{updateOn: 'default blur'}"
                     />
-                <button ng-show="playgroundCtrl.editionMode" ng-click="playgroundCtrl.confirmNewPrepName()" style="padding:2px; margin-left: 5px;">&#10004;</button>
-                <button ng-show="playgroundCtrl.editionMode" ng-click="playgroundCtrl.cancelPrepNameEdition()" style="padding:2px;">&#x2718;</button>
+                <button ng-show="playgroundCtrl.editionMode" ng-click="playgroundCtrl.confirmNewPrepName()" style="padding:2px; margin-left: 5px;" title="Confirm New Name">&#10004;</button>
+                <button ng-show="playgroundCtrl.editionMode" ng-click="playgroundCtrl.cancelPrepNameEdition()" style="padding:2px;" title="Cancel Name Edition">&#x2718;</button>
             </div>
             <recipe metadata="playgroundCtrl.metadata"></recipe>
         </talend-slidable>
