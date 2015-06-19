@@ -83,7 +83,7 @@ public class SchemaAnalyzerTest {
         // Analyze schema
         schemaAnalysis.analyze("1234");
         assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
-        String[] expectedNames = {"whaterver"};
+        String[] expectedNames = {"whaterver"}; // Not a typo: this is what QA provided as column name.
         Type[] expectedTypes = {Type.STRING};
         int i = 0;
         int j = 0;
