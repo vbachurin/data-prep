@@ -18,6 +18,7 @@
   .preparation {
     @include transition(all 0.2s ease-in-out);
     text-align: left;
+    min-width: 290px;
     max-width: 290px;
     float: left;
     padding: 12px;
