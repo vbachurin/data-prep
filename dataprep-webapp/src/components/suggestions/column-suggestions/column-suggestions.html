@@ -8,7 +8,7 @@
         <talend-tabs-item title="Line">Coming soon ...</talend-tabs-item>
         <talend-tabs-item title="Column" default="true">
             <div ng-repeat="(category, transformations) in columnSuggestionsCtrl.suggestions track by category">
-                <div>{{category}}</div>
+                <!--<div class="action-category">{{category}}</div>-->
 
                 <ul class="menu talend-accordion">
                     <li ng-repeat="transfo in transformations track by $index" ng-switch="!!(transfo.parameters || transfo.items)">

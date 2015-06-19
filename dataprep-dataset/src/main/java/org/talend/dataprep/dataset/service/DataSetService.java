@@ -435,14 +435,14 @@ public class DataSetService {
     }
 
     /**
-     * Updates a data set content and metadata. If no data set exists for given id, data set is silently created.
+     * Updates a data set content and metadata. If no data set exists for given id, a {@link TDPException} is thrown.
      *
      * @param dataSetId The id of data set to be updated.
      * @param dataSetMetadata The new content for the data set. If empty, existing content will <b>not</b> be replaced.
      * For delete operation, look at {@link #delete(String)}.
      */
     @RequestMapping(value = "/datasets/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Update a data set by id", consumes = "text/plain", notes = "Update a data set metadata according to the content of the PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id returns empty content.")
+    @ApiOperation(value = "Update a data set metadata by id", consumes = "application/json", notes = "Update a data set metadata according to the content of the PUT body. Id should be a UUID returned by the list operation. Not valid or non existing data set id return an error response.")
     @Timed
     @VolumeMetered
     public void updateDataSet(
@@ -454,38 +454,45 @@ public class DataSetService {
             LOG.debug("updateDataSet: {}", dataSetMetadata);
             // we retry information we do not update
             DataSetMetadata previous = dataSetMetadataRepository.get(dataSetId);
-            previous.setName(dataSetMetadata.getName());
+            if (previous == null) {
+                // No need to silently create the data set metadata: associated content will most likely not exist.
+                throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", dataSetId));
+            }
+            try {
+                // Update existing data set metadata with new one.
+                previous.setName(dataSetMetadata.getName());
+                Optional<SchemaParserResult.SheetContent> sheetContentFound = previous.getSchemaParserResult().getSheetContents()
+                        .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName()))
+                        .findFirst();
 
-            Optional<SchemaParserResult.SheetContent> sheetContentFound = previous.getSchemaParserResult().getSheetContents()
-                    .stream().filter(sheetContent -> dataSetMetadata.getSheetName().equals(sheetContent.getName())).findFirst();
-
-            if (sheetContentFound.isPresent()) {
-                List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
-                if (previous.getRow() == null) {
-                    previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
+                if (sheetContentFound.isPresent()) {
+                    List<ColumnMetadata> columnMetadatas = sheetContentFound.get().getColumnMetadatas();
+                    if (previous.getRow() == null) {
+                        previous.setRowMetadata(new RowMetadata(Collections.emptyList()));
+                    }
+                    previous.getRow().setColumns(columnMetadatas);
                 }
-                previous.getRow().setColumns(columnMetadatas);
+                // Set the user-selected sheet name
+                previous.setSheetName(dataSetMetadata.getSheetName());
+                previous.setSchemaParserResult(null);
+                FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
+                DraftValidator draftValidator = formatGuess.getDraftValidator();
+                // Validate that the new data set metadata removes the draft status
+                DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
+                if (result.draft) {
+                    // FIXME what to do here?? exception?
+                    LOG.warn("dataSetMetadata#{} still a draft", dataSetId);
+                    return;
+                }
+                // Data set metadata to update is no longer a draft
+                previous.setDraft(false);
+                dataSetMetadataRepository.add(previous); // Save it
+                // all good mate!! so send that to jms
+                // Asks for a in depth schema analysis (for column type information).
+                queueEvents(dataSetId, FormatAnalysis.class);
+            } catch (Exception e) {
+                throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
             }
-            // Set the user-selected sheet name
-            previous.setSheetName(dataSetMetadata.getSheetName());
-            previous.setSchemaParserResult(null);
-            FormatGuess formatGuess = formatGuessFactory.getFormatGuess(dataSetMetadata.getContent().getFormatGuessId());
-            DraftValidator draftValidator = formatGuess.getDraftValidator();
-            // Validate that the new data set metadata removes the draft status
-            DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
-            if (result.draft) {
-                // FIXME what to do here?? exception?
-                LOG.warn("dataSetMetadata#{} still a draft", dataSetId);
-                return;
-            }
-            // Data set metadata to update is no longer a draft
-            previous.setDraft(false);
-            dataSetMetadataRepository.add(previous); // Save it
-            // all good mate!! so send that to jms
-            // Asks for a in depth schema analysis (for column type information).
-            queueEvents(dataSetId, FormatAnalysis.class);
-        } catch (Exception e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         } finally {
             lock.unlock();
         }

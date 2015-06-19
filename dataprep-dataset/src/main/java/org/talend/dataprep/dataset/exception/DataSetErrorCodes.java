@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.ErrorCode;
 
 /**
@@ -33,7 +34,12 @@ public enum DataSetErrorCodes implements ErrorCode {
      * this one will happen when user do something on datas whereas those datas has been updated async in the backend
      * and this action is not possible anymore (i.e preview whereas this dataset do not need any preview)
      */
-    REDIRECT_CONTENT(301);
+    REDIRECT_CONTENT(301),
+    /**
+     * Error returned in case user tries to access to a data set that does not exist (or no longer exists).
+     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String, DataSetMetadata)
+     */
+    DATASET_DOES_NOT_EXIST(400, "id");
 
     /** The http status to use. */
     private int httpStatus;
