@@ -23,7 +23,11 @@
                 <button ng-show="!playgroundCtrl.editionMode" ng-click="playgroundCtrl.editionModeFn()" style="padding:0px;" title="Edit Preparation Name">&#9997;</button>
 
                 <label class="label-switch" ng-show="playgroundCtrl.isThereRecipe">
-                    <input type="checkbox" ng-checked="playgroundCtrl.hasActiveStep" id="onOffAllStepsId"/>
+                    <input type="checkbox"
+                           ng-model='playgroundCtrl.hasActiveStep'
+                           ng-change='playgroundCtrl.activateDeactivateAllsteps()'
+                           id="onOffAllStepsId"
+                    />
                     <div class="checkbox"></div>
                 </label>
 

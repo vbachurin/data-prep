@@ -9,13 +9,23 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
      */
-    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService, RecipeService) {
+    function PlaygroundCtrl($state, $stateParams, PlaygroundService, PreparationService, PreviewService, RecipeService, RecipeBulletService) {
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
         vm.editionMode = true;
         vm.recipeService = RecipeService;
-        vm.activeStepExist = null;
+
+        /**
+         * @ngdoc method
+         * @name activateDeactivateAllsteps
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description activates or deactivates all the steps of the recipe
+         */
+        vm.activateDeactivateAllsteps = function(){
+            RecipeBulletService.toggleAllSteps();
+        };
+
         /**
          * @ngdoc method
          * @name editionModeFn
@@ -33,6 +43,7 @@
          * @description confirms the new preparation name
          */
         vm.confirmNewPrepName = function(){
+            console.log('avant changeName -------');
             vm.changeName();
             vm.editionModeFn();
         };
@@ -56,6 +67,7 @@
          */
         vm.changeName = function() {
             var cleanName = vm.preparationName.trim();
+            console.log(cleanName,'-----------------------');
             if(cleanName) {
                 PlaygroundService.createOrUpdatePreparation(cleanName)
                     .then(function() {
@@ -188,7 +200,8 @@
                     return null;
                 }
 
-            }
+            },
+            set:function(){}
         });
 
     angular.module('data-prep.playground')
