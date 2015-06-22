@@ -24,8 +24,8 @@
         // dynamic object populated by reflection
         vm.exportParameters = {};
 
-        // constantes for localStorage keys
-        vm.exportParamKey = "datarep.export.param";
+        // constants for localStorage keys
+        vm.exportParamKey = 'datarep.export.param';
         vm.exportIdKey = 'dataprep.export.id';
 
         vm.currentExportType = {};
@@ -50,12 +50,12 @@
 
             if(!exportId){
                 // use default one from rest api!!
-                exportId = _.result(_.find(vm.exportTypes, function(exportType) {
+                exportId = _.result(_.find(vm.exportTypes, function(exportType){
                     return exportType.defaultExport === 'true';
                 }), 'id');
             }
 
-            var needParameters = _.result(_.find(vm.exportTypes, function(exportType) {
+            var needParameters = _.result(_.find(vm.exportTypes, function(exportType){
                 return exportType.id === exportId;
             }), 'needParameters');
 
@@ -104,7 +104,7 @@
 
             _.each(Object.keys(vm.exportParameters),function(val){
                 form[val]= vm.exportParameters[val];
-                $window.localStorage.setItem(vm.exportParamKey+"."+val,vm.exportParameters[val]);
+                $window.localStorage.setItem(vm.exportParamKey+'.'+val,vm.exportParameters[val]);
             });
 
 
@@ -119,15 +119,13 @@
          * @description prepare dynamic objects with new fields corresponding to export parameters
          */
         vm.setupParametersModal = function(exportType) {
-            _.each( exportType.parameters, function ( val )
-            {
-                if ( val.type === 'radio' )
-                {
+            _.each( exportType.parameters, function ( val ){
+                if ( val.type === 'radio' ){
                     vm.exportParameters[val.name] = val.defaultValue.value;
                 }
-                var paramValue = $window.localStorage.getItem( vm.exportParamKey + "." + val.name );
+                var paramValue = $window.localStorage.getItem( vm.exportParamKey + '.' + val.name );
 
-            } );
+            });
             vm.showExport = true;
         };
 
