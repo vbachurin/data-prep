@@ -102,7 +102,13 @@
             var lowerCasePhrase = phrase.toLowerCase();
             var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
             return function(item) {
-                return item[colId].toLowerCase().match(regexp);
+                // col could be removed by a step
+                if (item[colId]) {
+                    return item[colId].toLowerCase().match(regexp);
+                }
+                else {
+                    return false;
+                }
             };
         };
 
