@@ -114,6 +114,10 @@ public class LineBasedFormatGuesser implements FormatGuesser {
 
         // easy case where there's no choice
         if (separators.isEmpty()) {
+            if (lineCount > 0) {
+                // There are some lines processed, but no separator (a one-column content?), so pick a default separator.
+                return new Separator(',');
+            }
             return null;
         }
 

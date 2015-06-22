@@ -126,6 +126,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
                 }
             });
         } catch (IOException e) {
+            LOGGER.error("Unable to clear local data set content.", e);
             throw new TDPException(DataSetErrorCodes.UNABLE_TO_CLEAR_DATASETS, e);
         }
     }

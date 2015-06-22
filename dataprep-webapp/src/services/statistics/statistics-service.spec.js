@@ -134,7 +134,7 @@ describe('Statistics service', function() {
 		var convertedData = StatisticsService.extractNumericData(barChartNumCol.statistics.histogram);
 
 		//then
-		expect(convertedData[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min+' -> '+barChartNumCol.statistics.histogram[1].range.max);
+		expect(convertedData[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min+' ... '+barChartNumCol.statistics.histogram[1].range.max);
 	}));
 
 	it('Data type is a number and the resulted data must be the conversion of the histogram', inject(function(StatisticsService) {

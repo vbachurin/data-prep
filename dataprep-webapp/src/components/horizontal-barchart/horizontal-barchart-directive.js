@@ -29,7 +29,6 @@
 				function renderBarchart(){
 					var container = attrs.id;
 					var width = +attrs.width;
-					//var height = +attrs.height;
 					var height = Math.ceil(((+attrs.height)/15)*(statData.length + 1));
 
 					var m = [15, 10, 10, 10],

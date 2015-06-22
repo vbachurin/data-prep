@@ -175,6 +175,19 @@ public class DataSetServiceTests {
     }
 
     @Test
+    public void createEmptyLines() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("empty_lines2.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId);
+
+        final String content = when().get("/datasets/{id}/content", dataSetId).asString();
+        assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("empty_lines2.json")));
+    }
+
+    @Test
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
@@ -225,6 +238,34 @@ public class DataSetServiceTests {
                 .put("/datasets/{id}", "3d72677c-e2c9-4a34-8c58-959a56ec8643") //
                 .then() //
                 .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void previewNonDraft() throws Exception {
+        // Create a data set
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        dataSetMetadata.setDraft(false); // Ensure it is no draft
+        dataSetMetadataRepository.add(dataSetMetadata);
+        // Should receive a 301 that redirects to the GET data set content operation
+        given().redirects().follow(false).contentType(ContentType.JSON)
+                .get("/datasets/{id}/preview", dataSetId) //
+                .then() //
+                .statusCode(HttpStatus.MOVED_PERMANENTLY.value());
+        // Should receive a 200 if code follows redirection
+        given().redirects().follow(true).contentType(ContentType.JSON)
+                .get("/datasets/{id}/preview", dataSetId) //
+                .then() //
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void previewMissingMetadata() throws Exception {
+        // Data set 1234 does not exist, should get empty content response.
+        given().get("/datasets/{id}/preview", "1234") //
+                .then() //
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
