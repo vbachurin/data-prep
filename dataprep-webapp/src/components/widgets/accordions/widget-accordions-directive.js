@@ -8,7 +8,7 @@
      * @restrict E
      * @usage
      <talend-accordions>
-         <talend-accordions-item>
+         <talend-accordions-item on-open='fn' default='true'>
             <div id="trigger"></div>
             <div id="content"></div>
          </talend-accordions-item>
@@ -22,7 +22,9 @@
          </talend-accordions-item>
      </talend-accordions>
      * @param {div} trigger The trigger element that will be injected in the trigger transclusion point
-     * @param {div} content The content element that will be injected in the content transclusion point
+     * @param {div} content The content element that is shown/hidden
+     * @param {function} on-open The function to execute on accordion item open
+     * @param {boolean} default The default accordion to open
      */
     function TalendAccordions() {
         return {

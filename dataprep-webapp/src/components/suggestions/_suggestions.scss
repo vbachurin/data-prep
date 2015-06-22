@@ -38,19 +38,19 @@
     .menu {
       color: $menu-color;
 
-      >li {
+      .accordion {
         border-bottom: 1px solid $border-color;
 
         font-size: 0.9em;
         font-weight: 400;
-        padding: 2px 2px 2px 0px;
+        padding: 2px 2px 2px 0;
 
         >a {
           display: block;
           width:100%;
         }
 
-        .talend-accordion-trigger {
+        #trigger {
           &::before {
             content: "\25b8";
             margin-right: 5px;
@@ -58,7 +58,7 @@
         }
 
         &.open {
-          .talend-accordion-trigger::before {
+          #trigger::before {
             content: "\25BE";
           }
         }

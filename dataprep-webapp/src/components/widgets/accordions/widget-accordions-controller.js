@@ -41,6 +41,18 @@
             });
             accordion.active = !state;
         };
+
+        /**
+         * @ngdoc method
+         * @name unregister
+         * @methodOf talend.widget.controller:TalendAccordionsCtrl
+         * @param {object} tab The accordion to delete
+         * @description Delete an accordion
+         */
+        vm.unregister = function unregister(accordion) {
+            var index = vm.accordions.indexOf(accordion);
+            vm.accordions.splice(index, 1);
+        };
     }
 
     angular.module('talend.widget')

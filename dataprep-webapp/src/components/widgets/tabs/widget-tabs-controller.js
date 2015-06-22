@@ -43,6 +43,18 @@
             });
             tab.active = true;
         };
+
+        /**
+         * @ngdoc method
+         * @name unregister
+         * @methodOf talend.widget.controller:TalendTabsCtrl
+         * @param {object} tab The tab to delete
+         * @description Delete a tab
+         */
+        vm.unregister = function unregister(tab) {
+            var index = vm.tabs.indexOf(tab);
+            vm.tabs.splice(index, 1);
+        };
     }
 
     angular.module('talend.widget')

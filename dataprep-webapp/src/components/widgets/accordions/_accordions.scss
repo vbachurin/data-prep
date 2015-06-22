@@ -1,0 +1,10 @@
+.accordion {
+  #trigger {
+    cursor: pointer;
+  }
+
+  #content {
+    display: none;
+    background-color: rgb(226, 226, 227);
+  }
+}
