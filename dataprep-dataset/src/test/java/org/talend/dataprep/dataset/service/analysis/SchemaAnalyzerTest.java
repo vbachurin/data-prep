@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,30 @@ public class SchemaAnalyzerTest {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat(column.getType(), is(expectedTypes[i].getName()));
             assertThat(column.getDomain(), is(expectedDomains[i]));
+            i++;
+        }
+    }
+
+    /**
+     * See <a href="https://jira.talendforge.org/browse/TDP-226">https://jira.talendforge.org/browse/TDP-226</a>.
+     * @throws Exception
+     */
+    @Test
+    @Ignore
+    public void testTDP_226() throws Exception {
+        final DataSetMetadata metadata = metadata().id("1234").build();
+        repository.add(metadata);
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("empty_lines.csv"));
+        formatAnalysis.analyze("1234");
+        // Analyze schema
+        schemaAnalysis.analyze("1234");
+        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        String[] expectedNames = { "id", "firstname", "lastname", "age", "date-of-birth", "alive" };
+        Type[] expectedTypes = {Type.INTEGER, Type.STRING, Type.STRING, Type.INTEGER, Type.DATE, Type.BOOLEAN};
+        int i = 0;
+        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+            assertThat(column.getName(), is(expectedNames[i]));
+            assertThat(column.getType(), is(expectedTypes[i].getName()));
             i++;
         }
     }
