@@ -55,7 +55,7 @@ public class Split extends SingleColumnAction {
      */
     @Override
     public String getCategory() {
-        return ActionCategory.COLUMNS.getDisplayName();
+        return ActionCategory.QUICKFIX.getDisplayName();
     }
 
     @Override
