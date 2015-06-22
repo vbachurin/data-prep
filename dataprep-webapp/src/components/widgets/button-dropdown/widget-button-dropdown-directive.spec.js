@@ -52,20 +52,25 @@ describe('Button Dropdown directive', function () {
             expect(menu.hasClass('show-menu')).toBe(true);
         });
 
+
         it('should focus on dropdown menu when it is shown', function () {
             //given
             jasmine.clock().install();
-            var menu = element.find('.dropdown-menu').eq(0)[0];
+            var menu = element.find('.dropdown-menu').eq(0);
             var body = angular.element('body');
             body.append(element);
             expect(document.activeElement).not.toBe(menu);
+
+            expect(menu.hasClass('show-menu')).toBe(false);
 
             //when
             clickDropdownToggle();
             jasmine.clock().tick(100);
 
+            expect(menu.hasClass('show-menu')).toBe(true);
+
             //then
-            expect(document.activeElement).not.toBe(element.find('.dropdown-menu').eq(0)[0]);
+            expect(document.activeElement).not.toBe(element.find('.dropdown-menu').eq(0));
             jasmine.clock().uninstall();
         });
 
