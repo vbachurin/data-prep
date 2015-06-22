@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ public class CSVSerializer implements Serializer {
         while ((line = reader.readNext()) != null) {
 
             // skip empty lines
-            if (line.length == 1) {
+            if (line.length == 1 && StringUtils.isEmpty(line[0])) {
                 continue;
             }
 
@@ -95,7 +96,7 @@ public class CSVSerializer implements Serializer {
      * @return the remaining raw (with separators) content of the column.
      */
     private String getRemainingColumns(String[] line, int start, String separator) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int j = start; j < line.length; j++) {
             buffer.append(line[j]);
             if (j < line.length - 1) {
