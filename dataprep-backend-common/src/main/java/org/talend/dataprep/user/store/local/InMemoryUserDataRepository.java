@@ -10,13 +10,13 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.store.local;
+package org.talend.dataprep.user.store.local;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.talend.dataprep.api.user.UserData;
-import org.talend.dataprep.store.UserDataRepository;
+import org.talend.dataprep.user.store.UserDataRepository;
 
 /**
  * created by sgandon on 16 juin 2015 Detailled comment

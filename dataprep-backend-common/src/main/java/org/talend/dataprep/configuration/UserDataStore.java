@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.talend.dataprep.store.UserDataRepository;
-import org.talend.dataprep.store.local.InMemoryUserDataRepository;
-import org.talend.dataprep.store.mongo.MongoUserDateRepository;
+import org.talend.dataprep.user.store.UserDataRepository;
+import org.talend.dataprep.user.store.local.InMemoryUserDataRepository;
+import org.talend.dataprep.user.store.mongo.MongoUserDateRepository;
 
 @Configuration
 @ConditionalOnProperty(name = "user.data.store")
@@ -19,7 +19,7 @@ public class UserDataStore {
     @Value("${user.data.store}")
     private String userDataStoreConfiguration;
 
-    @Bean
+    @Bean(name = "UserDataRepository")
     public UserDataRepository getUserDataRepository() {
         LOGGER.info("User data store: {}", userDataStoreConfiguration); //$NON-NLS-1$
         switch (userDataStoreConfiguration) {

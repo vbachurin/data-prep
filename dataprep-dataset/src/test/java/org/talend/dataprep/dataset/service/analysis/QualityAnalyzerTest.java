@@ -20,7 +20,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.dataset.Application;
-import org.talend.dataprep.dataset.DataSetServiceTests;
+import org.talend.dataprep.dataset.service.DataSetServiceTests;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 

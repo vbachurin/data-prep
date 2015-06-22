@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.store;
+package org.talend.dataprep.user.store;
 
 import javax.validation.constraints.NotNull;
 

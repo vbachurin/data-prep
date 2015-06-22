@@ -10,24 +10,19 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.store.mongo;
+package org.talend.dataprep.user.store.mongo;
 
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.talend.dataprep.api.user.UserData;
-import org.talend.dataprep.store.UserDataRepository;
+import org.talend.dataprep.user.store.UserDataRepository;
 
 /**
  * created by sgandon on 16 juin 2015 Detailled comment
  *
  */
 public class MongoUserDateRepository implements UserDataRepository {
-
-    public interface UserDataMongoDbRepo extends MongoRepository<UserData, String> {
-        // interface to inject the Mongo Repo below
-    }
 
     @Autowired
     UserDataMongoDbRepo repository;
