@@ -47,7 +47,6 @@
          * @description confirms the new preparation name
          */
         vm.confirmNewPrepName = function(){
-            console.log('avant changeName -------');
             vm.changeName();
             vm.editionModeFn();
         };
@@ -71,7 +70,6 @@
          */
         vm.changeName = function() {
             var cleanName = vm.preparationName.trim();
-            console.log(cleanName,'-----------------------');
             if(cleanName) {
                 PlaygroundService.createOrUpdatePreparation(cleanName)
                     .then(function() {
