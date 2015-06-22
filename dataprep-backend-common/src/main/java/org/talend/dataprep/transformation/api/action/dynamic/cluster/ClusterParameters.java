@@ -12,7 +12,8 @@ import org.talend.dataprep.transformation.api.action.parameters.ClusterItem;
 import org.talend.dataprep.transformation.api.action.parameters.Clusters;
 import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-import org.talend.datascience.common.inference.Analyzer;
+import org.talend.dataquality.record.linkage.constant.AttributeMatcherType;
+import org.talend.datascience.common.recordlinkage.PostMerge;
 import org.talend.datascience.common.recordlinkage.StringClusters;
 import org.talend.datascience.common.recordlinkage.StringsClusterAnalyzer;
 
@@ -25,7 +26,8 @@ public class ClusterParameters implements DynamicParameters {
     @Override
     public GenericParameter getParameters(final String columnId, final DataSet content) {
         // Analyze clusters service
-        Analyzer<StringClusters> clusterAnalyzer = new StringsClusterAnalyzer();
+        StringsClusterAnalyzer clusterAnalyzer = new StringsClusterAnalyzer();
+        clusterAnalyzer.withPostMerges(new PostMerge(AttributeMatcherType.SOUNDEX, 0.8f));
         clusterAnalyzer.init();
         content.getRecords().forEach(row -> {
             String value = row.get(columnId);
