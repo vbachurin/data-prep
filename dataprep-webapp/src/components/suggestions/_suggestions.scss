@@ -50,11 +50,11 @@
     .menu {
       color: $menu-color;
 
-      >li {
+      .accordion {
         border-bottom: 1px solid $border-color;
         font-size: .95em;
         font-weight: 400;
-        padding: 7px 2px 7px 0px;
+        padding: 7px 2px 7px 0;
         &:hover{
           background-color: $super-light-gray;
         }
@@ -64,16 +64,9 @@
           width:100%;
         }
 
-        .talend-accordion-trigger {
-          //&::before {
-          //  content: "\25b8";
-          //  margin-right: 5px;
-          //}
-        }
-
         &.open {
           background-color: $super-light-gray;
-          .talend-accordion-trigger::before {
+          #trigger::before {
             content: "\25BE";
           }
         }
@@ -98,7 +91,7 @@
     }
 
     .submenu {
-      padding: 0px 15px 0px 5px;
+      padding: 0 15px 0 5px;
       li {
         text-align: right;
       }

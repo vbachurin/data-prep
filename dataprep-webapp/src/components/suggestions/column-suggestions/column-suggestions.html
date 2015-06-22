@@ -10,23 +10,24 @@
             <div ng-repeat="(category, transformations) in columnSuggestionsCtrl.suggestions track by category">
                 <!--<div class="action-category">{{category}}</div>-->
 
-                <ul class="menu talend-accordion">
-                    <li ng-repeat="transfo in transformations track by $index" ng-switch="!!(transfo.parameters || transfo.items)">
-
+                <talend-accordions class="menu">
+                    <talend-accordions-item ng-repeat="transfo in transformations track by $index"
+                                            ng-switch="!!(transfo.parameters || transfo.items)">
                         <!-- no static parameters -->
                         <a ng-switch-when="false"
                            ng-click="columnSuggestionsCtrl.select(transfo)">{{transfo.label}}</a>
 
                         <!-- with static parameters -->
                         <span ng-switch-when="true">
-                            <a class="talend-accordion-trigger">{{transfo.label}}</a>
-                            <ul class="submenu">
+                            <a id="trigger">{{transfo.label}}</a>
+                            <ul id="content">
                                 <transform-params transformation="transfo"
                                                   on-submit="columnSuggestionsCtrl.transformClosure(transfo)(params)"></transform-params>
                             </ul>
                         </span>
-                    </li>
-                </ul>
+
+                    </talend-accordions-item>
+                </talend-accordions>
             </div>
         </talend-tabs-item>
     </talend-tabs>

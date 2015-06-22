@@ -68,4 +68,16 @@ describe('Tabs directive', function () {
         expect(element.find('#tab2Content').length).toBe(0);
         expect(element.find('#tab3Content').length).toBe(0);
     });
+
+    it('should unregister tabs on scope destroy', function () {
+        //given
+        createElement();
+        expect(element.controller('talendTabs').tabs.length).toBe(3);
+
+        //when
+        scope.$destroy();
+
+        //then
+        expect(element.controller('talendTabs').tabs.length).toBe(0);
+    });
 });

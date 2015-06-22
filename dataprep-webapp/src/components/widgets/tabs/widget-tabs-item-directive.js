@@ -38,10 +38,16 @@
             link: function(scope, iElement, iAttrs, tabsCtrl) {
                 var ctrl = scope.tabsItemCtrl;
 
+                //register itself
                 tabsCtrl.register(ctrl);
                 if(ctrl.default) {
                     tabsCtrl.select(ctrl);
                 }
+
+                //unregister itself on destroy
+                scope.$on('$destroy', function() {
+                    tabsCtrl.unregister(ctrl);
+                });
             }
         };
     }

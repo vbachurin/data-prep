@@ -95,8 +95,8 @@ describe('Slidable directive', function () {
         var actionOnlySpan = element.find('.action').eq(0).find('span').eq(0);
         var displayedActionText = actionOnlySpan.find('span').not('.ng-hide').eq(0).text();
         var hiddenActionText = actionOnlySpan.find('span.ng-hide').eq(0).text();
-        expect(displayedActionText).toBe('❯');
-        expect(hiddenActionText).toBe('❮');
+        expect(displayedActionText).toBe('›');
+        expect(hiddenActionText).toBe('‹');
     });
 
     it('should show '<' when left slidable is displayed', function () {
@@ -110,8 +110,8 @@ describe('Slidable directive', function () {
         var actionOnlySpan = element.find('.action').eq(0).find('span').eq(0);
         var displayedActionText = actionOnlySpan.find('span').not('.ng-hide').eq(0).text();
         var hiddenActionText = actionOnlySpan.find('span.ng-hide').eq(0).text();
-        expect(displayedActionText).toBe('❮');
-        expect(hiddenActionText).toBe('❯');
+        expect(displayedActionText).toBe('‹');
+        expect(hiddenActionText).toBe('›');
     });
 
     it('should show '<' when right slidable is hidden', function () {
@@ -125,8 +125,8 @@ describe('Slidable directive', function () {
         var actionOnlySpan = element.find('.action').eq(0).find('span').eq(0);
         var displayedActionText = actionOnlySpan.find('span').not('.ng-hide').eq(0).text();
         var hiddenActionText = actionOnlySpan.find('span.ng-hide').eq(0).text();
-        expect(displayedActionText).toBe('❮');
-        expect(hiddenActionText).toBe('❯');
+        expect(displayedActionText).toBe('‹');
+        expect(hiddenActionText).toBe('›');
     });
 
     it('should show '>' when right slidable is displayed', function () {
@@ -140,8 +140,8 @@ describe('Slidable directive', function () {
         var actionOnlySpan = element.find('.action').eq(0).find('span').eq(0);
         var displayedActionText = actionOnlySpan.find('span').not('.ng-hide').eq(0).text();
         var hiddenActionText = actionOnlySpan.find('span.ng-hide').eq(0).text();
-        expect(displayedActionText).toBe('❯');
-        expect(hiddenActionText).toBe('❮');
+        expect(displayedActionText).toBe('›');
+        expect(hiddenActionText).toBe('‹');
     });
 
     it('should set and configure resize feature on left slidable', function() {
