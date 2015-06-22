@@ -1,17 +1,7 @@
 package org.talend.dataprep.dataset.store.local;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.io.*;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import javax.annotation.PostConstruct;
@@ -22,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.talend.dataprep.api.dataset.DataSetContent;
@@ -35,7 +24,6 @@ import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
 @Configuration
-@ConditionalOnExpression()
 @ConditionalOnProperty(name = "dataset.content.store", havingValue = "local", matchIfMissing = false)
 public class LocalDataSetContentStore implements DataSetContentStore {
 
@@ -92,7 +80,7 @@ public class LocalDataSetContentStore implements DataSetContentStore {
         try {
             return new FileInputStream(getFile(dataSetMetadata));
         } catch (FileNotFoundException e) {
-            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata));
+            LOGGER.warn("File '{}' does not exist.", getFile(dataSetMetadata), e);
             return new ByteArrayInputStream(new byte[0]);
         }
     }

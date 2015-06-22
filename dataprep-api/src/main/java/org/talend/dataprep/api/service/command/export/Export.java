@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -15,11 +17,9 @@ import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.ExportParameters;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import org.talend.dataprep.api.type.ExportType;
 
-import javax.servlet.http.HttpServletResponse;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Component
 @Scope("request")
@@ -30,7 +30,7 @@ public class Export extends PreparationCommand<InputStream> {
     private final HttpServletResponse response;
 
     private Export(final HttpClient client, final ExportParameters input, final HttpServletResponse response) {
-        super(APIService.PREPARATION_GROUP, client);
+        super(APIService.TRANSFORM_GROUP, client);
         this.input = input;
         this.response = response;
     }
@@ -61,7 +61,7 @@ public class Export extends PreparationCommand<InputStream> {
 
         // Set response headers
         response.setContentType(input.getExportType().getMimeType());
-        response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getEntension());
+        response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getExtension());
 
         // Get dataset content and call export service
         final String uri = getTransformationUri(input.getExportType(), input.getCsvSeparator(), encodedActions);
@@ -75,21 +75,22 @@ public class Export extends PreparationCommand<InputStream> {
 
     /**
      * Create the transformation export uri
+     * 
      * @param exportType The export type.
      * @param csvSeparator The CSV separator.
      * @param encodedActions The encoded actions.
      * @return The built URI
      */
     private String getTransformationUri(final ExportType exportType, final Character csvSeparator, final String encodedActions) {
-        String result = this.transformationServiceUrl + "/transform/" + exportType;
+        String result = this.transformationServiceUrl + "/export/" + exportType;
         boolean hasQueryParams = false;
 
-        if(csvSeparator != null) {
+        if (csvSeparator != null) {
             result = appendQueryParam(result, "separator=" + encode(csvSeparator.toString()), hasQueryParams);
             hasQueryParams = true;
         }
 
-        if(encodedActions != null) {
+        if (encodedActions != null) {
             result = appendQueryParam(result, "actions=" + encodedActions, hasQueryParams);
             hasQueryParams = true;
         }
@@ -99,6 +100,7 @@ public class Export extends PreparationCommand<InputStream> {
 
     /**
      * Append a query param to an url
+     * 
      * @param url The base url
      * @param param The param to append
      * @param alreadyHasParams True if url already have query params
@@ -107,6 +109,5 @@ public class Export extends PreparationCommand<InputStream> {
     private String appendQueryParam(final String url, final String param, final boolean alreadyHasParams) {
         return url + (alreadyHasParams ? "&" : "?") + param;
     }
-
 
 }

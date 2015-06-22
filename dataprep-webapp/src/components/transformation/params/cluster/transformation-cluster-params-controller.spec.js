@@ -128,7 +128,7 @@ describe('Transform cluster params controller', function () {
         for(var i = 0; i < ctrl.details.clusters.length; i++) {
             var parameters = ctrl.details.clusters[i].parameters;
             for(var j = 0; j < parameters.length; j++) {
-                expect(parameters[j].default).toBe('true');
+                expect(parameters[j].default).toBe(true);
             }
         }
     });
@@ -174,5 +174,14 @@ describe('Transform cluster params controller', function () {
 
         //then
         expect(ctrl.allCheckboxState).toBe(false);
+    });
+
+    it('should init replace list for editable select', function () {
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.details.clusters[0].replace.list).toEqual(['Texa', 'Tixass', 'Tex@s']);
+        expect(ctrl.details.clusters[1].replace.list).toEqual(['Massachusetts', 'Masachusetts', 'Massachussetts', 'Massachusets', 'Masachussets']);
     });
 });

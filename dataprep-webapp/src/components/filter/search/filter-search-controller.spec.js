@@ -12,7 +12,8 @@ describe('filter search controller', function() {
     var data = {
         'columns': [
             {
-                'id': 'id',
+                'id': '0000',
+                'name': 'id',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -21,7 +22,8 @@ describe('filter search controller', function() {
                 'type': 'number'
             },
             {
-                'id': 'Postal',
+                'id': '0001',
+                'name': 'Postal',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -30,7 +32,8 @@ describe('filter search controller', function() {
                 'type': 'string'
             },
             {
-                'id': 'State',
+                'id': '0002',
+                'name': 'State',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -39,7 +42,8 @@ describe('filter search controller', function() {
                 'type': 'string'
             },
             {
-                'id': 'Capital',
+                'id': '0003',
+                'name': 'Capital',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -48,7 +52,8 @@ describe('filter search controller', function() {
                 'type': 'string'
             },
             {
-                'id': 'MostPopulousCity',
+                'id': '0004',
+                'name': 'MostPopulousCity',
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
@@ -59,32 +64,32 @@ describe('filter search controller', function() {
         ],
         'records': [
             {
-                'id': '1',
-                'Postal': 'AL',
-                'State': 'My Alabama',
-                'Capital': 'Montgomery',
-                'MostPopulousCity': 'Birmingham city'
+                '0000': '1',
+                '0001': 'AL',
+                '0002': 'My Alabama',
+                '0003': 'Montgomery',
+                '0004': 'Birmingham city'
             },
             {
-                'id': '2',
-                'Postal': 'AK',
-                'State': 'Alaska',
-                'Capital': 'Juneau',
-                'MostPopulousCity': 'Anchorage'
+                '0000': '2',
+                '0001': 'AK',
+                '0002': 'Alaska',
+                '0003': 'Juneau',
+                '0004': 'Anchorage'
             },
             {
-                'id': '3',
-                'Postal': 'AL',
-                'State': 'My Alabama 2',
-                'Capital': 'Montgomery',
-                'MostPopulousCity': 'Birmingham city'
+                '0000': '3',
+                '0001': 'AL',
+                '0002': 'My Alabama 2',
+                '0003': 'Montgomery',
+                '0004': 'Birmingham city'
             },
             {
-                'id': '3',
-                'Postal': 'AL',
-                'State': 'My Alabama 3',
-                'Capital': 'Montgomery',
-                'MostPopulousCity': 'Alabama city'
+                '0000': '3',
+                '0001': 'AL',
+                '0002': 'My Alabama 3',
+                '0003': 'Montgomery',
+                '0004': 'Alabama city'
             }
         ]
     };
@@ -115,12 +120,14 @@ describe('filter search controller', function() {
         expect(suggestions[0]).toEqual({
             label: 'ala in <b>MostPopulousCity</b>',
             value: 'ala',
-            columnId: 'MostPopulousCity'
+            columnId: '0004',
+            columnName: 'MostPopulousCity'
         });
         expect(suggestions[1]).toEqual({
             label: 'ala in <b>State</b>',
             value: 'ala',
-            columnId: 'State'
+            columnId: '0002',
+            columnName: 'State'
         });
     }));
 
@@ -137,12 +144,15 @@ describe('filter search controller', function() {
         expect(suggestions[0]).toEqual({
             label: 'ala*ma in <b>MostPopulousCity</b>',
             value: 'ala*ma',
-            columnId: 'MostPopulousCity'
+            columnId: '0004',
+            columnName: 'MostPopulousCity'
+
         });
         expect(suggestions[1]).toEqual({
             label: 'ala*ma in <b>State</b>',
             value: 'ala*ma',
-            columnId: 'State'
+            columnId: '0002',
+            columnName: 'State'
         });
     }));
 
@@ -169,7 +179,8 @@ describe('filter search controller', function() {
         ctrl.filterSuggestOptions.on_select({
             label: 'ala in <b>State</b>',
             value: 'ala',
-            columnId: 'State'
+            columnName: 'State',
+            columnId: '0002'
         });
 
         //then

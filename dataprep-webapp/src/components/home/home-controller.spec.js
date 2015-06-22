@@ -81,24 +81,26 @@ describe('Home controller', function() {
         });
 
         describe('step 2 with unique name', function() {
-            beforeEach(inject(function(DatasetService) {
+
+            beforeEach(inject(function($rootScope, DatasetService) {
                 spyOn(DatasetService, 'getDatasetByName').and.returnValue(null);
+                spyOn($rootScope, '$emit').and.callThrough();
             }));
 
-            it('should create dataset if name is unique', inject(function(MessageService, DatasetService) {
+            it('should create dataset if name is unique', inject(function($rootScope, MessageService, DatasetService) {
                 //given
                 expect(ctrl.uploadingDatasets.length).toBe(0);
                 ctrl.uploadDatasetName();
                 expect(ctrl.uploadingDatasets.length).toBe(1);
 
                 //when
-                uploadDefer.resolve();
+                uploadDefer.resolve({data: 'fake_id'});
                 scope.$digest();
 
                 //then
                 expect(DatasetService.create).toHaveBeenCalled();
                 expect(ctrl.uploadingDatasets.length).toBe(0);
-                expect(MessageService.success).toHaveBeenCalledWith('DATASET_CREATE_SUCCESS_TITLE', 'DATASET_CREATE_SUCCESS', {dataset: 'my cool dataset'});
+                expect($rootScope.$emit).toHaveBeenCalledWith('talend.dataset.open', 'fake_id');
             }));
 
             it('should update progress on create', inject(function(DatasetService) {
@@ -142,12 +144,13 @@ describe('Home controller', function() {
             };
             var confirmDefer;
 
-            beforeEach(inject(function ($q, DatasetService, TalendConfirmService) {
+            beforeEach(inject(function ($rootScope, $q, DatasetService, TalendConfirmService) {
                 confirmDefer = $q.defer();
 
                 spyOn(DatasetService, 'getDatasetByName').and.returnValue(dataset);
                 spyOn(DatasetService, 'getUniqueName').and.returnValue('my cool dataset (1)');
                 spyOn(TalendConfirmService, 'confirm').and.returnValue(confirmDefer.promise);
+                spyOn($rootScope, '$emit').and.callThrough();
             }));
 
             it('should do nothing on confirm modal dismiss', inject(function (TalendConfirmService, DatasetService) {
@@ -165,19 +168,19 @@ describe('Home controller', function() {
                 expect(DatasetService.update).not.toHaveBeenCalled();
             }));
 
-            it('should create dataset with modified name', inject(function (MessageService, TalendConfirmService, DatasetService) {
+            it('should create dataset with modified name', inject(function ($rootScope, MessageService, TalendConfirmService, DatasetService) {
                 //given
                 ctrl.uploadDatasetName();
 
                 //when
                 confirmDefer.reject();
                 scope.$digest();
-                uploadDefer.resolve();
+                uploadDefer.resolve({data :'dataset_id_XYZ'});
                 scope.$digest();
 
                 //then
                 expect(DatasetService.fileToDataset).toHaveBeenCalledWith(ctrl.datasetFile[0], 'my cool dataset (1)');
-                expect(MessageService.success).toHaveBeenCalledWith('DATASET_CREATE_SUCCESS_TITLE', 'DATASET_CREATE_SUCCESS', {dataset : 'my cool dataset (1)'});
+                expect($rootScope.$emit).toHaveBeenCalledWith('talend.dataset.open', 'dataset_id_XYZ');
             }));
 
             it('should update existing dataset', inject(function (MessageService, TalendConfirmService, DatasetService) {

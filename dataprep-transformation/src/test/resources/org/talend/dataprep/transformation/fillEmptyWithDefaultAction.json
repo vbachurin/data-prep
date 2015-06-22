@@ -3,7 +3,7 @@
     {
       "action": "fillemptywithdefault",
       "parameters": {
-        "column_name": "city",
+        "column_id": "city",
         "default_value": "Minas Tirith"
       }
     }

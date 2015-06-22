@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ErrorService {
 
     /**
-     * This operation is called by Spring when unexpected (and Spring level) exceptions occur. This operation
-     * ensure enough is passed to caller for diagnostic.
+     * This operation is called by Spring when unexpected (and Spring level) exceptions occur. This operation ensure
+     * enough is passed to caller for diagnostic.
      *
      * @param request Current request from user.
      * @param response Current response written to user.
      * @return A map containing more detailed information about the error (in JSON format).
      */
-    @RequestMapping(value="/error", produces= APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/error", produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, Object> handle(final HttpServletRequest request, final HttpServletResponse response) {
         final int status = Integer.parseInt(request.getAttribute("javax.servlet.error.status_code").toString());

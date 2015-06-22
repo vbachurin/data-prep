@@ -68,7 +68,7 @@
         self.getPreparations = function() {
             return self.preparationsList() !== null ?
                 $q.when(self.preparationsList()) :
-                PreparationListService.refreshPreparations().then(consolidatePreparationsAndDatasets);
+                self.refreshPreparations();
         };
 
         //---------------------------------------------------------------------------------
@@ -167,10 +167,22 @@
          */
         self.updateStep = function(step, parameters) {
             parameters = parameters || {};
-            /*jshint camelcase: false */
-            parameters.column_name = step.column.id;
-
+            self.insertColumnInfo(parameters, step.column);
             return PreparationListService.updateStep(self.currentPreparationId, step, parameters);
+        };
+
+
+        /**
+         * @ngdoc method
+         * @name insertColumnInfo
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} parameters The parameters to update the column from
+         * @param {object} column The update source.
+         */
+        self.insertColumnInfo = function(parameters, column) {
+            /*jshint camelcase: false */
+            parameters.column_id = column.id;
+            parameters.column_name = column.name;
         };
 
         /**
@@ -186,9 +198,7 @@
          */
         self.appendStep = function(metadata, action, column, parameters) {
             parameters = parameters || {};
-            /*jshint camelcase: false */
-            parameters.column_name = column.id;
-
+            self.insertColumnInfo(parameters, column);
             var promise = self.currentPreparationId ? $q.when(self.currentPreparationId) : self.create(metadata, 'New preparation');
 
             return promise.then(function() {
@@ -207,9 +217,7 @@
          */
         self.paramsHasChanged = function(step, newParams) {
             newParams = newParams || {};
-            /*jshint camelcase: false */
-            newParams.column_name = step.column.id;
-
+            self.insertColumnInfo(newParams, step.column);
             return JSON.stringify(newParams) !== JSON.stringify(step.actionParameters.parameters);
         };
 

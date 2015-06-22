@@ -1,7 +1,6 @@
 package org.talend.dataprep.transformation.api.action.parameters;
 
 import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 public class Item {
 
@@ -78,6 +77,10 @@ public class Item {
 
         public boolean isDefault() {
             return this.isDefault;
+        }
+
+        public void setDefault(boolean defaultValue) {
+            this.isDefault = defaultValue;
         }
 
         public Parameter[] getParameters() {

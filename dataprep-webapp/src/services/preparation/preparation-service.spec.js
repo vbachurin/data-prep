@@ -272,7 +272,7 @@ describe('Preparation Service', function () {
     it('should update a preparation step with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationListService) {
         //given
         PreparationService.currentPreparationId = '6cd546546548a745';
-        var step = {column: {id: 'firstname'}};
+        var step = {column: {id: '1', name:'firstname'}};
         var parameters = {value: 'Toto'};
 
         //when
@@ -280,20 +280,20 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationListService.updateStep).toHaveBeenCalledWith('6cd546546548a745', step, {value: 'Toto', column_name: 'firstname'});
+        expect(PreparationListService.updateStep).toHaveBeenCalledWith('6cd546546548a745', step, {value: 'Toto', column_name: 'firstname', column_id: '1'});
     }));
 
     it('should update a preparation step without parameters (should create it with column id)', inject(function ($rootScope, PreparationService, PreparationListService) {
         //given
         PreparationService.currentPreparationId = '6cd546546548a745';
-        var step = {column: {id: 'firstname'}};
+        var step = {column: {id: '1', name:'firstname'}};
 
         //when
         PreparationService.updateStep(step);
         $rootScope.$digest();
 
         //then
-        expect(PreparationListService.updateStep).toHaveBeenCalledWith('6cd546546548a745', step, {column_name: 'firstname'});
+        expect(PreparationListService.updateStep).toHaveBeenCalledWith('6cd546546548a745', step, {column_name: 'firstname', column_id: '1'});
     }));
 
     it('should append step to current preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationListService) {
@@ -301,7 +301,7 @@ describe('Preparation Service', function () {
         PreparationService.currentPreparationId = '6cd546546548a745';
         var metadata = {id: '2430e5df845ab6034c85'};
         var action = 'cut';
-        var column = {id: 'firstname'};
+        var column = {id: '1', name: 'firstname'};
         var parameters = {value: 'Toto'};
 
         //when
@@ -309,7 +309,7 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationListService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'cut', {value: 'Toto', column_name: 'firstname'});
+        expect(PreparationListService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'cut', {value: 'Toto', column_name: 'firstname', column_id: '1'});
     }));
 
     it('should append step to current preparation without parameters (should create it with column id)', inject(function ($rootScope, PreparationService, PreparationListService) {
@@ -317,14 +317,14 @@ describe('Preparation Service', function () {
         PreparationService.currentPreparationId = '6cd546546548a745';
         var metadata = {id: '2430e5df845ab6034c85'};
         var action = 'uppercase';
-        var column = {id: 'firstname'};
+        var column = {id: '1', name: 'firstname'};
 
         //when
         PreparationService.appendStep(metadata, action, column);
         $rootScope.$digest();
 
         //then
-        expect(PreparationListService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'uppercase', {column_name: 'firstname'});
+        expect(PreparationListService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'uppercase', {column_name: 'firstname', column_id: '1'});
     }));
 
     it('should create a new preparation with generic name on append step if no preparation is loaded', inject(function ($rootScope, PreparationService, PreparationListService) {
@@ -346,10 +346,11 @@ describe('Preparation Service', function () {
         //given
        var step = {
            column: {
-               id: 'firstname'
+               id: '1',
+               name: 'firstname'
            },
            actionParameters: {
-               parameters: {value: '--', column_name: 'firstname'}
+               parameters: {value: '--', column_name: 'firstname', column_id: '1'}
            }
        };
         var newParams = {value: '.'};
@@ -365,10 +366,11 @@ describe('Preparation Service', function () {
         //given
         var step = {
             column: {
-                id: 'firstname'
+                id: '1',
+                name: 'firstname'
             },
             actionParameters: {
-                parameters: {value: '--', column_name: 'firstname'}
+                parameters: {value: '--', column_id: '1', column_name: 'firstname'}
             }
         };
         var newParams = {value: '--'};
@@ -384,10 +386,11 @@ describe('Preparation Service', function () {
         //given
         var step = {
             column: {
-                id: 'firstname'
+                id: '0',
+                name: 'firstname'
             },
             actionParameters: {
-                parameters: {column_name: 'firstname'}
+                parameters: {column_id: '0', column_name: 'firstname'}
             }
         };
 

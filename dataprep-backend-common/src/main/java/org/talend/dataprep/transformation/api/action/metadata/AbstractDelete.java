@@ -1,45 +1,45 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
-public abstract class AbstractDelete implements ActionMetadata {
+/**
+ * Abstract class used as base class for delete actions.
+ */
+public abstract class AbstractDelete extends SingleColumnAction {
 
-    public static final String COLUMN_NAME_PARAMETER = "column_name"; //$NON-NLS-1$
-
+    /**
+     * @see ActionMetadata#getCategory()
+     */
     @Override
     public String getCategory() {
-        return "cleansing"; //$NON-NLS-1$
+        return ActionCategory.CLEANSING.getDisplayName();
     }
 
+    /**
+     * @see ActionMetadata#create(Map)
+     */
     @Override
-    public Item[] getItems() {
-        return new Item[0];
-    }
-
-    @Override
-    public Parameter[] getParameters() {
-        return new Parameter[] { new Parameter(COLUMN_NAME_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };
-    }
-
-    public abstract boolean toDelete(Map<String, String> parsedParameters, String value);
-
-    @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER);
-            String value = row.get(columnName);
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+        return (row, context) -> {
+            String columnId = parameters.get(COLUMN_ID);
+            String value = row.get(columnId);
             if (toDelete(parameters, value)) {
                 row.setDeleted(true);
             }
         };
     }
 
-}
+    /**
+     * Return true if the given value should be deleted.
+     * 
+     * @param parsedParameters the delete action parameters.
+     * @param value the value to delete.
+     * @return true if the given value should be deleted.
+     */
+    public abstract boolean toDelete(Map<String, String> parsedParameters, String value);
 
+}

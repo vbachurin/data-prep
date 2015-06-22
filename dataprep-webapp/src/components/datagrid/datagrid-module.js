@@ -11,6 +11,8 @@
      * @requires data-prep.services.preparation
      * @requires data-prep.services.filter
      * @requires data-prep.services.playground
+     * @requires 'data-prep.services.statistics'
+     * @requires 'data-prep.services.utils'
      */
     angular.module('data-prep.datagrid', [
         'data-prep.datagrid-tooltip',
@@ -18,6 +20,8 @@
         'data-prep.services.dataset',
         'data-prep.services.preparation',
         'data-prep.services.filter',
-        'data-prep.services.playground'
+        'data-prep.services.playground',
+        'data-prep.services.statistics',
+        'data-prep.services.utils'
     ]);
 })();

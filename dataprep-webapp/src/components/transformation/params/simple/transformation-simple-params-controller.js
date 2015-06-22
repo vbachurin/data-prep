@@ -25,7 +25,7 @@
                 case 'float':
                     return parseFloat(param.default) || 0;
                 case 'boolean':
-                    return param.default === 'true';
+                    return param.default === 'true' || param.default === true;
                 default :
                     return param.default;
             }
@@ -46,6 +46,12 @@
             });
         };
 
+        /**
+         * @ngdoc method
+         * @name initInputTypes
+         * @methodOf data-prep.transformation-params.controller:TransformSimpleParamsCtrl
+         * @description [PRIVATE] Init params input type, depending on param type
+         */
         var initInputTypes = function() {
             _.forEach(vm.parameters, function(param) {
                 param.inputType = ConverterService.toInputType(param.type);

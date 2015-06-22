@@ -1,20 +1,19 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.exporter.json.JsonWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
-import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
+import org.talend.dataprep.transformation.api.transformer.type.TransformerStepSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 /**
@@ -30,7 +29,7 @@ class SimpleTransformer implements Transformer {
 
     /** The transformer selector that selects which transformer to use depending on the input content. */
     @Autowired
-    private TypeTransformerSelector typeStateSelector;
+    private TransformerStepSelector typeStateSelector;
 
     /** The parsed actions ready to be applied to a dataset. */
     private final ParsedActions actions;
@@ -45,10 +44,10 @@ class SimpleTransformer implements Transformer {
     }
 
     /**
-     * @see Transformer#transform(InputStream, OutputStream)
+     * @see Transformer#transform(DataSet, OutputStream)
      */
     @Override
-    public void transform(InputStream input, OutputStream output) {
+    public void transform(DataSet input, OutputStream output) {
         try {
             if (input == null) {
                 throw new IllegalArgumentException("Input cannot be null.");
@@ -58,10 +57,11 @@ class SimpleTransformer implements Transformer {
             }
 
             //@formatter:off
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
+            final TransformerConfiguration configuration = from(input)
+                    .output(JsonWriter.create(builder, output))
                     .preview(false)
-                    .actions(DataSetRow.class, actions.getRowTransformer())
-                    .actions(RowMetadata.class, actions.getMetadataTransformer())
+                    .recordActions(actions.getRowTransformer())
+                    .columnActions(actions.getMetadataTransformer())
                     .build();
             //@formatter:on
 

@@ -14,4 +14,8 @@ $datagrid-tooltip-font-size: .80em;
     font-family: $monospace;
     font-size: $datagrid-tooltip-font-size;
   }
+  .hiddenChars{
+    background-color: #E9E9E9;
+    border: 1px dotted #BABABA;
+  }
 }

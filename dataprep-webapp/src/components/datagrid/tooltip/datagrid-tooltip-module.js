@@ -8,6 +8,6 @@
      * @requires talend.module:widget
      */
     angular.module('data-prep.datagrid-tooltip', [
-        'talend.widget'
+        'talend.widget', 'ngSanitize'
     ]);
 })();

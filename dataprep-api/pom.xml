@@ -3,7 +3,7 @@
     <parent>
         <artifactId>dataprep-backend</artifactId>
         <groupId>org.talend.dataprep</groupId>
-        <version>1.0.m4-SNAPSHOT</version>
+        <version>1.0.m5-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -112,6 +112,11 @@
         <dependency>
             <groupId>uk.co.datumedge</groupId>
             <artifactId>hamcrest-json</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -7,7 +7,7 @@ describe('Datagrid tooltip directive', function() {
 
     beforeEach(inject(function($rootScope, $compile, $window) {
         scope = $rootScope.$new();
-        element = angular.element('<datagrid-tooltip record="record" key="colId" position="position" requested-state="showTooltip"></datagrid-tooltip>');
+        element = angular.element('<datagrid-tooltip record="record" key="colId" position="position" requested-state="showTooltip" html-str="htmlStr"></datagrid-tooltip>');
         $compile(element)(scope);
         scope.$digest();
 
@@ -23,7 +23,7 @@ describe('Datagrid tooltip directive', function() {
 
     it('should display tooltip with the right content', function() {
         //given
-        scope.record = {id: 'd589Bc827b8e7bc2', name: '    Toto aux toilettes'};
+        scope.htmlStr = '    Toto aux toilettes';
         scope.colId = 'name';
         scope.showTooltip = true;
 

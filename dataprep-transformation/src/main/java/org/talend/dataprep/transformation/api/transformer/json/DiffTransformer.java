@@ -1,7 +1,6 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.exporter.json.JsonWriter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
-import org.talend.dataprep.transformation.api.transformer.type.TypeTransformerSelector;
+import org.talend.dataprep.transformation.api.transformer.type.TransformerStepSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 /**
@@ -33,7 +32,7 @@ class DiffTransformer implements Transformer {
 
     /** The transformer selector that routes transformation according the content to transform. */
     @Autowired
-    private TypeTransformerSelector tranformerSelector;
+    private TransformerStepSelector transformerSelector;
 
     /** The previous action. */
     private final ParsedActions previousAction;
@@ -59,12 +58,11 @@ class DiffTransformer implements Transformer {
 
     /**
      * Starts the transformation in preview mode.
-     *
-     * @param input the dataset content.
+     *  @param input the dataset content.
      * @param output where to output the transformation.
      */
     @Override
-    public void transform(InputStream input, OutputStream output) {
+    public void transform(DataSet input, OutputStream output) {
         try {
             if (input == null) {
                 throw new IllegalArgumentException("Input cannot be null.");
@@ -74,17 +72,18 @@ class DiffTransformer implements Transformer {
             }
 
             //@formatter:off
-            final TransformerConfiguration configuration = getDefaultConfiguration(input, output, builder)
+            final TransformerConfiguration configuration = from(input)
+                    .output(JsonWriter.create(builder, output))
                     .indexes(indexes)
                     .preview(true)
-                    .actions(DataSetRow.class, previousAction.getRowTransformer())
-                    .actions(DataSetRow.class, newAction.getRowTransformer())
-                    .actions(RowMetadata.class, previousAction.getMetadataTransformer())
-                    .actions(RowMetadata.class, newAction.getMetadataTransformer())
+                    .recordActions(previousAction.getRowTransformer())
+                    .recordActions(newAction.getRowTransformer())
+                    .columnActions(previousAction.getMetadataTransformer())
+                    .columnActions(newAction.getMetadataTransformer())
                     .build();
             //@formatter:on
 
-            tranformerSelector.process(configuration);
+            transformerSelector.process(configuration);
 
             output.flush();
 

@@ -3,7 +3,8 @@
     {
       "action": "uppercase",
       "parameters": {
-        "column_name": "lastname"
+        "column_id": "0001",
+        "column_name": "firstname"
       }
     }
   ]

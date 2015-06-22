@@ -2,7 +2,7 @@ describe('Badge directive', function () {
     'use strict';
 
     var scope, createElement, element;
-    var obj = {value: 'toto'};
+    var obj = {value: 'toto', editable: true};
     var fns = {
         change: function() {},
         close: function() {}
@@ -63,7 +63,7 @@ describe('Badge directive', function () {
             scope.obj = obj;
 
             createElement = function () {
-                var template = '<talend-badge on-close="close()" on-change="change()" obj="obj" text="Displayed text"></talend-badge>';
+                var template = '<talend-badge on-close="close()" on-change="change()" obj="obj" text="Displayed text" editable="true"></talend-badge>';
                 element = $compile(template)(scope);
                 $timeout.flush();
                 scope.$digest();

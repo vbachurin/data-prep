@@ -12,72 +12,78 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import javax.annotation.Nonnull;
+import java.util.function.BiConsumer;
 
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
 
 /**
- * This will compute the absolute value for numerical columns
- *
+ * This will compute the absolute value for numerical columns.
  */
 @Component(Round.ACTION_BEAN_PREFIX + Round.ROUND_ACTION_NAME)
 public class Round extends SingleColumnAction {
 
+    /** The action name. */
     public static final String ROUND_ACTION_NAME = "round"; //$NON-NLS-1$
 
-    private Round() {
-    }
-
+    /**
+     * @see ActionMetadata#getName()
+     */
     @Override
     public String getName() {
         return ROUND_ACTION_NAME;
     }
 
+    /**
+     * @see ActionMetadata#getCategory()
+     */
     @Override
     public String getCategory() {
-        return "math"; //$NON-NLS-1$
+        return ActionCategory.MATH.getDisplayName();
     }
 
+    /**
+     * @see ActionMetadata#create(Map)
+     */
     @Override
-    @Nonnull
-    public Item[] getItems() {
-        return new Item[0];
-    }
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+        return (row, context) -> {
 
-    @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+            String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
-            String absValueStr = null;
-            if (value != null) {
-                try {
-                    double doubleValue = Double.parseDouble(value);
-                    long roundedValue = Math.round(doubleValue);
-                    absValueStr = String.format("%s", roundedValue); //$NON-NLS-1$
-                } catch (NumberFormatException nfe2) {
-                    // Nan: nothing to do, but fail silently (no change in value)
-                }
-                if (absValueStr != null) {
-                    row.set(columnName, absValueStr);
-                }
+            if (value == null) {
+                return;
             }
 
+            String absValueStr = null;
+            try {
+                double doubleValue = Double.parseDouble(value);
+                long roundedValue = Math.round(doubleValue);
+                absValueStr = String.format("%s", roundedValue); //$NON-NLS-1$
+            } catch (NumberFormatException nfe2) {
+                // Nan: nothing to do, but fail silently (no change in value)
+            }
+
+            if (absValueStr != null) {
+                row.set(columnName, absValueStr);
+            }
         };
     }
 
+    /**
+     * @see ActionMetadata#accept(ColumnMetadata)
+     */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.NUMERIC);
+    public boolean accept(ColumnMetadata column) {
+        Type columnType = Type.get(column.getType());
+        // in order to 'clean' integer typed columns, this function needs to be allowed on any numeric types
+        return Type.NUMERIC.isAssignableFrom(columnType);
     }
-
 }

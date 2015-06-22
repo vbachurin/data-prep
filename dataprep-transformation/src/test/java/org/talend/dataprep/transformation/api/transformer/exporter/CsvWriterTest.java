@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvWriter;
 
 public class CsvWriterTest {
@@ -30,12 +32,9 @@ public class CsvWriterTest {
     @Test
     public void write_should_write_columns() throws Exception {
         // given
-        final ColumnMetadata column1 = new ColumnMetadata("id", "string");
-        final ColumnMetadata column2 = new ColumnMetadata("firstname", "string");
-
-        final List<ColumnMetadata> columns = new ArrayList<>(2);
-        columns.add(column1);
-        columns.add(column2);
+        List<ColumnMetadata> columns = new ArrayList<>(2);
+        columns.add(ColumnMetadata.Builder.column().id(1).name("id").type(Type.STRING).build());
+        columns.add(ColumnMetadata.Builder.column().id(2).name("firstname").type(Type.STRING).build());
 
         // when
         writer.write(new RowMetadata(columns));
@@ -55,7 +54,7 @@ public class CsvWriterTest {
             writer.write(row);
             fail("should have thrown UnsupportedOperationException");
         }
-        //then
+        // then
         catch (final UnsupportedOperationException e) {
             assertThat(e.getMessage()).isEqualTo("Write columns should be called before to init column list");
         }
@@ -64,25 +63,22 @@ public class CsvWriterTest {
     @Test
     public void write_should_write_row() throws Exception {
         // given
-        final ColumnMetadata column1 = new ColumnMetadata("id", "string");
-        final ColumnMetadata column2 = new ColumnMetadata("firstname", "string");
-        final List<ColumnMetadata> columns = new ArrayList<>(2);
-        columns.add(column1);
-        columns.add(column2);
+        final ColumnMetadata column1 = ColumnMetadata.Builder.column().id(1).name("id").type(Type.STRING).build();
+        final ColumnMetadata column2 = ColumnMetadata.Builder.column().id(2).name("firstname").type(Type.STRING).build();
+        final List<ColumnMetadata> columns = Arrays.asList(column1, column2);
 
         final DataSetRow row = new DataSetRow();
-        row.set("id", "64a5456ac148b64524ef165");
-        row.set("firstname", "Superman");
+        row.set("0001", "64a5456ac148b64524ef165");
+        row.set("0002", "Superman");
 
-        final String expectedCsv = "\"id\";\"firstname\"\n" +
-                "\"64a5456ac148b64524ef165\";\"Superman\"\n";
+        final String expectedCsv = "\"id\";\"firstname\"\n" + "\"64a5456ac148b64524ef165\";\"Superman\"\n";
 
         // when
         writer.write(new RowMetadata(columns));
         writer.write(row);
         writer.flush();
 
-        //then
+        // then
         assertThat(outputStream.toString()).isEqualTo(expectedCsv);
     }
 

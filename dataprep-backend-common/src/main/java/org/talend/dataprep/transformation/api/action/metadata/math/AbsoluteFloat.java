@@ -12,17 +12,16 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import javax.annotation.Nonnull;
+import java.util.function.BiConsumer;
 
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
 
 /**
@@ -34,9 +33,6 @@ public class AbsoluteFloat extends SingleColumnAction {
 
     public static final String ABSOLUTE_FLOAT_ACTION_NAME = "absolute_float"; //$NON-NLS-1$
 
-    private AbsoluteFloat() {
-    }
-
     @Override
     public String getName() {
         return ABSOLUTE_FLOAT_ACTION_NAME;
@@ -44,19 +40,13 @@ public class AbsoluteFloat extends SingleColumnAction {
 
     @Override
     public String getCategory() {
-        return "math"; //$NON-NLS-1$
+        return ActionCategory.MATH.getDisplayName();
     }
 
     @Override
-    @Nonnull
-    public Item[] getItems() {
-        return new Item[0];
-    }
-
-    @Override
-    public Consumer<DataSetRow> create(Map<String, String> parameters) {
-        return row -> {
-            String columnName = parameters.get(COLUMN_NAME_PARAMETER_NAME);
+    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+        return (row, context) -> {
+            String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             String absValueStr = null;
             if (value != null) {
@@ -87,9 +77,12 @@ public class AbsoluteFloat extends SingleColumnAction {
         };
     }
 
+    /**
+     * @see ActionMetadata#accept(ColumnMetadata)
+     */
     @Override
-    public Set<Type> getCompatibleColumnTypes() {
-        return Collections.singleton(Type.FLOAT);
+    public boolean accept(ColumnMetadata column) {
+        return Type.FLOAT.equals(Type.get(column.getType())) || Type.DOUBLE.equals(Type.get(column.getType()));
     }
 
 }

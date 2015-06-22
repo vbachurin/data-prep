@@ -5,6 +5,11 @@
     "name": "uppercase",
     "parameters": [
       {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "column_name",
         "type": "string",
         "default": ""
@@ -16,6 +21,11 @@
     "items": [],
     "name": "lowercase",
     "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
       {
         "name": "column_name",
         "type": "string",
@@ -29,6 +39,11 @@
     "name": "propercase",
     "parameters": [
       {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "column_name",
         "type": "string",
         "default": ""
@@ -41,6 +56,11 @@
     "name": "trim",
     "parameters": [
       {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "column_name",
         "type": "string",
         "default": ""
@@ -52,6 +72,11 @@
     "items": [],
     "name": "fillemptywithdefault",
     "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
       {
         "name": "column_name",
         "type": "string",
@@ -68,6 +93,11 @@
     "name": "delete_empty",
     "parameters": [
       {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "column_name",
         "type": "string",
         "default": ""
@@ -77,6 +107,11 @@
   {
     "name": "delete_on_value",
     "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
       {
         "name": "column_name",
         "type": "string",
@@ -97,6 +132,11 @@
     "description":"Remove specified text from cells in this column",
     "parameters": [
       {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
         "name": "column_name",
         "type": "string",
         "default": ""
@@ -110,17 +150,19 @@
   },
   {
     "category": "columns",
-    "compatibleColumnTypes": [
-      "ANY"
-    ],
     "items": [],
     "name": "rename_column",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
         "default": ""
       },
       {
@@ -136,9 +178,6 @@
   },
   {
     "category": "columns",
-    "compatibleColumnTypes": [
-      "STRING"
-    ],
     "items": [
       {
         "name": "separator",
@@ -165,51 +204,104 @@
               {
                 "name": "manual_separator",
                 "type": "string",
-                "description": "choose your own separator",
-                "label": "manual separator",
+                "description": "Choose your own separator",
+                "label": "Manual separator",
                 "default": ""
               }
             ],
             "default": false
           }
         ],
-        "description": "character to use as separator",
-        "label": "separator"
+        "description": "Character to use as separator",
+        "label": "Separator"
       }
     ],
     "name": "split",
     "parameters": [
       {
-        "name": "column_name",
+        "name": "column_id",
         "type": "string",
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "limit",
+        "type": "integer",
+        "default": "2"
       }
     ],
     "description": "Split column from separators",
     "label": "Split"
   },
   {
-    "category":"quickfix",
-    "compatibleColumnTypes":[
-      "STRING"
-    ],
-    "name":"textclustering",
-    "dynamic":true,
-    "items":[
-
-    ],
-    "parameters":[
+    "category": "columns",
+    "name": "extractemaildomain",
+    "parameters": [
       {
-        "name":"column_name",
-        "type":"string",
-        "description":"The column on which apply this action to",
-        "label":"Column",
-        "default":""
+        "name": "column_id",
+        "type": "string",
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
       }
     ],
-    "description":"Replace all similar values with the right one",
-    "label":"Cluster"
-  }
+    "description": "Extract local and domain parts from an email",
+    "label": "Extract email tokens"
+  },
+  {
+    "category": "quickfix",
+    "name": "textclustering",
+    "dynamic": true,
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ],
+    "description": "Replace all similar values with the right one",
+    "label": "Cluster"
+  },
+   {
+      "label": "Duplicate",
+      "name":"copy",
+      "description": "Creates an exact copy of this column",
+      "category": "columns",
+      "parameters": [
+         {
+            "name": "column_id",
+            "type": "string",
+            "description": "The column on which apply this action to",
+            "label": "Column",
+            "default": ""
+         },
+         {
+            "name": "column_name",
+            "type": "string",
+            "description": "The column name on which apply this action to",
+            "label": "Column name",
+            "default": ""
+         }
+       ]
+    }
 ]

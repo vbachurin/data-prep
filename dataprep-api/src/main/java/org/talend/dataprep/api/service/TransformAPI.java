@@ -53,7 +53,7 @@ public class TransformAPI extends APIService {
             response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
 
-            HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, false);
+            HystrixCommand<InputStream> contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, true);
             HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, contentRetrieval, encodedActions);
 
             // Perform transformation
@@ -109,20 +109,17 @@ public class TransformAPI extends APIService {
     @RequestMapping(value = "/api/transform/suggest/{action}/params", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the transformation dynamic parameters", notes = "Returns the transformation parameters.")
     @Timed
-    public void suggestActionParams(
-            @ApiParam(value = "Transformation name.")
-            @PathVariable("action")
-            final String action,
-            @ApiParam(value = "Suggested dynamic transformation input (preparation id or dataset id")
-            @Valid
-            final DynamicParamsInput dynamicParamsInput,
-            final HttpServletResponse response) {
+    public void suggestActionParams(@ApiParam(value = "Transformation name.")
+    @PathVariable("action")
+    final String action, @ApiParam(value = "Suggested dynamic transformation input (preparation id or dataset id")
+    @Valid
+    final DynamicParamsInput dynamicParamsInput, final HttpServletResponse response) {
 
         try {
             // get preparation/dataset content
             HystrixCommand<InputStream> inputData;
             if (isNotBlank(dynamicParamsInput.getPreparationId())) {
-                inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), "head");
+                inputData = getCommand(PreparationGetContent.class, getClient(), dynamicParamsInput.getPreparationId(), dynamicParamsInput.getStepId());
             } else {
                 inputData = getCommand(DataSetGet.class, getClient(), dynamicParamsInput.getDatasetId(), false, true);
             }

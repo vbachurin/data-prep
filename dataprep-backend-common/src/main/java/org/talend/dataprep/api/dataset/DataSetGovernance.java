@@ -8,7 +8,7 @@ public class DataSetGovernance {
     public enum Certification {
         NONE,
         PENDING,
-        CERTIFIED;
+        CERTIFIED
     }
 
     private Certification certificationStep = Certification.NONE;

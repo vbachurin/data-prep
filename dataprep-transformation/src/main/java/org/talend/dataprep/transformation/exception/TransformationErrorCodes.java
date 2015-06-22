@@ -25,7 +25,6 @@ public enum TransformationErrorCodes implements ErrorCode {
 
     // 500
     UNABLE_TO_COMPUTE_DATASET_ACTIONS(INTERNAL_SERVER_ERROR),
-    UNABLE_TO_WRITE_JSON(INTERNAL_SERVER_ERROR),
     UNABLE_TRANSFORM_DATASET(INTERNAL_SERVER_ERROR),
     UNEXPECTED_EXCEPTION(INTERNAL_SERVER_ERROR);
 
@@ -83,6 +82,7 @@ public enum TransformationErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
+    @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }

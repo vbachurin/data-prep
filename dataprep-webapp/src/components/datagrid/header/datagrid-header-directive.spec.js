@@ -20,60 +20,33 @@ describe('Dataset column header directive', function() {
         };
     }));
     
-    it('should calculate column quality', function() {
+    it('should display column title and domain', function() {
         //given
         scope.column = {
-            'id': 'MostPopulousCity',
+            'id': '0',
+            'name': 'MostPopulousCity',
             'quality': {
                 'empty': 5,
                 'invalid': 10,
                 'valid': 72
             },
-            'type': 'string'
+            'type': 'string',
+            'domain': 'city'
         };
 
         //when
         createElement(scope);
 
         //then
-        expect(scope.column.total).toBe(87);
-        expect(scope.column.quality.emptyPercent).toBe(6);
-        expect(scope.column.quality.emptyPercentWidth).toBe(10);
-        expect(scope.column.quality.invalidPercent).toBe(12);
-        expect(scope.column.quality.invalidPercentWidth).toBe(12);
-        expect(scope.column.quality.validPercent).toBe(82);
-        expect(scope.column.quality.validPercentWidth).toBe(78);
+        expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
+        expect(element.find('.grid-header-type').text()).toBe('city');
     });
 
-    it('should calculate column quality with 0 values', function() {
+    it('should display column title and type', function() {
         //given
         scope.column = {
-            'id': 'MostPopulousCity',
-            'quality': {
-                'empty': 0,
-                'invalid': 0,
-                'valid': 100
-            },
-            'type': 'string'
-        };
-
-        //when
-        createElement(scope);
-
-        //then
-        expect(scope.column.total).toBe(100);
-        expect(scope.column.quality.emptyPercent).toBe(0);
-        expect(scope.column.quality.emptyPercentWidth).toBe(0);
-        expect(scope.column.quality.invalidPercent).toBe(0);
-        expect(scope.column.quality.invalidPercentWidth).toBe(0);
-        expect(scope.column.quality.validPercent).toBe(100);
-        expect(scope.column.quality.validPercentWidth).toBe(100);
-    });
-
-    it('should display colum title, type and set quality bars width', function() {
-        //given
-        scope.column = {
-            'id': 'MostPopulousCity',
+            'id': '0',
+            'name': 'MostPopulousCity',
             'quality': {
                 'empty': 5,
                 'invalid': 10,
@@ -87,33 +60,7 @@ describe('Dataset column header directive', function() {
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
-        expect(element.find('.grid-header-type').text()).toBe('string');
-        expect(element.find('.record-ok').css('width')).toBe('78%');
-        expect(element.find('.record-empty').css('width')).toBe('10%');
-        expect(element.find('.record-nok').css('width')).toBe('12%');
-    });
-
-    it('should display colum title, type and set quality bars width', function() {
-        //given
-        scope.column = {
-            'id': 'MostPopulousCity',
-            'quality': {
-                'empty': 5,
-                'invalid': 10,
-                'valid': 72
-            },
-            'type': 'string'
-        };
-
-        //when
-        createElement(scope);
-
-        //then
-        expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
-        expect(element.find('.grid-header-type').text()).toBe('string');
-        expect(element.find('.record-ok').css('width')).toBe('78%');
-        expect(element.find('.record-empty').css('width')).toBe('10%');
-        expect(element.find('.record-nok').css('width')).toBe('12%');
+        expect(element.find('.grid-header-type').text()).toBe('text');
     });
 
     it('should close dropdown on get transform list error', function() {

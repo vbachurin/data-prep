@@ -1,6 +1,5 @@
 package org.talend.dataprep.exception;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.List;
 public enum CommonErrorCodes implements ErrorCode {
     UNEXPECTED_EXCEPTION(500),
     UNABLE_TO_PARSE_JSON(500),
+    UNABLE_TO_WRITE_JSON(500),
     UNABLE_TO_SERIALIZE_TO_JSON(500),
     UNABLE_TO_COMPUTE_ID(500),
     UNABLE_TO_PRINT_PREPARATION(500),
@@ -29,17 +29,6 @@ public enum CommonErrorCodes implements ErrorCode {
     CommonErrorCodes(int httpStatus) {
         this.httpStatus = httpStatus;
         this.expectedContextEntries = Collections.emptyList();
-    }
-
-    /**
-     * default constructor.
-     * 
-     * @param httpStatus the http status to use.
-     * @param contextEntries expected context entries.
-     */
-    CommonErrorCodes(int httpStatus, String... contextEntries) {
-        this.httpStatus = httpStatus;
-        this.expectedContextEntries = Arrays.asList(contextEntries);
     }
 
     /**
@@ -69,6 +58,7 @@ public enum CommonErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
+    @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }

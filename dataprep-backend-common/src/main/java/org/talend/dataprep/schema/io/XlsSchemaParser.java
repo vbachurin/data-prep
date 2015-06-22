@@ -2,14 +2,7 @@ package org.talend.dataprep.schema.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalLong;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.SchemaParser;
 import org.talend.dataprep.schema.SchemaParserResult;
 
@@ -45,14 +40,14 @@ public class XlsSchemaParser implements SchemaParser {
         if (!sheetContents.isEmpty()) {
             return sheetContents.size() == 1 ? //
             SchemaParserResult.Builder.parserResult() //
-                    .sheetContents( sheetContents ) //
+                    .sheetContents(sheetContents) //
                     .draft(false) //
                     .build() //
                     : //
                     SchemaParserResult.Builder.parserResult() //
-                            .sheetContents( sheetContents ) //
+                            .sheetContents(sheetContents) //
                             .draft(true) //
-                            .sheetName(sheetContents.get( 0 ).getName()) //
+                            .sheetName(sheetContents.get(0).getName()) //
                             .build();
         }
 
@@ -96,7 +91,7 @@ public class XlsSchemaParser implements SchemaParser {
 
         } catch (IOException e) {
             LOGGER.debug("IOEXception during parsing xls content :" + e.getMessage(), e);
-            throw new RuntimeException(e.getMessage(), e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
     }
 
@@ -124,7 +119,6 @@ public class XlsSchemaParser implements SchemaParser {
         final List<ColumnMetadata> columnMetadatas = new ArrayList<>(cellsTypeMatrix.size());
 
         cellsTypeMatrix.forEach((integer, integerTypeSortedMap) -> {
-            int colRowTypeChange = cellTypeChange.get(integer);
 
             Type type = guessColumnType(integerTypeSortedMap, averageHeaderSize);
 
@@ -145,6 +139,7 @@ public class XlsSchemaParser implements SchemaParser {
             columnMetadatas.add(ColumnMetadata.Builder //
                     .column() //
                     .headerSize(averageHeaderSize) //
+                    .id(integer) //
                     .name(headerText) //
                     .type(type) //
                     .build());

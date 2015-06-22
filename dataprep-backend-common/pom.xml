@@ -6,14 +6,18 @@
     <parent>
         <groupId>org.talend.dataprep</groupId>
         <artifactId>dataprep-backend</artifactId>
-        <version>1.0.m4-SNAPSHOT</version>
+        <version>1.0.m5-SNAPSHOT</version>
         <relativePath>../dataprep-backend/pom.xml</relativePath>
     </parent>
     <packaging>jar</packaging>
     <artifactId>dataprep-backend-common</artifactId>
-    <version>1.0.m4-SNAPSHOT</version>
+    <version>1.0.m5-SNAPSHOT</version>
     <name>dataprep-backend-common</name>
     <dependencies>
+        <dependency>
+            <groupId>org.talend</groupId>
+            <artifactId>org.talend.datascience.spark</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
@@ -87,6 +91,10 @@
         <dependency>
             <groupId>uk.co.datumedge</groupId>
             <artifactId>hamcrest-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.talend</groupId>
+            <artifactId>org.talend.datascience.common</artifactId>
         </dependency>
         <!-- UNIT TEST DEPENDENCIES -->
         <dependency>

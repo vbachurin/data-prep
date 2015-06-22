@@ -18,11 +18,12 @@
          * @returns {function} the item creation closure
          */
         var createSuggestionItem = function(term) {
-            return function(colId) {
+            return function(col) {
                 return {
-                    label: term + ' in <b>' + colId + '</b>',
+                    label: term + ' in <b>' + col.name + '</b>',
                     value: term,
-                    columnId: colId
+                    columnId: col.id,
+                    columnName: col.name
                 };
             };
         };
@@ -40,11 +41,11 @@
             var colContainingTerm = FilterService.getColumnsContaining(cleanTerm);
 
             return _.chain(colContainingTerm)
-                .sortBy(function(colId) {
-                    return colId.toLowerCase();
-                })
-                .map(createSuggestionItem(cleanTerm))
-                .value();
+                      .sortBy(function(col) {
+                          return col.name.toLowerCase();
+                      })
+                      .map(createSuggestionItem(cleanTerm))
+                      .value();
         };
 
         /**
@@ -55,7 +56,7 @@
          * @description [PRIVATE] Action when user select a suggestion : create the filter and reset the input
          */
         var suggestionSelect = function(item) {
-            FilterService.addFilter('contains', item.columnId, {phrase: item.value});
+            FilterService.addFilter('contains', item.columnId, item.columnName, {phrase: item.value});
             vm.filterSearch = '';
         };
 

@@ -12,42 +12,9 @@
     function DatasetService($q, DatasetListService, DatasetRestService, PreparationListService) {
         var self = this;
 
-        /**
-         * @ngdoc method
-         * @name datasetsList
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Return the datasets list. See {@link data-prep.services.dataset.service:DatasetListService DatasetListService}.datasets
-         * @returns {object[]} The datasets list
-         */
-        self.datasetsList = function() {
-            return DatasetListService.datasets;
-        };
-
-        /**
-         * @ngdoc method
-         * @name consolidatePreparationsAndDatasets
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description [PRIVATE] Refresh the metadata within the preparations
-         */
-        var consolidatePreparationsAndDatasets = function(response) {
-            PreparationListService.refreshMetadataInfos(self.datasetsList())
-                .then(DatasetListService.refreshDefaultPreparation);
-            return response;
-        };
-
-        /**
-         * @ngdoc method
-         * @name getDatasets
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Return a promise that resolves the datasets list.
-         * @returns {promise} The pending GET or resolved promise
-         */
-        self.getDatasets = function() {
-            return self.datasetsList() ?
-                $q.when(self.datasetsList()) :
-                DatasetListService.refreshDatasets().then(consolidatePreparationsAndDatasets);
-        };
-
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Dataset----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name delete
@@ -89,6 +56,57 @@
             return promise;
         };
 
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Metadata---------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name datasetsList
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description Return the datasets list. See {@link data-prep.services.dataset.service:DatasetListService DatasetListService}.datasets
+         * @returns {object[]} The datasets list
+         */
+        self.datasetsList = function() {
+            return DatasetListService.datasets;
+        };
+
+        /**
+         * @ngdoc method
+         * @name consolidatePreparationsAndDatasets
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description [PRIVATE] Refresh the metadata within the preparations
+         */
+        var consolidatePreparationsAndDatasets = function(response) {
+            PreparationListService.refreshMetadataInfos(self.datasetsList())
+                .then(DatasetListService.refreshDefaultPreparation);
+            return response;
+        };
+
+        /**
+         * @ngdoc method
+         * @name getDatasets
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description Return a promise that resolves the datasets list.
+         * @returns {promise} The pending GET or resolved promise
+         */
+        self.getDatasets = function() {
+            return self.datasetsList() ?
+                $q.when(self.datasetsList()) :
+                DatasetListService.refreshDatasets().then(consolidatePreparationsAndDatasets);
+        };
+
+        /**
+         * @ngdoc method
+         * @name refreshDatasets
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description Refresh the dataset list
+         * @returns {promise} The process promise
+         */
+        self.refreshDatasets = function() {
+            return DatasetListService.refreshDatasets()
+                .then(consolidatePreparationsAndDatasets);
+        };
+
         /**
          * @ngdoc method
          * @name processCertification
@@ -104,17 +122,6 @@
 
         /**
          * @ngdoc method
-         * @name getContent
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @param {string} datasetId The dataset id
-         * @param {boolean} metadata If false, the metadata will not be returned
-         * @description Get a dataset content. It just call {@link data-prep.services.dataset.service:DatasetRestService DatasetRestService} getContent function
-         * @returns {promise} The pending GET promise
-         */
-        self.getContent = DatasetRestService.getContent;
-
-        /**
-         * @ngdoc method
          * @name getDatasetByName
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {string} name The dataset name
@@ -127,6 +134,39 @@
             });
         };
 
+        /**
+         * @ngdoc method
+         * @name getDatasetById
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {string} datasetId The dataset id
+         * @description Get the dataset that has the wanted id
+         * @returns {promise} The dataset
+         */
+        self.getDatasetById = function(datasetId) {
+            return DatasetListService.getDatasetsPromise().then( function(datasetList) {
+                return _.find(datasetList, function(dataset) {
+                    return dataset.id === datasetId;
+                });
+            });
+        };
+
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Content----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name getContent
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {string} datasetId The dataset id
+         * @param {boolean} metadata If false, the metadata will not be returned
+         * @description Get a dataset content. It just call {@link data-prep.services.dataset.service:DatasetRestService DatasetRestService} getContent function
+         * @returns {promise} The pending GET promise
+         */
+        self.getContent = DatasetRestService.getContent;
+
+        //--------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------Utiles-----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
          * @name fileToDataset
@@ -160,6 +200,35 @@
             }
 
             return result;
+        };
+
+        //--------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------Sheet Preview-------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name getSheetPreview
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} metadata The dataset metadata
+         * @param {string} sheetName The sheet name
+         * @description Get a dataset sheet preview
+         * @returns {object} The preview data
+         */
+        self.getSheetPreview = function(metadata, sheetName) {
+            return DatasetRestService.getSheetPreview(metadata.id, sheetName);
+        };
+
+        /**
+         * @ngdoc method
+         * @name setDatasetSheet
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {string} sheetName The sheet name
+         * @description Set the selected sheet to the dataset
+         * @returns {Promise} The process Promise
+         */
+        self.setDatasetSheet = function(metadata, sheetName) {
+            metadata.sheetName = sheetName;
+            return DatasetRestService.updateMetadata(metadata);
         };
     }
 

@@ -1,0 +1,75 @@
+svg{
+  font-family: $inconsolota;
+}
+
+.bg-rect{
+  fill:$medium-gray;
+  cursor:pointer
+}
+
+.bar rect {
+  fill: $dark-blue;
+}
+
+.bar text.value {
+  font-size: .8em;
+  fill: $shadow-gray;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.axis path {
+  fill: none;
+}
+
+.x.axis line {
+  stroke: #fff;
+  //stroke-opacity: .2;
+  stroke-opacity: .0;
+}
+
+.x.axis text {
+  font-size: .8em;
+  fill: $medium-gray;
+}
+
+.y.axis path {
+  stroke: $shadow-gray;
+}
+
+.y.axis text {
+  display: none;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-family: $inconsolota;
+  font-size: .8em;
+  font-weight: 400;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: $white;
+  border-radius: 2px;
+  z-index: 100000;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}

@@ -1,8 +1,12 @@
 package org.talend.dataprep.schema;
 
+
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.CommonErrorCodes;
@@ -11,19 +15,49 @@ import org.talend.dataprep.exception.TDPException;
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {
 
+    /** This class' logger. */
+    private static final Logger logger = LoggerFactory.getLogger(LineBasedFormatGuesser.class);
+
+    /** Replacement char used to replace a char that cannot be displayed, typical when you read binary files. */
+    private static final int REPLACEMENT_CHAR = 65533;
+
+    /** Threshold to detect binary stream. */
+    private static final int BINARY_DETECTION_THRESHOLD = 100;
+
+    /** The csv format guesser. */
     @Autowired
     private CSVFormatGuess csvFormatGuess;
-
     /** The fallback guess if the input is not CSV compliant. */
     @Autowired
     private NoOpFormatGuess fallbackGuess;
 
-    private static Separator guessSeparator(InputStream is, String encoding) {
+    /**
+     * @see FormatGuesser#guess(InputStream)
+     */
+    @Override
+    public FormatGuesser.Result guess(InputStream stream) {
+        Separator sep = guessSeparator(stream, "UTF-8");
+        if (sep != null) {
+            return new FormatGuesser.Result(csvFormatGuess, //
+                    Collections.singletonMap(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.getSeparator())));
+        }
+        return new FormatGuesser.Result(fallbackGuess, Collections.emptyMap()); // Fallback
+    }
+
+    /**
+     * Try to guess the separator used in the CSV.
+     *
+     * @param is the inputstream to read the CSV from.
+     * @param encoding the encoding to use for the reading.
+     * @return the guessed CSV separator or null if none found.
+     */
+    private Separator guessSeparator(InputStream is, String encoding) {
         try {
             Reader reader = encoding != null ? new InputStreamReader(is, encoding) : new InputStreamReader(is);
             try (LineNumberReader lineNumberReader = new LineNumberReader(reader)) {
                 List<Separator> separators = new ArrayList<>();
                 Map<Character, Separator> separatorMap = new HashMap<>();
+                int replacementCharsCount = 0;
                 int totalChars = 0;
                 int lineCount = 0;
                 boolean inQuote = false;
@@ -38,66 +72,74 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                     }
                     for (int i = 0; i < s.length(); i++) {
                         char c = s.charAt(i);
+                        if (REPLACEMENT_CHAR == (int) c) {
+                            replacementCharsCount++;
+                            if (replacementCharsCount > BINARY_DETECTION_THRESHOLD) {
+                                logger.debug("binary stream, hence cannot be a CSV");
+                                return null;
+                            }
+                        }
                         if ('"' == c) {
                             inQuote = !inQuote;
                         }
                         if (!Character.isLetterOrDigit(c) && !"\"' .-".contains(s.subSequence(i, i + 1)) && (!inQuote)) {
                             Separator separator = separatorMap.get(c);
                             if (separator == null) {
-                                separator = new Separator();
-                                separator.separator = c;
+                                separator = new Separator(c);
                                 separatorMap.put(c, separator);
                                 separators.add(separator);
                             }
-                            separator.currentLineCount++;
-                        }
-                    }
-                    if (!inQuote) {
-                        for (Separator separator : separators) {
-                            separator.totalCount += separator.currentLineCount;
-                            separator.totalOfSquaredCount += separator.currentLineCount * separator.currentLineCount;
-                            separator.currentLineCount = 0;
+                            separator.totalCountPlusOne();
                         }
                     }
                 }
 
-                // if there's only one separator, let's use it
-                if (separators.size() == 1) {
-                    return separators.get(0);
-                }
+                return chooseSeparator(separators, lineCount);
 
-                // if there are separators, let's see compute their coefficient of variation to see which one is the
-                // most likely to use
-                if (separators.size() > 0) {
-                    for (Separator separator : separators) {
-                        separator.averagePerLine = separator.totalCount / (double) lineCount;
-                        separator.stddev = Math
-                                .sqrt((((double) lineCount * separator.totalOfSquaredCount) - (separator.totalCount * separator.totalCount))
-                                        / ((double) lineCount * (lineCount - 1)));
-                    }
-                    Collections.sort(separators,
-                            (sep0, sep1) -> Double.compare(sep0.stddev / sep0.averagePerLine, sep1.stddev / sep1.averagePerLine));
-                    Separator separator = separators.get(0);
-                    if (separator.stddev / separator.averagePerLine < 0.1) {
-                        return separator;
-                    }
-                    // TODO shouldn't a fallback separator be returned ?
-                }
             }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_READ_CONTENT, e);
         }
-        return null;
+
     }
 
-    @Override
-    public FormatGuesser.Result guess(InputStream stream) {
-        Separator sep = guessSeparator(stream, "UTF-8");
-        if (sep != null) {
-            return new FormatGuesser.Result(csvFormatGuess, //
-                    Collections.singletonMap(CSVFormatGuess.SEPARATOR_PARAMETER, String.valueOf(sep.separator)));
+    /**
+     * Choose the best separator out of the ones.
+     *
+     * @param separators the list of separators found in the CSV (may be empty but not null.
+     * @param lineCount number of lines in the CSV.
+     * @return the separator to use to read the CSV or null if none found.
+     */
+    private Separator chooseSeparator(List<Separator> separators, int lineCount) {
+
+        // easy case where there's no choice
+        if (separators.isEmpty()) {
+            if (lineCount > 0) {
+                // There are some lines processed, but no separator (a one-column content?), so pick a default separator.
+                return new Separator(',');
+            }
+            return null;
         }
-        return new FormatGuesser.Result(fallbackGuess, Collections.emptyMap()); // Fallback
+
+        // if there's only one separator, let's use it
+        if (separators.size() == 1) {
+            return separators.get(0);
+        }
+
+        // compute the average per line for separators
+        for (Separator separator : separators) {
+            double averagePerLine = separator.getTotalCount() / lineCount;
+            separator.setAveragePerLine(averagePerLine);
+        }
+
+        // remove irrelevant separators (0 as average per line that can happen when you read binary files)
+        separators = separators.stream().filter(separator -> separator.getAveragePerLine() > 0).collect(Collectors.toList());
+
+        // return the separator with the highest average per line value
+        Collections.sort(separators, (sep0, sep1) -> Double.compare(sep1.getAveragePerLine(), sep0.getAveragePerLine()));
+        return separators.get(0);
+
     }
+
 
 }

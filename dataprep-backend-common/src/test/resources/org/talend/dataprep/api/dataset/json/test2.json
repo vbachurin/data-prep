@@ -11,7 +11,8 @@
   },
   "columns": [
     {
-      "id": "column1",
+      "id": "0005",
+      "name": "column1",
       "quality": {
         "empty": 0,
         "invalid": 10,

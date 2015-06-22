@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.ErrorCode;
 
 /**
@@ -22,17 +23,23 @@ public enum DataSetErrorCodes implements ErrorCode {
     UNABLE_TO_ANALYZE_COLUMN_TYPES(500),
     UNABLE_TO_ANALYZE_DATASET_QUALITY(500),
     /**
-     * Error returned in case the data set is in "error" state, meaning an internal error (schema analysis, quality
-     * analysis) error prevents service to correctly serve data set's content.
+     * Error returned in case the data set is in "importing" state, meaning all mandatory analysis prevents service to
+     * correctly serve data set's content.
      * 
-     * @see DataSetLifecycle#error()
+     * @see DataSetLifecycle#importing()
      */
-    UNABLE_TO_SERVE_DATASET_CONTENT(500, "id"),
+    UNABLE_TO_SERVE_DATASET_CONTENT(400, "id"),
+
     /**
-     * this one will happen when user do something on datas whereas those datas has been updated async
-     * in the backend and this action is not possible anymore (i.e preview whereas this dataset do not need any preview)
+     * this one will happen when user do something on datas whereas those datas has been updated async in the backend
+     * and this action is not possible anymore (i.e preview whereas this dataset do not need any preview)
      */
-    REDIRECT_CONTENT(301);
+    REDIRECT_CONTENT(301),
+    /**
+     * Error returned in case user tries to access to a data set that does not exist (or no longer exists).
+     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String, DataSetMetadata)
+     */
+    DATASET_DOES_NOT_EXIST(400, "id");
 
     /** The http status to use. */
     private int httpStatus;
@@ -88,6 +95,7 @@ public enum DataSetErrorCodes implements ErrorCode {
     /**
      * @return the expected context entries.
      */
+    @Override
     public Collection<String> getExpectedContextEntries() {
         return expectedContextEntries;
     }

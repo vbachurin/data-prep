@@ -26,19 +26,21 @@ describe('Filter service', function() {
         expect(FilterService.filters.length).toBe(0);
 
         //when
-        FilterService.addFilter('contains', 'col1', {phrase: 'toto'});
+        FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'toto'});
 
         //then
         expect(FilterService.filters.length).toBe(1);
 
-        var filterInfos = FilterService.filters[0];
-        expect(filterInfos.type).toBe('contains');
-        expect(filterInfos.colId).toBe('col1');
-        expect(filterInfos.args).toEqual({phrase: 'toto'});
-        expect(filterInfos.filterFn({col1: ' toto est ici'})).toBeTruthy();
-        expect(filterInfos.filterFn({col1: ' tata est ici'})).toBeFalsy();
+        var filterInfo = FilterService.filters[0];
+        expect(filterInfo.type).toBe('contains');
+        expect(filterInfo.colId).toBe('col1');
+        expect(filterInfo.colName).toBe('column name');
+        expect(filterInfo.editable).toBe(true);
+        expect(filterInfo.args).toEqual({phrase: 'toto'});
+        expect(filterInfo.filterFn({col1: ' toto est ici'})).toBeTruthy();
+        expect(filterInfo.filterFn({col1: ' tata est ici'})).toBeFalsy();
 
-        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfos.filterFn);
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
     }));
 
     it('should add "contains" filter with wildcard', inject(function(FilterService) {
@@ -46,20 +48,20 @@ describe('Filter service', function() {
         expect(FilterService.filters.length).toBe(0);
 
         //when
-        FilterService.addFilter('contains', 'col1', {phrase: 'to*ici'});
+        FilterService.addFilter('contains', 'col1', 'column name', {phrase: 'to*ici'});
 
         //then
         expect(FilterService.filters.length).toBe(1);
 
-        var filterInfos = FilterService.filters[0];
-        expect(filterInfos.filterFn({col1: ' toto est ici'})).toBeTruthy();
-        expect(filterInfos.filterFn({col1: ' tata est ici'})).toBeFalsy();
+        var filterInfo = FilterService.filters[0];
+        expect(filterInfo.filterFn({col1: ' toto est ici'})).toBeTruthy();
+        expect(filterInfo.filterFn({col1: ' tata est ici'})).toBeFalsy();
     }));
 
     it('should remove filter and remove datagrid filter', inject(function(FilterService, DatagridService) {
         //given
-        FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
-        FilterService.addFilter('contains', 'col2', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col1', 'column 1', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col2', 'column 1', {phrase: 'Toto'});
         var filter1 = FilterService.filters[0];
         var filter2 = FilterService.filters[1];
 
@@ -74,8 +76,8 @@ describe('Filter service', function() {
 
     it('should do nothing on remove if filter is unknown', inject(function(FilterService, DatagridService) {
         //given
-        FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
-        FilterService.addFilter('contains', 'col2', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col1', 'column 1', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col2', 'column 2', {phrase: 'Toto'});
 
         var filter1 = FilterService.filters[0];
         FilterService.removeFilter(filter1);
@@ -92,7 +94,7 @@ describe('Filter service', function() {
 
     it('should return filter value info for "contains" filter', inject(function(FilterService) {
         //given
-        FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col1', 'column 1', {phrase: 'Toto'});
         var filter1 = FilterService.filters[0];
 
         //when
@@ -104,8 +106,8 @@ describe('Filter service', function() {
 
     it('should update filter and update datagrid filter', inject(function(FilterService, DatagridService) {
         //given
-        FilterService.addFilter('contains', 'col1', {phrase: 'Toto'});
-        FilterService.addFilter('contains', 'col2', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col1', 'column 1', {phrase: 'Toto'});
+        FilterService.addFilter('contains', 'col2', 'column 2', {phrase: 'Toto'});
         var filter1 = FilterService.filters[0];
         var filter2 = FilterService.filters[1];
 
@@ -119,8 +121,56 @@ describe('Filter service', function() {
         expect(newFilter2).not.toBe(filter2);
         expect(newFilter2.type).toBe('contains');
         expect(newFilter2.colId).toBe('col2');
+        expect(newFilter2.colName).toBe('column 2');
         expect(newFilter2.args.phrase).toBe('Tata');
         expect(newFilter2.value).toBe('Tata');
         expect(DatagridService.updateFilter).toHaveBeenCalledWith(filter2.filterFn, newFilter2.filterFn);
     }));
+
+    it('should add "invalid records" filter and add datagrid filter', inject(function(FilterService, DatagridService) {
+        //given
+        expect(FilterService.filters.length).toBe(0);
+
+        //when
+        FilterService.addFilter('invalid_records', 'col1', 'column name', {values: ['NA', 'N/A', 'N.A']});
+
+        //then
+        expect(FilterService.filters.length).toBe(1);
+
+        var filterInfo = FilterService.filters[0];
+        expect(filterInfo.type).toBe('invalid_records');
+        expect(filterInfo.colId).toBe('col1');
+        expect(filterInfo.colName).toBe('column name');
+        expect(filterInfo.value).toBe('invalid records');
+        expect(filterInfo.editable).toBe(false);
+        expect(filterInfo.args).toEqual({values: ['NA', 'N/A', 'N.A']});
+        expect(filterInfo.filterFn({col1: 'NA'})).toBeTruthy();
+        expect(filterInfo.filterFn({col1: ' tata est ici'})).toBeFalsy();
+
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
+    }));
+
+    it('should add "empty records" filter and add datagrid filter', inject(function(FilterService, DatagridService) {
+        //given
+        expect(FilterService.filters.length).toBe(0);
+
+        //when
+        FilterService.addFilter('empty_records', 'col1', 'column name', {});
+
+        //then
+        expect(FilterService.filters.length).toBe(1);
+
+        var filterInfo = FilterService.filters[0];
+        expect(filterInfo.type).toBe('empty_records');
+        expect(filterInfo.colId).toBe('col1');
+        expect(filterInfo.colName).toBe('column name');
+        expect(filterInfo.value).toBe('empty records');
+        expect(filterInfo.editable).toBe(false);
+        expect(filterInfo.args).toEqual({});
+        expect(filterInfo.filterFn({col1: ''})).toBeTruthy();
+        expect(filterInfo.filterFn({col1: ' tata est ici'})).toBeFalsy();
+
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
+    }));
+
 });

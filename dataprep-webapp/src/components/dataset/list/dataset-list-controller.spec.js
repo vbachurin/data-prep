@@ -14,7 +14,7 @@ describe('Dataset list controller', function () {
 
     beforeEach(module('data-prep.dataset-list'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, DatasetService, PlaygroundService, MessageService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, $state, DatasetService, PlaygroundService, MessageService) {
         var datasetsValues = [datasets, refreshedDatasets];
         scope = $rootScope.$new();
 
@@ -33,6 +33,7 @@ describe('Dataset list controller', function () {
         spyOn(PlaygroundService, 'initPlayground').and.returnValue($q.when(true));
         spyOn(PlaygroundService, 'show').and.callThrough();
         spyOn(MessageService, 'error').and.returnValue(null);
+        spyOn($state, 'go').and.returnValue(null);
     }));
 
     afterEach(inject(function($stateParams) {
@@ -78,12 +79,15 @@ describe('Dataset list controller', function () {
     describe('already created', function () {
         var ctrl;
 
-        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService) {
+        beforeEach(inject(function ($rootScope, $q, MessageService, DatasetService, DatasetSheetPreviewService) {
             ctrl = createController();
             scope.$digest();
 
             spyOn(DatasetService, 'delete').and.returnValue($q.when(true));
+            spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.callThrough();
+            spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
+            spyOn(DatasetSheetPreviewService, 'display').and.returnValue($q.when(true));
         }));
 
         it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService) {
@@ -101,17 +105,29 @@ describe('Dataset list controller', function () {
             expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: 'Customers (50 lines)'});
         }));
 
-        it('should init and show playground', inject(function ($rootScope, PlaygroundService) {
+        it('should redirect to dataset playground when dataset is not a draft', inject(function ($rootScope, $state) {
             //given
             var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2'};
 
             //when
-            ctrl.open(dataset);
+            ctrl.openDataset(dataset);
             $rootScope.$apply();
 
             //then
-            expect(PlaygroundService.initPlayground).toHaveBeenCalledWith(dataset);
-            expect(PlaygroundService.show).toHaveBeenCalled();
+            expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: dataset.id});
+        }));
+
+        it('should redirect load sheet preview when dataset is a draft', inject(function ($rootScope, DatasetSheetPreviewService) {
+            //given
+            var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2', type: 'application/vnd.ms-excel', draft: true};
+
+            //when
+            ctrl.openDataset(dataset);
+            $rootScope.$apply();
+
+            //then
+            expect(DatasetSheetPreviewService.loadPreview).toHaveBeenCalledWith(dataset);
+            expect(DatasetSheetPreviewService.display).toHaveBeenCalled();
         }));
 
         it('should bind datasets getter to DatasetService.datasetsList()', inject(function (DatasetService) {
@@ -129,5 +145,103 @@ describe('Dataset list controller', function () {
             //then
             expect(DatasetService.processCertification).toHaveBeenCalledWith(datasets[0]);
         }));
+
+        it('should load excel draft preview and display it', inject(function ($rootScope, DatasetSheetPreviewService) {
+            //given
+            var draft = {type: 'application/vnd.ms-excel'};
+
+            //when
+            ctrl.openDraft(draft);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetSheetPreviewService.loadPreview).toHaveBeenCalledWith(draft);
+            expect(DatasetSheetPreviewService.display).toHaveBeenCalled();
+        }));
+
+        it('should display error message with unknown draft type', inject(function (DatasetSheetPreviewService, MessageService) {
+            //given
+            var draft = {type: 'application/myCustomType'};
+
+            //when
+            ctrl.openDraft(draft);
+
+            //then
+            expect(DatasetSheetPreviewService.loadPreview).not.toHaveBeenCalled();
+            expect(DatasetSheetPreviewService.display).not.toHaveBeenCalled();
+            expect(MessageService.error).toHaveBeenCalledWith('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE');
+        }));
+
+        it('should refresh dataset list and display error when draft has no type yet', inject(function (DatasetSheetPreviewService, DatasetService, MessageService) {
+            //given
+            var draft = {};
+
+            //when
+            ctrl.openDraft(draft);
+
+            //then
+            expect(DatasetSheetPreviewService.loadPreview).not.toHaveBeenCalled();
+            expect(DatasetSheetPreviewService.display).not.toHaveBeenCalled();
+            expect(MessageService.error).toHaveBeenCalledWith('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_CONTENT');
+            expect(DatasetService.refreshDatasets).toHaveBeenCalled();
+        }));
     });
+
+
+    describe('event "talend.dataset.open" received for a finished dataset', function () {
+        var ctrl;
+        var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
+
+        beforeEach(inject(function ($q, DatasetService) {
+            ctrl = createController();
+            scope.$digest();
+            spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
+        }));
+
+        it('should open dataset when "talend.dataset.open" event is received for a finished dataset', inject(function ($rootScope, $state, DatasetService) {
+
+
+            //given
+            createController();
+            //scope.$digest();
+
+            //when
+            $rootScope.$emit('talend.dataset.open', dataset.id);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetService.getDatasetById).toHaveBeenCalledWith(dataset.id);
+            expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: dataset.id});
+        }));
+    });
+
+
+    describe('event "talend.dataset.open" received for a draft dataset', function () {
+        var ctrl;
+        var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: true, type: 'application/vnd.ms-excel'};
+
+        beforeEach(inject(function ($q, DatasetService, DatasetSheetPreviewService) {
+            ctrl = createController();
+            scope.$digest();
+            spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
+            spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when({}));
+        }));
+
+        it('should open dataset when "talend.dataset.open" event is received for a draft dataset', inject(function ($rootScope, DatasetService, DatasetSheetPreviewService) {
+
+
+            //given
+            createController();
+            //scope.$digest();
+
+            //when
+            $rootScope.$emit('talend.dataset.open', dataset.id);
+            $rootScope.$digest();
+
+            //then
+            expect(DatasetService.getDatasetById).toHaveBeenCalledWith(dataset.id);
+            expect(DatasetSheetPreviewService.loadPreview).toHaveBeenCalledWith(dataset);
+        }));
+    });
+
 });

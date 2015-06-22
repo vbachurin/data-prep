@@ -1,8 +1,7 @@
 {
   "records":[
     {
-      "__tdpRowDiff":"delete",
-      "firstname":"Calvin",
+      "firstname": "CALVIN",
       "avgAmount":"200.56",
       "city":"Columbia",
       "birth":"01-02-1986",
@@ -10,7 +9,7 @@
       "id":"2",
       "state":"TN",
       "nbCommands":"13",
-      "lastname":"Jefferson"
+      "lastname": "JEFFERSON"
     },
     {
       "firstname":"ANDREW",
@@ -21,11 +20,7 @@
       "id":"4",
       "state":"NV",
       "nbCommands":"54",
-      "lastname":"TAFT",
-      "__tdpDiff":{
-        "firstname":"update",
-        "lastname":"update"
-      }
+      "lastname": "TAFT"
     },
     {
       "firstname":"FRANKLIN",
@@ -36,11 +31,7 @@
       "id":"6",
       "state":"IN",
       "nbCommands":"85",
-      "lastname":"TAYLOR",
-      "__tdpDiff":{
-        "firstname":"update",
-        "lastname":"update"
-      }
+      "lastname": "TAYLOR"
     }
   ]
 }

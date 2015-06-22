@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "action": "propercase",
+      "parameters": {
+        "column_id": "band"
+      }
+    }
+  ]
+}

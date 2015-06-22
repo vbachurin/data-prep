@@ -1,56 +1,51 @@
-<table class="inventory">
-    <thead>
-    <tr>
-        <th colspan="3">{{ ::'SORTED_BY' | translate }} {{ ::'NAME_SORT' | translate }}</th>
-    </tr>
-    </thead>
+<div class="inventory">
+    <div class="inventory-sort">{{ ::'SORTED_BY' | translate }} {{ ::'NAME_SORT' | translate }}</div>
 
-    <tbody ng-repeat="dataset in datasetListCtrl.datasets track by $index" class="inventory-entry">
-    <tr>
-        <td rowspan="2" class="inventory-icon" width="40px" ng-switch="dataset.type">
+    <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft">
+
+        <div class="inventory-icon" ng-switch="dataset.type" ng-click="datasetListCtrl.openDataset(dataset)">
             <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
             <img src="/assets/images/inventory/xls_file.png" ng-switch-when="application/vnd.ms-excel"/>
             <img src="/assets/images/inventory/generic_file.png" ng-switch-default/>
-            <img ng-src="/assets/images/certification-{{dataset.certification | lowercase}}.png" class="pin"
-                 ng-if="dataset.certification!='NONE'"/>
-        </td>
-        <td class="inventory-title">{{dataset.name}}</td>
-        <td rowspan="2" class="inventory-actions">
-            <div class="inventory-actions-wrapper">
-                <table class="inventory-actions-table">
-                    <tbody ng-switch="dataset.draft">
-                    <tr ng-switch-when="true">
-                        <td><a class="t-btn t-btn-transparent t-btn-shaker" ng-click="datasetListCtrl.openDraft(dataset)"></a></td>
-                        <td class="t-right-divider">
-                            <button class="t-btn t-btn-transparent t-btn-remove" ng-click="datasetListCtrl.delete(dataset)"></button>
-                        </td>
-                    </tr>
-                    <tr ng-switch-when="false">
-                        <td ng-switch="!!dataset.defaultPreparation.id">
-                            <a ng-switch-when="false" class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.datasets({datasetid: dataset.id})"></a>
-                            <a ng-switch-when="true" class="t-btn t-btn-transparent t-btn-shaker" ui-sref="nav.home.preparations({prepid: dataset.defaultPreparation.id})"></a>
-                        </td>
-                        <td class="t-right-divider"><button class="t-btn t-btn-transparent t-btn-pushto" ng-click=""></button></td>
-                        <td><button class="t-btn t-btn-transparent t-btn-favorite" ng-click=""></button></td>
-                        <td class="t-right-divider"><button t-btn-transparent class="t-btn t-btn-transparent t-btn-share" ng-click=""></button></td>
-                        <td class="t-right-divider">
-                            <button class="t-btn t-btn-transparent t-btn-remove" ng-click="datasetListCtrl.delete(dataset)"></button>
-                        </td>
-                        <td><button type="button"
-                                    class="t-btn t-btn-transparent t-btn-more"
-                                    ng-click="datasetListCtrl.processCertification(dataset)"></button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </td>
-    </tr>
+            <img ng-src="/assets/images/certification-{{dataset.certificationStep | lowercase}}.png"
+                 class="pin"
+                 ng-if="dataset.certificationStep!='NONE'"/>
+        </div>
 
-    <tr>
-        <td class="inventory-description">{{ 'INVENTORY_DETAILS' | translate:dataset }}</td>
-    </tr>
+        <div class="inventory-text">
+            <div class="inventory-title"
+                ng-click="datasetListCtrl.openDataset(dataset)">{{dataset.name}}</div>
+            <div class="inventory-description"
+                 ng-click="datasetListCtrl.openDataset(dataset)">{{ 'INVENTORY_DETAILS' | translate:dataset }}</div>
+        </div>
 
-    </tbody>
-</table>
+        <!-- Draft actions icons -->
+        <div ng-switch-when="true"
+             class="inventory-actions">
+            <button class="t-btn t-btn-transparent t-btn-remove" ng-click="datasetListCtrl.delete(dataset)"></button>
+        </div>
 
+        <!-- Not draft actions icons -->
+        <div ng-switch-when="false"
+             class="inventory-actions">
+            <button class="t-btn t-btn-transparent t-btn-shaker"
+                    ng-if="!!dataset.defaultPreparation"
+                    ui-sref="nav.home.preparations({prepid: dataset.defaultPreparation.id})"></button>
+            <button class="t-btn t-btn-transparent t-btn-pushto"></button>
+            <div class="t-right-divider"></div>
+
+            <button class="t-btn t-btn-transparent t-btn-favorite"></button>
+            <button class="t-btn t-btn-transparent t-btn-share"></button>
+            <div class="t-right-divider"></div>
+
+            <button class="t-btn t-btn-transparent t-btn-remove"
+                    ng-click="datasetListCtrl.delete(dataset)"></button>
+            <div class="t-right-divider"></div>
+
+            <button class="t-btn t-btn-transparent t-btn-more"
+                    ng-click="datasetListCtrl.processCertification(dataset)"></button>
+        </div>
+    </div>
+
+    <dataset-xls-preview></dataset-xls-preview>
+</div>

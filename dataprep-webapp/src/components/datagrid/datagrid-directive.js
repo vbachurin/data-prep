@@ -16,9 +16,12 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.services.transformation.service:ColumnSuggestionService
+     * @requires data-prep.services.utils.service:ConverterService
      * @restrict E
      */
-    function Datagrid($timeout, $compile, $window, DatagridService, FilterService, PreviewService) {
+    function Datagrid($compile, $window, DatagridService, FilterService, PreviewService,
+                      ColumnSuggestionService, StatisticsService, ConverterService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -30,11 +33,11 @@
 
                 // the tooltip ruler is used compute a cell text regardless of the font and zoom used.
                 // To do so, the text is put into an invisible span so that the span can be measured.
-                var tooltipRuler = angular.element('<span id="tooltip-ruler" style="display:none"></span>');
+                var tooltipRuler = angular.element('<span id="tooltip-ruler" class="tooltip-ruler" style="display:none;white-space:pre;"></span>');
                 iElement.append(tooltipRuler);
 
                 //------------------------------------------------------------------------------------------------------
-                //------------------------------------------------COL UTILES--------------------------------------------
+                //------------------------------------------------CLASS UTILES------------------------------------------
                 //------------------------------------------------------------------------------------------------------
 
                 /**
@@ -43,7 +46,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Reset columns class
                  */
-                var resetColumnsClass = function() {
+                var resetColumnsClass = function resetColumnsClass() {
                     _.forEach(grid.getColumns(), function(column) {
                         column.cssClass = null;
                     });
@@ -55,7 +58,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Reset the cells css
                  */
-                var resetCellStyles = function() {
+                var resetCellStyles = function resetCellStyles() {
                     grid.setCellCssStyles('highlight', {});
                 };
 
@@ -65,19 +68,13 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
                  */
-                var formatter = function(row, cell, value, columnDef, dataContext) {
-                    //hidden characters need to be shown
+                var formatter = function formatter(row, cell, value, columnDef, dataContext) {
+
                     var returnStr = value;
+
+                    //hidden characters need to be shown
                     if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
-                        var hiddenCharsRegExpMatch = value.match(/(^\s\s*)?(\S*)(\s\s*$)?/);
-                        if (hiddenCharsRegExpMatch[1]){
-                            returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>' + hiddenCharsRegExpMatch[2];
-                        }else{
-                            returnStr = hiddenCharsRegExpMatch[2] ;
-                        }
-                        if (hiddenCharsRegExpMatch[3]){
-                            returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
-                        }
+                        returnStr = ctrl.computeHTMLForLeadingOrTrailingHiddenChars(value);
                     }
                     //deleted row preview
                     if(dataContext.__tdpRowDiff === 'delete') {
@@ -88,8 +85,19 @@
                         return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
                     }
                     //updated cell preview
-                    if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id] === 'update') {
-                        return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                    if(dataContext.__tdpDiff){
+                        // update
+                        if (dataContext.__tdpDiff[columnDef.id] === 'update') {
+                            return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                        }
+                        // new
+                        else if (dataContext.__tdpDiff[columnDef.id] === 'new') {
+                            return '<div class="cellNewValue">' + returnStr + '</div>';
+                        }
+                        // new
+                        else if (dataContext.__tdpDiff[columnDef.id] === 'delete') {
+                            return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                        }
                     }
 
                     //no preview
@@ -108,12 +116,24 @@
                  * For preview, we inject directly a fake header
                  * @returns {object} - the adapted column item
                  */
-                var columnItem = function (col, index, preview) {
+                var columnItem = function columnItem(col, index, preview) {
                     var template;
                     if(preview) {
-                        template = '<div class="grid-header">' +
-                            '<div class="grid-header-title dropdown-button ng-binding">' + col.id + '</div>' +
-                            '<div class="grid-header-type ng-binding">' + col.type + '</div>' +
+
+                        var diffClass = '';
+                        if (col.__tdpColumnDiff === 'new') {
+                            diffClass = 'newColumn';
+                        }
+                        else if (col.__tdpColumnDiff === 'delete') {
+                            diffClass = 'deletedColumn';
+                        }
+                        else if (col.__tdpColumnDiff === 'update') {
+                            diffClass = 'updatedColumn';
+                        }
+
+                        template = '<div class="grid-header '+ diffClass +'">' +
+                            '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +
+                            '<div class="grid-header-type ng-binding">' + ConverterService.simplifyType(col.type) + '</div>' +
                             '</div>' +
                             '<div class="quality-bar"><div  class="record-ok" style="width: 100%;"></div></div>';
                     }
@@ -126,9 +146,10 @@
                         id: col.id,
                         field: col.id,
                         name: template,
-                        formatter: formatter
+                        formatter: formatter,
+                        minWidth: 80,
+                        tdpColMetadata: col
                     };
-
                     return colItem;
                 };
 
@@ -139,7 +160,7 @@
                  * @description [PRIVATE] Create and insert the dataset column headers (dropdown actions and quality bars).
                  The columns are from {@link data-prep.services.playground.service:DatagridService DatagridService}
                  */
-                var insertDatasetHeaders = function () {
+                var insertDatagridHeaders = function insertDatagridHeaders() {
                     _.forEach(DatagridService.data.columns, function (col, index) {
                         var header = createHeader(col);
                         iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
@@ -154,7 +175,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Create a column header object containing element, scope and column
                  */
-                var createHeader = function(col) {
+                var createHeader = function createHeader(col) {
                     var headerScope = scope.$new(true);
                     headerScope.columns = col;
                     var headerElement = angular.element('<datagrid-header column="columns"></datagrid-header>');
@@ -173,7 +194,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Remove header elements.
                  */
-                var clearHeaders = function () {
+                var clearHeaders = function clearHeaders() {
                     _.forEach(colHeaderElements, function (header) {
                         header.scope.$destroy();
                         header.element.remove();
@@ -183,15 +204,117 @@
 
                 /**
                  * @ngdoc method
-                 * @name updateColSelection
+                 * @name selectColumn
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {string} columnId The selected column
+                 * @description [PRIVATE] Update column style and trigger right panel update
+                 */
+                var selectColumn = function selectColumn(columnId) {
+                    var column = _.find(grid.getColumns(), function(column) {
+                        return column.id === columnId;
+                    });
+
+                    if(column.cssClass !== 'selected') {
+                        updateColumnsClass(column);
+                        updateSuggestionPanel(column);
+                    }
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name updateSuggestionPanel
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {string} selectedColumn The selected column
+                 * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
+                 */
+                var updateColumnsClass = function updateColumnsClass(selectedColumn) {
+                    resetColumnsClass();
+                    if(selectedColumn) {
+                        selectedColumn.cssClass = 'selected';
+                    }
+                    grid.invalidate();
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name updateSuggestionPanel
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @param {string} column - the selected column
                  * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
                  */
-                var updateColSelection = function (column) {
-                    $timeout(function() {
-                        DatagridService.setSelectedColumn(column.id);
+                var updateSuggestionPanel = function updateSuggestionPanel(column) {
+                    var columnMetadata = column.tdpColMetadata;
+                    StatisticsService.processVisuData(columnMetadata);
+                    ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name manageColumnSelection
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {boolean} wasPreview Flag that indicate if the data WAS in preview mode
+                 * @param {boolean} isPreview Flag that indicate if the data IS in preview mode
+                 * @description [PRIVATE] Update column selection and the suggestion panel if needed, accordingly
+                 * to the active cell.
+                 * This is usefull when data changes, the column style is reset but the active cell does not change.
+                 */
+                var manageColumnSelection = function manageColumnSelection(wasPreview, isPreview) {
+                    var activeCell = grid.getActiveCell();
+                    if(activeCell) {
+                        var column = grid.getColumns()[activeCell.cell];
+
+                        if(!wasPreview && !isPreview && activeCell) {
+                            selectColumn(column.id);
+                        }
+                        else if(!isPreview && activeCell) {
+                            updateColumnsClass(column);
+                        }
+                    }
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name autosizeColumns
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {object[]} gridColumns The grid columns
+                 * @description [PRIVATE] Compute columns sizes and update them in the grid. The sizes are saved in
+                 * localstorage if not already saved. They are then used to set the last saved sized.
+                 */
+                var autosizeColumns = function autosizeColumns(gridColumns) {
+                    var localKey = 'col_size_' + DatagridService.metadata.id;
+                    var sizesStr = $window.localStorage.getItem(localKey);
+                    var sizes = {};
+
+                    if(sizesStr) {
+                        sizes = JSON.parse(sizesStr);
+                        _.forEach(gridColumns, function(col) {
+                            col.width = sizes[col.id] || col.minWidth;
+                        });
+                        grid.setColumns(gridColumns);
+                    }
+                    else {
+                        grid.setColumns(gridColumns);
+                        grid.autosizeColumns();
+                        saveColumnSizes();
+                    }
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name saveColumnSizes
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Save the column sized of the dataset in localstorage
+                 */
+                var saveColumnSizes = function saveColumnSizes() {
+                    var localKey = 'col_size_' + DatagridService.metadata.id;
+                    var gridColumns = grid.getColumns();
+                    var sizes = {};
+
+                    _.forEach(gridColumns, function(col) {
+                        sizes[col.id] = col.width;
                     });
+
+                    $window.localStorage.setItem(localKey, JSON.stringify(sizes));
                 };
 
                 //------------------------------------------------------------------------------------------------------
@@ -203,7 +326,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach listeners for big table row management
                  */
-                var attachLongTableListeners = function() {
+                var attachLongTableListeners = function attachLongTableListeners() {
                     DatagridService.dataView.onRowCountChanged.subscribe(function () {
                         grid.updateRowCount();
                         grid.render();
@@ -220,28 +343,22 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach listeners for custom directives management in headers
                  */
-                var attachColumnHeaderListeners = function() {
+                var attachColumnHeaderListeners = function attachColumnHeaderListeners() {
                     //destroy old elements and insert compiled column header directives
                     grid.onColumnsReordered.subscribe(function () {
                         clearHeaders();
-                        insertDatasetHeaders();
+                        insertDatagridHeaders();
                     });
+
+                    grid.onColumnsResized.subscribe(saveColumnSizes);
 
                     //change column background and update column profil on click
                     grid.onHeaderClick.subscribe(function(e, args) {
+                        resetCellStyles();
+                        grid.resetActiveCell();
+
                         var columnId = args.column.id;
-                        var column = _.find(grid.getColumns(), function(column) {
-                            return column.id === columnId;
-                        });
-
-                        if(column.cssClass !== 'selected') {
-                            resetCellStyles();
-                            resetColumnsClass();
-                            column.cssClass = 'selected';
-                            grid.invalidate();
-
-                            updateColSelection(column);
-                        }
+                        selectColumn(columnId);
                     });
                 };
 
@@ -251,16 +368,20 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach cell hover for tooltips listeners
                  */
-                var attachTooltipListener = function() {
+                var attachTooltipListener = function attachTooltipListener() {
                     //show tooltips only if not empty and width is bigger than cell
-                    function shouldShowTooltip(item, column) {
-                        var toolTipText = item[column.id];
-                        if(toolTipText === '') {
+                    function shouldShowTooltip(text, cell) {
+                        if(text === '') {
                             return false;
                         }
 
-                        tooltipRuler.text(toolTipText);
-                        return column.width <= tooltipRuler.width();
+                        tooltipRuler.text(text);
+                        var box = grid.getCellNodeBox(cell.row, cell.cell);
+                        if (box === null){//not in a cell so no tooltip to be displayed
+                            return false;
+                        }//else return if the content is bigger than the displayed box
+                        //compute the diff between the displayed box and the hidden tooltip ruler size minus the cell padding
+                        return (box.right - box.left - 11 ) <= tooltipRuler.width() || (box.bottom - box.top) < tooltipRuler.height();
                     }
 
                     //show tooltip on hover
@@ -270,7 +391,7 @@
                         var column = grid.getColumns()[cell.cell];
                         var item = DatagridService.dataView.getItem(row);
 
-                        if (!shouldShowTooltip(item, column)) {
+                        if (!shouldShowTooltip(item[column.id], cell)) {
                             return;
                         }
                         
@@ -279,8 +400,9 @@
                             y: e.clientY
                         };
 
-                        ctrl.updateTooltip(item, column.id, position);
+                        ctrl.updateTooltip(item, column.id, position, ctrl.computeHTMLForLeadingOrTrailingHiddenChars(item[column.id]));
                     });
+
                     //hide tooltip on leave
                     grid.onMouseLeave.subscribe(function() {
                         ctrl.hideTooltip();
@@ -293,7 +415,7 @@
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach cell action listeners (click, active change, ...)
                  */
-                var attachCellListeners = function() {
+                var attachCellListeners = function attachCellListeners() {
                     //get clicked content and highlight cells in clicked column containing the content
                     grid.onClick.subscribe(function (e,args) {
                         var config = {};
@@ -308,8 +430,6 @@
 
                         grid.setCellCssStyles('highlight', config);
                         grid.invalidate();
-
-                        updateColSelection(column);
                     });
 
                     //change selected cell column background
@@ -323,12 +443,23 @@
                                 grid.invalidate();
                             }
 
+                            updateSuggestionPanel(column);
                         }
                     });
 
                 };
 
-                var attachGridMove = function() {
+                /**
+                 * @ngdoc method
+                 * @name attachGridMove
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description [PRIVATE] Attach :
+                 * <ul>
+                 *     <li> window resize event --> resize grid canvas</li>
+                 *     <li> grid scroll event --> update displayed record range</li>
+                 * </ul>
+                 */
+                var attachGridMove = function attachGridMove() {
                     grid.onScroll.subscribe(function() {
                         PreviewService.gridRangeIndex = grid.getRenderedRange();
                     });
@@ -372,6 +503,7 @@
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------UPDATE----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
+                var renewAllColumns = false;
                 /**
                  * @ngdoc method
                  * @name updateColumns
@@ -383,7 +515,7 @@
                  * - Classic : we map each column to a header. This header can be a reused header if the column was
                  * the same as before, or a new created one otherwise.
                  */
-                var updateColumns = function (dataCols, preview) {
+                var updateColumns = function updateColumns(dataCols, preview) {
                     //save current headers elements
                     _.forEach(colHeaderElements, function(header) {
                         header.element.detach();
@@ -393,18 +525,21 @@
                     var columns = _.map(dataCols, function (col, index) {
                         return columnItem(col, index, preview);
                     });
-                    grid.setColumns(columns);
+                    autosizeColumns(columns);
 
                     //insert reused or created datagrid headers
                     if(!preview) {
                         //map every column to a header
                         var finalColHeaderElements = _.map(dataCols, function (col, index) {
                             //find saved header corresponding to column
-                            var header = _.find(colHeaderElements, function (colHeader) {
-                                return colHeader.column === col;
+                            var header = renewAllColumns ? null : _.find(colHeaderElements, function (colHeader) {
+                                return colHeader.column.id === col.id;
                             });
+                            if (header) {
+                                header.scope.columns = col;
+                            }
                             //or create a new one if no corresponding one
-                            if (!header) {
+                            else {
                                 header = createHeader(col);
                             }
 
@@ -421,53 +556,13 @@
                         });
                         colHeaderElements = finalColHeaderElements;
                     }
-                };
 
-                /**
-                 * @ngdoc method
-                 * @name updateData
-                 * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Reset the cell styles and re render the grid
-                 */
-                var updateData = function () {
-                    resetCellStyles();
-                    grid.resetActiveCell();
-                    grid.invalidate();
+                    renewAllColumns = false;
                 };
 
                 //------------------------------------------------------------------------------------------------------
                 //-------------------------------------------------WATCHERS---------------------------------------------
                 //------------------------------------------------------------------------------------------------------
-                /**
-                 * Update grid columns on backend column change
-                 */
-                scope.$watch(
-                    function () {
-                        return DatagridService.data ? DatagridService.data.columns : null;
-                    },
-                    function (cols) {
-                        if (cols) {
-                            initGridIfNeeded();
-                            updateColumns(cols);
-                            grid.autosizeColumns();
-                        }
-                    }
-                );
-
-                /**
-                 * Update data on backend value change
-                 */
-                scope.$watch(
-                    function () {
-                        return DatagridService.data ? DatagridService.data.records : null;
-                    },
-                    function (records) {
-                        if(records) {
-                            initGridIfNeeded();
-                            updateData();
-                        }
-                    }
-                );
 
                 /**
                  * Scroll to top when loaded dataset change
@@ -478,7 +573,31 @@
                     },
                     function (metadata) {
                         if(metadata) {
-                            grid.scrollRowToTop(0);
+                            if(grid) {
+                                resetCellStyles();
+                                grid.resetActiveCell();
+                                grid.scrollRowToTop(0);
+                            }
+                            renewAllColumns = true;
+                        }
+                    }
+                );
+
+                /**
+                 * Update grid columns and invalidate grid on data change
+                 */
+                scope.$watch(
+                    function () {
+                        return DatagridService.data;
+                    },
+                    function (data, oldData) {
+                        if(data) {
+                            initGridIfNeeded();
+                            updateColumns(data.columns, data.preview);
+
+                            var wasPreview = oldData && oldData.preview;
+                            var isPreview = data && data.preview;
+                            manageColumnSelection(wasPreview, isPreview);
                         }
                     }
                 );

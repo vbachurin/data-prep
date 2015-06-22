@@ -1,23 +1,26 @@
-<table class="no-border param-choice">
-    <tbody ng-repeat="choice in choiceParamsCtrl.choices track by $index">
-    <tr>
-        <td class="param-choice-name">{{choice.label}} :</td>
-        <td class="param-choice-select">
-            <select
-                ng-model="choice.selectedValue"
-                ng-options="option as option.name for option in choice.values"
-                required></select>
-        </td>
-        <td class="param-desc"><img src="assets/images/information.png" title="{{::choice.description}}"/></td>
-    </tr>
+<div class="param">
+    <span ng-repeat="choice in choiceParamsCtrl.choices track by $index">
+        <div class="param-row" >
+            <div class="param-name">{{choice.label}} :</div>
 
-    <tr>
-        <td ng-repeat="option in choice.values track by $index" ng-if="option.parameters && choice.selectedValue === option">
-            <transform-simple-params
-                    ng-if="option.parameters && choice.selectedValue === option"
-                    parameters="option.parameters">
-            </transform-simple-params>
-        </td>
-    </tr>
-    </tbody>
-</table>
+            <div class="param-input">
+                <select
+                        ng-model="choice.selectedValue"
+                        ng-options="option as option.name for option in choice.values"
+                        required></select>
+            </div>
+
+            <img src="assets/images/information.png"
+                 title="{{::choice.description}}"
+                 class="param-desc-icon"
+                 ng-if="::(simpleParamsCtrl.tooltip !== 'false')"/>
+        </div>
+
+        <transform-simple-params
+                class="param-no-space"
+                ng-repeat="option in choice.values track by $index"
+                ng-if="option.parameters && choice.selectedValue === option"
+                parameters="option.parameters">
+        </transform-simple-params>
+    </span>
+</div>

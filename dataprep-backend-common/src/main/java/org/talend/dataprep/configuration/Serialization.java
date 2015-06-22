@@ -2,6 +2,7 @@ package org.talend.dataprep.configuration;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ public class Serialization {
     @Bean
     public Jackson2ObjectMapperBuilder jacksonBuilder() {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+        builder.featuresToDisable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
         builder.indentOutput(false);
         builder.modules(modules);
         return builder;

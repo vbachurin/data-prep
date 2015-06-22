@@ -13,7 +13,7 @@ import javax.validation.Payload;
 /**
  * Validates that one of the fields is not null
  */
-@Target({TYPE})
+@Target({ TYPE })
 @Retention(RUNTIME)
 @Constraint(validatedBy = OneNotBlankValidator.class)
 @Documented
@@ -24,5 +24,6 @@ public @interface OneNotBlank {
     String message() default "OneNotBlankValidator : all the tested fields are null/blank";
 
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

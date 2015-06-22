@@ -11,24 +11,32 @@
     }
 
     /**
-     * Filter infos object
+     * Filter info object
      * @param type - the filter type
      * @param colId - the column id
+     * @param colName - the column name
+     * @param editable - true if the filter is editable
      * @param args - the filter arguments
      * @param filterFn - the filter function
      * @constructor
      */
-    function Filter(type, colId, args, filterFn) {
+    function Filter(type, colId, colName, editable, args, filterFn) {
         var self = this;
 
         self.type = type;
         self.colId = colId;
+        self.colName = colName;
+        self.editable = editable;
         self.args = args;
         self.filterFn = filterFn;
         self.__defineGetter__('value', function(){
             switch(self.type) {
                 case 'contains':
                     return self.args.phrase;
+                case 'invalid_records':
+                    return 'invalid records';
+                case 'empty_records':
+                    return 'empty records';
             }
         });
     }
@@ -56,7 +64,7 @@
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} phrase - to match. Wildcard (*) accepted
          * @description Return the column with a cell that can match the phrase. It take into account a possible wildcard (*)
-         * @returns {string[]} - the columns id that contains a matching value
+         * @returns {Object[]} - the columns id that contains a matching value (col.id & col.name)
          */
         self.getColumnsContaining = function(phrase) {
             if (!phrase) {
@@ -83,14 +91,14 @@
 
         /**
          * @ngdoc method
-         * @name createContainFilter
+         * @name createContainFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId - the column id
          * @param {string} phrase - the phrase that the item must contain
          * @description [PRIVATE] Create a 'contains' filter function
          * @returns {function} - the predicated function
          */
-        var createContainFilter = function(colId, phrase) {
+        var createContainFilterFn = function(colId, phrase) {
             var lowerCasePhrase = phrase.toLowerCase();
             var regexp = new RegExp(escapeRegExpExceptStar(lowerCasePhrase));
             return function(item) {
@@ -100,24 +108,62 @@
 
         /**
          * @ngdoc method
+         * @name createEqualFilterFn
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId - the column id
+         * @param {string[]} values - the values to compare the record value against
+         * @description [PRIVATE] Create an 'equals' filter function
+         * @returns {function} - the predicated function
+         */
+        var createEqualFilterFn = function(colId, values) {
+            return function(item) {
+                return values.indexOf(item[colId]) > -1;
+            };
+        };
+
+        /**
+         * @ngdoc method
+         * @name createEmptyFilterFn
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId - the column id
+         * @description [PRIVATE] Create an 'empty' filter function
+         * @returns {function} - the predicated function
+         */
+        var createEmptyFilterFn = function(colId) {
+            return function(item) {
+                return !item[colId];
+            };
+        };
+
+        /**
+         * @ngdoc method
          * @name addFilter
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} type - the filter type (ex : contains)
          * @param {string} colId - the column id
+         * @param {string} colName - the column name
          * @param {string} args - the filter arguments (ex for 'contains' type : {phrase: 'toto'})
          * @description Add a filter and update datagrid filters
          */
-        self.addFilter = function(type, colId, args) {
+        self.addFilter = function(type, colId, colName, args) {
             var filterFn;
+            var filterInfo;
             switch(type) {
                 case 'contains':
-                    filterFn = createContainFilter(colId, args.phrase);
+                    filterFn = createContainFilterFn(colId, args.phrase);
+                    filterInfo = new Filter(type, colId, colName, true, args, filterFn);
+                    break;
+                case 'invalid_records':
+                    filterFn = createEqualFilterFn(colId, args.values);
+                    filterInfo = new Filter(type, colId, colName, false, args, filterFn);
+                    break;
+                case 'empty_records':
+                    filterFn = createEmptyFilterFn(colId);
+                    filterInfo = new Filter(type, colId, colName, false, args, filterFn);
                     break;
             }
-
-            var filterInfos = new Filter(type, colId, args, filterFn);
             DatagridService.addFilter(filterFn);
-            self.filters.push(filterInfos);
+            self.filters.push(filterInfo);
         };
 
         /**
@@ -149,13 +195,14 @@
 
             var newArgs;
             var newFilterFn;
+            var newFilter;
             switch(oldFilter.type) {
                 case 'contains':
                     newArgs = { phrase: newValue};
-                    newFilterFn = createContainFilter(oldFilter.colId, newValue);
+                    newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
+                    newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, true, newArgs, newFilterFn);
                     break;
             }
-            var newFilter = new Filter(oldFilter.type, oldFilter.colId, newArgs, newFilterFn);
 
             DatagridService.updateFilter(oldFn, newFilter.filterFn);
             self.filters.splice(index, 1, newFilter);

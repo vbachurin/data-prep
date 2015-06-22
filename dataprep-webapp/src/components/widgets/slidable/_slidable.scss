@@ -12,42 +12,38 @@
 
   &.slide-hide-add,
   &.slide-hide-remove.slide-hide-remove-active{
-    @include flex(0 $size);
     .content {
       overflow: hidden;
     }
   }
 
-  &.slide-hide-add.slide-hide-add-active,
-  &.slide-hide-remove {
-    @include flex(0 $actionSize);
-  }
-
   .content {
+    @include transition(0.25s ease width);
+    width: $width;
+
     .content-container {
       min-width: $width;
     }
   }
 
   .action {
-    @include flex(0 20px);
+    @include flex(0 $actionSize);
   }
 }
 
 .slidable {
   @include slidable-size(300px, 20px);
 
-  transition: 0.5s ease flex;
+  @include transition(0.25s ease flex);
 
   @include display(flex);
   @include flex-flow(row wrap);
   @include justify-content(space-between);
 
   .content {
-    transition: 0.5s ease width;
-    @include flex(1 0);
     order: 2;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .action {

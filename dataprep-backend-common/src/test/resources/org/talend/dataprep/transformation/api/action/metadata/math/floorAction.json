@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "action": "floor",
+      "parameters": {
+        "column_id": "aNumber"
+      }
+    }
+  ]
+}

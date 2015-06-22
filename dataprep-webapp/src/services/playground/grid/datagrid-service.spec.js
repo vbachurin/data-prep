@@ -52,77 +52,91 @@ describe('Datagrid service', function() {
     it('should return every column id', inject(function(DatagridService) {
         //given
         DatagridService.data = {columns: [
-            {id: 'col1', type: 'string'},
-            {id: 'col2', type: 'numeric'},
-            {id: 'col3', type: 'integer'},
-            {id: 'col4', type: 'float'},
-            {id: 'col5', type: 'double'},
-            {id: 'col6', type: 'boolean'},
-            {id: 'col7', type: 'string'}
+            {id: 'col1', name: 'column 1', type: 'string'},
+            {id: 'col2', name: 'column 2', type: 'numeric'},
+            {id: 'col3', name: 'column 3', type: 'integer'},
+            {id: 'col4', name: 'column 4', type: 'float'},
+            {id: 'col5', name: 'column 5', type: 'double'},
+            {id: 'col6', name: 'column 6', type: 'boolean'},
+            {id: 'col7', name: 'column 7', type: 'string'}
         ], records: []};
 
         //when
         var allCols = DatagridService.getColumns(false, false);
 
         //then
-        expect(allCols).toEqual(['col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7']);
+        expect(allCols).toEqual([{id:'col1', name: 'column 1'},
+                                 {id:'col2', name: 'column 2'},
+                                 {id:'col3', name: 'column 3'},
+                                 {id:'col4', name: 'column 4'},
+                                 {id:'col5', name: 'column 5'},
+                                 {id:'col6', name: 'column 6'},
+                                 {id:'col7', name: 'column 7'}]);
     }));
 
     it('should return non numeric col ids', inject(function(DatagridService) {
         //given
         DatagridService.data = {columns: [
-            {id: 'col1', type: 'string'},
-            {id: 'col2', type: 'numeric'},
-            {id: 'col3', type: 'integer'},
-            {id: 'col4', type: 'float'},
-            {id: 'col5', type: 'double'},
-            {id: 'col6', type: 'boolean'},
-            {id: 'col7', type: 'string'}
+            {id: 'col1', name: 'column 1', type: 'string'},
+            {id: 'col2', name: 'column 2', type: 'numeric'},
+            {id: 'col3', name: 'column 3', type: 'integer'},
+            {id: 'col4', name: 'column 4', type: 'float'},
+            {id: 'col5', name: 'column 5', type: 'double'},
+            {id: 'col6', name: 'column 6', type: 'boolean'},
+            {id: 'col7', name: 'column 7', type: 'string'}
         ], records: []};
 
         //when
         var allCols = DatagridService.getColumns(true, false);
 
         //then
-        expect(allCols).toEqual(['col1', 'col6', 'col7']);
+        expect(allCols).toEqual([{id:'col1', name: 'column 1'},
+                                 {id:'col6', name: 'column 6'},
+                                 {id:'col7', name: 'column 7'}]);
     }));
 
     it('should return non boolean col ids', inject(function(DatagridService) {
         //given
         DatagridService.data = {columns: [
-            {id: 'col1', type: 'string'},
-            {id: 'col2', type: 'numeric'},
-            {id: 'col3', type: 'integer'},
-            {id: 'col4', type: 'float'},
-            {id: 'col5', type: 'double'},
-            {id: 'col6', type: 'boolean'},
-            {id: 'col7', type: 'string'}
+            {id: 'col1', name: 'column 1', type: 'string'},
+            {id: 'col2', name: 'column 2', type: 'numeric'},
+            {id: 'col3', name: 'column 3', type: 'integer'},
+            {id: 'col4', name: 'column 4', type: 'float'},
+            {id: 'col5', name: 'column 5', type: 'double'},
+            {id: 'col6', name: 'column 6', type: 'boolean'},
+            {id: 'col7', name: 'column 7', type: 'string'}
         ], records: []};
 
         //when
         var allCols = DatagridService.getColumns(false, true);
 
         //then
-        expect(allCols).toEqual(['col1', 'col2', 'col3', 'col4', 'col5', 'col7']);
+        expect(allCols).toEqual([{id:'col1', name: 'column 1'},
+                                 {id:'col2', name: 'column 2'},
+                                 {id:'col3', name: 'column 3'},
+                                 {id:'col4', name: 'column 4'},
+                                 {id:'col5', name: 'column 5'},
+                                 {id:'col7', name: 'column 7'}]);
     }));
 
     it('should return non boolean and non numeric col ids', inject(function(DatagridService) {
         //given
         DatagridService.data = {columns: [
-            {id: 'col1', type: 'string'},
-            {id: 'col2', type: 'numeric'},
-            {id: 'col3', type: 'integer'},
-            {id: 'col4', type: 'float'},
-            {id: 'col5', type: 'double'},
-            {id: 'col6', type: 'boolean'},
-            {id: 'col7', type: 'string'}
+            {id: 'col1', name: 'column 1', type: 'string'},
+            {id: 'col2', name: 'column 2', type: 'numeric'},
+            {id: 'col3', name: 'column 3', type: 'integer'},
+            {id: 'col4', name: 'column 4', type: 'float'},
+            {id: 'col5', name: 'column 5', type: 'double'},
+            {id: 'col6', name: 'column 6', type: 'boolean'},
+            {id: 'col7', name: 'column 7', type: 'string'}
         ], records: []};
 
         //when
         var allCols = DatagridService.getColumns(true, true);
 
         //then
-        expect(allCols).toEqual(['col1', 'col7']);
+        expect(allCols).toEqual([{id:'col1', name: 'column 1'},
+                                 {id:'col7', name: 'column 7'}]);
     }));
 
     it('should add filter', inject(function(DatagridService) {
@@ -260,20 +274,5 @@ describe('Datagrid service', function() {
         expect(DatagridService.filters.length).toBe(2);
         expect(DatagridService.filters[0]).toBe(filterFnCol1);
         expect(DatagridService.filters[1]).toBe(newFilterFnCol2);
-    }));
-
-    it('should set selected column from column id', inject(function(DatagridService) {
-        //given
-        var colId = 'state';
-        var data = {
-            columns : [{id: 'firstname'}, {id: 'state'}]
-        };
-        DatagridService.data = data;
-
-        //when
-        DatagridService.setSelectedColumn(colId);
-
-        //then
-        expect(DatagridService.selectedColumn).toBe(data.columns[1]);
     }));
 });

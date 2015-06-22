@@ -1,9 +1,11 @@
 {
-  "id": "id",
+  "id": "0",
+  "name": "id",
   "quality": {
     "empty": 5,
     "invalid": 10,
     "valid": 72
   },
-  "type": "string"
+  "type": "string",
+  "domain": "EMAIL"
 }

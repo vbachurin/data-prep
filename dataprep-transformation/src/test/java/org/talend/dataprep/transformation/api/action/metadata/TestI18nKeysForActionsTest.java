@@ -1,15 +1,3 @@
-// ============================================================================
-//
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
-//
-// This source code is available under agreement available at
-// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
-//
-// You should have received a copy of the agreement
-// along with this program; if not, write to Talend SA
-// 9 rue Pages 92150 Suresnes, France
-//
-// ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.junit.Assert.assertNotEquals;
@@ -22,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.i18n.MessagesBundle;
@@ -29,7 +18,6 @@ import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
 
 /**
  * Test that a translation exists for i18n keys label/desc for each action and each params/item.
@@ -39,9 +27,10 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 @SpringApplicationConfiguration(classes = Application.class)
 @IntegrationTest
 @WebAppConfiguration
+@DirtiesContext
 public class TestI18nKeysForActionsTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( TestI18nKeysForActionsTest.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestI18nKeysForActionsTest.class);
 
     @Autowired
     private ActionMetadata[] allActions;
@@ -67,9 +56,8 @@ public class TestI18nKeysForActionsTest {
             assertNotEquals("", desc);
             assertI18nKeyExists("action." + name + ".desc");
 
-            String toString = actionMetadata.getName() + "," + actionMetadata.getCategory() + ","
-                    + actionMetadata.getCompatibleColumnTypes() + "," + actionMetadata.getLabel() + ","
-                    + actionMetadata.getDescription();
+            String toString = actionMetadata.getName() + "," + actionMetadata.getCategory() + "," + actionMetadata.getLabel()
+                    + "," + actionMetadata.getDescription();
             LOGGER.info(toString);
 
             for (Parameter param : actionMetadata.getParameters()) {

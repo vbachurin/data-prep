@@ -1,7 +1,23 @@
+<!-- TODO Styles are hard coded to get all buttons on a line (but this is temporary) -->
 <button type="button"
         class="t-btn t-btn-primary"
+        style="float: left;"
         ng-click="exportCtrl.showExport = true">
     {{ ::'EXPORT_CSV' | translate }}
+</button>
+
+<button type="button"
+        class="t-btn t-btn-primary"
+        style="float: left; margin-left: 10px"
+        ng-click="exportCtrl.export('TABLEAU')">
+    {{ ::'EXPORT_TABLEAU' | translate }}
+</button>
+
+<button type="button"
+        class="t-btn t-btn-primary"
+        style="float: left; margin-left: 10px"
+        ng-click="exportCtrl.export('XLS')">
+  {{ ::'EXPORT_XLS' | translate }}
 </button>
 
 <talend-modal fullscreen="false"
@@ -10,21 +26,23 @@
 
     <p>{{ ::'CHOOSE_SEPARATOR' | translate }}</p>
 
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="';'" />{{ :: 'SEPARATOR_SEMI_COLON' | translate }} (;)&emsp;
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="'	'" />{{ :: 'SEPARATOR_TAB' | translate }} (&emsp;)&emsp;
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="','" />{{ :: 'SEPARATOR_COMMA' | translate }} (,)&emsp;
+    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="';'"/>{{ :: 'SEPARATOR_SEMI_COLON' | translate }}
+    (;)&emsp;
+    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="'&#09;'"/>{{ :: 'SEPARATOR_TAB' | translate }} (&emsp;)&emsp;
+    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="' '"/>{{ :: 'SEPARATOR_SPACE' | translate }} (&nbsp;)&emsp;
+    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="','"/>{{ :: 'SEPARATOR_COMMA' | translate }} (,)&emsp;
 
     <div class="modal-buttons">
         <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
-        <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.export()">{{ ::'EXPORT' | translate }}</button>
+        <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.export('CSV')">{{ ::'EXPORT' | translate }}</button>
     </div>
 
-    <form id="csvExport" target="_blank">
+    <form id="exportForm" target="_blank">
         <input type="hidden" name="csvSeparator" value="{{ exportCtrl.csvSeparator }}" />
         <input type="hidden" name="preparationId" value="{{ exportCtrl.preparationId }}" />
         <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
         <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
-        <input type="hidden" name="exportType" value="CSV" />
+        <input type="hidden" name="exportType" />
     </form>
 
 </talend-modal>
