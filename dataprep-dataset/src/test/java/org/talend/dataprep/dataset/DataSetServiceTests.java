@@ -228,6 +228,34 @@ public class DataSetServiceTests {
     }
 
     @Test
+    public void previewNonDraft() throws Exception {
+        // Create a data set
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        dataSetMetadata.setDraft(false); // Ensure it is no draft
+        dataSetMetadataRepository.add(dataSetMetadata);
+        // Should receive a 301 that redirects to the GET data set content operation
+        given().redirects().follow(false).contentType(ContentType.JSON)
+                .get("/datasets/{id}/preview", dataSetId) //
+                .then() //
+                .statusCode(HttpStatus.MOVED_PERMANENTLY.value());
+        // Should receive a 200 if code follows redirection
+        given().redirects().follow(true).contentType(ContentType.JSON)
+                .get("/datasets/{id}/preview", dataSetId) //
+                .then() //
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void previewMissingMetadata() throws Exception {
+        // Data set 1234 does not exist, should get empty content response.
+        given().get("/datasets/{id}/preview", "1234") //
+                .then() //
+                .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
     public void test1() throws Exception {
         String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv"))) //
                 .queryParam("Content-Type", "text/csv") //

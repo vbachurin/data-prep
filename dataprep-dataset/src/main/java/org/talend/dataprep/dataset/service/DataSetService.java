@@ -388,12 +388,14 @@ public class DataSetService {
         }
         if (!dataSetMetadata.isDraft()) {
             response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+            // Moved to get data set content operation
+            response.setHeader("Location", "/datasets/" + dataSetId + "/content");
             return DataSet.empty(); // dataset not anymore a draft so preview doesn't make sense.
         }
         if (StringUtils.isNotEmpty(sheetName)) {
             dataSetMetadata.setSheetName(sheetName);
         }
-        // take care of previous datas without schema parser result
+        // take care of previous data without schema parser result
         if (dataSetMetadata.getSchemaParserResult() != null) {
             // sheet not yet set correctly so use the first one
             if (StringUtils.isEmpty(dataSetMetadata.getSheetName())) {
