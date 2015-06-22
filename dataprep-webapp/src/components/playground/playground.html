@@ -4,10 +4,10 @@
               on-close="playgroundCtrl.close()">
     <div class="modal-header">
         <ul>
+            <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
             <li>
                 <export></export>
             </li>
-            <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
         </ul>
 
         <div class="previewBadge" ng-show="playgroundCtrl.previewInProgress">
