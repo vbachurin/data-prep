@@ -16,19 +16,58 @@
   }
 }
 
-#stepsHeaderId{
-  margin-bottom: 20px;
+.steps-header{
+  margin: 15px 0px 15px 10px;
+  font-size: 1.4em;
+
   .title{
-    font-size: 1.2em;
-    padding-left: 5px;
+    padding: 2px 0px 0px 6px;
   }
   input{
+    font-family: $base-font-family;
     float: left;
-    width:170px;
-    margin-bottom:0px;
+    width:150px;
+    padding: 1px 0px 2px 0px;
+    margin: 0px 5px 0px 5px;
   }
   button{
-    font-size: 2em;
+    font-size: .80em;
+    margin: 3px;
+    padding: 2px;
+    border-radius: 50px;
+    vertical-align: top;
+    background-color: transparent;
+    color: $medium-gray;
+    font-weight: 400;
+    font-style: normal;
+    width: 24px;
+    height: 24px;
+
+    &.edit-btn{
+      margin-top: 4px;
+      color: $medium-gray;
+      background-color: transparent;
+      &:hover{
+       color: $dark-gray;
+      }
+    }
+
+    &.check-btn{
+        color: $white;
+        background-color: $blue;
+      &:hover{
+        background-color: darken( $blue, 10% );
+      }
+    }
+
+    &.cancel-btn{
+        margin-left: 0px;
+         color: $dark-gray;
+         background-color: $light-gray;
+      &:hover {
+        background-color: darken( $light-gray, 10% );
+      }
+    }
   }
 }
 
@@ -64,7 +103,7 @@
       border: none;
       cursor: pointer;
       height: $switch-height;
-      margin-top: 8px;
+      margin-top: 4px;
       padding: 0;
       position: relative;
       width: $switch-width;
