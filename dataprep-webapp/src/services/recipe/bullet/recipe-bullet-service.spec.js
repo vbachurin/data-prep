@@ -110,6 +110,20 @@ describe('Recipe Bullet service', function() {
 	    expect($timeout.cancel).toHaveBeenCalled();
 	}));
 
+	it('should activate/deactivate all the steps', inject(function(RecipeService, PlaygroundService, RecipeBulletService) {
+		//given
+		var recipe = RecipeService.getRecipe();
+		var step1 = {inactive: false};
+		var step2 = {inactive: false};
+		recipe.push(step1);
+		recipe.push(step2);
+
+		//when
+		RecipeBulletService.toggleAllSteps();
+
+		//then
+		expect(PlaygroundService.loadStep).toHaveBeenCalled();
+	}));
 
 	it('should trigger disable preview on active step hover', inject(function($timeout, RecipeService, PreviewService, RecipeBulletService) {
 	    //given

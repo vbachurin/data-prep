@@ -5,6 +5,7 @@ import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
@@ -48,6 +49,7 @@ import org.talend.dataprep.schema.FormatGuess;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -173,6 +175,19 @@ public class DataSetServiceTests {
     }
 
     @Test
+    public void createEmptyLines() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("empty_lines2.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId);
+
+        final String content = when().get("/datasets/{id}/content", dataSetId).asString();
+        assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("empty_lines2.json")));
+    }
+
+    @Test
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
@@ -205,13 +220,52 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void update() throws Exception {
+    public void updateRawContent() throws Exception {
         String dataSetId = "123456";
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv"))).when()
                 .put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
         assertQueueMessages(dataSetId);
+    }
+
+    @Test
+    public void updateMetadataContent() throws Exception {
+        assertThat(dataSetMetadataRepository.get("3d72677c-e2c9-4a34-8c58-959a56ec8643"), nullValue());
+        given().contentType(ContentType.JSON) //
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("metadata.json"))) //
+                .when() //
+                .put("/datasets/{id}", "3d72677c-e2c9-4a34-8c58-959a56ec8643") //
+                .then() //
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void previewNonDraft() throws Exception {
+        // Create a data set
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        dataSetMetadata.setDraft(false); // Ensure it is no draft
+        dataSetMetadataRepository.add(dataSetMetadata);
+        // Should receive a 301 that redirects to the GET data set content operation
+        given().redirects().follow(false).contentType(ContentType.JSON)
+                .get("/datasets/{id}/preview", dataSetId) //
+                .then() //
+                .statusCode(HttpStatus.MOVED_PERMANENTLY.value());
+        // Should receive a 200 if code follows redirection
+        given().redirects().follow(true).contentType(ContentType.JSON)
+                .get("/datasets/{id}/preview", dataSetId) //
+                .then() //
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void previewMissingMetadata() throws Exception {
+        // Data set 1234 does not exist, should get empty content response.
+        given().get("/datasets/{id}/preview", "1234") //
+                .then() //
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
@@ -437,13 +491,12 @@ public class DataSetServiceTests {
         assertQueueMessages(dataSetId);
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
-        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
     }
 
     @Test

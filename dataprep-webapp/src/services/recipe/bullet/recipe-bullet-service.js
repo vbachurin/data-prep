@@ -12,6 +12,7 @@
     function RecipeBulletService($timeout, RecipeService, PreviewService, PlaygroundService) {
         var self = this;
         var previewTimeout;
+        this.allToggledSteps = [];
 
         //---------------------------------------------------------------------------------------------
         //------------------------------------------Mouse Actions--------------------------------------
@@ -36,6 +37,22 @@
             else {
                 var previousStep = RecipeService.getPreviousStep(step);
                 PlaygroundService.loadStep(previousStep);
+            }
+        };
+
+        /**
+         * @ngdoc method
+         * @name toggleAllSteps
+         * @methodOf data-prep.recipe.service:RecipeBulletService
+         * @description Enable/disable step All steps
+         */
+        this.toggleAllSteps = function() {
+            var firstStep = RecipeService.getRecipe()[0];
+            if(!firstStep.inactive){
+                self.lastToggled = RecipeService.getLastActiveStep();
+                self.toggleStep(firstStep);
+            }else{
+                self.toggleStep(self.lastToggled);
             }
         };
 

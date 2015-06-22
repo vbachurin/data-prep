@@ -18,6 +18,7 @@
     function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService,
                                TransformationCacheService, ColumnSuggestionService, PreparationService, MessageService, StatisticsService) {
         var self = this;
+        self.toggleHappened = null;
 
         /**
          * @ngdoc property

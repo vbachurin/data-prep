@@ -268,7 +268,7 @@ public class TransformationServiceTests {
         final String datasetContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("parameters/dataset.json"));
         final String expectedParameters = IOUtils.toString(TransformationServiceTests.class
-                .getResourceAsStream("parameters/expected_cluster_params.json"));
+                .getResourceAsStream("parameters/expected_cluster_params_soundex.json"));
 
         // when
         final Response post = given().contentType(JSON).body(datasetContent).when()

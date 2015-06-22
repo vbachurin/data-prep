@@ -3,6 +3,7 @@ package org.talend.dataprep.api.service;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
@@ -239,7 +240,6 @@ public class DataPreparationAPITest {
         final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         // when
@@ -248,7 +248,7 @@ public class DataPreparationAPITest {
         // then
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
-        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
 
         // when
         when().put("/api/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
@@ -256,7 +256,7 @@ public class DataPreparationAPITest {
         // then
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
-        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
     }
 
     @Test
@@ -611,7 +611,7 @@ public class DataPreparationAPITest {
         // given
         final String dataSetId = createDataset("transformation/cluster_dataset.csv", "testClustering", "text/csv");
         final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class
-                .getResourceAsStream("transformation/expected_cluster_params.json"));
+                .getResourceAsStream("transformation/expected_cluster_params_soundex.json"));
 
         // when
         final String actualClusterParameters = given().formParam("datasetId", dataSetId).formParam("columnId", "0001")
@@ -626,7 +626,7 @@ public class DataPreparationAPITest {
         // given
         final String preparationId = createPreparationFromFile("transformation/cluster_dataset.csv", "testClustering", "text/csv");
         final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class
-                .getResourceAsStream("transformation/expected_cluster_params.json"));
+                .getResourceAsStream("transformation/expected_cluster_params_soundex.json"));
 
         // when
         final String actualClusterParameters = given().formParam("preparationId", preparationId)
@@ -656,7 +656,8 @@ public class DataPreparationAPITest {
                 .asString();
 
         // then (actions have normalized all cluster values, so no more clusters to be returned).
-        assertThat(actualClusterParameters, sameJSONAs("{\"details\":{\"titles\":[\"We found these values\",\"And we'll keep this value\"],\"clusters\":[]},\"type\":\"cluster\"}"));
+        final String expected = "{\"type\":\"cluster\",\"details\":{\"titles\":[\"We found these values\",\"And we'll keep this value\"],\"clusters\":[{\"parameters\":[{\"name\":\"MASSACHUSSETTS\",\"type\":\"boolean\",\"description\":\"parameter.MASSACHUSSETTS.desc\",\"label\":\"parameter.MASSACHUSSETTS.label\",\"default\":null},{\"name\":\"MASACHUSSETS\",\"type\":\"boolean\",\"description\":\"parameter.MASACHUSSETS.desc\",\"label\":\"parameter.MASACHUSSETS.label\",\"default\":null},{\"name\":\"MASSACHUSETTS\",\"type\":\"boolean\",\"description\":\"parameter.MASSACHUSETTS.desc\",\"label\":\"parameter.MASSACHUSETTS.label\",\"default\":null},{\"name\":\"MASSACHUSETS\",\"type\":\"boolean\",\"description\":\"parameter.MASSACHUSETS.desc\",\"label\":\"parameter.MASSACHUSETS.label\",\"default\":null},{\"name\":\"MASACHUSETTS\",\"type\":\"boolean\",\"description\":\"parameter.MASACHUSETTS.desc\",\"label\":\"parameter.MASACHUSETTS.label\",\"default\":null}],\"replace\":{\"name\":\"replaceValue\",\"type\":\"string\",\"description\":\"parameter.replaceValue.desc\",\"label\":\"parameter.replaceValue.label\",\"default\":\"MASSACHUSETTS\"}},{\"parameters\":[{\"name\":\"TEXAS\",\"type\":\"boolean\",\"description\":\"parameter.TEXAS.desc\",\"label\":\"parameter.TEXAS.label\",\"default\":null},{\"name\":\"TIXASS\",\"type\":\"boolean\",\"description\":\"parameter.TIXASS.desc\",\"label\":\"parameter.TIXASS.label\",\"default\":null}],\"replace\":{\"name\":\"replaceValue\",\"type\":\"string\",\"description\":\"parameter.replaceValue.desc\",\"label\":\"parameter.replaceValue.label\",\"default\":\"TIXASS\"}}]}}";
+        assertThat(actualClusterParameters, sameJSONAs(expected).allowingAnyArrayOrdering());
     }
 
     @Test

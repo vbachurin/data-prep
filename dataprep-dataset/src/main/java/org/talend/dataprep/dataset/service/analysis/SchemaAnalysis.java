@@ -88,6 +88,7 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                     // Column data type
                     final DataType dataType = columnResult.get(DataType.class);
                     final Map<DataType.Type, Long> frequencies = dataType.getTypeFrequencies();
+                    frequencies.remove(DataType.Type.EMPTY); // TDP-226: Don't take into account EMPTY values.
                     // Look at type frequencies distribution (if not spread enough, fall back to STRING).
                     StandardDeviation standardDeviation = new StandardDeviation();
                     double[] values = new double[frequencies.size()];

@@ -11,14 +11,15 @@ $invalid-color: rgb(247, 168, 0);
 @mixin badge($color: $custom-color) {
   background-color: $color;
   font-family: $base-font-family;
-  border-radius: 3px;
+  border-radius: 7px;
   color: $white;
   display: inline-block;
   font-size: $badge-font-size;
   font-weight: 300;
   line-height: 24px;
-  padding: 3px 5px;
+  padding: 2px 5px 1px 5px;
   border: 2px solid $white;
+  box-shadow: 5px 4px 6px -4px $dark-gray;
 }
 
 @mixin badge-description() {
@@ -53,6 +54,8 @@ $invalid-color: rgb(247, 168, 0);
 
     .description {
       @include badge-description;
+      font-family: $inconsolota;
+      text-transform: uppercase;
     }
 
     .badge-close {
@@ -92,11 +95,12 @@ $invalid-color: rgb(247, 168, 0);
 
   input[type="text"] {
     margin: 0;
-    padding: 0;
-    font-family: $base-font-family;
-    background: transparent;
+    padding: 2px;
+    font-family: $inconsolota;
+    background: rgba(255, 255, 255, 0.15);
     border: none;
     font-weight: 500;
     box-shadow: none;
+    text-transform: uppercase;
   }
 }
