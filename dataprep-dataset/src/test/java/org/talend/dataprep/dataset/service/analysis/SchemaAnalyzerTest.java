@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +120,6 @@ public class SchemaAnalyzerTest {
      * @throws Exception
      */
     @Test
-    @Ignore
     public void testTDP_226() throws Exception {
         final DataSetMetadata metadata = metadata().id("1234").build();
         repository.add(metadata);
