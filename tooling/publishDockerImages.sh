@@ -23,13 +23,22 @@ FTP_HOST='ftp.talend.com'
 FTP_USER='dataprep'
 FTP_PASSWD='-_V 8bS){'
 
+
+echo '==========================================='
+echo 'docker tag'
+echo '==========================================='
 for image in $images;
 do
   completeName=$image:$version
   echo 'docker tag --force '$completeName $registry/$completeName
   docker tag --force $completeName $registry/$completeName
 done
+echo '==========================================='
 
+
+echo '==========================================='
+echo archive images
+echo '==========================================='
 for image in $images;
 do
   list+=$registry/$image:$version
@@ -46,17 +55,13 @@ time docker save --output=$tar_archive $list
 
 echo 'gzip tar'
 time gzip $tar_archive
+echo '==========================================='
 
+
+echo '==========================================='
+echo 'FTP upload'
+echo '==========================================='
 tar_archive=$tar_archive'.gz'
-#===========================================
-#  _____ _____ ____  
-# |  ___|_   _|  _ \ 
-# | |_    | | | |_) |
-# |  _|   | | |  __/ 
-# |_|     |_| |_|    
-#                   
-#===========================================
-echo 'upload to ftp'
 md5sum $tar_archive > $tar_archive'.md5sum'
 
 ftp -n $FTP_HOST <<END_SCRIPT
@@ -68,8 +73,12 @@ put $tar_archive
 put $tar_archive.md5sum
 quit
 END_SCRIPT
-#===========================================
+echo '==========================================='
 
+
+echo '==========================================='
+echo 'docker push'
+echo '==========================================='
 echo 'remove temp files'
 rm $tar_archive*
 
@@ -79,4 +88,12 @@ do
   docker push $registry/$completeName
   docker rmi $registry/$completeName
 done
+echo '==========================================='
+
+
+echo '==========================================='
+echo 'notify dev server'
+echo '==========================================='
+ssh talend@dev.data-prep.talend.lan 'bash -s' < notifyRemote.sh $version
+echo '==========================================='
 

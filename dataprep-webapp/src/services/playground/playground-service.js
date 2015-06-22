@@ -52,6 +52,14 @@
          */
         self.preparationName = '';
 
+        /**
+         * @ngdoc property
+         * @name showRecipe
+         * @propertyOf data-prep.services.playground.service:PlaygroundService
+         * @description Flag that pilot the recipe panel display
+         */
+        self.showRecipe = false;
+
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------VISIBILITY--------------------------------------------
         //------------------------------------------------------------------------------------------------------
@@ -120,6 +128,7 @@
 
                         setName('');
                         reset(dataset, data);
+                        self.showRecipe = false;
                     });
             }
             else {
@@ -151,6 +160,7 @@
                     .then(function(response) {
                         setName(preparation.name);
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
+                        self.showRecipe = true;
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
@@ -228,7 +238,12 @@
                 })
                 .then(function(response) {
                     DatagridService.updateData(response.data);
-                    RecipeService.refresh();
+                    return RecipeService.refresh();
+                })
+                .then(function() {
+                    if(RecipeService.getRecipe().length === 1) { //first step append
+                        self.showRecipe = true;
+                    }
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');

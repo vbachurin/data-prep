@@ -7,7 +7,7 @@
          * @name data-prep.services.utils.service:apiUrl
          * @description The REST api base url
          */
-        .constant('apiUrl', 'http://localhost:8888')
+        .constant('apiUrl', 'http://10.42.10.99:8888')  /* VM1 */
         /**
          * @ngdoc object
          * @name data-prep.services.utils.service:disableDebug

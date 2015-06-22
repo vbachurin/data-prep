@@ -71,6 +71,36 @@
     ]
   },
   {
+    "name": "floor",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "name": "ceil",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "column_name",
+        "type": "string",
+        "default": ""
+      }
+    ]
+  },
+  {
     "category": "columns",
     "items": [],
     "name": "rename_column",
@@ -99,7 +129,7 @@
     "label": "Rename"
   },
   {
-      "label": "Copy",
+      "label": "Duplicate",
       "name":"copy",
       "description": "Creates an exact copy of this column",
       "category": "columns",

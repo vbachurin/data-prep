@@ -55,22 +55,25 @@ public class Round extends SingleColumnAction {
     @Override
     public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
         return (row, context) -> {
+
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
-            String absValueStr = null;
-            if (value != null) {
-                try {
-                    double doubleValue = Double.parseDouble(value);
-                    long roundedValue = Math.round(doubleValue);
-                    absValueStr = String.format("%s", roundedValue); //$NON-NLS-1$
-                } catch (NumberFormatException nfe2) {
-                    // Nan: nothing to do, but fail silently (no change in value)
-                }
-                if (absValueStr != null) {
-                    row.set(columnName, absValueStr);
-                }
+            if (value == null) {
+                return;
             }
 
+            String absValueStr = null;
+            try {
+                double doubleValue = Double.parseDouble(value);
+                long roundedValue = Math.round(doubleValue);
+                absValueStr = String.format("%s", roundedValue); //$NON-NLS-1$
+            } catch (NumberFormatException nfe2) {
+                // Nan: nothing to do, but fail silently (no change in value)
+            }
+
+            if (absValueStr != null) {
+                row.set(columnName, absValueStr);
+            }
         };
     }
 
@@ -80,6 +83,7 @@ public class Round extends SingleColumnAction {
     @Override
     public boolean accept(ColumnMetadata column) {
         Type columnType = Type.get(column.getType());
+        // in order to 'clean' integer typed columns, this function needs to be allowed on any numeric types
         return Type.NUMERIC.isAssignableFrom(columnType);
     }
 }

@@ -3,6 +3,7 @@ package org.talend.dataprep.api.service;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.api.type.ExportType.CSV;
@@ -237,11 +238,8 @@ public class DataPreparationAPITest {
     public void testAskCertification() throws Exception {
         // given
         final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
-        // TODO remove this when a better solution is available
-        Thread.sleep(200);
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         // when
@@ -250,7 +248,7 @@ public class DataPreparationAPITest {
         // then
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
-        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
 
         // when
         when().put("/api/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
@@ -258,7 +256,7 @@ public class DataPreparationAPITest {
         // then
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
-        assertEquals(originalNbLines, dataSetMetadata.getContent().getNbRecords());
+        assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
     }
 
     @Test

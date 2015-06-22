@@ -1,12 +1,32 @@
+@mixin menu-shape() {
+  background-color: $white;
+  border: 1px solid silver;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
 @mixin menu-list() {
-  & > li {
+  @include menu-shape;
+
+  li {
     border: none;
-    line-height: 1.42857143;
+    line-height: 1.5;
     padding: 3px 20px;
+    position: relative;
     white-space: nowrap;
 
     &:hover {
       background-color: $menus-hover;
+
+      >.submenu {
+        display: block;
+      }
+    }
+
+    &.more:after {
+      color: #333;
+      content: '\25b8';
+      position: absolute;
+      right: 5px;
     }
 
     a {
@@ -14,6 +34,24 @@
       font-size: 0.8em;
       font-weight: normal;
       text-transform: none;
+
+      >.info {
+        float: right;
+        color: $medium-gray;
+        text-transform: lowercase;
+        padding: 3px;
+      }
+    }
+
+    >.submenu {
+      @include menu-shape;
+
+      display: none;
+      padding-left: 0;
+
+      position: absolute;
+      top: 0;
+      left: 100%;
     }
 
     &.divider {
