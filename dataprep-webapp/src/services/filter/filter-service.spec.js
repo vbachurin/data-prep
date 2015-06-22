@@ -43,6 +43,23 @@ describe('Filter service', function() {
         expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
     }));
 
+    it('"contains" filter should not throw exception on non existing column (that could be removed by a step)', inject(function(FilterService, DatagridService) {
+        //given
+        expect(FilterService.filters.length).toBe(0);
+
+        //when
+        FilterService.addFilter('contains', 'col_that_does_not_exist', 'column name', {phrase: 'toto'});
+
+        //then
+        expect(FilterService.filters.length).toBe(1);
+
+        var filterInfo = FilterService.filters[0];
+        expect(filterInfo.type).toBe('contains');
+        expect(filterInfo.filterFn({col1: ' toto est ici'})).toBeFalsy();
+
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
+    }));
+
     it('should add "contains" filter with wildcard', inject(function(FilterService) {
         //given
         expect(FilterService.filters.length).toBe(0);
