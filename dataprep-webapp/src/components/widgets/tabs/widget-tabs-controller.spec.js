@@ -81,4 +81,24 @@ describe('Tabs widget controller', function () {
         expect(tab3.active).toBe(true);
         expect(tab4.active).toBe(false);
     });
+
+    it('should unregister tabs', function() {
+        //given
+        var ctrl = createController();
+        var tab = {active : false, title: 'my tab'};
+        var tab2 = {active : false, title: 'my tab'};
+        var tab3 = {active : false, title: 'my tab'};
+        var tab4 = {active : false, title: 'my tab'};
+
+        ctrl.register(tab);
+        ctrl.register(tab2);
+        ctrl.register(tab3);
+        ctrl.register(tab4);
+
+        //when
+        ctrl.unregister(tab2);
+
+        //then
+        expect(ctrl.tabs.indexOf(tab2)).toBe(-1);
+    });
 });

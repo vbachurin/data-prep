@@ -85,15 +85,8 @@ rm $tar_archive*
 for image in $images;
 do
   completeName=$image:$version
-  docker push $registry/$completeName
+  time docker push $registry/$completeName
   docker rmi $registry/$completeName
 done
-echo '==========================================='
-
-
-echo '==========================================='
-echo 'notify dev server'
-echo '==========================================='
-ssh talend@dev.data-prep.talend.lan 'bash -s' < notifyRemote.sh $version
 echo '==========================================='
 

@@ -175,6 +175,19 @@ public class DataSetServiceTests {
     }
 
     @Test
+    public void createEmptyLines() throws Exception {
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("empty_lines2.csv")))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        assertQueueMessages(dataSetId);
+
+        final String content = when().get("/datasets/{id}/content", dataSetId).asString();
+        assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("empty_lines2.json")));
+    }
+
+    @Test
     public void get() throws Exception {
         String expectedId = UUID.randomUUID().toString();
         DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
