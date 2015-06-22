@@ -55,7 +55,10 @@ public class ExtractEmailDomain extends SingleColumnAction {
      */
     @Override
     public boolean accept(ColumnMetadata column) {
-        return Type.STRING.equals(Type.get(column.getType()));
+        if (!Type.STRING.equals(Type.get(column.getType()))) {
+            return false;
+        }
+        return StringUtils.equalsIgnoreCase("email", column.getDomain());
     }
 
     /**

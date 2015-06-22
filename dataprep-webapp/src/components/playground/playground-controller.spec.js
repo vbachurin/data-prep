@@ -118,7 +118,7 @@ describe('Playground controller', function() {
         expect(PlaygroundService.createOrUpdatePreparation).not.toHaveBeenCalled();
     }));
 
-    it('should bind previewInProgress getter with PreviewService', inject(function(PlaygroundService, PreviewService) {
+    it('should bind previewInProgress getter with PreviewService', inject(function(PreviewService) {
         //given
         var ctrl = createController();
         expect(ctrl.previewInProgress).toBeFalsy();
@@ -128,5 +128,29 @@ describe('Playground controller', function() {
 
         //then
         expect(ctrl.previewInProgress).toBe(true);
+    }));
+
+    it('should bind showRecipe getter to PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.showRecipe).toBeFalsy();
+
+        //when
+        PlaygroundService.showRecipe = true;
+
+        //then
+        expect(ctrl.showRecipe).toBe(true);
+    }));
+
+    it('should bind showRecipe setter to PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(PlaygroundService.showRecipe).toBeFalsy();
+
+        //when
+        ctrl.showRecipe = true;
+
+        //then
+        expect(PlaygroundService.showRecipe).toBe(true);
     }));
 });

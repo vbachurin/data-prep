@@ -101,9 +101,11 @@ describe('Quality bar directive', function() {
     describe('without enter animation', function() {
         beforeEach(inject(function($compile) {
             createElement = function () {
-                var html = '<talend-quality-bar quality="quality" column="column" enter-animation="false"></talend-quality-bar>';
+                var html = '<quality-bar quality="quality" column="column" enter-animation="false"></quality-bar>';
                 element = $compile(html)(scope);
                 scope.$digest();
+
+                controller = element.controller('qualityBar');
             };
         }));
 

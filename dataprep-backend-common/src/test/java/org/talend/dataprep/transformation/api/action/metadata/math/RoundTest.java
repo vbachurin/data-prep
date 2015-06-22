@@ -43,13 +43,9 @@ public class RoundTest {
      * Constructor.
      */
     public RoundTest() throws IOException {
-
         roundAction = new Round();
-
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
-                roundAction, //
-                RoundTest.class.getResourceAsStream("roundAction.json"));
-
+        Map<String, String> parameters = ActionMetadataTestUtils //
+                .parseParameters(roundAction, RoundTest.class.getResourceAsStream("roundAction.json"));
         consumer = roundAction.create(parameters);
     }
 
@@ -93,9 +89,9 @@ public class RoundTest {
     @Test
     public void should_accept_column() {
         assertTrue(roundAction.accept(getColumn(Type.NUMERIC)));
+        assertTrue(roundAction.accept(getColumn(Type.INTEGER)));
         assertTrue(roundAction.accept(getColumn(Type.DOUBLE)));
         assertTrue(roundAction.accept(getColumn(Type.FLOAT)));
-        assertTrue(roundAction.accept(getColumn(Type.INTEGER)));
     }
 
     @Test

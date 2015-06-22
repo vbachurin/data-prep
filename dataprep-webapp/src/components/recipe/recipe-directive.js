@@ -12,7 +12,7 @@
      </recipe>
      * @param {object} metadata The loaded metadata
      */
-    function Recipe() {
+    function Recipe($timeout, RecipeService) {
         return {
             restrict: 'E',
             templateUrl: 'components/recipe/recipe.html',
@@ -21,7 +21,21 @@
             },
             bindToController: true,
             controllerAs: 'recipeCtrl',
-            controller: 'RecipeCtrl'
+            controller: 'RecipeCtrl',
+            link: function(scope, iElement) {
+                scope.$watch(
+                    function() {
+                        return RecipeService.getRecipe();
+                    },
+                    function(recipe) {
+                        if(recipe.length) {
+                            $timeout(function() {
+                                iElement.find('.talend-accordion-trigger:last').click();
+                            });
+                        }
+                    }
+                );
+            }
         };
     }
 

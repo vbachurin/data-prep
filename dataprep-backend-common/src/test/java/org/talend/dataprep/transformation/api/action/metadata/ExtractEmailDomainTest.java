@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,29 +26,18 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.Application;
-import org.talend.dataprep.transformation.TransformationServiceTests;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
- * Test class for Split action. Creates one consumer, and test it.
+ * Test class for ExtractEmailDomain action. Creates one consumer, and test it.
+ * 
+ * @see ExtractEmailDomain
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@IntegrationTest
-@WebAppConfiguration
 public class ExtractEmailDomainTest {
 
     /** The row consumer to test. */
@@ -57,22 +47,22 @@ public class ExtractEmailDomainTest {
     private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
 
     /** The action to test. */
-    @Autowired
     private ExtractEmailDomain action;
 
     /**
-     * Initialization before each test.
+     * Default empty constructor.
      */
-    @Before
-    public void setUp() throws IOException {
-        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("extractDomainAction.json"));
+    public ExtractEmailDomainTest() throws IOException {
+        String actions = IOUtils.toString(ExtractEmailDomainTest.class.getResourceAsStream("extractDomainAction.json"));
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
+        action = new ExtractEmailDomain();
         Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
         rowClosure = action.create(parameters);
         metadataClosure = action.createMetadataClosure(parameters);
     }
+
 
     /**
      * @see Split#create(Map)
@@ -146,5 +136,27 @@ public class ExtractEmailDomainTest {
     private ColumnMetadata createMetadata(String id, String name) {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
+    }
+
+    @Test
+    public void should_accept_column() {
+        ColumnMetadata column = getColumn(Type.STRING);
+        column.setDomain("email");
+        assertTrue(action.accept(column));
+    }
+
+    @Test
+    public void should_not_accept_column() {
+        assertFalse(action.accept(getColumn(Type.STRING)));
+        assertFalse(action.accept(getColumn(Type.DATE)));
+        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.accept(getColumn(Type.NUMERIC)));
+        assertFalse(action.accept(getColumn(Type.INTEGER)));
+        assertFalse(action.accept(getColumn(Type.DOUBLE)));
+        assertFalse(action.accept(getColumn(Type.FLOAT)));
+
+        ColumnMetadata column = getColumn(Type.STRING);
+        column.setDomain("not an email");
+        assertFalse(action.accept(column));
     }
 }

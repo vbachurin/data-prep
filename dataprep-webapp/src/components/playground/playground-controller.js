@@ -4,7 +4,11 @@
     /**
      * @ngdoc controller
      * @name data-prep.playground.controller:PlaygroundCtrl
-     * @description Playground controller.
+     * @description Playground controller.<br/>
+     * Watchers :
+     * <ul>
+     *     <li>Recipe length : display recipe panel on first step application</li>
+     * </ul>
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.playground.service:PreviewService
@@ -114,6 +118,25 @@
             configurable: false,
             get: function () {
                 return this.previewService.previewInProgress();
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name showRecipe
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description The flag that pilots the recipe panel display
+     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
+     */
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'showRecipe', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.playgroundService.showRecipe;
+            },
+            set: function(value) {
+                this.playgroundService.showRecipe = value;
             }
         });
 

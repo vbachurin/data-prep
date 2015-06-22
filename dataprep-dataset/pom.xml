@@ -18,6 +18,10 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
         <!-- Data Quality - Content analysis -->
         <dependency>
             <groupId>org.talend.studio</groupId>

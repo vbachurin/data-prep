@@ -46,15 +46,6 @@
          */
         self.filters = [];
 
-        /**
-         * @ngdoc property
-         * @name selectedColumn
-         * @propertyOf data-prep.services.playground.service:DatagridService
-         * @description the selected grid column
-         * @type {object}
-         */
-        self.selectedColumn = null;
-
         //------------------------------------------------------------------------------------------------------
         //---------------------------------------------------DATA-----------------------------------------------
         //------------------------------------------------------------------------------------------------------
@@ -201,19 +192,6 @@
             }
 
             return result;
-        };
-
-        /**
-         * @ngdoc method
-         * @name setSelectedColumn
-         * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {string} colId - the column id
-         * @description Set the selected column
-         */
-        self.setSelectedColumn = function(colId) {
-            self.selectedColumn = _.find(self.data.columns, function(col) {
-                return col.id === colId;
-            });
         };
 
         //------------------------------------------------------------------------------------------------------

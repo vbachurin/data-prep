@@ -204,15 +204,72 @@
 
                 /**
                  * @ngdoc method
-                 * @name updateColSelection
+                 * @name selectColumn
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {string} columnId The selected column
+                 * @description [PRIVATE] Update column style and trigger right panel update
+                 */
+                var selectColumn = function selectColumn(columnId) {
+                    var column = _.find(grid.getColumns(), function(column) {
+                        return column.id === columnId;
+                    });
+
+                    if(column.cssClass !== 'selected') {
+                        updateColumnsClass(column);
+                        updateSuggestionPanel(column);
+                    }
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name updateSuggestionPanel
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {string} selectedColumn The selected column
+                 * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
+                 */
+                var updateColumnsClass = function updateColumnsClass(selectedColumn) {
+                    resetColumnsClass();
+                    if(selectedColumn) {
+                        selectedColumn.cssClass = 'selected';
+                    }
+                    grid.invalidate();
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name updateSuggestionPanel
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @param {string} column - the selected column
                  * @description [PRIVATE] Set the selected column into service. This will trigger actions that use this property
                  */
-                var updateColSelection = function (column) {
-                    DatagridService.setSelectedColumn(column.id);
-                    StatisticsService.processVisuData(column.tdpColMetadata);
-                    ColumnSuggestionService.setColumn(column.tdpColMetadata); // this will trigger a digest after REST call
+                var updateSuggestionPanel = function updateSuggestionPanel(column) {
+                    var columnMetadata = column.tdpColMetadata;
+                    StatisticsService.processVisuData(columnMetadata);
+                    ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name manageColumnSelection
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @param {boolean} wasPreview Flag that indicate if the data WAS in preview mode
+                 * @param {boolean} isPreview Flag that indicate if the data IS in preview mode
+                 * @description [PRIVATE] Update column selection and the suggestion panel if needed, accordingly
+                 * to the active cell.
+                 * This is usefull when data changes, the column style is reset but the active cell does not change.
+                 */
+                var manageColumnSelection = function manageColumnSelection(wasPreview, isPreview) {
+                    var activeCell = grid.getActiveCell();
+                    if(activeCell) {
+                        var column = grid.getColumns()[activeCell.cell];
+
+                        if(!wasPreview && !isPreview && activeCell) {
+                            selectColumn(column.id);
+                        }
+                        else if(!isPreview && activeCell) {
+                            updateColumnsClass(column);
+                        }
+                    }
                 };
 
                 /**
@@ -297,19 +354,11 @@
 
                     //change column background and update column profil on click
                     grid.onHeaderClick.subscribe(function(e, args) {
+                        resetCellStyles();
+                        grid.resetActiveCell();
+
                         var columnId = args.column.id;
-                        var column = _.find(grid.getColumns(), function(column) {
-                            return column.id === columnId;
-                        });
-
-                        if(column.cssClass !== 'selected') {
-                            resetCellStyles();
-                            resetColumnsClass();
-                            column.cssClass = 'selected';
-                            grid.invalidate();
-
-                            updateColSelection(column);
-                        }
+                        selectColumn(columnId);
                     });
                 };
 
@@ -394,7 +443,7 @@
                                 grid.invalidate();
                             }
 
-                            updateColSelection(column);
+                            updateSuggestionPanel(column);
                         }
                     });
 
@@ -525,6 +574,8 @@
                     function (metadata) {
                         if(metadata) {
                             if(grid) {
+                                resetCellStyles();
+                                grid.resetActiveCell();
                                 grid.scrollRowToTop(0);
                             }
                             renewAllColumns = true;
@@ -539,13 +590,14 @@
                     function () {
                         return DatagridService.data;
                     },
-                    function (data) {
+                    function (data, oldData) {
                         if(data) {
                             initGridIfNeeded();
                             updateColumns(data.columns, data.preview);
-                            resetCellStyles();
-                            grid.resetActiveCell();
-                            grid.invalidate();
+
+                            var wasPreview = oldData && oldData.preview;
+                            var isPreview = data && data.preview;
+                            manageColumnSelection(wasPreview, isPreview);
                         }
                     }
                 );

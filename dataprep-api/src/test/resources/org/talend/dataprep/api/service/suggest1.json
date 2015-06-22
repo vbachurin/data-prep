@@ -240,26 +240,6 @@
     "label": "Split"
   },
   {
-    "category": "columns",
-    "name": "extractemaildomain",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "description": "The column on which apply this action to",
-        "label": "Column",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ],
-    "description": "Extract local and domain parts from an email",
-    "label": "Extract email tokens"
-  },
-  {
     "category": "quickfix",
     "name": "textclustering",
     "dynamic": true,
@@ -283,7 +263,7 @@
     "label": "Cluster"
   },
   {
-      "label": "Copy",
+      "label": "Duplicate",
       "name":"copy",
       "description": "Creates an exact copy of this column",
       "category": "columns",
