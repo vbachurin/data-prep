@@ -13,6 +13,10 @@
   color: $color;
   font-size: 0.95em;
 
+  ul{
+    border-top: 1px solid $shadow-gray;
+    padding-top: 5px;
+  }
 
   /*************************************Step text*************************************/
   li {
