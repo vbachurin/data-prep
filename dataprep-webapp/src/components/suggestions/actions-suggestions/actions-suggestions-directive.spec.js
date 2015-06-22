@@ -1,15 +1,17 @@
-describe('Column suggestions directive', function() {
+describe('Actions suggestions directive', function() {
     'use strict';
 
     var scope, element, createElement;
 
-    beforeEach(module('data-prep.column-suggestions'));
+    beforeEach(module('data-prep.actions-suggestions'));
     beforeEach(module('htmlTemplates'));
     
     beforeEach(inject(function($rootScope, $compile) {
+        scope = $rootScope.$new();
+
         createElement = function() {
             scope = $rootScope.$new();
-            element = angular.element('<column-suggestions></column-suggestions>');
+            element = angular.element('<actions-suggestions></actions-suggestions>');
             $compile(element)(scope);
             scope.$digest();
         };

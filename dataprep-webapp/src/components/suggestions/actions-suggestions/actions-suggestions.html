@@ -1,0 +1,69 @@
+<div class="actions-suggestions">
+    <div class="title">Actions {{ actionsSuggestionsCtrl.column.name ? ': ' + actionsSuggestionsCtrl.column.name : '' }}</div>
+    <div class="Description" ng-if="! actionsSuggestionsCtrl.suggestions">Select a column to display its actions</div>
+    
+    <talend-tabs ng-if="actionsSuggestionsCtrl.suggestions">
+        <talend-tabs-item title="Text">Coming soon ...</talend-tabs-item>
+        <talend-tabs-item title="Cell">Coming soon ...</talend-tabs-item>
+        <talend-tabs-item title="Line">Coming soon ...</talend-tabs-item>
+        <talend-tabs-item title="Column" default="true">
+            <div ng-repeat="(category, transformations) in actionsSuggestionsCtrl.suggestions track by category">
+                <!--<div class="action-category">{{category}}</div>-->
+
+                <talend-accordions class="menu">
+                    <talend-accordions-item ng-repeat="transfo in transformations track by $index"
+                                            ng-switch="!!(transfo.parameters || transfo.items)">
+                        <!-- no static parameters -->
+                        <a ng-switch-when="false"
+                           ng-click="actionsSuggestionsCtrl.select(transfo)">{{transfo.label}}</a>
+
+                        <!-- with static parameters -->
+                        <span ng-switch-when="true">
+                            <a id="trigger">{{transfo.label}}</a>
+                            <ul id="content">
+                                <transform-params transformation="transfo"
+                                                  on-submit="actionsSuggestionsCtrl.transformClosure(transfo)(params)"></transform-params>
+                            </ul>
+                        </span>
+
+                    </talend-accordions-item>
+                </talend-accordions>
+            </div>
+        </talend-tabs-item>
+
+        <talend-tabs-item title="Table">
+            <talend-accordions class="menu">
+                <talend-accordions-item>
+                    <a>Remove Empty Lines</a>
+                </talend-accordions-item>
+            </talend-accordions>
+            <talend-accordions class="menu">
+                <talend-accordions-item>
+                    <a>Create Email Addresses</a>
+                </talend-accordions-item>
+            </talend-accordions>
+            <talend-accordions class="menu">
+                <talend-accordions-item>
+                    <a>Correct Postal Addresses</a>
+                </talend-accordions-item>
+            </talend-accordions>
+        </talend-tabs-item>
+    </talend-tabs>
+
+    <!-- Dynamic params  -->
+    <talend-modal fullscreen="false"
+                  state="actionsSuggestionsCtrl.showDynamicModal"
+                  close-button="true">
+
+        <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
+        <div class="modal-subtitle">{{ actionsSuggestionsCtrl.dynamicTransformation.description }}</div>
+
+        <div ng-if="actionsSuggestionsCtrl.dynamicFetchInProgress">
+            <img class="continuous-rotate"
+                 style="background-color: grey"
+                 src="/components/widgets/loading/loading.png"/>
+        </div>
+        <transform-params transformation="actionsSuggestionsCtrl.dynamicTransformation"
+                          on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation)(params)"></transform-params>
+    </talend-modal>
+</div>

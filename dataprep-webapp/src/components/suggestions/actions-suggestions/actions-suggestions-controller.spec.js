@@ -1,15 +1,15 @@
-describe('Column suggestions controller', function() {
+describe('Actions suggestions controller', function() {
     'use strict';
 
     var createController, scope;
 
-    beforeEach(module('data-prep.column-suggestions'));
+    beforeEach(module('data-prep.actions-suggestions'));
 
     beforeEach(inject(function($rootScope, $controller, $q, PlaygroundService, TransformationService) {
         scope = $rootScope.$new();
 
         createController = function() {
-            var ctrl =  $controller('ColumnSuggestionsCtrl', {
+            var ctrl =  $controller('ActionsSuggestionsCtrl', {
                 $scope: scope
             });
             return ctrl;
