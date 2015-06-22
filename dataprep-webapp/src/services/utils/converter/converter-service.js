@@ -57,6 +57,28 @@
                }
         };
 
+        /**
+         * @ngdoc method
+         * @name adaptValue
+         * @methodOf data-prep.services.utils.service:ConverterService
+         * @param {object} type - the target type of the given value
+         * @param {object} value - the value to adapt
+         * @description [PRIVATE] Adapt the given value to the target type
+         */
+        this.adaptValue = function (type, value) {
+            switch (type) {
+                case 'numeric':
+                case 'integer':
+                case 'double':
+                case 'float':
+                    return parseFloat(value) || 0;
+                case 'boolean':
+                    return value === 'true' || value === true;
+                default :
+                    return value;
+            }
+        };
+
     }
 
     angular.module('data-prep.services.utils')
