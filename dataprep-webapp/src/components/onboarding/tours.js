@@ -18,7 +18,7 @@ function startTourIntro(){
             element: '#help-dataset-nav',
             title: 'Quick Data Access',
             intro: 'This is the place you can quickly access the dataset you are working on.',
-            position: 'right'
+            position: 'bottom'
         }
     ]
   });
