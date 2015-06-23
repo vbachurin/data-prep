@@ -1,5 +1,10 @@
 $sourcesanspro: "Source Sans Pro", "Lucida Grande", "Tahoma", "Verdana", "Arial", sans-serif;
 $inconsolota: Inconsolata, Monaco, Menlo, Consolas, "Courier New", monospace;
+$iconsfont: "icons-font";
+
+.icon {
+  font-family: $base-font-family;
+}
 
 @font-face {
 	font-family: 'Source Sans Pro';
@@ -284,4 +289,15 @@ $inconsolota: Inconsolata, Monaco, Menlo, Consolas, "Courier New", monospace;
   url('/assets/fonts/Inconsolata_700.ttf') format('truetype'),
     /* from http://fonts.gstatic.com/l/font?kit=AIed271kqQlcIRSOnQH0yXtNmQEE9wZ6UZlmiISB1pg#Inconsolata */
   url('/assets/fonts/Inconsolata_700.svg#Inconsolata') format('svg');
+}
+
+@font-face {
+  font-family: "icons-font";
+  src:url("/assets/fonts/icons-font.eot");
+  src:url("/assets/fonts/icons-font.eot?#iefix") format("embedded-opentype"),
+  url("/assets/fonts/icons-font.woff") format("woff"),
+  url("/assets/fonts/icons-font.ttf") format("truetype"),
+  url("/assets/fonts/icons-font.svg#icons-font") format("svg");
+  font-weight: normal;
+  font-style: normal;
 }

@@ -21,16 +21,17 @@
   font-size: 1.4em;
 
   .title{
-    padding: 2px 0px 0px 6px;
+    padding: 3px 0px 4px 0px;
+    text-transform: uppercase;
   }
   input{
     font-family: $base-font-family;
     float: left;
-    width:140px;
-    padding: 1px 0px 2px 0px;
-    margin: 0px 5px 0px 5px;
+    width:160px;
+    padding: 3px 0px 4px 0px;
   }
   button{
+    font-family: $iconsfont;
     font-size: .80em;
     margin: 3px;
     padding: 2px;
@@ -40,13 +41,16 @@
     color: $medium-gray;
     font-weight: 400;
     font-style: normal;
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
 
     &.edit-btn{
-      margin-top: 4px;
+      margin-top: 2px;
       color: $medium-gray;
       background-color: transparent;
+      &:after {
+        content: "a";  /* Edit icon  */
+      }
       &:hover{
        color: $dark-gray;
       }
@@ -55,6 +59,9 @@
     &.check-btn{
         color: $white;
         background-color: $blue;
+      &:after {
+        content: "b";   /* Valid icon  */
+      }
       &:hover{
         background-color: darken( $blue, 10% );
       }
@@ -64,6 +71,9 @@
         margin-left: 0px;
          color: $dark-gray;
          background-color: $light-gray;
+      &:after {
+        content: "c"; /* Cancel icon  */
+      }
       &:hover {
         background-color: darken( $light-gray, 10% );
       }
