@@ -17,7 +17,7 @@
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
-        vm.editionMode = true;
+        vm.editionMode = !vm.preparationName;
         vm.recipeService = RecipeService;
 
         /**
