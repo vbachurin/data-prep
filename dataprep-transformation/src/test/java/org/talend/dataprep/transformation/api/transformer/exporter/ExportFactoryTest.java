@@ -56,7 +56,7 @@ public class ExportFactoryTest {
     public void getExporter_csv_exporter_should_write_csv_format() throws Exception {
         // given
         HashMap<String, Object> arguments = new HashMap<>();
-        arguments.put("csvSeparator", ';');
+        arguments.put("exportParameters.csvSeparator", ';');
         final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(CSV)
                 .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json"))).build();
         final Transformer exporter = factory.getExporter(configuration);
