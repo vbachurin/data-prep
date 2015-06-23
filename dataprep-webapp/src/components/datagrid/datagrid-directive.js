@@ -232,6 +232,7 @@
                     if(selectedColumn) {
                         selectedColumn.cssClass = 'selected';
                     }
+                    alignRightNumbers();
                     grid.invalidate();
                 };
 
@@ -411,6 +412,49 @@
 
                 /**
                  * @ngdoc method
+                 * @name checkInvalidValues
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description adds a red indication on the right side of the cell to indicated that the value is invalid
+                 */
+                var checkInvalidValues = function(){
+                    var invalidConfig = {};
+                    _.each(grid.getColumns(), function(rawCol){
+                        var invalidValues = rawCol.tdpColMetadata.quality.invalidValues;
+                        if(invalidValues.length){
+                            _.each(DatagridService.dataView.getItems(), function(row, rowIndex){
+                                var content = DatagridService.dataView.getItem(rowIndex)[rawCol.id];
+                                if(invalidValues.indexOf(content)>=0){
+                                    var rowNbr= rowIndex.toString();
+                                    invalidConfig[rowNbr] = {};
+                                    invalidConfig[rowNbr][rawCol.id] = 'invalid-value';
+                                }
+                            });
+                        }
+                    });
+                    grid.setCellCssStyles('invalid-value', invalidConfig);
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name alignRightNumbers
+                 * @methodOf data-prep.datagrid.directive:Datagrid
+                 * @description aligns columns with having number types to the right
+                 */
+                var alignRightNumbers = function(){
+                    _.each(grid.getColumns(), function(rawCol){
+                        var colType = rawCol.tdpColMetadata.type;
+                        if (colType === 'numeric' || colType === 'integer' || colType === 'float' || colType === 'double'){
+                            alignColRight(rawCol);
+                        }
+                    });
+                };
+
+                var alignColRight = function(column){
+                    column.cssClass += ' numbers-on-the-right';
+                };
+
+                /**
+                 * @ngdoc method
                  * @name attachCellListeners
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Attach cell action listeners (click, active change, ...)
@@ -436,13 +480,7 @@
                     grid.onActiveCellChanged.subscribe(function(e,args) {
                         if(angular.isDefined(args.cell)) {
                             var column = grid.getColumns()[args.cell];
-
-                            if(column.cssClass !== 'selected') {
-                                resetColumnsClass();
-                                column.cssClass = 'selected';
-                                grid.invalidate();
-                            }
-
+                            updateColumnsClass(column);
                             updateSuggestionPanel(column);
                         }
                     });
@@ -555,8 +593,9 @@
                             header.element.remove();
                         });
                         colHeaderElements = finalColHeaderElements;
+                        checkInvalidValues();
                     }
-
+                    alignRightNumbers();
                     renewAllColumns = false;
                 };
 
@@ -598,6 +637,7 @@
                             var wasPreview = oldData && oldData.preview;
                             var isPreview = data && data.preview;
                             manageColumnSelection(wasPreview, isPreview);
+                            grid.invalidate();
                         }
                     }
                 );

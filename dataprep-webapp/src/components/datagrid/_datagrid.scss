@@ -7,7 +7,6 @@
   padding: 1px 4px 2px;
 }
 
-
 .tooltip-ruler{
 
   $datagrid-cell-font-size: .80em;
@@ -66,9 +65,10 @@
   }
 
   .slick-cell {
+    border-right-width: 5px;
     box-sizing: content-box;
     border-color: $datagrid-line-border;
-    border-bottom-color: transparent;
+    /*border-bottom-color: transparent;*/
     border-left-color: transparent;
     border-right-style: solid;
     padding-left: 4px;
@@ -82,13 +82,18 @@
       background-color: #DFE8F6;
     }
 
+    &.numbers-on-the-right{
+      text-align: right;
+    }
+
+    &.invalid-value {
+      border-right-color: red;
+      border-radius: 2px;
+    }
+
     &:hover {
       background-color: $datagrid-cell-bkg-active;
       cursor: cell;
-    }
-
-    &.selected {
-      background-color: #DFE8F6;
     }
 
     &.highlight {
