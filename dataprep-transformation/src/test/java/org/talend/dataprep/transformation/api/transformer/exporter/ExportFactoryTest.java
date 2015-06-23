@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -55,8 +56,8 @@ public class ExportFactoryTest {
     @Test
     public void getExporter_csv_exporter_should_write_csv_format() throws Exception {
         // given
-        HashMap<String, Object> arguments = new HashMap<>();
-        arguments.put("exportParameters.csvSeparator", ';');
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("exportParameters.csvSeparator", ";");
         final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(CSV)
                 .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json"))).build();
         final Transformer exporter = factory.getExporter(configuration);
