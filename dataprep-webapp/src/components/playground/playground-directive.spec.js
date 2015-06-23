@@ -79,7 +79,7 @@ describe('Playground directive', function() {
         createElement();
 
         //then
-        var stepsHeader = angular.element('body').find('#stepsHeaderId');
+        var stepsHeader = angular.element('body').find('.steps-header');
         var editionBtn = stepsHeader.find('button').eq(0);
         var confirmBtn = stepsHeader.find('button').eq(1);
         var cancelBtn = stepsHeader.find('button').eq(2);
