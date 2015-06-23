@@ -36,8 +36,8 @@ public class CsvExporter implements Transformer, Exporter {
     @Override
     public void transform(DataSet input, OutputStream output) {
 
-        char csvSeparator = exportConfiguration.getArguments().containsKey( "csvSeparator" ) ? //
-            (char) exportConfiguration.getArguments().get("csvSeparator") : //
+        char csvSeparator = exportConfiguration.getArguments().containsKey( "exportParameters.csvSeparator" ) ? //
+            ((String)exportConfiguration.getArguments().get("exportParameters.csvSeparator")).charAt( 0 ) : //
             au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
 
         try {

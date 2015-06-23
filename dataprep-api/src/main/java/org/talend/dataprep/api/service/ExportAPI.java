@@ -47,10 +47,12 @@ public class ExportAPI extends APIService {
             while(names.hasMoreElements()){
 
                 final String paramName = names.nextElement();
-                if ( StringUtils.contains( "exportParameters.", paramName )) {
+                if ( StringUtils.contains( paramName,"exportParameters.")) {
                     final String paramValue = request.getParameter( paramName );
                     if ( StringUtils.isNotEmpty( paramValue ) ) {
-                        final String decodeParamValue = new String( Base64.getDecoder().decode( paramValue ) );
+                        final String decodeParamValue = paramValue.getBytes().length > 1 ? //
+                            new String( Base64.getDecoder().decode( paramValue ) ): //
+                            paramValue;
                         arguments.put( paramName, decodeParamValue );
                     }
                 }
