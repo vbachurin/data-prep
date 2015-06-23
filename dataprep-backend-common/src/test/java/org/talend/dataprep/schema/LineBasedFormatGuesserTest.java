@@ -34,7 +34,7 @@ public class LineBasedFormatGuesserTest {
      * Standard csv file.
      */
     @Test
-    public void shouldGuessCSV() throws IOException {
+    public void should_guess_CSV() throws IOException {
 
         String fileName = "org/talend/dataprep/schema/standard.csv";
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
@@ -49,7 +49,7 @@ public class LineBasedFormatGuesserTest {
      * csv file with 2 possible separators : ';' or '/', ';' should be selected
      */
     @Test
-    public void shouldGuessBestSeparator() throws IOException {
+    public void should_guess_best_separator() throws IOException {
         String fileName = "org/talend/dataprep/schema/mixed_separators.csv";
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             FormatGuesser.Result actual = guesser.guess(inputStream);
@@ -65,8 +65,24 @@ public class LineBasedFormatGuesserTest {
      * Have a look at https://jira.talendforge.org/browse/TDP-181
      */
     @Test
-    public void shouldGuessBestSeparatorOutOfTwo() throws IOException {
+    public void should_guess_best_separator_out_of_two() throws IOException {
         String fileName = "org/talend/dataprep/schema/tdp-181.csv";
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+            FormatGuesser.Result actual = guesser.guess(inputStream);
+
+            Assert.assertNotNull(actual);
+            Assert.assertTrue(actual.getFormatGuess() instanceof CSVFormatGuess);
+            char separator = actual.getParameters().get(CSVFormatGuess.SEPARATOR_PARAMETER).charAt(0);
+            Assert.assertEquals(separator, ';');
+        }
+    }
+
+    /**
+     * Have a look at https://jira.talendforge.org/browse/TDP-258
+     */
+    @Test
+    public void should_guess_separator_with_ISO_8859_1_encoded_file() throws IOException {
+        String fileName = "org/talend/dataprep/schema/iso-8859-1.csv";
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             FormatGuesser.Result actual = guesser.guess(inputStream);
 
