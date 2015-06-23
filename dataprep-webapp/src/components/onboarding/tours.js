@@ -27,10 +27,16 @@ function startTourIntro(){
             position: 'right'
         },
         {
-            element: '#home_first_file',
-            title: 'Opening a file',
-            intro: 'Now open a file to get started with Data Prep and create your first preparation!',
-            position: 'right'
+            element: '#dataset_0',
+            title: 'Opening a dataset',
+            intro: 'Now open a dataset to get started with Data Prep and create your first preparation!',
+            position: 'bottom'
+        },
+        {
+            element: '#nav_help',
+            title: 'Help',
+            intro: 'Click here if you want to see this help again.',
+            position: 'bottom'
         }
     ]
   });
