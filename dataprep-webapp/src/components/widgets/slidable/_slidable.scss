@@ -33,7 +33,7 @@
 }
 
 .slidable {
-  @include slidable-size(300px, 20px);
+  @include slidable-size(350px, 20px);
 
   @include transition(0.25s ease flex);
 
