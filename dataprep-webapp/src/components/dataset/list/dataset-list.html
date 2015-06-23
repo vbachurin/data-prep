@@ -1,7 +1,7 @@
 <div class="inventory">
     <div class="inventory-sort">{{ ::'SORTED_BY' | translate }} {{ ::'NAME_SORT' | translate }}</div>
 
-    <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft">
+    <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft" id="dataset_{{$index}}" >
 
         <div class="inventory-icon" ng-switch="dataset.type" ng-click="datasetListCtrl.openDataset(dataset)">
             <img src="/assets/images/inventory/csv_file.png" ng-switch-when="text/csv"/>
