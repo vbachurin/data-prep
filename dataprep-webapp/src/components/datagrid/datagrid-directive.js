@@ -135,7 +135,7 @@
                             '<div class="grid-header-title dropdown-button ng-binding">' + col.name + '</div>' +
                             '<div class="grid-header-type ng-binding">' + ConverterService.simplifyType(col.type) + '</div>' +
                             '</div>' +
-                            '<div class="quality-bar"><div  class="record-ok" style="width: 100%;"></div></div>';
+                            '<div class="quality-bar"><div  class="record-unknown" style="width: 100%;"></div></div>';
                     }
                     else {
                         var divId = 'datagrid-header-' + index;
