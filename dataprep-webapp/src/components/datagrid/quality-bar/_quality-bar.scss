@@ -43,6 +43,7 @@
 
     .quality-bar-menu {
       @include menu-list;
+      outline: none;
     }
   }
 

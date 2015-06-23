@@ -123,6 +123,9 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
                 return;
             }
             metadata.setDraft(false);
+            if (schemaParserResult.getSheetContents().isEmpty()) {
+                throw new IOException("Parser could not detect file format for " + metadata.getId());
+            }
             metadata.getRow().setColumns(schemaParserResult.getSheetContents().get(0).getColumnMetadatas());
 
         } catch (IOException e) {

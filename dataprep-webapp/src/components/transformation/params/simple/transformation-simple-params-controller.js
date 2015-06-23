@@ -10,26 +10,7 @@
     function TransformSimpleParamsCtrl(ConverterService) {
         var vm = this;
 
-        /**
-         * @ngdoc method
-         * @name adaptParamDefaultValue
-         * @methodOf data-prep.transformation-params.controller:TransformSimpleParamsCtrl
-         * @param {object} param - the targeted param
-         * @description [PRIVATE] Adapt params default value to the requested type
-         */
-        var adaptParamDefaultValue = function (param) {
-            switch (param.type) {
-                case 'numeric':
-                case 'integer':
-                case 'double':
-                case 'float':
-                    return parseFloat(param.default) || 0;
-                case 'boolean':
-                    return param.default === 'true' || param.default === true;
-                default :
-                    return param.default;
-            }
-        };
+
 
         /**
          * @ngdoc method
@@ -39,8 +20,16 @@
          */
         var initParamsValues = function () {
             _.forEach(vm.parameters, function (param) {
-                if (param.default) {
-                    param.default = adaptParamDefaultValue(param);
+
+                if(param.initialValue) {
+                    param.initialValue = ConverterService.adaptValue(param.type, param.initialValue);
+                }
+
+                if (param.value) {
+                    param.value = ConverterService.adaptValue(param.type, param.value);
+                }
+                else if (param.default) {
+                    param.default = ConverterService.adaptValue(param.type, param.default);
                     param.value = param.default;
                 }
             });

@@ -20,7 +20,7 @@ describe('Playground directive', function() {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($state, $rootScope, $compile, PreparationService) {
+    beforeEach(inject(function($state, $rootScope, $compile, $timeout, PreparationService) {
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<playground></playground>');
@@ -28,6 +28,7 @@ describe('Playground directive', function() {
 
             $compile(element)(scope);
             scope.$digest();
+            $timeout.flush();
         };
 
         spyOn(PreparationService, 'refreshPreparations').and.callFake(function() {});
@@ -73,129 +74,168 @@ describe('Playground directive', function() {
         expect(playground.eq(0).find('datagrid').length).toBe(1);
     }));
 
-    it('should show/hide edition, confirmation, cancel buttons in the recipe header', inject(function(PlaygroundService) {
-        //given
-        PlaygroundService.currentMetadata = metadata;
-        createElement();
+    describe('recipe header', function() {
+        it('should show/hide action buttons in the recipe header', inject(function(PlaygroundService) {
+            //given
+            PlaygroundService.currentMetadata = metadata;
+            createElement();
 
-        //then
-        var stepsHeader = angular.element('body').find('#stepsHeaderId');
-        var editionBtn = stepsHeader.find('button').eq(0);
-        var confirmBtn = stepsHeader.find('button').eq(1);
-        var cancelBtn = stepsHeader.find('button').eq(2);
-        var event = new angular.element.Event('click');
+            var stepsHeader = angular.element('body > talend-modal').find('.steps-header').eq(0);
+            var editionBtn = stepsHeader.find('button.edit-btn').eq(0);
+            var confirmBtn = stepsHeader.find('button.check-btn').eq(0);
+            var cancelBtn = stepsHeader.find('button.cancel-btn').eq(0);
 
-        //when
-        expect(editionBtn.hasClass('ng-hide')).toBe(true);
-        expect(confirmBtn.hasClass('ng-hide')).toBe(false);
-        expect(cancelBtn.hasClass('ng-hide')).toBe(false);
+            expect(editionBtn.is(':visible')).toBe(false);
+            expect(confirmBtn.is(':visible')).toBe(true);
+            expect(cancelBtn.is(':visible')).toBe(true);
 
-        confirmBtn.trigger(event);
-        expect(editionBtn.hasClass('ng-hide')).toBe(false);
-        expect(confirmBtn.hasClass('ng-hide')).toBe(true);
-        expect(cancelBtn.hasClass('ng-hide')).toBe(true);
+            //when
+            var event = new angular.element.Event('click');
+            confirmBtn.trigger(event);
 
-        var event2 = new angular.element.Event('click');
-        editionBtn.trigger(event2);
-        expect(editionBtn.hasClass('ng-hide')).toBe(true);
-        expect(confirmBtn.hasClass('ng-hide')).toBe(false);
-        expect(cancelBtn.hasClass('ng-hide')).toBe(false);
-    }));
+            //then
+            expect(editionBtn.is(':visible')).toBe(true);
+            expect(confirmBtn.is(':visible')).toBe(false);
+            expect(cancelBtn.is(':visible')).toBe(false);
 
-    it('click on the switch On/Off checkbox', inject(function(PlaygroundService, RecipeService, RecipeBulletService) {
-        //given
-        spyOn(RecipeBulletService, 'toggleAllSteps').and.returnValue();
+            //when
+            var event2 = new angular.element.Event('click');
+            editionBtn.trigger(event2);
 
-        //when
-        createElement();
-        var switchOnOffComponent = angular.element('body').find('.label-switch');
-        var chkboxOnOff = switchOnOffComponent.find('#onOffAllStepsId');
+            //then
+            expect(editionBtn.is(':visible')).toBe(false);
+            expect(confirmBtn.is(':visible')).toBe(true);
+            expect(cancelBtn.is(':visible')).toBe(true);
+        }));
 
-        //then
-        chkboxOnOff.trigger('click');
-        expect(RecipeBulletService.toggleAllSteps).toHaveBeenCalled();
-    }));
+        it('should toggle recipe on click on the On/Off switch', inject(function(RecipeBulletService) {
+            //given
+            spyOn(RecipeBulletService, 'toggleRecipe').and.returnValue();
 
-    it('checks the checkbox property of the On/Off switch when the 1st step is inactive', inject(function(PlaygroundService, RecipeService) {
-        //given
-        PlaygroundService.currentMetadata = metadata;
-        var step = {
-            'inactive': true,
-            'transformation': {
-                'stepId': '92771a304130e9',
-                'name': 'propercase',
-                'parameters': [],
-                'items': [],
-                'dynamic': false
-            }
-        };
+            createElement();
+            var chkboxOnOff = angular.element('body').find('.label-switch > input[type="checkbox"]');
 
-        //when
-        RecipeService.getRecipe().push(step);
-        createElement();
-        var switchOnOffComponent = angular.element('body').find('.label-switch');
-        var chkboxOnOff = switchOnOffComponent.find('#onOffAllStepsId');
+            //when
+            chkboxOnOff.trigger('click');
 
-        //then
-        expect(chkboxOnOff.prop('checked')).toBe(false);
-    }));
+            //then
+            expect(RecipeBulletService.toggleRecipe).toHaveBeenCalled();
+        }));
 
-    it('checks the checkbox property of the On/Off switch when the 1st step is active', inject(function(PlaygroundService, RecipeService) {
-        //given
-        PlaygroundService.currentMetadata = metadata;
-        var step = {
-            'inactive': false,
-            'transformation': {
-                'stepId': '92771a304130e9',
-                'name': 'propercase',
-                'parameters': [],
-                'items': [],
-                'dynamic': false
-            }
-        };
+        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', inject(function($rootScope, PlaygroundService, RecipeService) {
+            //given
+            PlaygroundService.currentMetadata = metadata;
+            var step = {
+                inactive: false,
+                transformation: {
+                    stepId: '92771a304130e9',
+                    name: 'propercase',
+                    parameters: [],
+                    items: [],
+                    dynamic: false
+                }
+            };
+            RecipeService.getRecipe().push(step);
+            createElement();
 
-        //when
-        RecipeService.getRecipe().push(step);
-        createElement();
-        var switchOnOffComponent = angular.element('body').find('.label-switch');
-        var chkboxOnOff = switchOnOffComponent.find('#onOffAllStepsId');
+            var chkboxOnOff = angular.element('body').find('.label-switch > input[type="checkbox"]');
+            expect(chkboxOnOff.prop('checked')).toBe(true);
 
-        //then
-        expect(chkboxOnOff.prop('checked')).toBe(true);
-    }));
+            //when
+            step.inactive = true;
+            $rootScope.$digest();
 
-    //it('should change the preparation name', inject(function(PlaygroundService, $timeout) {
-    //    //given
-    //    PlaygroundService.currentMetadata = metadata;
-    //    PlaygroundService.preparationName = 'PrepName';
-    //    //spyOn(PlaygroundService, 'preparationName').and.returnValue('Prep Name');
-    //    spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue();
-    //    createElement();
-	//
-    //    //then
-    //    var recipeHeader = angular.element('body').find('stepsHeaderId');
-    //    var inputText = recipeHeader.find('#prepEditionInputId').eq(0);
-    //    //var event = new angular.element.Event('keyup');
-    //    //event.keyCode = 65;
-    //    //when
-    //    //inputText.trigger(event);
-	//
-	//
-    //    //var event2 = new angular.element.Event('keydown');
-    //    //event2.keycode = 13;
-    //    //inputText.trigger(event2);
-    //    //scope.$digest();
-    //    //expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalled();
-	//
-	//
-    //    var textDomEl = document.getElementById('prepEditionInputId');
-    //    console.log(textDomEl);
-    //    var event2 = new angular.element.Event('keydown');
-    //    event2.keycode = 13;
-    //    angular.element(textDomEl).trigger(event2);
-    //    scope.$digest();
-    //    expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalled();
-    //}));
+            //then
+            expect(chkboxOnOff.prop('checked')).toBe(false);
+        }));
+
+        it('should switch ON the On/Off switch when the 1st step is ACTIVE', inject(function($rootScope, PlaygroundService, RecipeService) {
+            //given
+            PlaygroundService.currentMetadata = metadata;
+            var step = {
+                inactive: true,
+                transformation: {
+                    stepId: '92771a304130e9',
+                    name: 'propercase',
+                    parameters: [],
+                    items: [],
+                    dynamic: false
+                }
+            };
+            RecipeService.getRecipe().push(step);
+            createElement();
+
+            var chkboxOnOff = angular.element('body').find('.label-switch > input[type="checkbox"]');
+            expect(chkboxOnOff.prop('checked')).toBe(false);
+
+            //when
+            step.inactive = false;
+            $rootScope.$digest();
+
+            //then
+            expect(chkboxOnOff.prop('checked')).toBe(true);
+        }));
+
+        it('should confirm preparation name edition on ENTER keydown', inject(function(PlaygroundService) {
+            //given
+            PlaygroundService.currentMetadata = metadata;
+            PlaygroundService.preparationName = 'PrepName';
+
+            createElement();
+            var ctrl = element.controller('playground');
+            spyOn(ctrl, 'confirmPrepNameEdition').and.returnValue();
+
+            var event = new angular.element.Event('keydown', {keyCode: 13});
+
+            //when
+            var input = angular.element('body > talend-modal .steps-header').find('input#prepNameInput');
+            input.trigger(event);
+
+            //then
+            expect(ctrl.confirmPrepNameEdition).toHaveBeenCalled();
+        }));
+
+        it('should cancel preparation name edition on ENTER keydown', inject(function($timeout, PlaygroundService) {
+            //given
+            PlaygroundService.currentMetadata = metadata;
+            PlaygroundService.preparationName = 'PrepName';
+
+            createElement();
+            var ctrl = element.controller('playground');
+            spyOn(ctrl, 'cancelPrepNameEdition').and.returnValue();
+
+            var event = new angular.element.Event('keydown', {keyCode: 27});
+
+            //when
+            var input = angular.element('body > talend-modal .steps-header').find('input#prepNameInput');
+            input.trigger(event);
+            $timeout.flush();
+
+            //then
+            expect(ctrl.cancelPrepNameEdition).toHaveBeenCalled();
+        }));
+
+        it('should do nothing special on keydown other than ENTER/ESC', inject(function($timeout, PlaygroundService) {
+            //given
+            PlaygroundService.currentMetadata = metadata;
+            PlaygroundService.preparationName = 'PrepName';
+
+            createElement();
+            var ctrl = element.controller('playground');
+            spyOn(ctrl, 'confirmPrepNameEdition').and.returnValue();
+            spyOn(ctrl, 'cancelPrepNameEdition').and.returnValue();
+
+            var event = new angular.element.Event('keydown', {keyCode: 19});
+
+            //when
+            var input = angular.element('body > talend-modal .steps-header').find('input#prepNameInput');
+            input.trigger(event);
+
+            //then
+            expect(ctrl.confirmPrepNameEdition).not.toHaveBeenCalled();
+            expect(ctrl.cancelPrepNameEdition).not.toHaveBeenCalled();
+        }));
+    });
 
     describe('hide playground', function() {
         beforeEach(inject(function(PlaygroundService, PreparationService) {

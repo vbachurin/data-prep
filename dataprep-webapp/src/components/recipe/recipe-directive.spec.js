@@ -106,10 +106,10 @@ describe('Recipe directive', function() {
         scope.$digest();
 
         //then
-        expect(element.find('>ul >li').length).toBe(2);
-        expect(element.find('>ul >li >.talend-accordion-trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column col1');
-        expect(element.find('>ul >li >.talend-accordion-trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column col2');
-        expect(element.find('>ul >li').eq(1).hasClass('inactive')).toBe(true);
+        expect(element.find('>ul .accordion').length).toBe(2);
+        expect(element.find('>ul .accordion #trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column col1');
+        expect(element.find('>ul .accordion #trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column col2');
+        expect(element.find('>ul .accordion').eq(1).hasClass('inactive')).toBe(true);
     }));
 
     it('should render recipe params', inject(function(RecipeService) {
@@ -118,8 +118,8 @@ describe('Recipe directive', function() {
         scope.$digest();
 
         //then
-        expect(element.find('>ul >li > ul.submenu').length).toBe(1);
-        expect(element.find('>ul >li > ul.submenu').eq(0).find('.transformation-params').length).toBe(1);
+        expect(element.find('>ul .accordion #content').length).toBe(1);
+        expect(element.find('>ul .accordion #content').eq(0).find('.transformation-params').length).toBe(1);
     }));
 
     it('should render recipe cluster params', inject(function(RecipeService) {

@@ -130,4 +130,32 @@ describe('Transform simple params controller', function () {
         expect(ctrl.parameters[0].value).toBe('param1Value');
         expect(ctrl.parameters[1].value).toBe(5);
     });
+
+    it('should init params with values values instead of default when available', function() {
+        //given
+        parameters = [
+            {name: 'param1', type: 'text', value: 'my value', default: 'param1Value'},
+            {name: 'param2', type: 'integer', value: '12', default: '5'}
+        ];
+
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.parameters[0].value).toBe('my value');
+        expect(ctrl.parameters[1].value).toBe(12);
+    });
+
+    it('should set initial value type ', function() {
+        //given
+        parameters = [
+            {name: 'param2', type: 'integer', value: '12', initialValue: '3', default: '5'}
+        ];
+
+        //when
+        var ctrl = createController();
+
+        //then
+        expect(ctrl.parameters[0].initialValue).toBe(3);
+    });
 });

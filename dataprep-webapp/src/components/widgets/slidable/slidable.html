@@ -8,12 +8,12 @@
 
     <div class="action" ng-class="::{right: (slidableCtrl.side === 'right')}" ng-click="slidableCtrl.toggle()">
         <span ng-if="::(slidableCtrl.side !== 'right')">
-            <span ng-show="slidableCtrl.visible">&#10094;</span>
-            <span ng-show="!slidableCtrl.visible">&#10095;</span>
+            <span ng-show="slidableCtrl.visible">&#8249;</span>
+            <span ng-show="!slidableCtrl.visible">&#8250;</span>
         </span>
         <span ng-if="::(slidableCtrl.side === 'right')">
-            <span ng-show="slidableCtrl.visible">&#10095;</span>
-            <span ng-show="!slidableCtrl.visible">&#10094;</span>
+            <span ng-show="slidableCtrl.visible">&#8250;</span>
+            <span ng-show="!slidableCtrl.visible">&#8249;</span>
         </span>
     </div>
 

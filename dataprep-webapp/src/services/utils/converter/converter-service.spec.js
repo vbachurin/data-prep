@@ -3,60 +3,43 @@ describe('Converter service', function() {
 
     beforeEach(module('data-prep.services.utils'));
 
-    it('should return number when input type is numeric', inject(function(ConverterService) {
-        //given
-        var type = 'numeric';
-
-        //when
-        var inputType = ConverterService.toInputType(type);
-
-        //then
-        expect(inputType).toBe('number');
+    it('should return number when input type is numeric, integer, double or float', inject(function(ConverterService) {
+        checkToInputType(ConverterService, ['numeric', 'integer', 'double', 'float'], 'number');
     }));
 
-    it('should return number when input type is integer', inject(function(ConverterService) {
-        //given
-        var type = 'integer';
-
-        //when
-        var inputType = ConverterService.toInputType(type);
-
-        //then
-        expect(inputType).toBe('number');
-    }));
-
-    it('should return number when input type is double', inject(function(ConverterService) {
-        //given
-        var type = 'double';
-
-        //when
-        var inputType = ConverterService.toInputType(type);
-
-        //then
-        expect(inputType).toBe('number');
-    }));
-
-    it('should return number when input type is float', inject(function(ConverterService) {
-        //given
-        var type = 'float';
-
-        //when
-        var inputType = ConverterService.toInputType(type);
-
-        //then
-        expect(inputType).toBe('number');
-    }));
 
     it('should return text when input type is string', inject(function(ConverterService) {
-        //given
-        var type = 'string';
-
-        //when
-        var inputType = ConverterService.toInputType(type);
-
-        //then
-        expect(inputType).toBe('text');
+        checkToInputType(ConverterService, ['string'], 'text');
     }));
+
+    it('should return checkbox when input type is boolean', inject(function(ConverterService) {
+        checkToInputType(ConverterService, ['boolean'], 'checkbox');
+    }));
+
+    it('should return text by default', inject(function(ConverterService) {
+        checkToInputType(ConverterService, ['toto', 'titi', 'tata'], 'text');
+    }));
+
+    /**
+     * @ngdoc method
+     * @name checkToInputType
+     * @methodOf data-prep.services.utils.service:ConverterServiceSpec
+     * @param {Object} service - the converter service
+     * @param {string[]} types - the types to convert
+     * @param {string} expectedType - the expected type
+     * @description check the checkToInputType function behaviour
+     */
+    var checkToInputType = function(service, types, expectedType) {
+        for (var i = 0; i < types.length; i++) {
+
+            //when
+            var type = service.toInputType(types[i]);
+
+            // then
+            expect(type).toBe(expectedType);
+        }
+    };
+
 
     it('should return number when column type is numeric, integer, double or float', inject(function(ConverterService) {
         checkSimplifiedTypes(ConverterService, ['numeric', 'integer', 'double', 'float'], 'number');

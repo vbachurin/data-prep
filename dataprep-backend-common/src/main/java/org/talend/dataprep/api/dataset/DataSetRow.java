@@ -2,16 +2,13 @@ package org.talend.dataprep.api.dataset;
 
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 
 /**
- * A DataSetRow is a row of a dataset.
+ * A DataSetRow is a row of a dataset. Values in data set row are <b>alphabetically</b> ordered by name.
  */
 public class DataSetRow implements Cloneable {
 
@@ -28,7 +25,7 @@ public class DataSetRow implements Cloneable {
      * Default empty constructor.
      */
     public DataSetRow() {
-        values = new LinkedHashMap<>();
+        values = new TreeMap<>();
         deleted = false;
     }
 

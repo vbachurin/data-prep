@@ -300,9 +300,6 @@ public class ColumnMetadata {
          * @return the builder to carry on building the column.
          */
         public ColumnMetadata.Builder name(String name) {
-            if (isEmpty(name)) {
-                throw new IllegalArgumentException("Name cannot be null or empty.");
-            }
             this.name = name;
             return this;
         }

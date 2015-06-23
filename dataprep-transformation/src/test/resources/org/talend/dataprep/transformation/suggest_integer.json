@@ -27,7 +27,7 @@
       ],
       "category":"quickfix",
       "description":"Fill empty cells of this column with given value",
-      "label":"Fill empty with value"
+      "label":"Fill empty cells with value..."
    },
    {
       "name":"absolute_int",
