@@ -177,7 +177,7 @@
     "label": "Rename"
   },
   {
-    "category": "columns",
+    "category": "quickfix",
     "items": [
       {
         "name": "separator",

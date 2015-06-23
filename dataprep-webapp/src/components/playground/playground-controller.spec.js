@@ -153,4 +153,47 @@ describe('Playground controller', function() {
         //then
         expect(PlaygroundService.showRecipe).toBe(true);
     }));
+
+    it('should toggle edition mode flag', function() {
+        //given
+        var ctrl = createController();
+        expect(ctrl.editionMode).toBe(true);
+
+        //when
+        ctrl.toggleEditionMode();
+
+        //then
+        expect(ctrl.editionMode).toBe(false);
+    });
+
+    it('should create/update preparation and toggle edition mode flag on name edition confirmation', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.editionMode).toBe(true);
+
+        ctrl.preparationName = 'my new name';
+
+        //when
+        ctrl.confirmPrepNameEdition();
+
+        //then
+        expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my new name');
+        expect(ctrl.editionMode).toBe(false);
+    }));
+
+    it('should reset name and toggle edition mode flag on name edition cancelation', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.editionMode).toBe(true);
+
+        ctrl.preparationName = 'my new name';
+        PlaygroundService.originalPreparationName = 'my old name';
+
+        //when
+        ctrl.cancelPrepNameEdition();
+
+        //then
+        expect(ctrl.preparationName).toBe('my old name');
+        expect(ctrl.editionMode).toBe(false);
+    }));
 });
