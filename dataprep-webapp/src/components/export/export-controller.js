@@ -67,7 +67,7 @@
                 return;
             }
 
-            vm.export(exportId);
+            vm.export();
         };
 
         /**
@@ -76,7 +76,7 @@
          * @methodOf data-prep.export.controller:ExportCtrl
          * @description start the export
          */
-        vm.export = function () {
+        vm.export = function() {
 
             // search in local storage
             var type = $window.localStorage.getItem(vm.exportIdKey);
@@ -103,10 +103,9 @@
             form.exportType.value = type;
 
             _.each(Object.keys(vm.exportParameters),function(val){
-                form[val]= vm.exportParameters[val];
+                form['exportParameters.'+val]= vm.exportParameters[val];
                 $window.localStorage.setItem(vm.exportParamKey+'.'+val,vm.exportParameters[val]);
             });
-
 
             form.submit();
 

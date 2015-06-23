@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,18 +77,17 @@ public class TransformationService {
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
     @VolumeMetered
     public void transform(@ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions, //
-            @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response) {
+            @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response,HttpServletRequest request) {
         // A transformation is an export to JSON
-        transform(ExportType.JSON, actions, null, content, response);
+        transform(ExportType.JSON, actions, content, response,request);
     }
 
     /**
-     * Similar to {@link #transform(String, InputStream, HttpServletResponse)} except this method allows client to
+     * Similar to {@link #transform(String, InputStream, HttpServletResponse,HttpServletRequest)} except this method allows client to
      * customize the output format (see {@link ExportType available export types}).
      *
      * @param format The output {@link ExportType format}. This format also set the MIME response type.
      * @param actions A Base64-encoded list of actions.
-     * @param csvSeparator The CSV separator (for {@link ExportType#CSV}), might be <code>null</code> for other export types.
      * @param content A JSON input that complies with {@link DataSet} bean.
      * @param response The response used to send transformation result back to client.
      */
@@ -96,16 +96,23 @@ public class TransformationService {
     @VolumeMetered
     public void transform(@ApiParam(value = "Output format.") @PathVariable("format") final ExportType format, //
                           @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) final String actions, //
-                          @ApiParam(value = "CSV separator.") @RequestParam(value = "separator", required = false) final String csvSeparator, //
                           @ApiParam(value = "Data set content as JSON") final InputStream content, //
-                          final HttpServletResponse response) {
+                          final HttpServletResponse response, final HttpServletRequest request) {
         final ObjectMapper mapper = builder.build();
+
         try (JsonParser parser = mapper.getFactory().createParser(content)) {
             final String decodedActions = new String(Base64.getDecoder().decode(actions));
-            final Character decodedCsvSeparator = csvSeparator != null ? new String(Base64.getDecoder().decode(csvSeparator))
-                    .charAt(0) : au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
+
             Map<String, Object> arguments = new HashMap<>();
-            arguments.put("csvSeparator", decodedCsvSeparator);
+            final Enumeration<String> names = request.getParameterNames();
+            while(names.hasMoreElements()){
+
+                final String paramName = names.nextElement();
+                final String paramValue = request.getParameter( paramName );
+                final String decodeParamValue = new String(Base64.getDecoder().decode(paramValue));
+
+                arguments.put(paramName, decodeParamValue);
+            }
 
             final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(format)
                     .actions(decodedActions).build();
