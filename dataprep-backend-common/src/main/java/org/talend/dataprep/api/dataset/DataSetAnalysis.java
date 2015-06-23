@@ -38,13 +38,15 @@ public class DataSetAnalysis {
             generator.writeFieldName("column"); //$NON-NLS-1$
             generator.writeStartArray();
             {
+                int i = 0;
                 for (ColumnMetadata column : metadata.getRow().getColumns()) {
                     generator.writeStartObject();
                     {
                         generator.writeStringField("name", StringUtils.EMPTY); //$NON-NLS-1$
                         generator.writeStringField("id", StringUtils.EMPTY); //$NON-NLS-1$
                         generator.writeStringField("type", column.getType()); //$NON-NLS-1$
-                        generator.writeStringField("suggested type", column.getType()); //$NON-NLS-1$
+                        generator.writeStringField("suggestedType", column.getType()); //$NON-NLS-1$
+                        generator.writeStringField("index", String.valueOf(i++));
                         // Types
                         generator.writeArrayFieldStart("types"); //$NON-NLS-1$
                         generator.writeStartObject();

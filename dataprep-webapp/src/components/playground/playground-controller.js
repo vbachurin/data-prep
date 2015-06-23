@@ -17,38 +17,36 @@
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
-        vm.editionMode = true;
+        vm.editionMode = !vm.preparationName;
         vm.recipeService = RecipeService;
 
         /**
          * @ngdoc method
-         * @name activateDeactivateAllsteps
+         * @name toggleRecipe
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
-         * @description activates or deactivates all the steps of the recipe
+         * @description Toggle all the steps of the recipe
          */
-        vm.activateDeactivateAllsteps = function(){
-            RecipeBulletService.toggleAllSteps();
-        };
+        vm.toggleRecipe = RecipeBulletService.toggleRecipe;
 
         /**
          * @ngdoc method
-         * @name editionModeFn
+         * @name toggleEditionMode
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
-         * @description just changes the editionMode variable
+         * @description Toggle the edition mode flag
          */
-        vm.editionModeFn = function(){
+        vm.toggleEditionMode = function toggleEditionMode(){
             vm.editionMode = !vm.editionMode;
         };
 
         /**
          * @ngdoc method
-         * @name confirmNewPrepName
+         * @name confirmPrepNameEdition
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
-         * @description confirms the new preparation name
+         * @description Change the preparation name
          */
-        vm.confirmNewPrepName = function(){
+        vm.confirmPrepNameEdition = function confirmPrepNameEdition(){
             vm.changeName();
-            vm.editionModeFn();
+            vm.toggleEditionMode();
         };
 
         /**
@@ -59,7 +57,7 @@
          */
         vm.cancelPrepNameEdition = function(){
             vm.preparationName = PlaygroundService.originalPreparationName;
-            vm.editionModeFn();
+            vm.toggleEditionMode();
         };
 
         /**
@@ -167,14 +165,14 @@
 
     /**
      * @ngdoc property
-     * @name isThereRecipe
+     * @name hasRecipe
      * @propertyOf data-prep.playground.controller:PlaygroundCtrl
-     * @description checks if there are steps in the preparation
-     * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService} property length of the returned recipe by getRecipe() function
+     * @description Checks if there are steps in the preparation
+     * It is bound to {@link data-prep.services.recipe.service:RecipeService RecipeService}.getRecipe() length
      * @type boolean
      */
     Object.defineProperty(PlaygroundCtrl.prototype,
-        'isThereRecipe', {
+        'hasRecipe', {
             enumerable: true,
             configurable: false,
             get: function () {
@@ -196,12 +194,7 @@
             configurable: false,
             get: function () {
                 var firstStep = this.recipeService.getRecipe()[0];
-                if (firstStep) {
-                    return !firstStep.inactive ? true : false;
-                } else {
-                    return null;
-                }
-
+                return firstStep && !firstStep.inactive;
             },
             set: function () {}
         });

@@ -1,8 +1,3 @@
-
-.talend-accordion{
-  //margin: 2px;
-}
-
 .recipe {
   $color: $black;
   $color-not-active: $shadow-gray;
@@ -13,6 +8,14 @@
   color: $color;
   font-size: 0.95em;
 
+  .content-container {
+    padding-right: 14px;
+  }
+
+  ul{
+    border-top: 1px solid $shadow-gray;
+    padding-top: 5px;
+  }
 
   /*************************************Step text*************************************/
   li {

@@ -128,7 +128,7 @@
     "category": "quickfix",
     "items": [],
     "name": "cut",
-    "label":"Cut",
+    "label":"Remove part of the text...",
     "description":"Remove specified text from cells in this column",
     "parameters": [
       {
@@ -177,7 +177,7 @@
     "label": "Rename"
   },
   {
-    "category": "columns",
+    "category": "quickfix",
     "items": [
       {
         "name": "separator",
@@ -260,7 +260,7 @@
       }
     ],
     "description": "Replace all similar values with the right one",
-    "label": "Cluster"
+    "label": "Find and group similar text..."
   },
   {
       "label": "Duplicate",

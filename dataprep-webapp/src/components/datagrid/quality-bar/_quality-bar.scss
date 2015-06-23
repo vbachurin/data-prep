@@ -2,6 +2,7 @@
   $ok-color: rgb(138, 188, 0);
   $empty-color: $white;
   $nok-color: rgb(247, 168, 0);
+  $unknown-color: $medium-gray;
 
   box-sizing: border-box;
   position:relative;
@@ -43,6 +44,7 @@
 
     .quality-bar-menu {
       @include menu-list;
+      outline: none;
     }
   }
 
@@ -70,6 +72,15 @@
 
     &:hover {
       background-color: $nok-color;
+    }
+  }
+
+  .record-unknown {
+    @extend .sub-bar;
+    background-color: $unknown-color;
+
+    &:hover {
+      background-color: $unknown-color;
     }
   }
 

@@ -3,19 +3,19 @@
 
     /**
      * @ngdoc controller
-     * @name data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
-     * @description Dataset grid controller.
+     * @name data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+     * @description Actions suggestion controller
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function ColumnSuggestionsCtrl(ColumnSuggestionService, PlaygroundService, TransformationService, PreparationService) {
+    function ActionsSuggestionsCtrl(ColumnSuggestionService, PlaygroundService, TransformationService, PreparationService) {
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
 
         /**
          * @ngdoc property
          * @name dynamicTransformation
-         * @propertyOf data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
+         * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
          * @description The dynamic param transformation to display
          */
         vm.dynamicTransformation = null;
@@ -23,7 +23,7 @@
         /**
          * @ngdoc property
          * @name dynamicFetchInProgress
-         * @propertyOf data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
+         * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
          * @description Flag that indicates if a fetch of dynamic parameters is in progress
          */
         vm.dynamicFetchInProgress = false;
@@ -31,7 +31,7 @@
         /**
          * @ngdoc property
          * @name showDynamicModal
-         * @propertyOf data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
+         * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
          * @description Flag that change the dynamic parameters modal display
          */
         vm.showDynamicModal = false;
@@ -39,7 +39,7 @@
         /**
          * @ngdoc method
          * @name initDynamicParams
-         * @methodOf data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
+         * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
          * @description [PRIVATE] Fetch the transformation dynamic parameters and inject them into transformation menu params
          * @returns {promise} The GET request promise
          */
@@ -55,7 +55,7 @@
         /**
          * @ngdoc method
          * @name select
-         * @methodOf data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
+         * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
          * @description Transformation selection.
          <ul>
             <li>Dynamic transformation : fetch the dynamic parameters and show the modal</li>
@@ -81,7 +81,7 @@
         /**
          * @ngdoc method
          * @name transformClosure
-         * @methodOf data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
+         * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
          * @description Transformation application closure. It take the transformation to build the closure.
          * The closure then take the parameters and append the new step in the current preparation
          */
@@ -98,11 +98,11 @@
     /**
      * @ngdoc property
      * @name column
-     * @propertyOf data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
+     * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
      * @description The transformations column.
      * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.currentColumn
      */
-    Object.defineProperty(ColumnSuggestionsCtrl.prototype,
+    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
         'column', {
             enumerable: true,
             configurable: false,
@@ -114,11 +114,11 @@
     /**
      * @ngdoc property
      * @name suggestions
-     * @propertyOf data-prep.column-suggestions.controller:ColumnSuggestionsCtrl
+     * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
      * @description The suggested transformations list.
      * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.transformations
      */
-    Object.defineProperty(ColumnSuggestionsCtrl.prototype,
+    Object.defineProperty(ActionsSuggestionsCtrl.prototype,
         'suggestions', {
             enumerable: true,
             configurable: false,
@@ -127,6 +127,6 @@
             }
         });
 
-    angular.module('data-prep.column-suggestions')
-        .controller('ColumnSuggestionsCtrl', ColumnSuggestionsCtrl);
+    angular.module('data-prep.actions-suggestions')
+        .controller('ActionsSuggestionsCtrl', ActionsSuggestionsCtrl);
 })();

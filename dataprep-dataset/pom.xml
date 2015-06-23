@@ -252,6 +252,22 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-report</id>
+                        <configuration>
+                            <excludes>
+                                <exclude>org/talend/dataprep/dataset/store/mongo/**/*</exclude>
+                                <exclude>org/talend/dataprep/dataset/store/hdfs/**/*</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
