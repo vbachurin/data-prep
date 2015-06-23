@@ -103,7 +103,7 @@
             form.exportType.value = type;
 
             _.each(Object.keys(vm.exportParameters),function(val){
-                form['exportParameters.'+val]= vm.exportParameters[val];
+                form.elements['exportParameters.' + val].value = vm.exportParameters[val];
                 $window.localStorage.setItem(vm.exportParamKey+'.'+val,vm.exportParameters[val]);
             });
 
