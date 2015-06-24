@@ -17,7 +17,6 @@
         var vm = this;
         vm.playgroundService = PlaygroundService;
         vm.previewService = PreviewService;
-        vm.editionMode = !vm.preparationName;
         vm.recipeService = RecipeService;
 
         /**
@@ -214,6 +213,24 @@
             },
             set: function(value) {
                 this.playgroundService.showRecipe = value;
+            }
+        });
+
+    /**
+     * @name editionMode
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description The flag that pilots the recipe panel display
+     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
+     */
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'editionMode', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.playgroundService.preparationNameEditionMode;
+            },
+            set: function(value) {
+                this.playgroundService.preparationNameEditionMode = value;
             }
         });
 

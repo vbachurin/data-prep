@@ -461,4 +461,45 @@ describe('Playground Service', function () {
             expect(PlaygroundService.showRecipe).toBe(false);
         }));
     });
+
+    describe('preparation name edition mode', function() {
+
+        beforeEach(inject(function($q, PreparationService, DatagridService, RecipeService) {
+            spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: {}}));
+            spyOn(PreparationService, 'appendStep').and.callFake(function() {
+                RecipeService.getRecipe().push({});
+                return $q.when(true);
+            });
+            spyOn(DatagridService, 'updateData').and.returnValue();
+        }));
+
+        it('should turn on edition mode on dataset playground init', inject(function($rootScope, PlaygroundService) {
+            //given
+            PlaygroundService.preparationNameEditionMode = false;
+            var dataset = {id: '1'};
+
+            //when
+            PlaygroundService.initPlayground(dataset);
+            $rootScope.$digest();
+
+            //then
+            expect(PlaygroundService.preparationNameEditionMode).toBe(true);
+        }));
+
+        it('should turn off edition mode playground init', inject(function($rootScope, PlaygroundService) {
+            //given
+            PlaygroundService.preparationNameEditionMode = true;
+            var preparation = {
+                id: '6845521254541',
+                dataset: {id: '1'}
+            };
+
+            //when
+            PlaygroundService.load(preparation);
+            $rootScope.$digest();
+
+            //then
+            expect(PlaygroundService.preparationNameEditionMode).toBe(false);
+        }));
+    });
 });

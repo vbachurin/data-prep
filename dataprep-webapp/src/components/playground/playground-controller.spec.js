@@ -44,6 +44,30 @@ describe('Playground controller', function() {
         expect(PlaygroundService.visible).toBe(true);
     }));
 
+    it('should bind editionMode getter with PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.editionMode).toBe(true);
+
+        //when
+        PlaygroundService.preparationNameEditionMode = false;
+
+        //then
+        expect(ctrl.editionMode).toBe(false);
+    }));
+
+    it('should bind editionMode setter with PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(PlaygroundService.preparationNameEditionMode).toBe(true);
+
+        //when
+        ctrl.editionMode = false;
+
+        //then
+        expect(PlaygroundService.preparationNameEditionMode).toBe(false);
+    }));
+
     it('should bind metadata getter with PlaygroundService', inject(function(PlaygroundService) {
         //given
         var metadata = {name: 'my dataset'};
