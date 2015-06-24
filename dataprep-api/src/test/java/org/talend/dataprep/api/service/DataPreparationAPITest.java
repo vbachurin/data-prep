@@ -579,7 +579,7 @@ public class DataPreparationAPITest {
                 .getResourceAsStream("export/expected_export_semicolon_separator.csv"));
 
         // when
-        final String export = given().formParam("exportType", CSV).formParam("csvSeparator", ";")
+        final String export = given().formParam("exportType", CSV).formParam("exportParameters.csvSeparator", ";")
                 .formParam("preparationId", preparationId).formParam("stepId", "head").when().get("/api/export").asString();
 
         // then

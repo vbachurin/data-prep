@@ -1,48 +1,41 @@
-<!-- TODO Styles are hard coded to get all buttons on a line (but this is temporary) -->
-<button type="button"
-        class="t-btn t-btn-primary"
-        style="float: left;"
-        ng-click="exportCtrl.showExport = true">
-    {{ ::'EXPORT_CSV' | translate }}
-</button>
-
-<button type="button"
-        class="t-btn t-btn-primary"
-        style="float: left; margin-left: 10px"
-        ng-click="exportCtrl.export('TABLEAU')">
-    {{ ::'EXPORT_TABLEAU' | translate }}
-</button>
-
-<button type="button"
-        class="t-btn t-btn-primary"
-        style="float: left; margin-left: 10px"
-        ng-click="exportCtrl.export('XLS')">
-  {{ ::'EXPORT_XLS' | translate }}
-</button>
+<talend-button-dropdown close-on-select="true" on-open="onOpen()">
+  <div class="dropdown-container">
+    <button class="dropdown-description" ng-click="exportCtrl.launchExport()">{{ ::'EXPORT' | translate }}</button>
+    <button class="dropdown-button"></button>
+    <ul class="dropdown-menu dropdown-select">
+      <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.launchExport(exportType)">{{exportType.id}}</li>
+    </ul>
+  </div>
+</talend-button-dropdown>
 
 <talend-modal fullscreen="false"
               state="exportCtrl.showExport"
               close-button="true">
 
-    <p>{{ ::'CHOOSE_SEPARATOR' | translate }}</p>
-
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="';'"/>{{ :: 'SEPARATOR_SEMI_COLON' | translate }}
-    (;)&emsp;
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="'&#09;'"/>{{ :: 'SEPARATOR_TAB' | translate }} (&emsp;)&emsp;
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="' '"/>{{ :: 'SEPARATOR_SPACE' | translate }} (&nbsp;)&emsp;
-    <input type="radio" ng-model="exportCtrl.csvSeparator" ng-value="','"/>{{ :: 'SEPARATOR_COMMA' | translate }} (,)&emsp;
+    <div ng-repeat="parameter in exportCtrl.currentExportType.parameters">
+      <p>{{ :: parameter.labelKey | translate }}</p>
+      <div ng-if="parameter.type == 'radio'">
+        <input ng-model="exportCtrl.exportParameters[parameter.name]" type="radio" value="{{::parameter.defaultValue.value}}"/>{{ :: parameter.defaultValue.labelKey | translate }}({{::parameter.defaultValue.value}})
+        <span ng-repeat="parameterValue in parameter.values">
+          <input ng-model="exportCtrl.exportParameters[parameter.name]" type="radio" value="{{::parameterValue.value}}">{{ :: parameterValue.labelKey | translate }}({{::parameterValue.value}})
+        </span>
+      </div>
+    </div>
 
     <div class="modal-buttons">
-        <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
-        <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.export('CSV')">{{ ::'EXPORT' | translate }}</button>
+      <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
+      <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.export()">{{ ::'EXPORT' | translate }}</button>
     </div>
 
     <form id="exportForm" target="_blank">
-        <input type="hidden" name="csvSeparator" value="{{ exportCtrl.csvSeparator }}" />
-        <input type="hidden" name="preparationId" value="{{ exportCtrl.preparationId }}" />
-        <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
-        <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
-        <input type="hidden" name="exportType" />
+      <input type="hidden" name="preparationId" value="{{ exportCtrl.preparationId }}" />
+      <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
+      <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
+      <input type="hidden" name="exportType" />
+
+      <input ng-repeat="parameter in exportCtrl.currentExportType.parameters"
+             ng-model="exportCtrl.exportParameters[parameter.name]" name="exportParameters.{{parameter.name}}" type="hidden"/>
+
     </form>
 
 </talend-modal>

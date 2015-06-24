@@ -35,11 +35,16 @@ public class CsvExporter implements Transformer, Exporter {
 
     @Override
     public void transform(DataSet input, OutputStream output) {
+
+        char csvSeparator = exportConfiguration.getArguments().containsKey( "exportParameters.csvSeparator" ) ? //
+            ((String)exportConfiguration.getArguments().get("exportParameters.csvSeparator")).charAt( 0 ) : //
+            au.com.bytecode.opencsv.CSVWriter.DEFAULT_SEPARATOR;
+
         try {
             final TransformerConfiguration configuration = from(input) //
-                    .output(new CsvWriter(output, (char) exportConfiguration.getArguments().get("csvSeparator"))) //
-                    .columnActions(actions.getMetadataTransformer()) //
-                    .recordActions(actions.getRowTransformer()) //
+                    .output(new CsvWriter(output, csvSeparator )) //
+                    .columnActions(actions.getMetadataTransformer() ) //
+                .recordActions(actions.getRowTransformer()) //
                     .build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {

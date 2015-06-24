@@ -2,10 +2,12 @@ describe('Export controller', function() {
     'use strict';
 
     var scope, createController;
+    
+    var exportTypes = [{'mimeType':'text/csv','extension':'.csv','id':'CSV','needParameters':'true','defaultExport':'false','parameters':[{'name':'csvSeparator','labelKey':'CHOOSE_SEPARATOR','type':'radio','defaultValue':{'value':';','labelKey':'SEPARATOR_SEMI_COLON'},'values':[{'value':'&#09;','labelKey':'SEPARATOR_TAB'},{'value':' ','labelKey':'SEPARATOR_SPACE'},{'value':',','labelKey':'SEPARATOR_COMMA'}]}]},{'mimeType':'application/tde','extension':'.tde','id':'TABLEAU','needParameters':'false','defaultExport':'false'},{'mimeType':'application/vnd.ms-excel','extension':'.xls','id':'XLS','needParameters':'false','defaultExport':'true'}];
 
     beforeEach(module('data-prep.export'));
 
-    beforeEach(inject(function($rootScope, $controller) {
+    beforeEach(inject(function($rootScope, $controller,$q,ExportService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -14,14 +16,21 @@ describe('Export controller', function() {
             });
             return ctrl;
         };
+
+        spyOn(ExportService, 'exportTypes').and.returnValue($q.when(exportTypes));
+
     }));
 
     it('should init csv separator to semicolon', function() {
         //when
         var ctrl = createController();
 
+        var csvExport = {'mimeType':'text/csv','extension':'.csv','id':'CSV','needParameters':'true','defaultExport':'false','parameters':[{'name':'csvSeparator','labelKey':'CHOOSE_SEPARATOR','type':'radio','defaultValue':{'value':';','labelKey':'SEPARATOR_SEMI_COLON'},'values':[{'value':'&#09;','labelKey':'SEPARATOR_TAB'},{'value':' ','labelKey':'SEPARATOR_SPACE'},{'value':',','labelKey':'SEPARATOR_COMMA'}]}]};
+
+        ctrl.setupParametersModal(csvExport);
+
         //then
-        expect(ctrl.csvSeparator).toBe(';');
+        expect(ctrl.exportParameters.csvSeparator).toBe(';');
     });
 
     it('should init exportUrl', inject(function(RestURLs) {
