@@ -5,7 +5,7 @@ mongodb:
     expose:
         - 27017
 api:
-    image: talend/dataprep-api:1.0.m5-SNAPSHOT
+    image: talend/dataprep-api:1.0.m6-SNAPSHOT
     expose:
         - 8888
     ports:
@@ -20,13 +20,13 @@ api:
         TDP_API_TRANSFORMATION_SERVICE_URL: http://${TRANSFORM_PORT_8180_TCP_ADDR}:${TRANSFORM_1_PORT_8180_TCP_PORT}
         TDP_API_PREPARATION_SERVICE_URL: http://${PREPARATION_PORT_9090_TCP_ADDR}:${PREPARATION_1_PORT_9090_TCP_PORT}
 transform:
-    image: talend/dataprep-transformation:1.0.m5-SNAPSHOT
+    image: talend/dataprep-transformation:1.0.m6-SNAPSHOT
     expose:
         - 8180
     environment:
         TDP_TRANSFORMATION_SERVER_PORT: 8180
 dataset:
-    image: talend/dataprep-dataset:1.0.m5-SNAPSHOT
+    image: talend/dataprep-dataset:1.0.m6-SNAPSHOT
     volumes:
         - runtime/dataset/store:/store
     expose:
@@ -41,7 +41,7 @@ dataset:
         TDP_DATASET_MONGODB_HOST: ${MONGODB_PORT_27017_TCP_ADDR}
         TDP_DATASET_MONGODB_PORT: ${MONGODB_PORT_27017_TCP_PORT}
 preparation:
-    image: talend/dataprep-preparation:1.0.m5-SNAPSHOT
+    image: talend/dataprep-preparation:1.0.m6-SNAPSHOT
     expose:
         - 9090
     links:
