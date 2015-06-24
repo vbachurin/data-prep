@@ -5,6 +5,7 @@
         [
             'ngSanitize',
             'ui.router', //more advanced router
+            'data-prep.navbar',
             'data-prep.home',
             'data-prep.services.rest' //rest interceptors
         ])
@@ -33,6 +34,8 @@
             $stateProvider
                 .state('nav', {
                     abstract: true,
+                    controller: 'NavbarCtrl',
+                    controllerAs: 'navbarCtrl',
                     templateUrl: 'components/navbar/navbar.html'
                 })
                 .state('nav.home', {

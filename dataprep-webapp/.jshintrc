@@ -45,6 +45,7 @@
     "Blob": false,
     // Highcharts
     "Highcharts": false,
-    "d3":false
+    "d3":false,
+    "introJs": false
   }
 }
