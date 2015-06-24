@@ -12,15 +12,7 @@ import org.junit.Test;
 
 public class ExportTypeTest {
 
-    /*
-    CSV("", ".csv"),
-    XLS("", ".xls"),
-    TABLEAU("", ".tde"),
-    JSON("application.json", ".json");
-
-     */
-
-    ExportType[] exportTypes = ExportType.values();
+    private final ExportType[] exportTypes = ExportType.values();
 
     @Test
     public void testExtensions() throws Exception {
