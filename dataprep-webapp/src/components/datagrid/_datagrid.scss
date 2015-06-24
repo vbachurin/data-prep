@@ -68,7 +68,7 @@
     border-right-width: 5px;
     box-sizing: content-box;
     border-color: $datagrid-line-border;
-    /*border-bottom-color: transparent;*/
+    border-bottom-color: transparent;
     border-left-color: transparent;
     border-right-style: solid;
     padding-left: 4px;
@@ -87,8 +87,7 @@
     }
 
     &.invalid-value {
-      border-right-color: red;
-      border-radius: 2px;
+      border-right-color: $nok-color;
     }
 
     &:hover {
