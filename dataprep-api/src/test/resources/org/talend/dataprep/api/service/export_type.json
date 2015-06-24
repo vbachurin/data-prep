@@ -1,17 +1,17 @@
 [
   {
-    "mimeType": "application/vnd.ms-excel",
-    "extension": ".xls",
-    "id": "XLS",
-    "needParameters": "false",
-    "defaultExport": "true"
-  },
-  {
     "mimeType": "application/tde",
     "extension": ".tde",
     "id": "TABLEAU",
     "needParameters": "false",
     "defaultExport": "false"
+  },
+  {
+    "mimeType": "application/vnd.ms-excel",
+    "extension": ".xls",
+    "id": "XLS",
+    "needParameters": "false",
+    "defaultExport": "true"
   },
   {
     "mimeType": "text/csv",
