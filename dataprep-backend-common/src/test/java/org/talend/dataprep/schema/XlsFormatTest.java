@@ -1,5 +1,10 @@
 package org.talend.dataprep.schema;
 
+import static org.junit.Assert.assertThat;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.data.MapEntry;
 import org.junit.Assert;
@@ -171,7 +177,7 @@ public class XlsFormatTest {
                     .contains(MapEntry.entry("0000", "Little Creatures"), //
                             MapEntry.entry("0001", "Australie"),//
                             MapEntry.entry("0002", "Awesome"), //
-                            MapEntry.entry("0003", "10.0")); //
+                            MapEntry.entry("0003", "10")); //
 
             Assertions.assertThat(values.get(1)) //
                     .contains(MapEntry.entry("0000", "Heinekein"), //
@@ -182,14 +188,14 @@ public class XlsFormatTest {
             Assertions.assertThat(values.get(2)) //
                     .contains(MapEntry.entry("0000", "Foo"), //
                             MapEntry.entry("0001", "Australie"),//
-                            MapEntry.entry("0002", "10.0"),//
-                            MapEntry.entry("0003", "6.0"));
+                            MapEntry.entry("0002", "10"),//
+                            MapEntry.entry("0003", "6"));
 
             Assertions.assertThat(values.get(3)) //
                     .contains(MapEntry.entry("0000", "Bar"), //
                             MapEntry.entry("0001", "France"),//
                             MapEntry.entry("0002", "crappy"), //
-                            MapEntry.entry("0003", "2.0"));
+                            MapEntry.entry("0003", "2"));
         }
 
     }
@@ -380,5 +386,36 @@ public class XlsFormatTest {
         }
 
     }
+
+    /**
+     * <p>
+     * See <a href="https://jira.talendforge.org/browse/TDP-222">https://jira.talendforge.org/browse/TDP-222</a>.
+     * </p>
+     * <p>
+     * XlsSerializer should follow the data format as set in the Excel file. This test ensures XlsSerializer follows the
+     * data format as defined and don't directly use {@link Cell#getNumericCellValue()}.
+     * </p>
+     * @throws Exception
+     * @see org.talend.dataprep.schema.io.XlsUtils#getCellValueAsString(Cell)
+     */
+    @Test
+    public void testGeneralNumberFormat_TDP_222() throws Exception {
+        final DataSetMetadata metadata = metadata().id("1234")
+                .row(column().name("id").id(0).type(Type.INTEGER), column().name("value1").id(1).type(Type.INTEGER)).build();
+        FormatGuess formatGuess;
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("excel_numbers.xls")) {
+            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
+            formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
+            Assert.assertNotNull(formatGuess);
+            Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
+            Assert.assertEquals(XlsFormatGuess.MEDIA_TYPE, formatGuess.getMediaType());
+        }
+        // Test number serialization in XLS type guess
+        InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("excel_numbers.xls");
+        final String result = IOUtils.toString(formatGuess.getSerializer().serialize(input, metadata));
+        final String expected = "[{\"0000\":\"1\",\"0001\":\"123\"},{\"0000\":\"2\",\"0001\":\"123,1\"},{\"0000\":\"3\",\"0001\":\"209,9\"}]";
+        assertThat(result, sameJSONAs(expected));
+    }
+
 
 }
