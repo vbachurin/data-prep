@@ -14,7 +14,7 @@ public enum ExportType {
     CSV("text/csv", ".csv"),
     XLS("application/vnd.ms-excel", ".xls"),
     TABLEAU("application/tde", ".tde"),
-    JSON("application.json", ".json");
+    JSON("application/json", ".json");
 
     private final String mimeType;
 
