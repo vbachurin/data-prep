@@ -18,7 +18,7 @@ describe('Datagrid directive', function () {
                     'valid': 72,
                     invalidValues:[]
                 },
-                'type': 'number',
+                'type': 'numeric',
                 'domain': 'STATE_CODE_'
             },
             {
@@ -551,6 +551,20 @@ describe('Datagrid directive', function () {
         expect(secondRow.cell(1).text()).toBe('AK');
         expect(secondRow.cell(2).text()).toBe('Alaska');
         expect(secondRow.cell(3).text()).toBe('Juneau');
+    }));
+
+    it('should align to right the columns having type number', inject(function (DatagridService) {
+
+        //given
+        var colIndex = 0;
+
+        //when
+        DatagridService.setDataset(metadata, data);
+        var grid = new GridGetter(element);
+        scope.$digest();
+
+        //then
+        expect(grid.row(0).cell(colIndex).element().hasClass('numbers-on-the-right')).toBe(true);
     }));
 
     it('should highlight cells containing clicked value', inject(function (DatagridService) {
