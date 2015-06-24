@@ -1,8 +1,12 @@
 package org.talend.dataprep.api.service;
 
+import static org.junit.Assert.assertThat;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -22,7 +26,6 @@ import org.talend.dataprep.api.type.ExportType;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 
@@ -57,6 +60,10 @@ public class ExportAPITest {
         String json = RestAssured.when().get("/api/export/types").asString();
 
         logger.debug("json: '{}'", json);
+
+        final String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("export_type.json"));
+
+        assertThat(expectedContent, sameJSONAs(json));
 
         ObjectMapper objectMapper = new ObjectMapper();
 

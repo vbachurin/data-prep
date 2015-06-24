@@ -17,6 +17,7 @@ describe('Playground controller', function() {
 
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
         spyOn($state, 'go').and.returnValue();
+
     }));
 
     it('should bind showPlayground getter with PlaygroundService', inject(function(PlaygroundService) {
