@@ -237,7 +237,7 @@
       }
     ],
     "description": "Split column from separators",
-    "label": "Split"
+    "label": "Split the text in parts..."
   },
   {
     "category": "quickfix",
