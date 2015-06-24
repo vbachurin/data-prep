@@ -3,7 +3,6 @@ package org.talend.dataprep.schema;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,12 +133,12 @@ public class LineBasedFormatGuesser implements FormatGuesser {
         }
 
         // remove irrelevant separators (0 as average per line that can happen when you read binary files)
-        separators = separators.stream().filter(separator -> separator.getAveragePerLine() > 0).collect(Collectors.toList());
-
-        // return the separator with the highest average per line value
-        Collections.sort(separators, (sep0, sep1) -> Double.compare(sep1.getAveragePerLine(), sep0.getAveragePerLine()));
-        return separators.get(0);
-
+        final Separator dominantSeparator = separators.stream()
+                .filter(separator -> separator.getAveragePerLine() > 0) //
+                .sorted((sep0, sep1) -> Double.compare(sep1.getAveragePerLine(), sep0.getAveragePerLine())) //
+                .findFirst() //
+                .get();
+        return dominantSeparator;
     }
 
 
