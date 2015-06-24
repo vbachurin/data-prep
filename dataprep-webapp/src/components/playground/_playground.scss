@@ -57,26 +57,26 @@
       }
     }
 
-    &.check-btn{
-        color: $white;
-        background-color: $dark-green;
+    &.cancel-btn{
+        color: $dark-gray;
+        background-color: $light-gray;
       &:after {
-        content: "b";   /* Valid icon  */
+        content: "b";
       }
       &:hover{
-        background-color: darken( $dark-green, 10% );
+        background-color: darken( $light-gray, 10% );
       }
     }
 
-    &.cancel-btn{
+    &.check-btn{
         margin-left: 0px;
-         color: $dark-gray;
-         background-color: $light-gray;
+         color: $white;
+         background-color: $dark-green;
       &:after {
-        content: "c"; /* Cancel icon  */
+        content: "c";
       }
       &:hover {
-        background-color: darken( $light-gray, 10% );
+        background-color: darken( $dark-green, 10% );
       }
     }
   }
