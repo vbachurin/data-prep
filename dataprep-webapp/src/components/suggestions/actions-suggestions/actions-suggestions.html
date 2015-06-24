@@ -58,10 +58,12 @@
         <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
         <div class="modal-subtitle">{{ actionsSuggestionsCtrl.dynamicTransformation.description }}</div>
 
-        <div ng-if="actionsSuggestionsCtrl.dynamicFetchInProgress">
-            <img class="continuous-rotate"
-                 style="background-color: grey"
-                 src="/components/widgets/loading/loading.png"/>
+        <!--<div ng-if="actionsSuggestionsCtrl.dynamicFetchInProgress">-->
+        <div >
+            <i data-icon="e" class="icon continuous-rotate"></i>
+            <!--<img class="continuous-rotate"-->
+                 <!--style="background-color: grey"-->
+                 <!--src="/components/widgets/loading/loading.png"/>-->
         </div>
         <transform-params transformation="actionsSuggestionsCtrl.dynamicTransformation"
                           on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation)(params)"></transform-params>
