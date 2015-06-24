@@ -62,46 +62,60 @@
                     grid.setCellCssStyles('highlight', {});
                 };
 
+                var redRect = '<div title="Invalid Value" class="red-rect"></div>';
+                var invisibleRect = '<div class="invisible-rect"></div>';
+
                 /**
                  * @ngdoc method
                  * @name formatter
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
                  */
-                var formatter = function formatter(row, cell, value, columnDef, dataContext) {
+                var formatter = function(col){
 
-                    var returnStr = value;
+                    var invalidValues = col.quality.invalidValues;
 
-                    //hidden characters need to be shown
-                    if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
-                        returnStr = ctrl.computeHTMLForLeadingOrTrailingHiddenChars(value);
-                    }
-                    //deleted row preview
-                    if(dataContext.__tdpRowDiff === 'delete') {
-                        return '<div class="cellDeletedValue"><strike>' + (returnStr ? returnStr : ' ') + '</strike></div>';
-                    }
-                    //new row preview
-                    else if(dataContext.__tdpRowDiff === 'new') {
-                        return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
-                    }
-                    //updated cell preview
-                    if(dataContext.__tdpDiff){
-                        // update
-                        if (dataContext.__tdpDiff[columnDef.id] === 'update') {
-                            return '<div class="cellUpdateValue">' + returnStr + '</div>';
-                        }
-                        // new
-                        else if (dataContext.__tdpDiff[columnDef.id] === 'new') {
-                            return '<div class="cellNewValue">' + returnStr + '</div>';
-                        }
-                        // new
-                        else if (dataContext.__tdpDiff[columnDef.id] === 'delete') {
-                            return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
-                        }
-                    }
+                    return function formatter(row, cell, value, columnDef, dataContext) {
 
-                    //no preview
-                    return returnStr;
+                        var returnStr = value;
+
+                        //hidden characters need to be shown
+                        if(value && (/\s/.test(value.charAt(0)) || /\s/.test(value.charAt(value.length-1))))  {
+                            returnStr = ctrl.computeHTMLForLeadingOrTrailingHiddenChars(value);
+                        }
+                        //deleted row preview
+                        if(dataContext.__tdpRowDiff === 'delete') {
+                            return '<div class="cellDeletedValue"><strike>' + (returnStr ? returnStr : ' ') + '</strike></div>';
+                        }
+                        //new row preview
+                        else if(dataContext.__tdpRowDiff === 'new') {
+                            return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                        }
+                        //updated cell preview
+                        if(dataContext.__tdpDiff){
+                            // update
+                            if (dataContext.__tdpDiff[columnDef.id] === 'update') {
+                                return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                            }
+                            // new
+                            else if (dataContext.__tdpDiff[columnDef.id] === 'new') {
+                                return '<div class="cellNewValue">' + returnStr + '</div>';
+                            }
+                            // new
+                            else if (dataContext.__tdpDiff[columnDef.id] === 'delete') {
+                                return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                            }
+                        }
+
+                        //no preview
+                        if(invalidValues.indexOf(returnStr) >= 0){
+                            return returnStr + redRect;
+                        }
+                        else {
+                            return returnStr + invisibleRect;
+                        }
+
+                    };
                 };
 
                 /**
@@ -146,7 +160,7 @@
                         id: col.id,
                         field: col.id,
                         name: template,
-                        formatter: formatter,
+                        formatter: formatter(col),
                         minWidth: 80,
                         tdpColMetadata: col
                     };
@@ -412,33 +426,6 @@
 
                 /**
                  * @ngdoc method
-                 * @name checkInvalidValues
-                 * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description adds a red indication on the right side of the cell to indicated that the value is invalid
-                 */
-                var checkInvalidValues = function(){
-                    var invalidConfig = {};
-                    var displayedRowsLength = DatagridService.dataView.getLength();
-                    _.each(grid.getColumns(), function(rawCol){
-                        var invalidValues = rawCol.tdpColMetadata.quality.invalidValues;
-                        if(invalidValues.length){
-                            for(var i= 0; i< displayedRowsLength; i++){
-                                var content = DatagridService.dataView.getItem(i)[rawCol.id];
-                                if(invalidValues.indexOf(content)>=0){
-                                    var rowNbr= i.toString();
-                                    if(!invalidConfig[rowNbr]){
-                                        invalidConfig[rowNbr] = {};
-                                    }
-                                    invalidConfig[rowNbr][rawCol.id] = 'invalid-value';
-                                }
-                            }
-                        }
-                    });
-                    grid.setCellCssStyles('invalid-value', invalidConfig);
-                };
-
-                /**
-                 * @ngdoc method
                  * @name alignRightNumbers
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description aligns columns with having number types to the right
@@ -596,7 +583,6 @@
                             header.element.remove();
                         });
                         colHeaderElements = finalColHeaderElements;
-                        checkInvalidValues();
                     }
                     alignRightNumbers();
                     renewAllColumns = false;
@@ -657,7 +643,6 @@
                             resetCellStyles();
                             grid.resetActiveCell();
                             grid.scrollRowToTop(0);
-                            checkInvalidValues();
                         }
                     }
                 );

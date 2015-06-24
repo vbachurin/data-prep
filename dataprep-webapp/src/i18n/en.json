@@ -69,6 +69,8 @@
   "IMPORT_EXCEL_FILE": "Import Excel File",
   "STYLESHEET": "Style sheet",
 
+  "INVALIDVALUE":"Invalid Value",
+
   "_comment": "Success",
   "DATASET_CREATE_SUCCESS_TITLE": "New dataset",
   "DATASET_CREATE_SUCCESS": "The dataset \"{{dataset}}\" has been created",

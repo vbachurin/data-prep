@@ -14,6 +14,23 @@
   font-family: $monospace;
 }
 
+.red-rect{
+  background-color: $nok-color;
+  width: 5px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  height: 100%;
+}
+
+.invisible-rect{
+  background-color: inherit;
+  width: 5px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  height: 100%;
+}
 
 .datagrid {
   $datagrid-line-odd: #f9f9f9;
@@ -65,14 +82,13 @@
   }
 
   .slick-cell {
-    border-right-width: 5px;
     box-sizing: content-box;
     border-color: $datagrid-line-border;
     border-bottom-color: transparent;
     border-left-color: transparent;
     border-right-style: solid;
     padding-left: 4px;
-    padding-right: 4px;
+    padding-right: 7px;
     color: $datagrid-cell;
     font-size: $datagrid-cell-font-size;
     font-family: $monospace;
@@ -84,10 +100,6 @@
 
     &.numbers-on-the-right{
       text-align: right;
-    }
-
-    &.invalid-value {
-      border-right-color: $nok-color;
     }
 
     &:hover {
@@ -110,10 +122,8 @@
     }
 
     .cellDeletedValue {
-      //color: $white;
       color: $medium-gray;
       @include cellImitation();
-      //background-color: rgba(255, 0, 0, 0.5);
       background-color: $light-gray;
       text-decoration: line-through;
     }
@@ -121,7 +131,7 @@
     &.active {
       border: 2px solid $black;
       height: 19px;
-      padding: 0px 3px 2px 3px;
+      padding: 0 7px 2px 3px;
       background-color: $white;
     }
 
