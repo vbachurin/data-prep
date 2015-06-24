@@ -160,8 +160,12 @@ public class DataSetService {
     public Iterable<DataSetMetadata> list() {
         final Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
         Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
-        stream.forEach(metadata -> completeWithUserData(metadata));
-        return stream.filter(metadata -> !metadata.getLifecycle().importing()).collect(Collectors.toList());
+        return stream.filter(metadata -> !metadata.getLifecycle().importing())//
+                .map(metadata -> {
+                    completeWithUserData(metadata);
+                    return metadata;
+                })//
+                .collect(Collectors.toList());
     }
 
     /**
@@ -560,14 +564,15 @@ public class DataSetService {
 
     /**
      * update the current user data dataset favorites list by adding or removing the dataSetId according to the unset
-     * flag. The user data for the current will be created if it does not exist.
+     * flag. The user data for the current will be created if it does not exist. If no data set exists for given id, a
+     * {@link TDPException} is thrown.
      * 
      * @param unset, if true this will remove the dataSetId from the list of favorites, if false then it adds the
      * dataSetId to the favorite list
      * @param dataSetId, the id of the favorites data set. If the data set does not exists nothing is done.
      */
     @RequestMapping(value = "/datasets/{id}/favorite", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    @ApiOperation(value = "set or unset a dataset as favorite", notes = "Speficy if a dataset is or is not a favorite for the current user.")
+    @ApiOperation(value = "set or unset a dataset as favorite", notes = "Specify if a dataset is or is not a favorite for the current user.")
     @Timed
     public void setFavorites(
             @RequestParam(defaultValue = "false") @ApiParam(name = "unset", value = "if true then unset the dataset as favorite, if false (default value) set the favorite flag") boolean unset, //
@@ -593,8 +598,7 @@ public class DataSetService {
                 userDataRepository.setUserData(userData);
             }
         } else {// no dataset found so throws an error
-                // throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST,
-                // TDPExceptionContext.build().put("id", dataSetId));
+            throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", dataSetId));
         }
     }
 }

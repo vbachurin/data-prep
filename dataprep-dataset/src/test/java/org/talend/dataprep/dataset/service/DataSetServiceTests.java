@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.spark.SparkContext;
-import org.hamcrest.collection.IsEmptyIterable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +61,46 @@ import com.jayway.restassured.http.ContentType;
 @WebAppConfiguration
 @IntegrationTest
 public class DataSetServiceTests {
+
+    /**
+     * 
+     */
+    private static final String T_SHIRT_100_CSV_EXPECTED_JSON = "../t-shirt_100.csv.expected.json";
+
+    /**
+     * 
+     */
+    private static final String T_SHIRT_100_CSV = "../t-shirt_100.csv";
+
+    /**
+     * 
+     */
+    private static final String US_STATES_TO_CLEAN_CSV = "../us_states_to_clean.csv";
+
+    /**
+     * 
+     */
+    private static final String TAGADA2_CSV = "../tagada2.csv";
+
+    /**
+     * 
+     */
+    private static final String TAGADA_CSV = "../tagada.csv";
+
+    /**
+     * 
+     */
+    private static final String EMPTY_LINES2_JSON = "../empty_lines2.json";
+
+    /**
+     * 
+     */
+    private static final String EMPTY_LINES2_CSV = "../empty_lines2.csv";
+
+    /**
+     * 
+     */
+    private static final String METADATA_JSON = "../metadata.json";
 
     @Value("${local.server.port}")
     public int port;
@@ -201,7 +240,7 @@ public class DataSetServiceTests {
     @Test
     public void create() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
@@ -212,14 +251,14 @@ public class DataSetServiceTests {
     @Test
     public void createEmptyLines() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("empty_lines2.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(EMPTY_LINES2_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
         assertQueueMessages(dataSetId);
 
         final String content = when().get("/datasets/{id}/content", dataSetId).asString();
-        assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream("empty_lines2.json")));
+        assertThat(content, sameJSONAsFile(DataSetServiceTests.class.getResourceAsStream(EMPTY_LINES2_JSON)));
     }
 
     @Test
@@ -234,6 +273,19 @@ public class DataSetServiceTests {
         int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
         assertTrue("statusCode is:" + statusCode,
                 statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
+
+        // test Favorites
+        boolean isFavorite = from(when().get("/datasets/{id}/content", expectedId).asString()).get("metadata.favorite");
+        assertFalse(isFavorite);
+        // add favorite
+        UserData userData = new UserData("anonymousUser");
+        HashSet<String> favorites = new HashSet<String>();
+        favorites.add(expectedId);
+        userData.setFavoritesDatasets(favorites);
+        userDataRepository.setUserData(userData);
+
+        isFavorite = from(when().get("/datasets/{id}/content", expectedId).asString()).get("metadata.favorite");
+        assertTrue(isFavorite);
     }
 
     @Test
@@ -257,7 +309,7 @@ public class DataSetServiceTests {
     @Test
     public void updateRawContent() throws Exception {
         String dataSetId = "123456";
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada.csv"))).when()
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))).when()
                 .put("/datasets/{id}/raw", dataSetId).then().statusCode(HttpStatus.OK.value());
         List<String> ids = from(when().get("/datasets").asString()).get("id");
         assertThat(ids, hasItem(dataSetId));
@@ -265,10 +317,10 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void updateMetadataContent() throws Exception {
+    public void updateMetadataContentWithWrongDatasetId() throws Exception {
         assertThat(dataSetMetadataRepository.get("3d72677c-e2c9-4a34-8c58-959a56ec8643"), nullValue());
         given().contentType(ContentType.JSON) //
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("metadata.json"))) //
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(METADATA_JSON))) //
                 .when() //
                 .put("/datasets/{id}", "3d72677c-e2c9-4a34-8c58-959a56ec8643") //
                 .then() //
@@ -278,19 +330,17 @@ public class DataSetServiceTests {
     @Test
     public void previewNonDraft() throws Exception {
         // Create a data set
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         dataSetMetadata.setDraft(false); // Ensure it is no draft
         dataSetMetadataRepository.add(dataSetMetadata);
         // Should receive a 301 that redirects to the GET data set content operation
-        given().redirects().follow(false).contentType(ContentType.JSON)
-                .get("/datasets/{id}/preview", dataSetId) //
+        given().redirects().follow(false).contentType(ContentType.JSON).get("/datasets/{id}/preview", dataSetId) //
                 .then() //
                 .statusCode(HttpStatus.MOVED_PERMANENTLY.value());
         // Should receive a 200 if code follows redirection
-        given().redirects().follow(true).contentType(ContentType.JSON)
-                .get("/datasets/{id}/preview", dataSetId) //
+        given().redirects().follow(true).contentType(ContentType.JSON).get("/datasets/{id}/preview", dataSetId) //
                 .then() //
                 .statusCode(HttpStatus.OK.value());
     }
@@ -305,7 +355,7 @@ public class DataSetServiceTests {
 
     @Test
     public void test1() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada.csv"))) //
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
                 .queryParam("Content-Type", "text/csv") //
                 .when() //
                 .post("/datasets") //
@@ -320,7 +370,7 @@ public class DataSetServiceTests {
 
     @Test
     public void test2() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada2.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA2_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
@@ -331,7 +381,7 @@ public class DataSetServiceTests {
 
     @Test
     public void test3() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         // Update content
@@ -398,8 +448,7 @@ public class DataSetServiceTests {
      */
     @Test
     public void empty_lines_and_missing_values() throws Exception {
-        String dataSetId = given()
-                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../us_states_to_clean.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(US_STATES_TO_CLEAN_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
@@ -411,7 +460,7 @@ public class DataSetServiceTests {
 
     @Test
     public void nbLines() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
@@ -423,19 +472,19 @@ public class DataSetServiceTests {
 
     @Test
     public void nbLines2() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../t-shirt_100.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../t-shirt_100.csv.expected.json");
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV_EXPECTED_JSON);
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
     public void nbLinesUpdate() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
         InputStream content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
@@ -444,7 +493,7 @@ public class DataSetServiceTests {
         assertThat(contentAsString, sameJSONAs("{\"metadata\":{\"records\":2,\"nbLinesHeader\":1,\"nbLinesFooter\":0}}")
                 .allowingExtraUnexpectedFields().allowingAnyArrayOrdering());
 
-        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../t-shirt_100.csv")))
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV)))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/{id}/raw", dataSetId).asString();
 
         assertQueueMessages(dataSetId);
@@ -452,7 +501,7 @@ public class DataSetServiceTests {
         content = when().get("/datasets/{id}/content?metadata=true&columns=false", dataSetId).asInputStream();
         contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../t-shirt_100.csv.expected.json");
+        InputStream expected = DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV_EXPECTED_JSON);
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
@@ -484,6 +533,21 @@ public class DataSetServiceTests {
         String contentAsString = when().get("/datasets/{id}/metadata", "1234").asString();
         InputStream expected = DataSetServiceTests.class.getResourceAsStream("../metadata1.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
+
+        Boolean isFavorites = from(contentAsString).get("metadata.favorite");
+        assertFalse(isFavorites);
+
+        // add favorite
+        UserData userData = new UserData("anonymousUser");
+        HashSet<String> favorites = new HashSet<String>();
+        favorites.add("1234");
+        userData.setFavoritesDatasets(favorites);
+        userDataRepository.setUserData(userData);
+
+        contentAsString = when().get("/datasets/{id}/metadata", "1234").asString();
+        isFavorites = from(contentAsString).get("metadata.favorite");
+        assertTrue(isFavorites);
+
     }
 
     @Test
@@ -519,7 +583,7 @@ public class DataSetServiceTests {
     @Test
     public void testAskCertification() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
@@ -537,7 +601,7 @@ public class DataSetServiceTests {
     @Test
     public void testCertify() throws Exception {
         int before = dataSetMetadataRepository.size();
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada.csv")))
+        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         int after = dataSetMetadataRepository.size();
         assertThat(after - before, is(1));
@@ -571,7 +635,7 @@ public class DataSetServiceTests {
     }
 
     @Test
-    public void testSetUnsetFavoriteDataSet() {
+    public void testSetUnsetFavoriteDataSet() throws IOException {
         String dsId1 = UUID.randomUUID().toString();
         String dsId2 = UUID.randomUUID().toString();
 
@@ -591,7 +655,14 @@ public class DataSetServiceTests {
         assertThat(favoritesResp, hasItem(dsId1));
         // check wrong datasetId
         String wrongDsId = UUID.randomUUID().toString();
-        assertThat(from(when().put("/datasets/{id}/favorite", wrongDsId).asString()).get(), IsEmptyIterable.emptyIterable());
+        assertThat(dataSetMetadataRepository.get(wrongDsId), nullValue());
+        given().contentType(ContentType.JSON) //
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(METADATA_JSON))) //
+                .when() //
+                .put("/datasets/{id}/favorite", wrongDsId) //
+                .then() //
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+
     }
 
     @Test
@@ -604,48 +675,6 @@ public class DataSetServiceTests {
         DataSetMetadata dataSetMetadataGet = dataSetMetadataRepository.get(expectedDsId);
         assertNotNull(dataSetMetadataGet);
         assertFalse(dataSetMetadataGet.isFavorite());
-    }
-
-    @Test
-    public void testCompleteWithUserDataGetMetadata() throws IOException {
-        String expectedId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).build();
-        dataSetMetadataRepository.add(dataSetMetadata);
-        dataSetMetadata.getLifecycle().schemaAnalyzed(true);
-        dataSetMetadataRepository.add(dataSetMetadata);
-        String contentAsString = when().get("/datasets/{id}/metadata", expectedId).asString();
-        assertTrue(contentAsString.contains("\"favorite\":false"));
-
-        // add favorite
-        UserData userData = new UserData("anonymousUser");
-        HashSet<String> favorites = new HashSet<String>();
-        favorites.add(expectedId);
-        userData.setFavoritesDatasets(favorites);
-        userDataRepository.setUserData(userData);
-
-        contentAsString = when().get("/datasets/{id}/metadata", expectedId).asString();
-        assertTrue(contentAsString.contains("\"favorite\":true"));
-    }
-
-    @Test
-    public void testCompleteWithUserDataGet() throws IOException {
-        // test with get
-        String expectedId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
-        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
-        dataSetMetadataRepository.add(dataSetMetadata);
-        String contentAsString = when().get("/datasets/{id}/content", expectedId).asString();
-        assertTrue(contentAsString.contains("\"favorite\":false"));
-        // add favorite
-        UserData userData = new UserData("anonymousUser");
-        HashSet<String> favorites = new HashSet<String>();
-        favorites.add(expectedId);
-        userData.setFavoritesDatasets(favorites);
-        userDataRepository.setUserData(userData);
-
-        contentAsString = when().get("/datasets/{id}/content", expectedId).asString();
-        assertTrue(contentAsString.contains("\"favorite\":true"));
-
     }
 
 }
