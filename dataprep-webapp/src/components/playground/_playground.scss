@@ -18,21 +18,22 @@
 
 .steps-header{
   margin: 15px 0px 15px 10px;
-  font-size: 1.4em;
 
   .title{
     padding: 3px 0px 4px 0px;
+    font-size: 1.2em;
+    font-weight: 600;
     text-transform: uppercase;
   }
   input{
     font-family: $base-font-family;
     float: left;
-    width:160px;
-    padding: 3px 0px 4px 0px;
+    width:190px;
+    padding: 5px 0px 4px 3px;
   }
   button{
     font-family: $iconsfont;
-    font-size: .80em;
+    font-size: .9em;
     margin: 3px;
     padding: 2px;
     border-radius: 50px;
@@ -41,8 +42,8 @@
     color: $medium-gray;
     font-weight: 400;
     font-style: normal;
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
 
     &.edit-btn{
       margin-top: 2px;
@@ -58,12 +59,12 @@
 
     &.check-btn{
         color: $white;
-        background-color: $blue;
+        background-color: $dark-green;
       &:after {
         content: "b";   /* Valid icon  */
       }
       &:hover{
-        background-color: darken( $blue, 10% );
+        background-color: darken( $dark-green, 10% );
       }
     }
 

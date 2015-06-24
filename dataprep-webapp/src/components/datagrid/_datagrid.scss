@@ -65,7 +65,7 @@
   }
 
   .slick-cell {
-    //border-right-width: 5px;
+    border-right-width: 5px;
     box-sizing: content-box;
     border-color: $datagrid-line-border;
     border-bottom-color: transparent;
@@ -87,8 +87,7 @@
     }
 
     &.invalid-value {
-      border-right-color: red;
-      border-radius: 2px;
+      border-right-color: $nok-color;
     }
 
     &:hover {
