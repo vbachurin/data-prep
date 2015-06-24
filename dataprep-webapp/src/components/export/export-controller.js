@@ -127,8 +127,6 @@
                 if ( val.type === 'radio' ){
                     vm.exportParameters[val.name] = val.defaultValue.value;
                 }
-                var paramValue = $window.localStorage.getItem( vm.exportParamKey + '.' + val.name );
-
             });
             vm.showExport = true;
         };

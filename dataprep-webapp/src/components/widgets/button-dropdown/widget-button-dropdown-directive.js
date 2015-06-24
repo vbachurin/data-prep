@@ -104,7 +104,7 @@
                     };
 
                     //Click : Show/focus or hide menu on action zone click
-                    action.click(function (event) {
+                    action.click(function () {
                         var isVisible = menu.hasClass('show-menu');
 
                         hideAllDropDowns();
