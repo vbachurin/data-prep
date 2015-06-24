@@ -50,7 +50,7 @@ public class XlsUtils {
                 return sdf.format(cell.getDateCellValue());
             }
             // Numeric type (use data formatter to get number format right)
-            DataFormatter formatter = new HSSFDataFormatter();
+            DataFormatter formatter = new HSSFDataFormatter(Locale.ENGLISH);
             return formatter.formatCellValue(cell);
         case Cell.CELL_TYPE_STRING:
             return StringUtils.trim(cell.getStringCellValue());

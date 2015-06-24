@@ -413,7 +413,7 @@ public class XlsFormatTest {
         // Test number serialization in XLS type guess
         InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("excel_numbers.xls");
         final String result = IOUtils.toString(formatGuess.getSerializer().serialize(input, metadata));
-        final String expected = "[{\"0000\":\"1\",\"0001\":\"123\"},{\"0000\":\"2\",\"0001\":\"123,1\"},{\"0000\":\"3\",\"0001\":\"209,9\"}]";
+        final String expected = "[{\"0000\":\"1\",\"0001\":\"123\"},{\"0000\":\"2\",\"0001\":\"123.1\"},{\"0000\":\"3\",\"0001\":\"209.9\"}]";
         assertThat(result, sameJSONAs(expected));
     }
 
