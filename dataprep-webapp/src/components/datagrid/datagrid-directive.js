@@ -418,17 +418,20 @@
                  */
                 var checkInvalidValues = function(){
                     var invalidConfig = {};
+                    var displayedRowsLength = DatagridService.dataView.getLength();
                     _.each(grid.getColumns(), function(rawCol){
                         var invalidValues = rawCol.tdpColMetadata.quality.invalidValues;
                         if(invalidValues.length){
-                            _.each(DatagridService.dataView.getItems(), function(row, rowIndex){
-                                var content = DatagridService.dataView.getItem(rowIndex)[rawCol.id];
+                            for(var i= 0; i< displayedRowsLength; i++){
+                                var content = DatagridService.dataView.getItem(i)[rawCol.id];
                                 if(invalidValues.indexOf(content)>=0){
-                                    var rowNbr= rowIndex.toString();
-                                    invalidConfig[rowNbr] = {};
+                                    var rowNbr= i.toString();
+                                    if(!invalidConfig[rowNbr]){
+                                        invalidConfig[rowNbr] = {};
+                                    }
                                     invalidConfig[rowNbr][rawCol.id] = 'invalid-value';
                                 }
-                            });
+                            }
                         }
                     });
                     grid.setCellCssStyles('invalid-value', invalidConfig);
@@ -443,7 +446,7 @@
                 var alignRightNumbers = function(){
                     _.each(grid.getColumns(), function(rawCol){
                         var colType = rawCol.tdpColMetadata.type;
-                        if (colType === 'numeric' || colType === 'integer' || colType === 'float' || colType === 'double'){
+                        if (ConverterService.toInputType(colType) === 'number'){
                             alignColRight(rawCol);
                         }
                     });
@@ -654,6 +657,7 @@
                             resetCellStyles();
                             grid.resetActiveCell();
                             grid.scrollRowToTop(0);
+                            checkInvalidValues();
                         }
                     }
                 );

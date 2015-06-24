@@ -64,7 +64,7 @@ public class Export extends PreparationCommand<InputStream> {
         response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getExtension());
 
         // Get dataset content and call export service
-        final String uri = getTransformationUri(input.getExportType(), input.getCsvSeparator(), encodedActions);
+        final String uri = getTransformationUri(input.getExportType(), input.getArguments(), encodedActions);
         final HttpPost transformationCall = new HttpPost(uri);
         final InputStream content = getDatasetContent(dataSetId);
         transformationCall.setEntity(new InputStreamEntity(content));
@@ -77,17 +77,19 @@ public class Export extends PreparationCommand<InputStream> {
      * Create the transformation export uri
      * 
      * @param exportType The export type.
-     * @param csvSeparator The CSV separator.
+     * @param params optional params
      * @param encodedActions The encoded actions.
      * @return The built URI
      */
-    private String getTransformationUri(final ExportType exportType, final Character csvSeparator, final String encodedActions) {
+    private String getTransformationUri(final ExportType exportType, final Map<String,String> params, final String encodedActions) {
         String result = this.transformationServiceUrl + "/export/" + exportType;
         boolean hasQueryParams = false;
 
-        if (csvSeparator != null) {
-            result = appendQueryParam(result, "separator=" + encode(csvSeparator.toString()), hasQueryParams);
-            hasQueryParams = true;
+        if (params != null ) {
+            for (Map.Entry<String,String> entry:params.entrySet()){
+                result = appendQueryParam( result, entry.getKey() + "=" + encode( entry.getValue() ), hasQueryParams );
+                hasQueryParams = true;
+            }
         }
 
         if (encodedActions != null) {
