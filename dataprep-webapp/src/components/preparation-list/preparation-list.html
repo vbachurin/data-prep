@@ -9,9 +9,14 @@
             {{::'LAST_MODIFICATION' | translate}}: {{preparation.lastModificationDate | date}} {{preparation.lastModificationDate | date:'shortTime'}}
         </p>
         <p class="details">
-            <span class="important">{{preparation.dataset.name}}</span> ({{preparation.dataset.records}} {{::'ROWS' | translate}})<br/>
-            <span class="important">{{preparation.steps.length - 1}} {{::'STEPS' | translate}}</span> {{::'RECIPE' | translate}}
+            <span class="important">{{preparation.dataset.name}}</span> - {{preparation.dataset.records}} {{::'ROWS' |
+            translate}}<br/>
+
+        <p class="details">
+            <span class="important">{{preparation.steps.length - 1}} {{::'STEPS' | translate}}</span> {{::'RECIPE' |
+            translate}}
+            <a class="actions" ng-click="preparationListCtrl.delete(preparation)">[delete]</a>
         </p>
-        <a ng-click="preparationListCtrl.delete(preparation)">[delete]</a>
+        </p>
     </div>
 </div>
