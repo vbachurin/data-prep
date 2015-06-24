@@ -15,7 +15,7 @@ public enum ExportType {
     // take care when declaring new export type as only one can be default :-)
     CSV("text/csv", ".csv", true, false, Arrays.asList(new Parameter("csvSeparator", "CHOOSE_SEPARATOR", "radio",
             new ParameterValue(";", "SEPARATOR_SEMI_COLON"), //
-            Arrays.asList(new ParameterValue("&#09;", "SEPARATOR_TAB"), //
+            Arrays.asList(new ParameterValue("\u0009", "SEPARATOR_TAB"), // &#09;
                     new ParameterValue(" ", "SEPARATOR_SPACE"), //
                     new ParameterValue(",", "SEPARATOR_COMMA"))))),
     XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()),
