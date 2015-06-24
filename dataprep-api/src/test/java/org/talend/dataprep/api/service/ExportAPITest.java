@@ -34,7 +34,7 @@ import com.jayway.restassured.RestAssured;
 @WebIntegrationTest
 public class ExportAPITest {
 
-    final Logger logger = LoggerFactory.getLogger(getClass());
+    final Logger logger = LoggerFactory.getLogger(ExportAPITest.class);
 
     @Value("${local.server.port}")
     public int port;
@@ -63,7 +63,9 @@ public class ExportAPITest {
 
         final String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("export_type.json"));
 
-        assertThat(expectedContent, sameJSONAs(json));
+        logger.debug("expected content: '{}'", expectedContent);
+
+        assertThat(json, sameJSONAs(expectedContent));
 
         ObjectMapper objectMapper = new ObjectMapper();
 
