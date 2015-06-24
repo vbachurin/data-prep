@@ -21,8 +21,8 @@ public class LineBasedFormatGuesser implements FormatGuesser {
     /** Replacement char used to replace a char that cannot be displayed, typical when you read binary files. */
     private static final int REPLACEMENT_CHAR = 65533;
 
-    /** Threshold to detect binary stream. */
-    private static final int BINARY_DETECTION_THRESHOLD = 100;
+    /** Threshold to detect binary stream in percentage. */
+    private static final int BINARY_DETECTION_THRESHOLD = 10;
 
     /** The csv format guesser. */
     @Autowired
@@ -74,8 +74,9 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                         char c = s.charAt(i);
                         if (REPLACEMENT_CHAR == (int) c) {
                             replacementCharsCount++;
-                            if (replacementCharsCount > BINARY_DETECTION_THRESHOLD) {
-                                logger.debug("binary stream, hence cannot be a CSV");
+                            int replacementCharPercentage = replacementCharsCount * 100 / totalChars;
+                            if (replacementCharPercentage > BINARY_DETECTION_THRESHOLD) {
+                                logger.debug("binary stream detected, hence cannot be a CSV");
                                 return null;
                             }
                         }

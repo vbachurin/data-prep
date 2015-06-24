@@ -80,6 +80,31 @@ public class SplitTest {
     }
 
     /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_split_row_twice() {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_split_3", "Bacon");
+        expectedValues.put("steps_split_4", "ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_split_1", "Bacon");
+        expectedValues.put("steps_split_2", "ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row, new TransformationContext());
+        rowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
      * @see Split#createMetadataClosure(Map)
      */
     @Test
@@ -141,6 +166,35 @@ public class SplitTest {
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
         expected.add(createMetadata("steps", "steps"));
+        expected.add(createMetadata("steps_split_1", "steps_split_1"));
+        expected.add(createMetadata("steps_split_2", "steps_split_2"));
+        expected.add(createMetadata("last update", "last update"));
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * @see Split#createMetadataClosure(Map)
+     */
+    @Test
+    public void should_update_metadata_twice() {
+
+        List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("steps", "steps"));
+        input.add(createMetadata("last update", "last update"));
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        metadataClosure.accept(rowMetadata, new TransformationContext());
+        metadataClosure.accept(rowMetadata, new TransformationContext());
+
+        List<ColumnMetadata> actual = rowMetadata.getColumns();
+
+        List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("recipe", "recipe"));
+        expected.add(createMetadata("steps", "steps"));
+        expected.add(createMetadata("steps_split_3", "steps_split_3"));
+        expected.add(createMetadata("steps_split_4", "steps_split_4"));
         expected.add(createMetadata("steps_split_1", "steps_split_1"));
         expected.add(createMetadata("steps_split_2", "steps_split_2"));
         expected.add(createMetadata("last update", "last update"));

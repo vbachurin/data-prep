@@ -3,8 +3,7 @@
 
     angular.module('data-prep.suggestions', [
         'talend.widget',
-        'data-prep.table-suggestions',
-        'data-prep.column-suggestions',
+        'data-prep.actions-suggestions',
         'data-prep.column-profile'
     ]);
 })();

@@ -65,7 +65,7 @@ public class JsonWriterTest {
         row.set("id", "64a5456ac148b64524ef165");
         row.set("firstname", "Superman");
 
-        final String expectedCsv = "{\"id\":\"64a5456ac148b64524ef165\",\"firstname\":\"Superman\"}";
+        final String expectedCsv = "{\"firstname\":\"Superman\",\"id\":\"64a5456ac148b64524ef165\"}";
 
         // when
         writer.write(row);

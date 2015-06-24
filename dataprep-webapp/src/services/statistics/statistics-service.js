@@ -55,7 +55,8 @@
 			} else if (column.type === 'boolean') {
 				self.data            = column.statistics.frequencyTable;
 			} else {
-				console.log('not a number neither a stater neither a string');
+				self.data            = null;
+				console.log('nor a number neither a boolean neither a string');
 			}
 		};
 
@@ -66,6 +67,9 @@
 		self.processVisuData = function (column) {
 			if (column.domain.indexOf('STATE_CODE_') !== -1) {
 				self.processMapData(column);
+			} else if(column.domain === 'LOCALIZATION'){
+				self.data            = null;
+				self.stateDistribution = null;
 			} else {
 				self.processBarchartData(column);
 			}

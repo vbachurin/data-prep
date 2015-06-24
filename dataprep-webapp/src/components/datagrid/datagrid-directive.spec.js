@@ -15,7 +15,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'number',
                 'domain': 'STATE_CODE_'
@@ -26,7 +27,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string',
                 'domain': 'STATE_CODE_'
@@ -37,7 +39,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string',
                 'domain': 'STATE_CODE_'
@@ -48,7 +51,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string',
                 'domain': 'STATE_CODE_'
@@ -59,7 +63,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string',
                 'domain': 'STATE_CODE_'
@@ -97,7 +102,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'number'
             },
@@ -107,7 +113,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -117,7 +124,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -127,7 +135,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -137,7 +146,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             }
@@ -175,7 +185,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'number'
             },
@@ -185,7 +196,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -195,7 +207,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             }
@@ -218,7 +231,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'number'
             },
@@ -228,7 +242,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -238,7 +253,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             }
@@ -262,7 +278,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'number'
             },
@@ -272,7 +289,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string',
                 '__tdpColumnDiff': 'delete'
@@ -283,7 +301,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             }
@@ -307,7 +326,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'number'
             },
@@ -317,7 +337,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string',
                 '__tdpColumnDiff': 'new'
@@ -328,7 +349,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             }
@@ -351,7 +373,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'number'
             },
@@ -361,7 +384,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -371,7 +395,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             }
@@ -393,7 +418,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -402,7 +428,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -411,7 +438,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -420,7 +448,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             },
@@ -429,7 +458,8 @@ describe('Datagrid directive', function () {
                 'quality': {
                     'empty': 5,
                     'invalid': 10,
-                    'valid': 72
+                    'valid': 72,
+                    invalidValues:[]
                 },
                 'type': 'string'
             }

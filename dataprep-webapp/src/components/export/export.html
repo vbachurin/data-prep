@@ -32,6 +32,10 @@
       <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
       <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
       <input type="hidden" name="exportType" />
+
+      <input ng-repeat="parameter in exportCtrl.currentExportType.parameters"
+             ng-model="exportCtrl.exportParameters[parameter.name]" name="exportParameters.{{parameter.name}}" type="hidden"/>
+
     </form>
 
 </talend-modal>
