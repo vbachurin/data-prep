@@ -38,8 +38,4 @@ execute 'git tag -a '$1' --file=/tmp/commit_msg'
 execute 'git push --tags'
 
 # here publish docker images to registry
-./pushDockerImages.sh $1
-./publishDockerImages.sh $1
-
-./pushDockerImages.sh latest
-./publishDockerImages.sh latest
+./tagAndPushDockerImages.sh $1 latest
