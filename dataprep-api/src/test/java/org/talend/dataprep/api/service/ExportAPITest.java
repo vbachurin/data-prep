@@ -1,8 +1,5 @@
 package org.talend.dataprep.api.service;
 
-import static org.junit.Assert.assertThat;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +63,7 @@ public class ExportAPITest {
 
         logger.debug("expected content: '{}'", expectedContent);
 
-        assertThat(json, sameJSONAs(expectedContent));
+        JSONAssert.assertEquals(expectedContent, json, false);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
