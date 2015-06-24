@@ -18,8 +18,8 @@
   .preparation {
     @include transition(all 0.2s ease-in-out);
     text-align: left;
-    min-width: 290px;
-    max-width: 290px;
+    min-width: 285px;
+    max-width: 285px;
     float: left;
     padding: $grid-item-border-size;
     box-shadow: inset 0px 0px 1px 1px $shadow-gray;
