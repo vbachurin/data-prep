@@ -9,9 +9,11 @@ import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -42,11 +44,14 @@ public class XlsUtils {
         case Cell.CELL_TYPE_FORMULA:
             return cell.getCellFormula();
         case Cell.CELL_TYPE_NUMERIC:
+            // Date is typed as numeric
             if (HSSFDateUtil.isCellDateFormatted(cell)) { // TODO configurable??
                 DateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
                 return sdf.format(cell.getDateCellValue());
             }
-            return String.valueOf(cell.getNumericCellValue());
+            // Numeric type (use data formatter to get number format right)
+            DataFormatter formatter = new HSSFDataFormatter();
+            return formatter.formatCellValue(cell);
         case Cell.CELL_TYPE_STRING:
             return StringUtils.trim(cell.getStringCellValue());
         default:
