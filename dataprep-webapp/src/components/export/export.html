@@ -1,7 +1,7 @@
 <talend-button-dropdown close-on-select="true" on-open="onOpen()">
   <div class="dropdown-container">
-    <button class="t-btn-primary" ng-click="exportCtrl.launchExport()">{{ ::'EXPORT' | translate }}</button>
-    <button class="t-btn dropdown-button"></button>
+    <button class="dropdown-description" ng-click="exportCtrl.launchExport()">{{ ::'EXPORT' | translate }}</button>
+    <button class="dropdown-button"></button>
     <ul class="dropdown-menu dropdown-select">
       <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.launchExport(exportType)">{{exportType.id}}</li>
     </ul>
