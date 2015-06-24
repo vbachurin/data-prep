@@ -3,6 +3,8 @@ describe('Playground directive', function() {
 
     var scope, createElement, element;
 
+    var exportTypes = [{'mimeType':'text/csv','extension':'.csv','id':'CSV','needParameters':'true','defaultExport':'false','parameters':[{'name':'csvSeparator','labelKey':'CHOOSE_SEPARATOR','type':'radio','defaultValue':{'value':';','labelKey':'SEPARATOR_SEMI_COLON'},'values':[{'value':'&#09;','labelKey':'SEPARATOR_TAB'},{'value':' ','labelKey':'SEPARATOR_SPACE'},{'value':',','labelKey':'SEPARATOR_COMMA'}]}]},{'mimeType':'application/tde','extension':'.tde','id':'TABLEAU','needParameters':'false','defaultExport':'false'},{'mimeType':'application/vnd.ms-excel','extension':'.xls','id':'XLS','needParameters':'false','defaultExport':'true'}];
+
     var metadata = {
         'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
         'name': 'US States',
@@ -20,8 +22,10 @@ describe('Playground directive', function() {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($state, $rootScope, $compile, $timeout, PreparationService) {
+
+    beforeEach(inject(function($state, $rootScope, $compile,$q,$timeout,PreparationService,ExportService) {
         scope = $rootScope.$new();
+
         createElement = function() {
             element = angular.element('<playground></playground>');
             angular.element('body').append(element);
@@ -33,6 +37,8 @@ describe('Playground directive', function() {
 
         spyOn(PreparationService, 'refreshPreparations').and.callFake(function() {});
         spyOn($state, 'go').and.callFake(function() {});
+        spyOn(ExportService, 'exportTypes').and.returnValue($q.when(exportTypes));
+
     }));
 
     afterEach(inject(function($stateParams) {
@@ -56,7 +62,7 @@ describe('Playground directive', function() {
 
         //check header is present and contains description and search filter
         expect(playgroundModal.find('.modal-header').length).toBe(1);
-        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(1).text().trim()).toBe('File: US States (3 lines)');
+        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
 
         //check left slidable is hidden recipe with left slide action
         expect(playground.eq(0).find('.slidable').eq(0).hasClass('recipe')).toBe(true);

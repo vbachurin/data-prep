@@ -3,11 +3,13 @@ package org.talend.dataprep.api.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,6 @@ import org.talend.dataprep.api.type.ExportType;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.restassured.RestAssured;
 
@@ -31,7 +32,7 @@ import com.jayway.restassured.RestAssured;
 @WebIntegrationTest
 public class ExportAPITest {
 
-    final Logger logger = LoggerFactory.getLogger(getClass());
+    final Logger logger = LoggerFactory.getLogger(ExportAPITest.class);
 
     @Value("${local.server.port}")
     public int port;
@@ -57,6 +58,12 @@ public class ExportAPITest {
         String json = RestAssured.when().get("/api/export/types").asString();
 
         logger.debug("json: '{}'", json);
+
+        final String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("export_type.json"));
+
+        logger.debug("expected content: '{}'", expectedContent);
+
+        JSONAssert.assertEquals(expectedContent, json, false);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
