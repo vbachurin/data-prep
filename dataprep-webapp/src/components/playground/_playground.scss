@@ -5,7 +5,7 @@
 
   position: absolute;
   top: 14px;
-  right: 55px;
+  right: 230px;
 
   background: rgba(255, 255, 255, 0.5);
 
@@ -17,10 +17,10 @@
 }
 
 .steps-header{
-  margin: 15px 0px 15px 10px;
+  margin: 15px 0 15px 10px;
 
   .title{
-    padding: 3px 0px 4px 0px;
+    padding: 3px 0 4px 0;
     font-size: 1.2em;
     font-weight: 600;
     text-transform: uppercase;
@@ -29,7 +29,7 @@
     font-family: $base-font-family;
     float: left;
     width:190px;
-    padding: 5px 0px 4px 3px;
+    padding: 5px 0 4px 3px;
   }
   button{
     font-family: $iconsfont;
