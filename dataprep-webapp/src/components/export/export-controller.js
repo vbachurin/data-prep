@@ -46,6 +46,11 @@
             } else {
                 var lastExportId = $window.localStorage.getItem(vm.exportIdKey);
                 exportId = lastExportId;
+                var form = document.getElementById('exportForm');
+                _.each(Object.keys(vm.exportParameters),function(val){
+                    var paramVal = $window.localStorage.getItem(vm.exportParamKey+'.'+val);
+                    form.elements['exportParameters.' + val].value = paramVal;
+                });
             }
 
             if(!exportId){
