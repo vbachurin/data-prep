@@ -71,7 +71,7 @@ describe('Onboarding service', function() {
         var options = introJsMock.setOptions.calls.argsFor(0)[0];
         expect(options.steps[0]).toEqual({
             element: '.no-js',
-            position: 'right', 
+            position: 'right',
             intro: '<div class="introjs-tooltiptitle">Welcome to Talend Data Preparation!</div><div class="introjs-tooltipcontent">To know more about Talend Data Preparation, take this quick tour!</div>'
         });
     }));

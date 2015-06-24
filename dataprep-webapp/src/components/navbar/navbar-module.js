@@ -1,5 +1,9 @@
 (function() {
     'use strict';
 
-    angular.module('data-prep.navbar', ['data-prep.services.onboarding']);
+    angular.module('data-prep.navbar', [
+        'ui.router',
+        'data-prep.services.onboarding',
+        'data-prep.services.dataset'
+    ]);
 })();

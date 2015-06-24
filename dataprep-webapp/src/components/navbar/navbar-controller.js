@@ -4,12 +4,12 @@
     function NavbarCtrl($state, $timeout, DatasetService, OnboardingService) {
         this.startTour = OnboardingService.startTour;
 
-        if($state.current.name === 'nav.home.datasets' && !$state.params.datasetid) {
-            if(OnboardingService.shouldStartTour()) {
-                DatasetService.refreshDatasets().then(function() {
-                    $timeout(OnboardingService.startTour);
-                });
-            }
+        if($state.current.name === 'nav.home.datasets'
+                && !$state.params.datasetid
+                && OnboardingService.shouldStartTour()) {
+            DatasetService.refreshDatasets().then(function() {
+                $timeout(OnboardingService.startTour);
+            });
         }
     }
 
