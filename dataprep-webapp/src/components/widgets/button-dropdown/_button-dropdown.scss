@@ -42,7 +42,7 @@
     font-size: 0.7em;
     text-transform: uppercase;
     margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 10px;
+    padding: 0px 5px 0px 10px;
 
     @include media($large-screen) {
       font-size: 1em;
@@ -58,11 +58,11 @@
     font-size: 0.7em;
     font-weight: 800;
     margin: 0px 0px 0px 0px;
-    padding: 5px 10px 5px 0px;
+    padding: 5px 0px 5px 0px;
 
     @include media($large-screen) {
       font-size: 1em;
-      padding: 0 ($dropdown-padding * 2.5) 0 ($dropdown-padding / 2);
+      padding: 0px 20px 0px 5px;
     }
 
     &:hover {
@@ -71,11 +71,12 @@
     }
 
     &:after {
+      padding: 0px 10px 0px 10px;
       color: $white;
       content: "\25BE";
       display: block;
       position: absolute;
-      right: $dropdown-padding;
+      right: 0px;
       top: -3px;
       cursor: pointer;
     }
