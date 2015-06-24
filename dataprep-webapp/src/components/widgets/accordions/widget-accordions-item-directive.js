@@ -40,10 +40,13 @@
             bindToController: true,
             controller: function() {},
             controllerAs: 'accordionsItemCtrl',
-            link: function(scope, iElement, iAttrs, accordionsCtrl) {
+            link: function (scope, iElement, iAttrs, accordionsCtrl) {
                 var ctrl = scope.accordionsItemCtrl;
-                var contentElement;
+                var contentElement, accordionItem;
 
+                //------------------------------------------------------------------------------------------------
+                //---------------------------------------------INIT-----------------------------------------------
+                //------------------------------------------------------------------------------------------------
                 /**
                  * @ngdoc method
                  * @name getContentElement
@@ -51,11 +54,11 @@
                  * @description [PRIVATE] Get content element. If it is defined, we save it to serve it directly next time
                  */
                 var getContentElement = function getContentElement() {
-                    if(contentElement) {
+                    if (contentElement) {
                         return contentElement;
                     }
                     var fetchContent = iElement.find('#content').eq(0);
-                    if(fetchContent.length) {
+                    if (fetchContent.length) {
                         contentElement = fetchContent;
                     }
                     return fetchContent;
@@ -68,9 +71,9 @@
                  * @description [PRIVATE] Register itself to parent
                  */
                 var registerToParent = function registerToParent() {
-                    accordionsCtrl.register(ctrl);
-                    if(ctrl.default) {
-                        accordionsCtrl.toggle(ctrl);
+                    accordionsCtrl.register(accordionItem);
+                    if (ctrl.default) {
+                        accordionsCtrl.toggle(accordionItem);
                     }
                 };
 
@@ -81,10 +84,8 @@
                  * @description [PRIVATE] Place trigger element in the trigger zone
                  */
                 var attachTriggerElement = function attachTriggerElement() {
-                    $timeout(function() {
-                        var elementToAttach = iElement.find('#trigger').eq(0);
-                        iElement.find('>#trigger-transclusion').append(elementToAttach);
-                    });
+                    var elementToAttach = iElement.find('#trigger').eq(0);
+                    iElement.find('>#trigger-transclusion').append(elementToAttach);
                 };
 
                 /**
@@ -94,34 +95,63 @@
                  * @description [PRIVATE] Unregister itself on element destroy
                  */
                 var attachUnregisterOnDestroy = function attachUnregisterOnDestroy() {
-                    scope.$on('$destroy', function() {
-                        accordionsCtrl.unregister(ctrl);
+                    scope.$on('$destroy', function () {
+                        accordionsCtrl.unregister(accordionItem);
                     });
                 };
 
-                registerToParent();
-                attachTriggerElement();
-                attachUnregisterOnDestroy();
-
-                //toggle function triggered on click
-                ctrl.toggle = function toggle() {
-                    accordionsCtrl.toggle(ctrl);
+                /**
+                 * @ngdoc method
+                 * @name open
+                 * @methodOf talend.widget.directive:TalendAccordionsItem
+                 * @description [PRIVATE] Open the accordion DOM element, trigger on open callback and update active flag
+                 */
+                var open = function open() {
+                    this.active = true;
+                    getContentElement().slideDown('fast');
+                    iElement.addClass('open');
+                    ctrl.onOpen();
                 };
 
-                //slide animation to open/hide content
-                scope.$watch(function() {
-                    return ctrl.active;
-                }, function(active) {
-                    if(active) {
-                        getContentElement().slideDown('fast');
-                        iElement.addClass('open');
-                        ctrl.onOpen();
-                    }
-                    else {
-                        getContentElement().slideUp('fast');
-                        iElement.removeClass('open');
-                    }
-                });
+                /**
+                 * @ngdoc method
+                 * @name close
+                 * @methodOf talend.widget.directive:TalendAccordionsItem
+                 * @description [PRIVATE] Close the accordion DOM element and update active flag
+                 */
+                var close = function close() {
+                    this.active = false;
+                    getContentElement().slideUp('fast');
+                    iElement.removeClass('open');
+                };
+
+                /**
+                 * @ngdoc method
+                 * @name initAccordionItem
+                 * @methodOf talend.widget.directive:TalendAccordionsItem
+                 * @description [PRIVATE] Init the accordion item to expose to the accordion parent.
+                 * It contains active flag, open and close functions.
+                 */
+                var initAccordionItem = function initAccordionItem() {
+                    accordionItem = {
+                        active: false,
+                        open: open,
+                        close: close
+                    };
+                };
+
+                initAccordionItem();
+                $timeout(registerToParent);
+                $timeout(attachTriggerElement);
+                attachUnregisterOnDestroy();
+
+                //------------------------------------------------------------------------------------------------
+                //--------------------------------------CONTROLLER INIT-------------------------------------------
+                //------------------------------------------------------------------------------------------------
+                //toggle item with impact ON WHOLE ACCORDION
+                ctrl.toggle = function toggle() {
+                    accordionsCtrl.toggle(accordionItem);
+                };
             }
         };
     }

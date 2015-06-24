@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -103,17 +104,19 @@ public class Split extends SingleColumnAction {
     @Override
     public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
 
-        String columnName = parameters.get(COLUMN_ID);
+        String columnId = parameters.get(COLUMN_ID);
         String realSeparator = getSeparator(parameters);
         int limit = Integer.parseInt(parameters.get(LIMIT));
 
         return (row, context) -> {
-            String originalValue = row.get(columnName);
+            String originalValue = row.get(columnId);
             if (originalValue != null) {
                 String[] split = originalValue.split(realSeparator, limit);
                 for (int i = 1; i <= limit; i++) {
                     String newValue = (i <= split.length ? split[i - 1] : StringUtils.EMPTY);
-                    row.set(columnName + SPLIT_APPENDIX + "_" + i, newValue);
+                    List<String> rowIds = row.values().keySet().stream().collect(Collectors.toList());
+                    Integer nextSplitIndex = getNextAvailableSplitIndex(rowIds, columnId);
+                    row.set(columnId + SPLIT_APPENDIX + "_" + nextSplitIndex, newValue);
                 }
             }
         };
@@ -130,34 +133,84 @@ public class Split extends SingleColumnAction {
         return (rowMetadata, context) -> {
 
             String columnId = parameters.get(COLUMN_ID);
+            int limit = Integer.parseInt(parameters.get(LIMIT));
 
-            List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
+            // go through the columns to be able to 'insert' the new columns just after the one needed.
+            for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
 
-            for (ColumnMetadata column : rowMetadata.getColumns()) {
-                ColumnMetadata newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
-                newColumns.add(newColumnMetadata);
+                ColumnMetadata column = rowMetadata.getColumns().get(i);
+                if (!StringUtils.equals(column.getId(), columnId)) {
+                    continue;
+                }
 
-                // append the split column
-                if (StringUtils.equals(columnId, column.getId())) {
-                    for (int i = 1; i <= Integer.parseInt(parameters.get(LIMIT)); i++) {
-                        newColumnMetadata = ColumnMetadata.Builder //
-                                .column() //
-                                .computedId(column.getId() + SPLIT_APPENDIX + "_" + i) //
-                                .name(column.getName() + SPLIT_APPENDIX + "_" + i) //
-                                .type(Type.get(column.getType())) //
-                                .empty(column.getQuality().getEmpty()) //
-                                .invalid(column.getQuality().getInvalid()) //
-                                .valid(column.getQuality().getValid()) //
-                                .headerSize(column.getHeaderSize()) //
-                                .build();
-                        newColumns.add(newColumnMetadata);
+                for (int j = 1; j <= limit; j++) {
+
+                    // get the new column id
+                    List<String> columnIds = new ArrayList<>(rowMetadata.size());
+                    rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
+
+                    Integer nextAvailableSplitIndex = getNextAvailableSplitIndex(columnIds, column.getId());
+                    if (nextAvailableSplitIndex == null) {
+                        // if this happen, let's not break anything
+                        break;
                     }
+
+                    // create the new column
+                    ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+                            .column() //
+                            .computedId(column.getId() + SPLIT_APPENDIX + '_' + nextAvailableSplitIndex) //
+                            .name(column.getName() + SPLIT_APPENDIX + '_' + nextAvailableSplitIndex) //
+                            .type(Type.get(column.getType())) //
+                            .empty(column.getQuality().getEmpty()) //
+                            .invalid(column.getQuality().getInvalid()) //
+                            .valid(column.getQuality().getValid()) //
+                            .headerSize(column.getHeaderSize()) //
+                            .build();
+
+                    // add the new column after the current one
+                    rowMetadata.getColumns().add(i + j, newColumnMetadata);
                 }
 
             }
 
-            // apply the new columns to the row metadata
-            rowMetadata.setColumns(newColumns);
         };
     }
+
+    /**
+     * Return the next available split index for the given column within the given ids.
+     *
+     * This is useful in case a column is split several times.
+     *
+     * @param columnsId the columns id.
+     * @param columnId the column id to split.
+     * @return the next available split index or null if not found.
+     */
+    private Integer getNextAvailableSplitIndex(List<String> columnsId, String columnId) {
+
+        for (int i = 1; i < 1000; i++) {
+            String temp = columnId + SPLIT_APPENDIX + '_' + i;
+            if (!contains(columnsId, temp)) {
+                return i;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Return true if the given list of String contains the wanted one.
+     *
+     * @param strings the list of Strings to search.
+     * @param wanted the wanted string.
+     * @return true if the given list of String contains the wanted one.
+     */
+    private boolean contains(List<String> strings, String wanted) {
+        for (String current : strings) {
+            if (StringUtils.equals(current, wanted)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
