@@ -148,6 +148,15 @@ public class DataSetRowTest {
     }
 
     @Test
+    public void testNoOrder() throws Exception {
+        DataSetRow row = createRow(defaultValues(), false);
+        // Reorder with 0 column is equivalent to clone().
+        final DataSetRow order = row.order(Collections.emptyList());
+        assertTrue(row != order);
+        assertThat(row.values(), is(order.values()));
+    }
+
+    @Test
     public void testIncorrectOrder() throws Exception {
         DataSetRow row = createRow(defaultValues(), false);
         // Reorder with 1 column should fail (not enough column, expected 4 columns).
@@ -159,13 +168,6 @@ public class DataSetRowTest {
         };
         try {
             row.order(newOrder);
-            fail();
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
-        // Reorder with empty column should fail too
-        try {
-            row.order(Collections.emptyList());
             fail();
         } catch (IllegalArgumentException e) {
             // Expected

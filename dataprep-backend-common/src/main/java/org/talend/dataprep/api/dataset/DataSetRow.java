@@ -220,6 +220,9 @@ public class DataSetRow implements Cloneable {
         if (columns == null) {
             throw new IllegalArgumentException("Columns cannot be null.");
         }
+        if (columns.isEmpty()) {
+            return clone();
+        }
         if (columns.size() != values.size()) {
             throw new IllegalArgumentException("Expected " + values.size() + " columns but got " + columns.size());
         }
