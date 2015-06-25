@@ -62,9 +62,6 @@
                     grid.setCellCssStyles('highlight', {});
                 };
 
-                var redRect = '<div title="Invalid Value" class="red-rect"></div>';
-                var invisibleRect = '<div class="invisible-rect"></div>';
-
                 /**
                  * @ngdoc method
                  * @name formatter
@@ -109,10 +106,10 @@
 
                         //no preview
                         if(invalidValues.indexOf(returnStr) >= 0){
-                            return returnStr + redRect;
+                            return returnStr + '<div title="Invalid Value" class="red-rect"></div>';
                         }
                         else {
-                            return returnStr + invisibleRect;
+                            return returnStr + '<div class="invisible-rect"></div>';
                         }
 
                     };
