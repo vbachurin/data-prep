@@ -9,7 +9,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class CloneInputStream extends InputStream {
+public class CloneInputStream extends InputStream {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloneInputStream.class);
 
@@ -17,9 +17,9 @@ class CloneInputStream extends InputStream {
 
     private final Collection<OutputStream> destinations;
 
-    public CloneInputStream(InputStream inputStream, Collection<OutputStream> destinations) {
+    public CloneInputStream(InputStream inputStream, OutputStream... destinations) {
         this.inputStream = inputStream;
-        this.destinations = destinations;
+        this.destinations = Arrays.asList(destinations);
     }
 
     @Override
