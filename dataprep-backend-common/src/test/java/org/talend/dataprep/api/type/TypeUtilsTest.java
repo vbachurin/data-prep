@@ -14,51 +14,49 @@ public class TypeUtilsTest {
 
     @Test
     public void testConvertString() throws Exception {
-        ColumnMetadata metadata = column().type(Type.ANY).build();
+        ColumnMetadata metadata = column().id(1).type(Type.ANY).build();
         DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
         assertThat(types[0], is(DataType.Type.STRING));
 
-        metadata = column().type(Type.STRING).build();
+        metadata = column().id(2).type(Type.STRING).build();
         types = TypeUtils.convert(Collections.singletonList(metadata));
         assertThat(types[0], is(DataType.Type.STRING));
     }
 
     @Test
     public void testConvertInteger() throws Exception {
-        ColumnMetadata metadata = column().type(Type.NUMERIC).build();
+        ColumnMetadata metadata = column().id(1).type(Type.NUMERIC).build();
         DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
         assertThat(types[0], is(DataType.Type.INTEGER));
 
-        metadata = column().type(Type.INTEGER).build();
+        metadata = column().id(2).type(Type.INTEGER).build();
         types = TypeUtils.convert(Collections.singletonList(metadata));
         assertThat(types[0], is(DataType.Type.INTEGER));
     }
 
     @Test
     public void testConvertDouble() throws Exception {
-        ColumnMetadata metadata = column().type(Type.DOUBLE).build();
+        ColumnMetadata metadata = column().id(1).type(Type.DOUBLE).build();
         DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
         assertThat(types[0], is(DataType.Type.DOUBLE));
 
-        metadata = column().type(Type.FLOAT).build();
+        metadata = column().id(2).type(Type.FLOAT).build();
         types = TypeUtils.convert(Collections.singletonList(metadata));
         assertThat(types[0], is(DataType.Type.DOUBLE));
     }
 
     @Test
     public void testConvertBoolean() throws Exception {
-        ColumnMetadata metadata = column().type(Type.BOOLEAN).build();
+        ColumnMetadata metadata = column().id(1).type(Type.BOOLEAN).build();
         final DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
         assertThat(types[0], is(DataType.Type.BOOLEAN));
     }
 
     @Test
     public void testConvertDate() throws Exception {
-        ColumnMetadata metadata = column().type(Type.DATE).build();
+        ColumnMetadata metadata = column().id(1).type(Type.DATE).build();
         final DataType.Type[] types = TypeUtils.convert(Collections.singletonList(metadata));
         assertThat(types[0], is(DataType.Type.DATE));
     }
-
-
 
 }
