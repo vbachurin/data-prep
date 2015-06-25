@@ -5,8 +5,12 @@
         var vm = this;
         vm.datasetGridService = DatagridService;
         vm.chartConfig = {};
-        vm.barchartClickFn = StatisticsService.addFilter;
+        vm.barchartClickFn = function barchartClickFn (item){
+            return StatisticsService.addFilter(item.data);
+        };
+
         vm.processedData = null;
+
         $scope.$watch(function(){
             return StatisticsService.data;
         }, function(newData){
