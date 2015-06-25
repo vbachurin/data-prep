@@ -35,6 +35,7 @@
     function TalendDropdown($window) {
         return {
             restrict: 'EA',
+            replace: true,
             transclude: true,
             templateUrl: 'components/widgets/dropdown/dropdown.html',
             scope: {
