@@ -13,20 +13,29 @@
 	function HorizontalBarchart (StatisticsService) {
 		return {
 			restrict: 'E',
+			scope:{
+				barchartClick:'&',
+				fieldPlucked:'@',
+				visuData:"="
+			},
 			link: function (scope, element, attrs) {
-				var statData = [];
-				scope.$watch(function(){
-					return StatisticsService.data;
+				var statData = scope.visuData;//[];
+				console.log(statData);
+				if(statData){
+					renderBarchart(scope);
+				}
+				scope.$watchCollection(function(){
+					return scope.visuData;
 				}, function(newData){
 					element.empty();
 
 					statData = newData;
 					if(statData){
-						renderBarchart();
+						renderBarchart(scope);
 					}
 				});
 
-				function renderBarchart(){
+				function renderBarchart(scope){
 					var container = attrs.id;
 					var width = +attrs.width;
 					var height = Math.ceil(((+attrs.height)/15)*(statData.length + 1));
@@ -116,7 +125,8 @@
 							tip.hide(d);
 						})
 						.on('click',function(d){
-							StatisticsService.addFilter(d.data);
+							var expressionHandler = scope.barchartClick();
+							expressionHandler(d[scope.fieldPlucked]);
 						});
 				}
 			}

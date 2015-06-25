@@ -110,11 +110,11 @@ describe('Statistics service', function() {
 	it('Should add a new filter', inject(function(StatisticsService, FilterService, $timeout) {
 		//given
 		StatisticsService.selectedColumn = {};
-		StatisticsService.selectedColumn.id = "toto";
+		StatisticsService.selectedColumn.id = 'toto';
 		spyOn(FilterService, 'addFilter').and.returnValue();
 
 		//when
-		StatisticsService.addFilter("volvo");
+		StatisticsService.addFilter('volvo');
 		$timeout.flush();
 
 		//then
