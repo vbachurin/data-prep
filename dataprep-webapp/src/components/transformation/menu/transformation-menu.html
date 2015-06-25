@@ -15,11 +15,8 @@
             <div class="modal-title">{{ menuCtrl.menu.label }}</div>
             <div class="modal-subtitle">{{ menuCtrl.menu.description }}</div>
 
-            <div >
-                <div data-icon="d" class="icon continuous-rotate"></div>
-                <!--<img class="continuous-rotate"-->
-                     <!--style="background-color: grey"-->
-                     <!--src="/components/widgets/loading/loading.png"/>-->
+            <div ng-if="menuCtrl.menu.dynamic && menuCtrl.dynamicFetchInProgress">
+                <i data-icon="e" class="icon continuous-rotate"></i>
             </div>
             <transform-params transformation="menuCtrl.menu"
                               on-submit="menuCtrl.transform(params)"></transform-params>
