@@ -19,65 +19,67 @@
   $dropdown-arrow-top-distance: 0;
 
   margin: 10px 0px 0px 0px;
-  border-radius: 7px;
   position: absolute;
   right: 100px;
   top: -3px;
 
+
   .dropdown-container {
-    border-radius: 5px;
     line-height: 30px;
     display: inline-block;
     position: relative;
     text-align: center;
-    background: $dark-green;
     cursor: pointer;
   }
 
   .dropdown-description {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
     line-height: 36px;
     background: $dark-green;
     color: $white;
     float: left;
-    font-size: 0.7em;
     text-transform: uppercase;
     margin: 0px 0px 0px 0px;
     padding: 0px 5px 0px 10px;
+    font-size: 1em;
 
-    @include media($large-screen) {
-      font-size: 1em;
+    &:hover {
+      background-color: darken($dark-green, 5%);
+      cursor: cursor;
     }
   }
 
   .dropdown-button {
-    line-height: 40px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    line-height: 36px;
     background: $dark-green;
     border-color: transparent;
     cursor: hand;
     float: right;
-    font-size: 0.7em;
     font-weight: 800;
     margin: 0px 0px 0px 0px;
-    padding: 5px 0px 5px 0px;
-
-    @include media($large-screen) {
-      font-size: 1em;
-      padding: 0px 20px 0px 5px;
-    }
+    font-size: 1em;
+    padding: 0px 15px 0px 5px;
 
     &:hover {
-      background-color: darken($dark-green, 10%);
-      cursor: hand;
+      background-color: darken($dark-green, 5%);
+      cursor: cursor;
     }
 
     &:after {
-      padding: 0px 10px 0px 10px;
+      padding: 0px 10px 0px 2px;
       color: $white;
       content: "\25BE";
       display: block;
       position: absolute;
       right: 0px;
-      top: -3px;
+      top: -1px;
       cursor: pointer;
     }
   }
