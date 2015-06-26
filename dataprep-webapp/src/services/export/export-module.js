@@ -6,5 +6,5 @@
      * @name data-prep.services.export
      * @description This module contains the services for export
      */
-    angular.module('data-prep.services.export', []);
+    angular.module('data-prep.services.export', ['data-prep.services.utils']);
 })();

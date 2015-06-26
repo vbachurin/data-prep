@@ -17,9 +17,9 @@
         /**
          * @ngdoc method
          * @name exportTypes
-         * @methodOf data-prep.services.export.service:DatasetRestService
-         * @description returns the export types list
-         * @returns {Promise} - the GET call promise
+         * @methodOf data-prep.services.export.service:ExportRestService
+         * @description Fetch the available export types
+         * @returns {Promise}  The GET call promise
          */
         self.exportTypes = function() {
             return $http.get(RestURLs.exportUrl + '/types');
