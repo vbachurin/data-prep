@@ -11,6 +11,9 @@
 
         vm.processedData = null;
 
+        /*
+        * Update the Barchart data
+        * */
         $scope.$watch(function(){
             return StatisticsService.data;
         }, function(newData){

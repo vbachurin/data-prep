@@ -7,7 +7,14 @@
 	 * @description This directive renders the horizontal bar chart.
 	 * @restrict E
 	 * @usage
-	 * <horizontal-barchart id="containerId" width="width" height="height"></horizontal-barchart>
+	 *     <horizontal-barchart id="barChart"
+	 *			 width="250"
+	 *			 height="400"
+	 *			 on-click="columnProfileCtrl.barchartClickFn"
+	 *			 visu-data="columnProfileCtrl.processedData"
+	 *			 key-field="occurrences"
+	 *			 value-field="data"
+	 *		 ></horizontal-barchart>
 	 * */
 
 	function HorizontalBarchart () {
