@@ -1,5 +1,6 @@
 package org.talend.dataprep.configuration;
 
+import java.io.File;
 import java.net.URI;
 
 import org.apache.hadoop.fs.FileSystem;
@@ -26,7 +27,7 @@ public class HDFS {
     public FileSystem getHDFSFileSystem() {
         try {
             FileSystem fileSystem = FileSystem.get(new URI(hdfsLocation), new org.apache.hadoop.conf.Configuration());
-            LOGGER.info("HDFS file system: {} ({}).", fileSystem.getClass(), fileSystem.getUri());
+            LOGGER.info("HDFS file system: {} ({}).", fileSystem.getClass(), new File(fileSystem.getUri()).getAbsolutePath());
             return fileSystem;
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_CONNECT_TO_HDFS, e, TDPExceptionContext.build().put("location",

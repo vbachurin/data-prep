@@ -84,6 +84,7 @@ public class CloneInputStream extends InputStream {
         inputStream.close();
         destinations.forEach(out -> {
             try {
+                out.flush();
                 out.close();
             } catch (IOException e) {
                 LOG.error("Unable to write to '" + out + "'.", e);

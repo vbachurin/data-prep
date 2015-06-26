@@ -7,19 +7,20 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
 @Component
+@EnableScheduling
 @ConditionalOnProperty(name = "hdfs.location")
 public class HDFSContentCache implements ContentCache {
 
@@ -32,24 +33,52 @@ public class HDFSContentCache implements ContentCache {
         LOGGER.info("Using content cache: {}", this.getClass().getName());
     }
 
-    private static Path getPath(String preparationId, String stepId) {
-        return new Path("preparations/" + preparationId + "/" + stepId);
+    private Path getPath(String preparationId, String stepId) {
+        try {
+            if ("origin".equalsIgnoreCase(stepId)) {
+                stepId = Step.ROOT_STEP.id();
+            }
+            final Path preparation = new Path("preparations/" + preparationId);
+            final String filteringStepId = stepId;
+            final FileStatus[] statuses = fileSystem.listStatus(preparation, p -> {
+                return p.getName().startsWith(filteringStepId);
+            });
+            FileStatus electedFile = null;
+            int maxTTL = 0;
+            for (FileStatus status : statuses) {
+                final String suffix = StringUtils.substringAfterLast(status.getPath().getName(), ".");
+                if (Long.parseLong(suffix) > maxTTL) {
+                    electedFile = status;
+                }
+            }
+            if (electedFile == null) {
+                return null;
+            }
+            return electedFile.getPath();
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
     }
 
     @Override
     public boolean has(String preparationId, String stepId) {
-        try {
-            final Path path = getPath(preparationId, stepId);
-            return fileSystem.exists(path);
-        } catch (IOException e) {
-            return false;
+        final Path path = getPath(preparationId, stepId);
+        final boolean exists = path != null;
+        if (exists) {
+            LOGGER.debug("[{} @{}] Cache hit.", preparationId, stepId);
+        } else {
+            LOGGER.debug("[{} @{}] Cache miss.", preparationId, stepId);
         }
+        return exists;
     }
 
     @Override
     public InputStream get(String preparationId, String stepId) {
         try {
             final Path path = getPath(preparationId, stepId);
+            if (path == null) {
+                throw new IllegalArgumentException("No cache for preparation #" + preparationId + " @ " + stepId);
+            }
             return fileSystem.open(path);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
@@ -59,15 +88,30 @@ public class HDFSContentCache implements ContentCache {
     @Override
     public OutputStream put(String preparationId, String stepId, TimeToLive timeToLive) {
         try {
-            final Path path = getPath(preparationId, stepId);
             // Adds suffix for time to live checks
-            path.suffix("." + String.valueOf(System.currentTimeMillis() + timeToLive.getTime()));
+            final Path preparation = new Path("preparations/" + preparationId + "/" + stepId);
+            final Path path = preparation.suffix("." + String.valueOf(System.currentTimeMillis() + timeToLive.getTime()));
             final boolean created = fileSystem.createNewFile(path);
             if (!created) {
-                LOGGER.error("Unable to create cache for {} at step {}", preparationId, stepId);
+                LOGGER.error("[{} @{}] Unable to create cache.", preparationId, stepId);
                 return new NullOutputStream();
             }
             return fileSystem.create(path);
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
+    @Override
+    public void evict(String preparationId, String stepId) {
+        try {
+            LOGGER.debug("[{} @{}] Evict.", preparationId, stepId);
+            final Path path = getPath(preparationId, stepId);
+            if (path == null) {
+                LOGGER.debug("[{} @{}] Evict failed: file already deleted.", preparationId, stepId);
+                return;
+            }
+            fileSystem.rename(path, path.suffix(".0"));
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
@@ -81,22 +125,26 @@ public class HDFSContentCache implements ContentCache {
         try {
             final long start = System.currentTimeMillis();
             LOGGER.debug("Janitor process started @ {}.", start);
-            final FileStatus[] statuses = fileSystem.listStatus(new Path("/preparations"), path -> {
-                final String suffix = StringUtils.substringAfterLast(path.getName(), ".");
-                final long time = Long.parseLong(suffix);
-                return time > start;
-            });
+            final RemoteIterator<LocatedFileStatus> files = fileSystem.listFiles(new Path("preparations/"), true);
             int deletedCount = 0;
-            for (FileStatus status : statuses) {
-                try {
-                    fileSystem.delete(status.getPath(), true);
-                    deletedCount++;
-                } catch (IOException e) {
-                    LOGGER.error("Unable to delete '" + status.getPath() + "'.", e);
+            int totalCount = 0;
+            while (files.hasNext()) {
+                final LocatedFileStatus fileStatus = files.next();
+                final Path path = fileStatus.getPath();
+                final String suffix = StringUtils.substringAfterLast(path.getName(), ".");
+                final long time = Long.parseLong(StringUtils.isEmpty(suffix) ? "0": suffix);
+                if(time < start) {
+                    try {
+                        fileSystem.delete(path, true);
+                        deletedCount++;
+                    } catch (IOException e) {
+                        LOGGER.error("Unable to delete '{}'.", path, e);
+                    }
                 }
+                totalCount++;
             }
             LOGGER.debug("Janitor process ended @ {} ({}/{} files successfully deleted).", System.currentTimeMillis(),
-                    deletedCount, statuses.length);
+                    deletedCount, totalCount);
         } catch (IOException e) {
             LOGGER.error("Unable to clean up cache.", e);
         }

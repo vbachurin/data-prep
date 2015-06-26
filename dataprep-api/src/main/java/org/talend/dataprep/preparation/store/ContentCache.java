@@ -40,4 +40,13 @@ public interface ContentCache {
      * @return A {@link OutputStream output stream} to be used to write content in cache entry
      */
     OutputStream put(String preparationId, String stepId, HDFSContentCache.TimeToLive timeToLive);
+
+    /**
+     * Mark cache entry as invalid for given <code>preparationId</code> at step <code>stepId</code>. After this method
+     * completes, {@link #has(String, String)} must immediately return <code>false</code>.
+     * 
+     * @param preparationId A non-null {@link org.talend.dataprep.api.preparation.Preparation preparation} preparationId.
+     * @param stepId A non-null {@link org.talend.dataprep.api.preparation.Step step} preparationId.
+     */
+    void evict(String preparationId, String stepId);
 }
