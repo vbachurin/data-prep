@@ -7,26 +7,31 @@
 	 * @description This directive renders the horizontal bar chart.
 	 * @restrict E
 	 * @usage
-	 * <horizontal-barchart id="containerId" width="width" height="height"></horizontal-barchart>
+	 *     <horizontal-barchart id="barChart"
+	 *			 width="250"
+	 *			 height="400"
+	 *			 on-click="columnProfileCtrl.barchartClickFn"
+	 *			 visu-data="columnProfileCtrl.processedData"
+	 *			 key-field="occurrences"
+	 *			 value-field="data"
+	 *		 ></horizontal-barchart>
 	 * */
 
-	function HorizontalBarchart (StatisticsService) {
+	function HorizontalBarchart () {
 		return {
 			restrict: 'E',
+			scope:{
+				onClick:'&',
+				visuData:'=',
+				keyField:'@',
+				valueField:'@'
+			},
 			link: function (scope, element, attrs) {
-				var statData = [];
-				scope.$watch(function(){
-					return StatisticsService.data;
-				}, function(newData){
-					element.empty();
+				var statData = scope.visuData;
+				var xField = scope.keyField;//occurences
+				var yField = scope.valueField;
 
-					statData = newData;
-					if(statData){
-						renderBarchart();
-					}
-				});
-
-				function renderBarchart(){
+				function renderBarchart(scope){
 					var container = attrs.id;
 					var width = +attrs.width;
 					var height = Math.ceil(((+attrs.height)/15)*(statData.length + 1));
@@ -45,7 +50,7 @@
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
-							return '<strong>Occurences:</strong> <span style="color:yellow">' + d.occurrences + '</span>';
+							return '<strong>Occurences:</strong> <span style="color:yellow">' + d[xField] + '</span>';
 						});
 
 					var svg = d3.select('#'+container).append('svg')
@@ -57,24 +62,24 @@
 					svg.call(tip);
 
 					// Parse numbers, and sort by value.
-					statData.forEach(function(d) { d.occurrences = +d.occurrences; });
-					//statData.sort(function(a, b) { return b.occurrences - a.occurrences; });
+					statData.forEach(function(d) { d[xField] = +d[xField]; });
+					//statData.sort(function(a, b) { return b[xField] - a[xField]; });
 
 					// Set the scale domain.
-					x.domain([0, d3.max(statData, function(d) { return d.occurrences; })]);
-					y.domain(statData.map(function(d) { return d.data; }));
+					x.domain([0, d3.max(statData, function(d) { return d[xField]; })]);
+					y.domain(statData.map(function(d) { return d[yField]; }));
 
 					var bar = svg.selectAll('g.bar')
 						.data(statData)
 						.enter().append('g')
 						.attr('class', 'bar')
-						.attr('transform', function(d) { return 'translate(0,' + y(d.data) + ')'; });
+						.attr('transform', function(d) { return 'translate(0,' + y(d[yField]) + ')'; });
 
 					bar.append('rect')
 						.attr('width', x(0))
 						.attr('height', y.rangeBand())
 						.transition().delay(function (d,i){ return i * 30;})
-						.attr('width', function(d) { return x(d.occurrences); })
+						.attr('width', function(d) { return x(d[xField]); })
 						.attr('height', y.rangeBand());
 
 					svg.append('g')
@@ -93,13 +98,13 @@
 						.attr('dy', '.35em')
 						.attr('text-anchor', 'start')
 						.transition().delay(function (d,i){ return i * 30;})
-						.text(function(d) { return d.data?d.data:'(EMPTY)';/* + '  ' + d.occurrences;*/});
+						.text(function(d) { return d[yField]?d[yField]:'(EMPTY)';/* + '  ' + d[xField];*/});
 
 					/************btgrect*********/
 					var bgBar = svg.selectAll('g.bg-rect')
 						.data(statData)
 						.enter().append('g')
-						.attr('transform', function(d) { return 'translate(0,' + (y(d.data)-2) + ')'; });
+						.attr('transform', function(d) { return 'translate(0,' + (y(d[yField])-2) + ')'; });
 
 					bgBar.append('rect')
 						.attr('width', w+100)
@@ -116,9 +121,24 @@
 							tip.hide(d);
 						})
 						.on('click',function(d){
-							StatisticsService.addFilter(d.data);
+							scope.onClick()(d);
+							//var expressionHandler = ;
+							//expressionHandler(d);
 						});
 				}
+
+				if(statData){
+					renderBarchart(scope);
+				}
+				scope.$watchCollection('visuData',
+					function(newData){
+					element.empty();
+
+					statData = newData;
+					if(statData){
+						renderBarchart(scope);
+					}
+				});
 			}
 		};
 	}

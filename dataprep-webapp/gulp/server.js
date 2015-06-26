@@ -30,7 +30,9 @@ function browserSyncInit(baseDir, files, browser) {
 
 }
 
+//serve the app for dev, it uses the utils.constant.mine.js prioritarily.
 gulp.task('serve', ['clean'], function () {
+  gulp.start('copy-personnal-files');
   gulp.start('watch');
   browserSyncInit([
     '.tmp',
@@ -44,6 +46,23 @@ gulp.task('serve', ['clean'], function () {
     'src/**/*.html'
   ]);
 });
+
+//serve the app for dev, ignoring the file  utils.constant.mine.js.
+gulp.task('serve:default', ['clean'], function () {
+  gulp.start('watch');
+  browserSyncInit([
+    '.tmp',
+    'src'
+  ], [
+    '.tmp/**/*.css',
+    'src/**/*.js',
+    'src/assets/images/**/*',
+    '.tmp/*.html',
+    '.tmp/**/*.html',
+    'src/**/*.html'
+  ]);
+});
+
 
 gulp.task('serve:dist', ['build'], function () {
   browserSyncInit('dist');

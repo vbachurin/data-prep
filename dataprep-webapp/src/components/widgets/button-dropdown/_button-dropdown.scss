@@ -12,6 +12,7 @@
     background: $button-background-color;
     color: $button-color;
     cursor: pointer;
+    height: 36px;
 
     font-size: 0.7em;
     @include media($large-screen) {
@@ -26,21 +27,19 @@
   .button-dropdown-main {
     @include button-dropdown-style();
 
-    border-radius: 7px 0 0 7px;
-    padding-right: 7px;
+    border-radius: 3px 0 0 3px;
+    padding: 0 7px 0 10px;
     text-transform: uppercase;
   }
 
   .button-dropdown-side {
     @include button-dropdown-style();
 
-    border-radius: 0 7px 7px 0;
+    border-radius: 0 3px 3px 0;
     font-weight: 800;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 0 10px;
     margin-left: -5px;
 
-    height: auto;
     width: auto;
 
     &:hover {

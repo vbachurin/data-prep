@@ -2,6 +2,10 @@
     <horizontal-barchart id="barChart"
                 width="250"
                 height="400"
+                on-click="columnProfileCtrl.barchartClickFn"
+                visu-data="columnProfileCtrl.processedData"
+                key-field="occurrences"
+                value-field="data"
                ></horizontal-barchart>
 
     <highchart id="geochart"

@@ -430,7 +430,7 @@
                 var alignRightNumbers = function(){
                     _.each(grid.getColumns(), function(rawCol){
                         var colType = rawCol.tdpColMetadata.type;
-                        if (ConverterService.toInputType(colType) === 'number'){
+                        if (ConverterService.simplifyType(colType) === 'number'){
                             alignColRight(rawCol);
                         }
                     });

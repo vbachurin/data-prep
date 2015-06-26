@@ -114,7 +114,7 @@ public class RecordsTransformerStep implements TransformerStep {
                 process.forEach(row -> {
                     if (!row.row.isDeleted()) {
                         // Clone original value since row instance is reused.
-                        transformedRows.add(row.row.clone());
+                        transformedRows.add(row.row.order(context.getTransformedRowMetadata().getColumns()));
                     }
                     writeRow(writer, row.row);
                 });
