@@ -24,12 +24,12 @@ describe('horizontalBarchart directive', function () {
 				console.log(obj);
 			};
 
-			element = angular.element('<horizontal-barchart id="barChart" width="250" height="400"'
-											+ 'on-click="onclck"'
-											+ 'visu-data="visData"'
-											+ 'key-field="occurrences"'
-											+ 'value-field="data"'
-											+ '></horizontal-barchart>');
+			element = angular.element('<horizontal-barchart id="barChart" width="250" height="400"'+
+											 'on-click="onclck"'+
+											 'visu-data="visData"'+
+											 'key-field="occurrences"'+
+											 'value-field="data"'+
+											 '></horizontal-barchart>');
 
 			angular.element('body').append(element);
 			$compile(element)(scope);
@@ -43,7 +43,7 @@ describe('horizontalBarchart directive', function () {
 		StatisticsService.resetCharts();
 	}));
 
-	it('should render all bars', (function () {
+	it('should render all bars', function () {
 		//given
 		createElement();
 
@@ -56,7 +56,7 @@ describe('horizontalBarchart directive', function () {
 		expect(element.find('.value').length).toBe(statsData.length);
 		expect(element.find('.bg-rect').length).toBe(statsData.length);
 		expect(element.find('.bar').length).toBe(statsData.length);
-	}));
+	});
 
 	//waiting for a solution for this issue PhantomJs + svg :
 	// https://github.com/ariya/phantomjs/issues/13293
