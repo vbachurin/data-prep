@@ -109,6 +109,10 @@ public class Split extends SingleColumnAction {
         int limit = Integer.parseInt(parameters.get(LIMIT));
 
         return (row, context) -> {
+            // defensive programming
+            if (StringUtils.isEmpty(realSeparator)) {
+                return;
+            }
             String originalValue = row.get(columnId);
             if (originalValue != null) {
                 String[] split = originalValue.split(realSeparator, limit);
@@ -130,10 +134,15 @@ public class Split extends SingleColumnAction {
     @Override
     public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
 
+        String columnId = parameters.get(COLUMN_ID);
+        int limit = Integer.parseInt(parameters.get(LIMIT));
+
         return (rowMetadata, context) -> {
 
-            String columnId = parameters.get(COLUMN_ID);
-            int limit = Integer.parseInt(parameters.get(LIMIT));
+            // defensive programming
+            if (StringUtils.isEmpty(getSeparator(parameters))) {
+                return;
+            }
 
             // go through the columns to be able to 'insert' the new columns just after the one needed.
             for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
