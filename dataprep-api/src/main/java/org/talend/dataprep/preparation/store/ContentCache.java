@@ -35,7 +35,9 @@ public interface ContentCache {
      * 
      * @param preparationId A non-null {@link org.talend.dataprep.api.preparation.Preparation preparation} id.
      * @param stepId A non-null {@link org.talend.dataprep.api.preparation.Step step} id.
+     * @param timeToLive The {@link org.talend.dataprep.preparation.store.HDFSContentCache.TimeToLive TTL} for the new
+     * cache entry.
      * @return A {@link OutputStream output stream} to be used to write content in cache entry
      */
-    OutputStream put(String preparationId, String stepId);
+    OutputStream put(String preparationId, String stepId, HDFSContentCache.TimeToLive timeToLive);
 }

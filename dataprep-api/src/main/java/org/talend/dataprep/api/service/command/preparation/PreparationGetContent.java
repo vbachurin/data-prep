@@ -15,6 +15,7 @@ import org.talend.dataprep.api.service.command.common.PreparationCommand;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
 import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.HDFSContentCache;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -55,6 +56,6 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
         final Transform transformCommand = context.getBean(Transform.class, client, retrieveDataSet, encodedActions);
 
         // ... and send it back to user (but saves it back in content cache).
-        return new CloneInputStream(transformCommand.execute(), contentCache.put(id, version));
+        return new CloneInputStream(transformCommand.execute(), contentCache.put(id, version, HDFSContentCache.TimeToLive.DEFAULT));
     }
 }
