@@ -1,7 +1,5 @@
 package org.talend.dataprep.api.dataset;
 
-import static org.springframework.util.StringUtils.isEmpty;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
@@ -260,7 +258,7 @@ public class ColumnMetadata {
     public static class Builder {
 
         /** The column id. */
-        private int id;
+        private Integer id;
 
         /** The column computedId. */
         private String computedId;
@@ -410,7 +408,7 @@ public class ColumnMetadata {
          */
         public ColumnMetadata build() {
             ColumnMetadata columnMetadata;
-            if (StringUtils.isEmpty(computedId)) {
+            if (id != null) {
                 columnMetadata = new ColumnMetadata(id, name, type.getName());
             } else {
                 columnMetadata = new ColumnMetadata(computedId, name, type.getName());

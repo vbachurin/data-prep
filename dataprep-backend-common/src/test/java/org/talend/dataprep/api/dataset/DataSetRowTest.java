@@ -14,6 +14,47 @@ import org.talend.dataprep.api.type.Type;
 
 public class DataSetRowTest {
 
+
+    /**
+     * Test the clear method.
+     */
+    @Test
+    public void should_clear_row() {
+        DataSetRow row = createRow(defaultValues(), true);
+        row.diff(createRow(defaultValues(), false));
+
+        row.clear();
+
+        assertFalse(row.isDeleted());
+        assertTrue(row.values().isEmpty());
+    }
+
+    /**
+     * Test the should write method.
+     */
+    @Test
+    public void write_or_not_write_that_is_the_question() {
+        // no old value not deleted --> write
+        DataSetRow row = createRow(defaultValues(), false);
+        assertTrue(row.shouldWrite());
+
+        // no old value and deleted --> don't write
+        row.setDeleted(true);
+        assertFalse(row.shouldWrite());
+
+        // old value and deleted --> write
+        row.diff(createRow(defaultValues(), false));
+        assertTrue(row.shouldWrite());
+
+        // old deleted value and deleted --> don't write
+        row.diff(createRow(defaultValues(), true));
+        assertFalse(row.shouldWrite());
+
+        // old deleted value and not deleted --> don't write
+        row.setDeleted(false);
+        assertTrue(row.shouldWrite());
+    }
+
     /**
      * Test the new flag.
      */
@@ -189,7 +230,6 @@ public class DataSetRowTest {
     private DataSetRow createRow(final Map<String, String> values, final boolean isDeleted) {
         final DataSetRow row = new DataSetRow(values);
         row.setDeleted(isDeleted);
-
         return row;
     }
 
