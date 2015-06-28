@@ -51,6 +51,16 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>talend-releases</id>
+            <url>http://newbuild.talend.com:8081/nexus/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
     <modules>
         <module>../dataprep-backend-common</module>

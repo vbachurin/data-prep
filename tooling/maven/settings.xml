@@ -8,5 +8,10 @@
             <username>development</username>
             <password>dev123</password>
         </server>
+        <server>
+            <id>talend-releases</id>
+            <username>development</username>
+            <password>dev123</password>
+        </server>
     </servers>
 </settings>
