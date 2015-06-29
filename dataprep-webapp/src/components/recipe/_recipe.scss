@@ -8,7 +8,7 @@
   color: $color;
   font-size: 0.95em;
 
-  .content-container {
+  > .content > .content-container {
     padding-right: 14px;
   }
 
@@ -71,16 +71,6 @@
 
     &:hover{
       color: $color-not-active-hover;
-    }
-  }
-
-  /*************************************Parameters**********************************/
-  .submenu {
-    background: darken($background, 10%);
-    padding: 5px;
-
-    input {
-      color: #000000 !important;
     }
   }
 

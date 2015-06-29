@@ -9,16 +9,16 @@
      * @usage
      <talend-accordions>
          <talend-accordions-item on-open='fn' default='true'>
-             <div id="trigger"></div>
-             <div id="content"></div>
+             <div class="trigger"></div>
+             <div class="content"></div>
          </talend-accordions-item>
          <talend-accordions-item>
-             <div id="trigger"></div>
-             <div id="content"></div>
+             <div class="trigger"></div>
+             <div class="content"></div>
          </talend-accordions-item>
          <talend-accordions-item>
-             <div id="trigger"></div>
-             <div id="content"></div>
+             <div class="trigger"></div>
+             <div class="content"></div>
          </talend-accordions-item>
      </talend-accordions>
      * @param {div} trigger The trigger element that will be injected in the trigger transclusion point
@@ -43,6 +43,8 @@
             link: function (scope, iElement, iAttrs, accordionsCtrl) {
                 var ctrl = scope.accordionsItemCtrl;
                 var contentElement, accordionItem;
+                var triggerContainer = iElement.find('>.trigger-container');
+                var contentContainer = iElement.find('>.content-container');
 
                 //------------------------------------------------------------------------------------------------
                 //---------------------------------------------INIT-----------------------------------------------
@@ -57,7 +59,7 @@
                     if (contentElement) {
                         return contentElement;
                     }
-                    var fetchContent = iElement.find('#content').eq(0);
+                    var fetchContent = contentContainer.find('>.content').eq(0);
                     if (fetchContent.length) {
                         contentElement = fetchContent;
                     }
@@ -84,8 +86,8 @@
                  * @description [PRIVATE] Place trigger element in the trigger zone
                  */
                 var attachTriggerElement = function attachTriggerElement() {
-                    var elementToAttach = iElement.find('#trigger').eq(0);
-                    iElement.find('>#trigger-transclusion').append(elementToAttach);
+                    var elementToAttach = contentContainer.find('>.trigger').eq(0);
+                    triggerContainer.append(elementToAttach);
                 };
 
                 /**
