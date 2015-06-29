@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -11,133 +11,92 @@
      * @requires data-prep.services.utils.service:RestURLs
      * @requires data-prep.services.export.service:ExportService
      */
-    function ExportCtrl($window,PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService) {
+    function ExportCtrl($timeout, PlaygroundService, PreparationService, RecipeService, RestURLs, ExportService) {
         var vm = this;
-        vm.exportUrl = RestURLs.exportUrl;
         vm.preparationService = PreparationService;
         vm.recipeService = RecipeService;
         vm.playgroundService = PlaygroundService;
         vm.exportService = ExportService;
 
-        // all export types
-        vm.exportTypes = [];
-        // dynamic object populated by reflection
-        vm.exportParameters = {};
+        /**
+         * @ngdoc property
+         * @name currentExportType
+         * @propertyOf data-prep.export.controller:ExportCtrl
+         * @description Current export type
+         * @type {Object}
+         */
+        vm.currentExportType = null;
 
-        // constants for localStorage keys
-        vm.exportParamKey = 'datarep.export.param';
-        vm.exportIdKey = 'dataprep.export.id';
-
-        vm.currentExportType = {};
-
+        /**
+         * @ngdoc property
+         * @name currentExportParameters
+         * @propertyOf data-prep.export.controller:ExportCtrl
+         * @description Current export parameters model, bound to form inputs
+         * @type {Object}
+         */
+        vm.currentExportParameters = null;
 
         /**
          * @ngdoc method
-         * @name launchExport
+         * @name resetCurrentParameters
          * @methodOf data-prep.export.controller:ExportCtrl
-         * @description use by dropdown button list to change default export and define parameters
+         * @description Reset current export parameters with the saved one from localStorage
          */
-        vm.launchExport = function(exportType){
+        vm.resetCurrentParameters = function resetCurrentParameters() {
+            vm.currentExportParameters = ExportService.getParameters();
+            vm.currentExportType = ExportService.getType(vm.currentExportParameters.exportType);
+        };
 
-            vm.currentExportType=exportType;
-            var exportId;
-            if (exportType){
-                exportId = exportType.id;
-            } else {
-                var lastExportId = $window.localStorage.getItem(vm.exportIdKey);
-                exportId = lastExportId;
-                var form = document.getElementById('exportForm');
-                _.each(Object.keys(vm.exportParameters),function(val){
-                    var paramVal = $window.localStorage.getItem(vm.exportParamKey+'.'+val);
-                    form.elements['exportParameters.' + val].value = paramVal;
+        /**
+         * @ngdoc method
+         * @name changeTypeAndExport
+         * @methodOf data-prep.export.controller:ExportCtrl
+         * @param {object} exportType The export type
+         * @description Change the export type and launch the export.
+         * If the export type has parameters, we init the form and display a modal
+         */
+        vm.changeTypeAndExport = function (exportType) {
+            var parameters = {exportType: exportType.id};
+            vm.currentExportType = exportType;
+            vm.currentExportParameters = parameters;
+            
+            if (exportType.parameters) {
+                _.forEach(exportType.parameters, function(param) {
+                    parameters['exportParameters.' + param.name] = param.defaultValue.value;
                 });
+                vm.showModal = true;
             }
-
-            if(!exportId){
-                // use default one from rest api!!
-                exportId = _.result(_.find(vm.exportTypes, function(exportType){
-                    return exportType.defaultExport === 'true';
-                }), 'id');
+            else {
+                ExportService.setParameters(parameters);
+                $timeout(vm.export);
             }
+        };
 
-            var needParameters = _.result(_.find(vm.exportTypes, function(exportType){
-                return exportType.id === exportId;
-            }), 'needParameters');
-
-
-            $window.localStorage.setItem(vm.exportIdKey,exportId);
-
-            if (needParameters==='true' && exportType){
-                vm.setupParametersModal(exportType);
-                return;
-            }
-
-            vm.export();
+        /**
+         * @ngdoc method
+         * @name saveEditionAndExport
+         * @methodOf data-prep.export.controller:ExportCtrl
+         * @description Save the currently edited export parameters and launch the export
+         */
+        vm.saveEditionAndExport = function saveEditionAndExport() {
+            ExportService.setParameters(vm.currentExportParameters);
+            $timeout(vm.export);
         };
 
         /**
          * @ngdoc method
          * @name export
          * @methodOf data-prep.export.controller:ExportCtrl
-         * @description start the export
+         * @description Launch the export
          */
-        vm.export = function() {
-
-            // search in local storage
-            var type = $window.localStorage.getItem(vm.exportIdKey);
-
-            // if not use the default one
-            if(!type){
-                var needParameters = false;
-                _.each(vm.exportType,function(val){
-                   if (val.defaultExport==='true'){
-                       type=val.id;
-                       needParameters=val.needParameters;
-                       vm.currentExportType=val;
-                   }
-                });
-                // if this default need parameters open modal to ask
-                if(needParameters==='true'){
-                    vm.setupParametersModal(vm.currentExportType);
-                    return;
-                }
-            }
-
-            var form = document.getElementById('exportForm');
-            form.action = vm.exportUrl;
-            form.exportType.value = type;
-
-            _.each(Object.keys(vm.exportParameters),function(val){
-                form.elements['exportParameters.' + val].value = vm.exportParameters[val];
-                $window.localStorage.setItem(vm.exportParamKey+'.'+val,vm.exportParameters[val]);
-            });
-
-            form.submit();
-
+        vm.export = function () {
+            vm.form.action = RestURLs.exportUrl;
+            vm.form.submit();
         };
 
-        /**
-         * @ngdoc method
-         * @name setupParametersModal
-         * @methodOf data-prep.export.controller:ExportCtrl
-         * @description prepare dynamic objects with new fields corresponding to export parameters
-         */
-        vm.setupParametersModal = function(exportType) {
-            _.each( exportType.parameters, function ( val ){
-                if ( val.type === 'radio' ){
-                    vm.exportParameters[val.name] = val.defaultValue.value;
-                }
-            });
-            vm.showExport = true;
-        };
-
-
-        // setup export types on start
-        ExportService.exportTypes()
-            .then(function(response){
-                vm.exportTypes = response.data;
-        });
-
+        // get types list
+        ExportService.refreshTypes()
+            .then(vm.resetCurrentParameters);
     }
 
     /**
@@ -187,6 +146,22 @@
             get: function () {
                 var metadata = this.playgroundService.currentMetadata;
                 return metadata ? metadata.id : '';
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name exportTypes
+     * @propertyOf data-prep.export.controller:ExportCtrl
+     * @description The export types list
+     * It is bound to {@link data-prep.services.export.service:ExportService ExportService} property
+     */
+    Object.defineProperty(ExportCtrl.prototype,
+        'exportTypes', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.exportService.exportTypes;
             }
         });
 

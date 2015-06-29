@@ -13,7 +13,10 @@
             restrict: 'E',
             bindToController: true,
             controllerAs: 'exportCtrl',
-            controller: 'ExportCtrl'
+            controller: 'ExportCtrl',
+            link: function(scope, iElement, iAttrs, ctrl) {
+                ctrl.form = iElement.find('#exportForm').eq(0)[0];
+            }
         };
     }
 

@@ -148,6 +148,7 @@ public class SplitTest {
         assertEquals(expectedValues, row.values());
     }
 
+
     /**
      * @see Split#createMetadataClosure(Map)
      */
@@ -202,6 +203,55 @@ public class SplitTest {
         assertEquals(expected, actual);
     }
 
+
+    @Test
+    public void should_not_split_because_null_separator() throws IOException {
+
+        // given
+        Split nullSeparatorAction = new Split();
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                nullSeparatorAction, //
+                SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
+
+        BiConsumer<DataSetRow, TransformationContext> closure = nullSeparatorAction.create(parameters);
+
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        // when
+        closure.accept(row, new TransformationContext());
+
+        // then
+        assertEquals(values, row.values());
+    }
+
+    @Test
+    public void should_not_update_metadata_because_null_separator() throws IOException {
+
+        // given
+        Split nullSeparatorAction = new Split();
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                nullSeparatorAction, //
+                SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
+        nullSeparatorAction.create(parameters);
+        BiConsumer<RowMetadata, TransformationContext> closure = nullSeparatorAction.createMetadataClosure(parameters);
+
+        List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("steps", "steps"));
+        input.add(createMetadata("last update", "last update"));
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        // when
+        closure.accept(rowMetadata, new TransformationContext());
+
+        // then
+        assertEquals(input, rowMetadata.getColumns());
+    }
+
     @Test
     public void should_accept_column() {
         assertTrue(action.accept(getColumn(Type.STRING)));
@@ -214,6 +264,7 @@ public class SplitTest {
         assertFalse(action.accept(getColumn(Type.DATE)));
         assertFalse(action.accept(getColumn(Type.BOOLEAN)));
     }
+
 
     /**
      * @param name name of the column metadata to create.

@@ -27,6 +27,7 @@
             });
 
             $translateProvider.preferredLanguage('en');
+            $translateProvider.useSanitizeValueStrategy(null);
         }])
 
         //Router config

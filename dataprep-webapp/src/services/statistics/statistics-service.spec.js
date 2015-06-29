@@ -25,6 +25,11 @@ describe('Statistics service', function() {
 		}
 	};
 
+	var localizationCol = {
+		'domain': 'LOCALIZATION',
+		'type': 'double'
+	};
+
 	var barChartStrCol = {
 		'domain': 'barchartAndString',
 		'type': 'string',
@@ -102,7 +107,31 @@ describe('Statistics service', function() {
 		StatisticsService.resetCharts();
 	}));
 
-	it('Data type is string and the resulted data must be directly the frequencyTable one', inject(function(StatisticsService) {
+	it('Should add a new filter', inject(function(StatisticsService, FilterService, $timeout) {
+		//given
+		StatisticsService.selectedColumn = {};
+		StatisticsService.selectedColumn.id = 'toto';
+		spyOn(FilterService, 'addFilter').and.returnValue();
+
+		//when
+		StatisticsService.addFilter('volvo');
+		$timeout.flush();
+
+		//then
+		expect(FilterService.addFilter).toHaveBeenCalled();
+	}));
+
+	it('Should set the data to null, the selectedColumn and the stateDistribution to the column', inject(function(StatisticsService) {
+		//when
+		StatisticsService.processMapData(barChartStrCol);
+
+		//then
+		expect(StatisticsService.data).toBe(null);
+		expect(StatisticsService.stateDistribution).toBe(barChartStrCol);
+		expect(StatisticsService.selectedColumn).toBe(barChartStrCol);
+	}));
+
+	it('Should set the data to the frequencyTable because column type is string', inject(function(StatisticsService) {
 		//when
 		StatisticsService.processVisuData(barChartStrCol);
 
@@ -111,7 +140,16 @@ describe('Statistics service', function() {
 		expect(StatisticsService.stateDistribution).toBe(null);
 	}));
 
-	it('Data type is boolean and the resulted data must be directly the frequencyTable one', inject(function(StatisticsService) {
+	it('Should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function(StatisticsService) {
+		//when
+		StatisticsService.processVisuData(localizationCol);
+
+		//then
+		expect(StatisticsService.data).toBe(null);
+		expect(StatisticsService.stateDistribution).toBe(null);
+	}));
+
+	it('Should set the data to the frequencyTable because column type is boolean', inject(function(StatisticsService) {
 		//when
 		StatisticsService.processVisuData(barChartBoolCol);
 
@@ -120,7 +158,7 @@ describe('Statistics service', function() {
 		expect(StatisticsService.stateDistribution).toBe(null);
 	}));
 
-	it('The domain is STATE_CODE and the resulted data must be null', inject(function(StatisticsService) {
+	it('Should set the data to null and stateDistribution to the column, because the column domain contains STATE_CODE', inject(function(StatisticsService) {
 		//when
 		StatisticsService.processVisuData(mapCol);
 
@@ -129,7 +167,7 @@ describe('Statistics service', function() {
 		expect(StatisticsService.stateDistribution).toBe(mapCol);
 	}));
 
-	it('Extract Data from the histogram', inject(function(StatisticsService) {
+	it('should extract Data from the histogram', inject(function(StatisticsService) {
 		//when
 		var convertedData = StatisticsService.extractNumericData(barChartNumCol.statistics.histogram);
 
@@ -137,7 +175,7 @@ describe('Statistics service', function() {
 		expect(convertedData[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min+' ... '+barChartNumCol.statistics.histogram[1].range.max);
 	}));
 
-	it('Data type is a number and the resulted data must be the conversion of the histogram', inject(function(StatisticsService) {
+	it('should set the data to the conversion of the histogram, because the column type is number', inject(function(StatisticsService) {
 		//when
 		StatisticsService.processVisuData(barChartNumCol);
 

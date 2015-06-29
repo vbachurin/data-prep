@@ -15,17 +15,15 @@
 
   background: $background;
   color: $color;
+  overflow-y: auto;
 
   .action-category{
-    color: $dark-blue;
     font-size: .9em;
     font-weight: 600;
     text-transform: uppercase;
-    padding: 20px 0px 0px 5px;
 
-    // MM to make the categories invisible
-    padding: 0px;
-    line-height: 0px;
+    padding: 0;
+    line-height: 0;
     color:transparent;
   }
 
