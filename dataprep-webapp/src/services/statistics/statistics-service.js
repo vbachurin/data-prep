@@ -12,7 +12,12 @@
 		 * @description Add a 'contains' filter in the angular context
 		 */
 		self.addFilter = function (value) {
-			$timeout(FilterService.addFilter.bind(null,'contains',self.selectedColumn.id,self.selectedColumn.name,{phrase: 			value}));
+			if(value){
+				$timeout(FilterService.addFilter.bind(null,'contains',self.selectedColumn.id,self.selectedColumn.name,{phrase:value}));
+			}
+			else {
+				$timeout(FilterService.addFilter.bind(null, 'empty_records', self.selectedColumn.id,self.selectedColumn.name, {}));
+			}
 		};
 
 		/**
