@@ -1,7 +1,6 @@
 package org.talend.dataprep.api.service.command.export;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +11,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.ExportParameters;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
@@ -37,40 +35,28 @@ public class Export extends PreparationCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
+        final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
         String dataSetId;
-        String encodedActions = null;
         String name;
-
-        // Get dataset id and actions from preparation
         if (StringUtils.isNotBlank(input.getPreparationId())) {
-            final JsonNode preparationDetails = getPreparationDetails(input.getPreparationId());
-
-            final List<String> currentStepsIds = getActionsStepIds(preparationDetails, input.getStepId());
-            final Map<String, Action> actions = getActions(preparationDetails, currentStepsIds);
-
-            dataSetId = preparationDetails.get("dataSetId").textValue();
-            encodedActions = serializeAndEncode(actions);
-            name = preparationDetails.get("name").textValue();
-        }
-        // Get provided dataset id
-        else {
+            // Get name from preparation (preparation is set)
+            name = context.getPreparation().getName();
+        } else {
+            // Get name from data set
             dataSetId = input.getDatasetId();
             final JsonNode datasetDetails = getDatasetDetails(dataSetId);
             name = datasetDetails.get("metadata").get("name").textValue();
         }
-
         // Set response headers
         response.setContentType(input.getExportType().getMimeType());
         response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getExtension());
-
         // Get dataset content and call export service
+        final String encodedActions = serialize(context.getActions());
         final String uri = getTransformationUri(input.getExportType(), input.getArguments(), encodedActions);
         final HttpPost transformationCall = new HttpPost(uri);
-        final InputStream content = getDatasetContent(dataSetId);
-        transformationCall.setEntity(new InputStreamEntity(content));
-
-        return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(),
-                transformationCall::releaseConnection);
+        transformationCall.setEntity(new InputStreamEntity(context.getContent()));
+        final InputStream transformedContent = client.execute(transformationCall).getEntity().getContent();
+        return new ReleasableInputStream(transformedContent, transformationCall::releaseConnection);
     }
 
     /**
@@ -94,7 +80,6 @@ public class Export extends PreparationCommand<InputStream> {
 
         if (encodedActions != null) {
             result = appendQueryParam(result, "actions=" + encodedActions, hasQueryParams);
-            hasQueryParams = true;
         }
 
         return result;

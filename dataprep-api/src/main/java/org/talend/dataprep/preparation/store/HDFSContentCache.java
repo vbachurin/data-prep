@@ -39,6 +39,9 @@ public class HDFSContentCache implements ContentCache {
                 stepId = Step.ROOT_STEP.id();
             }
             final Path preparation = new Path("preparations/" + preparationId);
+            if (!fileSystem.exists(preparation)) {
+                return null;
+            }
             final String filteringStepId = stepId;
             final FileStatus[] statuses = fileSystem.listStatus(preparation, p -> {
                 return p.getName().startsWith(filteringStepId);
@@ -88,6 +91,10 @@ public class HDFSContentCache implements ContentCache {
     @Override
     public OutputStream put(String preparationId, String stepId, TimeToLive timeToLive) {
         try {
+            if ("head".equals(stepId)) {
+                throw new IllegalArgumentException("Illegal shortcut for preparation step '" + stepId + "'.");
+            }
+            LOGGER.info("[{} @{}] Cache add.", preparationId, stepId);
             // Adds suffix for time to live checks
             final Path preparation = new Path("preparations/" + preparationId + "/" + stepId);
             final Path path = preparation.suffix("." + String.valueOf(System.currentTimeMillis() + timeToLive.getTime()));
@@ -123,28 +130,32 @@ public class HDFSContentCache implements ContentCache {
     @Scheduled(fixedDelay = 60000)
     public void janitor() {
         try {
-            final long start = System.currentTimeMillis();
-            LOGGER.debug("Janitor process started @ {}.", start);
-            final RemoteIterator<LocatedFileStatus> files = fileSystem.listFiles(new Path("preparations/"), true);
-            int deletedCount = 0;
-            int totalCount = 0;
-            while (files.hasNext()) {
-                final LocatedFileStatus fileStatus = files.next();
-                final Path path = fileStatus.getPath();
-                final String suffix = StringUtils.substringAfterLast(path.getName(), ".");
-                final long time = Long.parseLong(StringUtils.isEmpty(suffix) ? "0": suffix);
-                if(time < start) {
-                    try {
-                        fileSystem.delete(path, true);
-                        deletedCount++;
-                    } catch (IOException e) {
-                        LOGGER.error("Unable to delete '{}'.", path, e);
+            if (!fileSystem.exists(new Path("preparations/"))) {
+                LOGGER.info("No cache content to clean.");
+            } else {
+                final long start = System.currentTimeMillis();
+                LOGGER.debug("Janitor process started @ {}.", start);
+                final RemoteIterator<LocatedFileStatus> files = fileSystem.listFiles(new Path("preparations/"), true);
+                int deletedCount = 0;
+                int totalCount = 0;
+                while (files.hasNext()) {
+                    final LocatedFileStatus fileStatus = files.next();
+                    final Path path = fileStatus.getPath();
+                    final String suffix = StringUtils.substringAfterLast(path.getName(), ".");
+                    final long time = Long.parseLong(StringUtils.isEmpty(suffix) ? "0" : suffix);
+                    if (time < start) {
+                        try {
+                            fileSystem.delete(path, true);
+                            deletedCount++;
+                        } catch (IOException e) {
+                            LOGGER.error("Unable to delete '{}'.", path, e);
+                        }
                     }
+                    totalCount++;
                 }
-                totalCount++;
+                LOGGER.debug("Janitor process ended @ {} ({}/{} files successfully deleted).", System.currentTimeMillis(),
+                        deletedCount, totalCount);
             }
-            LOGGER.debug("Janitor process ended @ {} ({}/{} files successfully deleted).", System.currentTimeMillis(),
-                    deletedCount, totalCount);
         } catch (IOException e) {
             LOGGER.error("Unable to clean up cache.", e);
         }

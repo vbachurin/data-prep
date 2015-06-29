@@ -2,18 +2,33 @@ package org.talend.dataprep.api.service.command.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
+import org.talend.dataprep.preparation.store.ContentCache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 
 public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
+
+    @Autowired
+    protected Jackson2ObjectMapperBuilder builder;
+
+    @Autowired
+    protected ContentCache contentCache;
 
     protected PreparationCommand(final HystrixCommandGroupKey groupKey, final HttpClient client) {
         super(groupKey, client);
@@ -26,11 +41,11 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * @return the resulting Json node object
      * @throws java.io.IOException
      */
-    protected JsonNode getPreparationDetails(final String preparationId) throws IOException {
+    protected Preparation getPreparationDetails(final String preparationId) throws IOException {
         final HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparationId);
         try {
             InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
-            return getJsonReader().readTree(content);
+            return builder.build().reader(Preparation.class).readValue(content);
         } finally {
             preparationRetrieval.releaseConnection();
         }
@@ -66,12 +81,12 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Serialize the actions to string and encode it to base 64
-     * 
+     *
      * @param stepActions - map of couple (stepId, action)
      * @return the serialized and encoded actions
      */
-    protected String serializeAndEncode(final Map<String, Action> stepActions) throws JsonProcessingException {
-        final String serialized = "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions.values()) + "}";
+    protected String serialize(final List<Action> stepActions) throws JsonProcessingException {
+        final String serialized = "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions) + "}";
 
         return encode(serialized);
     }
@@ -98,51 +113,93 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         return Base64.getEncoder().encodeToString(toEncode.getBytes());
     }
 
-    /**
-     * Get the list of steps ids, corresponding to an action, in the chronological order If the last active step is
-     * provided, the method will only get the steps id from first to the last active step (included)
-     * 
-     * @param preparationDetails - the Json node preparation details
-     * @param lastActiveStep - the last active step id
-     * @return the list of steps ids
-     */
-    protected List<String> getActionsStepIds(final JsonNode preparationDetails, final String lastActiveStep)
-            throws JsonProcessingException {
-        final List<String> result = new ArrayList<>(preparationDetails.size() - 1);
-        final JsonNode stepsNode = preparationDetails.get("steps");
-
-        if (!"origin".equals(lastActiveStep) && !stepsNode.get(stepsNode.size() - 1).textValue().equals(lastActiveStep)) {
-            // steps are in reverse order and the last is the initial step (no actions). So we skip the last and we get
-            // them in reverse order
-            for (int i = stepsNode.size() - 2; i >= 0; --i) {
-                final String stepId = stepsNode.get(i).textValue();
-                result.add(stepId);
-
-                if (stepId.equals(lastActiveStep)) {
-                    break;
-                }
-            }
+    protected List<Action> getPreparationActions(Preparation preparation, String stepId) throws IOException {
+        final HttpGet actionsRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparation.id()
+                + "/actions/" + stepId);
+        try {
+            InputStream content = client.execute(actionsRetrieval).getEntity().getContent();
+            List<List<Action>> actions = builder.build().reader(new TypeReference<List<List<Action>>>() {
+            }).readValue(content);
+            List<Action> allActions = new ArrayList<>();
+            actions.forEach(allActions::addAll);
+            return allActions;
+        } finally {
+            actionsRetrieval.releaseConnection();
         }
-
-        return result;
     }
 
-    /**
-     * Get a map of couples (step id, action)
-     * 
-     * @param preparationDetails - the Json node preparation details
-     * @param stepsIds - the step ids in the chronological order
-     * @return The map of couples in the StepsIds order
-     * @throws java.io.IOException
-     */
-    protected Map<String, Action> getActions(final JsonNode preparationDetails, final List<String> stepsIds) throws IOException {
-        final Map<String, Action> result = new LinkedHashMap<>(stepsIds.size());
-        final JsonNode actionsNode = preparationDetails.get("actions");
+    public PreparationContext getContext(String preparationId, String stepId) throws IOException {
+        PreparationContext ctx = new PreparationContext();
+        // Modifies asked version with actual step id
+        final Preparation preparation = getPreparationDetails(preparationId);
+        ctx.preparation = preparation;
+        String version = stepId;
+        if ("head".equals(stepId)) {
+            version = preparation.getSteps().get(0);
+        } else if ("origin".equals(version)) {
+            version = Step.ROOT_STEP.id();
+        }
+        ctx.version = version;
+        // Direct try on cache at given version
+        if (contentCache.has(preparationId, version)) {
+            ctx.content = contentCache.get(preparationId, version);
+            ctx.actions = Collections.emptyList();
+            return ctx;
+        }
+        // Try to find intermediate cached version (starting from version)
+        final List<String> preparationSteps = preparation.getSteps();
+        String lastStepId = version;
+        for (String step : preparationSteps) {
+            if (contentCache.has(preparationId, step)) {
+                ctx.content = contentCache.get(preparationId, step);
+                break;
+            }
+            lastStepId = step;
+        }
+        // Did not find any cache for retrieve preparation details, starts over from original dataset
+        if (Step.ROOT_STEP.id().equals(lastStepId)) {
+            final String dataSetId = preparation.getDataSetId();
+            final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
+            ctx.content = retrieveDataSet.execute();
+        }
+        // Build the actions to execute
+        if (Step.ROOT_STEP.id().equals(lastStepId)) {
+            // Went down to root step and found nothing in cache -> get all preparation actions
+            ctx.actions = getPreparationActions(preparation, version);
+        } else {
+            // Stopped in the middle -> compute list of actions to remove
+            List<Action> preparationActions = getPreparationActions(preparation, version);
+            final List<Action> performedActions = getPreparationActions(preparation, lastStepId);
+            preparationActions.removeAll(performedActions);
+            ctx.actions = performedActions;
+        }
+        return ctx;
+    }
 
-        for (int i = 0; i < stepsIds.size(); ++i) {
-            result.put(stepsIds.get(i), getObjectMapper().readValue(actionsNode.get(i).toString(), Action.class));
+    public class PreparationContext {
+
+        InputStream content;
+
+        List<Action> actions;
+
+        Preparation preparation;
+
+        public String version;
+
+        public InputStream getContent() {
+            return content;
         }
 
-        return result;
+        public List<Action> getActions() {
+            return actions;
+        }
+
+        public Preparation getPreparation() {
+            return preparation;
+        }
+
+        public String getVersion() {
+            return version;
+        }
     }
 }
