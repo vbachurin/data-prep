@@ -207,4 +207,23 @@ describe('Dataset Rest Service', function () {
         //then
         expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
     }));
+
+    it('should call set favorite', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var dataset = {name: 'my dataset', file: {path: '/path/to/file'}, error: false, id: 'e85afAa78556d5425bc2',
+        favorite:true};
+
+        $httpBackend
+            .expectPOST(RestURLs.datasetUrl + '/favorite/e85afAa78556d5425bc2?unset=true')
+            .respond(200);
+
+        //when
+        DatasetRestService.toggleFavorite(dataset);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        //expect POST no to throw any exception;
+    }));
+
 });

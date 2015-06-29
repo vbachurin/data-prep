@@ -47,7 +47,8 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
         if (zeObject != null) {
             Field[] fields = zeObject.getClass().getDeclaredFields();
             for (Field field : fields) {
-                if (Modifier.isTransient(field.getModifiers())) {
+                // ignore jacoco injected field
+                if (Modifier.isTransient(field.getModifiers()) && !field.getName().endsWith("jacocoData")) { //$NON-NLS-1$
                     Object defaultValue = Defaults.defaultValue(field.getType());
                     field.setAccessible(true);
                     try {

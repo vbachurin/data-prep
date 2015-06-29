@@ -630,8 +630,9 @@ public class DataSetServiceTests {
         favorites.add(dsId2);
         userData.setFavoritesDatasets(favorites);
         userDataRepository.setUserData(userData);
-        when().get("/datasets/favorites").then().statusCode(HttpStatus.OK.value())
-                .body(equalTo("[\"" + dsId1 + "\",\"" + dsId2 + "\"]"));
+        List<String> favoritesResp = from(when().get("/datasets/favorites").asString()).get();
+        assertEquals(2, favoritesResp.size());
+        assertThat(favoritesResp, hasItems(dsId1, dsId2));
     }
 
     @Test

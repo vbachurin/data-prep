@@ -51,7 +51,7 @@ public class FormatAnalyzerTest {
     public void testCSVAnalysis() throws Exception {
         final DataSetMetadata metadata = metadata().id("1234").build();
         repository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("avengers.csv"));
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../avengers.csv"));
         formatAnalysis.analyze("1234");
         assertThat(repository.get("1234"), notNullValue());
         assertThat(metadata.getContent().getFormatGuessId(), is(CSVFormatGuess.BEAN_ID));
@@ -63,13 +63,12 @@ public class FormatAnalyzerTest {
     public void testXLSAnalysis() throws Exception {
         final DataSetMetadata metadata = metadata().id("1234").build();
         repository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("tagada.xls"));
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../tagada.xls"));
         formatAnalysis.analyze("1234");
         assertThat(repository.get("1234"), notNullValue());
         assertThat(metadata.getContent().getFormatGuessId(), is(XlsFormatGuess.BEAN_ID));
         assertThat(metadata.getContent().getMediaType(), is("application/vnd.ms-excel"));
         assertThat(metadata.getContent().getParameters().isEmpty(), is(true));
     }
-
 
 }

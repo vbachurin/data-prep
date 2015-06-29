@@ -76,6 +76,7 @@ describe('Dataset list controller', function () {
         expect(MessageService.error).toHaveBeenCalledWith('PLAYGROUND_FILE_NOT_FOUND_TITLE', 'PLAYGROUND_FILE_NOT_FOUND', {type: 'dataset'});
     }));
 
+
     describe('already created', function () {
         var ctrl;
 
@@ -88,6 +89,7 @@ describe('Dataset list controller', function () {
             spyOn(MessageService, 'success').and.callThrough();
             spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
             spyOn(DatasetSheetPreviewService, 'display').and.returnValue($q.when(true));
+            spyOn(DatasetService, 'toggleFavorite').and.returnValue($q.when(true));
         }));
 
         it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService) {
@@ -184,6 +186,18 @@ describe('Dataset list controller', function () {
             expect(DatasetSheetPreviewService.display).not.toHaveBeenCalled();
             expect(MessageService.error).toHaveBeenCalledWith('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_CONTENT');
             expect(DatasetService.refreshDatasets).toHaveBeenCalled();
+        }));
+
+        it('should toogle dataset favorite flag', inject(function ($rootScope, DatasetService) {
+            //given
+            var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2', favorite: false};
+
+            //when
+            ctrl.toggleFavorite(dataset);
+            $rootScope.$apply();
+
+            //then
+            expect(DatasetService.toggleFavorite).toHaveBeenCalledWith(dataset);
         }));
     });
 

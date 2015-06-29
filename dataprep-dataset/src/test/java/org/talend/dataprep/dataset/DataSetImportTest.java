@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.dataset.service.DataSetServiceTests;
 import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
@@ -82,7 +81,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -121,7 +120,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -162,7 +161,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);

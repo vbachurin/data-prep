@@ -197,7 +197,7 @@ public class DataSetAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/dataset/favorite/{id}", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/datasets/favorite/{id}", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Set or Unset the dataset as favorite for the current user.", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, //
     notes = "Specify if a dataset is or is not a favorite for the current user.")
     public String favorite(
