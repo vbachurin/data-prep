@@ -170,16 +170,18 @@ public class HDFSContentCache implements ContentCache {
                     final LocatedFileStatus fileStatus = files.next();
                     final Path path = fileStatus.getPath();
                     final String suffix = StringUtils.substringAfterLast(path.getName(), ".");
-                    final long time = Long.parseLong(StringUtils.isEmpty(suffix) ? "0" : suffix);
-                    if (time < start) {
-                        try {
-                            fileSystem.delete(path, true);
-                            deletedCount++;
-                        } catch (IOException e) {
-                            LOGGER.error("Unable to delete '{}'.", path, e);
+                    if (suffix.startsWith("nfs")) { // Ignore NFS files (HDFS + NFS? yes, but may happen in local mode).
+                        final long time = Long.parseLong(StringUtils.isEmpty(suffix) ? "0" : suffix);
+                        if (time < start) {
+                            try {
+                                fileSystem.delete(path, true);
+                                deletedCount++;
+                            } catch (IOException e) {
+                                LOGGER.error("Unable to delete '{}'.", path, e);
+                            }
                         }
+                        totalCount++;
                     }
-                    totalCount++;
                 }
                 LOGGER.debug("Janitor process ended @ {} ({}/{} files successfully deleted).", System.currentTimeMillis(),
                         deletedCount, totalCount);
