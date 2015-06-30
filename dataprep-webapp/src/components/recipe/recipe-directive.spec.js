@@ -107,8 +107,8 @@ describe('Recipe directive', function() {
 
         //then
         expect(element.find('>ul .accordion').length).toBe(2);
-        expect(element.find('>ul .accordion #trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column col1');
-        expect(element.find('>ul .accordion #trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column col2');
+        expect(element.find('>ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column col1');
+        expect(element.find('>ul .accordion .trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column col2');
         expect(element.find('>ul .accordion').eq(1).hasClass('inactive')).toBe(true);
     }));
 
@@ -118,8 +118,8 @@ describe('Recipe directive', function() {
         scope.$digest();
 
         //then
-        expect(element.find('>ul .accordion #content').length).toBe(1);
-        expect(element.find('>ul .accordion #content').eq(0).find('.transformation-params').length).toBe(1);
+        expect(element.find('>ul .accordion .content').length).toBe(1);
+        expect(element.find('>ul .accordion .content').eq(0).find('.transformation-params').length).toBe(1);
     }));
 
     it('should render recipe cluster params', inject(function(RecipeService) {

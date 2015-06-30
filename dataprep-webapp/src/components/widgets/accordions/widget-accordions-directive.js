@@ -9,16 +9,16 @@
      * @usage
      <talend-accordions>
          <talend-accordions-item on-open='fn' default='true'>
-            <div id="trigger"></div>
-            <div id="content"></div>
+             <div class="trigger"></div>
+             <div class="content"></div>
          </talend-accordions-item>
          <talend-accordions-item>
-             <div id="trigger"></div>
-             <div id="content"></div>
+             <div class="trigger"></div>
+             <div class="content"></div>
          </talend-accordions-item>
          <talend-accordions-item>
-             <div id="trigger"></div>
-             <div id="content"></div>
+             <div class="trigger"></div>
+             <div class="content"></div>
          </talend-accordions-item>
      </talend-accordions>
      * @param {div} trigger The trigger element that will be injected in the trigger transclusion point
