@@ -2,7 +2,10 @@ package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -30,23 +33,21 @@ public class PreviewUpdate extends PreparationCommand<InputStream> {
     @Override
     protected InputStream run() throws Exception {
         // get preparation details
-        final Preparation preparationDetails = getPreparationDetails(input.getPreparationId());
-        final String dataSetId = preparationDetails.getDataSetId();
+        final Preparation preparation = getPreparation(input.getPreparationId());
+        final String dataSetId = preparation.getDataSetId();
         // extract actions by steps in chronological order, until defined last active step (from input)
         Map<String, Action> originalActions = new LinkedHashMap<>();
-        final List<String> steps = preparationDetails.getSteps();
-        final Iterator<Action> actions = getPreparationActions(preparationDetails, input.getCurrentStepId()).iterator();
-        for (String step : steps) {
-            originalActions.put(step, actions.next());
-        }
+        final List<String> steps = preparation.getSteps();
+        final Iterator<Action> actions = getPreparationActions(preparation, input.getCurrentStepId()).iterator();
+        steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
         // modify actions to include the update
         final Map<String, Action> modifiedActions = new LinkedHashMap<>(originalActions);
         if (modifiedActions.get(input.getUpdateStepId()) != null) {
             modifiedActions.put(input.getUpdateStepId(), input.getAction());
         }
         // serialize and base 64 encode the 2 actions list
-        final String oldEncodedActions = serialize(new ArrayList<>(originalActions.values()));
-        final String newEncodedActions = serialize(new ArrayList<>(modifiedActions.values()));
+        final String oldEncodedActions = serialize(originalActions.values());
+        final String newEncodedActions = serialize(modifiedActions.values());
         // get dataset content
         final InputStream content = getDatasetContent(dataSetId);
         // get usable tdpIds

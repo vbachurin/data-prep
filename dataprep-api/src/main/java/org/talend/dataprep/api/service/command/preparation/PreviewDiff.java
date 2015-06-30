@@ -30,22 +30,18 @@ public class PreviewDiff extends PreparationCommand<InputStream> {
     @Override
     protected InputStream run() throws Exception {
         // get preparation details
-        final Preparation preparationDetails = getPreparationDetails(input.getPreparationId());
-        final String dataSetId = preparationDetails.getDataSetId();
+        final Preparation preparation = getPreparation(input.getPreparationId());
+        final String dataSetId = preparation.getDataSetId();
         // extract actions by steps in chronological order, until defined last active step (from input)
         Map<String, Action> originalActions = new LinkedHashMap<>();
-        final List<String> steps = preparationDetails.getSteps();
-        final Iterator<Action> actions = getPreparationActions(preparationDetails, input.getCurrentStepId()).iterator();
-        for (String step : steps) {
-            originalActions.put(step, actions.next());
-        }
+        final List<String> steps = preparation.getSteps();
+        final Iterator<Action> actions = getPreparationActions(preparation, input.getCurrentStepId()).iterator();
+        steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
         // modify actions to include the update
         Map<String, Action> previewActions = new LinkedHashMap<>();
-        final List<String> previewSteps = preparationDetails.getSteps();
-        final Iterator<Action> previewActionsIterator = getPreparationActions(preparationDetails, input.getCurrentStepId()).iterator();
-        for (String step : previewSteps) {
-            previewActions.put(step, previewActionsIterator.next());
-        }
+        final List<String> previewSteps = preparation.getSteps();
+        final Iterator<Action> previewActionsIterator = getPreparationActions(preparation, input.getPreviewStepId()).iterator();
+        previewSteps.stream().filter(step -> previewActionsIterator.hasNext()).forEach(step -> previewActions.put(step, previewActionsIterator.next()));
         // serialize and base 64 encode the 2 actions list
         final String oldEncodedActions = serialize(new ArrayList<>(originalActions.values()));
         final String newEncodedActions = serialize(new ArrayList<>(previewActions.values()));

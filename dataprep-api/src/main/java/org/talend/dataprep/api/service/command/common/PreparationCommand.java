@@ -2,10 +2,7 @@ package org.talend.dataprep.api.service.command.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -41,7 +38,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * @return the resulting Json node object
      * @throws java.io.IOException
      */
-    protected Preparation getPreparationDetails(final String preparationId) throws IOException {
+    protected Preparation getPreparation(final String preparationId) throws IOException {
         final HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparationId);
         try {
             InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
@@ -85,9 +82,8 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * @param stepActions - map of couple (stepId, action)
      * @return the serialized and encoded actions
      */
-    protected String serialize(final List<Action> stepActions) throws JsonProcessingException {
+    protected String serialize(final Collection<Action> stepActions) throws JsonProcessingException {
         final String serialized = "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions) + "}";
-
         return encode(serialized);
     }
 
@@ -99,7 +95,6 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      */
     protected String serializeAndEncode(final List<Integer> listToEncode) throws JsonProcessingException {
         final String serialized = getJsonWriter().writeValueAsString(listToEncode);
-
         return encode(serialized);
     }
 
@@ -122,6 +117,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             }).readValue(content);
             List<Action> allActions = new ArrayList<>();
             actions.forEach(allActions::addAll);
+            Collections.reverse(allActions);
             return allActions;
         } finally {
             actionsRetrieval.releaseConnection();
@@ -130,15 +126,20 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     public PreparationContext getContext(String preparationId, String stepId) throws IOException {
         PreparationContext ctx = new PreparationContext();
+        if (preparationId == null) {
+            ctx.actions = Collections.emptyList();
+            ctx.version = Step.ROOT_STEP.id();
+            return ctx;
+        }
         // Modifies asked version with actual step id
-        final Preparation preparation = getPreparationDetails(preparationId);
-        ctx.preparation = preparation;
+        final Preparation preparation = getPreparation(preparationId);
         String version = stepId;
         if ("head".equals(stepId)) {
             version = preparation.getSteps().get(0);
         } else if ("origin".equals(version)) {
             version = Step.ROOT_STEP.id();
         }
+        ctx.preparation = preparation;
         ctx.version = version;
         // Direct try on cache at given version
         if (contentCache.has(preparationId, version)) {
@@ -165,7 +166,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         // Build the actions to execute
         if (Step.ROOT_STEP.id().equals(lastStepId)) {
             // Went down to root step and found nothing in cache -> get all preparation actions
-            ctx.actions = getPreparationActions(preparation, version);
+            ctx.actions = getPreparationActions(preparation, stepId);
         } else {
             // Stopped in the middle -> compute list of actions to remove
             List<Action> preparationActions = getPreparationActions(preparation, version);
