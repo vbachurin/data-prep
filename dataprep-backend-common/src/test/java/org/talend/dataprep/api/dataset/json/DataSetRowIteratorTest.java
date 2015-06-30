@@ -14,10 +14,10 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 
 /**
  * Unit test for the DataSetRowIterator.
+ * 
  * @see DataSetRowIterator
  */
 public class DataSetRowIteratorTest {
-
 
     @Test
     public void should_iterate_row() throws IOException {
@@ -33,7 +33,7 @@ public class DataSetRowIteratorTest {
         DataSetRowIterator iterator = new DataSetRowIterator(json);
 
         List<DataSetRow> actual = new ArrayList<>();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             actual.add(iterator.next().clone());
         }
 
@@ -45,7 +45,7 @@ public class DataSetRowIteratorTest {
     private DataSetRow getDataSetRow(String... data) {
         DecimalFormat format = new DecimalFormat("0000");
         Map<String, String> values = new HashMap<>();
-        for (int i=0; i<data.length;i++) {
+        for (int i = 0; i < data.length; i++) {
             values.put(format.format(i), data[i]);
         }
         return new DataSetRow(values);
