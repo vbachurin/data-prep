@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "gloubi-boulga",
+      "parameters": {
+        "column_id": "0000",
+        "column_name": "name"
+      }
+    }
+  ]
+}
