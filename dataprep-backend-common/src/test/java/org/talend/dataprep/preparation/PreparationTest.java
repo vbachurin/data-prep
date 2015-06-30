@@ -10,7 +10,6 @@ import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTEN
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.output.NullOutputStream;
@@ -187,7 +186,7 @@ public class PreparationTest {
 
         Preparation theOtherOne = new Preparation();
         theOtherOne.setAuthor("Joss Stone");
-        theOtherOne.setCreationDate(new Date().getTime());
+        theOtherOne.setCreationDate(source.getCreationDate() - 1000);
         theOtherOne.setDataSetId("ds#123456");
         theOtherOne.setLastModificationDate(theOtherOne.getCreationDate() + 12345682);
         theOtherOne.setName("my preparation name");
@@ -204,7 +203,7 @@ public class PreparationTest {
 
         Preparation source = new Preparation();
         source.setAuthor("Bloc Party");
-        source.setCreationDate(new Date().getTime());
+        source.setCreationDate(theOtherOne.getCreationDate() - 1000);
         source.setDataSetId("ds#65478");
         source.setLastModificationDate(source.getCreationDate() + 2658483);
         source.setName("banquet");
