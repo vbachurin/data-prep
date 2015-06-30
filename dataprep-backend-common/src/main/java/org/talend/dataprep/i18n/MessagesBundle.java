@@ -31,8 +31,15 @@ public class MessagesBundle implements ApplicationContextAware {
 
     private static final Logger LOG = LoggerFactory.getLogger(MessagesBundle.class);
 
+    /**
+     * Source resource bundle that holds all the actions name and parameters name. This is not autowired because this
+     * class is meant to be called with the <b>static</b> method getString().
+     */
     private static ResourceBundleMessageSource source;
 
+    /**
+     * Private constructor.
+     */
     private MessagesBundle() {
     }
 
@@ -69,6 +76,9 @@ public class MessagesBundle implements ApplicationContextAware {
         return source.getMessage(code, args, locale);
     }
 
+    /**
+     * @see ApplicationContextAware#setApplicationContext(ApplicationContext)
+     */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         source = applicationContext.getBean(ResourceBundleMessageSource.class);
