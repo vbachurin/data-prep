@@ -49,4 +49,9 @@ public interface ContentCache {
      * @param stepId A non-null {@link org.talend.dataprep.api.preparation.Step step} preparationId.
      */
     void evict(String preparationId, String stepId);
+
+    /**
+     * Removes all content cached by this {@link ContentCache cache}.
+     */
+    void clear();
 }

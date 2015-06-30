@@ -45,4 +45,9 @@ public class NoOpContentCache implements ContentCache {
     public void evict(String preparationId, String stepId) {
         // Nothing to do.
     }
+
+    @Override
+    public void clear() {
+        // Nothing to do.
+    }
 }

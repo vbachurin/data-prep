@@ -33,8 +33,24 @@ public class HDFSContentCache implements ContentCache {
         LOGGER.info("Using content cache: {}", this.getClass().getName());
     }
 
-    private Path getPath(String preparationId, String stepId) {
+    /**
+     * Return the HDFS {@link Path path} for a preparation at a given step. The <code>includeEvicted</code> boolean
+     * indicates whether {@link #evict(String, String) evicted} content should be included in search.
+     * @param preparationId A non-null preparation id.
+     * @param stepId A non-null step id.
+     * @param includeEvicted <code>true</code> if method should also look into evicted content, <code>false</code>
+     *                       otherwise.
+     * @param fileSystem The HDFS instance to use for search.
+     * @return The {@link Path path} to the content or <code>null</code> if not found.
+     */
+    static Path getPath(String preparationId, String stepId, boolean includeEvicted, FileSystem fileSystem) {
         try {
+            if (preparationId == null) {
+                throw new IllegalArgumentException("Preparation id cannot be null.");
+            }
+            if (stepId == null) {
+                throw new IllegalArgumentException("Step id cannot be null.");
+            }
             if ("origin".equalsIgnoreCase(stepId)) {
                 stepId = Step.ROOT_STEP.id();
             }
@@ -47,7 +63,7 @@ public class HDFSContentCache implements ContentCache {
                 return p.getName().startsWith(filteringStepId);
             });
             FileStatus electedFile = null;
-            int maxTTL = 0;
+            int maxTTL = includeEvicted ? -1 : 0;
             for (FileStatus status : statuses) {
                 final String suffix = StringUtils.substringAfterLast(status.getPath().getName(), ".");
                 if (Long.parseLong(suffix) > maxTTL) {
@@ -65,7 +81,7 @@ public class HDFSContentCache implements ContentCache {
 
     @Override
     public boolean has(String preparationId, String stepId) {
-        final Path path = getPath(preparationId, stepId);
+        final Path path = getPath(preparationId, stepId, false, fileSystem);
         final boolean exists = path != null;
         if (exists) {
             LOGGER.debug("[{} @{}] Cache hit.", preparationId, stepId);
@@ -78,7 +94,7 @@ public class HDFSContentCache implements ContentCache {
     @Override
     public InputStream get(String preparationId, String stepId) {
         try {
-            final Path path = getPath(preparationId, stepId);
+            final Path path = getPath(preparationId, stepId, false, fileSystem);
             if (path == null) {
                 throw new IllegalArgumentException("No cache for preparation #" + preparationId + " @ " + stepId);
             }
@@ -91,7 +107,7 @@ public class HDFSContentCache implements ContentCache {
     @Override
     public OutputStream put(String preparationId, String stepId, TimeToLive timeToLive) {
         try {
-            if ("head".equals(stepId)) {
+            if ("head".equals(stepId) || "origin".equals(stepId)) {
                 throw new IllegalArgumentException("Illegal shortcut for preparation step '" + stepId + "'.");
             }
             LOGGER.info("[{} @{}] Cache add.", preparationId, stepId);
@@ -113,12 +129,24 @@ public class HDFSContentCache implements ContentCache {
     public void evict(String preparationId, String stepId) {
         try {
             LOGGER.debug("[{} @{}] Evict.", preparationId, stepId);
-            final Path path = getPath(preparationId, stepId);
+            final Path path = getPath(preparationId, stepId, false, fileSystem);
             if (path == null) {
                 LOGGER.debug("[{} @{}] Evict failed: file already deleted.", preparationId, stepId);
                 return;
             }
             fileSystem.rename(path, path.suffix(".0"));
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
+    @Override
+    public void clear() {
+        try {
+            final Path preparationRootPath = new Path("preparations/");
+            if (fileSystem.exists(preparationRootPath)) {
+                fileSystem.delete(preparationRootPath, true);
+            }
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
