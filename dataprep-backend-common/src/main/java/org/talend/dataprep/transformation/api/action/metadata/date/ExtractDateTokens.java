@@ -1,20 +1,18 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import java.io.IOException;
+import java.text.ParsePosition;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -161,7 +159,7 @@ public class ExtractDateTokens extends SingleColumnAction {
             String value = row.get(columnId);
             TemporalAccessor temporalAccessor = null;
             try {
-                temporalAccessor = dtf.parse(value);
+                temporalAccessor = dtf.parse(value, new ParsePosition(0));
 
                 for (Entry<String, ChronoField> date_field : DATE_FIELDS.entrySet()) {
                     if (new Boolean(parameters.get(date_field.getKey()))) {
