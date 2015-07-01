@@ -9,7 +9,7 @@
         <div class="dropdown-container">
             <div class="dropdown-action"></div>
             <ul class="dropdown-menu dropdown-menu-small-top quality-bar-menu" role="menu">
-                <li role="presentation">
+                <li role="presentation" ng-click="qualityBarCtrl.filterValidRecords(qualityBarCtrl.column)">
                     <a role="menuitem" href="#">Select Valid Records for {{ qualityBarCtrl.column.name | uppercase }}</a>
                 </li>
             </ul>
