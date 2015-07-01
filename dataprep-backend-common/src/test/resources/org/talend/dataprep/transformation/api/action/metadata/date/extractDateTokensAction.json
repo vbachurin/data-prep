@@ -3,7 +3,10 @@
     {
       "action": "extract_date_tokens",
       "parameters": {
-        "column_id": "0001"
+        "column_id": "0001",
+        "year": "true",
+        "month": "true",
+        "day": "false"
       }
     }
   ]

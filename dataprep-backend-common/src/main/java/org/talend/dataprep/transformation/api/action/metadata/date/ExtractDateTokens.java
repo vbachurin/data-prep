@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -18,6 +20,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,7 +38,13 @@ public class ExtractDateTokens extends SingleColumnAction {
     /** Name of the date pattern. */
     protected static final String PATTERN = "date_pattern"; //$NON-NLS-1$
 
-    private static final String YEAR = "_YEAR";
+    private static final String YEAR = "YEAR";
+
+    private static final String MONTH = "MONTH";
+
+    private static final String DAY = "DAY";
+
+    private static final String SEPARATOR = "_";
 
     /**
      * @see ActionMetadata#createMetadataClosure(Map)
@@ -77,22 +86,32 @@ public class ExtractDateTokens extends SingleColumnAction {
                 rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
 
                 // create the new column
-                ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
-                        .column() //
-                        .computedId(column.getId() + YEAR) //
-                        .name(column.getName() + YEAR) //
-                        .type(Type.get(column.getType())) //
-                        .empty(column.getQuality().getEmpty()) //
-                        .invalid(column.getQuality().getInvalid()) //
-                        .valid(column.getQuality().getValid()) //
-                        .headerSize(column.getHeaderSize()) //
-                        .build();
+                ColumnMetadata newColumnMetadata = createNewColumn(column, YEAR);
 
                 // add the new column after the current one
                 rowMetadata.getColumns().add(i + 1, newColumnMetadata);
 
             }
         };
+    }
+
+    /**
+     * DOC stef Comment method "createNewColumn".
+     * @param column
+     * @return
+     */
+    private ColumnMetadata createNewColumn(ColumnMetadata column, String suffix) {
+        ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+                .column() //
+                .computedId(column.getId() + SEPARATOR + suffix) //
+                .name(column.getName() + SEPARATOR + suffix) //
+                .type(Type.get(column.getType())) //
+                .empty(column.getQuality().getEmpty()) //
+                .invalid(column.getQuality().getInvalid()) //
+                .valid(column.getQuality().getValid()) //
+                .headerSize(column.getHeaderSize()) //
+                .build();
+        return newColumnMetadata;
     }
 
     /**
@@ -143,7 +162,7 @@ public class ExtractDateTokens extends SingleColumnAction {
                 GregorianCalendar gc = new GregorianCalendar();
                 gc.setTime(date);
 
-                row.set(columnId + YEAR, gc.get(GregorianCalendar.YEAR) + "");
+                row.set(columnId + SEPARATOR + YEAR, gc.get(GregorianCalendar.YEAR) + "");
             } catch (ParseException e) {
                 // cannot parse the date, let's leave it as is
             }
@@ -164,6 +183,15 @@ public class ExtractDateTokens extends SingleColumnAction {
             throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
         }
 
+    }
+
+    @Override
+    @Nonnull
+    public Parameter[] getParameters() {
+        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
+ new Parameter(YEAR, Type.BOOLEAN.getName(), "true"),
+                new Parameter("month", Type.BOOLEAN.getName(), "true"),
+                new Parameter("day", Type.BOOLEAN.getName(), "true") };
     }
 
     /**
