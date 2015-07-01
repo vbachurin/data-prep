@@ -8,16 +8,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -26,17 +22,15 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
-import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.quality.ValueQuality;
 import org.talend.datascience.common.inference.quality.ValueQualityAnalyzer;
 import org.talend.datascience.common.inference.type.DataType;
 
 @Component
-public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
+public class QualityAnalysis implements SynchronousDataSetAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QualityAnalysis.class);
 
@@ -51,20 +45,6 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
 
     @Autowired
     Jackson2ObjectMapperBuilder builder;
-
-    @JmsListener(destination = Destinations.QUALITY_ANALYSIS)
-    public void analyzeQuality(Message message) {
-        try {
-            String dataSetId = message.getStringProperty("dataset.id"); //$NON-NLS-1$
-            try {
-                analyze(dataSetId);
-            } finally {
-                message.acknowledge();
-            }
-        } catch (JMSException e) {
-            throw new TDPException(DataSetErrorCodes.UNEXPECTED_JMS_EXCEPTION, e);
-        }
-    }
 
     /**
      * Analyse the dataset metadata quality.
@@ -139,7 +119,7 @@ public class QualityAnalysis implements AsynchronousDataSetAnalyzer {
     }
 
     @Override
-    public String destination() {
-        return Destinations.QUALITY_ANALYSIS;
+    public int order() {
+        return 3;
     }
 }
