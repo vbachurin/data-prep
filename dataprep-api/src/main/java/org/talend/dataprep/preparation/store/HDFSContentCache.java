@@ -169,7 +169,7 @@ public class HDFSContentCache implements ContentCache {
                     final LocatedFileStatus fileStatus = files.next();
                     final Path path = fileStatus.getPath();
                     final String suffix = StringUtils.substringAfterLast(path.getName(), ".");
-                    if (suffix.startsWith("nfs")) { // Ignore NFS files (HDFS + NFS? yes, but may happen in local mode).
+                    if (!suffix.startsWith("nfs")) { // Ignore NFS files (HDFS + NFS? yes, but may happen in local mode).
                         final long time = Long.parseLong(StringUtils.isEmpty(suffix) ? "0" : suffix);
                         if (time < start) {
                             try {
