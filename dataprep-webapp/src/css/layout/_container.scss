@@ -38,9 +38,20 @@
 .flex-center {
   @include flex-grow(1);
   @include flex-basis(500px);
+  display:flex;
+  flex-direction: column;
+}
+
+.flex-center-header {
+  flex-shrink: 0;
+}
+
+.flex-center-body {
+  flex-shrink: 1;
   overflow-x: hidden;
   overflow-y: auto;
 }
+
 
 
 /*********************************************************************************************************************/

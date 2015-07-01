@@ -3,6 +3,7 @@ package org.talend.dataprep.preparation;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
@@ -177,6 +178,40 @@ public class PreparationTest {
 
         PreparationUtils.prettyPrint(repository, preparation, new NullOutputStream()); // Basic walk through code, no
         // assert.
+    }
+
+    @Test
+    public void should_merge_from_other() {
+        Preparation source = new Preparation();
+
+        Preparation theOtherOne = new Preparation();
+        theOtherOne.setAuthor("Joss Stone");
+        theOtherOne.setCreationDate(source.getCreationDate() - 1000);
+        theOtherOne.setDataSetId("ds#123456");
+        theOtherOne.setLastModificationDate(theOtherOne.getCreationDate() + 12345682);
+        theOtherOne.setName("my preparation name");
+        theOtherOne.setStep(ROOT_STEP);
+
+        Preparation actual = source.merge(theOtherOne);
+
+        assertEquals(actual, theOtherOne);
+    }
+
+    @Test
+    public void should_merge_from_source() {
+        Preparation theOtherOne = new Preparation();
+
+        Preparation source = new Preparation();
+        source.setAuthor("Bloc Party");
+        source.setCreationDate(theOtherOne.getCreationDate() - 1000);
+        source.setDataSetId("ds#65478");
+        source.setLastModificationDate(source.getCreationDate() + 2658483);
+        source.setName("banquet");
+        source.setStep(ROOT_STEP);
+
+        Preparation actual = source.merge(theOtherOne);
+
+        assertEquals(actual, source);
     }
 
     private static List<Action> getSimpleAction(final String actionName, final String paramKey, final String paramValue) {
