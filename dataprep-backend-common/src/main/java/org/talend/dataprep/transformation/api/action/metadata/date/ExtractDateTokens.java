@@ -1,9 +1,15 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
@@ -44,6 +50,13 @@ public class ExtractDateTokens extends SingleColumnAction {
 
     private static final String DAY = "DAY";
 
+    private static final Map<String, ChronoField> DATE_FIELDS = new HashMap();
+    static {
+        DATE_FIELDS.put(YEAR, ChronoField.YEAR);
+        DATE_FIELDS.put(MONTH, ChronoField.MONTH_OF_YEAR);
+        DATE_FIELDS.put(DAY, ChronoField.DAY_OF_MONTH);
+    }
+
     private static final String SEPARATOR = "_";
 
     /**
@@ -70,8 +83,8 @@ public class ExtractDateTokens extends SingleColumnAction {
             JsonNode rootNode = getStatisticsNode(mapper, column);
 
             JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-            String futureExPattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
-            context.put(PATTERN, futureExPattern);
+            String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
+            context.put(PATTERN, datePattern);
 
             // go through the columns to be able to 'insert' the new columns just after the one needed.
             for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
@@ -85,12 +98,15 @@ public class ExtractDateTokens extends SingleColumnAction {
                 List<String> columnIds = new ArrayList<>(rowMetadata.size());
                 rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
 
-                // create the new column
-                ColumnMetadata newColumnMetadata = createNewColumn(column, YEAR);
+                for (String date_field : DATE_FIELDS.keySet()) {
+                    if (new Boolean(parameters.get(date_field))) {
+                        // create the new column
+                        ColumnMetadata newColumnMetadata = createNewColumn(column, date_field);
 
-                // add the new column after the current one
-                rowMetadata.getColumns().add(i + 1, newColumnMetadata);
-
+                        // add the new column after the current one
+                        rowMetadata.getColumns().add(i + 1, newColumnMetadata);
+                    }
+                }
             }
         };
     }
@@ -152,46 +168,32 @@ public class ExtractDateTokens extends SingleColumnAction {
         return (row, context) -> {
 
             // sadly unable to do that outside of the closure since the context is not available
-            SimpleDateFormat currentDateFormat = getDateFormat((String) context.get(PATTERN));
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) context.get(PATTERN));
 
             // parse the
             String value = row.get(columnId);
-            Date date = null;
+            TemporalAccessor temporalAccessor = null;
             try {
-                date = currentDateFormat.parse(value);
-                GregorianCalendar gc = new GregorianCalendar();
-                gc.setTime(date);
+                temporalAccessor = dtf.parse(value);
 
-                row.set(columnId + SEPARATOR + YEAR, gc.get(GregorianCalendar.YEAR) + "");
-            } catch (ParseException e) {
+                for (Entry<String, ChronoField> date_field : DATE_FIELDS.entrySet()) {
+                    if (new Boolean(parameters.get(date_field.getKey()))) {
+                        row.set(columnId + SEPARATOR + date_field.getKey(), temporalAccessor.get(date_field.getValue()) + "");
+                    }
+                }
+            } catch (DateTimeParseException e) {
                 // cannot parse the date, let's leave it as is
             }
         };
     }
 
-    /**
-     * @param pattern the date pattern.
-     * @return the simple date format out of the parameters.
-     */
-    private SimpleDateFormat getDateFormat(String pattern) {
-        try {
-            if (StringUtils.isEmpty(pattern)) {
-                throw new IllegalArgumentException();
-            }
-            return new SimpleDateFormat(pattern, Locale.ENGLISH);
-        } catch (IllegalArgumentException iae) {
-            throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
-        }
-
-    }
-
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
- new Parameter(YEAR, Type.BOOLEAN.getName(), "true"),
-                new Parameter("month", Type.BOOLEAN.getName(), "true"),
-                new Parameter("day", Type.BOOLEAN.getName(), "true") };
+        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER, //
+                new Parameter(YEAR, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(MONTH, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(DAY, Type.BOOLEAN.getName(), "true") };
     }
 
     /**

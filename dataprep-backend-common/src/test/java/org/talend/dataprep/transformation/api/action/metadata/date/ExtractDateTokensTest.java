@@ -67,6 +67,7 @@ public class ExtractDateTokensTest {
         expectedValues.put("0000", "toto");
         expectedValues.put("0001", "04/25/1999");
         expectedValues.put("0001_YEAR", "1999");
+        expectedValues.put("0001_MONTH", "4");
         expectedValues.put("0002", "tata");
 
         assertEquals(expectedValues, row.values());
