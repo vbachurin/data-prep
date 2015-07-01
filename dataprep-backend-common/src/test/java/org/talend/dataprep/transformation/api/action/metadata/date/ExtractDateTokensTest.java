@@ -123,19 +123,19 @@ public class ExtractDateTokensTest {
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
         expected.add(createMetadata("0001", "0001"));
+        expected.add(createMetadata("0001_YEAR", "0001_YEAR", Type.INTEGER));
+        expected.add(createMetadata("0001_MONTH", "0001_MONTH", Type.INTEGER));
         expected.add(createMetadata("last update", "last update"));
-        expected.add(createMetadata("0001_MONTH", "0001_MONTH"));
-        expected.add(createMetadata("0001_YEAR", "0001_YEAR"));
 
         assertEquals(expected, actual);
     }
 
-    /**
-     * @param name name of the column metadata to create.
-     * @return a new column metadata
-     */
     private ColumnMetadata createMetadata(String id, String name) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
+        return createMetadata(id, name, Type.STRING);
+    }
+
+    private ColumnMetadata createMetadata(String id, String name, Type type) {
+        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
     }
 
