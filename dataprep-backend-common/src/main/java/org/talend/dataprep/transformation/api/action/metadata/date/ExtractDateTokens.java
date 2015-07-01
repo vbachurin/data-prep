@@ -86,26 +86,13 @@ public class ExtractDateTokens extends SingleColumnAction {
             String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
             context.put(PATTERN, datePattern);
 
-            // go through the columns to be able to 'insert' the new columns just after the one needed.
-            for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
+            for (String date_field : DATE_FIELDS.keySet()) {
+                if (new Boolean(parameters.get(date_field))) {
+                    // create the new column
+                    ColumnMetadata newColumnMetadata = createNewColumn(column, date_field);
 
-                column = rowMetadata.getColumns().get(i);
-                if (!StringUtils.equals(column.getId(), columnId)) {
-                    continue;
-                }
-
-                // get the new column id
-                List<String> columnIds = new ArrayList<>(rowMetadata.size());
-                rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
-
-                for (String date_field : DATE_FIELDS.keySet()) {
-                    if (new Boolean(parameters.get(date_field))) {
-                        // create the new column
-                        ColumnMetadata newColumnMetadata = createNewColumn(column, date_field);
-
-                        // add the new column after the current one
-                        rowMetadata.getColumns().add(i + 1, newColumnMetadata);
-                    }
+                    // add the new column after the current one
+                    rowMetadata.getColumns().add(newColumnMetadata);
                 }
             }
         };
@@ -182,7 +169,11 @@ public class ExtractDateTokens extends SingleColumnAction {
                     }
                 }
             } catch (DateTimeParseException e) {
-                // cannot parse the date, let's leave it as is
+                for (Entry<String, ChronoField> date_field : DATE_FIELDS.entrySet()) {
+                    if (new Boolean(parameters.get(date_field.getKey()))) {
+                        row.set(columnId + SEPARATOR + date_field.getKey(), "");
+                    }
+                }
             }
         };
     }
