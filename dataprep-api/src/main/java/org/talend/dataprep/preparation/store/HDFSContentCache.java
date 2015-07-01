@@ -109,7 +109,7 @@ public class HDFSContentCache implements ContentCache {
             if ("head".equals(stepId) || "origin".equals(stepId)) {
                 throw new IllegalArgumentException("Illegal shortcut for preparation step '" + stepId + "'.");
             }
-            LOGGER.info("[{} @{}] Cache add.", preparationId, stepId);
+            LOGGER.debug("[{} @{}] Cache add.", preparationId, stepId);
             // Adds suffix for time to live checks
             final Path preparation = new Path("preparations/" + preparationId + "/" + stepId);
             final Path path = preparation.suffix("." + String.valueOf(System.currentTimeMillis() + timeToLive.getTime()));
@@ -158,7 +158,7 @@ public class HDFSContentCache implements ContentCache {
     public void janitor() {
         try {
             if (!fileSystem.exists(new Path("preparations/"))) {
-                LOGGER.info("No cache content to clean.");
+                LOGGER.debug("No cache content to clean.");
             } else {
                 final long start = System.currentTimeMillis();
                 LOGGER.debug("Janitor process started @ {}.", start);
