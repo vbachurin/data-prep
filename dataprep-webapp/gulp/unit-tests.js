@@ -17,7 +17,7 @@ function runTests(singleRun, done, karmaConfPath) {
     var testFiles = bowerDeps.js.concat([
         'src/*.js',
         'src/{services,components}/**/*-module.js',
-        'src/{services,components}/**/*.js',
+        'src/{services,components,mocks}/**/*.js',
         'src/components/**/*.html'
     ]);
 
