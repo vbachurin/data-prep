@@ -6,7 +6,9 @@
         "column_id": "0001",
         "YEAR": "true",
         "MONTH": "true",
-        "DAY": "false"
+        "DAY": "false",
+        "HOUR_24": "true",
+        "MINUTE": "true"
       }
     }
   ]

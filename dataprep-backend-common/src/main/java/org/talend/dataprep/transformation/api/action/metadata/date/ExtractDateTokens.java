@@ -6,12 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.UnsupportedTemporalTypeException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
@@ -52,10 +50,19 @@ public class ExtractDateTokens extends SingleColumnAction {
 
     private static final String DAY = "DAY";
 
+    private static final String HOUR_12 = "HOUR_12";
+
+    private static final String HOUR_24 = "HOUR_24";
+
+    private static final String MINUTE = "MINUTE";
+
     private static final DateFieldMappingBean[] DATE_FIELDS = new DateFieldMappingBean[] {//
     new DateFieldMappingBean(YEAR, ChronoField.YEAR),//
             new DateFieldMappingBean(MONTH, ChronoField.MONTH_OF_YEAR),//
-            new DateFieldMappingBean(DAY, ChronoField.DAY_OF_MONTH) //
+            new DateFieldMappingBean(DAY, ChronoField.DAY_OF_MONTH), //
+            new DateFieldMappingBean(HOUR_12, ChronoField.HOUR_OF_AMPM), //
+            new DateFieldMappingBean(HOUR_24, ChronoField.HOUR_OF_DAY), //
+            new DateFieldMappingBean(MINUTE, ChronoField.MINUTE_OF_HOUR), //
     };
 
     private static class DateFieldMappingBean {
@@ -188,7 +195,13 @@ public class ExtractDateTokens extends SingleColumnAction {
 
                 for (DateFieldMappingBean date_field : DATE_FIELDS) {
                     if (new Boolean(parameters.get(date_field.key))) {
-                        row.set(columnId + SEPARATOR + date_field.key, temporalAccessor.get(date_field.field) + "");
+                        String newValue = "";
+                        try {
+                            newValue = temporalAccessor.get(date_field.field) + "";
+                        } catch (UnsupportedTemporalTypeException e) {
+                            // This field cannot be compute, nothing to do, keep new value empty
+                        }
+                        row.set(columnId + SEPARATOR + date_field.key, newValue);
                     }
                 }
             } catch (DateTimeParseException e) {
@@ -207,7 +220,11 @@ public class ExtractDateTokens extends SingleColumnAction {
         return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER, //
                 new Parameter(YEAR, Type.BOOLEAN.getName(), "true"),//
                 new Parameter(MONTH, Type.BOOLEAN.getName(), "true"),//
-                new Parameter(DAY, Type.BOOLEAN.getName(), "true") };
+                new Parameter(DAY, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(HOUR_12, Type.BOOLEAN.getName(), "false"),//
+                new Parameter(HOUR_24, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(MINUTE, Type.BOOLEAN.getName(), "true"),//
+        };
     }
 
     /**

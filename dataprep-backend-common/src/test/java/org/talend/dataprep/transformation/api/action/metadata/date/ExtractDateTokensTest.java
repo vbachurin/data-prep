@@ -73,6 +73,37 @@ public class ExtractDateTokensTest {
         expectedValues.put("0001", "04/25/1999");
         expectedValues.put("0001_YEAR", "1999");
         expectedValues.put("0001_MONTH", "4");
+        expectedValues.put("0001_HOUR_24", "");
+        expectedValues.put("0001_MINUTE", "");
+        expectedValues.put("0002", "tata");
+
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_process_row_with_time() {
+
+        // given
+        Map<String, String> values = new HashMap<>();
+        values.put("0000", "toto");
+        values.put("0001", "04/25/1999 15:45");
+        values.put("0002", "tata");
+        DataSetRow row = new DataSetRow(values);
+
+        TransformationContext context = new TransformationContext();
+        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy HH:mm");
+
+        // when
+        rowClosure.accept(row, context);
+
+        // then
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "toto");
+        expectedValues.put("0001", "04/25/1999 15:45");
+        expectedValues.put("0001_YEAR", "1999");
+        expectedValues.put("0001_MONTH", "4");
+        expectedValues.put("0001_HOUR_24", "15");
+        expectedValues.put("0001_MINUTE", "45");
         expectedValues.put("0002", "tata");
 
         assertEquals(expectedValues, row.values());
@@ -100,6 +131,8 @@ public class ExtractDateTokensTest {
         expectedValues.put("0001", "25-04-1999");
         expectedValues.put("0001_YEAR", "");
         expectedValues.put("0001_MONTH", "");
+        expectedValues.put("0001_HOUR_24", "");
+        expectedValues.put("0001_MINUTE", "");
         expectedValues.put("0002", "tata");
 
         assertEquals(expectedValues, row.values());
@@ -125,6 +158,8 @@ public class ExtractDateTokensTest {
         expected.add(createMetadata("0001", "0001"));
         expected.add(createMetadata("0001_YEAR", "0001_YEAR", Type.INTEGER));
         expected.add(createMetadata("0001_MONTH", "0001_MONTH", Type.INTEGER));
+        expected.add(createMetadata("0001_HOUR_24", "0001_HOUR_24", Type.INTEGER));
+        expected.add(createMetadata("0001_MINUTE", "0001_MINUTE", Type.INTEGER));
         expected.add(createMetadata("last update", "last update"));
 
         assertEquals(expected, actual);
