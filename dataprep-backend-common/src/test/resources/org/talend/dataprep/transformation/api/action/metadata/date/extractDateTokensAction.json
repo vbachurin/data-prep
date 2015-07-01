@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "action": "extract_date_tokens",
+      "parameters": {
+        "column_id": "0001"
+      }
+    }
+  ]
+}
