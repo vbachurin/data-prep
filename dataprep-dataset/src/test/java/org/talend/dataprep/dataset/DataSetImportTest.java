@@ -106,6 +106,8 @@ public class DataSetImportTest {
         final DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(metadata.getLifecycle().importing(), is(false));
         assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        // TDP-283: Quality analysis should be synchronous
+        assertThat(metadata.getLifecycle().qualityAnalyzed(), is(true));
     }
 
     /**
