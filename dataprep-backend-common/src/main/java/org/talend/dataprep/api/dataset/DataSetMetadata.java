@@ -5,15 +5,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.talend.dataprep.api.dataset.json.EpochTimeDeserializer;
-import org.talend.dataprep.api.dataset.json.EpochTimeSerializer;
 import org.talend.dataprep.schema.SchemaParserResult;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -57,8 +53,6 @@ public class DataSetMetadata {
     private String author;
 
     @JsonProperty("created")
-    @JsonSerialize(using = EpochTimeSerializer.class)
-    @JsonDeserialize(using = EpochTimeDeserializer.class)
     private long creationDate;
 
     /** Sheet number in case of excel source. */
