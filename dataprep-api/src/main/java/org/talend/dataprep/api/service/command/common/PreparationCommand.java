@@ -21,6 +21,25 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 
 public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
+    /**
+     * <p>
+     * A configuration to allow work from intermediate (cached) preparation content. If set to <b>true</b> and
+     * preparation has:
+     * <ul>
+     *     <li>Root</li>
+     *     <li>Step #1</li>
+     *     <li>Step #2</li>
+     * </ul>
+     * When user asks for content @ Step #2, a more efficient approach is to start from content @ Step #1 (iso. starting
+     * over from Root).
+     * </p>
+     * <p>
+     * However, content cached for Step #1 can't be used as is (columns are located after "records", causing DataSet
+     * deserialization to fail).
+     * </p>
+     */
+    private  static final boolean ALLOW_WORK_FROM_CACHE = false;
+
     @Autowired
     protected Jackson2ObjectMapperBuilder builder;
 
@@ -148,34 +167,37 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             ctx.fromCache = true;
             return ctx;
         }
-        // Try to find intermediate cached version (starting from version)
-        final List<String> preparationSteps = preparation.getSteps();
-        String lastStepId = version;
-        for (String step : preparationSteps) {
-            if (contentCache.has(preparationId, step)) {
-                ctx.content = contentCache.get(preparationId, step);
-                ctx.fromCache = true;
-                break;
+        // At this point, content does *not* come from cache
+        ctx.fromCache = false;
+        String transformationStartStep;
+        if (ALLOW_WORK_FROM_CACHE) {
+            // Try to find intermediate cached version (starting from version)
+            transformationStartStep = version;
+            final List<String> preparationSteps = preparation.getSteps();
+            for (String step : preparationSteps) {
+                transformationStartStep = step;
+                if (contentCache.has(preparationId, step)) {
+                    ctx.content = contentCache.get(preparationId, step);
+                    break;
+                }
             }
-            lastStepId = step;
+        } else {
+            // Don't allow to work from intermediate cached steps, so start over from root (data set content).
+            transformationStartStep = Step.ROOT_STEP.id();
         }
         // Did not find any cache for retrieve preparation details, starts over from original dataset
-        if (Step.ROOT_STEP.id().equals(lastStepId)) {
+        if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
             final String dataSetId = preparation.getDataSetId();
             final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
             ctx.content = retrieveDataSet.execute();
-            ctx.fromCache = false;
         }
         // Build the actions to execute
-        if (Step.ROOT_STEP.id().equals(lastStepId)) {
+        if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
             // Went down to root step and found nothing in cache -> get all preparation actions
             ctx.actions = getPreparationActions(preparation, stepId);
         } else {
             // Stopped in the middle -> compute list of actions to remove
-            List<Action> preparationActions = getPreparationActions(preparation, version);
-            final List<Action> performedActions = getPreparationActions(preparation, lastStepId);
-            preparationActions.removeAll(performedActions);
-            ctx.actions = performedActions;
+            ctx.actions = getPreparationActions(preparation, transformationStartStep);
         }
         return ctx;
     }
