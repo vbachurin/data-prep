@@ -145,6 +145,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         if (contentCache.has(preparationId, version)) {
             ctx.content = contentCache.get(preparationId, version);
             ctx.actions = Collections.emptyList();
+            ctx.fromCache = true;
             return ctx;
         }
         // Try to find intermediate cached version (starting from version)
@@ -153,6 +154,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         for (String step : preparationSteps) {
             if (contentCache.has(preparationId, step)) {
                 ctx.content = contentCache.get(preparationId, step);
+                ctx.fromCache = true;
                 break;
             }
             lastStepId = step;
@@ -162,6 +164,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             final String dataSetId = preparation.getDataSetId();
             final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
             ctx.content = retrieveDataSet.execute();
+            ctx.fromCache = false;
         }
         // Build the actions to execute
         if (Step.ROOT_STEP.id().equals(lastStepId)) {
@@ -178,6 +181,8 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     public class PreparationContext {
+
+        boolean fromCache;
 
         InputStream content;
 
@@ -201,6 +206,10 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
         public String getVersion() {
             return version;
+        }
+
+        public boolean fromCache() {
+            return fromCache;
         }
     }
 }

@@ -12,7 +12,7 @@ import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.CloneInputStream;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
 import org.talend.dataprep.api.service.command.transformation.Transform;
-import org.talend.dataprep.preparation.store.HDFSContentCache;
+import org.talend.dataprep.preparation.store.ContentCache;
 
 @Component
 @Scope("request")
@@ -33,18 +33,21 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
         PreparationContext preparationContext = getContext(id, version);
         List<Action> actions = preparationContext.getActions();
         InputStream content = preparationContext.getContent();
-        if (actions.isEmpty()) {
-            // Nothing to do, return content as is.
-            return content;
-        } else {
+        // Run transformation (if any action to perform)
+        if (!actions.isEmpty()) {
             final String encodedActions = serialize(actions);
             // pass content to the transformation service as input as well as actions to perform on input...
             final Transform transformCommand = context.getBean(Transform.class, client, content, encodedActions);
-            // ... and send it back to user (but saves it back in content cache).
+            content = transformCommand.execute();
+        }
+        // Cache result (if wasn't already cached)
+        if (preparationContext.fromCache()) {
+            return content;
+        } else {
             final OutputStream newCacheEntry = contentCache.put(id, //
                     preparationContext.getVersion(), //
-                    HDFSContentCache.TimeToLive.DEFAULT);
-            return new CloneInputStream(transformCommand.execute(), newCacheEntry);
+                    ContentCache.TimeToLive.DEFAULT);
+            return new CloneInputStream(content, newCacheEntry);
         }
     }
 

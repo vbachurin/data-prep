@@ -61,7 +61,7 @@ public class HDFSContentCacheTest {
     public void testPut() throws Exception {
         // Put a content in cache...
         assertThat(cache.has(PREPARATION_ID, STEP_ID), is(false));
-        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, HDFSContentCache.TimeToLive.DEFAULT)) {
+        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
@@ -74,7 +74,7 @@ public class HDFSContentCacheTest {
         // Put a content in cache...
         assertThat(cache.has(PREPARATION_ID, "origin"), is(false));
         assertThat(cache.has(PREPARATION_ID, Step.ROOT_STEP.id()), is(false));
-        try (OutputStream entry = cache.put(PREPARATION_ID, Step.ROOT_STEP.id(), HDFSContentCache.TimeToLive.DEFAULT)) {
+        try (OutputStream entry = cache.put(PREPARATION_ID, Step.ROOT_STEP.id(), ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
@@ -86,19 +86,19 @@ public class HDFSContentCacheTest {
     @Test(expected = IllegalArgumentException.class)
     public void testWrongPut_Head() throws Exception {
         // Put a content in cache with "head" is not accepted
-        cache.put(PREPARATION_ID, "head", HDFSContentCache.TimeToLive.DEFAULT);
+        cache.put(PREPARATION_ID, "head", ContentCache.TimeToLive.DEFAULT);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongPut_Origin() throws Exception {
         // Put a content in cache with "origin" is not accepted
-        cache.put(PREPARATION_ID, "origin", HDFSContentCache.TimeToLive.DEFAULT);
+        cache.put(PREPARATION_ID, "origin", ContentCache.TimeToLive.DEFAULT);
     }
 
     @Test
     public void testGet() throws Exception {
         // Put a content in cache...
-        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, HDFSContentCache.TimeToLive.DEFAULT)) {
+        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
@@ -110,7 +110,7 @@ public class HDFSContentCacheTest {
     @Test
     public void testEvict() throws Exception {
         // Put a content in cache...
-        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, HDFSContentCache.TimeToLive.DEFAULT)) {
+        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
@@ -124,7 +124,7 @@ public class HDFSContentCacheTest {
     @Test
     public void testJanitor() throws Exception {
         // Put a content in cache...
-        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, HDFSContentCache.TimeToLive.DEFAULT)) {
+        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }

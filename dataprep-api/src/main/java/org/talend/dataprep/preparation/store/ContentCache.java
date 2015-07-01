@@ -2,6 +2,7 @@ package org.talend.dataprep.preparation.store;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A component to hold versions of a preparation at different steps. Each implementation may implement different
@@ -39,7 +40,7 @@ public interface ContentCache {
      * cache entry.
      * @return A {@link OutputStream output stream} to be used to write content in cache entry
      */
-    OutputStream put(String preparationId, String stepId, HDFSContentCache.TimeToLive timeToLive);
+    OutputStream put(String preparationId, String stepId, TimeToLive timeToLive);
 
     /**
      * Mark cache entry as invalid for given <code>preparationId</code> at step <code>stepId</code>. After this method
@@ -54,4 +55,32 @@ public interface ContentCache {
      * Removes all content cached by this {@link ContentCache cache}.
      */
     void clear();
+
+    /**
+     * Configure how long a cache entry may exist in cache.
+     */
+    enum TimeToLive {
+        /**
+         * Default time to live for a content in cache (1 hour).
+         */
+        DEFAULT(TimeUnit.HOURS.toMillis(1)),
+        /**
+         * Short time to live (short period -> 1 minute).
+         */
+        SHORT(TimeUnit.MINUTES.toMillis(1)),
+        /**
+         * Long time to live (long period -> 1 day).
+         */
+        LONG(TimeUnit.DAYS.toMillis(1));
+
+        private final long time;
+
+        TimeToLive(long time) {
+            this.time = time;
+        }
+
+        public long getTime() {
+            return time;
+        }
+    }
 }

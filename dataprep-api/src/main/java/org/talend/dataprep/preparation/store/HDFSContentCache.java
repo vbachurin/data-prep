@@ -3,7 +3,6 @@ package org.talend.dataprep.preparation.store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang.StringUtils;
@@ -191,31 +190,4 @@ public class HDFSContentCache implements ContentCache {
         }
     }
 
-    /**
-     * Configure how long a cache entry may exist in cache.
-     */
-    public enum TimeToLive {
-        /**
-         * Default time to live for a content in cache (1 hour).
-         */
-        DEFAULT(TimeUnit.HOURS.toMillis(1)),
-        /**
-         * Short time to live (short period -> 1 minute).
-         */
-        SHORT(TimeUnit.MINUTES.toMillis(1)),
-        /**
-         * Long time to live (long period -> 1 day).
-         */
-        LONG(TimeUnit.DAYS.toMillis(1));
-
-        private final long time;
-
-        TimeToLive(long time) {
-            this.time = time;
-        }
-
-        public long getTime() {
-            return time;
-        }
-    }
 }
