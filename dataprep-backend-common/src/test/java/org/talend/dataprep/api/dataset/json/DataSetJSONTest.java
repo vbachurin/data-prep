@@ -103,7 +103,8 @@ public class DataSetJSONTest {
         assertEquals(2, metadata.getContent().getNbRecords());
         assertEquals(1, metadata.getContent().getNbLinesInHeader());
         assertEquals(0, metadata.getContent().getNbLinesInFooter());
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-YYYY HH:mm");
+
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Date expectedDate = dateFormat.parse("02-17-2015 09:02");
