@@ -4,7 +4,7 @@
 	/**
 	 * @ngdoc service
 	 * @name data-prep.services.uploadWorkflowService:UploadWorkflowService
-	 * @description UploadWorkflowService service. This service exposes functions open the different types of dataset
+	 * @description UploadWorkflowService service. This service exposes functions to open the different types of dataset
 	 */
 	function UploadWorkflowService ($state, DatasetSheetPreviewService, MessageService, DatasetService){
 		var self = this;
