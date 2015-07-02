@@ -18,6 +18,6 @@
         'data-prep.dataset-xls-preview',
         'data-prep.services.dataset',
         'data-prep.services.playground',
-        'data-prep.services.utils'
+        'data-prep.services.utils',
     ]);
 })();

@@ -13,6 +13,8 @@
         'ui.router',
         'talend.widget',
         'data-prep.services.preparation',
-        'data-prep.services.playground'
+        'data-prep.services.playground',
+        'data-prep.services.dataset',
+        'data-prep.services.uploadWorkflowService'
     ]);
 })();

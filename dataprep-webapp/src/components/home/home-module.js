@@ -20,6 +20,7 @@
         'data-prep.playground',
         'data-prep.preparation-list',
         'data-prep.services.dataset',
-        'data-prep.services.utils'
+        'data-prep.services.utils',
+        'data-prep.services.uploadWorkflowService'
     ]);
 })();
