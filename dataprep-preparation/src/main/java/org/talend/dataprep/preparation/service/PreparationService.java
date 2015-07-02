@@ -61,7 +61,7 @@ public class PreparationService {
         return author;
     }
 
-    private static String getStepId(@ApiParam("version") @PathVariable("version") String version, Preparation preparation) {
+    private static String getStepId(String version, Preparation preparation) {
         String stepId;
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
             stepId = preparation.getStep().id();
@@ -157,6 +157,15 @@ public class PreparationService {
         return preparationRepository.get(id, Preparation.class);
     }
 
+    @RequestMapping(value = "/preparations/{id}/steps", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all preparation steps id", notes = "Return the steps of the preparation with provided id.")
+    @Timed
+    public List<String> getSteps(@ApiParam("id") @PathVariable("id") String id) {
+        LOGGER.debug("Get steps of preparation for #{}.", id);
+        final Step step = preparationRepository.get(id, Preparation.class).getStep();
+        return PreparationUtils.listSteps(step, preparationRepository);
+    }
+
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
@@ -223,7 +232,7 @@ public class PreparationService {
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
+    @ApiOperation(value = "Get all the actions of a preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
     public PreparationActions getVersionedAction(@ApiParam("id") @PathVariable("id") final String id, //
                                                  @ApiParam("version") @PathVariable("version") final String version) {

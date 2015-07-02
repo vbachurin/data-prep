@@ -1,0 +1,19 @@
+{
+  "actions": [
+    {
+      "action": "uppercase",
+      "parameters": {
+        "column_id": "0000",
+        "column_name": "name"
+      }
+    },
+    {
+      "action": "rename_column",
+      "parameters": {
+        "new_column_name": "blah blah blah",
+        "column_id": "0001",
+        "column_name": "count"
+      }
+    }
+  ]
+}

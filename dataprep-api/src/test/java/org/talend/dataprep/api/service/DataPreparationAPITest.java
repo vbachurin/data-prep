@@ -32,6 +32,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.preparation.store.ContentCache;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +61,9 @@ public class DataPreparationAPITest {
     @Autowired
     ConfigurableEnvironment environment;
 
+    @Autowired
+    ContentCache cache;
+
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -77,6 +81,7 @@ public class DataPreparationAPITest {
         dataSetMetadataRepository.clear();
         contentStore.clear();
         preparationRepository.clear();
+        cache.clear();
     }
 
     @Test
@@ -392,7 +397,9 @@ public class DataPreparationAPITest {
         final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json");
 
         // when
+        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
         final String content = when().get("/api/preparations/{id}/content", preparationId).asString();
+        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
 
         // then
         assertThat(content, sameJSONAsFile(expected));
@@ -414,6 +421,10 @@ public class DataPreparationAPITest {
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(2));
         assertThat(steps.get(1), is(ROOT_STEP.id()));
+        // Cache is lazily populated
+        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
+        assertThat(cache.has(preparationId, steps.get(0)), is(false));
+        assertThat(cache.has(preparationId, steps.get(1)), is(false));
         // Request preparation content at different versions (preparation has 2 steps -> Root + Upper Case).
         assertThat(when().get("/api/preparations/{id}/content", preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
@@ -427,6 +438,10 @@ public class DataPreparationAPITest {
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=" + ROOT_STEP.id(), preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
+        // After all these preparation get content, cache should be populated with content
+        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
+        assertThat(cache.has(preparationId, steps.get(0)), is(true));
+        assertThat(cache.has(preparationId, steps.get(1)), is(true));
     }
 
     /**

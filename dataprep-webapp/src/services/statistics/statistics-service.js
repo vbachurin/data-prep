@@ -1,6 +1,12 @@
 (function () {
 	'use strict';
-
+	/**
+	 * @ngdoc service
+	 * @name data-prep.services.statistics:StatisticsService
+	 * @description Extracts/structures the data to be visualized in charts
+	 * @requires data-prep.services.playground.service:DatagridService
+	 * @requires data-prep.services.filter.service:FilterService
+	 */
 	function StatisticsService (DatagridService, FilterService, $timeout) {
 		var self = this;
 
@@ -12,7 +18,12 @@
 		 * @description Add a 'contains' filter in the angular context
 		 */
 		self.addFilter = function (value) {
-			$timeout(FilterService.addFilter.bind(null,'contains',self.selectedColumn.id,self.selectedColumn.name,{phrase: 			value}));
+			if(value){
+				$timeout(FilterService.addFilter.bind(null,'contains',self.selectedColumn.id,self.selectedColumn.name,{phrase:value}));
+			}
+			else {
+				$timeout(FilterService.addFilter.bind(null,'empty_records',self.selectedColumn.id,self.selectedColumn.name,{}));
+			}
 		};
 
 		/**

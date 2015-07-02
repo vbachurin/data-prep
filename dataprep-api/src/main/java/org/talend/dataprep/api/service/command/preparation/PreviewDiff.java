@@ -2,8 +2,7 @@ package org.talend.dataprep.api.service.command.preparation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -11,12 +10,11 @@ import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.PreviewDiffInput;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 @Component
 @Scope("request")
@@ -31,31 +29,28 @@ public class PreviewDiff extends PreparationCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-
         // get preparation details
-        final JsonNode preparationDetails = getPreparationDetails(input.getPreparationId());
-        final String dataSetId = preparationDetails.get("dataSetId").textValue();
-
+        final Preparation preparation = getPreparation(input.getPreparationId());
+        final String dataSetId = preparation.getDataSetId();
         // extract actions by steps in chronological order, until defined last active step (from input)
-        final List<String> currentStepsIds = getActionsStepIds(preparationDetails, input.getCurrentStepId());
-        final Map<String, Action> currentActions = getActions(preparationDetails, currentStepsIds);
-
-        // extract actions without disabled steps
-        final List<String> previewStepsIds = getActionsStepIds(preparationDetails, input.getPreviewStepId());
-        final Map<String, Action> previewActions = getActions(preparationDetails, previewStepsIds);
-
+        Map<String, Action> originalActions = new LinkedHashMap<>();
+        final List<String> steps = preparation.getSteps();
+        final Iterator<Action> actions = getPreparationActions(preparation, input.getCurrentStepId()).iterator();
+        steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
+        // modify actions to include the update
+        Map<String, Action> previewActions = new LinkedHashMap<>();
+        final List<String> previewSteps = preparation.getSteps();
+        final Iterator<Action> previewActionsIterator = getPreparationActions(preparation, input.getPreviewStepId()).iterator();
+        previewSteps.stream().filter(step -> previewActionsIterator.hasNext()).forEach(step -> previewActions.put(step, previewActionsIterator.next()));
         // serialize and base 64 encode the 2 actions list
-        final String currentEncodedActions = serializeAndEncode(currentActions);
-        final String previewEncodedActions = serializeAndEncode(previewActions);
-
+        final String oldEncodedActions = serialize(new ArrayList<>(originalActions.values()));
+        final String newEncodedActions = serialize(new ArrayList<>(previewActions.values()));
         // get dataset content
         final InputStream content = getDatasetContent(dataSetId);
-
         // get usable tdpIds
         final String encodedTdpIds = serializeAndEncode(input.getTdpIds());
-
         // call transformation preview with content and the 2 transformations
-        return previewTransformation(content, currentEncodedActions, previewEncodedActions, encodedTdpIds);
+        return previewTransformation(content, oldEncodedActions, newEncodedActions, encodedTdpIds);
     }
 
     /**
