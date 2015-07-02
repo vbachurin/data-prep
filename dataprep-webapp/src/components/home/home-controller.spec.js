@@ -35,7 +35,7 @@ describe('Home controller', function() {
     describe('with created controller', function() {
         var uploadDefer;
 
-        beforeEach(inject(function($q, DatasetService) {
+        beforeEach(inject(function($q, DatasetService, UploadWorkflowService) {
             ctrl = createController();
             ctrl.datasetFile = [{name: 'my dataset.csv'}];
             ctrl.datasetName = 'my cool dataset';
@@ -45,7 +45,9 @@ describe('Home controller', function() {
                 uploadDefer.progressCb = callback;
                 return uploadDefer.promise;
             };
-
+            var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
+            spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
+            spyOn(UploadWorkflowService, 'openDataset').and.returnValue();
             spyOn(DatasetService, 'fileToDataset').and.callThrough();
             spyOn(DatasetService, 'create').and.returnValue(uploadDefer.promise);
             spyOn(DatasetService, 'update').and.returnValue(uploadDefer.promise);
@@ -90,9 +92,6 @@ describe('Home controller', function() {
             it('should create dataset if name is unique', inject(function($q, $rootScope, MessageService, DatasetService, UploadWorkflowService) {
                 //given
                 var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
-                spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
-                spyOn(UploadWorkflowService, 'openDataset').and.returnValue();
-
                 expect(ctrl.uploadingDatasets.length).toBe(0);
                 ctrl.uploadDatasetName();
                 expect(ctrl.uploadingDatasets.length).toBe(1);
@@ -173,20 +172,19 @@ describe('Home controller', function() {
                 expect(DatasetService.update).not.toHaveBeenCalled();
             }));
 
-            //it('should create dataset with modified name', inject(function ($rootScope, MessageService, TalendConfirmService, DatasetService) {
-            //    //given
-            //    ctrl.uploadDatasetName();
-			//
-            //    //when
-            //    confirmDefer.reject();
-            //    scope.$digest();
-            //    uploadDefer.resolve({data :'dataset_id_XYZ'});
-            //    scope.$digest();
-			//
-            //    //then
-            //    expect(DatasetService.fileToDataset).toHaveBeenCalledWith(ctrl.datasetFile[0], 'my cool dataset (1)');
-            //    expect($rootScope.$emit).toHaveBeenCalledWith('talend.dataset.open', 'dataset_id_XYZ');
-            //}));
+            it('should create dataset with modified name', inject(function ($rootScope, MessageService, TalendConfirmService, DatasetService) {
+                //given
+                ctrl.uploadDatasetName();
+
+                //when
+                confirmDefer.reject();
+                scope.$digest();
+                uploadDefer.resolve({data :'dataset_id_XYZ'});
+                scope.$digest();
+
+                //then
+                expect(DatasetService.fileToDataset).toHaveBeenCalledWith(ctrl.datasetFile[0], 'my cool dataset (1)');
+            }));
 
             it('should update existing dataset', inject(function (MessageService, TalendConfirmService, DatasetService) {
                 //given
