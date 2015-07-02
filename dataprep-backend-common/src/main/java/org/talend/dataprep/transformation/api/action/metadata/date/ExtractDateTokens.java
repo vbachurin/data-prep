@@ -187,28 +187,26 @@ public class ExtractDateTokens extends SingleColumnAction {
             // sadly unable to do that outside of the closure since the context is not available
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) context.get(PATTERN));
 
-            // parse the
             String value = row.get(columnId);
+
+            // parse the date
             TemporalAccessor temporalAccessor = null;
             try {
                 temporalAccessor = dtf.parse(value, new ParsePosition(0));
-
-                for (DateFieldMappingBean date_field : DATE_FIELDS) {
-                    if (new Boolean(parameters.get(date_field.key))) {
-                        String newValue = "";
-                        try {
-                            newValue = temporalAccessor.get(date_field.field) + "";
-                        } catch (UnsupportedTemporalTypeException e) {
-                            // This field cannot be compute, nothing to do, keep new value empty
-                        }
-                        row.set(columnId + SEPARATOR + date_field.key, newValue);
-                    }
-                }
             } catch (DateTimeParseException e) {
-                for (DateFieldMappingBean date_field : DATE_FIELDS) {
-                    if (new Boolean(parameters.get(date_field.key))) {
-                        row.set(columnId + SEPARATOR + date_field.key, "");
+                // Nothing to do: in this case, temporalAccessor is left null, this will be used bellow to set empty new
+                // value for all fields
+            }
+
+            for (DateFieldMappingBean date_field : DATE_FIELDS) {
+                if (new Boolean(parameters.get(date_field.key))) {
+                    String newValue = "";
+
+                    if (temporalAccessor != null && // may occurs if date is not parsable with pattern
+                            temporalAccessor.isSupported(date_field.field)) {
+                        newValue = temporalAccessor.get(date_field.field) + "";
                     }
+                    row.set(columnId + SEPARATOR + date_field.key, newValue);
                 }
             }
         };
