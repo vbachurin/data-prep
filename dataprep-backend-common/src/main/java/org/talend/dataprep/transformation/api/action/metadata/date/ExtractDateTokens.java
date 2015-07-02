@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
-import java.time.temporal.UnsupportedTemporalTypeException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +43,8 @@ public class ExtractDateTokens extends SingleColumnAction {
     /** Name of the date pattern. */
     protected static final String PATTERN = "date_pattern"; //$NON-NLS-1$
 
+    private static final String SEPARATOR = "_";
+
     private static final String YEAR = "YEAR";
 
     private static final String MONTH = "MONTH";
@@ -56,13 +57,28 @@ public class ExtractDateTokens extends SingleColumnAction {
 
     private static final String MINUTE = "MINUTE";
 
+    private static final String AM_PM = "AM_PM";
+
+    private static final String SECOND = "SECOND";
+
+    private static final String DAY_OF_WEEK = "DAY_OF_WEEK";
+
+    private static final String DAY_OF_YEAR = "DAY_OF_YEAR";
+
+    private static final String WEEK_OF_YEAR = "WEEK_OF_YEAR";
+
     private static final DateFieldMappingBean[] DATE_FIELDS = new DateFieldMappingBean[] {//
     new DateFieldMappingBean(YEAR, ChronoField.YEAR),//
             new DateFieldMappingBean(MONTH, ChronoField.MONTH_OF_YEAR),//
             new DateFieldMappingBean(DAY, ChronoField.DAY_OF_MONTH), //
             new DateFieldMappingBean(HOUR_12, ChronoField.HOUR_OF_AMPM), //
+            new DateFieldMappingBean(AM_PM, ChronoField.AMPM_OF_DAY), //
             new DateFieldMappingBean(HOUR_24, ChronoField.HOUR_OF_DAY), //
             new DateFieldMappingBean(MINUTE, ChronoField.MINUTE_OF_HOUR), //
+            new DateFieldMappingBean(SECOND, ChronoField.SECOND_OF_MINUTE), //
+            new DateFieldMappingBean(DAY_OF_WEEK, ChronoField.DAY_OF_WEEK), //
+            new DateFieldMappingBean(DAY_OF_YEAR, ChronoField.DAY_OF_YEAR), //
+            new DateFieldMappingBean(WEEK_OF_YEAR, ChronoField.ALIGNED_WEEK_OF_YEAR), //
     };
 
     private static class DateFieldMappingBean {
@@ -79,7 +95,23 @@ public class ExtractDateTokens extends SingleColumnAction {
 
     }
 
-    private static final String SEPARATOR = "_";
+    @Override
+    @Nonnull
+    public Parameter[] getParameters() {
+        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER, //
+                new Parameter(YEAR, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(MONTH, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(DAY, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(HOUR_12, Type.BOOLEAN.getName(), "false"),//
+                new Parameter(AM_PM, Type.BOOLEAN.getName(), "false"),//
+                new Parameter(HOUR_24, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(MINUTE, Type.BOOLEAN.getName(), "true"),//
+                new Parameter(SECOND, Type.BOOLEAN.getName(), "false"),//
+                new Parameter(DAY_OF_WEEK, Type.BOOLEAN.getName(), "false"),//
+                new Parameter(DAY_OF_YEAR, Type.BOOLEAN.getName(), "false"),//
+                new Parameter(WEEK_OF_YEAR, Type.BOOLEAN.getName(), "false"),//
+        };
+    }
 
     /**
      * @see ActionMetadata#createMetadataClosure(Map)
@@ -209,19 +241,6 @@ public class ExtractDateTokens extends SingleColumnAction {
                     row.set(columnId + SEPARATOR + date_field.key, newValue);
                 }
             }
-        };
-    }
-
-    @Override
-    @Nonnull
-    public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER, //
-                new Parameter(YEAR, Type.BOOLEAN.getName(), "true"),//
-                new Parameter(MONTH, Type.BOOLEAN.getName(), "true"),//
-                new Parameter(DAY, Type.BOOLEAN.getName(), "true"),//
-                new Parameter(HOUR_12, Type.BOOLEAN.getName(), "false"),//
-                new Parameter(HOUR_24, Type.BOOLEAN.getName(), "true"),//
-                new Parameter(MINUTE, Type.BOOLEAN.getName(), "true"),//
         };
     }
 
