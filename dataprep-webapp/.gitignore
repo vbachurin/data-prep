@@ -1,6 +1,5 @@
 # Created by .gitignore support plugin (hsz.mobi)
 
-*.mine.js
 ### JetBrains template
 ## Directory-based project format
 .idea/
@@ -26,3 +25,4 @@ bower_components/
 dist/
 node/
 ngdoc/
+*.mine.js
