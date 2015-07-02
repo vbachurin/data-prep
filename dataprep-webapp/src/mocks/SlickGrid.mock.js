@@ -14,11 +14,15 @@ function SlickGridMock () {
         initRenderedRangeMock: function(range) {
             this.range = range;
         },
+        initActiveCellMock: function(activeCell) {
+            this.activeCell = activeCell;
+        },
         cssStyleConfig: {},
 
         //slickGrid events
         onActiveCellChanged: {subscribe: function() {}},
         onClick: {subscribe: function() {}},
+        onColumnsReordered: {subscribe: function() {}},
         onColumnsResized: {subscribe: function() {}},
         onHeaderClick: {subscribe: function() {}},
         onMouseEnter: {subscribe: function() {}},
@@ -27,6 +31,7 @@ function SlickGridMock () {
 
         //slickGrid functions
         autosizeColumns: function() {},
+        getActiveCell: function() {return this.activeCell;},
         getColumns: function() {return this.columns;},
         getCellFromEvent: function() {return this.cell;},
         getCellNodeBox: function() {return this.box;},
@@ -38,6 +43,7 @@ function SlickGridMock () {
         resizeCanvas: function() {},
         setColumns: function(columns) {this.columns = columns;},
         setCellCssStyles: function(cssStyle, config) {this.cssStyleConfig[cssStyle] = config;},
+        scrollRowToTop: function() {},
         updateRowCount: function() {}
     };
 }

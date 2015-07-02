@@ -1,3 +1,6 @@
+/*global window:false */
+/*global SlickGridMock:false */
+
 describe('Datagrid grid service', function () {
     'use strict';
 
@@ -19,7 +22,6 @@ describe('Datagrid grid service', function () {
 
     beforeEach(function () {
         window.Slick = {
-            /*global SlickGridMock:false */
             Grid: SlickGridMock
         };
     });

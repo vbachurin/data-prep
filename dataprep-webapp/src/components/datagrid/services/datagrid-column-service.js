@@ -109,7 +109,7 @@
                         return colHeader.column.id === col.id;
                     });
                     if (header) {
-                        header.scope.columns = col;
+                        header.scope.column = col;
                     }
                     //or create a new one if no corresponding one
                     else {
@@ -146,8 +146,8 @@
          */
         function createHeader(col) {
             var headerScope = $rootScope.$new(true);
-            headerScope.columns = col;
-            var headerElement = angular.element('<datagrid-header column="columns"></datagrid-header>');
+            headerScope.column = col;
+            var headerElement = angular.element('<datagrid-header column="column"></datagrid-header>');
             $compile(headerElement)(headerScope);
 
             return {

@@ -155,38 +155,22 @@
                 //hidden characters need to be shown
                 var returnStr = computeHTMLForLeadingOrTrailingHiddenChars(value);
 
-                //deleted row preview
-                if(dataContext.__tdpRowDiff === 'delete') {
-                    return '<div class="cellDeletedValue"><strike>' + (returnStr ? returnStr : ' ') + '</strike></div>';
-                }
-                //new row preview
-                else if(dataContext.__tdpRowDiff === 'new') {
-                    return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                //entire row modification preview
+                switch(dataContext.__tdpRowDiff) {
+                    case 'delete': return '<div class="cellDeletedValue"><strike>' + (returnStr ? returnStr : ' ') + '</strike></div>';
+                    case 'new': return '<div class="cellNewValue">' + (returnStr ? returnStr : ' ') + '</div>';
                 }
 
-                //updated cell preview
-                if(dataContext.__tdpDiff){
-                    // update
-                    if (dataContext.__tdpDiff[columnDef.id] === 'update') {
-                        return '<div class="cellUpdateValue">' + returnStr + '</div>';
-                    }
-                    // new
-                    else if (dataContext.__tdpDiff[columnDef.id] === 'new') {
-                        return '<div class="cellNewValue">' + returnStr + '</div>';
-                    }
-                    // new
-                    else if (dataContext.__tdpDiff[columnDef.id] === 'delete') {
-                        return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
+                //cell modification preview
+                if(dataContext.__tdpDiff && dataContext.__tdpDiff[columnDef.id]){
+                    switch(dataContext.__tdpDiff[columnDef.id]) {
+                        case 'update': return '<div class="cellUpdateValue">' + returnStr + '</div>';
+                        case 'new': return '<div class="cellNewValue">' + returnStr + '</div>';
+                        case 'delete': return '<div class="cellDeletedValue">' + (returnStr ? returnStr : ' ') + '</div>';
                     }
                 }
 
-                if(isInvalid(returnStr)){
-                    return returnStr + '<div title="Invalid Value" class="red-rect"></div>';
-                }
-                else {
-                    return returnStr + '<div class="invisible-rect"></div>';
-                }
-
+                return returnStr + (isInvalid(returnStr) ? '<div title="Invalid Value" class="red-rect"></div>' : '<div class="invisible-rect"></div>');
             };
         }
 
