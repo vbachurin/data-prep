@@ -320,6 +320,30 @@ describe('Datagrid style service', function () {
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
         }));
+
+        it('should apply "selected" class to last selected column before preview', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+
+            gridMock.initActiveCellMock({cell: 1}); // a cell from column 1
+            DatagridStyleService.manageColumnStyle(false); // will select column 1
+            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
+
+            DatagridStyleService.manageColumnStyle(true); // will unselect column 1
+            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(false);
+
+            gridMock.initActiveCellMock(); // no active cell anymore, it should take last selected column id
+
+            //when
+            DatagridStyleService.manageColumnStyle(false);
+
+            //then
+            expect(gridColumns[0].cssClass).toBeFalsy();
+            expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
+            expect(gridColumns[2].cssClass).toBeFalsy();
+            expect(gridColumns[3].cssClass).toBeFalsy();
+            expect(gridColumns[4].cssClass).toBeFalsy();
+        }));
     });
 
     describe('text to html adaptation', function() {
