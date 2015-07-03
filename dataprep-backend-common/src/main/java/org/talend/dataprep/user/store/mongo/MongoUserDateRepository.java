@@ -15,6 +15,8 @@ package org.talend.dataprep.user.store.mongo;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.user.store.UserDataRepository;
 
@@ -22,6 +24,8 @@ import org.talend.dataprep.user.store.UserDataRepository;
  * created by sgandon on 16 juin 2015 Detailled comment
  *
  */
+@Component
+@ConditionalOnProperty(name = "user.data.store", havingValue = "mongodb", matchIfMissing = false)
 public class MongoUserDateRepository implements UserDataRepository {
 
     @Autowired

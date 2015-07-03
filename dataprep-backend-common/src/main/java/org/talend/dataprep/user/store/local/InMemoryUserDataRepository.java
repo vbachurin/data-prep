@@ -15,6 +15,8 @@ package org.talend.dataprep.user.store.local;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.user.store.UserDataRepository;
 
@@ -22,6 +24,8 @@ import org.talend.dataprep.user.store.UserDataRepository;
  * created by sgandon on 16 juin 2015 Detailled comment
  *
  */
+@Component
+@ConditionalOnProperty(name = "user.data.store", havingValue = "in-memory", matchIfMissing = false)
 public class InMemoryUserDataRepository implements UserDataRepository {
 
     private final Map<String, UserData> store = new HashMap<>();
