@@ -146,7 +146,7 @@ public class DataSetServiceTests {
 
         String expected = "[{\"id\":\""
                 + id1
-                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":\"01-01-1970 00:00\"}]";
+                + "\",\"name\":\"name1\",\"records\":0,\"author\":\"anonymous\",\"nbLinesHeader\":0,\"nbLinesFooter\":0,\"created\":0}]";
 
         InputStream content = when().get("/datasets").asInputStream();
         String contentAsString = IOUtils.toString(content);

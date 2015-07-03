@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.dataset.json;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 
@@ -28,6 +30,9 @@ import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.CSVFormatGuess;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DataSetJSONTest.class)
 @Configuration
@@ -45,7 +50,9 @@ public class DataSetJSONTest {
      */
     public DataSet from(InputStream json) {
         try {
-            return builder.build().reader(DataSet.class).readValue(json);
+            final ObjectMapper mapper = builder.build();
+            JsonParser parser = mapper.getFactory().createParser(json);
+            return mapper.reader(DataSet.class).readValue(parser);
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
@@ -96,7 +103,8 @@ public class DataSetJSONTest {
         assertEquals(2, metadata.getContent().getNbRecords());
         assertEquals(1, metadata.getContent().getNbLinesInHeader());
         assertEquals(0, metadata.getContent().getNbLinesInFooter());
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-YYYY HH:mm");
+
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Date expectedDate = dateFormat.parse("02-17-2015 09:02");
@@ -162,4 +170,12 @@ public class DataSetJSONTest {
         assertThat(writer.toString(), sameJSONAsFile(DataSetJSONTest.class.getResourceAsStream("test3.json")));
     }
 
+    @Test
+    public void testColumnAtEnd() throws Exception {
+        DataSet dataSet = from(DataSetJSONTest.class.getResourceAsStream("test4.json"));
+        // There are 4 columns, but Jackson doesn't take them into account if at end of content. This is not "expected"
+        // but known. This test ensure the known behavior remains the same.
+        assertThat(dataSet.getMetadata(), nullValue());
+        assertThat(dataSet.getColumns().size(), is(0));
+    }
 }

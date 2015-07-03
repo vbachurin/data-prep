@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
@@ -23,7 +23,7 @@ import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
-@Configuration
+@Component
 @ConditionalOnProperty(name = "dataset.content.store", havingValue = "local", matchIfMissing = false)
 public class LocalDataSetContentStore implements DataSetContentStore {
 

@@ -1,6 +1,12 @@
 (function () {
 	'use strict';
-
+	/**
+	 * @ngdoc service
+	 * @name data-prep.services.statistics:StatisticsService
+	 * @description Extracts/structures the data to be visualized in charts
+	 * @requires data-prep.services.playground.service:DatagridService
+	 * @requires data-prep.services.filter.service:FilterService
+	 */
 	function StatisticsService (DatagridService, FilterService, $timeout) {
 		var self = this;
 

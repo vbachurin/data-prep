@@ -37,40 +37,36 @@ public class Export extends PreparationCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        String dataSetId;
-        String encodedActions = null;
         String name;
-
-        // Get dataset id and actions from preparation
+        List<Action> actions;
+        InputStream content;
         if (StringUtils.isNotBlank(input.getPreparationId())) {
-            final JsonNode preparationDetails = getPreparationDetails(input.getPreparationId());
-
-            final List<String> currentStepsIds = getActionsStepIds(preparationDetails, input.getStepId());
-            final Map<String, Action> actions = getActions(preparationDetails, currentStepsIds);
-
-            dataSetId = preparationDetails.get("dataSetId").textValue();
-            encodedActions = serializeAndEncode(actions);
-            name = preparationDetails.get("name").textValue();
-        }
-        // Get provided dataset id
-        else {
-            dataSetId = input.getDatasetId();
+            // Get name from preparation (preparation is set)
+            final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
+            //
+            name = context.getPreparation().getName();
+            actions = context.getActions();
+            content = context.getContent();
+        } else {
+            // Get name from data set
+            final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
+            String dataSetId = input.getDatasetId();
             final JsonNode datasetDetails = getDatasetDetails(dataSetId);
+            //
             name = datasetDetails.get("metadata").get("name").textValue();
+            actions = context.getActions();
+            content = getDatasetContent(dataSetId);
         }
-
         // Set response headers
         response.setContentType(input.getExportType().getMimeType());
         response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getExtension());
-
         // Get dataset content and call export service
+        final String encodedActions = serialize(actions);
         final String uri = getTransformationUri(input.getExportType(), input.getArguments(), encodedActions);
         final HttpPost transformationCall = new HttpPost(uri);
-        final InputStream content = getDatasetContent(dataSetId);
         transformationCall.setEntity(new InputStreamEntity(content));
-
-        return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(),
-                transformationCall::releaseConnection);
+        final InputStream transformedContent = client.execute(transformationCall).getEntity().getContent();
+        return new ReleasableInputStream(transformedContent, transformationCall::releaseConnection);
     }
 
     /**
@@ -94,7 +90,6 @@ public class Export extends PreparationCommand<InputStream> {
 
         if (encodedActions != null) {
             result = appendQueryParam(result, "actions=" + encodedActions, hasQueryParams);
-            hasQueryParams = true;
         }
 
         return result;

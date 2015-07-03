@@ -130,6 +130,17 @@
 
         /**
          * @ngdoc method
+         * @name filterValidRecords
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description Create a filter for all valid records on the given column.
+         * @param {object} column - the column to filter
+         */
+        vm.filterValidRecords = function(column) {
+            FilterService.addFilter('valid_records', column.id, column.name, {values: column.quality.invalidValues});
+        };
+
+        /**
+         * @ngdoc method
          * @name filterInvalidRecords
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
          * @description Create a filter for invalid records on the given column.
