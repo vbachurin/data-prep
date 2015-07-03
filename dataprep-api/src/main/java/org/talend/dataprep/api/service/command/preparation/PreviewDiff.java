@@ -32,23 +32,29 @@ public class PreviewDiff extends PreparationCommand<InputStream> {
         // get preparation details
         final Preparation preparation = getPreparation(input.getPreparationId());
         final String dataSetId = preparation.getDataSetId();
-        // extract actions by steps in chronological order, until defined last active step (from input)
-        Map<String, Action> originalActions = new LinkedHashMap<>();
+
+        // get steps from first operation to head
         final List<String> steps = preparation.getSteps();
+        steps.remove(0);
+
+        // extract actions by steps in chronological order, until last active step (from input)
+        Map<String, Action> originalActions = new LinkedHashMap<>();
         final Iterator<Action> actions = getPreparationActions(preparation, input.getCurrentStepId()).iterator();
         steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
-        // modify actions to include the update
+
+        // extract actions by steps in chronological order, until preview step (from input)
         Map<String, Action> previewActions = new LinkedHashMap<>();
         final List<String> previewSteps = preparation.getSteps();
         final Iterator<Action> previewActionsIterator = getPreparationActions(preparation, input.getPreviewStepId()).iterator();
         previewSteps.stream().filter(step -> previewActionsIterator.hasNext()).forEach(step -> previewActions.put(step, previewActionsIterator.next()));
+
         // serialize and base 64 encode the 2 actions list
         final String oldEncodedActions = serialize(new ArrayList<>(originalActions.values()));
         final String newEncodedActions = serialize(new ArrayList<>(previewActions.values()));
-        // get dataset content
+
         final InputStream content = getDatasetContent(dataSetId);
-        // get usable tdpIds
         final String encodedTdpIds = serializeAndEncode(input.getTdpIds());
+
         // call transformation preview with content and the 2 transformations
         return previewTransformation(content, oldEncodedActions, newEncodedActions, encodedTdpIds);
     }

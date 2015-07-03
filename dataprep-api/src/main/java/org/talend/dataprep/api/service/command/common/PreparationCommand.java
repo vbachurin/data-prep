@@ -26,9 +26,9 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * A configuration to allow work from intermediate (cached) preparation content. If set to <b>true</b> and
      * preparation has:
      * <ul>
-     *     <li>Root</li>
-     *     <li>Step #1</li>
-     *     <li>Step #2</li>
+     * <li>Root</li>
+     * <li>Step #1</li>
+     * <li>Step #2</li>
      * </ul>
      * When user asks for content @ Step #2, a more efficient approach is to start from content @ Step #1 (iso. starting
      * over from Root).
@@ -38,7 +38,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * deserialization to fail).
      * </p>
      */
-    private  static final boolean ALLOW_WORK_FROM_CACHE = false;
+    private static final boolean ALLOW_WORK_FROM_CACHE = false;
 
     @Autowired
     protected Jackson2ObjectMapperBuilder builder;
@@ -52,7 +52,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Call Preparation Service to get preparation details
-     * 
+     *
      * @param preparationId - the preparation id
      * @return the resulting Json node object
      * @throws java.io.IOException
@@ -86,7 +86,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Get dataset records
-     * 
+     *
      * @param dataSetId - the dataset id
      * @return the resulting input stream records
      */
@@ -108,7 +108,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Serialize the list of integer to string and encode it to base 64
-     * 
+     *
      * @param listToEncode - list of integer to encode
      * @return the serialized and encoded list
      */
@@ -119,7 +119,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Encode the string to base 64
-     * 
+     *
      * @param toEncode The string to encode
      * @return the encoded string
      */
@@ -132,12 +132,12 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
                 + "/actions/" + stepId);
         try {
             InputStream content = client.execute(actionsRetrieval).getEntity().getContent();
-            List<List<Action>> actions = builder.build().reader(new TypeReference<List<List<Action>>>() {
-            }).readValue(content);
-            List<Action> allActions = new ArrayList<>();
-            actions.forEach(allActions::addAll);
-            Collections.reverse(allActions);
-            return allActions;
+            List<Action> actions = builder
+                    .build()
+                    .reader(new TypeReference<List<Action>>() {
+                    })
+                    .readValue(content);
+            return actions;
         } finally {
             actionsRetrieval.releaseConnection();
         }
@@ -154,7 +154,8 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         final Preparation preparation = getPreparation(preparationId);
         String version = stepId;
         if ("head".equals(stepId)) {
-            version = preparation.getSteps().get(0);
+            int lastIndex = preparation.getSteps().size() - 1;
+            version = preparation.getSteps().get(lastIndex);
         } else if ("origin".equals(version)) {
             version = Step.ROOT_STEP.id();
         }
