@@ -1,40 +1,45 @@
-<talend-button-dropdown button-text="{{ ::'EXPORT' | translate }}" button-action="exportCtrl.export()">
-    <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.changeTypeAndExport(exportType)">{{exportType.id}}</li>
+<talend-button-dropdown close-on-select="true" on-open="onOpen()">
+  <div class="dropdown-container">
+    <button class="dropdown-description" ng-click="exportCtrl.launchExport()">{{ ::'EXPORT' | translate }}
+        <div class="line-separator"></div>
+    </button>
+    <!-- FIXME &nbsp; is a hack to display the dropdown list with Firefox -->
+
+    <button class="dropdown-button">&nbsp;</button>
+      <ul class="dropdown-menu dropdown-select">
+      <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.launchExport(exportType)">{{exportType.id}}</li>
+    </ul>
+  </div>
 </talend-button-dropdown>
 
 <talend-modal fullscreen="false"
-              state="exportCtrl.showModal"
-              close-button="true"
-              on-close="exportCtrl.resetCurrentParameters()">
+              state="exportCtrl.showExport"
+              close-button="true">
 
-    <div ng-repeat="parameter in exportCtrl.currentExportType.parameters track by $index">
-      <p>{{ parameter.labelKey | translate }}</p>
+    <div ng-repeat="parameter in exportCtrl.currentExportType.parameters">
+      <p>{{ :: parameter.labelKey | translate }}</p>
       <div ng-if="parameter.type == 'radio'">
-        <input ng-model="exportCtrl.currentExportParameters['exportParameters.' + parameter.name]"
-               type="radio"
-               value="{{parameter.defaultValue.value}}"/>{{ parameter.defaultValue.labelKey | translate }}( {{parameter.defaultValue.value}} )
-        <span ng-repeat="parameterValue in parameter.values track by $index">
-            <input ng-model="exportCtrl.currentExportParameters['exportParameters.' + parameter.name]"
-                   type="radio"
-                   value="{{parameterValue.value}}" >{{ parameterValue.labelKey | translate }}( {{parameterValue.value}} )
+        <input ng-model="exportCtrl.exportParameters[parameter.name]" type="radio" value="{{::parameter.defaultValue.value}}"/>{{ :: parameter.defaultValue.labelKey | translate }}({{::parameter.defaultValue.value}})
+        <span ng-repeat="parameterValue in parameter.values">
+          <input ng-model="exportCtrl.exportParameters[parameter.name]" type="radio" value="{{::parameterValue.value}}">{{ :: parameterValue.labelKey | translate }}({{::parameterValue.value}})
         </span>
       </div>
     </div>
 
     <div class="modal-buttons">
-      <button class="talend-modal-close t-btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
-      <button class="talend-modal-close t-btn-primary modal-primary-button" ng-click="exportCtrl.saveEditionAndExport()">{{ ::'EXPORT' | translate }}</button>
+      <button class="talend-modal-close btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}</button>
+      <button class="talend-modal-close btn-primary modal-primary-button" ng-click="exportCtrl.export()">{{ ::'EXPORT' | translate }}</button>
     </div>
+
+    <form id="exportForm" target="_blank">
+      <input type="hidden" name="preparationId" value="{{ exportCtrl.preparationId }}" />
+      <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
+      <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
+      <input type="hidden" name="exportType" />
+
+      <input ng-repeat="parameter in exportCtrl.currentExportType.parameters"
+             ng-model="exportCtrl.exportParameters[parameter.name]" name="exportParameters.{{parameter.name}}" type="hidden"/>
+
+    </form>
+
 </talend-modal>
-
-<form id="exportForm">
-    <input type="hidden" name="preparationId" value="{{ exportCtrl.preparationId }}" />
-    <input type="hidden" name="stepId" value="{{ exportCtrl.stepId }}" />
-    <input type="hidden" name="datasetId" value="{{ exportCtrl.datasetId }}" />
-
-    <input ng-repeat="(key, value) in exportCtrl.currentExportParameters track by $index"
-           name="{{key}}"
-           value="{{value}}"
-           type="hidden"/>
-
-</form>
