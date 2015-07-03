@@ -1,20 +1,37 @@
 (function () {
 	'use strict';
-
+	/**
+	 * @ngdoc service
+	 * @name data-prep.services.statistics:StatisticsService
+	 * @description Extracts/structures the data to be visualized in charts
+	 * @requires data-prep.services.playground.service:DatagridService
+	 * @requires data-prep.services.filter.service:FilterService
+	 */
 	function StatisticsService (DatagridService, FilterService, $timeout) {
 		var self = this;
 
 		/**
-		 * Add a 'contains' filter in the angular context
+		 * @ngdoc method
+		 * @name addFilter
+		 * @methodOf data-prep.services.statistics:StatisticsService
 		 * @param value - the phrase
+		 * @description Add a 'contains' filter in the angular context
 		 */
 		self.addFilter = function (value) {
-			$timeout(FilterService.addFilter.bind(null,'contains',self.selectedColumn.id,self.selectedColumn.name,{phrase: 			value}));
+			if(value){
+				$timeout(FilterService.addFilter.bind(null,'contains',self.selectedColumn.id,self.selectedColumn.name,{phrase:value}));
+			}
+			else {
+				$timeout(FilterService.addFilter.bind(null,'empty_records',self.selectedColumn.id,self.selectedColumn.name,{}));
+			}
 		};
 
 		/**
-		 * removes the previous barchart and sets the map chart
-		 * @param column
+		 * @ngdoc method
+		 * @name processMapData
+		 * @methodOf data-prep.services.statistics:StatisticsService
+		 * @param column - the clicked column
+		 * @description removes the previous barchart and sets the map chart
 		 */
 		self.processMapData = function (column) {
 			self.selectedColumn = column;
@@ -25,8 +42,12 @@
 		};
 
 		/**
-		 * extracts and builds the data for numeric column, from the histogram of the statistics
-		 * @param column.statistics.histogram
+		 * @ngdoc method
+		 * @name extractNumericData
+		 * @methodOf data-prep.services.statistics:StatisticsService
+		 * @param column.statistics.histogram Array
+		 * @description extracts and builds the data for numeric column, from the histogram of the statistics
+		 * @returns [{"data":" 0 ... 10", "occurences":11}, {"data":" 10 ... 20", "occurences":11}, ...]
 		 */
 		self.extractNumericData = function(histoData){
 			var concatData         = [];
@@ -40,9 +61,11 @@
 		};
 
 		/**
-		 * calculates the barchart data according to the column types
-		 * @param column
-		 * @returns [{"data":" 0-> 10", "occurences":11}, {"data":" 10 -> 20", "occurences":11}, ...]
+		 * @ngdoc method
+		 * @name processBarchartData
+		 * @methodOf data-prep.services.statistics:StatisticsService
+		 * @param column - the selected column
+		 * @description shows/hides the visualization according to the clicked column type
 		 */
 		self.processBarchartData = function (column) {
 			self.selectedColumn = column;
@@ -61,22 +84,27 @@
 		};
 
 		/**
-		 * checks what to draw a barchart or a map according to the column.domain field
-		 * @param column
+		 * @ngdoc method
+		 * @name processVisuData
+		 * @methodOf data-prep.services.statistics:StatisticsService
+		 * @param column - the selected column
+		 * @description processes the visualization data according to the clicked column domain
 		 */
 		self.processVisuData = function (column) {
 			if (column.domain.indexOf('STATE_CODE_') !== -1) {
 				self.processMapData(column);
 			} else if(column.domain === 'LOCALIZATION'){
-				self.data            = null;
-				self.stateDistribution = null;
+				self.resetCharts();
 			} else {
 				self.processBarchartData(column);
 			}
 		};
 
 		/**
-		 * empties the map chart/barchart, called on a new opened dataset or preparation
+		 * @ngdoc method
+		 * @name resetCharts
+		 * @methodOf data-prep.services.statistics:StatisticsService
+		 * @description removes the map chart/barchart, called on a new opened dataset or preparation
 		 */
 		self.resetCharts = function(){
 			self.data = null;

@@ -61,8 +61,12 @@
     </div>
 
     <div class="flex-center">
-        <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
-        <ui-view name="home-content"></ui-view>
+        <div class="flex-center-header">
+            <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
+        </div>
+        <div class="flex-center-body">
+            <ui-view name="home-content"></ui-view>
+        </div>
     </div>
 
     <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-menu-right inventory-data" resizable="inventory-data">

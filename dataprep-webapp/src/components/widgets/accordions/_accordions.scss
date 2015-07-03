@@ -1,9 +1,10 @@
 .accordion {
-  #trigger {
+  > .trigger-container {
     cursor: pointer;
   }
 
-  #content {
+  > .content-container > .content {
+    margin: 0 20px 0 0;
     display: none;
     background-color: rgb(226, 226, 227);
   }

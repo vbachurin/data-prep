@@ -3,6 +3,10 @@ package org.talend.dataprep.api.preparation;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+import java.util.Objects;
+
+import java.util.List;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -20,6 +24,8 @@ public class Preparation extends Identifiable {
 
     private Step step;
 
+    private List<String> steps;
+
     public Preparation() {
         this.creationDate = System.currentTimeMillis();
         this.lastModificationDate = this.creationDate;
@@ -29,6 +35,14 @@ public class Preparation extends Identifiable {
         this();
         this.dataSetId = dataSetId;
         this.step = step;
+    }
+
+    public List<String> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<String> steps) {
+        this.steps = steps;
     }
 
     public String getName() {
@@ -116,5 +130,29 @@ public class Preparation extends Identifiable {
         merge.lastModificationDate = max(other.lastModificationDate, lastModificationDate);
         merge.step = other.step != null ? other.step : step;
         return merge;
+    }
+
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Preparation that = (Preparation) o;
+        return Objects.equals(creationDate, that.creationDate) &&
+                Objects.equals(lastModificationDate, that.lastModificationDate) &&
+                Objects.equals(dataSetId, that.dataSetId) &&
+                Objects.equals(author, that.author) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(step, that.step);
+    }
+
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(dataSetId, author, name, creationDate, lastModificationDate, step);
     }
 }

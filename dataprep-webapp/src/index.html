@@ -2,7 +2,7 @@
 <html lang="en" class="no-js" ng-app="data-prep" ng-cloak>
     <head>
         <meta charset="utf-8">
-        <title>Talend - Data Shaker</title>
+        <title>Talend - DataPrep</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -83,6 +83,7 @@
         <script src="../bower_components/highmaps-release/modules/map.js"></script>
         <script src="../bower_components/d3/d3.js"></script>
         <script src="../bower_components/d3-tip/index.js"></script>
+        <script src="../bower_components/intro.js/intro.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
@@ -114,8 +115,14 @@
         <script src="services/playground/preview/preview-service.js"></script>
         <script src="services/playground/playground-service.js"></script>
         <script src="services/playground/grid/datagrid-service.js"></script>
+        <script src="services/onboarding/onboarding-module.js"></script>
+        <script src="services/onboarding/onboarding-service.js"></script>
+        <script src="services/onboarding/onboarding-datasets-constants.js"></script>
         <script src="services/filter/filter-module.js"></script>
         <script src="services/filter/filter-service.js"></script>
+        <script src="services/export/export-module.js"></script>
+        <script src="services/export/export-service.js"></script>
+        <script src="services/export/export-rest-service.js"></script>
         <script src="services/dataset/dataset-module.js"></script>
         <script src="services/dataset/rest/dataset-rest-service.js"></script>
         <script src="services/dataset/preview/dataset-sheet-preview-service.js"></script>
@@ -136,6 +143,9 @@
         <script src="components/widgets/confirm/widget-confirm-service.js"></script>
         <script src="components/widgets/confirm/widget-confirm-directive.js"></script>
         <script src="components/widgets/confirm/widget-confirm-controller.js"></script>
+        <script src="components/widgets/charts/horizontal-barchart/horizontal-barchart-module.js"></script>
+        <script src="components/widgets/charts/horizontal-barchart/horizontal-barchart-directive.js"></script>
+        <script src="components/widgets/button-dropdown/widget-button-dropdown-directive.js"></script>
         <script src="components/widgets/badge/widget-badge-directive.js"></script>
         <script src="components/widgets/badge/widget-badge-controller.js"></script>
         <script src="components/widgets/accordions/widget-accordions-item-directive.js"></script>
@@ -143,7 +153,6 @@
         <script src="components/widgets/accordions/widget-accordions-controller.js"></script>
         <script src="components/validation/type-validation-module.js"></script>
         <script src="components/validation/type-validation-directive.js"></script>
-        <script src="components/utils/constants/utils-constants.js"></script>
         <script src="components/transformation/params/transformation-params-module.js"></script>
         <script src="components/transformation/params/transformation-params-directive.js"></script>
         <script src="components/transformation/params/transformation-params-controller.js"></script>
@@ -177,10 +186,8 @@
         <script src="components/playground/playground-module.js"></script>
         <script src="components/playground/playground-directive.js"></script>
         <script src="components/playground/playground-controller.js"></script>
-        <script src="components/onboarding/tours.js"></script>
-        <script src="components/onboarding/intro.js"></script>
-        <script src="components/horizontal-barchart/horizontal-barchart-module.js"></script>
-        <script src="components/horizontal-barchart/horizontal-barchart-directive.js"></script>
+        <script src="components/navbar/navbar-module.js"></script>
+        <script src="components/navbar/navbar-controller.js"></script>
         <script src="components/home/home-module.js"></script>
         <script src="components/home/home-controller.js"></script>
         <script src="components/filter/search/filter-search-module.js"></script>
@@ -203,13 +210,19 @@
         <script src="components/datagrid/tooltip/datagrid-tooltip-module.js"></script>
         <script src="components/datagrid/tooltip/datagrid-tooltip-directive.js"></script>
         <script src="components/datagrid/tooltip/datagrid-tooltip-controller.js"></script>
+        <script src="components/datagrid/datagrid-module.js"></script>
+        <script src="components/datagrid/services/datagrid-tooltip-service.js"></script>
+        <script src="components/datagrid/services/datagrid-style-service.js"></script>
+        <script src="components/datagrid/services/datagrid-size-service.js"></script>
+        <script src="components/datagrid/services/datagrid-grid-service.js"></script>
+        <script src="components/datagrid/services/datagrid-external-service.js"></script>
+        <script src="components/datagrid/services/datagrid-column-service.js"></script>
         <script src="components/datagrid/quality-bar/quality-bar-module.js"></script>
         <script src="components/datagrid/quality-bar/quality-bar-directive.js"></script>
         <script src="components/datagrid/quality-bar/quality-bar-controller.js"></script>
         <script src="components/datagrid/header/datagrid-header-module.js"></script>
         <script src="components/datagrid/header/datagrid-header-directive.js"></script>
         <script src="components/datagrid/header/datagrid-header-controller.js"></script>
-        <script src="components/datagrid/datagrid-module.js"></script>
         <script src="components/datagrid/datagrid-directive.js"></script>
         <script src="components/datagrid/datagrid-controller.js"></script>
         <script src="assets/maps/us-all.js"></script>

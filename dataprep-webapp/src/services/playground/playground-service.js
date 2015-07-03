@@ -60,6 +60,15 @@
          */
         self.showRecipe = false;
 
+        /**
+         * @ngdoc property
+         * @name preparationNameEditionMode
+         * @propertyOf data-prep.services.playground.service:PlaygroundService
+         * @description Flag that the name edition mode.
+         * The edition mode is active when user open an existing preparation, and inactive for a new preparation
+         */
+        self.preparationNameEditionMode = true;
+
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------VISIBILITY--------------------------------------------
         //------------------------------------------------------------------------------------------------------
@@ -129,6 +138,7 @@
                         setName('');
                         reset(dataset, data);
                         self.showRecipe = false;
+                        self.preparationNameEditionMode = true;
                     });
             }
             else {
@@ -161,6 +171,7 @@
                         setName(preparation.name);
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
                         self.showRecipe = true;
+                        self.preparationNameEditionMode = false;
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');

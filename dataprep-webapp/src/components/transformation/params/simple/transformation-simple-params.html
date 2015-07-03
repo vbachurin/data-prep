@@ -10,6 +10,7 @@
         <div class="param-input" ng-if="::(!simpleParamsCtrl.editableSelect)">
             <input name="{{::(param.name + $index)}}"
                    type="{{::param.inputType}}"
+                   ng-trim="false"
                    ng-model="param.value"
                    type-validation="{{::param.type}}"/>
             <span ng-if="::(param.type === 'boolean')">{{param.name}}</span>

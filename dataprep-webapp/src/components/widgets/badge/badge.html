@@ -1,5 +1,5 @@
 <span class="badge-notice"
-      ng-class="{'custom': badgeCtrl.type==='contains', 'invalid': badgeCtrl.type==='invalid_records', 'empty': badgeCtrl.type==='empty_records'}">
+      ng-class="badgeCtrl.type">
     <span class="badge-item text">{{badgeCtrl.text}}</span>
     <span ng-if="badgeCtrl.obj.value">
         <span class="badge-item"> : </span>

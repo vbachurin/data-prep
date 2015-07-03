@@ -13,8 +13,8 @@
       "id": "avgAmount",
       "quality": {
         "empty": 0,
-        "invalid": 2,
-        "valid": 0
+        "invalid": 0,
+        "valid": 2
       },
       "type": "double"
     },

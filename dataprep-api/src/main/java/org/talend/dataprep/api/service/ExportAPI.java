@@ -4,20 +4,25 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VAL
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.io.InputStream;
-import java.util.List;
+import java.util.Base64;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.api.ExportParameters;
 import org.talend.dataprep.api.service.command.export.Export;
 import org.talend.dataprep.api.service.command.export.ExportTypes;
-import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 
@@ -32,16 +37,30 @@ public class ExportAPI extends APIService {
 
     @RequestMapping(value = "/api/export", method = GET)
     @ApiOperation(value = "Export a dataset", consumes = APPLICATION_FORM_URLENCODED_VALUE, notes = "Export a dataset or a preparation to file. The file type is provided in the request body.")
-    public void export(@ApiParam(value = "Export configuration")
-    @Valid
-    final ExportParameters input, final HttpServletResponse response) {
+    public void export(@ApiParam(value = "Export configuration") @Valid final ExportParameters input, //
+                       final HttpServletResponse response, //
+                       final HttpServletRequest request) {
         try {
+            Map<String, String> arguments = new HashMap<>();
+            final Enumeration<String> names = request.getParameterNames();
+            while (names.hasMoreElements()) {
+                final String paramName = names.nextElement();
+                if (StringUtils.contains(paramName, "exportParameters.")) {
+                    final String paramValue = request.getParameter(paramName);
+                    if (StringUtils.isNotEmpty(paramValue)) {
+                        final String decodeParamValue = paramValue.getBytes().length > 1 ? //
+                        new String(Base64.getDecoder().decode(paramValue))
+                                : //
+                                paramValue;
+                        arguments.put(paramName, decodeParamValue);
+                    }
+                }
+            }
+            input.setArguments(arguments);
             final HystrixCommand<InputStream> command = getCommand(Export.class, getClient(), input, response);
             final ServletOutputStream outputStream = response.getOutputStream();
-
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
-
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);
         }
@@ -50,22 +69,17 @@ public class ExportAPI extends APIService {
     /**
      * Get the available export types
      */
-    @RequestMapping(value = "/api/export/types", method = GET)
+    @RequestMapping(value = "/api/export/types", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get the available export types")
     @Timed
     public void exportTypes(final HttpServletResponse response) {
-
         try {
             final HystrixCommand<InputStream> command = getCommand(ExportTypes.class, getClient());
             final ServletOutputStream outputStream = response.getOutputStream();
-
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
-
         } catch (Exception e) {
             throw new TDPException(APIErrorCodes.UNABLE_TO_EXPORT_CONTENT, e);
         }
-
     }
-
 }

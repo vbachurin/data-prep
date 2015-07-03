@@ -17,6 +17,7 @@ describe('Playground controller', function() {
 
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
         spyOn($state, 'go').and.returnValue();
+
     }));
 
     it('should bind showPlayground getter with PlaygroundService', inject(function(PlaygroundService) {
@@ -41,6 +42,30 @@ describe('Playground controller', function() {
 
         //then
         expect(PlaygroundService.visible).toBe(true);
+    }));
+
+    it('should bind editionMode getter with PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.editionMode).toBe(true);
+
+        //when
+        PlaygroundService.preparationNameEditionMode = false;
+
+        //then
+        expect(ctrl.editionMode).toBe(false);
+    }));
+
+    it('should bind editionMode setter with PlaygroundService', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        expect(PlaygroundService.preparationNameEditionMode).toBe(true);
+
+        //when
+        ctrl.editionMode = false;
+
+        //then
+        expect(PlaygroundService.preparationNameEditionMode).toBe(false);
     }));
 
     it('should bind metadata getter with PlaygroundService', inject(function(PlaygroundService) {

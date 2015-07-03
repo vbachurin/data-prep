@@ -4,7 +4,7 @@
 
 .preparation-list {
   $grid-item-columns: 4;
-  $grid-item-border-size: 15px;
+  $grid-item-border-size: 10px;
   $grid-item-border-color: $white;
   $grid-items-background: $super-light-gray;
   $grid-items-shadow: $shadow-gray;
@@ -13,15 +13,15 @@
   $important-color: $dark-blue;
 
   width: 100%;
-  padding: 10px 10px 10px 10px;
+  padding: 15px;
 
   .preparation {
     @include transition(all 0.2s ease-in-out);
     text-align: left;
-    min-width: 290px;
-    max-width: 290px;
+    min-width: 285px;
+    max-width: 285px;
     float: left;
-    padding: 12px;
+    padding: $grid-item-border-size;
     box-shadow: inset 0px 0px 1px 1px $shadow-gray;
     //border: ($grid-item-border-size / 2) solid $grid-item-border-color;
     margin: 5px;
@@ -74,14 +74,25 @@
     .details {
       padding-left: 10px;
       font-size: 0.8em;
+      margin: 0px 0px 0px 0px;
     }
 
     .important {
+
       color: $important-color;
       font-size: 0.9em;
       &:hover{
-        text-decoration: underline;
-        cursor: pointer;
+        //text-decoration: underline;
+        //cursor: pointer;
+      }
+    }
+
+    .actions{
+      float: right;
+      font-weight: 600;
+      color: $grid-items-background;
+      &:hover{
+        color: $color-error;
       }
     }
   }

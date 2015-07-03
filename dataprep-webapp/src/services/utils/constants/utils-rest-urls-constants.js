@@ -14,7 +14,7 @@
                 transformUrl:           apiUrl + '/api/transform',
                 preparationUrl:         apiUrl + '/api/preparations',
                 previewUrl:             apiUrl + '/api/preparations/preview',
-                exportUrl:             apiUrl + '/api/export'
+                exportUrl:              apiUrl + '/api/export'
             };
         }]);
 })();

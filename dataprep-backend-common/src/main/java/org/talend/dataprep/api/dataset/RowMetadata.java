@@ -2,6 +2,7 @@ package org.talend.dataprep.api.dataset;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.talend.dataprep.api.dataset.diff.Flag;
 
@@ -94,8 +95,30 @@ public class RowMetadata {
         columnMetadata.sort((col1, col2) -> col1.getId().compareTo(col2.getId()));
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
         return "RowMetadata{" + "columnMetadata=" + columnMetadata + '}';
+    }
+
+    /**
+     * @see Object#equals(Object)
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RowMetadata that = (RowMetadata) o;
+        return Objects.equals(columnMetadata, that.columnMetadata);
+    }
+
+    /**
+     * @see Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(columnMetadata);
     }
 }

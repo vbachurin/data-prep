@@ -190,4 +190,23 @@ describe('Filter service', function() {
         expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
     }));
 
+    it('should add "valid records" filter and add datagrid filter', inject(function(FilterService, DatagridService) {
+        //when
+        FilterService.addFilter('valid_records', 'col1', 'column name', {values:['m','p']});
+
+        //then
+        expect(FilterService.filters.length).toBe(1);
+
+        var filterInfo = FilterService.filters[0];
+        expect(filterInfo.type).toBe('valid_records');
+        expect(filterInfo.colId).toBe('col1');
+        expect(filterInfo.colName).toBe('column name');
+        expect(filterInfo.value).toBe('valid records');
+        expect(filterInfo.editable).toBe(false);
+        expect(filterInfo.args).toEqual({values:['m','p']});
+        expect(filterInfo.filterFn({col1: 'a'})).toBeTruthy();
+        expect(filterInfo.filterFn({col1: 'm'})).toBeFalsy();
+
+        expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
+    }));
 });

@@ -35,11 +35,14 @@
          * @description Open an accordion and hide the others
          */
         vm.toggle = function toggle(accordion) {
-            var state = accordion.active;
+            var wasActive = accordion.active;
             _.forEach(vm.accordions, function(accordionToDeactivate) {
-                accordionToDeactivate.active = false;
+                accordionToDeactivate.close();
             });
-            accordion.active = !state;
+
+            if(!wasActive) {
+                accordion.open();
+            }
         };
 
         /**

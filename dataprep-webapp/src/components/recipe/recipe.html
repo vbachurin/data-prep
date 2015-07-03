@@ -2,9 +2,8 @@
     <talend-accordions-item ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId"
                             ng-class="{'inactive': step.inactive}"
                             on-open="recipeCtrl.resetParams(step)"
-                            default="true">
-        <div id="trigger"
-             class="step-description"
+                            default="$index === (recipeCtrl.recipe.length - 1)">
+        <div class="trigger step-description"
              ng-click="recipeCtrl.showModal[$index] = !!step.transformation.cluster">
 
             {{$index + 1}}.
@@ -16,7 +15,7 @@
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
         </div>
 
-        <div id="content">
+        <div class="content">
             <transform-params ng-if="(step.transformation.parameters.length || step.transformation.items.length)"
                               transformation="step.transformation"
                               on-submit="recipeCtrl.stepUpdateClosure(step)(params)"

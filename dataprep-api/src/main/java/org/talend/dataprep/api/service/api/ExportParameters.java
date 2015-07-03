@@ -5,8 +5,10 @@ import javax.validation.constraints.NotNull;
 import org.talend.dataprep.api.service.validation.OneNotBlank;
 import org.talend.dataprep.api.type.ExportType;
 
+import java.util.Map;
+
 /**
- * Parameters for dataset/preparation export
+ * Parameter for dataset/preparation export
  */
 @OneNotBlank({ "preparationId", "datasetId" })
 public class ExportParameters {
@@ -16,11 +18,6 @@ public class ExportParameters {
      */
     @NotNull
     private ExportType exportType;
-
-    /**
-     * CSV separator to use
-     */
-    private Character csvSeparator;
 
     /**
      * The preparation id to export. If this is null, datasetId must be set
@@ -36,6 +33,8 @@ public class ExportParameters {
      * The dataset id to export. If this is null, preparationId must be set
      */
     private String datasetId;
+
+    private Map<String, String> arguments;
 
     public ExportType getExportType() {
         return exportType;
@@ -69,11 +68,13 @@ public class ExportParameters {
         this.datasetId = datasetId;
     }
 
-    public Character getCsvSeparator() {
-        return csvSeparator;
+    public Map<String, String> getArguments()
+    {
+        return arguments;
     }
 
-    public void setCsvSeparator(char csvSeparator) {
-        this.csvSeparator = csvSeparator;
+    public void setArguments( Map<String, String> arguments )
+    {
+        this.arguments = arguments;
     }
 }

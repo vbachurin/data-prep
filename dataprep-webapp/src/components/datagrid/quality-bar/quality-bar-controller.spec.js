@@ -232,6 +232,29 @@ describe('Quality bar controller', function () {
             expect(FilterService.addFilter).toHaveBeenCalledWith('invalid_records', col.id, col.name, {values: col.quality.invalidValues});
         }));
 
+        it('should set filter on valid records', inject(function(FilterService) {
+
+            //given
+            var ctrl = createController();
+            var col = {
+                'id': '0000',
+                'name': 'MostPopulousCity',
+                'quality': {
+                    'empty': 0,
+                    'invalid': 10,
+                    'valid': 90,
+                    'invalidValues': ['AA', 'AB', 'BA']
+                },
+                'type': 'string'
+            };
+
+            //when
+            ctrl.filterValidRecords(col);
+
+            //then
+            expect(FilterService.addFilter).toHaveBeenCalledWith('valid_records', col.id, col.name, {values: col.quality.invalidValues});
+        }));
+
         it('should set filter on empty records', inject(function(FilterService) {
 
             //given

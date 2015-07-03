@@ -5,7 +5,7 @@
 
   position: absolute;
   top: 14px;
-  right: 55px;
+  right: 230px;
 
   background: rgba(255, 255, 255, 0.5);
 
@@ -16,22 +16,30 @@
   }
 }
 
+.export {
+  position: absolute;
+  top: 7px;
+  right: 80px;
+}
+
 .steps-header{
-  margin: 15px 0px 15px 10px;
-  font-size: 1.4em;
+  margin: 15px 0 15px 10px;
 
   .title{
-    padding: 2px 0px 0px 6px;
+    padding: 3px 0 4px 0;
+    font-size: 1.2em;
+    font-weight: 600;
+    text-transform: uppercase;
   }
   input{
     font-family: $base-font-family;
     float: left;
-    width:140px;
-    padding: 1px 0px 2px 0px;
-    margin: 0px 5px 0px 5px;
+    width:190px;
+    padding: 5px 0 4px 3px;
   }
   button{
-    font-size: .80em;
+    font-family: $iconsfont;
+    font-size: .9em;
     margin: 3px;
     padding: 2px;
     border-radius: 50px;
@@ -44,28 +52,37 @@
     height: 24px;
 
     &.edit-btn{
-      margin-top: 4px;
+      margin-top: 2px;
       color: $medium-gray;
       background-color: transparent;
+      &:after {
+        content: "a";  /* Edit icon  */
+      }
       &:hover{
        color: $dark-gray;
       }
     }
 
-    &.check-btn{
-        color: $white;
-        background-color: $blue;
+    &.cancel-btn{
+        color: $dark-gray;
+        background-color: $light-gray;
+      &:after {
+        content: "b";
+      }
       &:hover{
-        background-color: darken( $blue, 10% );
+        background-color: darken( $light-gray, 10% );
       }
     }
 
-    &.cancel-btn{
+    &.check-btn{
         margin-left: 0px;
-         color: $dark-gray;
-         background-color: $light-gray;
+         color: $white;
+         background-color: $dark-green;
+      &:after {
+        content: "c";
+      }
       &:hover {
-        background-color: darken( $light-gray, 10% );
+        background-color: darken( $dark-green, 10% );
       }
     }
   }

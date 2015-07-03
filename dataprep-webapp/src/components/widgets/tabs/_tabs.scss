@@ -6,7 +6,7 @@ talend-tabs {
     @include flex-row();
 
     border-bottom: 1px solid $light-gray;
-    box-shadow: -7px 7px 2px -4px rgba(0, 0, 0, 0.1);
+    box-shadow: -2px 7px 2px -4px rgba(0, 0, 0, 0.1);
     margin-bottom: 0.5em;
 
     >.tabs-item {

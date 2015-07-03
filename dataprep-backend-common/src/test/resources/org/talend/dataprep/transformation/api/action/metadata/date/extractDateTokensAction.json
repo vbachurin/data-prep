@@ -1,0 +1,15 @@
+{
+  "actions": [
+    {
+      "action": "extract_date_tokens",
+      "parameters": {
+        "column_id": "0001",
+        "YEAR": "true",
+        "MONTH": "true",
+        "DAY": "false",
+        "HOUR_24": "true",
+        "MINUTE": "true"
+      }
+    }
+  ]
+}

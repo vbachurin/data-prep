@@ -3,14 +3,21 @@ package org.talend.dataprep.preparation.store;
 import static org.talend.dataprep.api.preparation.PreparationActions.ROOT_CONTENT;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Identifiable;
 import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 
+@Component
+@ConditionalOnProperty(name = "preparation.store", havingValue = "in-memory")
 public class InMemoryPreparationRepository implements PreparationRepository {
 
     private final Map<String, Identifiable> store = new HashMap<>();
@@ -48,23 +55,17 @@ public class InMemoryPreparationRepository implements PreparationRepository {
      */
     @Override
     public Collection<Preparation> getByDataSet(String dataSetId) {
-
         // defensive programming
         if (StringUtils.isEmpty(dataSetId)) {
             return Collections.emptyList();
         }
-
-        List<Preparation> filteredPreparations = new ArrayList<>();
-
-        // first filter on the class and then second filter on the dataset id
-        store.entrySet().stream().filter(entry -> Preparation.class.equals(entry.getValue().getClass())).forEach(entry -> {
-            Preparation preparation = (Preparation) entry.getValue();
-            // second filter on the dataset id
-            if (dataSetId.equals(preparation.getDataSetId())) {
-                filteredPreparations.add(preparation);
-            }
-        });
-        return filteredPreparations;
+        // first filter on the class (listAll()) and then second filter on the dataset id
+        return listAll(Preparation.class).stream()
+                .filter(p -> { //
+                    // filter on the dataset id
+                    return dataSetId.equals(p.getDataSetId());
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

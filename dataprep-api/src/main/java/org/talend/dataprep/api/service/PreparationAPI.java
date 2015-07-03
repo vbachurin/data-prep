@@ -122,9 +122,9 @@ public class PreparationAPI extends APIService {
         LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version);
-        try {
+        try (InputStream preparationContent = command.execute()){
             OutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(command.execute(), outputStream);
+            IOUtils.copyLarge(preparationContent, outputStream);
             outputStream.flush();
             LOG.debug("Retrieved preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         } catch (IOException e) {

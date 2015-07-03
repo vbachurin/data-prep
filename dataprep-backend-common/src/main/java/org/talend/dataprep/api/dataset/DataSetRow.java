@@ -3,6 +3,7 @@ package org.talend.dataprep.api.dataset;
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
@@ -19,7 +20,7 @@ public class DataSetRow implements Cloneable {
     private DataSetRow oldValue;
 
     /** Values of the dataset row. */
-    private final Map<String, String> values;
+    private TreeMap<String, String> values;
 
     /**
      * Default empty constructor.
@@ -207,5 +208,30 @@ public class DataSetRow implements Cloneable {
     @Override
     public String toString() {
         return "DataSetRow{" + "deleted=" + deleted + ", oldValue=" + oldValue + ", values=" + values + '}';
+    }
+
+    /**
+     * Order values of this data set row according to <code>columns</code>. This method clones the current record, so
+     * no need to call {@link #clone()}.
+     * @param columns The columns to be used to order values.
+     * @return A new data set row for method with values ordered following <code>columns</code>.
+     */
+    public DataSetRow order(List<ColumnMetadata> columns) {
+        if (columns == null) {
+            throw new IllegalArgumentException("Columns cannot be null.");
+        }
+        if (columns.isEmpty()) {
+            return clone();
+        }
+        if (columns.size() != values.size()) {
+            throw new IllegalArgumentException("Expected " + values.size() + " columns but got " + columns.size());
+        }
+
+        List<String> idIndexes = columns.stream().map(ColumnMetadata::getId).collect(Collectors.toList());
+        TreeMap<String, String> orderedValues = new TreeMap<>((id1, id2) -> idIndexes.indexOf(id1) - idIndexes.indexOf(id2));
+        orderedValues.putAll(values);
+        final DataSetRow dataSetRow = new DataSetRow();
+        dataSetRow.values = orderedValues;
+        return dataSetRow;
     }
 }

@@ -1,6 +1,12 @@
 (function () {
     'use strict';
 
+    /**
+     * @ngdoc directive
+     * @name data-prep.datagrid.directive:Export
+     * @description This directive create the Export<br/>
+     * @restrict E
+     */
     function Export() {
         return {
             templateUrl: 'components/export/export.html',
@@ -8,13 +14,8 @@
             bindToController: true,
             controllerAs: 'exportCtrl',
             controller: 'ExportCtrl',
-            link: function (scope, iElement, iAttrs, ctrl) {
-                ctrl.export = function (type) {
-                    var form = document.getElementById('exportForm');
-                    form.action = ctrl.exportUrl;
-                    form.exportType.value = type;
-                    form.submit();
-                };
+            link: function(scope, iElement, iAttrs, ctrl) {
+                ctrl.form = iElement.find('#exportForm').eq(0)[0];
             }
         };
     }

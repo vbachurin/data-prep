@@ -100,7 +100,7 @@ public class RecordsTransformerStep implements TransformerStep {
                 if (types.length > 0) {
                     process = process.map(p -> {
                         if (!p.row.isDeleted()) {
-                            final Map<String, Object> rowValues = p.row.values();
+                            final Map<String, Object> rowValues = p.row.order(columns).values();
                             final List<String> strings = stream(rowValues.values().spliterator(), false) //
                                     .map(String::valueOf) //
                                     .collect(Collectors.<String>toList());
@@ -114,7 +114,7 @@ public class RecordsTransformerStep implements TransformerStep {
                 process.forEach(row -> {
                     if (!row.row.isDeleted()) {
                         // Clone original value since row instance is reused.
-                        transformedRows.add(row.row.clone());
+                        transformedRows.add(row.row.order(context.getTransformedRowMetadata().getColumns()));
                     }
                     writeRow(writer, row.row);
                 });

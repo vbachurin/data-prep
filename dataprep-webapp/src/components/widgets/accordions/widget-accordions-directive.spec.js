@@ -4,7 +4,7 @@ describe('Accordion directive', function () {
     var scope, createElement;
 
     var clickOnTriggerElement = function(element, index) {
-        element.find('.accordion').eq(index).find('#trigger').click();
+        element.find('.accordion').eq(index).find('.trigger').click();
     };
 
     var expectElementToBeVisible = function(element) {
@@ -29,18 +29,18 @@ describe('Accordion directive', function () {
             createElement = function () {
                 var template = '<talend-accordions>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">1. Uppercase on column LASTNAME</a>' +
+                    '       <a class="trigger">1. Uppercase on column LASTNAME</a>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">2. Replace empty in column STATE</a>' +
-                    '       <div id="content">content1</div>' +
+                    '       <a class="trigger">2. Replace empty in column STATE</a>' +
+                    '       <div class="content">content1</div>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">2bis. Replace empty in column STATE</a>' +
-                    '       <div id="content">content2</div>' +
+                    '       <a class="trigger">2bis. Replace empty in column STATE</a>' +
+                    '       <div class="content">content2</div>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">Lowercase on column Firstname</a>' +
+                    '       <a class="trigger">Lowercase on column Firstname</a>' +
                     '   </talend-accordions-item>' +
                     '</talend-accordions>';
                 var element = $compile(template)(scope);
@@ -54,8 +54,8 @@ describe('Accordion directive', function () {
         it('should open the first sub-menu on click on the corresponding trigger', function () {
             //given
             var element = createElement(scope);
-            var firstSubmenu = element.find('.accordion').eq(1).find('#content');
-            var secondSubmenu = element.find('.accordion').eq(2).find('#content');
+            var firstSubmenu = element.find('.accordion').eq(1).find('.content');
+            var secondSubmenu = element.find('.accordion').eq(2).find('.content');
 
             expectElementToBeHidden(firstSubmenu);
             expectElementToBeHidden(secondSubmenu);
@@ -71,8 +71,8 @@ describe('Accordion directive', function () {
         it('should close the first sub-menu on click on the corresponding trigger', function () {
             //given
             var element = createElement(scope);
-            var firstSubmenu = element.find('.accordion').eq(1).find('#content');
-            var secondSubmenu = element.find('.accordion').eq(2).find('#content');
+            var firstSubmenu = element.find('.accordion').eq(1).find('.content');
+            var secondSubmenu = element.find('.accordion').eq(2).find('.content');
 
             clickOnTriggerElement(element, 1);
             expectElementToBeVisible(firstSubmenu);
@@ -89,8 +89,8 @@ describe('Accordion directive', function () {
         it('should close the other sub-menus on click on a trigger', function () {
             //given
             var element = createElement(scope);
-            var firstSubmenu = element.find('.accordion').eq(1).find('#content');
-            var secondSubmenu = element.find('.accordion').eq(2).find('#content');
+            var firstSubmenu = element.find('.accordion').eq(1).find('.content');
+            var secondSubmenu = element.find('.accordion').eq(2).find('.content');
 
             clickOnTriggerElement(element, 1);
             expectElementToBeVisible(firstSubmenu);
@@ -125,18 +125,18 @@ describe('Accordion directive', function () {
             createElement = function () {
                 var template = '<talend-accordions>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">1. Uppercase on column LASTNAME</a>' +
+                    '       <a class="trigger">1. Uppercase on column LASTNAME</a>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item on-open="onOpen()">' +
-                    '       <a id="trigger">2. Replace empty in column STATE</a>' +
-                    '       <div id="content">content1</div>' +
+                    '       <a class="trigger">2. Replace empty in column STATE</a>' +
+                    '       <div class="content">content1</div>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">2bis. Replace empty in column STATE</a>' +
-                    '       <div id="content">content2</div>' +
+                    '       <a class="trigger">2bis. Replace empty in column STATE</a>' +
+                    '       <div class="content">content2</div>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">3. Lowercase on column Firstname</a>' +
+                    '       <a class="trigger">3. Lowercase on column Firstname</a>' +
                     '   </talend-accordions-item>' +
                     '</talend-accordions>';
 
@@ -169,18 +169,18 @@ describe('Accordion directive', function () {
             createElement = function () {
                 var template = '<talend-accordions>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">1. Uppercase on column LASTNAME</a>' +
+                    '       <a class="trigger">1. Uppercase on column LASTNAME</a>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item default="true">' +
-                    '       <a id="trigger">2. Replace empty in column STATE</a>' +
-                    '       <div id="content">content1</div>' +
+                    '       <a class="trigger">2. Replace empty in column STATE</a>' +
+                    '       <div class="content">content1</div>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">2bis. Replace empty in column STATE</a>' +
-                    '       <div id="content">content2</div>' +
+                    '       <a class="trigger">2bis. Replace empty in column STATE</a>' +
+                    '       <div class="content">content2</div>' +
                     '   </talend-accordions-item>' +
                     '   <talend-accordions-item>' +
-                    '       <a id="trigger">3. Lowercase on column Firstname</a>' +
+                    '       <a class="trigger">3. Lowercase on column Firstname</a>' +
                     '   </talend-accordions-item>' +
                     '</talend-accordions>';
 
@@ -197,7 +197,7 @@ describe('Accordion directive', function () {
             var element = createElement(scope);
 
             //then
-            var submenu = element.find('.accordion').eq(1).find('#content');
+            var submenu = element.find('.accordion').eq(1).find('.content');
             expectElementToBeVisible(submenu);
         });
     });

@@ -7,7 +7,7 @@
   "eqeqeq": true,
   "immed": true,
   "indent": 2,
-  "latedef": true,
+  "latedef": false,
   "newcap": true,
   "noarg": true,
   "quotmark": "single",
@@ -45,6 +45,7 @@
     "Blob": false,
     // Highcharts
     "Highcharts": false,
-    "d3":false
+    "d3":false,
+    "introJs": false
   }
 }

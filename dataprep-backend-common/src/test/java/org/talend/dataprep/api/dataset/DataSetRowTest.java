@@ -1,19 +1,59 @@
 package org.talend.dataprep.api.dataset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.diff.Flag;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
+import org.talend.dataprep.api.type.Type;
 
 public class DataSetRowTest {
+
+
+    /**
+     * Test the clear method.
+     */
+    @Test
+    public void should_clear_row() {
+        DataSetRow row = createRow(defaultValues(), true);
+        row.diff(createRow(defaultValues(), false));
+
+        row.clear();
+
+        assertFalse(row.isDeleted());
+        assertTrue(row.values().isEmpty());
+    }
+
+    /**
+     * Test the should write method.
+     */
+    @Test
+    public void write_or_not_write_that_is_the_question() {
+        // no old value not deleted --> write
+        DataSetRow row = createRow(defaultValues(), false);
+        assertTrue(row.shouldWrite());
+
+        // no old value and deleted --> don't write
+        row.setDeleted(true);
+        assertFalse(row.shouldWrite());
+
+        // old value and deleted --> write
+        row.diff(createRow(defaultValues(), false));
+        assertTrue(row.shouldWrite());
+
+        // old deleted value and deleted --> don't write
+        row.diff(createRow(defaultValues(), true));
+        assertFalse(row.shouldWrite());
+
+        // old deleted value and not deleted --> don't write
+        row.setDeleted(false);
+        assertTrue(row.shouldWrite());
+    }
 
     /**
      * Test the new flag.
@@ -119,6 +159,69 @@ public class DataSetRowTest {
         }
     }
 
+    @Test
+    public void testOrder() throws Exception {
+        DataSetRow row = createRow(defaultValues(), false);
+        // Asserts on original order
+        String[] expectedKeyOrder = { "age", "firstName", "id", "lastName" };
+        final Iterator<String> keys = row.values().keySet().iterator();
+        for (String expectedKey : expectedKeyOrder) {
+            assertThat(keys.hasNext(), is(true));
+            assertThat(keys.next(), is(expectedKey));
+        }
+        // Reorder
+        List<ColumnMetadata> newOrder = new ArrayList<ColumnMetadata>() {
+
+            {
+                add(column().computedId("firstName").type(Type.STRING).build());
+                add(column().computedId("lastName").type(Type.STRING).build());
+                add(column().computedId("id").type(Type.STRING).build());
+                add(column().computedId("age").type(Type.STRING).build());
+            }
+        };
+        final DataSetRow newRow = row.order(newOrder);
+        String[] expectedNewKeyOrder = { "firstName", "lastName", "id", "age" };
+        final Iterator<String> newOrderKeys = newRow.values().keySet().iterator();
+        for (String expectedKey : expectedNewKeyOrder) {
+            assertThat(newOrderKeys.hasNext(), is(true));
+            assertThat(newOrderKeys.next(), is(expectedKey));
+        }
+    }
+
+    @Test
+    public void testNoOrder() throws Exception {
+        DataSetRow row = createRow(defaultValues(), false);
+        // Reorder with 0 column is equivalent to clone().
+        final DataSetRow order = row.order(Collections.emptyList());
+        assertTrue(row != order);
+        assertThat(row.values(), is(order.values()));
+    }
+
+    @Test
+    public void testIncorrectOrder() throws Exception {
+        DataSetRow row = createRow(defaultValues(), false);
+        // Reorder with 1 column should fail (not enough column, expected 4 columns).
+        List<ColumnMetadata> newOrder = new ArrayList<ColumnMetadata>() {
+
+            {
+                add(column().computedId("firstName").type(Type.STRING).build());
+            }
+        };
+        try {
+            row.order(newOrder);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+        // Reorder with null column should fail
+        try {
+            row.order(null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+    }
+
     /**
      * @param values the values of the row to return.
      * @param isDeleted true if the row is deleted.
@@ -127,7 +230,6 @@ public class DataSetRowTest {
     private DataSetRow createRow(final Map<String, String> values, final boolean isDeleted) {
         final DataSetRow row = new DataSetRow(values);
         row.setDeleted(isDeleted);
-
         return row;
     }
 

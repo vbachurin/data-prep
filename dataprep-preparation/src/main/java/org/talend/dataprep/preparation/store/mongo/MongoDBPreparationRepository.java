@@ -10,8 +10,12 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.*;
 
+@Component
+@ConditionalOnProperty(name = "preparation.store", havingValue = "mongodb")
 public class MongoDBPreparationRepository implements PreparationRepository {
 
     @Autowired

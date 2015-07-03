@@ -1,4 +1,4 @@
-describe('Playground directive', function() {
+describe('Playground directive', function () {
     'use strict';
 
     var scope, createElement, element;
@@ -20,9 +20,11 @@ describe('Playground directive', function() {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($state, $rootScope, $compile, $timeout, PreparationService) {
+
+    beforeEach(inject(function ($state, $rootScope, $compile, $q, $timeout, PreparationService, ExportService) {
         scope = $rootScope.$new();
-        createElement = function() {
+
+        createElement = function () {
             element = angular.element('<playground></playground>');
             angular.element('body').append(element);
 
@@ -31,11 +33,14 @@ describe('Playground directive', function() {
             $timeout.flush();
         };
 
-        spyOn(PreparationService, 'refreshPreparations').and.callFake(function() {});
-        spyOn($state, 'go').and.callFake(function() {});
+        spyOn(PreparationService, 'refreshPreparations').and.returnValue();
+        spyOn($state, 'go').and.returnValue();
+        spyOn(ExportService, 'refreshTypes').and.returnValue($q.when([]));
+        spyOn(ExportService, 'getParameters').and.returnValue({});
+
     }));
 
-    afterEach(inject(function($stateParams) {
+    afterEach(inject(function ($stateParams) {
         scope.$destroy();
         element.remove();
 
@@ -43,7 +48,7 @@ describe('Playground directive', function() {
         $stateParams.datasetid = null;
     }));
 
-    it('should render playground elements', inject(function(PlaygroundService) {
+    it('should render playground elements', inject(function (PlaygroundService) {
         //given
         PlaygroundService.currentMetadata = metadata;
 
@@ -56,7 +61,7 @@ describe('Playground directive', function() {
 
         //check header is present and contains description and search filter
         expect(playgroundModal.find('.modal-header').length).toBe(1);
-        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(1).text().trim()).toBe('File: US States (3 lines)');
+        expect(playgroundModal.find('.modal-header').eq(0).find('li').eq(0).text().trim()).toBe('File: US States (3 lines)');
 
         //check left slidable is hidden recipe with left slide action
         expect(playground.eq(0).find('.slidable').eq(0).hasClass('recipe')).toBe(true);
@@ -74,8 +79,8 @@ describe('Playground directive', function() {
         expect(playground.eq(0).find('datagrid').length).toBe(1);
     }));
 
-    describe('recipe header', function() {
-        it('should show/hide action buttons in the recipe header', inject(function(PlaygroundService) {
+    describe('recipe header', function () {
+        it('should show/hide action buttons in the recipe header', inject(function (PlaygroundService) {
             //given
             PlaygroundService.currentMetadata = metadata;
             createElement();
@@ -108,7 +113,7 @@ describe('Playground directive', function() {
             expect(cancelBtn.is(':visible')).toBe(true);
         }));
 
-        it('should toggle recipe on click on the On/Off switch', inject(function(RecipeBulletService) {
+        it('should toggle recipe on click on the On/Off switch', inject(function (RecipeBulletService) {
             //given
             spyOn(RecipeBulletService, 'toggleRecipe').and.returnValue();
 
@@ -122,7 +127,7 @@ describe('Playground directive', function() {
             expect(RecipeBulletService.toggleRecipe).toHaveBeenCalled();
         }));
 
-        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', inject(function($rootScope, PlaygroundService, RecipeService) {
+        it('should switch OFF the On/Off switch when the 1st step is INACTIVE', inject(function ($rootScope, PlaygroundService, RecipeService) {
             //given
             PlaygroundService.currentMetadata = metadata;
             var step = {
@@ -149,7 +154,7 @@ describe('Playground directive', function() {
             expect(chkboxOnOff.prop('checked')).toBe(false);
         }));
 
-        it('should switch ON the On/Off switch when the 1st step is ACTIVE', inject(function($rootScope, PlaygroundService, RecipeService) {
+        it('should switch ON the On/Off switch when the 1st step is ACTIVE', inject(function ($rootScope, PlaygroundService, RecipeService) {
             //given
             PlaygroundService.currentMetadata = metadata;
             var step = {
@@ -176,7 +181,7 @@ describe('Playground directive', function() {
             expect(chkboxOnOff.prop('checked')).toBe(true);
         }));
 
-        it('should confirm preparation name edition on ENTER keydown', inject(function(PlaygroundService) {
+        it('should confirm preparation name edition on ENTER keydown', inject(function (PlaygroundService) {
             //given
             PlaygroundService.currentMetadata = metadata;
             PlaygroundService.preparationName = 'PrepName';
@@ -195,7 +200,7 @@ describe('Playground directive', function() {
             expect(ctrl.confirmPrepNameEdition).toHaveBeenCalled();
         }));
 
-        it('should cancel preparation name edition on ENTER keydown', inject(function($timeout, PlaygroundService) {
+        it('should cancel preparation name edition on ENTER keydown', inject(function ($timeout, PlaygroundService) {
             //given
             PlaygroundService.currentMetadata = metadata;
             PlaygroundService.preparationName = 'PrepName';
@@ -215,7 +220,7 @@ describe('Playground directive', function() {
             expect(ctrl.cancelPrepNameEdition).toHaveBeenCalled();
         }));
 
-        it('should do nothing special on keydown other than ENTER/ESC', inject(function($timeout, PlaygroundService) {
+        it('should do nothing special on keydown other than ENTER/ESC', inject(function ($timeout, PlaygroundService) {
             //given
             PlaygroundService.currentMetadata = metadata;
             PlaygroundService.preparationName = 'PrepName';
@@ -237,8 +242,8 @@ describe('Playground directive', function() {
         }));
     });
 
-    describe('hide playground', function() {
-        beforeEach(inject(function(PlaygroundService, PreparationService) {
+    describe('hide playground', function () {
+        beforeEach(inject(function (PlaygroundService, PreparationService) {
             PlaygroundService.currentMetadata = metadata;
             createElement();
 
@@ -247,7 +252,7 @@ describe('Playground directive', function() {
             expect(PreparationService.refreshPreparations).not.toHaveBeenCalled();
         }));
 
-        it('should change route to preparations list on preparation playground hide', inject(function($state, $stateParams, PlaygroundService) {
+        it('should change route to preparations list on preparation playground hide', inject(function ($state, $stateParams, PlaygroundService) {
             //given: simulate playground route with preparation id
             $stateParams.prepid = '1234';
 
@@ -259,7 +264,7 @@ describe('Playground directive', function() {
             expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid: null});
         }));
 
-        it('should change route to datasets list on dataset playground hide', inject(function($state, $stateParams, PlaygroundService) {
+        it('should change route to datasets list on dataset playground hide', inject(function ($state, $stateParams, PlaygroundService) {
             //given: simulate playground route with preparation id
             $stateParams.datasetid = '1234';
 
@@ -271,7 +276,7 @@ describe('Playground directive', function() {
             expect($state.go).toHaveBeenCalledWith('nav.home.datasets', {datasetid: null});
         }));
 
-        it('should do nothing if playground is not routed', inject(function($state, $stateParams, PlaygroundService, PreparationService) {
+        it('should do nothing if playground is not routed', inject(function ($state, $stateParams, PlaygroundService, PreparationService) {
             //given: simulate no preparation id in route
             $stateParams.prepid = null;
             $stateParams.datasetid = null;
@@ -285,7 +290,7 @@ describe('Playground directive', function() {
             expect($state.go).not.toHaveBeenCalled();
         }));
 
-        it('should refresh preparations on playground hide', inject(function(PlaygroundService, PreparationService) {
+        it('should refresh preparations on playground hide', inject(function (PlaygroundService, PreparationService) {
             //when
             PlaygroundService.hide();
             scope.$apply();

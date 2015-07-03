@@ -41,7 +41,8 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
 		  '!src/**/*.spec.js',
 		  '!src/**/*_test.js',
 		  '!src/**/*.mock.js',
-		  '!src/lib/**/*.*'
+		  '!src/lib/**/*.*',
+            '!src/**/*.mine.*'
 		])
         .pipe($.naturalSort())//This fixes a angularFileSort issue : https://github.com/klei/gulp-angular-filesort/issues/17
 		.pipe($.angularFilesort())
@@ -51,6 +52,14 @@ gulp.task('injector:js', ['scripts', 'injector:css'], function () {
 		}))
     .pipe(gulp.dest('src/'));
 });
+
+//this copies the personal files into .tmp folder to override default values
+gulp.task('copy-personnal-files', function () {
+  return gulp.src(['src/services/utils/constants/utils-constants.mine.js'])
+      .pipe($.rename('services/utils/constants/utils-constants.js'))
+      .pipe(gulp.dest('.tmp'));
+});
+
 
 gulp.task('partials', function () {
   return gulp.src(['src/**/*.html', '.tmp/**/*.html'])
