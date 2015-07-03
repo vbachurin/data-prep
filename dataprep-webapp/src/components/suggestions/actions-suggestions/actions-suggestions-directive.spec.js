@@ -41,6 +41,6 @@ describe('Actions suggestions directive', function() {
         createElement();
 
         //then
-        expect(element.find('.title').text().trim()).toBe('Actions : Col 1');
+        expect(element.find('.title').text().trim()).toBe('Actions: Col 1');
     }));
 });
