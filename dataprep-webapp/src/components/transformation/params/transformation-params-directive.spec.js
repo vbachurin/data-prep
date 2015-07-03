@@ -48,8 +48,8 @@ describe('Transformation params directive', function () {
 
         //then
         expect(element.find('.param-name').length).toBe(2);
-        expect(element.find('.param-name').eq(0).text().trim()).toBe('Param 1 :');
-        expect(element.find('.param-name').eq(1).text().trim()).toBe('Param 2 :');
+        expect(element.find('.param-name').eq(0).text().trim()).toBe('Param 1:');
+        expect(element.find('.param-name').eq(1).text().trim()).toBe('Param 2:');
         expect(element.find('.param-input').length).toBe(2);
         expect(element.find('.param-input').eq(0).find('input[type="text"]').length).toBe(1);
         expect(element.find('.param-input').eq(1).find('input[type="number"]').length).toBe(1);
@@ -80,7 +80,7 @@ describe('Transformation params directive', function () {
         //then
         var paramChoice = element.find('.param').eq(0);
         expect(paramChoice.find('.param-name').length).toBe(1);
-        expect(paramChoice.find('.param-name').eq(0).text().trim()).toBe('my choice :');
+        expect(paramChoice.find('.param-name').eq(0).text().trim()).toBe('my choice:');
         expect(paramChoice.find('.param-input').length).toBe(1);
         expect(paramChoice.find('.param-input').eq(0).find('select').length).toBe(1);
         expect(paramChoice.find('.param-input').eq(0).find('option').length).toBe(2);
@@ -136,8 +136,8 @@ describe('Transformation params directive', function () {
 
         //then
         expect(paramChoice.find('.param-name').length).toBe(3); // choice name + 2 input params name
-        expect(paramChoice.find('.param-name').eq(1).text().trim()).toBe('Param 1 :');
-        expect(paramChoice.find('.param-name').eq(2).text().trim()).toBe('Param 2 :');
+        expect(paramChoice.find('.param-name').eq(1).text().trim()).toBe('Param 1:');
+        expect(paramChoice.find('.param-name').eq(2).text().trim()).toBe('Param 2:');
 
         expect(paramChoice.find('.param-input').length).toBe(3); // choice + 2 input params
         expect(paramChoice.find('.param-input').eq(1).find('input[type="text"]').length).toBe(1);
