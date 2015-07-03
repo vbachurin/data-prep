@@ -139,7 +139,6 @@
          */
         var createValidFilterFn = function(colId, values){
             return function(item) {
-                console.log(values);
                 return values.indexOf(item[colId]) === -1;
             };
         };
