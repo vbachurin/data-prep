@@ -35,7 +35,7 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
         InputStream content = preparationContext.getContent();
         // Run transformation (if any action to perform)
         if (!actions.isEmpty()) {
-            final String encodedActions = serialize(actions);
+            final String encodedActions = serializeActions(actions);
             // pass content to the transformation service as input as well as actions to perform on input...
             final Transform transformCommand = context.getBean(Transform.class, client, content, encodedActions);
             content = transformCommand.execute();

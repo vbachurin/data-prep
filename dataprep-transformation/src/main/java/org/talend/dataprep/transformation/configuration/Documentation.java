@@ -26,6 +26,7 @@ public class Documentation {
         ApiInfo apiInfo = new ApiInfo("Talend Data Preparation - Transformation Service (TS)",
                 "This service exposes operations to transform data (upper case, lower case...).", StringUtils.EMPTY,
                 StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
-        return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(".*transform.*", ".*suggest.*"); //$NON-NLS-1 //$NON-NLS-2$
+        return new SwaggerSpringMvcPlugin(springSwaggerConfig).apiInfo(apiInfo).includePatterns(
+                ".*transform.*", ".*suggest.*", ".*export.*"); //$NON-NLS-1 //$NON-NLS-2$
     }
 }

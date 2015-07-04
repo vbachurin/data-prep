@@ -6,7 +6,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Base64;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -49,12 +48,12 @@ public class TransformAPI extends APIService {
         LOG.debug("Transforming dataset id #{} (pool: {})...", dataSetId, getConnectionManager().getTotalStats());
         try {
             // Configure transformation flow
-            String encodedActions = Base64.getEncoder().encodeToString(IOUtils.toByteArray(body));
             response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             HttpClient client = getClient();
 
             InputStream contentRetrieval = getCommand(DataSetGet.class, client, dataSetId, false, true).execute();
-            HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, contentRetrieval, encodedActions);
+            HystrixCommand<InputStream> transformation = getCommand(Transform.class, client, contentRetrieval,
+                    IOUtils.toString(body));
 
             // Perform transformation
             ServletOutputStream outputStream = response.getOutputStream();
