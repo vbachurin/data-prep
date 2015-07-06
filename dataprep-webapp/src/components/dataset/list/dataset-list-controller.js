@@ -15,7 +15,7 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
-     * @requires data-prep.services.uploadWorkflowService
+     * @requires data-prep.services.uploadWorkflowService:UploadWorkflowService
      */
     function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService) {
         var vm = this;
