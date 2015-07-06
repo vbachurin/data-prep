@@ -21,13 +21,14 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the absolute actions.
@@ -61,7 +62,7 @@ public class AbsoluteTest {
         String content = floatAction.trim();
         JsonNode node = mapper.readTree(content);
 
-        Map<String, String> parameters = absFloatAction.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
+        Map<String, String> parameters = absFloatAction.parseParameters(node.get("actions").get(0).get("parameters").fields());//$NON-NLS-1$//$NON-NLS-2$
         absFloatConsumer = absFloatAction.create(parameters);
 
         absIntAction = new AbsoluteInt();
@@ -70,7 +71,7 @@ public class AbsoluteTest {
         content = intAction.trim();
         node = mapper.readTree(content);
 
-        Map<String, String> parameters2 = absIntAction.parseParameters(node.get("actions").get(0).get("parameters").getFields());//$NON-NLS-1$//$NON-NLS-2$
+        Map<String, String> parameters2 = absIntAction.parseParameters(node.get("actions").get(0).get("parameters").fields());//$NON-NLS-1$//$NON-NLS-2$
         absIntConsumer = absIntAction.create(parameters2); //$NON-NLS-1$ //$NON-NLS-2$
     }
 

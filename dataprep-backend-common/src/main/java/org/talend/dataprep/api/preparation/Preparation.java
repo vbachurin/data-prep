@@ -5,6 +5,8 @@ import static java.lang.Math.min;
 
 import java.util.Objects;
 
+import java.util.List;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -22,6 +24,8 @@ public class Preparation extends Identifiable {
 
     private Step step;
 
+    private List<String> steps;
+
     public Preparation() {
         this.creationDate = System.currentTimeMillis();
         this.lastModificationDate = this.creationDate;
@@ -31,6 +35,14 @@ public class Preparation extends Identifiable {
         this();
         this.dataSetId = dataSetId;
         this.step = step;
+    }
+
+    public List<String> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<String> steps) {
+        this.steps = steps;
     }
 
     public String getName() {

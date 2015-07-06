@@ -12,14 +12,15 @@
         <li>datasets : on dataset list change, set the default preparation id in each element</li>
      </ul>
      * @requires data-prep.services.dataset.service:DatasetService
-     * @requires data-prep.services.dataset.service:DatasetSheetPreviewService
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
+     * @requires data-prep.services.uploadWorkflowService:UploadWorkflowService
      */
-    function DatasetListCtrl($rootScope, $state, $stateParams, DatasetService, DatasetSheetPreviewService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService) {
         var vm = this;
         vm.datasetService = DatasetService;
+        vm.uploadWorkflowService = UploadWorkflowService;
 
         /**
          * @ngdoc method
@@ -52,44 +53,13 @@
 
         /**
          * @ngdoc method
-         * @name openDraft
+         * @name toggleFavorite
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Draft management
-         * <ul>
-         *      <li>File type is not defined : display error, refresh dataset list</li>
-         *      <li>File type is excel : redirect to schema selection</li>
-         *      <li>File type defined but unknown : display error</li>
-         * </ul>
-         * @param {object} dataset The dataset draft to open
+         * @description toogle dataset as Favorite or not
+         * @param {object} dataset - the dataset to be set or unset favorite
          */
-        vm.openDraft = function (dataset) {
-            if (dataset.type === 'application/vnd.ms-excel') {
-                DatasetSheetPreviewService.loadPreview(dataset)
-                    .then(DatasetSheetPreviewService.display);
-            }
-            else if (dataset.type) {
-                MessageService.error('PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE', 'PREVIEW_NOT_IMPLEMENTED_FOR_TYPE_TITLE');
-            }
-            else {
-                DatasetService.refreshDatasets();
-                MessageService.error('FILE_FORMAT_ANALYSIS_NOT_READY_TITLE', 'FILE_FORMAT_ANALYSIS_NOT_READY_CONTENT');
-            }
-        };
-
-        /**
-         * @ngdoc method
-         * @name openDataset
-         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Try to open a dataset. If it is a draft, we open the draft import wizard instead.
-         * @param {object} dataset The dataset to open
-         */
-        vm.openDataset = function(dataset) {
-            if(dataset.draft) {
-                vm.openDraft(dataset);
-            }
-            else {
-                $state.go('nav.home.datasets', {datasetid: dataset.id});
-            }
+        vm.toggleFavorite = function(dataset) {
+            DatasetService.toggleFavorite(dataset);//just a delegate
         };
 
         /**
@@ -122,15 +92,6 @@
                 }
             }
         };
-
-
-        /*
-         * listen to open dataset event.
-         */
-        $rootScope.$on('talend.dataset.open', function (event, datasetId) {
-            DatasetService.getDatasetById(datasetId).then(vm.openDataset);
-      });
-
 
         // load the datasets
         DatasetService

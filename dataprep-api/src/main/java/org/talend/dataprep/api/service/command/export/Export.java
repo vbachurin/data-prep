@@ -7,9 +7,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.InputStreamBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
@@ -37,40 +41,42 @@ public class Export extends PreparationCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-        String dataSetId;
-        String encodedActions = null;
         String name;
-
-        // Get dataset id and actions from preparation
+        List<Action> actions;
+        InputStream content;
         if (StringUtils.isNotBlank(input.getPreparationId())) {
-            final JsonNode preparationDetails = getPreparationDetails(input.getPreparationId());
-
-            final List<String> currentStepsIds = getActionsStepIds(preparationDetails, input.getStepId());
-            final Map<String, Action> actions = getActions(preparationDetails, currentStepsIds);
-
-            dataSetId = preparationDetails.get("dataSetId").textValue();
-            encodedActions = serializeAndEncode(actions);
-            name = preparationDetails.get("name").textValue();
-        }
-        // Get provided dataset id
-        else {
-            dataSetId = input.getDatasetId();
+            // Get name from preparation (preparation is set)
+            final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
+            //
+            name = context.getPreparation().getName();
+            actions = context.getActions();
+            content = context.getContent();
+        } else {
+            // Get name from data set
+            final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
+            String dataSetId = input.getDatasetId();
             final JsonNode datasetDetails = getDatasetDetails(dataSetId);
+            //
             name = datasetDetails.get("metadata").get("name").textValue();
+            actions = context.getActions();
+            content = getDatasetContent(dataSetId);
         }
-
         // Set response headers
         response.setContentType(input.getExportType().getMimeType());
         response.setHeader("Content-Disposition", "attachment; filename=" + name + input.getExportType().getExtension());
-
         // Get dataset content and call export service
-        final String uri = getTransformationUri(input.getExportType(), input.getArguments(), encodedActions);
+        final String encodedActions = serializeActions(actions);
+        final String uri = getTransformationUri(input.getExportType(), input.getArguments());
         final HttpPost transformationCall = new HttpPost(uri);
-        final InputStream content = getDatasetContent(dataSetId);
-        transformationCall.setEntity(new InputStreamEntity(content));
 
-        return new ReleasableInputStream(client.execute(transformationCall).getEntity().getContent(),
-                transformationCall::releaseConnection);
+        HttpEntity reqEntity = MultipartEntityBuilder.create()
+                .addPart("actions", new StringBody(encodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$
+                .addPart("content", new InputStreamBody(content, ContentType.APPLICATION_JSON)) //$NON-NLS-1$
+                .build();
+
+        transformationCall.setEntity(reqEntity);
+        final InputStream transformedContent = client.execute(transformationCall).getEntity().getContent();
+        return new ReleasableInputStream(transformedContent, transformationCall::releaseConnection);
     }
 
     /**
@@ -78,10 +84,9 @@ public class Export extends PreparationCommand<InputStream> {
      * 
      * @param exportType The export type.
      * @param params optional params
-     * @param encodedActions The encoded actions.
      * @return The built URI
      */
-    private String getTransformationUri(final ExportType exportType, final Map<String,String> params, final String encodedActions) {
+    private String getTransformationUri(final ExportType exportType, final Map<String, String> params) {
         String result = this.transformationServiceUrl + "/export/" + exportType;
         boolean hasQueryParams = false;
 
@@ -90,11 +95,6 @@ public class Export extends PreparationCommand<InputStream> {
                 result = appendQueryParam( result, entry.getKey() + "=" + encode( entry.getValue() ), hasQueryParams );
                 hasQueryParams = true;
             }
-        }
-
-        if (encodedActions != null) {
-            result = appendQueryParam(result, "actions=" + encodedActions, hasQueryParams);
-            hasQueryParams = true;
         }
 
         return result;

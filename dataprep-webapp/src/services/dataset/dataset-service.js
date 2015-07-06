@@ -122,6 +122,21 @@
 
         /**
          * @ngdoc method
+         * @name toggleFavorite
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} dataset The target dataset to set or unset favorite
+         * @description Set or Unset the dataset as favorite
+         * @returns {promise} The pending POST promise
+         */
+        self.toggleFavorite = function(dataset) {
+            return DatasetRestService.toggleFavorite(dataset).then(function(){
+                dataset.favorite = !dataset.favorite;
+            });
+        };
+
+
+        /**
+         * @ngdoc method
          * @name getDatasetByName
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {string} name The dataset name

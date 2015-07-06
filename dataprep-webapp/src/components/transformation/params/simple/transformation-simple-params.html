@@ -1,6 +1,6 @@
 <div class="param">
     <div class="param-row" ng-repeat="param in simpleParamsCtrl.parameters track by $index">
-        <div class="param-name" ng-if="::(simpleParamsCtrl.label !== 'false')">{{simpleParamsCtrl.label}}{{::param.label}} :</div>
+        <div class="param-name" ng-if="::(simpleParamsCtrl.label !== 'false')">{{simpleParamsCtrl.label}}{{::param.label}}:</div>
 
         <div class="param-input" ng-if="::(simpleParamsCtrl.editableSelect)">
             <editable-select
@@ -10,6 +10,7 @@
         <div class="param-input" ng-if="::(!simpleParamsCtrl.editableSelect)">
             <input name="{{::(param.name + $index)}}"
                    type="{{::param.inputType}}"
+                   ng-trim="false"
                    ng-model="param.value"
                    type-validation="{{::param.type}}"/>
             <span ng-if="::(param.type === 'boolean')">{{param.name}}</span>

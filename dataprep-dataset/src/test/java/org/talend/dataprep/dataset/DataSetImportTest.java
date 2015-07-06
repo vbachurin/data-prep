@@ -81,7 +81,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -106,6 +106,8 @@ public class DataSetImportTest {
         final DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(metadata.getLifecycle().importing(), is(false));
         assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        // TDP-283: Quality analysis should be synchronous
+        assertThat(metadata.getLifecycle().qualityAnalyzed(), is(true));
     }
 
     /**
@@ -118,7 +120,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -159,7 +161,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);

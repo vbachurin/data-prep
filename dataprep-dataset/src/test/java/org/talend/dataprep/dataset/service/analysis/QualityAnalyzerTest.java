@@ -20,7 +20,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.Quality;
 import org.talend.dataprep.dataset.Application;
-import org.talend.dataprep.dataset.DataSetServiceTests;
+import org.talend.dataprep.dataset.service.DataSetServiceTests;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
@@ -61,7 +61,7 @@ public class QualityAnalyzerTest {
     public void testAnalysis() throws Exception {
         final DataSetMetadata metadata = metadata().id("1234").build();
         repository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("avengers.csv"));
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../avengers.csv"));
         formatAnalysis.analyze("1234");
         schemaAnalysis.analyze("1234");
         // Analyze quality
@@ -81,7 +81,7 @@ public class QualityAnalyzerTest {
         String dsId = "4321";
         final DataSetMetadata metadata = metadata().id(dsId).build();
         repository.add(metadata);
-        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("dataset_with_invalid_records.csv"));
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../dataset_with_invalid_records.csv"));
         formatAnalysis.analyze(dsId);
         schemaAnalysis.analyze(dsId);
         // Analyze quality

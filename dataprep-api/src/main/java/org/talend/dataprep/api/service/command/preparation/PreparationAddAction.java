@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -15,10 +16,14 @@ import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.preparation.store.ContentCache;
 
 @Component
 @Scope("request")
 public class PreparationAddAction extends DataPrepCommand<Void> {
+
+    @Autowired
+    private ContentCache contentCache;
 
     private final InputStream actions;
 
@@ -39,6 +44,10 @@ public class PreparationAddAction extends DataPrepCommand<Void> {
             HttpResponse response = client.execute(actionAppend);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode >= 200) {
+                // Invalidate cache for preparation's head (if any)
+                if (contentCache.has(id, "head")) {
+                    contentCache.evict(id, "head");
+                }
                 return null;
             }
             throw new TDPException(APIErrorCodes.UNABLE_TO_ACTIONS_TO_PREPARATION, TDPExceptionContext.build().put("id", id));

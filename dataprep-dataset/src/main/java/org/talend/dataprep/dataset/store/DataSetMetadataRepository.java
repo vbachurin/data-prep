@@ -1,5 +1,7 @@
 package org.talend.dataprep.dataset.store;
 
+import javax.annotation.Nullable;
+
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 
@@ -47,8 +49,9 @@ public interface DataSetMetadataRepository {
      * Returns the {@link DataSetMetadata data set} with given id.
      * 
      * @param id A data set id.
-     * @return The {@link DataSetMetadata} with given <code>id</code>.
+     * @return The {@link DataSetMetadata} with given <code>id</code> or null if non found.
      */
+    @Nullable
     DataSetMetadata get(String id);
 
     /**

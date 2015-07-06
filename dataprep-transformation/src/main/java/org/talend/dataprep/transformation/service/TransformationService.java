@@ -12,9 +12,13 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -66,56 +70,86 @@ public class TransformationService {
     @Autowired
     private ExportFactory exportFactory;
 
+
     /**
-     * Apply all <code>actions</code> to <code>content</code>. Actions is a Base64-encoded JSON list of {@link ActionMetadata} with parameters.
+     * Apply all <code>actions</code> to <code>content</code>. Actions is a Base64-encoded JSON list of
+     * {@link ActionMetadata} with parameters.
+     *
+     * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
      *
      * @param actions A Base64-encoded list of actions.
      * @param content A JSON input that complies with {@link DataSet} bean.
      * @param response The response used to send transformation result back to client.
+     * @param request The request used to send transformation result back to client.
      */
-    @RequestMapping(value = "/transform", method = POST, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.")
+    @RequestMapping(value = "/transform", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void transform(@ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) String actions, //
-            @ApiParam(value = "Data set content as JSON") InputStream content, HttpServletResponse response,HttpServletRequest request) {
+    public void transform(
+            @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestPart(value = "actions", required = false) Part actions, //
+            @ApiParam(value = "Data set content as JSON") @RequestPart(value = "content", required = false) Part content, //
+            HttpServletResponse response, //
+            HttpServletRequest request) throws IOException {
         // A transformation is an export to JSON
-        transform(ExportType.JSON, actions, content, response,request);
+        export(ExportType.JSON, actions, content, response, request);
     }
 
+
     /**
-     * Similar to {@link #transform(String, InputStream, HttpServletResponse,HttpServletRequest)} except this method allows client to
-     * customize the output format (see {@link ExportType available export types}).
+     * Similar to {@link #transform(Part, Part, HttpServletResponse,HttpServletRequest)} except this method allows
+     * client to customize the output format (see {@link ExportType available export types}).
+     *
+     * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
      *
      * @param format The output {@link ExportType format}. This format also set the MIME response type.
      * @param actions A Base64-encoded list of actions.
      * @param content A JSON input that complies with {@link DataSet} bean.
      * @param response The response used to send transformation result back to client.
      */
-    @RequestMapping(value = "/export/{format}", method = POST)
-    @ApiOperation(value = "Transform input data", notes = "This operation export the input data transformed using the supplied actions in the provided format.")
+    @RequestMapping(value = "/export/{format}", method = POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Export the preparation applying the transformation", notes = "This operation export the input data transformed using the supplied actions in the provided format.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void transform(@ApiParam(value = "Output format.") @PathVariable("format") final ExportType format, //
-                          @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestParam(value = "actions", defaultValue = "", required = false) final String actions, //
-                          @ApiParam(value = "Data set content as JSON") final InputStream content, //
-                          final HttpServletResponse response, final HttpServletRequest request) {
+    public void export(@ApiParam(value = "Output format.")
+    @PathVariable("format")
+    final ExportType format, //
+            @ApiParam(value = "Actions to perform on content.")
+            @RequestPart(value = "actions", required = false)
+            final Part actions, //
+            @ApiParam(value = "Data set content as JSON.")
+            @RequestPart(value = "content", required = false)
+            final Part content, //
+            final HttpServletResponse response, final HttpServletRequest request) {
         final ObjectMapper mapper = builder.build();
 
-        try (JsonParser parser = mapper.getFactory().createParser(content)) {
-            final String decodedActions = new String(Base64.getDecoder().decode(actions));
+        try {
+
+            JsonParser parser = mapper.getFactory().createParser(content.getInputStream());
 
             Map<String, Object> arguments = new HashMap<>();
             final Enumeration<String> names = request.getParameterNames();
             while(names.hasMoreElements()){
 
                 final String paramName = names.nextElement();
-                final String paramValue = request.getParameter( paramName );
+
+                // filter out the content and the actions
+                if (StringUtils.equals("actions", paramName) || StringUtils.equals("content", paramName)) {
+                    continue;
+                }
+
+                final String paramValue = request.getParameter(paramName);
                 final String decodeParamValue = new String(Base64.getDecoder().decode(paramValue));
 
                 arguments.put(paramName, decodeParamValue);
             }
-
-            final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(format)
-                    .actions(decodedActions).build();
+            String decodedActions = "";
+            if (actions != null) {
+                decodedActions = IOUtils.toString(actions.getInputStream());
+            }
+            final ExportConfiguration configuration = ExportConfiguration.builder() //
+                    .args(arguments) //
+                    .format(format) //
+                    .actions(decodedActions) //
+                    .build();
 
             response.setContentType(format.getMimeType());
 
@@ -135,31 +169,44 @@ public class TransformationService {
     }
 
     /**
-     * This operation allow client to create a diff between 2 list of actions starting from the same data. For example, sending:
+     * This operation allow client to create a diff between 2 list of actions starting from the same data. For example,
+     * sending:
      * <ul>
      * <li>{a1, a2} as old actions</li>
      * <li>{a1, a2, a3} as new actions</li>
      * </ul>
      * ... will highlight changes done by a3.
-     * @param oldActions A Base64-encoded list of actions.
-     * @param newActions A Base64-encoded list of actions.
+     *
+     * To prevent the actions to exceed URL length limit, everything is shipped within via the multipart request body.
+     *
+     * @param oldActions A list of actions.
+     * @param newActions A list of actions.
      * @param indexes Allows client to indicates specific line numbers to focus on.
      * @param content A JSON input that complies with {@link DataSet} bean.
      * @param response The response used to send transformation result back to client.
      */
-    @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Transform input data", notes = "This operation returns the input data diff between the old and the new transformation actions")
+    @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Preview the transformation on input data", notes = "This operation returns the input data diff between the old and the new transformation actions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void transformPreview(@ApiParam(value = "Old actions to perform on content (encoded in Base64).") @RequestParam(value = "oldActions", required = false) final String oldActions, //
-                                 @ApiParam(value = "New actions to perform on content (encoded in Base64).") @RequestParam(value = "newActions", required = false) final String newActions, //
-                                 @ApiParam(value = "The row indexes to return") @RequestParam(value = "indexes", required = false) final String indexes, //
-                                 @ApiParam(value = "Data set content as JSON") final InputStream content, //
+    public void transformPreview(@ApiParam(value = "Old actions to perform on content.")
+    @RequestPart(value = "oldActions", required = false)
+    final Part oldActions, //
+            @ApiParam(value = "New actions to perform on content.")
+            @RequestPart(value = "newActions", required = false)
+            final Part newActions, //
+            @ApiParam(value = "The row indexes to return")
+            @RequestPart(value = "indexes", required = false)
+            final Part indexes, //
+            @ApiParam(value = "Data set content as JSON")
+            @RequestPart
+            final Part content, //
                                  final HttpServletResponse response) {
         final ObjectMapper mapper = builder.build();
-        try (JsonParser parser = mapper.getFactory().createParser(content)) {
-            final String decodedIndexes = indexes == null ? null : new String(Base64.getDecoder().decode(indexes));
-            final String decodedOldActions = oldActions == null ? null : new String(Base64.getDecoder().decode(oldActions));
-            final String decodedNewActions = newActions == null ? null : new String(Base64.getDecoder().decode(newActions));
+        try {
+            JsonParser parser = mapper.getFactory().createParser(IOUtils.toString(content.getInputStream()));
+            final String decodedIndexes = indexes == null ? null : IOUtils.toString(indexes.getInputStream());
+            final String decodedOldActions = oldActions == null ? null : IOUtils.toString(oldActions.getInputStream());
+            final String decodedNewActions = newActions == null ? null : IOUtils.toString(newActions.getInputStream());
 
             final Transformer transformer = diffFactory.withIndexes(decodedIndexes).withActions(decodedOldActions, decodedNewActions).get();
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);

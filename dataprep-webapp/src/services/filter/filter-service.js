@@ -37,6 +37,8 @@
                     return 'invalid records';
                 case 'empty_records':
                     return 'empty records';
+                case 'valid_records':
+                    return 'valid records';
             }
         });
     }
@@ -129,6 +131,20 @@
 
         /**
          * @ngdoc method
+         * @name createValidFilterFn
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId - the column id
+         * @description [PRIVATE] Create a 'valid' filter function
+         * @returns {function} - the predicated function
+         */
+        var createValidFilterFn = function(colId, values){
+            return function(item) {
+                return values.indexOf(item[colId]) === -1 && item[colId];
+            };
+        };
+
+        /**
+         * @ngdoc method
          * @name createEmptyFilterFn
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} colId - the column id
@@ -165,6 +181,10 @@
                     break;
                 case 'empty_records':
                     filterFn = createEmptyFilterFn(colId);
+                    filterInfo = new Filter(type, colId, colName, false, args, filterFn);
+                    break;
+                case 'valid_records':
+                    filterFn = createValidFilterFn(colId, args.values);
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn);
                     break;
             }

@@ -3,18 +3,17 @@ package org.talend.dataprep.dataset.store.hdfs;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
@@ -24,31 +23,20 @@ import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
-@org.springframework.context.annotation.Configuration
+@Component
 @ConditionalOnProperty(name = "dataset.content.store", havingValue = "hdfs", matchIfMissing = false)
+@ConditionalOnBean(FileSystem.class)
 public class HDFSContentStore implements DataSetContentStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HDFSContentStore.class);
 
     private static final String HDFS_DIRECTORY = "talend/tdp/datasets/"; //$NON-NLS-1$
 
-    private final FileSystem fileSystem;
+    @Autowired
+    private FileSystem fileSystem;
 
     @Autowired
     private FormatGuess.Factory factory;
-
-    @Value("${dataset.content.store.hdfs.location}")
-    private String hdfsStoreLocation;
-
-    public HDFSContentStore() {
-        try {
-            fileSystem = FileSystem.get(new URI(hdfsStoreLocation), new Configuration());
-            LOGGER.info("HDFS file system: {} ({}).", fileSystem.getClass(), fileSystem.getUri());
-        } catch (Exception e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_CONNECT_TO_HDFS, e, TDPExceptionContext.build().put("location",
-                    hdfsStoreLocation));
-        }
-    }
 
     private static Path getPath(DataSetMetadata dataSetMetadata) {
         return new Path(HDFS_DIRECTORY + dataSetMetadata.getId());

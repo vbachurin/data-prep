@@ -26,6 +26,7 @@ api:
         TDP_API_DATASET_SERVICE_URL: http://${DATASET_PORT_8080_TCP_ADDR}:${DATASET_PORT_8080_TCP_PORT}
         TDP_API_TRANSFORMATION_SERVICE_URL: http://${TRANSFORM_PORT_8180_TCP_ADDR}:${TRANSFORM_1_PORT_8180_TCP_PORT}
         TDP_API_PREPARATION_SERVICE_URL: http://${PREPARATION_PORT_9090_TCP_ADDR}:${PREPARATION_1_PORT_9090_TCP_PORT}
+        TDP_API_PREPARATION_HDFS_URL: file:/tmp/hdfs
 transform:
     image: talend/dataprep-transformation:1.0.m6-SNAPSHOT
     expose:
@@ -66,6 +67,6 @@ web:
         - "80:80"
         - "443:443"
     environment:
-        TDP_API_HOST: 10.42.10.99
+        TDP_API_HOST: boot2docker
         TDP_API_PORT: 8888
 

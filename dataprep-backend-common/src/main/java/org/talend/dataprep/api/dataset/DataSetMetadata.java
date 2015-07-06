@@ -5,15 +5,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.talend.dataprep.api.dataset.json.EpochTimeDeserializer;
-import org.talend.dataprep.api.dataset.json.EpochTimeSerializer;
 import org.talend.dataprep.schema.SchemaParserResult;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents all information needed to look for a data set ({@link #getId()} as well as information inferred from data
@@ -57,8 +53,6 @@ public class DataSetMetadata {
     private String author;
 
     @JsonProperty("created")
-    @JsonSerialize(using = EpochTimeSerializer.class)
-    @JsonDeserialize(using = EpochTimeDeserializer.class)
     private long creationDate;
 
     /** Sheet number in case of excel source. */
@@ -76,6 +70,13 @@ public class DataSetMetadata {
      */
     @JsonProperty("schemaParserResult")
     private SchemaParserResult schemaParserResult;
+
+    /**
+     * flag to tell the dataset is one of the favorites for the current user this value is sent back to front but not
+     * stored because it stored in another user related storage
+     */
+    @JsonProperty("favorite")
+    private transient boolean favorite;
 
     public DataSetMetadata() {
         // no op
@@ -201,6 +202,24 @@ public class DataSetMetadata {
     }
 
     /**
+     * Getter for favorite.
+     * 
+     * @return the favorite
+     */
+    public boolean isFavorite() {
+        return this.favorite;
+    }
+
+    /**
+     * Sets the favorite.
+     * 
+     * @param favorite the favorite to set
+     */
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    /**
      * Dataset builder.
      */
     public static class Builder {
@@ -234,6 +253,8 @@ public class DataSetMetadata {
         private String formatGuessId;
 
         private String mediaType;
+
+        private boolean isFavorite;
 
         public static DataSetMetadata.Builder metadata() {
             return new Builder();
@@ -314,6 +335,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public DataSetMetadata.Builder isFavorite(boolean isFavorite) {
+            this.isFavorite = isFavorite;
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -331,6 +357,7 @@ public class DataSetMetadata {
             DataSetMetadata metadata = new DataSetMetadata(id, name, author, createdDate, row);
             metadata.sheetName = this.sheetName;
             metadata.draft = this.draft;
+            metadata.setFavorite(this.isFavorite);
             // Content information
             DataSetContent currentContent = metadata.getContent();
             currentContent.setNbRecords(size);

@@ -1,11 +1,18 @@
 package org.talend.dataprep.dataset.service;
 
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.TimeZone;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -22,13 +29,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
@@ -45,8 +59,13 @@ import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.schema.DraftValidator;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
+import org.talend.dataprep.user.store.UserDataRepository;
 
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -74,6 +93,9 @@ public class DataSetService {
 
     @Autowired
     private DataSetContentStore contentStore;
+
+    @Autowired
+    private UserDataRepository userDataRepository;
 
     @Autowired
     private FormatGuess.Factory formatGuessFactory;
@@ -112,15 +134,16 @@ public class DataSetService {
             jmsTemplate.send(asynchronousDataSetAnalyzer.destination(), session -> {
                 Message message = session.createMessage();
                 message.setStringProperty("dataset.id", id); //$NON-NLS-1
-                return message;
-            });
+                    return message;
+                });
         }
     }
 
     /**
-     * @return Get user name from Spring Security context, return "anonymous" if no user is currently logged in.
+     * @return Get user id based on the user name from Spring Security context, return "anonymous" if no user is
+     * currently logged in.
      */
-    private static String getUserName() {
+    private static String getUserId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String author;
         if (principal != null) {
@@ -132,12 +155,17 @@ public class DataSetService {
     }
 
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is always displayed in UTC time zone.")
+    @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is a Epoch time value (in UTC time zone).")
     @Timed
     public Iterable<DataSetMetadata> list() {
         final Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
-        final Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
-        return stream.filter(metadata -> !metadata.getLifecycle().importing()).collect(Collectors.toList());
+        Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
+        return stream.filter(metadata -> !metadata.getLifecycle().importing())//
+                .map(metadata -> {
+                    completeWithUserData(metadata);
+                    return metadata;
+                })//
+                .collect(Collectors.toList());
     }
 
     /**
@@ -158,7 +186,7 @@ public class DataSetService {
             @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE); //$NON-NLS-1$
         final String id = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(id).name(name).author(getUserName()).created(System.currentTimeMillis())
+        DataSetMetadata dataSetMetadata = metadata().id(id).name(name).author(getUserId()).created(System.currentTimeMillis())
                 .build();
         dataSetMetadata.getLifecycle().importing(true); // Indicate data set is being imported
         // Save data set content
@@ -206,6 +234,7 @@ public class DataSetService {
             // Build the result
             DataSet dataSet = new DataSet();
             if (metadata) {
+                completeWithUserData(dataSetMetadata);
                 dataSet.setMetadata(dataSetMetadata);
             }
             if (columns) {
@@ -234,7 +263,7 @@ public class DataSetService {
             if (metadata != null) {
                 contentStore.delete(metadata);
                 dataSetMetadataRepository.remove(dataSetId);
-            }
+            }// do nothing if the dataset does not exists
         } finally {
             lock.unlock();
         }
@@ -253,20 +282,22 @@ public class DataSetService {
         datasetLock.lock();
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-            LOG.trace("Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+            if (dataSetMetadata != null) {
+                LOG.trace("Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
 
-            if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
-                dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
-                dataSetMetadataRepository.add(dataSetMetadata);
-            } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
-                dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
-                dataSetMetadataRepository.add(dataSetMetadata);
-            } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.CERTIFIED) {
-                dataSetMetadata.getGovernance().setCertificationStep(Certification.NONE);
-                dataSetMetadataRepository.add(dataSetMetadata);
-            }
+                if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
+                    dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
+                    dataSetMetadataRepository.add(dataSetMetadata);
+                } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.PENDING) {
+                    dataSetMetadata.getGovernance().setCertificationStep(Certification.CERTIFIED);
+                    dataSetMetadataRepository.add(dataSetMetadata);
+                } else if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.CERTIFIED) {
+                    dataSetMetadata.getGovernance().setCertificationStep(Certification.NONE);
+                    dataSetMetadataRepository.add(dataSetMetadata);
+                }
 
-            LOG.debug("New certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+                LOG.debug("New certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+            }// else do nothing if the dataset does not exists
         } finally {
             datasetLock.unlock();
         }
@@ -336,6 +367,7 @@ public class DataSetService {
             return DataSet.empty();
         }
         DataSet dataSet = new DataSet();
+        completeWithUserData(metadata);
         dataSet.setMetadata(metadata);
         dataSet.setColumns(metadata.getRow().getColumns());
         return dataSet;
@@ -427,6 +459,7 @@ public class DataSetService {
         // Build the result
         DataSet dataSet = new DataSet();
         if (metadata) {
+            completeWithUserData(dataSetMetadata);
             dataSet.setMetadata(dataSetMetadata);
         }
         if (columns) {
@@ -434,6 +467,20 @@ public class DataSetService {
         }
         dataSet.setRecords(contentStore.stream(dataSetMetadata).limit(100));
         return dataSet;
+    }
+
+    /**
+     * This gets the current user data related to the dataSetMetadata and updates the dataSetMetadata accordingly. First
+     * check for favorites dataset
+     * 
+     * @param dataSetMetadata, the metadata to be updated
+     */
+    void completeWithUserData(DataSetMetadata dataSetMetadata) {
+        String userId = getUserId();
+        UserData userData = userDataRepository.getUserData(userId);
+        if (userData != null) {
+            dataSetMetadata.setFavorite(userData.getFavoritesDatasets().contains(dataSetMetadata.getId()));
+        }// no user data related to the current user to do nothing
     }
 
     /**
@@ -500,4 +547,59 @@ public class DataSetService {
         }
     }
 
+    /**
+     * list all the favorites dataset for the current user
+     * 
+     * @return a list of the dataset Ids of all the favorites dataset for the current user or an empty list if none
+     * found
+     */
+    @RequestMapping(value = "/datasets/favorites", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "return all favorites datasets of the current user", notes = "Returns the list of favorites datasets.")
+    @Timed
+    public Iterable<String> favorites() {
+        String userId = getUserId();
+        UserData userData = userDataRepository.getUserData(userId);
+        return userData != null ? userData.getFavoritesDatasets() : Collections.EMPTY_LIST;
+    }
+
+    /**
+     * update the current user data dataset favorites list by adding or removing the dataSetId according to the unset
+     * flag. The user data for the current will be created if it does not exist. If no data set exists for given id, a
+     * {@link TDPException} is thrown.
+     * 
+     * @param unset, if true this will remove the dataSetId from the list of favorites, if false then it adds the
+     * dataSetId to the favorite list
+     * @param dataSetId, the id of the favorites data set. If the data set does not exists nothing is done.
+     */
+    @RequestMapping(value = "/datasets/{id}/favorite", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "set or unset a dataset as favorite", notes = "Specify if a dataset is or is not a favorite for the current user.")
+    @Timed
+    public void setFavorites(
+            @RequestParam(defaultValue = "false") @ApiParam(name = "unset", value = "if true then unset the dataset as favorite, if false (default value) set the favorite flag") boolean unset, //
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the favorite data set, do nothing is the id does not exist.") String dataSetId) {
+        String userId = getUserId();
+        // check that dataset exists
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        if (dataSetMetadata != null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("{} favorite dataset for #{} for user {}", unset ? "Unset" : "Set", dataSetId, userId); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+            }
+
+            UserData userData = userDataRepository.getUserData(userId);
+            if (unset) {// unset the favorites
+                if (userData != null) {
+                    userData.getFavoritesDatasets().remove(dataSetId);
+                    userDataRepository.setUserData(userData);
+                }// no user data for this user so nothing to unset
+            } else {// set the favorites
+                if (userData == null) {// let's create a new UserData
+                    userData = new UserData(userId);
+                }// else already created so just update it.
+                userData.addFavoriteDataset(dataSetId);
+                userDataRepository.setUserData(userData);
+            }
+        } else {// no dataset found so throws an error
+            throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", dataSetId));
+        }
+    }
 }

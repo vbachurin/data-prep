@@ -10,8 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,6 +18,9 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.Serializer;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 @Service("serializer#xls")
 public class XlsSerializer implements Serializer {
@@ -34,7 +35,7 @@ public class XlsSerializer implements Serializer {
             Workbook workbook = XlsUtils.getWorkbook(rawContent);
 
             StringWriter writer = new StringWriter();
-            JsonGenerator generator = new JsonFactory().createJsonGenerator(writer);
+            JsonGenerator generator = new JsonFactory().createGenerator(writer);
 
             // if no sheet name just get the first one (take it easy mate :-) )
             Sheet sheet = StringUtils.isEmpty(metadata.getSheetName()) ? workbook.getSheetAt(0) : //

@@ -34,8 +34,9 @@ describe('Home controller', function() {
 
     describe('with created controller', function() {
         var uploadDefer;
+        var dataset = {id: 'ec4834d9bc2af8', name: 'Customers (50 lines)', draft: false};
 
-        beforeEach(inject(function($q, DatasetService) {
+        beforeEach(inject(function($q, DatasetService, UploadWorkflowService) {
             ctrl = createController();
             ctrl.datasetFile = [{name: 'my dataset.csv'}];
             ctrl.datasetName = 'my cool dataset';
@@ -46,6 +47,8 @@ describe('Home controller', function() {
                 return uploadDefer.promise;
             };
 
+            spyOn(DatasetService, 'getDatasetById').and.returnValue($q.when(dataset));
+            spyOn(UploadWorkflowService, 'openDataset').and.returnValue();
             spyOn(DatasetService, 'fileToDataset').and.callThrough();
             spyOn(DatasetService, 'create').and.returnValue(uploadDefer.promise);
             spyOn(DatasetService, 'update').and.returnValue(uploadDefer.promise);
@@ -87,20 +90,21 @@ describe('Home controller', function() {
                 spyOn($rootScope, '$emit').and.callThrough();
             }));
 
-            it('should create dataset if name is unique', inject(function($rootScope, MessageService, DatasetService) {
+            it('should create dataset if name is unique', inject(function($q, $rootScope, MessageService, DatasetService, UploadWorkflowService) {
                 //given
                 expect(ctrl.uploadingDatasets.length).toBe(0);
                 ctrl.uploadDatasetName();
                 expect(ctrl.uploadingDatasets.length).toBe(1);
 
                 //when
-                uploadDefer.resolve({data: 'fake_id'});
+                uploadDefer.resolve({data: dataset.id});
                 scope.$digest();
 
                 //then
                 expect(DatasetService.create).toHaveBeenCalled();
                 expect(ctrl.uploadingDatasets.length).toBe(0);
-                expect($rootScope.$emit).toHaveBeenCalledWith('talend.dataset.open', 'fake_id');
+                expect(DatasetService.getDatasetById).toHaveBeenCalledWith(dataset.id);
+                expect(UploadWorkflowService.openDataset).toHaveBeenCalled();
             }));
 
             it('should update progress on create', inject(function(DatasetService) {
@@ -180,7 +184,6 @@ describe('Home controller', function() {
 
                 //then
                 expect(DatasetService.fileToDataset).toHaveBeenCalledWith(ctrl.datasetFile[0], 'my cool dataset (1)');
-                expect($rootScope.$emit).toHaveBeenCalledWith('talend.dataset.open', 'dataset_id_XYZ');
             }));
 
             it('should update existing dataset', inject(function (MessageService, TalendConfirmService, DatasetService) {

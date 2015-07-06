@@ -1,5 +1,6 @@
 package org.talend.dataprep.exception;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +14,8 @@ public enum CommonErrorCodes implements ErrorCode {
     UNABLE_TO_PRINT_PREPARATION(500),
     UNABLE_TO_READ_CONTENT(500),
     UNABLE_TO_PARSE_ACTIONS(500),
-    UNABLE_TO_PARSE_REQUEST(400); // e.g IllegalArgumentException
+    UNABLE_TO_PARSE_REQUEST(400), // e.g IllegalArgumentException
+    UNABLE_TO_CONNECT_TO_HDFS(500, "location");
 
     /** The http status to use. */
     private int httpStatus;
@@ -29,6 +31,16 @@ public enum CommonErrorCodes implements ErrorCode {
     CommonErrorCodes(int httpStatus) {
         this.httpStatus = httpStatus;
         this.expectedContextEntries = Collections.emptyList();
+    }
+
+    /**
+     * default constructor.
+     *
+     * @param httpStatus the http status to use.
+     */
+    CommonErrorCodes(int httpStatus, String... contextEntries) {
+        this.httpStatus = httpStatus;
+        this.expectedContextEntries = Arrays.asList(contextEntries);
     }
 
     /**

@@ -15,7 +15,7 @@ public class EpochTimeDeserializer extends JsonDeserializer<Long> {
     @Override
     public Long deserialize(JsonParser jp, DeserializationContext context) throws IOException {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-YYYY HH:mm"); //$NON-NLS-1
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm"); //$NON-NLS-1
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             return dateFormat.parse(jp.getText()).getTime();
         } catch (ParseException e) {

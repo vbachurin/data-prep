@@ -2,11 +2,12 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.*;
 
-import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Utility class for the ActionsMetadata

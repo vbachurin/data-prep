@@ -61,7 +61,7 @@ public class PreparationService {
         return author;
     }
 
-    private static String getStepId(@ApiParam("version") @PathVariable("version") String version, Preparation preparation) {
+    private static String getStepId(String version, Preparation preparation) {
         String stepId;
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
             stepId = preparation.getStep().id();
@@ -157,6 +157,15 @@ public class PreparationService {
         return preparationRepository.get(id, Preparation.class);
     }
 
+    @RequestMapping(value = "/preparations/{id}/steps", method = GET, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get all preparation steps id", notes = "Return the steps of the preparation with provided id.")
+    @Timed
+    public List<String> getSteps(@ApiParam("id") @PathVariable("id") String id) {
+        LOGGER.debug("Get steps of preparation for #{}.", id);
+        final Step step = preparationRepository.get(id, Preparation.class).getStep();
+        return PreparationUtils.listSteps(step, preparationRepository);
+    }
+
     @RequestMapping(value = "/preparations/{id}/actions", method = POST, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action to a preparation", notes = "Append an action at end of the preparation with given id.")
     @Timed
@@ -190,29 +199,33 @@ public class PreparationService {
     public void updateAction(@PathVariable("id") final String id, //
                              @PathVariable("action") final String action, //
                              @RequestBody final AppendStep step) {
+        // Get preparation
         LOGGER.debug("Modifying actions in preparation #{}", id);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation == null) {
             LOGGER.error("Preparation #{} does not exist", id);
             throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
         }
+
+        // Get steps from modified to the head
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
-        // Add update preparation step
         final List<String> steps = PreparationUtils.listSteps(head, action, preparationRepository);
         LOGGER.debug("Rewriting history for {} steps.", steps.size());
-        // Build list of actions added at each step
+
+        // Build list of actions from modified one to the head
         List<AppendStep> appends = new ArrayList<>(steps.size());
         appends.add(step);
-        for (int i = steps.size() - 1; i > 0; i--) {
-            final List<Action> previous = getActions(steps.get(i));
-            final List<Action> current = getActions(steps.get(i - 1));
+        for (int i = 1; i < steps.size(); ++i) {
+            final List<Action> previous = getActions(steps.get(i - 1));
+            final List<Action> current = getActions(steps.get(i));
             final AppendStep appendStep = new AppendStep();
             appendStep.setActions(current.subList(previous.size(), current.size()));
             appends.add(appendStep);
         }
-        // Rebuild history from modified step
-        final Step modifiedStep = preparationRepository.get(steps.get(steps.size() - 1), Step.class);
+
+        // Rebuild history from modified step : needed because the ids will be regenerated at each step
+        final Step modifiedStep = preparationRepository.get(steps.get(0), Step.class);
         preparation.setStep(preparationRepository.get(modifiedStep.getParent(), Step.class));
         preparationRepository.add(preparation);
         for (AppendStep append : appends) {
@@ -223,16 +236,16 @@ public class PreparationService {
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get the action on preparation at given version.", notes = "Returns the action JSON at version.")
+    @ApiOperation(value = "Get all the actions of a preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
-    public PreparationActions getVersionedAction(@ApiParam("id") @PathVariable("id") final String id, //
+    public List<Action> getVersionedAction(@ApiParam("id") @PathVariable("id") final String id, //
                                                  @ApiParam("version") @PathVariable("version") final String version) {
         LOGGER.debug("Get list of actions of preparations #{} at version {}.", id, version);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation != null) {
             final String stepId = getStepId(version, preparation);
             final Step step = preparationRepository.get(stepId, Step.class);
-            return preparationRepository.get(step.getContent(), PreparationActions.class);
+            return preparationRepository.get(step.getContent(), PreparationActions.class).getActions();
         } else {
             throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
         }

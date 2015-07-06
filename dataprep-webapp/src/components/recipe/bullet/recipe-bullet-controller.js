@@ -26,7 +26,7 @@
          * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
          * @param {object} allSvgs The list of bullets
          * @description Get the bullets to modify, according to the current bullet
-         * @returns The bullets elements to changed
+         * @returns {Array} The bullets elements to changed
          */
         vm.getBulletsToChange = function (allSvgs) {
             //current step active : we should deactivate all the steps from current to the end
@@ -45,7 +45,7 @@
          * @name isStartChain
          * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
          * @description Test if step is the first element of the chain
-         * @returns true if step is the first step
+         * @returns {boolean} true if step is the first step
          */
         vm.isStartChain = function () {
             return RecipeService.isFirstStep(vm.step);
@@ -56,7 +56,7 @@
          * @name isEndChain
          * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
          * @description Test if step is the last element of the chain
-         * @returns true if step is the last step
+         * @returns {boolean} true if step is the last step
          */
         vm.isEndChain = function () {
             return RecipeService.isLastStep(vm.step);
