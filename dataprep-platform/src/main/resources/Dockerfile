@@ -1,4 +1,4 @@
-FROM ubuntu:14.10
+FROM alpine:3.2
 
 COPY runtime/mongodb /data/db
 COPY runtime/dataset/store /store
