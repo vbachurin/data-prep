@@ -155,7 +155,7 @@
          * @returns {Promise} The PUT promise
          */
         self.toggleFavorite = function(dataset) {
-            return $http.post(RestURLs.datasetUrl + '/favorite/' + dataset.id + "?unset="+dataset.favorite);
+            return $http.post(RestURLs.datasetUrl + '/favorite/' + dataset.id + '?unset='+dataset.favorite);
         };
 
     }

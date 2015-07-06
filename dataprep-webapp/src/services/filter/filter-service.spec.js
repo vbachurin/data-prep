@@ -206,6 +206,7 @@ describe('Filter service', function() {
         expect(filterInfo.args).toEqual({values:['m','p']});
         expect(filterInfo.filterFn({col1: 'a'})).toBeTruthy();
         expect(filterInfo.filterFn({col1: 'm'})).toBeFalsy();
+        expect(filterInfo.filterFn({col1: ''})).toBeFalsy();
 
         expect(DatagridService.addFilter).toHaveBeenCalledWith(filterInfo.filterFn);
     }));
