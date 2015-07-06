@@ -10,6 +10,7 @@
      * @requires data-prep.services.dataset-xls-preview
      * @requires data-prep.services.playground
      * @requires data-prep.services.utils
+     * @requires data-prep.services.uploadWorkflowService
      */
     angular.module('data-prep.dataset-list', [
         'ui.router',
