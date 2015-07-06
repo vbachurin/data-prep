@@ -8,7 +8,7 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.dataset.service:DatasetService
      * @requires talend.widget.service:TalendConfirmService
-     * @requires data-prep.services.uploadWorkflowService'
+     * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
      */
     function HomeCtrl(UploadWorkflowService, MessageService, DatasetService, TalendConfirmService) {
         var vm = this;
