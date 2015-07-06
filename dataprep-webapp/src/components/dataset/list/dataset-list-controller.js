@@ -51,6 +51,17 @@
 
         /**
          * @ngdoc method
+         * @name toggleFavorite
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description toogle dataset as Favorite or not
+         * @param {object} dataset - the dataset to be set or unset favorite
+         */
+        vm.toggleFavorite = function(dataset) {
+            DatasetService.toggleFavorite(dataset);//just a delegate
+        };
+
+        /**
+         * @ngdoc method
          * @name processCertification
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description Ask certification for a dataset

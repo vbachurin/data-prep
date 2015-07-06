@@ -40,8 +40,8 @@ describe('Transformation simple params directive', function () {
 
         //then
         expect(element.find('.param-name').length).toBe(2);
-        expect(element.find('.param-name').eq(0).text().trim()).toBe('Param 1 :');
-        expect(element.find('.param-name').eq(1).text().trim()).toBe('Param 2 :');
+        expect(element.find('.param-name').eq(0).text().trim()).toBe('Param 1:');
+        expect(element.find('.param-name').eq(1).text().trim()).toBe('Param 2:');
         expect(element.find('.param-input').length).toBe(2);
         expect(element.find('.param-input').eq(0).find('input[type="text"]').length).toBe(1);
         expect(element.find('.param-input').eq(1).find('input[type="number"]').length).toBe(1);

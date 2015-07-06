@@ -28,6 +28,7 @@ describe('Dataset Service', function () {
         spyOn(DatasetRestService, 'getContent').and.returnValue($q.when({}));
         spyOn(DatasetRestService, 'getSheetPreview').and.returnValue($q.when({}));
         spyOn(DatasetRestService, 'updateMetadata').and.returnValue($q.when({}));
+        spyOn(DatasetRestService, 'toggleFavorite').and.returnValue($q.when({}));
 
         spyOn(DatasetListService, 'refreshDatasets').and.returnValue($q.when(datasets));
         spyOn(PreparationListService, 'refreshMetadataInfos').and.returnValue(preparationConsolidation);
@@ -363,6 +364,45 @@ describe('Dataset Service', function () {
 
         //then
         expect(actual).toBeUndefined();
+    }));
+
+    it('should not find dataset by id', inject(function ($rootScope, DatasetService, DatasetListService) {
+        //given
+        DatasetListService.datasets = datasets;
+
+        var actual;
+
+        //when
+        DatasetService.getDatasetById('not to be found').then(function(dataset) {
+            actual = dataset;
+        });
+        $rootScope.$digest();
+
+        //then
+        expect(actual).toBeUndefined();
+    }));
+
+    it('should toggle favorite in a dataset', inject(function ($rootScope, DatasetService, DatasetListService, DatasetRestService) {
+        //given
+        var dataset = DatasetListService.datasets[0];
+        dataset.favorite = false;
+        //when
+        DatasetService.toggleFavorite(dataset);
+        $rootScope.$digest();
+
+        //then
+        expect(DatasetRestService.toggleFavorite).toHaveBeenCalledWith(dataset);
+        expect(dataset.favorite).toBeTruthy();
+
+        //check the unset too
+        //when
+        DatasetService.toggleFavorite(dataset);
+        $rootScope.$digest();
+
+        //then
+        expect(DatasetRestService.toggleFavorite).toHaveBeenCalledWith(dataset);
+        expect(dataset.favorite).toBeFalsy();
+
     }));
 
 });

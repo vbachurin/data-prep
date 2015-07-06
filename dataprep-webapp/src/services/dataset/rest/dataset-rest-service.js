@@ -142,6 +142,22 @@
                 });
         };
 
+
+        //--------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------Toogle Favorite-------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name toogleFavorite
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Toogle the Favorite flag for a dataset for the current user
+         * @param {dataset} dataset The dataset to be toggled
+         * @returns {Promise} The PUT promise
+         */
+        self.toggleFavorite = function(dataset) {
+            return $http.post(RestURLs.datasetUrl + '/favorite/' + dataset.id + "?unset="+dataset.favorite);
+        };
+
     }
 
     angular.module('data-prep.services.dataset')

@@ -88,6 +88,7 @@ describe('Dataset list controller', function () {
             spyOn(MessageService, 'success').and.callThrough();
             spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
             spyOn(DatasetSheetPreviewService, 'display').and.returnValue($q.when(true));
+            spyOn(DatasetService, 'toggleFavorite').and.returnValue($q.when(true));
         }));
 
         it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService) {
@@ -119,6 +120,18 @@ describe('Dataset list controller', function () {
 
             //then
             expect(DatasetService.processCertification).toHaveBeenCalledWith(datasets[0]);
+        }));
+
+        it('should toogle dataset favorite flag', inject(function ($rootScope, DatasetService) {
+            //given
+            var dataset = {name: 'Customers (50 lines)', id: 'aA2bc348e933bc2', favorite: false};
+
+            //when
+            ctrl.toggleFavorite(dataset);
+            $rootScope.$apply();
+
+            //then
+            expect(DatasetService.toggleFavorite).toHaveBeenCalledWith(dataset);
         }));
     });
 });

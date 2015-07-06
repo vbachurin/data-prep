@@ -26,8 +26,12 @@ class Aspects {
         }
         // filter out hystrix exception level if possible
         catch (HystrixRuntimeException hre) {
-            if (hre.getCause() instanceof TDPException) {
-                throw hre.getCause();
+            Throwable e = hre;
+            while (e.getCause() != null) {
+                e = e.getCause();
+                if (e instanceof TDPException) {
+                    throw e;
+                }
             }
             throw hre;
         }
