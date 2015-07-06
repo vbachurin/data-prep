@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.springframework.stereotype.Service;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
@@ -16,6 +14,9 @@ import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
 import au.com.bytecode.opencsv.CSVReader;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 @Service("serializer#csv")
 public class CSVSerializer implements Serializer {

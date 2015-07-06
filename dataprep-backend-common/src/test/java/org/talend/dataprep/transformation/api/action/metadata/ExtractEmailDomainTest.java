@@ -23,15 +23,16 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Test class for ExtractEmailDomain action. Creates one consumer, and test it.
@@ -58,7 +59,7 @@ public class ExtractEmailDomainTest {
         String content = actions.trim();
         JsonNode node = mapper.readTree(content);
         action = new ExtractEmailDomain();
-        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").getFields());
+        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").fields());
         rowClosure = action.create(parameters);
         metadataClosure = action.createMetadataClosure(parameters);
     }

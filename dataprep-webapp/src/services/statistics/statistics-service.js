@@ -14,7 +14,7 @@
 		 * @ngdoc method
 		 * @name addFilter
 		 * @methodOf data-prep.services.statistics:StatisticsService
-		 * @param value - the phrase
+		 * @param {string} value The phrase to filter
 		 * @description Add a 'contains' filter in the angular context
 		 */
 		self.addFilter = function (value) {
@@ -30,7 +30,7 @@
 		 * @ngdoc method
 		 * @name processMapData
 		 * @methodOf data-prep.services.statistics:StatisticsService
-		 * @param column - the clicked column
+		 * @param {object} column The clicked column
 		 * @description removes the previous barchart and sets the map chart
 		 */
 		self.processMapData = function (column) {
@@ -45,9 +45,9 @@
 		 * @ngdoc method
 		 * @name extractNumericData
 		 * @methodOf data-prep.services.statistics:StatisticsService
-		 * @param column.statistics.histogram Array
+		 * @param {Array} histoData Array of data
 		 * @description extracts and builds the data for numeric column, from the histogram of the statistics
-		 * @returns [{"data":" 0 ... 10", "occurences":11}, {"data":" 10 ... 20", "occurences":11}, ...]
+		 * @returns {Array} Extracted data with the specified format {"data":" 0 ... 10", "occurences":11}, {"data":" 10 ... 20", "occurences":11}
 		 */
 		self.extractNumericData = function(histoData){
 			var concatData         = [];
@@ -64,7 +64,7 @@
 		 * @ngdoc method
 		 * @name processBarchartData
 		 * @methodOf data-prep.services.statistics:StatisticsService
-		 * @param column - the selected column
+		 * @param {object} column The selected column
 		 * @description shows/hides the visualization according to the clicked column type
 		 */
 		self.processBarchartData = function (column) {
@@ -87,7 +87,7 @@
 		 * @ngdoc method
 		 * @name processVisuData
 		 * @methodOf data-prep.services.statistics:StatisticsService
-		 * @param column - the selected column
+		 * @param {object} column The selected column
 		 * @description processes the visualization data according to the clicked column domain
 		 */
 		self.processVisuData = function (column) {
@@ -120,8 +120,11 @@
 		 * @param keyName - distribution key name (default : 'colValue');
 		 * @param valueName - distribution value name (default : 'frequency')
 		 * @param keyTransformer - transformer applied to the distribution key
-		 * @returns [{colValue: string, frequency: integer}} - colValue (or specified) : the grouped value, frequency
-		 *     (or specified) : the nb of time the value appears
+		 * @returns {Array} Column distribution array {colValue: string, frequency: integer}}
+		 * <ul>
+		 *     <li>colValue (or specified) : the grouped value</li>
+		 *     <li>frequency (or specified) : the nb of time the value appears</li>
+		 * </ul>
 		 */
 		self.getDistribution = function (columnId, keyName, valueName, keyTransformer) {
 			keyName   = keyName || 'colValue';
@@ -148,8 +151,8 @@
 
 		/**
 		 * Calculate geo distribution, and targeted map
-		 * @param column
-		 * @returns {{map: string, data: [{}]}}
+		 * @param {object} column The target column
+		 * @returns {object} Geo distribution {map: string, data: [{}]}
 		 */
 		self.getGeoDistribution = function (column) {
 			var keyPrefix = 'us-';

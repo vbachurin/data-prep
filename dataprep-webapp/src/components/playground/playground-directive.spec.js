@@ -86,31 +86,31 @@ describe('Playground directive', function () {
             createElement();
 
             var stepsHeader = angular.element('body > talend-modal').find('.steps-header').eq(0);
-            var editionBtn = stepsHeader.find('button.edit-btn').eq(0);
-            var confirmBtn = stepsHeader.find('button.check-btn').eq(0);
-            var cancelBtn = stepsHeader.find('button.cancel-btn').eq(0);
+            var nonEditionSection = stepsHeader.find('div[ng-show="!playgroundCtrl.editionMode"]').eq(0);
+            var editionSection = stepsHeader.find('div[ng-show="playgroundCtrl.editionMode"]').eq(0);
 
-            expect(editionBtn.is(':visible')).toBe(false);
-            expect(confirmBtn.is(':visible')).toBe(true);
-            expect(cancelBtn.is(':visible')).toBe(true);
+            var confirmBtn = stepsHeader.find('a.check-btn').eq(0);
+            var editionBtn = stepsHeader.find('a.edit-btn').eq(0);
+
+            expect(nonEditionSection.is(':visible')).toBe(false);
+            expect(editionSection.is(':visible')).toBe(true);
 
             //when
             var event = new angular.element.Event('click');
             confirmBtn.trigger(event);
 
             //then
-            expect(editionBtn.is(':visible')).toBe(true);
-            expect(confirmBtn.is(':visible')).toBe(false);
-            expect(cancelBtn.is(':visible')).toBe(false);
+            expect(nonEditionSection.is(':visible')).toBe(true);
+            expect(editionSection.is(':visible')).toBe(false);
 
             //when
             var event2 = new angular.element.Event('click');
             editionBtn.trigger(event2);
 
             //then
-            expect(editionBtn.is(':visible')).toBe(false);
-            expect(confirmBtn.is(':visible')).toBe(true);
-            expect(cancelBtn.is(':visible')).toBe(true);
+            expect(nonEditionSection.is(':visible')).toBe(false);
+            expect(editionSection.is(':visible')).toBe(true);
+
         }));
 
         it('should toggle recipe on click on the On/Off switch', inject(function (RecipeBulletService) {

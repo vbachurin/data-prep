@@ -3,13 +3,14 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Model an action to perform on a dataset.
