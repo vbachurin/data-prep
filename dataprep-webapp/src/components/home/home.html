@@ -50,7 +50,7 @@
 </header>
 
 <div class="home">
-    <div class="flex-menu-left side-menu">
+    <div class="flex-left-panel side-menu">
         <ul>
             <li id="nav_home_datasets"><a ui-sref="nav.home.datasets" ui-sref-active="selected">{{ ::'ALL_FOLDERS' | translate }}</a></li>
             <li id="nav_home_preparations"><a ui-sref="nav.home.preparations" ui-sref-active="selected">{{ ::'ALL_PREPARATIONS' | translate }}</a></li>
@@ -60,16 +60,16 @@
         </ul>
     </div>
 
-    <div class="flex-center">
-        <div class="flex-center-header">
+    <div class="flex-center flex-column">
+        <div class="flex-fixed">
             <dataset-upload-list datasets="homeCtrl.uploadingDatasets"></dataset-upload-list>
         </div>
-        <div class="flex-center-body">
+        <div class="flex-flexible">
             <ui-view name="home-content"></ui-view>
         </div>
     </div>
 
-    <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-menu-right inventory-data" resizable="inventory-data">
+    <talend-slidable visible="homeCtrl.showRightPanel" side="right" class="flex-right-panel inventory-data" resizable="inventory-data">
         <p class="title">{{ ::'INVENTORY_DATA' | translate }}</p>
         <hr/>
         <p class="empty">
