@@ -9,10 +9,12 @@
      */
     function DatagridStyleService(DatagridService, ConverterService) {
         var grid;
+        var lastSelectedColumnId;
 
         return {
             init: init,
             resetCellStyles : resetCellStyles,
+            resetColumnStyles : resetColumnStyles,
             manageColumnStyle: manageColumnStyle,
             computeHTMLForLeadingOrTrailingHiddenChars: computeHTMLForLeadingOrTrailingHiddenChars,
             columnFormatter: columnFormatter,
@@ -30,6 +32,17 @@
         function resetCellStyles() {
             grid.resetActiveCell();
             grid.setCellCssStyles('highlight', {});
+        }
+
+        /**
+         * @ngdoc method
+         * @name resetColumnStyles
+         * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * @description Reset the columns css.
+         * Currently there is only one visual style class : selected. We reset the lastSelected
+         */
+        function resetColumnStyles() {
+            lastSelectedColumnId = null;
         }
 
         /**
@@ -85,6 +98,10 @@
                 updateSelectionClass(column, selectedCol);
                 updateNumbersClass(column);
             });
+
+            if(selectedCol) {
+                lastSelectedColumnId = selectedCol.id;
+            }
         }
 
         /**
@@ -96,14 +113,21 @@
          * This is usefull when data changes, the column style is reset but the active cell does not change.
          */
         function manageColumnStyle(isPreview) {
-            var activeCell = grid.getActiveCell();
-            if(!isPreview && activeCell) {
-                var column = grid.getColumns()[activeCell.cell];
-                updateColumnClass(column);
+            var column;
+
+            if(!isPreview) {
+                var activeCell = grid.getActiveCell();
+                if(activeCell) {
+                    column = grid.getColumns()[activeCell.cell];
+                }
+                else if(lastSelectedColumnId) {
+                    column = _.find(grid.getColumns(), function(col) {
+                        return col.id === lastSelectedColumnId;
+                    });
+                }
             }
-            else {
-                updateColumnClass(null);
-            }
+
+            updateColumnClass(column);
         }
 
         /**

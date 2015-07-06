@@ -29,17 +29,19 @@ public class PreviewDiff extends PreviewAbstract {
         final Preparation preparation = getPreparation(input.getPreparationId());
         final String dataSetId = preparation.getDataSetId();
 
-        // extract actions by steps in chronological order, until defined last active step (from input)
-        Map<String, Action> originalActions = new LinkedHashMap<>();
+        // get steps from first operation to head
         final List<String> steps = preparation.getSteps();
+        steps.remove(0);
+        
+        // extract actions by steps in chronological order, until defined last active step (from input)
+        final Map<String, Action> originalActions = new LinkedHashMap<>();
         final Iterator<Action> actions = getPreparationActions(preparation, input.getCurrentStepId()).iterator();
         steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
 
-        // modify actions to include the update
-        Map<String, Action> previewActions = new LinkedHashMap<>();
-        final List<String> previewSteps = preparation.getSteps();
+        // extract actions by steps in chronological order, until preview step (from input)
+        final Map<String, Action> previewActions = new LinkedHashMap<>();
         final Iterator<Action> previewActionsIterator = getPreparationActions(preparation, input.getPreviewStepId()).iterator();
-        previewSteps.stream().filter(step -> previewActionsIterator.hasNext()).forEach(step -> previewActions.put(step, previewActionsIterator.next()));
+        steps.stream().filter(step -> previewActionsIterator.hasNext()).forEach(step -> previewActions.put(step, previewActionsIterator.next()));
 
         // serialize the 2 actions list
         final String oldEncodedActions = serializeActions(new ArrayList<>(originalActions.values()));

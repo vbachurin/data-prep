@@ -102,6 +102,7 @@
                 var onMetadataChange = function onMetadataChange() {
                     if(grid) {
                         DatagridStyleService.resetCellStyles();
+                        DatagridStyleService.resetColumnStyles();
                         grid.scrollRowToTop(0);
                         renewAllColumns = true;
                     }

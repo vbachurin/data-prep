@@ -32,6 +32,7 @@ describe('Datagrid directive', function() {
         spyOn(DatagridSizeService, 'autosizeColumns').and.returnValue();
         spyOn(DatagridStyleService, 'manageColumnStyle').and.returnValue();
         spyOn(DatagridStyleService, 'resetCellStyles').and.returnValue();
+        spyOn(DatagridStyleService, 'resetColumnStyles').and.returnValue();
     }));
 
     afterEach(function() {
@@ -105,6 +106,11 @@ describe('Datagrid directive', function() {
         it('should reset cell styles', inject(function(DatagridStyleService) {
             //then
             expect(DatagridStyleService.resetCellStyles).toHaveBeenCalled();
+        }));
+
+        it('should reset columns styles', inject(function(DatagridStyleService) {
+            //then
+            expect(DatagridStyleService.resetColumnStyles).toHaveBeenCalled();
         }));
 
         it('should scroll to top', function() {

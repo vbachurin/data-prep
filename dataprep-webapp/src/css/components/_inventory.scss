@@ -125,6 +125,15 @@ $border-color: #CECECE;
 
 .btn-transparent{
   opacity: 0;
+  outline: none;
+
+  &:active,
+  &:focus {
+    background-color: transparent;
+  }
+  &:hover {
+    background-color: $action-hover-background;
+  }
 }
 
 .divider {

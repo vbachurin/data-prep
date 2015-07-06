@@ -12,13 +12,13 @@ describe('Recipe service', function () {
             'creationDate': 1427980028390,
             'lastModificationDate': 1427980216038,
             'steps': [
-                '2aba0e60054728f046d35315830bce9abc3c5249',
-                'add60ff0f6de4c703fa75725ada38fb37af065e6',
-                '1e1f41dd6d4554705abebd8d1896022acdbad217',
-                '0c58ee3034114eb620b8e598e02c74172a43e96a',
-                'ec87e2acda2b181fc7eb7c22d91e128c6d0434fc',
+                'f6e172c33bdacbc69bca9d32b2bd78174712a171',
                 '329ccf0cce42db4dc0ffa9f389c05ff7d75c1748',
-                'f6e172c33bdacbc69bca9d32b2bd78174712a171'
+                'ec87e2acda2b181fc7eb7c22d91e128c6d0434fc',
+                '0c58ee3034114eb620b8e598e02c74172a43e96a',
+                '1e1f41dd6d4554705abebd8d1896022acdbad217',
+                'add60ff0f6de4c703fa75725ada38fb37af065e6',
+                '2aba0e60054728f046d35315830bce9abc3c5249'
             ],
             'actions': [
                 {

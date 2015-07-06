@@ -32,9 +32,12 @@ public class PreviewUpdate extends PreviewAbstract {
         final Preparation preparation = getPreparation(input.getPreparationId());
         final String dataSetId = preparation.getDataSetId();
 
+        //Get steps from first transformation
+        final List<String> steps = preparation.getSteps();
+        steps.remove(0);
+        
         // extract actions by steps in chronological order, until defined last active step (from input)
         Map<String, Action> originalActions = new LinkedHashMap<>();
-        final List<String> steps = preparation.getSteps();
         final Iterator<Action> actions = getPreparationActions(preparation, input.getCurrentStepId()).iterator();
         steps.stream().filter(step -> actions.hasNext()).forEach(step -> originalActions.put(step, actions.next()));
 
@@ -50,7 +53,6 @@ public class PreviewUpdate extends PreviewAbstract {
 
         // get dataset content
         final InputStream content = getDatasetContent(dataSetId);
-
         // get usable tdpIds
         final String encodedTdpIds = serializeIds(input.getTdpIds());
 
