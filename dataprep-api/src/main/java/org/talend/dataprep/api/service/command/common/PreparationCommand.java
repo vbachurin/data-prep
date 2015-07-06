@@ -26,9 +26,9 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * A configuration to allow work from intermediate (cached) preparation content. If set to <b>true</b> and
      * preparation has:
      * <ul>
-     * <li>Root</li>
-     * <li>Step #1</li>
-     * <li>Step #2</li>
+     *     <li>Root</li>
+     *     <li>Step #1</li>
+     *     <li>Step #2</li>
      * </ul>
      * When user asks for content @ Step #2, a more efficient approach is to start from content @ Step #1 (iso. starting
      * over from Root).
@@ -96,25 +96,23 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     /**
-     * Serialize the actions to string and encode it to base 64
+     * Serialize the actions to string.
      *
      * @param stepActions - map of couple (stepId, action)
-     * @return the serialized and encoded actions
+     * @return the serialized actions
      */
-    protected String serialize(final Collection<Action> stepActions) throws JsonProcessingException {
-        final String serialized = "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions) + "}";
-        return encode(serialized);
+    protected String serializeActions(final Collection<Action> stepActions) throws JsonProcessingException {
+        return "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions) + "}";
     }
 
     /**
-     * Serialize the list of integer to string and encode it to base 64
-     *
+     * Serialize the list of integer to json string.
+     * 
      * @param listToEncode - list of integer to encode
      * @return the serialized and encoded list
      */
-    protected String serializeAndEncode(final List<Integer> listToEncode) throws JsonProcessingException {
-        final String serialized = getJsonWriter().writeValueAsString(listToEncode);
-        return encode(serialized);
+    protected String serializeIds(final List<Integer> listToEncode) throws JsonProcessingException {
+        return getJsonWriter().writeValueAsString(listToEncode);
     }
 
     /**
