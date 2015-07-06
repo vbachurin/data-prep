@@ -187,7 +187,7 @@
         /**
          * @ngdoc method
          * @name cancelPreview
-         * @param partial If true, we cancel pending preview but we do NOT restore the original data
+         * @param {boolean} partial If true, we cancel pending preview but we do NOT restore the original data
          * @methodOf data-prep.services.playground.service:PreviewService
          * @description Cancel the current preview or the pending preview (resolving the cancel promise).
          * The original records is set back into the datagrid

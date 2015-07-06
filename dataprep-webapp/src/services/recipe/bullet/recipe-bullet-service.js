@@ -42,7 +42,7 @@
         /**
          * @ngdoc method
          * @name toggleRecipe
-         * @methodOf data-prep.recipe.service:RecipeBulletService
+         * @methodOf data-prep.services.recipe.service:RecipeBulletService
          * @description Enable/disable the recipe.
          * When it is enabled, the last active step before disabling action is loaded
          */

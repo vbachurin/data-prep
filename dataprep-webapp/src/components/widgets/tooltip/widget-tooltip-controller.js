@@ -36,8 +36,8 @@
          * @ngdoc method
          * @name updatePosition
          * @methodOf talend.widget.controller:TalendTooltipCtrl
-         * @param horizontalPosition - {left: (number | string); right: (number | string)}
-         * @param verticalPosition - {top: (number | string); bottom: (number | string)}
+         * @param {object} horizontalPosition - {left: (number | string); right: (number | string)}
+         * @param {object} verticalPosition - {top: (number | string); bottom: (number | string)}
          * @description Change the position of the tooltip
          */
         vm.updatePosition = function(horizontalPosition, verticalPosition) {
