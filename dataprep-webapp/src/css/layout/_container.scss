@@ -57,6 +57,8 @@
 .flex-fixed {
   @include flex-grow(0);
   @include flex-shrink(0);
+  max-height: 300px;
+  overflow: auto;
 }
 
 .flex-flexible {
