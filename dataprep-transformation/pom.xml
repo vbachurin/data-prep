@@ -129,7 +129,7 @@
                         <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
                             <imageName>talend/${project.name}:${project.version}</imageName>
-                            <baseImage>tal-qa158.talend.lan:5000/talend/minijre:8</baseImage>
+                            <baseImage>talend-registry:5000/talend/minijre:8</baseImage>
                             <cmd><![CDATA[
                                 export PATH=/lib/tde/lib64:$PATH && java -Djna.library.path=/lib/tde/lib64 -Dspring.config.name=application_docker -jar /${project.build.finalName}.jar
                             ]]>
