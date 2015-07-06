@@ -8,19 +8,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
-import org.talend.dataprep.transformation.api.transformer.exporter.Exporter;
 import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.type.TransformerStepSelector;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 @Component("transformer#json")
 @Scope("request")
-public class JsonExporter implements Transformer, Exporter {
+public class JsonExporter implements Transformer {
 
     private final ParsedActions actions;
 
@@ -52,8 +50,4 @@ public class JsonExporter implements Transformer, Exporter {
         }
     }
 
-    @Override
-    public ExportType getExportType() {
-        return ExportType.JSON;
-    }
 }

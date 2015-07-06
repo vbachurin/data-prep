@@ -35,8 +35,12 @@ import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
-import org.talend.dataprep.transformation.api.transformer.exporter.ExportFactory;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvWriter;
+import org.talend.dataprep.transformation.api.transformer.exporter.json.JsonWriter;
+import org.talend.dataprep.transformation.api.transformer.exporter.tableau.TableauWriter;
+import org.talend.dataprep.transformation.api.transformer.exporter.xls.XlsWriter;
+import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 import org.talend.dataprep.transformation.api.transformer.json.DiffTransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformerFactory;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
@@ -67,10 +71,6 @@ public class TransformationService {
     @Autowired
     private DiffTransformerFactory diffFactory;
 
-    @Autowired
-    private ExportFactory transformerFactory;
-
-
     /**
      * Apply all <code>actions</code> to <code>content</code>. Actions is a Base64-encoded JSON list of
      * {@link ActionMetadata} with parameters.
@@ -91,7 +91,7 @@ public class TransformationService {
             HttpServletResponse response, //
             HttpServletRequest request) throws IOException {
         // A transformation is an export to JSON
-        export(ExportType.JSON, actions, content, response, request);
+        transform(ExportType.JSON, actions, content, response, request);
     }
 
 
@@ -109,7 +109,7 @@ public class TransformationService {
     @RequestMapping(value = "/export/{format}", method = POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Export the preparation applying the transformation", notes = "This operation export the input data transformed using the supplied actions in the provided format.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void export(@ApiParam(value = "Output format.") @PathVariable("format") final ExportType format, //
+    public void transform(@ApiParam(value = "Output format.") @PathVariable("format") final ExportType format, //
             @ApiParam(value = "Actions to perform on content.") @RequestPart(value = "actions", required = false) final Part actions, //
             @ApiParam(value = "Data set content as JSON.") @RequestPart(value = "content", required = false) final Part content, //
             final HttpServletResponse response, final HttpServletRequest request) {
@@ -131,20 +131,30 @@ public class TransformationService {
 
                 arguments.put(paramName, decodeParamValue);
             }
-            String decodedActions = "";
-            if (actions != null) {
-                decodedActions = IOUtils.toString(actions.getInputStream());
+            String decodedActions = IOUtils.toString(actions.getInputStream());
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            TransformerWriter writer;
+            switch (format) {
+                case CSV:
+                    writer = new CsvWriter(response.getOutputStream(), ',');
+                    break;
+                case XLS:
+                    writer = new XlsWriter(response.getOutputStream());
+                    break;
+                case TABLEAU:
+                    writer = new TableauWriter(response.getOutputStream());
+                    break;
+                case JSON:
+                    writer = new JsonWriter(mapper.writer().getFactory().createGenerator(response.getOutputStream()));
+                    break;
+                default:
+                    throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED);
             }
-            final ExportConfiguration configuration = ExportConfiguration.builder() //
-                    .args(arguments) //
-                    .format(format) //
-                    .actions(decodedActions) //
-                    .build();
-
             response.setContentType(format.getMimeType());
 
-            final Transformer transformer = transformerFactory.getTransformer(configuration);
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            TransformerConfiguration transformerConfiguration = TransformerConfiguration.builder().input(dataSet).output(writer).build();
+
+            final Transformer transformer = simpleFactory.get();
             transformer.transform(dataSet, response.getOutputStream());
         } catch(JsonMappingException e) {
             // Ignore (end of input)
