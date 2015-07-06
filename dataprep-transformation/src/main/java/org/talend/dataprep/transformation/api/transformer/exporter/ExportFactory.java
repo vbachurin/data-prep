@@ -1,12 +1,9 @@
 package org.talend.dataprep.transformation.api.transformer.exporter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
@@ -24,8 +21,12 @@ public class ExportFactory {
     @Autowired
     private ApplicationContext context;
 
-    public Transformer getExporter(final ExportConfiguration configuration) {
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
+
+    public Transformer getTransformer(final ExportConfiguration configuration) {
         final ParsedActions actionConsumer = parser.parse(configuration.getActions());
+
 
         switch (configuration.getFormat()) {
         case JSON:
@@ -39,20 +40,6 @@ public class ExportFactory {
         default:
             throw new UnsupportedOperationException("Unknown export type : " + configuration.getFormat());
         }
-    }
-
-    public List<ExportType> getExportTypes() {
-
-        String[] beansNames = context.getBeanNamesForType(Exporter.class);
-
-        List<ExportType> exportTypes = new ArrayList<>(beansNames.length);
-
-        for (String beanName : beansNames) {
-            exportTypes.add( ((Exporter) context.getBean(beanName, null, null)).getExportType());
-        }
-
-        return exportTypes;
-
     }
 
     public Transformer get(final Class<? extends Transformer> transformerClass, final ParsedActions actionConsumer,

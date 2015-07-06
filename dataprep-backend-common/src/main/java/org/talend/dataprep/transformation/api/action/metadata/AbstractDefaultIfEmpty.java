@@ -1,10 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
 public abstract class AbstractDefaultIfEmpty extends SingleColumnAction {
 
@@ -16,7 +14,7 @@ public abstract class AbstractDefaultIfEmpty extends SingleColumnAction {
     }
 
     @Override
-    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+    public DataSetRowAction create(Map<String, String> parameters) {
         return (row, context) -> {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);

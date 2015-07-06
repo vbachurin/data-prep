@@ -1,13 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
 @Component(TextClustering.ACTION_BEAN_PREFIX + TextClustering.TEXT_CLUSTERING)
 public class TextClustering extends AbstractDynamicAction {
@@ -35,7 +33,7 @@ public class TextClustering extends AbstractDynamicAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+    public DataSetRowAction create(Map<String, String> parameters) {
         return (row, context) -> {
             final String columnName = parameters.get(COLUMN_ID);
             final String value = row.get(columnName);

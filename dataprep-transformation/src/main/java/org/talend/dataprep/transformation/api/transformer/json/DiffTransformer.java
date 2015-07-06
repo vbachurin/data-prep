@@ -76,10 +76,10 @@ class DiffTransformer implements Transformer {
                     .output(JsonWriter.create(builder, output))
                     .indexes(indexes)
                     .preview(true)
-                    .recordActions(previousAction.getRowTransformer())
-                    .recordActions(newAction.getRowTransformer())
-                    .columnActions(previousAction.getMetadataTransformer())
-                    .columnActions(newAction.getMetadataTransformer())
+                    .recordActions(previousAction.asUniqueRowTransformer())
+                    .recordActions(newAction.asUniqueRowTransformer())
+                    .columnActions(previousAction.asUniqueMetadataTransformer())
+                    .columnActions(newAction.asUniqueMetadataTransformer())
                     .build();
             //@formatter:on
 

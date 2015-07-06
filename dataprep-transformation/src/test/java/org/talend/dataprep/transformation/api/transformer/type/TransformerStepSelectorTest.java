@@ -102,8 +102,8 @@ public class TransformerStepSelectorTest {
                     .input(dataSet)
                     .output(transformerWriter)
                     .preview(false)
-                    .recordActions(changeLastnameAction.getRowTransformer())
-                    .columnActions(changeLastnameAction.getMetadataTransformer())
+                    .recordActions(changeLastnameAction.asUniqueRowTransformer())
+                    .columnActions(changeLastnameAction.asUniqueMetadataTransformer())
                     .build();
             //@formatter:on
 
@@ -168,8 +168,8 @@ public class TransformerStepSelectorTest {
                     .input(dataSet)
                     .output(transformerWriter)
                     .preview(false)
-                    .recordActions(changeLastnameAction.getRowTransformer())
-                    .columnActions(changeLastnameAction.getMetadataTransformer())
+                    .recordActions(changeLastnameAction.asUniqueRowTransformer())
+                    .columnActions(changeLastnameAction.asUniqueMetadataTransformer())
                     .build();
             //@formatter:on
 
@@ -205,8 +205,8 @@ public class TransformerStepSelectorTest {
                     .output(transformerWriter) //
                     .indexes(indexes) //
                     .preview(true) //
-                    .recordActions(identityAction.getRowTransformer()) //
-                    .recordActions(getChangeNameAndDeleteAction.getRowTransformer()) //
+                    .recordActions(identityAction.asUniqueRowTransformer()) //
+                    .recordActions(getChangeNameAndDeleteAction.asUniqueRowTransformer()) //
                     .build();
 
             // when

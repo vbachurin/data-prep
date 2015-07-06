@@ -26,11 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class DiffTransformerFactory implements TransformerFactory {
 
-    //@formatter:off
-    /** No op parsed actions. */
-    private static final ParsedActions IDLE_CONSUMER = new ParsedActions((row, context) -> {}, (rowMetadata, context) -> {});
-    //@formatter:on
-
     /** The spring application context to use to get the DiffTransformer. */
     @Autowired
     private WebApplicationContext context;
@@ -64,8 +59,8 @@ public class DiffTransformerFactory implements TransformerFactory {
      * @return this factory.
      */
     public DiffTransformerFactory withActions(final String previousActions, String newActions) {
-        this.previousActions = previousActions == null ? IDLE_CONSUMER : parser.parse(previousActions);
-        this.newActions = newActions == null ? IDLE_CONSUMER : parser.parse(newActions);
+        this.previousActions = previousActions == null ? ActionParser.IDLE_CONSUMER : parser.parse(previousActions);
+        this.newActions = newActions == null ? ActionParser.IDLE_CONSUMER : parser.parse(newActions);
         return this;
     }
 

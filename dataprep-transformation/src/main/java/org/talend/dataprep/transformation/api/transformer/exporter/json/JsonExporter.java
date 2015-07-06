@@ -43,8 +43,8 @@ public class JsonExporter implements Transformer, Exporter {
             // Create configuration
             final TransformerConfiguration configuration = from(input) //
                     .output(JsonWriter.create(builder, output)) //
-                    .recordActions(actions.getRowTransformer()) //
-                    .columnActions(actions.getMetadataTransformer()) //
+                    .recordActions(actions.asUniqueRowTransformer()) //
+                    .columnActions(actions.asUniqueMetadataTransformer()) //
                     .build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {

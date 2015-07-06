@@ -3,15 +3,13 @@ package org.talend.dataprep.transformation.api.action.metadata;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
@@ -64,7 +62,7 @@ public class CopyColumn extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+    public DataSetRowAction create(Map<String, String> parameters) {
         String columnName = parameters.get(COLUMN_ID);
 
         return (row, context) -> {
@@ -81,7 +79,7 @@ public class CopyColumn extends SingleColumnAction {
      * @see ActionMetadata#createMetadataClosure(Map)
      */
     @Override
-    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
+    public DataSetMetadataAction createMetadataClosure(Map<String, String> parameters) {
 
         return (rowMetadata, context) -> {
 

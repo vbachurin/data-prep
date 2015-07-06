@@ -3,6 +3,9 @@ package org.talend.dataprep.api.preparation;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+@JsonRootName("action")
 public class Action {
 
     private String action;

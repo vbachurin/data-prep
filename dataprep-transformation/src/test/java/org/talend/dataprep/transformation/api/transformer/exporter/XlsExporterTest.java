@@ -47,7 +47,7 @@ public class XlsExporterTest {
 
         // given
         final ExportConfiguration configuration = ExportConfiguration.builder().format(ExportType.XLS).actions("").build();
-        final Transformer exporter = factory.getExporter(configuration);
+        final Transformer exporter = factory.getTransformer(configuration);
 
         final InputStream inputStream = ExportFactory.class.getResourceAsStream("export_dataset.json");
 

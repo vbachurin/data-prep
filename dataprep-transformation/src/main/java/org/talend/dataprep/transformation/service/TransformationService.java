@@ -68,7 +68,7 @@ public class TransformationService {
     private DiffTransformerFactory diffFactory;
 
     @Autowired
-    private ExportFactory exportFactory;
+    private ExportFactory transformerFactory;
 
 
     /**
@@ -109,22 +109,12 @@ public class TransformationService {
     @RequestMapping(value = "/export/{format}", method = POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Export the preparation applying the transformation", notes = "This operation export the input data transformed using the supplied actions in the provided format.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void export(@ApiParam(value = "Output format.")
-    @PathVariable("format")
-    final ExportType format, //
-            @ApiParam(value = "Actions to perform on content.")
-            @RequestPart(value = "actions", required = false)
-            final Part actions, //
-            @ApiParam(value = "Data set content as JSON.")
-            @RequestPart(value = "content", required = false)
-            final Part content, //
+    public void export(@ApiParam(value = "Output format.") @PathVariable("format") final ExportType format, //
+            @ApiParam(value = "Actions to perform on content.") @RequestPart(value = "actions", required = false) final Part actions, //
+            @ApiParam(value = "Data set content as JSON.") @RequestPart(value = "content", required = false) final Part content, //
             final HttpServletResponse response, final HttpServletRequest request) {
         final ObjectMapper mapper = builder.build();
-
-        try {
-
-            JsonParser parser = mapper.getFactory().createParser(content.getInputStream());
-
+        try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
             Map<String, Object> arguments = new HashMap<>();
             final Enumeration<String> names = request.getParameterNames();
             while(names.hasMoreElements()){
@@ -153,7 +143,7 @@ public class TransformationService {
 
             response.setContentType(format.getMimeType());
 
-            final Transformer transformer = exportFactory.getExporter(configuration);
+            final Transformer transformer = transformerFactory.getTransformer(configuration);
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             transformer.transform(dataSet, response.getOutputStream());
         } catch(JsonMappingException e) {
@@ -298,8 +288,8 @@ public class TransformationService {
     @ApiOperation(value = "Get the available export types")
     @Timed
     public void exportTypes(final HttpServletResponse response) {
-        List<ExportType> exportTypes = exportFactory.getExportTypes();
-        exportTypes.remove(ExportType.JSON);
+        List<ExportType> exportTypes = new ArrayList<>(Arrays.asList(ExportType.values()));
+        exportTypes.remove(ExportType.JSON); // Don't expose JSON to external callers.
         try {
             builder.build() //
                     .writer() //

@@ -43,8 +43,8 @@ public class CsvExporter implements Transformer, Exporter {
         try {
             final TransformerConfiguration configuration = from(input) //
                     .output(new CsvWriter(output, csvSeparator )) //
-                    .columnActions(actions.getMetadataTransformer() ) //
-                .recordActions(actions.getRowTransformer()) //
+                    .columnActions(actions.asUniqueMetadataTransformer() ) //
+                .recordActions(actions.asUniqueRowTransformer()) //
                     .build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {

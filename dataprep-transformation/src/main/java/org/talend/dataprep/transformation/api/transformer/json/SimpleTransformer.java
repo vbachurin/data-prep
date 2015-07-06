@@ -60,8 +60,8 @@ class SimpleTransformer implements Transformer {
             final TransformerConfiguration configuration = from(input)
                     .output(JsonWriter.create(builder, output))
                     .preview(false)
-                    .recordActions(actions.getRowTransformer())
-                    .columnActions(actions.getMetadataTransformer())
+                    .recordActions(actions.asUniqueRowTransformer())
+                    .columnActions(actions.asUniqueMetadataTransformer())
                     .build();
             //@formatter:on
 

@@ -38,8 +38,8 @@ public class TableauExporter implements Transformer, Exporter {
         try {
             final TransformerConfiguration configuration = from(input)
                     .output(new TableauWriter(output)) //
-                    .recordActions(actions.getRowTransformer()) //
-                    .columnActions(actions.getMetadataTransformer()) //
+                    .recordActions(actions.asUniqueRowTransformer()) //
+                    .columnActions(actions.asUniqueMetadataTransformer()) //
                     .build();
             typeStateSelector.process(configuration);
         } catch (IOException e) {

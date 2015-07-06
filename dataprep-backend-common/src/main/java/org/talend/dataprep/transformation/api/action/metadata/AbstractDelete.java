@@ -1,10 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
 /**
  * Abstract class used as base class for delete actions.
@@ -23,7 +21,7 @@ public abstract class AbstractDelete extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+    public DataSetRowAction create(Map<String, String> parameters) {
         return (row, context) -> {
             String columnId = parameters.get(COLUMN_ID);
             String value = row.get(columnId);

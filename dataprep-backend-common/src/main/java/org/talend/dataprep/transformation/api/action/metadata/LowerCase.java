@@ -1,13 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
 /**
  * Lower case a column in a dataset row.
@@ -38,7 +36,7 @@ public class LowerCase extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
+    public DataSetRowAction create(Map<String, String> parameters) {
         return (row, context) -> {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);

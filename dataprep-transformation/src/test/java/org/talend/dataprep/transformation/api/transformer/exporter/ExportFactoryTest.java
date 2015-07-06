@@ -47,7 +47,7 @@ public class ExportFactoryTest {
                 .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json"))).build();
 
         // when
-        final Transformer exporter = factory.getExporter(configuration);
+        final Transformer exporter = factory.getTransformer(configuration);
 
         // then
         assertThat(exporter).isInstanceOf(CsvExporter.class);
@@ -60,7 +60,7 @@ public class ExportFactoryTest {
         arguments.put("exportParameters.csvSeparator", ";");
         final ExportConfiguration configuration = ExportConfiguration.builder().args(arguments).format(CSV)
                 .actions(IOUtils.toString(ExportFactory.class.getResourceAsStream("upper_case_firstname.json"))).build();
-        final Transformer exporter = factory.getExporter(configuration);
+        final Transformer exporter = factory.getTransformer(configuration);
         final String expectedCsv = IOUtils.toString(ExportFactory.class
                 .getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
 
