@@ -12,6 +12,7 @@
      * @requires data-prep.preparation-list
      * @requires data-prep.services.dataset
      * @requires data-prep.services.utils
+     * @requires data-prep.services.uploadWorkflowService
      */
     angular.module('data-prep.home', [
         'talend.widget',
@@ -20,6 +21,7 @@
         'data-prep.playground',
         'data-prep.preparation-list',
         'data-prep.services.dataset',
-        'data-prep.services.utils'
+        'data-prep.services.utils',
+        'data-prep.services.uploadWorkflowService'
     ]);
 })();

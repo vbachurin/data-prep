@@ -12,7 +12,7 @@
         /**
          * @ngdoc property
          * @name currentMetadata
-         * @propertyOf data-prep.services.dataset.service:DatasetPreviewService
+         * @propertyOf data-prep.services.dataset.service:DatasetSheetPreviewService
          * @description The current metadata to preview
          * @type {Object}
          */
@@ -21,7 +21,7 @@
         /**
          * @ngdoc property
          * @name selectedSheetName
-         * @propertyOf data-prep.services.dataset.service:DatasetPreviewService
+         * @propertyOf data-prep.services.dataset.service:DatasetSheetPreviewService
          * @description The loaded sheet name
          * @type {Object}
          */
@@ -30,7 +30,7 @@
         /**
          * @ngdoc property
          * @name grid
-         * @propertyOf data-prep.services.dataset.service:DatasetPreviewService
+         * @propertyOf data-prep.services.dataset.service:DatasetSheetPreviewService
          * @description The Slickgrid that will contains the data
          * @type {Object}
          */
@@ -39,7 +39,7 @@
         /**
          * @ngdoc property
          * @name showModal
-         * @propertyOf data-prep.services.dataset.service:DatasetPreviewService
+         * @propertyOf data-prep.services.dataset.service:DatasetSheetPreviewService
          * @description The flag that display preview modal
          * @type {boolean}
          */
@@ -48,7 +48,7 @@
         /**
          * @ngdoc method
          * @name display
-         * @methodOf data-prep.services.dataset.service:DatasetPreviewService
+         * @methodOf data-prep.services.dataset.service:DatasetSheetPreviewService
          * @description Set the display flag to true
          */
         this.display = function() {
@@ -58,7 +58,7 @@
         /**
          * @ngdoc method
          * @name resetGrid
-         * @methodOf data-prep.services.dataset.service:DatasetPreviewService
+         * @methodOf data-prep.services.dataset.service:DatasetSheetPreviewService
          * @description Remove all grid content
          */
         var resetGrid = function() {
@@ -69,8 +69,8 @@
         /**
          * @ngdoc method
          * @name setGridData
-         * @methodOf data-prep.services.dataset.service:DatasetPreviewService
-         * @param data The new data containing columns and records
+         * @methodOf data-prep.services.dataset.service:DatasetSheetPreviewService
+         * @param {object} data The new data containing columns and records
          * @description Set new grid content
          */
         var setGridData = function(data) {
@@ -93,8 +93,8 @@
         /**
          * @ngdoc method
          * @name loadPreview
-         * @methodOf data-prep.services.dataset.service:DatasetPreviewService
-         * @param metadata The dataset metadata to load
+         * @methodOf data-prep.services.dataset.service:DatasetSheetPreviewService
+         * @param {object} metadata The dataset metadata to load
          * @description Set the metadata containing the dataset sheets, and get the preview of the default (last) selected sheet
          */
         this.loadPreview = function(metadata) {
@@ -111,8 +111,8 @@
         /**
          * @ngdoc method
          * @name loadSheet
-         * @methodOf data-prep.services.dataset.service:DatasetPreviewService
-         * @param sheetName The sheet name to load on the current dataset
+         * @methodOf data-prep.services.dataset.service:DatasetSheetPreviewService
+         * @param {string} sheetName The sheet name to load on the current dataset
          * @description Get and load the sheet preview
          */
         this.loadSheet = function(sheetName) {
@@ -126,8 +126,8 @@
         /**
          * @ngdoc method
          * @name setDatasetSheet
-         * @methodOf data-prep.services.dataset.service:DatasetPreviewService
-         * @param sheetName The sheet name to set in the dataset
+         * @methodOf data-prep.services.dataset.service:DatasetSheetPreviewService
+         * @param {string} sheetName The sheet name to set in the dataset
          * @description Select a sheet in the current dataset. We update the metadata
          */
         this.setDatasetSheet = function(sheetName) {
