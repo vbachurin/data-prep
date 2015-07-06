@@ -17,7 +17,7 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.PreparationRepository;
 
 @Component
-@ConditionalOnProperty(name = "preparation.store", havingValue = "in-memory")
+@ConditionalOnProperty(name = "preparation.store", havingValue = "in-memory", matchIfMissing = true)
 public class InMemoryPreparationRepository implements PreparationRepository {
 
     private final Map<String, Identifiable> store = new HashMap<>();

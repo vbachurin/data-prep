@@ -8,9 +8,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PreparationActions extends Identifiable {
 
