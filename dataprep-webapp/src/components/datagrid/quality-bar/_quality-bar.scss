@@ -73,6 +73,7 @@
 
   .record-unknown {
     @extend .sub-bar;
+    width: 100%;
     background-color: $unknown-color;
 
     &:hover {

@@ -359,8 +359,8 @@ public class DataPreparationAPITest {
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
         assertThat(steps.size(), is(2));
-        assertThat(steps.get(0), is("96f62093552b1803eefb6790cf66d12aee0f2211"));
-        assertThat(steps.get(1), is(ROOT_STEP.id()));
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
+        assertThat(steps.get(1), is("96f62093552b1803eefb6790cf66d12aee0f2211"));
     }
 
     @Test
@@ -372,9 +372,9 @@ public class DataPreparationAPITest {
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
-        assertThat(steps.get(0), is("3dbbab224c7ef6352c6ab2e48f6af29322dee932")); // <- upper_case_2
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("4e3b0c1e2f2ee1e399f3f8bd8092fe0f2f74e690")); // <- upper_case_1
-        assertThat(steps.get(2), is(ROOT_STEP.id()));
+        assertThat(steps.get(2), is("3dbbab224c7ef6352c6ab2e48f6af29322dee932")); // <- upper_case_2
 
         // when : Update first action (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
         final String actionContent3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("lower_case_1.json"));
@@ -385,9 +385,9 @@ public class DataPreparationAPITest {
         // then : Steps id should have changed due to update
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
-        assertThat(steps.get(0), is("0047ac44eb97d99115bd6c45c5efe9def7104ac7"));
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("b85406721e33024bcadecd98b9b7d87465113a5a"));
-        assertThat(steps.get(2), is(ROOT_STEP.id()));
+        assertThat(steps.get(2), is("0047ac44eb97d99115bd6c45c5efe9def7104ac7"));
     }
 
     @Test
@@ -420,24 +420,27 @@ public class DataPreparationAPITest {
         // then
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(2));
-        assertThat(steps.get(1), is(ROOT_STEP.id()));
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
+
         // Cache is lazily populated
         assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
         assertThat(cache.has(preparationId, steps.get(0)), is(false));
         assertThat(cache.has(preparationId, steps.get(1)), is(false));
+
         // Request preparation content at different versions (preparation has 2 steps -> Root + Upper Case).
         assertThat(when().get("/api/preparations/{id}/content", preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=head", preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=" + steps.get(0), preparationId).asString(),
-                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
-        assertThat(when().get("/api/preparations/{id}/content?version=" + steps.get(1), preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
+        assertThat(when().get("/api/preparations/{id}/content?version=" + steps.get(1), preparationId).asString(),
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=origin", preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=" + ROOT_STEP.id(), preparationId).asString(),
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
+
         // After all these preparation get content, cache should be populated with content
         assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
         assertThat(cache.has(preparationId, steps.get(0)), is(true));
@@ -475,11 +478,13 @@ public class DataPreparationAPITest {
 
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
+        final String firstActionStep = steps.get(1);
+        final String lastStep = steps.get(steps.size() - 1);
 
         final String input = "{" //
                 + "   \"preparationId\": \"" + preparationId + "\",\n" //
-                + "   \"currentStepId\": \"" + steps.get(2) + "\",\n" // action 1
-                + "   \"previewStepId\": \"" + steps.get(0) + "\",\n" // action 1 + 2 + 3
+                + "   \"currentStepId\": \"" + firstActionStep + "\",\n" // action 1
+                + "   \"previewStepId\": \"" + lastStep + "\",\n" // action 1 + 2 + 3
                 + "   \"tdpIds\": [1, 3, 5]" //
                 + "}";
 
@@ -504,11 +509,12 @@ public class DataPreparationAPITest {
 
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
+        final String lastStep = steps.get(steps.size() - 1);
 
         final String input = "{" //
                 + "   \"preparationId\": \"" + preparationId + "\",\n" //
-                + "   \"currentStepId\": \"" + steps.get(0) + "\",\n" // action 1 + 2 + 3
-                + "   \"updateStepId\": \"" + steps.get(0) + "\",\n" // action 3
+                + "   \"currentStepId\": \"" + lastStep + "\",\n" // action 1 + 2 + 3
+                + "   \"updateStepId\": \"" + lastStep + "\",\n" // action 3
                 + "   \"tdpIds\": [1, 3, 5]," //
                 + "   \"action\": {" //
                 + "       \"action\": \"delete_on_value\",\n"//
@@ -560,10 +566,11 @@ public class DataPreparationAPITest {
 
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
+        final String firstActionStep = steps.get(1);
 
         // when
         final String export = given().formParam("exportType", CSV).formParam("preparationId", preparationId)
-                .formParam("stepId", steps.get(2)).when().get("/api/export").asString();
+                .formParam("stepId", firstActionStep).when().get("/api/export").asString();
 
         // then
         assertEquals(expectedExport, export);

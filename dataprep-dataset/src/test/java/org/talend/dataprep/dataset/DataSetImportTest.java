@@ -81,7 +81,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -120,7 +120,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -161,7 +161,7 @@ public class DataSetImportTest {
         // Create a data set (asynchronously)
         Runnable creation = () -> {
             try {
-                dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("tagada.csv")))
+                dataSetId = given().body(IOUtils.toString(DataSetImportTest.class.getResourceAsStream("tagada.csv")))
                         .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
             } catch (IOException e) {
                 throw new RuntimeException(e);

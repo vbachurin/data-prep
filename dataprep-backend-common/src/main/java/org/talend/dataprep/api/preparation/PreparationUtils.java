@@ -64,7 +64,7 @@ public class PreparationUtils {
         if (step == null) {
             return;
         }
-        versions.add(step.id());
+        versions.add(0, step.id());
         if (limit.equals(step.getId())) {
             return;
         }

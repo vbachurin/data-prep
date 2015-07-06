@@ -60,20 +60,22 @@ public class TransformationServiceTests {
 
     @Test
     public void emptyTransformation() {
-        when().post("/transform").then().statusCode(HttpStatus.OK.value());
+        given().multiPart("content", "").when().post("/transform").then().statusCode(HttpStatus.OK.value());
     }
 
     @Test
     public void noAction() throws Exception {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when().post("/transform").asString();
+        String transformedContent = given().multiPart("actions", "").multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(initialContent, transformedContent, false);
     }
 
     @Test
     public void noActionWithCarrierReturn() throws Exception {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("carrierReturn.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when().post("/transform").asString();
+        String transformedContent = given().multiPart("actions", "").multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(initialContent, transformedContent, false);
     }
 
@@ -82,8 +84,8 @@ public class TransformationServiceTests {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("action1.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1_action1.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when()
-                .post("/transform?actions=" + encode(actions)).asString();
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -92,14 +94,14 @@ public class TransformationServiceTests {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("action2.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test1_action2.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when()
-                .post("/transform?actions=" + encode(actions)).asString();
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
     @Test
     public void testInvalidJSONInput() throws Exception {
-        given().contentType(JSON).body("invalid content on purpose.").when().post("/transform").then().statusCode(400)
+        given().multiPart("content", "invalid content on purpose.").when().post("/transform").then().statusCode(400)
                 .content("code", is("TDP_TS_UNABLE_TO_PARSE_JSON"));
     }
 
@@ -110,8 +112,8 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_fillEmptyWithDefaultAction.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when()
-                .post("/transform?actions=" + encode(actions)).asString();
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -122,8 +124,8 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_fillEmptyWithDefaultBooleanAction.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when()
-                .post("/transform?actions=" + encode(actions)).asString();
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -134,8 +136,8 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_fillEmptyWithDefaultIntegerAction.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when()
-                .post("/transform?actions=" + encode(actions)).asString();
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -145,8 +147,8 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils
                 .toString(TransformationServiceTests.class.getResourceAsStream("test3_negateAction.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when()
-                .post("/transform?actions=" + encode(actions)).asString();
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -155,8 +157,8 @@ public class TransformationServiceTests {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("cutAction.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test4.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test4_cutAction.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when()
-                .post("/transform?actions=" + encode(actions)).asString();
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -166,8 +168,8 @@ public class TransformationServiceTests {
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));
         String expectedContent = IOUtils.toString(TransformationServiceTests.class
                 .getResourceAsStream("test3_deleteEmptyAction.json"));
-        String transformedContent = given().contentType(JSON).body(initialContent).when()
-                .post("/transform?actions=" + encode(actions)).asString();
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
         assertEquals(expectedContent, transformedContent, false);
     }
 
@@ -251,11 +253,11 @@ public class TransformationServiceTests {
 
         final String oldActions = getSingleTransformation();
         final String newActions = getMultipleTransformation();
-        final String indexes = "WzEsMyw1XQ=="; // [1,3,5] Base64 encoded
+        final String indexes = "[1,3,5]";
 
         // when
-        final Response post = given().contentType(JSON).body(datasetContent).when()
-                .post("/transform/preview?oldActions=" + oldActions + "&newActions=" + newActions + "&indexes=" + indexes);
+        final Response post = given().multiPart("oldActions", oldActions).multiPart("newActions", newActions)
+                .multiPart("indexes", indexes).multiPart("content", datasetContent).when().post("/transform/preview");
         final String response = post.asString();
 
         // then
@@ -280,19 +282,11 @@ public class TransformationServiceTests {
     }
 
     private String getSingleTransformation() {
-        /**
-         * {"actions": [ { "action": "uppercase", "parameters":{ "column_id": "lastname" } } ]}
-         */
-        return "eyJhY3Rpb25zIjogWyB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ICJsYXN0bmFtZSIgfSB9IF19";
+        return "{\"actions\": [ { \"action\": \"uppercase\", \"parameters\":{ \"column_id\": \"lastname\" } } ]}";
     }
 
     private String getMultipleTransformation() {
-        /**
-         * {"actions": [ { "action": "uppercase", "parameters":{ "column_id": "lastname" } }, { "action": "uppercase",
-         * "parameters":{ "column_id": "firstname" } }, { "action": "delete_on_value", "parameters":{ "column_id":
-         * "city", "value": "Columbia" } } ]}
-         */
-        return "eyJhY3Rpb25zIjogWyB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ICJsYXN0bmFtZSIgfSB9LCB7ICJhY3Rpb24iOiAidXBwZXJjYXNlIiwicGFyYW1ldGVycyI6eyAiY29sdW1uX2lkIjogImZpcnN0bmFtZSIgfSB9LCB7ICJhY3Rpb24iOiAiZGVsZXRlX29uX3ZhbHVlIiwgInBhcmFtZXRlcnMiOnsgImNvbHVtbl9pZCI6ImNpdHkiLCAidmFsdWUiOiAiQ29sdW1iaWEiIH0gfSBdfQ==";
+        return "{\"actions\": [ { \"action\": \"uppercase\", \"parameters\":{ \"column_id\": \"lastname\" } }, { \"action\": \"uppercase\",\"parameters\":{ \"column_id\": \"firstname\" } }, { \"action\": \"delete_on_value\", \"parameters\":{ \"column_id\":\"city\", \"value\": \"Columbia\" } } ]}";
     }
 
 }

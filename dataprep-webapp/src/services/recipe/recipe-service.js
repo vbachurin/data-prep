@@ -302,12 +302,11 @@
                 .then(function(resp) {
                     //steps ids are in reverse order and the last is the 'no-transformation' id
                     var steps = resp.data.steps.slice(0);
-                    var initialStepId = steps.pop();
+                    var initialStepId = steps.shift();
                     initialState = {transformation: {stepId: initialStepId}};
 
                     var oldRecipe = recipe;
                     var newRecipe = _.chain(steps)
-                        .reverse()
                         .zip(resp.data.actions, resp.data.metadata)
                         .map(createItem)
                         .value();

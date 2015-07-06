@@ -38,7 +38,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * deserialization to fail).
      * </p>
      */
-    private  static final boolean ALLOW_WORK_FROM_CACHE = false;
+    private static final boolean ALLOW_WORK_FROM_CACHE = false;
 
     @Autowired
     protected Jackson2ObjectMapperBuilder builder;
@@ -52,7 +52,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Call Preparation Service to get preparation details
-     * 
+     *
      * @param preparationId - the preparation id
      * @return the resulting Json node object
      * @throws java.io.IOException
@@ -86,7 +86,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
     /**
      * Get dataset records
-     * 
+     *
      * @param dataSetId - the dataset id
      * @return the resulting input stream records
      */
@@ -96,30 +96,28 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     /**
-     * Serialize the actions to string and encode it to base 64
+     * Serialize the actions to string.
      *
      * @param stepActions - map of couple (stepId, action)
-     * @return the serialized and encoded actions
+     * @return the serialized actions
      */
-    protected String serialize(final Collection<Action> stepActions) throws JsonProcessingException {
-        final String serialized = "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions) + "}";
-        return encode(serialized);
+    protected String serializeActions(final Collection<Action> stepActions) throws JsonProcessingException {
+        return "{\"actions\": " + getJsonWriter().writeValueAsString(stepActions) + "}";
     }
 
     /**
-     * Serialize the list of integer to string and encode it to base 64
+     * Serialize the list of integer to json string.
      * 
      * @param listToEncode - list of integer to encode
      * @return the serialized and encoded list
      */
-    protected String serializeAndEncode(final List<Integer> listToEncode) throws JsonProcessingException {
-        final String serialized = getJsonWriter().writeValueAsString(listToEncode);
-        return encode(serialized);
+    protected String serializeIds(final List<Integer> listToEncode) throws JsonProcessingException {
+        return getJsonWriter().writeValueAsString(listToEncode);
     }
 
     /**
      * Encode the string to base 64
-     * 
+     *
      * @param toEncode The string to encode
      * @return the encoded string
      */
@@ -132,12 +130,12 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
                 + "/actions/" + stepId);
         try {
             InputStream content = client.execute(actionsRetrieval).getEntity().getContent();
-            List<List<Action>> actions = builder.build().reader(new TypeReference<List<List<Action>>>() {
-            }).readValue(content);
-            List<Action> allActions = new ArrayList<>();
-            actions.forEach(allActions::addAll);
-            Collections.reverse(allActions);
-            return allActions;
+            List<Action> actions = builder
+                    .build()
+                    .reader(new TypeReference<List<Action>>() {
+                    })
+                    .readValue(content);
+            return actions;
         } finally {
             actionsRetrieval.releaseConnection();
         }
@@ -154,7 +152,8 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         final Preparation preparation = getPreparation(preparationId);
         String version = stepId;
         if ("head".equals(stepId)) {
-            version = preparation.getSteps().get(0);
+            int lastIndex = preparation.getSteps().size() - 1;
+            version = preparation.getSteps().get(lastIndex);
         } else if ("origin".equals(version)) {
             version = Step.ROOT_STEP.id();
         }
