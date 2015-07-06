@@ -15,10 +15,12 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
+     * @requires data-prep.services.uploadWorkflowService
      */
-    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService) {
+    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService) {
         var vm = this;
         vm.datasetService = DatasetService;
+        vm.uploadWorkflowService = UploadWorkflowService;
 
         /**
          * @ngdoc method

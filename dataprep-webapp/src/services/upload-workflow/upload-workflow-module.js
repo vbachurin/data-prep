@@ -3,7 +3,7 @@
 
 	/**
 	 * @ngdoc object
-	 * @name data-prep.services.uploadworkflow
+	 * @name data-prep.services.upload-workflow
 	 * @description This module contains the services to manage uploaded datasets
 	 * @requires data-prep.services.dataset
 	 * @requires data-prep.services.utils
