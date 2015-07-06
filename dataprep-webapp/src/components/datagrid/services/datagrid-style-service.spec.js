@@ -151,7 +151,7 @@ describe('Datagrid style service', function () {
     });
 
     describe('on active cell changed event', function () {
-        it('should set selected column class', inject(function (DatagridStyleService) {
+        it('should set "selected" column class', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
             var args = {cell: 1};
@@ -267,10 +267,11 @@ describe('Datagrid style service', function () {
         it('should NOT set "selected" class without active cell', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
+            DatagridStyleService.resetColumnStyles();
             assertColumnsHasNoStyles();
 
             var isPreview = false;
-            gridMock.initActiveCellMock({});
+            gridMock.initActiveCellMock();
 
             //when
             DatagridStyleService.manageColumnStyle(isPreview);
