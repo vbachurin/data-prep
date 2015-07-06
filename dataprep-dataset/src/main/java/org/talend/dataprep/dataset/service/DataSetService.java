@@ -589,6 +589,7 @@ public class DataSetService {
             if (unset) {// unset the favorites
                 if (userData != null) {
                     userData.getFavoritesDatasets().remove(dataSetId);
+                    userDataRepository.setUserData(userData);
                 }// no user data for this user so nothing to unset
             } else {// set the favorites
                 if (userData == null) {// let's create a new UserData
