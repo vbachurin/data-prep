@@ -12,13 +12,17 @@ import org.apache.commons.collections.IteratorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import com.google.common.base.Defaults;
 
+@Component
+@ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "in-memory", matchIfMissing = true)
 public class InMemoryDataSetMetadataRepository implements DataSetMetadataRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(InMemoryDataSetMetadataRepository.class);
@@ -39,9 +43,9 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
     }
 
     /**
-     * this nullifie and reset transient values that are supposed not to be stored
+     * this nullifies and resets transient values that are supposed not to be stored
      * 
-     * @param zeObject
+     * @param zeObject The object where non transient fields will be nullified.
      */
     void resetTransientValues(@Nullable Object zeObject) {
         if (zeObject != null) {

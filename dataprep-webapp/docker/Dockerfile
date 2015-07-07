@@ -1,12 +1,16 @@
-FROM fedora/apache:latest
+FROM talend-registry:5000/talend/miningnix:1.8
+
+RUN apk --update add bash
 
 # copy the script that will init host:port of api rest service
 COPY docker/init_docker.sh /init_docker.sh
-RUN chmod +x init_docker.sh
+#RUN chmod +x init_docker.sh
 
-# copy source of web-app to web server 
-COPY dist /var/www/html
+# override the nginx default conf
+ADD nginx.conf /etc/nginx/conf/nginx.conf
+
+# copy source of web-app to web server
+COPY dist /etc/nginx/html
 
 # this script will init host:port of api service AND start the apache service
-CMD /init_docker.sh
-
+CMD ["/init_docker.sh","&","nginx", "-g", "daemon off;"]

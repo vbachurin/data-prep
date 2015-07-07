@@ -13,7 +13,8 @@
         var grid;
 
         return {
-            init: init
+            init: init,
+            updateSuggestionPanel: updateSuggestionPanel
         };
 
         //--------------------------------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@ describe('Datagrid directive', function() {
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile, DatagridGridService, DatagridColumnService, DatagridSizeService, DatagridStyleService) {
+    beforeEach(inject(function($rootScope, $compile, DatagridGridService, DatagridColumnService, DatagridSizeService, DatagridStyleService, DatagridExternalService) {
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<datagrid></datagrid>');
@@ -33,6 +33,7 @@ describe('Datagrid directive', function() {
         spyOn(DatagridStyleService, 'manageColumnStyle').and.returnValue();
         spyOn(DatagridStyleService, 'resetCellStyles').and.returnValue();
         spyOn(DatagridStyleService, 'resetColumnStyles').and.returnValue();
+        spyOn(DatagridExternalService, 'updateSuggestionPanel').and.returnValue();
     }));
 
     afterEach(function() {
@@ -89,6 +90,19 @@ describe('Datagrid directive', function() {
             //then
             expect(grid.invalidate).toHaveBeenCalled();
         });
+
+        it('should update suggestion panel when a column is selected', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
+            //given
+            var selectedColumn = {id: '0001'};
+            spyOn(DatagridStyleService, 'selectedColumn').and.returnValue(selectedColumn);
+
+            //when
+            DatagridService.data = {};
+            scope.$digest();
+
+            //then
+            expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(selectedColumn);
+        }));
     });
 
     describe('on metadata change', function() {

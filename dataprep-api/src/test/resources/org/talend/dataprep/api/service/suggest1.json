@@ -170,7 +170,7 @@
         "type": "string",
         "description": "The new column name",
         "label": "New name",
-        "default": ""
+        "default": "firstname"
       }
     ],
     "description": "Rename this column",

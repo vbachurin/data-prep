@@ -119,4 +119,16 @@ public interface ActionMetadata {
         return false;
     }
 
+    /**
+     * Adapts the current action metadata to the column. This method may return <code>this</code> if no action specific
+     * change should be done. It may return a different instance with information from column (like a default value
+     * inferred from column's name).
+     * 
+     * @param column A {@link ColumnMetadata column} information.
+     * @return <code>this</code> if no change is required or a new action metadata with information extracted from
+     * <code>column</code>.
+     */
+    default ActionMetadata adapt(ColumnMetadata column) {
+        return this;
+    }
 }

@@ -1,7 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 import static org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction.COLUMN_ID;
 
@@ -13,6 +14,7 @@ import java.util.function.BiConsumer;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
@@ -44,6 +46,13 @@ public class TextClusteringTest {
         // then
         rows.stream().map((row) -> row.get("uglystate"))
                 .forEach((uglystate) -> Assertions.assertThat(uglystate).isEqualTo("Tata"));
+    }
+
+    @Test
+    public void testAdapt() throws Exception {
+        assertThat(textClustering.adapt(null), is(textClustering));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(textClustering.adapt(column), is(textClustering));
     }
 
     @Test

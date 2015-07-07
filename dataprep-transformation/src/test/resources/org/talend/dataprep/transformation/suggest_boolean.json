@@ -88,7 +88,7 @@
             "type": "string",
             "description": "The new column name",
             "label": "New name",
-            "default": ""
+            "default": "id"
          }
       ],
       "description": "Rename this column",
