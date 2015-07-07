@@ -1,7 +1,7 @@
 #! /bin/bash
 
-LOCATION='/var/www/html/scripts'
-
+LOCATION='/etc/nginx/html/scripts'
+NGINX_CONF_LOCATION='/etc/nginx/conf'
 # improve following to support ipv6
 IP_ADDRESS_REGEX='[0-9\.]*'
 PORT_REGEX='[0-9]*'
@@ -15,6 +15,12 @@ JS_FILE=`ls "$LOCATION"/app*`
 JS_FILE_BACKUP=$JS_FILE.orig
 echo 'file to patch=<'$JS_FILE'>'
 
+# replace default nginx conf to get gzip on
+CONF_FILE=$NGINX_CONF_LOCATION/nginx.conf
+CONF_BACKUP=$CONF_FILE.orig
+cp $CONF_FILE $CONF_BACKUP
+sed "s|#gzip  on;|gzip  on;|g" $CONF_BACKUP > $CONF_FILE
+
 # replace default api service host:port by those taken from api container
 cd $LOCATION
 cp $JS_FILE $JS_FILE_BACKUP
@@ -27,5 +33,5 @@ echo 'after: '
 sed 's/[.]constant/\n/g' $JS_FILE | grep '(.apiUrl'
 
 # launch apache service (foreground to prevent command to finish, and container to stop)
-/run-apache.sh
+nginx -g "daemon off;"
 

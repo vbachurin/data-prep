@@ -1,6 +1,6 @@
 package org.talend.dataprep.transformation.api.transformer.type;
 
-import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
+import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
 
 /**
  * Definition of a Dataset content Type (column, records, ...) transformer/serializer.

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
+import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
 
 /**
  * Transformer that works on RowMetadata.

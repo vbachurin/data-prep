@@ -1,10 +1,6 @@
 package org.talend.dataprep.transformation.api.transformer;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.talend.dataprep.api.dataset.DataSet;
-import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
 
 /**
  * Base interface used to transform (apply preparations to) dataset content.
@@ -13,12 +9,17 @@ public interface Transformer {
 
     /**
      * Transform (apply preparations to) data content.
+     * 
      * @param input the dataset content.
-     * @param output where to output the transformation.
+     * @param configuration Configuration of the transformation (export format...).
      */
-    void transform(DataSet input, OutputStream output);
+    void transform(DataSet input, TransformerConfiguration configuration);
 
-    default TransformerConfiguration.Builder from(DataSet input) throws IOException {
-        return TransformerConfiguration.builder().input(input);
-    }
+    /**
+     * @param configuration Configuration of a transformation (export format...).
+     * @return <code>true</code> if {@link Transformer transformer} implementation handles <code>configuration</code>,
+     * <code>false</code> otherwise.
+     */
+    boolean accept(TransformerConfiguration configuration);
+
 }

@@ -1,20 +1,39 @@
-package org.talend.dataprep.transformation.api.transformer.input;
+package org.talend.dataprep.transformation.api.transformer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.type.ExportType;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.action.ParsedActions;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 
 /**
  * Full configuration for a transformation.
  */
 public class TransformerConfiguration {
+
+    /** The export format {@link org.talend.dataprep.api.type.ExportType} */
+    private final ExportType format;
+
+    /** The actions in JSON string format */
+    private final String actions;
+
+    /** The arguments in Map */
+    private final Map<String, Object> arguments;
 
     /** The dataset input to transform. */
     private final DataSet input;
@@ -52,11 +71,17 @@ public class TransformerConfiguration {
             final List<Integer> indexes, //
             final boolean preview, //
             final List<BiConsumer<RowMetadata, TransformationContext>> columnActions, //
-            final List<BiConsumer<DataSetRow, TransformationContext>> recordActions) {
+            final List<BiConsumer<DataSetRow, TransformationContext>> recordActions, //
+            final ExportType format, //
+            final String actions, //
+            final Map<String, Object> arguments) {
         this.input = input;
         this.output = output;
         this.indexes = indexes;
         this.preview = preview;
+        this.format = format;
+        this.actions = actions;
+        this.arguments = arguments;
         this.columnActions = columnActions == null ? Collections.emptyList() : columnActions;
         this.recordActions = recordActions == null ? Collections.emptyList() : recordActions;
         this.transformationContexts = new ArrayList<>();
@@ -70,6 +95,27 @@ public class TransformerConfiguration {
             this.transformationContexts.add(new TransformationContext());
         }
 
+    }
+
+    /**
+     * @return The expected output {@link ExportType format} of the transformation.
+     */
+    public ExportType getFormat() {
+        return format;
+    }
+
+    /**
+     * @return The actions (as string) to apply in transformation.
+     */
+    public String getActions() {
+        return actions;
+    }
+
+    /**
+     * @return Arguments for the {@link ExportType export type} (parameters depend on the export type).
+     */
+    public Map<String, Object> getArguments() {
+        return arguments;
     }
 
     /**
@@ -134,8 +180,23 @@ public class TransformerConfiguration {
      */
     public static class Builder {
 
+        /**
+         * The export format {@link org.talend.dataprep.api.type.ExportType}
+         */
+        private ExportType format = ExportType.JSON;
+
+        /**
+         * The actions in JSON string format
+         */
+        private String actions = StringUtils.EMPTY;
+
+        /**
+         * The actions in Map
+         */
+        private Map<String, Object> arguments = Collections.emptyMap();
+
         /** The dataset input to transform. */
-        private DataSet input;
+        private DataSet input = DataSet.empty();
 
         /** Where to write the transformed content. */
         private TransformerWriter output;
@@ -151,6 +212,8 @@ public class TransformerConfiguration {
 
         /** The list of actions to perform on records. */
         private List<BiConsumer<DataSetRow, TransformationContext>> recordActions = new ArrayList<>(2);
+
+        private String previousActions;
 
         /**
          * @param input the dataset input to set.
@@ -210,11 +273,89 @@ public class TransformerConfiguration {
         }
 
         /**
-         * @return a new TransformerConfiguration from the builder setup.
+         * @return a new {@link TransformerConfiguration} from the builder setup.
          */
         public TransformerConfiguration build() {
-            return new TransformerConfiguration(input, output, indexes, preview, columnActions, recordActions);
+            return new TransformerConfiguration(input, output, indexes, preview, columnActions, recordActions, format, actions,
+                    arguments);
         }
 
+        /**
+         * Builder DSL for format setter
+         *
+         * @param format The export type.
+         * @return The builder
+         */
+        public Builder format(final ExportType format) {
+            this.format = format;
+            return this;
+        }
+
+        /**
+         * Builder DSL for actions setter
+         *
+         * @param actions The actions in JSON string format.
+         * @return The builder
+         */
+        public Builder withActions(final String actions) {
+            this.actions = actions;
+            return this;
+        }
+
+        /**
+         * Builder DSL for arguments setter
+         *
+         * @param arguments The arguments in Map
+         * @return The builder
+         */
+        public Builder args(final Map<String, Object> arguments) {
+            this.arguments = arguments;
+            return this;
+        }
+
+        /**
+         * Add the actions for the future transformer.
+         *
+         * @param previousActions the previous actions used to compute the diff.
+         * @param newActions the new actions to display.
+         * @return this factory.
+         */
+        public Builder withActions(final String previousActions, String newActions) {
+            this.previousActions = previousActions;
+            this.actions = newActions;
+            return this;
+        }
+
+        /**
+         * Add the indexes for the future transformer.
+         *
+         * @param indexes the row indexes to compute the diff for.
+         * @return this factory.
+         */
+        public Builder withIndexes(final String indexes) {
+            this.indexes = indexes == null ? null : parseIndexes(indexes);
+            return this;
+        }
+
+        /**
+         * Parses the given json string into a list of integer.
+         *
+         * @param indexes the json string of indexes.
+         * @return the list of integer that matches the given json string.
+         */
+        private List<Integer> parseIndexes(final String indexes) {
+            try {
+                final ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+                final JsonNode json = mapper.readTree(indexes);
+
+                final List<Integer> result = new ArrayList<>(json.size());
+                for (JsonNode index : json) {
+                    result.add(index.intValue());
+                }
+                return result;
+            } catch (IOException e) {
+                throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_ACTIONS, e);
+            }
+        }
     }
 }

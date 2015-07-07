@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer.exporter;
+package org.talend.dataprep.transformation.api.transformer.writer;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,8 +11,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -27,6 +25,8 @@ import org.talend.dataprep.transformation.api.transformer.Transformer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -34,22 +34,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @DirtiesContext
 public class XlsExporterTest {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
-    private ExportFactory factory;
+    private TransformerFactory factory;
 
     @Test
     public void write_simple_xls_file() throws Exception {
 
         // given
-        final ExportConfiguration configuration = ExportConfiguration.builder().format(ExportType.XLS).actions("").build();
-        final Transformer exporter = factory.getTransformer(configuration);
+        final TransformerConfiguration configuration = TransformerConfiguration.builder().format(ExportType.XLS).withActions("").build();
+        final Transformer exporter = factory.get(configuration);
 
-        final InputStream inputStream = ExportFactory.class.getResourceAsStream("export_dataset.json");
+        final InputStream inputStream = TransformerFactory.class.getResourceAsStream("export_dataset.json");
 
         Path path = Files.createTempFile("datarep-foo", "xls");
 
@@ -59,7 +57,7 @@ public class XlsExporterTest {
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             try (final OutputStream outputStream = Files.newOutputStream(path)) {
                 // when
-                exporter.transform(dataSet, outputStream);
+                exporter.transform(dataSet, configuration);
                 outputStream.flush();
             }
         }

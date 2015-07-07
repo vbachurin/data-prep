@@ -3,11 +3,15 @@ package org.talend.dataprep.dataset.store.mongo;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
+@Component
+@ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "mongodb")
 public class MongoDataSetMetadataRepository implements DataSetMetadataRepository {
 
     @Autowired

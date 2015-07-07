@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
-import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
+import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 /**

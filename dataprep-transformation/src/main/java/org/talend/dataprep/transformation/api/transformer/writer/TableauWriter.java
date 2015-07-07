@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer.exporter.tableau;
+package org.talend.dataprep.transformation.api.transformer.writer;
 
 
 import java.io.*;

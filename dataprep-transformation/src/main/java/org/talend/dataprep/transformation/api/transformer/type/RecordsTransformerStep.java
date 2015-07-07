@@ -22,7 +22,7 @@ import org.talend.dataprep.api.type.TypeUtils;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
-import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
+import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.datascience.common.inference.Analyzer;
