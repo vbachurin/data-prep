@@ -36,7 +36,7 @@ public class DeleteEmptyTest {
                 deleteEmpty, //
                 DeleteEmptyTest.class.getResourceAsStream("deleteEmptyAction.json"));
 
-        consumer = deleteEmpty.create(parameters);
+        consumer = deleteEmpty.create(parameters).getRowAction();
     }
 
     @Test

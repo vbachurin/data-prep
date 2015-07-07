@@ -9,11 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public abstract class AbstractDynamicAction extends SingleColumnAction {
 
-    @Override
-    public boolean isDynamic() {
-        return true;
-    }
-
     /**
      * Get all the parameters without skiping any. The parameters are dynamics.
      * 

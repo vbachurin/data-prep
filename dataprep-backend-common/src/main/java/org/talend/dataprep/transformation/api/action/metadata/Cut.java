@@ -1,12 +1,14 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(Cut.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
@@ -46,14 +48,14 @@ public class Cut extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public DataSetRowAction create(Map<String, String> parameters) {
-        return (row, context) -> {
+    public Action create(Map<String, String> parameters) {
+        return builder().withRow((row, context) -> {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             if (value != null) {
                 row.set(columnName, value.replace(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
             }
-        };
+        }).build();
     }
 
     /**

@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
@@ -48,13 +49,14 @@ public class ChangeDatePatternTest {
                 action, //
                 ChangeDatePatternTest.class.getResourceAsStream("changeDatePatternAction.json"));
 
-        rowClosure = action.create(parameters);
-        metadataClosure = action.createMetadataClosure(parameters);
+        final Action action = this.action.create(parameters);
+        rowClosure = action.getRowAction();
+        metadataClosure = action.getMetadataAction();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void should_check_column_id_parameter_when_dealing_with_row_metadata() {
-        action.createMetadataClosure(new HashMap<>());
+        action.create(new HashMap<>());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -62,7 +64,7 @@ public class ChangeDatePatternTest {
         Map<String, String> missingParameters = new HashMap<>();
         missingParameters.put(ChangeDatePattern.COLUMN_ID, "0000");
         missingParameters.put(ChangeDatePattern.NEW_PATTERN, "toto");
-        action.createMetadataClosure(missingParameters);
+        action.create(missingParameters);
     }
 
     @Test
@@ -93,7 +95,7 @@ public class ChangeDatePatternTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void should_check_column_id_when_dealing_with_row() {
-        action.createMetadataClosure(new HashMap<>());
+        action.create(new HashMap<>());
     }
 
     @Test(expected = IllegalArgumentException.class)

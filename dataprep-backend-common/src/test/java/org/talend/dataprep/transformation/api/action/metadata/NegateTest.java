@@ -36,7 +36,7 @@ public class NegateTest {
                 action, //
                 NegateTest.class.getResourceAsStream("negateAction.json"));
 
-        consumer = action.create(parameters);
+        consumer = action.create(parameters).getRowAction();
     }
 
     @Test

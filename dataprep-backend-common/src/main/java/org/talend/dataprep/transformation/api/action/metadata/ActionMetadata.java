@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
@@ -15,8 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Model an action to perform on a dataset.
  *
- * At row level, a closure is created for each row, see {@link ActionMetadata#create(Map)}. At row metadata level, a
- * closure is created for the row metadata, see {@link ActionMetadata#createMetadataClosure(Map)}.
+ * An "action" is created for each row, see {@link ActionMetadata#create(Map)}.
  *
  * The actions are called from the
  */
@@ -74,30 +74,13 @@ public interface ActionMetadata {
     boolean accept(ColumnMetadata column);
 
     /**
-     * Create a closure to perform the transformation on a DatasetRow according to the parameter.
+     * Creates an {@link Action action} based on provided parameters.
      * 
-     * @param parameters A key/value map holding all action dependent configuration.
-     * @return A closure that accepts a DatasetRow, closures are expected to execute safely.
+     * @param parameters Action-dependent parameters, can be empty.
+     * @return An {@link Action action} that can implement {@link DataSetRowAction row action} and/or
+     * {@link DataSetMetadataAction metadata action}.
      */
-    default DataSetRowAction create(Map<String, String> parameters) {
-        return (row, context) -> {
-            // default empty implementation
-        };
-    }
-
-    /**
-     * Create a closure to perform the transformation at row metadata given the parameters.
-     *
-     * By default, the original row metadata is returned.
-     *
-     * @param parameters the parameters needed to perform the action.
-     * @return A closure that accepts the dataset row metadata, closures are expected to execute safely.
-     */
-    default DataSetMetadataAction createMetadataClosure(Map<String, String> parameters) {
-        return (rowMetadata, context) -> {
-            // default empty implementation
-        };
-    }
+    Action create(Map<String, String> parameters);
 
     /**
      * Parse the given json parameter into a map<key, value>.
@@ -107,14 +90,6 @@ public interface ActionMetadata {
      */
     default Map<String, String> parseParameters(Iterator<Map.Entry<String, JsonNode>> parameters) {
         return ActionMetadataUtils.parseParameters(parameters, this);
-    }
-
-    /**
-     * @return True if the action is dynamic (i.e the parameters depends on the context
-     * (dataset/preparation/previous_actions)
-     */
-    default boolean isDynamic() {
-        return false;
     }
 
 }

@@ -41,9 +41,9 @@ public class Aggregate<T, U> implements BiConsumer<T, U> {
      */
     @Override
     public void accept(T t, U u) {
-        for (BiConsumer<T, U> action : actions) {
+        actions.stream().filter(action -> action != null).forEach(action -> {
             action.accept(t, u);
-        }
+        });
     }
 
 }

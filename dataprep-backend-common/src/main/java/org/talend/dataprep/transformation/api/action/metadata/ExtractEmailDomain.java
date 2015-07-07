@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +9,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
 /**
  * Split a cell value on a separator.
@@ -65,12 +66,11 @@ public class ExtractEmailDomain extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public DataSetRowAction create(Map<String, String> parameters) {
+    public Action create(Map<String, String> parameters) {
+        return builder().withRow((row, context) -> {
+            String columnName = parameters.get(COLUMN_ID);
+            String realSeparator = "@";
 
-        String columnName = parameters.get(COLUMN_ID);
-        String realSeparator = "@";
-
-        return (row, context) -> {
             String originalValue = row.get(columnName);
             if (originalValue != null) {
                 String[] split = originalValue.split(realSeparator, 2);
@@ -81,23 +81,9 @@ public class ExtractEmailDomain extends SingleColumnAction {
                 String domain_part = split.length >= 2 ? split[1] : StringUtils.EMPTY;
                 row.set(columnName + _DOMAIN, domain_part);
             }
-        };
-    }
-
-    /**
-     * Update row metadata.
-     *
-     * @see ActionMetadata#createMetadataClosure(Map)
-     */
-    @Override
-    public DataSetMetadataAction createMetadataClosure(Map<String, String> parameters) {
-
-        return (rowMetadata, context) -> {
-
+        }).withMetadata((rowMetadata, context) -> {
             String columnId = parameters.get(COLUMN_ID);
-
             List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
-
             for (ColumnMetadata column : rowMetadata.getColumns()) {
                 ColumnMetadata newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
                 newColumns.add(newColumnMetadata);
@@ -133,6 +119,6 @@ public class ExtractEmailDomain extends SingleColumnAction {
 
             // apply the new columns to the row metadata
             rowMetadata.setColumns(newColumns);
-        };
+        }).build();
     }
 }

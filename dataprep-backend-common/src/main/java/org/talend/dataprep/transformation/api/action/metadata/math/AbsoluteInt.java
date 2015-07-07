@@ -12,12 +12,14 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
@@ -42,8 +44,8 @@ public class AbsoluteInt extends SingleColumnAction {
     }
 
     @Override
-    public DataSetRowAction create(Map<String, String> parameters) {
-        return (row, context) -> {
+    public Action create(Map<String, String> parameters) {
+        return builder().withRow((row, context) -> {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             String absValueStr = null;
@@ -71,8 +73,7 @@ public class AbsoluteInt extends SingleColumnAction {
                     row.set(columnName, absValueStr);
                 }// else not a int or a float to do nothing.
             }// else no value set for this column so do nothing
-
-        };
+        }).build();
     }
 
     /**

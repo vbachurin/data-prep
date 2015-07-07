@@ -54,8 +54,9 @@ public class ActionParser {
             for (Action parsedAction : parsedActions.getActions()) {
                 final String name = ActionMetadata.ACTION_BEAN_PREFIX + parsedAction.getAction().toLowerCase();
                 final ActionMetadata metadata = context.getBean(name, ActionMetadata.class);
-                rowActions.add(metadata.create(parsedAction.getParameters()));
-                metadataActions.add(metadata.createMetadataClosure(parsedAction.getParameters()));
+                final Action action = metadata.create(parsedAction.getParameters());
+                rowActions.add(action.getRowAction());
+                metadataActions.add(action.getMetadataAction());
             }
             // all set: wraps everything and return to caller
             return new ParsedActions(rowActions, metadataActions);

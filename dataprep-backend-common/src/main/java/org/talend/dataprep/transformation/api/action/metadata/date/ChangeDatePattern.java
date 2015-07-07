@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
@@ -11,11 +13,10 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
@@ -51,50 +52,6 @@ public class ChangeDatePattern extends SingleColumnAction {
     protected static final String OLD_PATTERN = "old_pattern"; //$NON-NLS-1$
 
     /**
-     * @see ActionMetadata#createMetadataClosure(Map)
-     */
-    @Override
-    public DataSetMetadataAction createMetadataClosure(Map<String, String> parameters) {
-
-        // check the column id parameter
-        String columnId = getColumnIdParameter(parameters);
-
-        // parse and checks the new date pattern
-        String newPattern = getDateFormat(getNewPattern(parameters)).toPattern();
-
-        JsonFactory jsonFactory = new JsonFactory();
-        ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
-        return (rowMetadata, context) -> {
-
-            ColumnMetadata column = rowMetadata.getById(columnId);
-            // defensive programming
-            if (column == null) {
-                return;
-            }
-
-            // store the current pattern in the context
-            JsonNode rootNode = getStatisticsNode(mapper, column);
-
-            JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-            String futureExPattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
-            context.put(OLD_PATTERN, futureExPattern);
-
-            // update the pattern in the column
-            try {
-                ((ObjectNode) mostUsedPatternNode).put("pattern", newPattern); //$NON-NLS-1$
-                StringWriter temp = new StringWriter(1000);
-
-                JsonGenerator generator = jsonFactory.createGenerator(temp);
-                mapper.writeTree(generator, rootNode);
-                column.setStatistics(temp.toString());
-            } catch (IOException e) {
-                throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
-            }
-        };
-    }
-
-    /**
      * @param parameters the parameters.
      * @return the column id parameter.
      */
@@ -125,26 +82,53 @@ public class ChangeDatePattern extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public DataSetRowAction create(Map<String, String> parameters) {
-
+    public Action create(Map<String, String> parameters) {
         String columnId = getColumnIdParameter(parameters);
         SimpleDateFormat newDateFormat = getDateFormat(getNewPattern(parameters));
-
-        return (row, context) -> {
-
+        return builder().withRow((row, context) -> {
             // sadly unable to do that outside of the closure since the context is not available
-            SimpleDateFormat currentDateFormat = getDateFormat((String) context.get(OLD_PATTERN));
+                SimpleDateFormat currentDateFormat = getDateFormat((String) context.get(OLD_PATTERN));
 
-            // parse the
-            String value = row.get(columnId);
-            Date date = null;
-            try {
-                date = currentDateFormat.parse(value);
-                row.set(columnId, newDateFormat.format(date));
-            } catch (ParseException e) {
-                // cannot parse the date, let's leave it as is
-            }
-        };
+                // parse the
+                String value = row.get(columnId);
+                Date date = null;
+                try {
+                    date = currentDateFormat.parse(value);
+                    row.set(columnId, newDateFormat.format(date));
+                } catch (ParseException e) {
+                    // cannot parse the date, let's leave it as is
+                }
+            }).withMetadata((rowMetadata, context) -> {
+                // parse and checks the new date pattern
+                String newPattern = getDateFormat(getNewPattern(parameters)).toPattern();
+
+                JsonFactory jsonFactory = new JsonFactory();
+                ObjectMapper mapper = new ObjectMapper(jsonFactory);
+                ColumnMetadata column = rowMetadata.getById(columnId);
+                // defensive programming
+                if (column == null) {
+                    return;
+                }
+
+                // store the current pattern in the context
+                JsonNode rootNode = getStatisticsNode(mapper, column);
+
+                JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
+                String futureExPattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
+                context.put(OLD_PATTERN, futureExPattern);
+
+                // update the pattern in the column
+                try {
+                    ((ObjectNode) mostUsedPatternNode).put("pattern", newPattern); //$NON-NLS-1$
+                    StringWriter temp = new StringWriter(1000);
+
+                    JsonGenerator generator = jsonFactory.createGenerator(temp);
+                    mapper.writeTree(generator, rootNode);
+                    column.setStatistics(temp.toString());
+                } catch (IOException e) {
+                    throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
+                }
+            }).build();
     }
 
     /**

@@ -49,7 +49,7 @@ public class UpperCasetTest {
                 action, //
                 UpperCasetTest.class.getResourceAsStream("uppercase.json"));
 
-        rowClosure = action.create(parameters);
+        rowClosure = action.create(parameters).getRowAction();
     }
 
     /**

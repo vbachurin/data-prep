@@ -30,7 +30,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
  * 
  * @see LowerCase
  */
-public class LowerCasetTest {
+public class LowerCaseTest {
 
     /** The row consumer to test. */
     private BiConsumer<DataSetRow, TransformationContext> closure;
@@ -41,15 +41,15 @@ public class LowerCasetTest {
     /**
      * Constructor.
      */
-    public LowerCasetTest() throws IOException {
+    public LowerCaseTest() throws IOException {
 
         action = new LowerCase();
 
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
-                LowerCasetTest.class.getResourceAsStream("lowercase.json"));
+                LowerCaseTest.class.getResourceAsStream("lowercase.json"));
 
-        closure = action.create(parameters);
+        closure = action.create(parameters).getRowAction();
     }
 
     /**

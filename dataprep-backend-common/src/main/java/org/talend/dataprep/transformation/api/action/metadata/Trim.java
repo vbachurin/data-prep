@@ -1,13 +1,15 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
@@ -48,8 +50,8 @@ public class Trim extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public DataSetRowAction create(Map<String, String> parsedParameters) {
-        return (row, context) -> {
+    public Action create(Map<String, String> parsedParameters) {
+        return builder().withRow((row, context) -> {
             String columnName = parsedParameters.get(COLUMN_ID);
             String value = row.get(columnName);
 
@@ -57,7 +59,7 @@ public class Trim extends SingleColumnAction {
                 String newValue = value.trim();
                 row.set(columnName, newValue);
             }
-        };
+        }).build();
     }
 
     /**

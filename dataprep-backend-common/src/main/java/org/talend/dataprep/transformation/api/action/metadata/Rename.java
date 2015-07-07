@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +11,8 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -62,16 +64,9 @@ public class Rename extends SingleColumnAction {
         return true;
     }
 
-    /**
-     * Update the row metadata.
-     * 
-     * @see ActionMetadata#createMetadataClosure(Map)
-     */
     @Override
-    public DataSetMetadataAction createMetadataClosure(Map<String, String> parameters) {
-
-        return (rowMetadata, context) -> {
-
+    public Action create(Map<String, String> parameters) {
+        return builder().withMetadata((rowMetadata, context) -> {
             String columnId = parameters.get(COLUMN_ID);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
 
@@ -99,7 +94,6 @@ public class Rename extends SingleColumnAction {
             }
 
             rowMetadata.setColumns(newColumns);
-        };
+        }).build();
     }
-
 }

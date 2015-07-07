@@ -12,12 +12,14 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
@@ -51,9 +53,8 @@ public class Round extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public DataSetRowAction create(Map<String, String> parameters) {
-        return (row, context) -> {
-
+    public Action create(Map<String, String> parameters) {
+        return builder().withRow((row, context) -> {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             if (value == null) {
@@ -72,7 +73,7 @@ public class Round extends SingleColumnAction {
             if (absValueStr != null) {
                 row.set(columnName, absValueStr);
             }
-        };
+        }).build();
     }
 
     /**

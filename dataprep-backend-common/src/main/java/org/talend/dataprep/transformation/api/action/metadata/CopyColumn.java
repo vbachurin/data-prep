@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +9,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
@@ -62,26 +63,14 @@ public class CopyColumn extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public DataSetRowAction create(Map<String, String> parameters) {
-        String columnName = parameters.get(COLUMN_ID);
-
-        return (row, context) -> {
+    public Action create(Map<String, String> parameters) {
+        return builder().withRow((row, context) -> {
+            String columnName = parameters.get(COLUMN_ID);
             String originalValue = row.get(columnName);
             if (originalValue != null) {
                 row.set(columnName + COPY_APPENDIX, originalValue);
             }
-        };
-    }
-
-    /**
-     * Update row metadata.
-     *
-     * @see ActionMetadata#createMetadataClosure(Map)
-     */
-    @Override
-    public DataSetMetadataAction createMetadataClosure(Map<String, String> parameters) {
-
-        return (rowMetadata, context) -> {
+        }).withMetadata((rowMetadata, context) -> {
 
             String columnId = parameters.get(COLUMN_ID);
 
@@ -110,6 +99,6 @@ public class CopyColumn extends SingleColumnAction {
 
             // apply the new columns to the row metadata
             rowMetadata.setColumns(newColumns);
-        };
+        }).build();
     }
 }

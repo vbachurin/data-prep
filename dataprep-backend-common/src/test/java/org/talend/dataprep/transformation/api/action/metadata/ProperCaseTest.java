@@ -48,7 +48,7 @@ public class ProperCaseTest {
                 action, //
                 ProperCaseTest.class.getResourceAsStream("properCaseAction.json"));
 
-        consumer = action.create(parameters);
+        consumer = action.create(parameters).getRowAction();
     }
 
     @Test

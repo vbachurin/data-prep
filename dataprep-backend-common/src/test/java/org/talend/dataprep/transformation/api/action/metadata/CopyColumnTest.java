@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
@@ -56,8 +57,9 @@ public class CopyColumnTest {
                 action, //
                 CopyColumnTest.class.getResourceAsStream("copyColumnAction.json"));
 
-        rowClosure = action.create(parameters);
-        metadataClosure = action.createMetadataClosure(parameters);
+        final Action action = this.action.create(parameters);
+        rowClosure = action.getRowAction();
+        metadataClosure = action.getMetadataAction();
     }
 
     /**
@@ -82,7 +84,7 @@ public class CopyColumnTest {
     }
 
     /**
-     * @see Split#createMetadataClosure(Map)
+     * @see Action#getMetadataAction()
      */
     @Test
     public void should_update_metadata() {
