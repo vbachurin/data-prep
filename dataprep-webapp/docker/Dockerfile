@@ -6,6 +6,9 @@ RUN apk --update add bash
 COPY docker/init_docker.sh /init_docker.sh
 #RUN chmod +x init_docker.sh
 
+# override the nginx default conf
+ADD nginx.conf /etc/nginx/conf/nginx.conf
+
 # copy source of web-app to web server
 COPY dist /etc/nginx/html
 
