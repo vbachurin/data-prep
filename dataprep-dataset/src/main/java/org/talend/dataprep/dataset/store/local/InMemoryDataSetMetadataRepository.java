@@ -12,13 +12,17 @@ import org.apache.commons.collections.IteratorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 
 import com.google.common.base.Defaults;
 
+@Component
+@ConditionalOnProperty(name = "dataset.metadata.store", havingValue = "in-memory", matchIfMissing = true)
 public class InMemoryDataSetMetadataRepository implements DataSetMetadataRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(InMemoryDataSetMetadataRepository.class);
