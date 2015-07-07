@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.junit.Test;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
@@ -49,6 +52,13 @@ public class ProperCaseTest {
                 ProperCaseTest.class.getResourceAsStream("properCaseAction.json"));
 
         consumer = action.create(parameters);
+    }
+
+    @Test
+    public void testAdapt() throws Exception {
+        assertThat(action.adapt(null), is(action));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(action.adapt(column), is(action));
     }
 
     @Test

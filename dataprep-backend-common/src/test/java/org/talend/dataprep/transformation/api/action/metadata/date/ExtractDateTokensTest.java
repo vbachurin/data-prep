@@ -1,11 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,12 @@ public class ExtractDateTokensTest {
         metadataClosure = action.createMetadataClosure(parameters);
     }
 
+    @Test
+    public void testAdapt() throws Exception {
+        assertThat(action.adapt(null), is(action));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(action.adapt(column), is(action));
+    }
 
     @Test
     public void should_process_row() {
