@@ -228,7 +228,10 @@ public class TransformationService {
             return Collections.emptyList();
         }
         // look for all actions applicable to the column type
-        return Stream.of(allActions).filter(am -> am.accept(column)).collect(Collectors.toList());
+        return Stream.of(allActions) //
+                .filter(am -> am.accept(column)) //
+                .map(am -> am.adapt(column)) //
+                .collect(Collectors.toList());
     }
 
     /**

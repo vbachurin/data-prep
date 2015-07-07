@@ -12,8 +12,10 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
@@ -28,6 +30,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
  * Test class for Rename action. Creates one consumer, and test it.
@@ -53,6 +56,21 @@ public class RenameTest {
         metadataClosure = action.create(parameters).getMetadataAction();
     }
 
+    @Test
+    public void testAdapt() throws Exception {
+        assertThat(action.adapt(null), is(action));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(action.adapt(column), not(is(action)));
+        boolean hasMetExpectedParameter = false;
+        for (Parameter parameter : action.adapt(column).getParameters()) {
+            if (Rename.NEW_COLUMN_NAME_PARAMETER_NAME.equals(parameter.getName())) {
+                assertThat(parameter.getDefault(), is(column.getName()));
+                hasMetExpectedParameter = true;
+            }
+        }
+        assertThat(hasMetExpectedParameter, is(true));
+    }
+
     /**
      * @see Action#getMetadataAction()
      */
@@ -60,8 +78,8 @@ public class RenameTest {
     public void should_update_metadata() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        ColumnMetadata metadata = ColumnMetadata.Builder //
-                .column() //
+        ColumnMetadata metadata = //
+                column() //
                 .id(1) //
                 .name("first name") //
                 .type(Type.STRING) //
@@ -77,7 +95,7 @@ public class RenameTest {
 
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
-        ColumnMetadata renamedMetadata = ColumnMetadata.Builder.column() //
+        ColumnMetadata renamedMetadata = column() //
                 .id(1) //
                 .name("NAME_FIRST") //
                 .type(Type.STRING) //

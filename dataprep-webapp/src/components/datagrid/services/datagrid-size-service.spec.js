@@ -1,15 +1,21 @@
 describe('Datagrid size service', function () {
     'use strict';
 
-    var gridMock;
+    var gridMock, windowMock, gridColumns;
 
     var storageKey = 'dataprep.col_size_00000000';
 
-    var gridColumns;
+    beforeEach(module('data-prep.datagrid', function ($provide) {
+        $provide.factory('$window', function () {
+            windowMock = jasmine.createSpy('$window');
+            /*global window:false */
+            windowMock.localStorage = window.localStorage;
+            windowMock.addEventListener = function() {};
+            return windowMock;
+        });
+    }));
 
-    beforeEach(module('data-prep.datagrid'));
-
-    beforeEach(inject(function ($window, DatagridService) {
+    beforeEach(inject(function (_$window_, $window, DatagridService) {
         /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
         gridColumns = [

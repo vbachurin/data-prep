@@ -18,12 +18,13 @@
      * @requires data-prep.datagrid.service:DatagridStyleService
      * @requires data-prep.datagrid.service:DatagridSizeService
      * @requires data-prep.datagrid.service:DatagridTooltipService
+     * @requires data-prep.datagrid.service:DatagridExternalService
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @restrict E
      */
     function Datagrid(DatagridGridService, DatagridColumnService, DatagridStyleService, DatagridSizeService,
-                      DatagridTooltipService, DatagridService, FilterService) {
+                      DatagridTooltipService, DatagridExternalService, DatagridService, FilterService) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/datagrid.html',
@@ -88,7 +89,7 @@
                  * The expected order is based on the grid headers order.
                  */
                 var insertHeaders = function insertHeaders(headers) {
-                    _.forEach(headers, function(header, index) {
+                    _.forEach(headers, function (header, index) {
                         iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
                     });
                 };
@@ -100,7 +101,7 @@
                  * @description [PRIVATE] Reset cell styles, scroll to top and expect to recreate all columns on next update
                  */
                 var onMetadataChange = function onMetadataChange() {
-                    if(grid) {
+                    if (grid) {
                         DatagridStyleService.resetCellStyles();
                         DatagridStyleService.resetColumnStyles();
                         grid.scrollRowToTop(0);
@@ -115,13 +116,17 @@
                  * @description [PRIVATE] Update and resize the columns with its headers, set grid styles
                  */
                 var onDataChange = function onDataChange(data) {
-                    if(data) {
+                    if (data) {
                         initGridIfNeeded();
                         DatagridColumnService.updateColumns(data.columns, data.preview, renewAllColumns);
                         DatagridSizeService.autosizeColumns();
                         renewAllColumns = false;
 
                         DatagridStyleService.manageColumnStyle(data.preview);
+                        var selectedColumn = DatagridStyleService.selectedColumn();
+                        if (selectedColumn) {
+                            DatagridExternalService.updateSuggestionPanel(selectedColumn);
+                        }
                         grid.invalidate();
                     }
                 };
@@ -133,7 +138,7 @@
                  * @description [PRIVATE] Refresh cell styles and scroll to top
                  */
                 var onFiltersChange = function onFiltersChange() {
-                    if(grid) {
+                    if (grid) {
                         DatagridStyleService.resetCellStyles();
                         grid.scrollRowToTop(0);
                     }
@@ -149,7 +154,7 @@
                  * @description [PRIVATE] Init Slick grid and init datagrid private services.
                  */
                 var initGridIfNeeded = function () {
-                    if(!grid) {
+                    if (!grid) {
                         grid = DatagridGridService.initGrid('#datagrid');
 
                         // the tooltip ruler is used compute a cell text regardless of the font and zoom used.

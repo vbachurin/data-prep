@@ -53,7 +53,7 @@ public interface ActionMetadata {
     /**
      * Returns the list of multiple valued parameters required for this Action to be executed. represented as list box
      * on the front end.
-     * 
+     *
      * @return A list of {@link org.talend.dataprep.transformation.api.action.parameters.Item items}. This should never
      * return null, actions with no item should return empty list.
      **/
@@ -67,7 +67,7 @@ public interface ActionMetadata {
 
     /**
      * Return true if the action can be applied to the given column metadata.
-     * 
+     *
      * @param column the column metadata to transform.
      * @return true if the action can be applied to the given column metadata.
      */
@@ -75,7 +75,7 @@ public interface ActionMetadata {
 
     /**
      * Creates an {@link Action action} based on provided parameters.
-     * 
+     *
      * @param parameters Action-dependent parameters, can be empty.
      * @return An {@link Action action} that can implement {@link DataSetRowAction row action} and/or
      * {@link DataSetMetadataAction metadata action}.
@@ -92,4 +92,16 @@ public interface ActionMetadata {
         return ActionMetadataUtils.parseParameters(parameters, this);
     }
 
+    /**
+     * Adapts the current action metadata to the column. This method may return <code>this</code> if no action specific
+     * change should be done. It may return a different instance with information from column (like a default value
+     * inferred from column's name).
+     *
+     * @param column A {@link ColumnMetadata column} information.
+     * @return <code>this</code> if no change is required or a new action metadata with information extracted from
+     * <code>column</code>.
+     */
+    default ActionMetadata adapt(ColumnMetadata column) {
+        return this;
+    }
 }

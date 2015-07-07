@@ -15,6 +15,7 @@
             init: init,
             resetCellStyles : resetCellStyles,
             resetColumnStyles : resetColumnStyles,
+            selectedColumn : selectedColumn,
             manageColumnStyle: manageColumnStyle,
             computeHTMLForLeadingOrTrailingHiddenChars: computeHTMLForLeadingOrTrailingHiddenChars,
             columnFormatter: columnFormatter,
@@ -43,6 +44,14 @@
          */
         function resetColumnStyles() {
             lastSelectedColumnId = null;
+        }
+
+        function selectedColumn() {
+            if(lastSelectedColumnId) {
+                return _.find(grid.getColumns(), function(column) {
+                    return column.id === lastSelectedColumnId;
+                });
+            }
         }
 
         /**

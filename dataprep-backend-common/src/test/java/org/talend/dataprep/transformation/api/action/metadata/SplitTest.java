@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
@@ -57,6 +59,13 @@ public class SplitTest {
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
         metadataClosure = action.getMetadataAction();
+    }
+
+    @Test
+    public void testAdapt() throws Exception {
+        assertThat(action.adapt(null), is(action));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(action.adapt(column), is(action));
     }
 
     /**

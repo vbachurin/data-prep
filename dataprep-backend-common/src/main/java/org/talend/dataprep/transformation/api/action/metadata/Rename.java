@@ -29,6 +29,20 @@ public class Rename extends SingleColumnAction {
     /** Name of the new column parameter. */
     public static final String NEW_COLUMN_NAME_PARAMETER_NAME = "new_column_name"; //$NON-NLS-1$
 
+    /** Parameters (column name, new column name...) */
+    private final Parameter[] parameters;
+
+    // Default parameters
+    public Rename() {
+        parameters = new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
+                new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), StringUtils.EMPTY) };
+    }
+
+    // For overridden parameters
+    public Rename(Parameter[] parameters) {
+        this.parameters = parameters;
+    }
+
     /**
      * @see ActionMetadata#getName()
      */
@@ -51,8 +65,7 @@ public class Rename extends SingleColumnAction {
     @Override
     @Nonnull
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
-                new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), StringUtils.EMPTY) };
+        return parameters;
     }
 
     /**
@@ -95,5 +108,19 @@ public class Rename extends SingleColumnAction {
 
             rowMetadata.setColumns(newColumns);
         }).build();
+    }
+
+    /**
+     * @param column A {@link ColumnMetadata column} information.
+     * @return A rename action with <code>column</code> name as default name.
+     */
+    @Override
+    public ActionMetadata adapt(ColumnMetadata column) {
+        if (column == null) {
+            return this;
+        }
+        final Parameter[] newParameters = {COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
+                new Parameter(NEW_COLUMN_NAME_PARAMETER_NAME, Type.STRING.getName(), column.getName())};
+        return new Rename(newParameters);
     }
 }

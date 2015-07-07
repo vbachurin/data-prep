@@ -624,4 +624,33 @@ describe('Datagrid style service', function () {
             expect(diffClass).toBe('');
         }));
     });
+
+    describe('column selection management', function() {
+        it('should return selected column', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+
+            //given : set selected column
+            var activeCell = {cell: 1};
+            gridMock.initActiveCellMock(activeCell);
+            DatagridStyleService.manageColumnStyle(false);
+
+            //when
+            var selectedColumn = DatagridStyleService.selectedColumn();
+
+            //then
+            expect(selectedColumn).toBe(gridColumns[1]);
+        }));
+
+        it('should undefined when there is no selected column', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+
+            //when
+            var selectedColumn = DatagridStyleService.selectedColumn();
+
+            //then
+            expect(selectedColumn).not.toBeDefined();
+        }));
+    });
 });

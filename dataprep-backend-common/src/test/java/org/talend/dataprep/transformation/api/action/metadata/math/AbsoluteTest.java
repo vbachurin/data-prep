@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
@@ -50,6 +53,20 @@ public class AbsoluteTest {
     private BiConsumer<DataSetRow, TransformationContext> absFloatConsumer;
 
     private BiConsumer<DataSetRow, TransformationContext> absIntConsumer;
+
+    @Test
+    public void testAdaptFloat() throws Exception {
+        assertThat(absFloatAction.adapt(null), is(absFloatAction));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(absFloatAction.adapt(column), is(absFloatAction));
+    }
+
+    @Test
+    public void testAdaptInt() throws Exception {
+        assertThat(absIntAction.adapt(null), is(absIntAction));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(absIntAction.adapt(column), is(absIntAction));
+    }
 
     /**
      * Default empty constructor.
