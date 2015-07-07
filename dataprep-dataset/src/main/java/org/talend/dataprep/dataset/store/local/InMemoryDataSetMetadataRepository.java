@@ -43,9 +43,9 @@ public class InMemoryDataSetMetadataRepository implements DataSetMetadataReposit
     }
 
     /**
-     * this nullifie and reset transient values that are supposed not to be stored
+     * this nullifies and resets transient values that are supposed not to be stored
      * 
-     * @param zeObject
+     * @param zeObject The object where non transient fields will be nullified.
      */
     void resetTransientValues(@Nullable Object zeObject) {
         if (zeObject != null) {
