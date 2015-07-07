@@ -234,7 +234,7 @@ describe('Datagrid service', function() {
         expect(DatagridService.filters[0]).toBe(filterFnCol1);
     }));
 
-    it('should return the rows containing searched value', inject(function(DatagridService) {
+    it('should return the rows containing non empty searched value', inject(function(DatagridService) {
         //given
         DatagridService.setDataset({}, {columns: [], records: [
             {text: 'mon toto est ici'},
@@ -250,6 +250,24 @@ describe('Datagrid service', function() {
 
         //then
         expect(rowsId).toEqual([1, 2, 3, 5]);
+    }));
+
+    it('should return the rows with empty value', inject(function(DatagridService) {
+        //given
+        DatagridService.setDataset({}, {columns: [], records: [
+            {text: 'mon toto est ici'},
+            {text: ''},
+            {text: 'la tata est ici'},
+            {text: 'mon toto est la'},
+            {text: ''},
+            {text: 'mi titi est la'}
+        ]});
+
+        //when
+        var rowsId = DatagridService.getRowsContaining('text', '');
+
+        //then
+        expect(rowsId).toEqual([1, 4]);
     }));
 
     it('should update filter', inject(function(DatagridService) {
