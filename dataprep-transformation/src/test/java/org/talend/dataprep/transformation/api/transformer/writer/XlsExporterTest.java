@@ -22,11 +22,11 @@ import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.schema.io.XlsUtils;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
-import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -44,7 +44,7 @@ public class XlsExporterTest {
     public void write_simple_xls_file() throws Exception {
 
         // given
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().format(ExportType.XLS).withActions("").build();
+        final Configuration configuration = Configuration.builder().format(ExportType.XLS).withActions("").build();
         final Transformer exporter = factory.get(configuration);
 
         final InputStream inputStream = TransformerFactory.class.getResourceAsStream("export_dataset.json");

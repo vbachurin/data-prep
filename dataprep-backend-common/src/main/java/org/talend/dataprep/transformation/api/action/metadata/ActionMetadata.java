@@ -93,6 +93,14 @@ public interface ActionMetadata {
     }
 
     /**
+     * @return True if the action is dynamic (i.e the parameters depends on the context
+     * (dataset/preparation/previous_actions)
+     */
+    default boolean isDynamic() {
+        return false;
+    }
+
+    /**
      * Adapts the current action metadata to the column. This method may return <code>this</code> if no action specific
      * change should be done. It may return a different instance with information from column (like a default value
      * inferred from column's name).

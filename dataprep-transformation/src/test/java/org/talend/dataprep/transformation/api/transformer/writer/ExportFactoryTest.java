@@ -22,10 +22,10 @@ import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -44,7 +44,7 @@ public class ExportFactoryTest {
         // given
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("exportParameters.csvSeparator", ";");
-        final TransformerConfiguration configuration = TransformerConfiguration.builder().args(arguments).format(CSV)
+        final Configuration configuration = Configuration.builder().args(arguments).format(CSV)
                 .withActions(IOUtils.toString(TransformerFactory.class.getResourceAsStream("upper_case_firstname.json"))).build();
         final Transformer exporter = factory.get(configuration);
         final String expectedCsv = IOUtils.toString(ExportFactoryTest.class

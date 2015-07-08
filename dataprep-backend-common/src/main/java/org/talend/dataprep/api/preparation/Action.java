@@ -11,6 +11,10 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("action")
 public class Action {
 
+    public static final DataSetRowAction IDLE_ROW_ACTION = (row, context) -> {};
+
+    public static final DataSetMetadataAction IDLE_METADATA_ACTION = (metadata, context) -> {};
+
     private final transient DataSetRowAction rowAction;
 
     private final transient DataSetMetadataAction metadataAction;
@@ -20,8 +24,8 @@ public class Action {
     private Map<String, String> parameters = new HashMap<>(1);
 
     public Action() {
-        rowAction = (row, context) -> {};
-        metadataAction = (metadata, context) -> {};
+        rowAction = IDLE_ROW_ACTION;
+        metadataAction = IDLE_METADATA_ACTION;
     }
 
     public Action(DataSetRowAction rowAction, DataSetMetadataAction metadataAction) {
@@ -55,9 +59,9 @@ public class Action {
 
     public static class Builder {
 
-        private DataSetRowAction rowAction;
+        private DataSetRowAction rowAction = IDLE_ROW_ACTION;
 
-        private DataSetMetadataAction metadataAction;
+        private DataSetMetadataAction metadataAction = IDLE_METADATA_ACTION;
 
         public static Builder builder() {
             return new Builder();

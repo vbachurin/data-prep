@@ -1,14 +1,14 @@
 package org.talend.dataprep.transformation.api.transformer;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
 /**
  * Interface used by all TransformerFactories.
@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 public class TransformerFactory {
 
     @Autowired
-    private Transformer[] transformers;
+    private List<Transformer> transformers;
 
     // Intentionally left private to prevent non-Spring managed initialization.
     private TransformerFactory() {
@@ -27,15 +27,12 @@ public class TransformerFactory {
      * Generate the wanted Transformer.
      * 
      * @return the Transformer.
-     * @param configuration A {@link TransformerConfiguration configuration} for a transformation.
+     * @param configuration A {@link Configuration configuration} for a transformation.
      */
-    public Transformer get(@Nonnull TransformerConfiguration configuration) {
-        List<Transformer> electedTransformers = new LinkedList<>();
-        for (Transformer transformer : transformers) {
-            if (transformer.accept(configuration)) {
-                electedTransformers.add(transformer);
-            }
-        }
+    public Transformer get(@Nonnull Configuration configuration) {
+        List<Transformer> electedTransformers = transformers.stream() //
+                .filter(transformer -> transformer.accept(configuration)) //
+                .collect(Collectors.toList());
         if (electedTransformers.isEmpty()) {
             throw new IllegalStateException("No transformers eligible for configuration.");
         }

@@ -1,13 +1,25 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.ActionParser;
+import org.talend.dataprep.transformation.api.action.ParsedActions;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
-import org.talend.dataprep.transformation.api.transformer.type.TransformerStepSelector;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
+import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 /**
  * Transformer that preview the transformation (puts additional json content so that the front can display the
@@ -20,25 +32,96 @@ class DiffTransformer implements Transformer {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
-    /** The transformer selector that routes transformation according the content to transform. */
     @Autowired
-    private TransformerStepSelector transformerSelector;
-
+    private ActionParser actionParser;
+    
     /**
      * Starts the transformation in preview mode.
      * @param input the dataset content.
-     * @param configuration
+     * @param configuration The {@link Configuration configuration} for this transformation.
      */
     @Override
-    public void transform(DataSet input, TransformerConfiguration configuration) {
+    public void transform(DataSet input, Configuration configuration) {
         if (input == null) {
             throw new IllegalArgumentException("Input cannot be null.");
         }
-        transformerSelector.process(configuration);
+        final PreviewConfiguration previewConfiguration = (PreviewConfiguration) configuration;
+
+        final TransformerWriter writer = configuration.output();
+        final DataSet dataSet = configuration.input();
+
+        final ParsedActions reference = actionParser.parse(previewConfiguration.getReferenceActions());
+        final ParsedActions newAction = actionParser.parse(previewConfiguration.getActions());
+        final BiConsumer<DataSetRow, TransformationContext> referenceAction = reference.asUniqueRowTransformer();
+        final BiConsumer<DataSetRow, TransformationContext> action = newAction.asUniqueRowTransformer();
+
+        TransformationContext referenceContext = previewConfiguration.getContexts()[0];
+        TransformationContext context = previewConfiguration.getContexts()[1];
+
+        final List<Integer> indexes = previewConfiguration.getIndexes();
+        final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
+        final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : 0;
+        final Integer maxIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).max().getAsInt() : Integer.MAX_VALUE;
+
+        // TODO Metadata
+        Stream<DataSetRow> records = dataSet.getRecords();
+        try {
+            writer.fieldName("records");
+            writer.startArray();
+            AtomicInteger index = new AtomicInteger(0);
+
+            if (referenceAction == null) {
+                throw new IllegalStateException("No old action to perform for preview.");
+            }
+
+            final AtomicInteger resultIndexShift = new AtomicInteger();
+            // With preview (no 'old row' and 'new row' to compare when writing results).
+            Stream<Processing[]> process = records
+                    .map(row -> new Processing(row, index.getAndIncrement() - resultIndexShift.get())) //
+                    .map(p -> new Processing[]{new Processing(p.row.clone(), p.index), p}) //
+                    .map(p -> {
+                        referenceAction.accept(p[0].row, referenceContext);
+                        if (p[0].row.isDeleted()) {
+                            resultIndexShift.incrementAndGet();
+                        }
+                        action.accept(p[1].row, context);
+                        return p;
+                    }); //
+            if (indexes != null) {
+                process = process.filter(p -> {
+                    final boolean inRange = p[1].index >= minIndex && p[1].index <= maxIndex;
+                    final boolean include = indexes.contains(p[1].index) || (p[0].row.isDeleted() && !p[1].row.isDeleted());
+                    return inRange && include;
+                });
+            }
+            process.forEach(p -> {
+                p[1].row.diff(p[0].row);
+                try {
+                    if (p[1].row.shouldWrite()) {
+                        writer.write(p[1].row);
+                    }
+                } catch (IOException e) {
+                    throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+                }
+            });
+            writer.endArray();
+        } catch (IOException e) {
+            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+        }
     }
 
     @Override
-    public boolean accept(TransformerConfiguration configuration) {
-        return configuration.isPreview();
+    public boolean accept(Configuration configuration) {
+        return PreviewConfiguration.class.isAssignableFrom(configuration.getClass());
+    }
+
+    public static class Processing {
+        DataSetRow row;
+        int index;
+
+        public Processing(DataSetRow row, int index) {
+            this.row = row;
+            this.index = index;
+        }
     }
 }

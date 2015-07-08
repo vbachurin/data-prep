@@ -36,11 +36,11 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 import org.talend.dataprep.transformation.api.transformer.writer.CsvWriter;
 import org.talend.dataprep.transformation.api.transformer.writer.JsonWriter;
 import org.talend.dataprep.transformation.api.transformer.writer.TableauWriter;
 import org.talend.dataprep.transformation.api.transformer.writer.XlsWriter;
-import org.talend.dataprep.transformation.api.transformer.TransformerConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -152,7 +152,7 @@ public class TransformationService {
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             response.setContentType(format.getMimeType());
 
-            TransformerConfiguration configuration = TransformerConfiguration.builder() //
+            Configuration configuration = Configuration.builder() //
                     .input(dataSet) //
                     .output(findWriter(format, response)) //
                     .withActions(decodedActions) //
@@ -201,11 +201,9 @@ public class TransformationService {
             final String decodedOldActions = oldActions == null ? null : IOUtils.toString(oldActions.getInputStream());
             final String decodedNewActions = newActions == null ? null : IOUtils.toString(newActions.getInputStream());
 
-            final TransformerConfiguration configuration = TransformerConfiguration.builder() //
+            final Configuration configuration = Configuration.builder() //
                     .format(ExportType.JSON) //
                     .output(findWriter(ExportType.JSON, response)) //
-                    .withIndexes(decodedIndexes) //
-                    .withActions(decodedOldActions, decodedNewActions) //
                     .build();
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             factory.get(configuration).transform(dataSet, configuration);
