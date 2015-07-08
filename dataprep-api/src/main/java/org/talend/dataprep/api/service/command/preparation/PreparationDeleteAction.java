@@ -38,7 +38,7 @@ public class PreparationDeleteAction extends DataPrepCommand<Void> {
         try {
             final HttpResponse response = client.execute(actionAppend);
             final int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode >= 200) {
+            if (statusCode == 200) {
                 return null;
             }
             throw new TDPException(UNABLE_TO_DELETE_ACTION_IN_PREPARATION, TDPExceptionContext.build()

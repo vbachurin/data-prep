@@ -44,7 +44,7 @@ public class PreparationUpdateAction extends DataPrepCommand<Void> {
 
             final HttpResponse response = client.execute(actionAppend);
             final int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode >= 200) {
+            if (statusCode == 200) {
                 return null;
             }
             throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_ACTION_IN_PREPARATION, TDPExceptionContext.build()

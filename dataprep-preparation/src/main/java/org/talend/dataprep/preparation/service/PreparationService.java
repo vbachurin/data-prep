@@ -6,6 +6,7 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST;
+import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED;
 import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_STEP_DOES_NOT_EXIST;
 
 import java.io.IOException;
@@ -198,13 +199,17 @@ public class PreparationService {
     @Timed
     public void deleteAction(@PathVariable("id") final String id, //
                              @PathVariable("action") final String action) throws TDPException {
+        if(ROOT_STEP.getId().equals(action)) {
+            throw new TDPException(PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED);
+        }
+
         LOGGER.debug("Deleting actions in preparation #{}", id);
         final Preparation preparation = getPreparation(id);
 
         // Get all steps
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
-        final List<String> steps = PreparationUtils.listSteps(head, null, preparationRepository);
+        final List<String> steps = PreparationUtils.listSteps(head, ROOT_STEP.getId(), preparationRepository);
         if (!steps.contains(action)) {
             throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
                     TDPExceptionContext.build()
