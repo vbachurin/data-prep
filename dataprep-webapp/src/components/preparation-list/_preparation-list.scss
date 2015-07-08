@@ -21,6 +21,7 @@
     min-width: 285px;
     max-width: 285px;
     float: left;
+    position: relative;
     padding: $grid-item-border-size;
     box-shadow: inset 0px 0px 1px 1px $shadow-gray;
     //border: ($grid-item-border-size / 2) solid $grid-item-border-color;
@@ -44,7 +45,12 @@
       margin: 0;
       max-height: 25px;
 
-
+      &.oneline{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width:85%;
+      }
       a {
         text-overflow: ellipsis;
         color: $title-color;
@@ -58,7 +64,12 @@
         &.favorite {
           font-size: 1.4em;
           float: right;
-          color: $light-gray;
+          color: #B8B8B8;/*$light-gray;*/
+          text-decoration: none;
+          position: absolute;
+          right: 8px;
+          top: 5px;
+          width: 25px;
 
           &.selected {
             color: $orange;
@@ -75,23 +86,36 @@
       padding-left: 10px;
       font-size: 0.8em;
       margin: 0px 0px 0px 0px;
+      &.oneline{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width:67%;
+        float: left;
+      }
     }
 
     .important {
 
       color: $important-color;
       font-size: 0.9em;
+
       &:hover{
         //text-decoration: underline;
         //cursor: pointer;
       }
     }
 
+    .nbrows{
+      width: 33%;
+      float: left;
+    }
+
     .actions{
       float: right;
       font-size: 1.3rem;
       font-weight: 600;
-      color: $grid-items-background;
+      color: #D2D2D2;/*$grid-items-background;*/
       &:hover{
         color: $color-error;
       }
