@@ -42,26 +42,24 @@ public class XlsExporterTest {
 
     @Test
     public void write_simple_xls_file() throws Exception {
-
         // given
-        final Configuration configuration = Configuration.builder().format(ExportType.XLS).withActions("").build();
-        final Transformer exporter = factory.get(configuration);
-
-        final InputStream inputStream = TransformerFactory.class.getResourceAsStream("export_dataset.json");
-
         Path path = Files.createTempFile("datarep-foo", "xls");
-
         Files.deleteIfExists(path);
-        final ObjectMapper mapper = builder.build();
-        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            try (final OutputStream outputStream = Files.newOutputStream(path)) {
+        try (final OutputStream outputStream = Files.newOutputStream(path)) {
+            final Configuration configuration = Configuration.builder() //
+                    .format(ExportType.XLS) //
+                    .output(outputStream) //
+                    .actions("") //
+                    .build();
+            final Transformer exporter = factory.get(configuration);
+            final InputStream inputStream = XlsExporterTest.class.getResourceAsStream("export_dataset.json");
+            final ObjectMapper mapper = builder.build();
+            try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+                final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
                 // when
                 exporter.transform(dataSet, configuration);
-                outputStream.flush();
             }
         }
-
         Workbook workbook = XlsUtils.getWorkbook(Files.newInputStream(path));
 
         Assertions.assertThat(workbook).isNotNull();

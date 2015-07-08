@@ -60,16 +60,15 @@ class SimpleTransformer implements Transformer {
         if (input == null) {
             throw new IllegalArgumentException("Input cannot be null.");
         }
-        final TransformerWriter writer = configuration.output();
+        final TransformerWriter writer = configuration.writer();
         try {
             writer.startObject();
             final ParsedActions parsedActions = actionParser.parse(configuration.getActions());
             final List<DataSetMetadataAction> metadataActions = parsedActions.getMetadataTransformers();
             final List<DataSetRowAction> rowActions = parsedActions.getRowTransformers();
-            final DataSet dataSet = configuration.input();
             TransformationContext context = configuration.getTransformationContext();
             // Metadata transformation
-            final List<ColumnMetadata> dataSetColumns = dataSet.getColumns();
+            final List<ColumnMetadata> dataSetColumns = input.getColumns();
             RowMetadata rowMetadata = new RowMetadata(dataSetColumns);
             if (!dataSetColumns.isEmpty()) {
                 for (DataSetMetadataAction action : metadataActions) {
@@ -81,7 +80,7 @@ class SimpleTransformer implements Transformer {
                 }
             }
             // Row transformations
-            Stream<DataSetRow> records = dataSet.getRecords();
+            Stream<DataSetRow> records = input.getRecords();
             writer.fieldName("records");
             writer.startArray();
             // Apply actions to records
@@ -136,7 +135,7 @@ class SimpleTransformer implements Transformer {
                         "", //
                         "", //
                         0, //
-                        context.getTransformedRowMetadata());
+                        rowMetadata);
                 transformedMetadata.getContent().setNbRecords(transformedRows.size());
                 statisticsDataSet.setMetadata(transformedMetadata);
                 statisticsDataSet.setRecords(transformedRows.stream());

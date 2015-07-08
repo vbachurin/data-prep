@@ -44,21 +44,23 @@ public class ExportFactoryTest {
         // given
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("exportParameters.csvSeparator", ";");
-        final Configuration configuration = Configuration.builder().args(arguments).format(CSV)
-                .withActions(IOUtils.toString(TransformerFactory.class.getResourceAsStream("upper_case_firstname.json"))).build();
+        final OutputStream outputStream = new ByteArrayOutputStream();
+        final Configuration configuration = Configuration.builder().args(arguments).format(CSV).output(outputStream)
+                .actions(IOUtils.toString(ExportFactoryTest.class.getResourceAsStream("upper_case_firstname.json"))).build();
         final Transformer exporter = factory.get(configuration);
         final String expectedCsv = IOUtils.toString(ExportFactoryTest.class
                 .getResourceAsStream("expected_export_preparation_uppercase_firstname.csv"));
 
         final ObjectMapper mapper = builder.build();
-        final InputStream inputStream = TransformerFactory.class.getResourceAsStream("export_dataset.json");
+        final InputStream inputStream = ExportFactoryTest.class.getResourceAsStream("export_dataset.json");
         try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            final OutputStream outputStream = new ByteArrayOutputStream();
+
             // when
             exporter.transform(dataSet, configuration);
             // then
-            assertThat(outputStream.toString()).isEqualTo(expectedCsv);        }
+            assertThat(outputStream.toString()).isEqualTo(expectedCsv);
+        }
 
     }
 }

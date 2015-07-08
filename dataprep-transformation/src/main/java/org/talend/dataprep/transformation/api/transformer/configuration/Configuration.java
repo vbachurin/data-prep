@@ -1,13 +1,23 @@
 package org.talend.dataprep.transformation.api.transformer.configuration;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.type.ExportType;
+import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.writer.CsvWriter;
+import org.talend.dataprep.transformation.api.transformer.writer.JsonWriter;
+import org.talend.dataprep.transformation.api.transformer.writer.TableauWriter;
+import org.talend.dataprep.transformation.api.transformer.writer.XlsWriter;
+import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Full configuration for a transformation.
@@ -23,27 +33,19 @@ public class Configuration {
     /** The arguments for export */
     private final Map<String, Object> arguments;
 
-    /** The dataset input to transform. */
-    private final DataSet input;
-
     /** Where to write the transformed content. */
-    private final TransformerWriter output;
+    private final OutputStream output;
 
     /** List of transformation context, one per action. */
     private TransformationContext transformationContext;
 
     /**
      * Constructor for the transformer configuration.
-     * 
-     * @param input the json parser.
-     * @param output the writer plugged to the output stream to write into.
      */
-    protected Configuration(final DataSet input, //
-                            final TransformerWriter output, //
-                            final ExportType format, //
-                            final String actions, //
-                            final Map<String, Object> arguments) {
-        this.input = input;
+    protected Configuration(final OutputStream output, //
+            final ExportType format, //
+            final String actions, //
+            final Map<String, Object> arguments) {
         this.output = output;
         this.format = format;
         this.actions = actions;
@@ -80,16 +82,9 @@ public class Configuration {
     }
 
     /**
-     * @return the dataset to transform as json parser.
-     */
-    public DataSet input() {
-        return input;
-    }
-
-    /**
      * @return the writer where to write the transform dataset.
      */
-    public TransformerWriter output() {
+    public OutputStream output() {
         return output;
     }
 
@@ -98,6 +93,31 @@ public class Configuration {
      */
     public TransformationContext getTransformationContext() {
         return transformationContext;
+    }
+
+    /**
+     * @return The {@link TransformerWriter writer} to be used to send result back to client.
+     */
+    public TransformerWriter writer() {
+        switch (format) {
+        case CSV:
+            final String separator = (String) arguments.get("exportParameters.csvSeparator");
+            return new CsvWriter(output, separator.charAt(0));
+        case XLS:
+            return new XlsWriter(output);
+        case TABLEAU:
+            return new TableauWriter(output);
+        case JSON:
+            try {
+                final ObjectMapper mapper = new ObjectMapper();
+                final JsonGenerator generator = mapper.getFactory().createGenerator(output);
+                return new JsonWriter(generator);
+            } catch (IOException e) {
+                throw new TDPException(TransformationErrorCodes.UNEXPECTED_EXCEPTION, e);
+            }
+        default:
+            throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED);
+        }
     }
 
     /**
@@ -120,26 +140,14 @@ public class Configuration {
          */
         private Map<String, Object> arguments = Collections.emptyMap();
 
-        /** The dataset input to transform. */
-        private DataSet input = DataSet.empty();
-
         /** Where to write the transformed content. */
-        private TransformerWriter output;
-
-        /**
-         * @param input the dataset input to set.
-         * @return the builder to chain calls.
-         */
-        public Builder input(final DataSet input) {
-            this.input = input;
-            return this;
-        }
+        private OutputStream output;
 
         /**
          * @param output where to write the transformed dataset.
          * @return the builder to chain calls.
          */
-        public Builder output(final TransformerWriter output) {
+        public Builder output(final OutputStream output) {
             this.output = output;
             return this;
         }
@@ -148,7 +156,7 @@ public class Configuration {
          * @return a new {@link Configuration} from the builder setup.
          */
         public Configuration build() {
-            return new Configuration(input, output, format, actions, arguments);
+            return new Configuration(output, format, actions, arguments);
         }
 
         /**
@@ -168,7 +176,7 @@ public class Configuration {
          * @param actions The actions in JSON string format.
          * @return The builder
          */
-        public Builder withActions(final String actions) {
+        public Builder actions(final String actions) {
             this.actions = actions;
             return this;
         }

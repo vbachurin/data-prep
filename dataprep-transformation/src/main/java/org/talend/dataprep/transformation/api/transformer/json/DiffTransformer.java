@@ -11,6 +11,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
@@ -47,11 +48,10 @@ class DiffTransformer implements Transformer {
         }
         final PreviewConfiguration previewConfiguration = (PreviewConfiguration) configuration;
 
-        final TransformerWriter writer = configuration.output();
-        final DataSet dataSet = configuration.input();
+        final TransformerWriter writer = configuration.writer();
 
         final ParsedActions reference = actionParser.parse(previewConfiguration.getReferenceActions());
-        final ParsedActions newAction = actionParser.parse(previewConfiguration.getActions());
+        final ParsedActions newAction = actionParser.parse(previewConfiguration.getPreviewActions());
         final BiConsumer<DataSetRow, TransformationContext> referenceAction = reference.asUniqueRowTransformer();
         final BiConsumer<DataSetRow, TransformationContext> action = newAction.asUniqueRowTransformer();
 
@@ -63,17 +63,19 @@ class DiffTransformer implements Transformer {
         final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : 0;
         final Integer maxIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).max().getAsInt() : Integer.MAX_VALUE;
 
-        // TODO Metadata
-        Stream<DataSetRow> records = dataSet.getRecords();
+        Stream<DataSetRow> records = input.getRecords();
         try {
+            writer.startObject();
+            // Metadata
+            writer.fieldName("columns");
+            writer.write(new RowMetadata(input.getColumns()));
+            // Records
             writer.fieldName("records");
             writer.startArray();
             AtomicInteger index = new AtomicInteger(0);
-
             if (referenceAction == null) {
                 throw new IllegalStateException("No old action to perform for preview.");
             }
-
             final AtomicInteger resultIndexShift = new AtomicInteger();
             // With preview (no 'old row' and 'new row' to compare when writing results).
             Stream<Processing[]> process = records
@@ -105,6 +107,8 @@ class DiffTransformer implements Transformer {
                 }
             });
             writer.endArray();
+            writer.endObject();
+            writer.flush();
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
         }

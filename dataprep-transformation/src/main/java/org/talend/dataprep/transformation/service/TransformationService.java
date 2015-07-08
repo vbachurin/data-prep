@@ -35,12 +35,8 @@ import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
 import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
-import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
 import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
-import org.talend.dataprep.transformation.api.transformer.writer.CsvWriter;
-import org.talend.dataprep.transformation.api.transformer.writer.JsonWriter;
-import org.talend.dataprep.transformation.api.transformer.writer.TableauWriter;
-import org.talend.dataprep.transformation.api.transformer.writer.XlsWriter;
+import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -65,28 +61,6 @@ public class TransformationService {
 
     @Autowired
     private TransformerFactory factory;
-
-    private TransformerWriter findWriter(ExportType format, HttpServletResponse response) throws IOException {
-        TransformerWriter writer;
-        switch (format) {
-            case CSV:
-                writer = new CsvWriter(response.getOutputStream(), ',');
-                break;
-            case XLS:
-                writer = new XlsWriter(response.getOutputStream());
-                break;
-            case TABLEAU:
-                writer = new TableauWriter(response.getOutputStream());
-                break;
-            case JSON:
-                final ObjectMapper mapper = builder.build();
-                writer = new JsonWriter(mapper.writer().getFactory().createGenerator(response.getOutputStream()));
-                break;
-            default:
-                throw new TDPException(TransformationErrorCodes.OUTPUT_TYPE_NOT_SUPPORTED);
-        }
-        return writer;
-    }
 
     /**
      * Apply all <code>actions</code> to <code>content</code>. Actions is a Base64-encoded JSON list of
@@ -153,9 +127,10 @@ public class TransformationService {
             response.setContentType(format.getMimeType());
 
             Configuration configuration = Configuration.builder() //
-                    .input(dataSet) //
-                    .output(findWriter(format, response)) //
-                    .withActions(decodedActions) //
+                    .format(format)
+                    .args(arguments)
+                    .output(response.getOutputStream()) //
+                    .actions(decodedActions) //
                     .build();
             factory.get(configuration).transform(dataSet, configuration);
         } catch(JsonMappingException e) {
@@ -193,19 +168,26 @@ public class TransformationService {
     public void transformPreview(@ApiParam(value = "Old actions to perform on content.") @RequestPart(value = "oldActions", required = false) final Part oldActions, //
             @ApiParam(value = "New actions to perform on content.") @RequestPart(value = "newActions", required = false) final Part newActions, //
             @ApiParam(value = "The row indexes to return") @RequestPart(value = "indexes", required = false) final Part indexes, //
-            @ApiParam(value = "Data set content as JSON") @RequestPart final Part content, //
+            @ApiParam(value = "Data set content as JSON") @RequestPart(value = "content", required = false) final Part content, //
             final HttpServletResponse response) {
         final ObjectMapper mapper = builder.build();
-        try (JsonParser parser = mapper.getFactory().createParser(IOUtils.toString(content.getInputStream()))) {
+        try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
             final String decodedIndexes = indexes == null ? null : IOUtils.toString(indexes.getInputStream());
             final String decodedOldActions = oldActions == null ? null : IOUtils.toString(oldActions.getInputStream());
             final String decodedNewActions = newActions == null ? null : IOUtils.toString(newActions.getInputStream());
-
-            final Configuration configuration = Configuration.builder() //
-                    .format(ExportType.JSON) //
-                    .output(findWriter(ExportType.JSON, response)) //
-                    .build();
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+
+            final PreviewConfiguration configuration = PreviewConfiguration.preview() //
+                    .withActions(decodedNewActions) //
+                    .withIndexes(decodedIndexes) //
+                    .fromReference( //
+                            Configuration.builder() //
+                                    .format(ExportType.JSON) //
+                                    .output(response.getOutputStream()) //
+                                    .actions(decodedOldActions) //
+                                    .build() //
+                    ) //
+                    .build();
             factory.get(configuration).transform(dataSet, configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);

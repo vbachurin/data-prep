@@ -46,7 +46,7 @@ public abstract class PreviewAbstract extends PreparationCommand<InputStream> {
         HttpEntity reqEntity = MultipartEntityBuilder.create()
                 .addPart("oldActions", new StringBody(oldEncodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
                 .addPart("newActions", new StringBody(newEncodedActions, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
-                .addPart("indexes", new StringBody(encodedTdpIds, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
+                .addPart("previewIndexes", new StringBody(encodedTdpIds, ContentType.TEXT_PLAIN.withCharset("UTF-8"))) //$NON-NLS-1$ //$NON-NLS-2$
                 .addPart("content", new InputStreamBody(content, ContentType.APPLICATION_JSON)) //$NON-NLS-1$
                 .build();
         transformationCall.setEntity(reqEntity);
