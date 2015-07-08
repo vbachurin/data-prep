@@ -91,5 +91,9 @@
   "SERVICE_UNAVAILABLE": "Service unavailable",
   "UPLOAD_ERROR_TITLE": "Upload error",
   "DELETE_DATASET_ERROR": "Deletion not allowed, dataset still used by preparation(s)",
-  "UPLOAD_ERROR": "An error occurred during file upload"
+  "UPLOAD_ERROR": "An error occurred during file upload",
+
+  "NO_CLUSTERS_ACTION_MSG":"No Clusters Were Found !!!",
+  "NO_CHOICES_ACTION_MSG":"No Choices Were Found !!!",
+  "NO_PARAMS_ACTION_MSG":"No Simple Parameters Were Found !!!"
 }

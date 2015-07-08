@@ -53,14 +53,21 @@
     <talend-modal fullscreen="false"
                   state="actionsSuggestionsCtrl.showDynamicModal"
                   close-button="true">
+        <div ng-if="actionsSuggestionsCtrl.showHideModalContent">
+            <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
+            <div class="modal-subtitle">{{ actionsSuggestionsCtrl.dynamicTransformation.description }}</div>
 
-        <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
-        <div class="modal-subtitle">{{ actionsSuggestionsCtrl.dynamicTransformation.description }}</div>
-
-        <div ng-if="actionsSuggestionsCtrl.dynamicFetchInProgress">
-            <i data-icon="e" class="icon continuous-rotate"></i>
+            <div ng-if="actionsSuggestionsCtrl.dynamicFetchInProgress">
+                <i data-icon="e" class="icon continuous-rotate"></i>
+            </div>
+            <transform-params transformation="actionsSuggestionsCtrl.dynamicTransformation"
+                              on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation)(params)"></transform-params>
         </div>
-        <transform-params transformation="actionsSuggestionsCtrl.dynamicTransformation"
-                          on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation)(params)"></transform-params>
+        <div ng-if="!actionsSuggestionsCtrl.showHideModalContent">
+            <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
+
+            <div class="modal-subtitle">{{ actionsSuggestionsCtrl.emptyParamsMsg | translate }}</div>
+
+        </div>
     </talend-modal>
 </div>

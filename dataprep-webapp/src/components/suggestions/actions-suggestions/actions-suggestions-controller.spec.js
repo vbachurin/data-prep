@@ -25,6 +25,7 @@ describe('Actions suggestions controller', function() {
 
         //then
         expect(ctrl.dynamicTransformation).toBe(null);
+        expect(ctrl.showHideModalContent).toBe(null);
         expect(ctrl.dynamicFetchInProgress).toBe(false);
         expect(ctrl.showDynamicModal).toBe(false);
     }));
@@ -147,6 +148,78 @@ describe('Actions suggestions controller', function() {
 
             //then
             expect(ctrl.dynamicFetchInProgress).toBe(false);
+        }));
+
+        it('should show NO CLUSTERS WERE FOUND message', inject(function() {
+            //given
+            var ctrl = createController();
+            ctrl.dynamicTransformation = {name: 'cluster', dynamic: true, cluster:{clusters:[]}};
+
+            //when
+            ctrl.checkDynamicResponse();
+
+            //then
+            expect(ctrl.emptyParamsMsg).toEqual('NO_CLUSTERS_ACTION_MSG');
+        }));
+
+        it('should show NO CHOICES WERE FOUND message', inject(function() {
+            //given
+            var ctrl = createController();
+            ctrl.dynamicTransformation = {name: 'choices', dynamic: true, parameters:[]};
+
+            //when
+            ctrl.checkDynamicResponse();
+
+            //then
+            expect(ctrl.emptyParamsMsg).toEqual('NO_CHOICES_ACTION_MSG');
+        }));
+
+        it('should show NO SIMPLE PARAMS WERE FOUND message', inject(function() {
+            //given
+            var ctrl = createController();
+            ctrl.dynamicTransformation = {name: 'items', dynamic: true, items:[]};
+
+            //when
+            ctrl.checkDynamicResponse();
+
+            //then
+            expect(ctrl.emptyParamsMsg).toEqual('NO_PARAMS_ACTION_MSG');
+        }));
+
+        it('should show dynamic cluster transformation in a modal', inject(function() {
+            //given
+            var ctrl = createController();
+            ctrl.dynamicTransformation = {name: 'cluster', dynamic: true, cluster:{clusters:[{parameters:[],replace:{}}]}};
+
+            //when
+            ctrl.checkDynamicResponse();
+
+            //then
+            expect(ctrl.showHideModalContent).toBe(true);
+        }));
+
+        it('should show dynamic parameters transformation in a modal', inject(function() {
+            //given
+            var ctrl = createController();
+            ctrl.dynamicTransformation = {name: 'items', dynamic: true, items:[1,2]};
+
+            //when
+            ctrl.checkDynamicResponse();
+
+            //then
+            expect(ctrl.showHideModalContent).toBe(true);
+        }));
+
+        it('should show dynamic choices transformation in a modal', inject(function() {
+            //given
+            var ctrl = createController();
+            ctrl.dynamicTransformation = {name: 'items', dynamic: true, parameters:[1,2]};
+
+            //when
+            ctrl.checkDynamicResponse();
+
+            //then
+            expect(ctrl.showHideModalContent).toBe(true);
         }));
     });
 });
