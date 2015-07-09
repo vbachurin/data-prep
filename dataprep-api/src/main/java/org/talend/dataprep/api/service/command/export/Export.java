@@ -18,6 +18,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.ExportParameters;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
@@ -46,12 +47,10 @@ public class Export extends PreparationCommand<InputStream> {
         List<Action> actions;
         InputStream content;
         if (StringUtils.isNotBlank(input.getPreparationId())) {
-            // Get name from preparation (preparation is set)
-            final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
-            //
-            name = context.getPreparation().getName();
-            actions = getPreparationActions(context.getPreparation(), input.getStepId());
-            content = getDatasetContent(context.getPreparation().getDataSetId());
+            final Preparation preparation = getPreparation(input.getPreparationId());
+            name = preparation.getName();
+            actions = getPreparationActions(preparation, input.getStepId());
+            content = getDatasetContent(preparation.getDataSetId());
         } else {
             // Get name from data set
             String dataSetId = input.getDatasetId();
