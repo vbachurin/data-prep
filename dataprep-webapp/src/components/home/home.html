@@ -17,6 +17,13 @@
                        ng-model="homeCtrl.datasetFile"
                        ng-file-change="homeCtrl.uploadDatasetFile()"/>
             </li>
+            <li>
+                <a class="btn-primary">
+                    <i data-icon="m" class="iconfont"></i>
+                    <i class="iconlabel" ng-click="homeCtrl.tempImportRemoteDataset()">{{ ::'IMPORT_REMOTE_FILE' |
+                        translate }}</i>
+                </a>
+            </li>
 
 
             <!-- FOR DEMO PURPOSE ONLY -->
@@ -48,6 +55,7 @@
             </div>
         </form>
     </talend-modal>
+
 </header>
 
 <div class="home">

@@ -1,18 +1,11 @@
 package org.talend.dataprep.dataset.service;
 
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.*;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -29,27 +22,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.DistributedLock;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
-import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.DataSetAnalyzer;
 import org.talend.dataprep.dataset.service.analysis.FormatAnalysis;
 import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
-import org.talend.dataprep.dataset.store.DataSetContentStore;
-import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.dataset.service.locator.DataSetLocatorService;
+import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
+import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
@@ -61,11 +46,7 @@ import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
 import org.talend.dataprep.user.store.UserDataRepository;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -92,13 +73,16 @@ public class DataSetService {
     private DataSetMetadataRepository dataSetMetadataRepository;
 
     @Autowired
-    private DataSetContentStore contentStore;
+    private ContentStoreRouter contentStore;
 
     @Autowired
     private UserDataRepository userDataRepository;
 
     @Autowired
     private FormatGuess.Factory formatGuessFactory;
+
+    @Autowired
+    private DataSetLocatorService datasetLocator;
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
@@ -172,7 +156,9 @@ public class DataSetService {
      * Creates a new data set and returns the new data set id as text in the response.
      *
      * @param name An optional name for the new data set (might be <code>null</code>).
-     * @param dataSetContent The raw content of the data set (might be a CSV, XLS...).
+     * @param contentType the request content type.
+     * @param content The raw content of the data set (might be a CSV, XLS...) or the connection parameter in case of a
+     * remote csv.
      * @param response The HTTP response to interact with caller.
      * @return The new data id.
      * @see #get(boolean, boolean, String, HttpServletResponse)
@@ -183,16 +169,36 @@ public class DataSetService {
     @VolumeMetered
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
-            @ApiParam(value = "content") InputStream dataSetContent, HttpServletResponse response) {
+            @RequestHeader("Content-Type") String contentType, @ApiParam(value = "content") InputStream content,
+            HttpServletResponse response) {
+
         response.setHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE); //$NON-NLS-1$
         final String id = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(id).name(name).author(getUserId()).created(System.currentTimeMillis())
+
+        // get the location out of the content type and the request body
+        DataSetLocation location;
+        try {
+            location = datasetLocator.getDataSetLocation(contentType, content);
+        } catch (IOException e) {
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_LOCATION, e);
+        }
+
+        DataSetMetadata dataSetMetadata = metadata() //
+                .id(id) //
+                .name(name) //
+                .author(getUserId()) //
+                .location(location) //
+                .created(System.currentTimeMillis()) //
                 .build();
+
         dataSetMetadata.getLifecycle().importing(true); // Indicate data set is being imported
+
         // Save data set content
-        contentStore.storeAsRaw(dataSetMetadata, dataSetContent);
+        contentStore.storeAsRaw(dataSetMetadata, content);
+
         // Create the new data set
         dataSetMetadataRepository.add(dataSetMetadata);
+
         // Queue events (format analysis, content indexing for search...)
         queueEvents(id);
         return id;

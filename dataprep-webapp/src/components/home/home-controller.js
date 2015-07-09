@@ -169,6 +169,37 @@
                 });
         };
 
+        /**
+         * @ngdoc method
+         * @name tempImportRemoteDataset
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Temporary function that calls a the backend to import a remote dataset. All parameters are hard coded.
+         */
+        vm.tempImportRemoteDataset = function() {
+
+            // hardcoded parameters for the first implementation
+            var importParameters = {
+                type: 'http',
+                name: 'test_import-'+ new Date().getTime() / 1000,
+                url:'http://samplecsvs.s3.amazonaws.com/Sacramentorealestatetransactions.csv'
+            };
+
+            var dataset = DatasetService.fileToDataset('', importParameters.name);
+            vm.uploadingDatasets.push(dataset);
+
+            DatasetService.import(importParameters)
+                .then(function(event) {
+                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
+                    DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
+                })
+                .catch(function() {
+                    dataset.error = true;
+                    MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
+                });
+
+
+        };
+
     }
 
     angular.module('data-prep.home')

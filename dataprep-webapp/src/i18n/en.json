@@ -45,6 +45,7 @@
   "EXPORT_CSV": "Export to CSV",
   "EXPORT_TABLEAU": "Export to TABLEAU",
   "IMPORT_FILE": "Import local file",
+  "IMPORT_REMOTE_FILE": "Import remote file",
   "OK": "Ok",
   "CONFIRM": "Confirm",
 
@@ -57,6 +58,8 @@
   "ENTER_DATASET_NAME": "Enter the dataset name",
   "NO_UNDONE_CONFIRM": "This operation cannot be undone. Are you sure ?",
   "UPDATE_EXISTING_DATASET": "Do you want to update existing \"{{dataset}}\" dataset ?",
+  "_comment": "import remote dataset",
+  "ENTER_HTTP_DATASET_URL": "Enter the HTTP dataset url",
 
   "_comment": "Instructions",
   "CHOOSE_SEPARATOR": "Which character do you want as delimiter ?",
@@ -89,9 +92,11 @@
   "PLAYGROUND_FILE_NOT_FOUND": "The {{type}} with this id does not exist or is inaccessible",
   "SERVER_ERROR_TITLE": "Server error",
   "SERVICE_UNAVAILABLE": "Service unavailable",
-  "UPLOAD_ERROR_TITLE": "Upload error",
   "DELETE_DATASET_ERROR": "Deletion not allowed, dataset still used by preparation(s)",
+  "UPLOAD_ERROR_TITLE": "Upload error",
   "UPLOAD_ERROR": "An error occurred during file upload",
+  "IMPORT_ERROR_TITLE": "Import error",
+  "IMPORT_ERROR": "An error occurred during import",
 
   "NO_CLUSTERS_ACTION_MSG":"No Clusters Were Found !!!",
   "NO_CHOICES_ACTION_MSG":"No Choices Were Found !!!",

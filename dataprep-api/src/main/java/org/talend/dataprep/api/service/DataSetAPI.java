@@ -26,16 +26,25 @@ import com.wordnik.swagger.annotations.ApiParam;
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
 public class DataSetAPI extends APIService {
 
+    /**
+     * Create a dataset from request body content.
+     *
+     * @param name The dataset name.
+     * @param contentType the request content type used to distinguish dataset creation or import.
+     * @param dataSetContent the dataset content from the http request body.
+     * @return The dataset id.
+     */
     @RequestMapping(value = "/api/datasets", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
+            @RequestHeader("Content-Type") String contentType,
             @ApiParam(value = "content") InputStream dataSetContent) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating dataset (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<String> creation = getCommand(CreateDataSet.class, client, name, dataSetContent);
+        HystrixCommand<String> creation = getCommand(CreateDataSet.class, client, name, contentType, dataSetContent);
         String result = creation.execute();
         LOG.debug("Dataset creation done.");
         return result;

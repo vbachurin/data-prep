@@ -1,4 +1,4 @@
-package org.talend.dataprep.dataset.store.local;
+package org.talend.dataprep.dataset.store.content.file;
 
 import java.io.*;
 import java.nio.file.*;
@@ -17,17 +17,21 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
-import org.talend.dataprep.dataset.store.DataSetContentStore;
+import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
-@Component
+/**
+ * Local dataset content that stores content in files.
+ */
+@Component("ContentStore#local")
 @ConditionalOnProperty(name = "dataset.content.store", havingValue = "local", matchIfMissing = false)
-public class LocalDataSetContentStore implements DataSetContentStore {
+public class LocalFileContentStore implements DataSetContentStore {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalDataSetContentStore.class);
+    /** This class' logger. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileContentStore.class);
 
     @Autowired
     FormatGuess.Factory factory;

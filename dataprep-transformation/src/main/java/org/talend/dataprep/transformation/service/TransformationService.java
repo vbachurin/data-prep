@@ -86,7 +86,7 @@ public class TransformationService {
     @ApiOperation(value = "Transform input data", notes = "This operation returns the input data transformed using the supplied actions.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
     public void transform(
-            @ApiParam(value = "Actions to perform on content (encoded in Base64).") @RequestPart(value = "actions", required = false) Part actions, //
+            @ApiParam(value = "Actions to perform on conte  nt.") @RequestPart(value = "actions", required = false) Part actions, //
             @ApiParam(value = "Data set content as JSON") @RequestPart(value = "content", required = false) Part content, //
             HttpServletResponse response, //
             HttpServletRequest request) throws IOException {

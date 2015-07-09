@@ -34,10 +34,24 @@
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {object} dataset The dataset to create
          * @description Create a dataset. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} create function
-         * @returns {promise} The pending DELETE promise
+         * @returns {promise} The pending CREATE promise
          */
         self.create = function(dataset) {
             var promise = DatasetListService.create(dataset);
+            promise.then(consolidatePreparationsAndDatasets);
+            return promise;
+        };
+
+        /**
+         * @ngdoc method
+         * @name import
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @param {object} parameters The import parameters (type, url, username...)
+         * @description Import call the backend to import the remote. It just call {@link data-prep.services.dataset.service:DatasetListService DatasetListService} import function
+         * @returns {promise} The pending IMPORT promise
+         */
+        self.import = function(parameters) {
+            var promise = DatasetListService.importRemoteDataset(parameters);
             promise.then(consolidatePreparationsAndDatasets);
             return promise;
         };
@@ -180,7 +194,7 @@
         self.getContent = DatasetRestService.getContent;
 
         //--------------------------------------------------------------------------------------------------------------
-        //---------------------------------------------------Utiles-----------------------------------------------------
+        //---------------------------------------------------Utils-----------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
