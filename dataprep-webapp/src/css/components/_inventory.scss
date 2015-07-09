@@ -138,6 +138,7 @@ $border-color: #CECECE;
 
 .divider {
   width: 1px;
+  margin: 0px 5px;
   background: $white;
 }
 
@@ -151,5 +152,14 @@ $border-color: #CECECE;
     border-radius: 5px;
     color: white;
     background-color: $background-blue;
+    .favorite-true{
+      opacity: 1;
+      color: orange;
+    }
   }
+}
+
+.favorite-true{
+  opacity: 1;
+  color: orange;
 }
