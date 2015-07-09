@@ -3,6 +3,7 @@ package org.talend.dataprep.api.preparation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.data.annotation.Transient;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
@@ -16,8 +17,10 @@ public class Action {
 
     public static final DataSetMetadataAction IDLE_METADATA_ACTION = (metadata, context) -> {};
 
+    @Transient
     private final transient DataSetRowAction rowAction;
 
+    @Transient
     private final transient DataSetMetadataAction metadataAction;
 
     private String action;
@@ -51,11 +54,13 @@ public class Action {
     }
 
     @JsonIgnore(true)
+    @Transient
     public DataSetRowAction getRowAction() {
         return rowAction;
     }
 
     @JsonIgnore(true)
+    @Transient
     public DataSetMetadataAction getMetadataAction() {
         return metadataAction;
     }
