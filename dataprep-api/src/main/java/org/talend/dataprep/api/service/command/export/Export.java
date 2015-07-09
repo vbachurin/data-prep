@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.service.command.export;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -49,16 +50,15 @@ public class Export extends PreparationCommand<InputStream> {
             final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
             //
             name = context.getPreparation().getName();
-            actions = context.getActions();
-            content = context.getContent();
+            actions = getPreparationActions(context.getPreparation(), input.getStepId());
+            content = getDatasetContent(context.getPreparation().getDataSetId());
         } else {
             // Get name from data set
-            final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
             String dataSetId = input.getDatasetId();
             final JsonNode datasetDetails = getDatasetDetails(dataSetId);
             //
             name = datasetDetails.get("metadata").get("name").textValue();
-            actions = context.getActions();
+            actions = Collections.emptyList();
             content = getDatasetContent(dataSetId);
         }
         // Set response headers
