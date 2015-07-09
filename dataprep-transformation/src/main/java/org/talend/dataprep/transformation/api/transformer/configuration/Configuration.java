@@ -101,7 +101,10 @@ public class Configuration {
     public TransformerWriter writer() {
         switch (format) {
         case CSV:
-            final String separator = (String) arguments.get("exportParameters.csvSeparator");
+            String separator = (String) arguments.get("exportParameters.csvSeparator");
+            if (separator == null) {
+                separator = ",";
+            }
             return new CsvWriter(output, separator.charAt(0));
         case XLS:
             return new XlsWriter(output);

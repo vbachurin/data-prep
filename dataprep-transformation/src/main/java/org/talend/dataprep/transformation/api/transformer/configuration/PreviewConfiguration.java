@@ -15,11 +15,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PreviewConfiguration extends Configuration {
 
     private final String previewActions;
+
     /** Indexes of rows (used in diff). */
     private final List<Integer> indexes;
 
     /** List of transformation context, one per action. */
-    private TransformationContext[] contexts = new TransformationContext[2];
+    private final TransformationContext context = new TransformationContext();
 
     protected PreviewConfiguration(Configuration configuration, String previewActions, List<Integer> indexes) {
         super(configuration.output(), configuration.format(), configuration.getActions(), configuration.getArguments());
@@ -31,8 +32,12 @@ public class PreviewConfiguration extends Configuration {
         return new Builder();
     }
 
-    public TransformationContext[] getContexts() {
-        return contexts;
+    public TransformationContext getReferenceContext() {
+        return super.getTransformationContext();
+    }
+
+    public TransformationContext getPreviewContext() {
+        return context;
     }
 
     public List<Integer> getIndexes() {

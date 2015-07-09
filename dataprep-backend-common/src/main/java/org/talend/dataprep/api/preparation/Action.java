@@ -6,6 +6,7 @@ import java.util.Map;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("action")
@@ -49,10 +50,12 @@ public class Action {
         this.parameters = parameters;
     }
 
+    @JsonIgnore(true)
     public DataSetRowAction getRowAction() {
         return rowAction;
     }
 
+    @JsonIgnore(true)
     public DataSetMetadataAction getMetadataAction() {
         return metadataAction;
     }

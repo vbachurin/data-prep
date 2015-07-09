@@ -156,12 +156,12 @@ class SimpleTransformer implements Transformer {
                     metadata.setDomain(semanticType.getSuggestedCategory());
                 }
             }
+            writer.endArray();
             // Write columns
             if (!writer.requireMetadataForHeader() && !dataSetColumns.isEmpty()) {
                 writer.fieldName("columns");
                 writer.write(rowMetadata);
             }
-            writer.endArray();
             writer.endObject();
             writer.flush();
         } catch (IOException | URISyntaxException e) {

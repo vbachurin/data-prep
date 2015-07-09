@@ -50,13 +50,15 @@ class DiffTransformer implements Transformer {
 
         final TransformerWriter writer = configuration.writer();
 
-        final ParsedActions reference = actionParser.parse(previewConfiguration.getReferenceActions());
-        final ParsedActions newAction = actionParser.parse(previewConfiguration.getPreviewActions());
-        final BiConsumer<DataSetRow, TransformationContext> referenceAction = reference.asUniqueRowTransformer();
-        final BiConsumer<DataSetRow, TransformationContext> action = newAction.asUniqueRowTransformer();
+        final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());
+        final ParsedActions previewActions = actionParser.parse(previewConfiguration.getPreviewActions());
+        final BiConsumer<DataSetRow, TransformationContext> referenceAction = referenceActions.asUniqueRowTransformer();
+        final BiConsumer<RowMetadata, TransformationContext> referenceMetadataAction = referenceActions.asUniqueMetadataTransformer();
+        final BiConsumer<RowMetadata, TransformationContext> previewMetadataAction = previewActions.asUniqueMetadataTransformer();
+        final BiConsumer<DataSetRow, TransformationContext> previewAction = previewActions.asUniqueRowTransformer();
 
-        TransformationContext referenceContext = previewConfiguration.getContexts()[0];
-        TransformationContext context = previewConfiguration.getContexts()[1];
+        TransformationContext referenceContext = previewConfiguration.getReferenceContext();
+        TransformationContext previewContext = previewConfiguration.getPreviewContext();
 
         final List<Integer> indexes = previewConfiguration.getIndexes();
         final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
@@ -68,7 +70,12 @@ class DiffTransformer implements Transformer {
             writer.startObject();
             // Metadata
             writer.fieldName("columns");
-            writer.write(new RowMetadata(input.getColumns()));
+            RowMetadata referenceMetadata = new RowMetadata(input.getColumns());
+            RowMetadata rowMetadata = new RowMetadata(input.getColumns());
+            referenceMetadataAction.accept(referenceMetadata, referenceContext);
+            previewMetadataAction.accept(rowMetadata, previewContext);
+            rowMetadata.diff(referenceMetadata);
+            writer.write(rowMetadata);
             // Records
             writer.fieldName("records");
             writer.startArray();
@@ -86,7 +93,7 @@ class DiffTransformer implements Transformer {
                         if (p[0].row.isDeleted()) {
                             resultIndexShift.incrementAndGet();
                         }
-                        action.accept(p[1].row, context);
+                        previewAction.accept(p[1].row, previewContext);
                         return p;
                     }); //
             if (indexes != null) {
