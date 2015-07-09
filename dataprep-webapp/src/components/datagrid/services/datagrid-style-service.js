@@ -285,5 +285,5 @@
     }
 
     angular.module('data-prep.datagrid')
-        .factory('DatagridStyleService', DatagridStyleService);
+        .service('DatagridStyleService', DatagridStyleService);
 })();

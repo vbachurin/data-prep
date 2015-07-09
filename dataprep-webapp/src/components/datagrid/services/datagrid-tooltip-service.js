@@ -157,5 +157,5 @@
     }
 
     angular.module('data-prep.datagrid')
-        .factory('DatagridTooltipService', DatagridTooltipService);
+        .service('DatagridTooltipService', DatagridTooltipService);
 })();

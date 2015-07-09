@@ -106,5 +106,5 @@
     }
 
     angular.module('data-prep.datagrid')
-        .factory('DatagridSizeService', DatagridSizeService);
+        .service('DatagridSizeService', DatagridSizeService);
 })();
