@@ -1,6 +1,6 @@
 <div class="preparation-list">
     <div class="preparation" ng-repeat="preparation in preparationListCtrl.preparations track by $index">
-        <p class="title">
+        <p class="title oneline">
             <a ui-sref="nav.home.preparations({prepid: preparation.id})">{{preparation.name}}</a>
             <a class="favorite" data-icon="f" ng-class="{selected: preparation.favorite}" ng-click="preparation.favorite = !preparation.favorite"></a>
         </p>
@@ -8,15 +8,23 @@
             {{::'OWNED_BY' | translate}} <span class="important">{{preparation.author}}</span><br/>
             {{::'LAST_MODIFICATION' | translate}}: {{preparation.lastModificationDate | date}} {{preparation.lastModificationDate | date:'shortTime'}}
         </p>
-        <p class="details">
-            <span class="important">{{preparation.dataset.name}}</span> - {{preparation.dataset.records}} {{::'ROWS' |
-            translate}}<br/>
+
+        <div style="position: relative;">
+            <p class="details oneline">
+                <span class="important">{{preparation.dataset.name}}</span>
+            </p>
+
+            <p class="details nbrows">
+                <span>- {{ preparation.dataset.records}} {{::'ROWS' | translate}}<span>
+            </p>
+        </div>
+
+        <br/>
 
         <p class="details">
             <span class="important">{{preparation.steps.length - 1}} {{::'STEPS' | translate}}</span> {{::'RECIPE' |
             translate}}
             <a data-icon="e" class="actions" ng-click="preparationListCtrl.delete(preparation)"></a>
-        </p>
         </p>
     </div>
 </div>

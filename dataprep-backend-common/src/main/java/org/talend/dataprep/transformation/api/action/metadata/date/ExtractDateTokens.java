@@ -14,6 +14,8 @@ import java.util.function.BiConsumer;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -80,6 +82,7 @@ public class ExtractDateTokens extends SingleColumnAction {
             new DateFieldMappingBean(DAY_OF_YEAR, ChronoField.DAY_OF_YEAR), //
             new DateFieldMappingBean(WEEK_OF_YEAR, ChronoField.ALIGNED_WEEK_OF_YEAR), //
     };
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExtractDateTokens.class);
 
     private static class DateFieldMappingBean {
 
@@ -146,7 +149,7 @@ public class ExtractDateTokens extends SingleColumnAction {
                     context.put(PATTERN, datePattern);
 
                     for (DateFieldMappingBean date_field : DATE_FIELDS) {
-                        if (new Boolean(parameters.get(date_field.key))) {
+                        if (Boolean.valueOf(parameters.get(date_field.key))) {
                             // create the new column
                             newColumnMetadata = createNewColumn(column, date_field.key);
 
@@ -160,13 +163,8 @@ public class ExtractDateTokens extends SingleColumnAction {
         };
     }
 
-    /**
-     * DOC stef Comment method "createNewColumn".
-     * @param column
-     * @return
-     */
     private ColumnMetadata createNewColumn(ColumnMetadata column, String suffix) {
-        ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+        return ColumnMetadata.Builder //
                 .column() //
                 .computedId(column.getId() + SEPARATOR + suffix) //
                 .name(column.getName() + SEPARATOR + suffix) //
@@ -176,7 +174,6 @@ public class ExtractDateTokens extends SingleColumnAction {
                 .valid(column.getQuality().getValid()) //
                 .headerSize(column.getHeaderSize()) //
                 .build();
-        return newColumnMetadata;
     }
 
     /**
@@ -228,13 +225,14 @@ public class ExtractDateTokens extends SingleColumnAction {
             } catch (DateTimeParseException e) {
                 // Nothing to do: in this case, temporalAccessor is left null, this will be used bellow to set empty new
                 // value for all fields
+                LOGGER.debug("Unable to parse date {}.", value, e);
             }
 
             for (DateFieldMappingBean date_field : DATE_FIELDS) {
-                if (new Boolean(parameters.get(date_field.key))) {
+                if (Boolean.valueOf(parameters.get(date_field.key))) {
                     String newValue = "";
 
-                    if (temporalAccessor != null && // may occurs if date is not parsable with pattern
+                    if (temporalAccessor != null && // may occurs if date can not be parsed with pattern
                             temporalAccessor.isSupported(date_field.field)) {
                         newValue = temporalAccessor.get(date_field.field) + "";
                     }

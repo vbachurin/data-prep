@@ -67,6 +67,6 @@ web:
         - "80:80"
         - "443:443"
     environment:
-        TDP_API_HOST: boot2docker
+        TDP_API_HOST: 10.42.10.99
         TDP_API_PORT: 8888
 

@@ -3,9 +3,8 @@ package org.talend.dataprep.api.preparation;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-import java.util.Objects;
-
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -137,8 +136,12 @@ public class Preparation extends Identifiable {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Preparation that = (Preparation) o;
         return Objects.equals(creationDate, that.creationDate) &&
                 Objects.equals(lastModificationDate, that.lastModificationDate) &&

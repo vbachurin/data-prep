@@ -20,7 +20,7 @@ public class DataSetRow implements Cloneable {
     private DataSetRow oldValue;
 
     /** Values of the dataset row. */
-    private TreeMap<String, String> values;
+    private SortedMap<String, String> values;
 
     /**
      * Default empty constructor.
@@ -228,7 +228,7 @@ public class DataSetRow implements Cloneable {
         }
 
         List<String> idIndexes = columns.stream().map(ColumnMetadata::getId).collect(Collectors.toList());
-        TreeMap<String, String> orderedValues = new TreeMap<>((id1, id2) -> idIndexes.indexOf(id1) - idIndexes.indexOf(id2));
+        SortedMap<String, String> orderedValues = new TreeMap<>((id1, id2) -> idIndexes.indexOf(id1) - idIndexes.indexOf(id2));
         orderedValues.putAll(values);
         final DataSetRow dataSetRow = new DataSetRow();
         dataSetRow.values = orderedValues;
