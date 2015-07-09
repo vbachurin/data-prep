@@ -149,26 +149,26 @@ describe('Preparation list directive', function() {
 
         var description = preparationTiles.eq(0).find('.description').eq(0).text();
         var details = preparationTiles.eq(0).find('.details').eq(0).text();
-        var rowsDetails = preparationTiles.eq(0).find('.details').eq(1).text();
-        var otherDetails = preparationTiles.eq(0).find('.details').eq(2).text();
+        var secondDetails = preparationTiles.eq(0).find('.details').eq(1).text();
+        var thirdDetails = preparationTiles.eq(0).find('.details').eq(2).text();
 
         expect(description).toContain('anonymousUser'); //owner
         expect(description).toContain('27'); //creation date day
         expect(description).toContain('2015'); //creation date year
         expect(details).toContain('customers_jso_light'); //dataset name
-        expect(rowsDetails).toContain('15'); //dataset nb records
-        expect(otherDetails).toContain('3'); //steps
+        expect(secondDetails).toContain('15'); //dataset nb records
+        expect(thirdDetails).toContain('3'); //steps
 
         description = preparationTiles.eq(1).find('.description').eq(0).text();
         details = preparationTiles.eq(1).find('.details').eq(0).text();
-        rowsDetails = preparationTiles.eq(1).find('.details').eq(1).text();
-        otherDetails = preparationTiles.eq(1).find('.details').eq(2).text();
+        secondDetails = preparationTiles.eq(1).find('.details').eq(1).text();
+        thirdDetails = preparationTiles.eq(1).find('.details').eq(1).text();
 
         expect(description).toContain('anonymousUser'); //owner
         expect(description).toContain('27'); //creation date day
         expect(description).toContain('2015'); //creation date year
         expect(details).toContain('first_interactions'); //dataset name
-        expect(rowsDetails).toContain('29379'); //dataset nb records
-        expect(otherDetails).toContain('3'); //steps
+        expect(secondDetails).toContain('29379'); //dataset nb records
+        expect(thirdDetails).toContain('3'); //steps
     });
 });
