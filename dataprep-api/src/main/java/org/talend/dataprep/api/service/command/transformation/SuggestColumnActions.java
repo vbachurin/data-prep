@@ -9,10 +9,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
@@ -31,10 +29,6 @@ public class SuggestColumnActions extends DataPrepCommand<InputStream> {
 
     /** The column description to get the actions for (in json). */
     private final InputStream input;
-
-    /** The data-prep ready jackson module. */
-    @Autowired(required = true)
-    private Jackson2ObjectMapperBuilder builder;
 
     /**
      * Constructor.

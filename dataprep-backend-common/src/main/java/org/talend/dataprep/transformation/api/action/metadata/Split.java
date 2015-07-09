@@ -115,7 +115,7 @@ public class Split extends SingleColumnAction {
                 if (originalValue != null) {
                     String[] split = originalValue.split(realSeparator, limit);
                     for (int i = 1; i <= limit; i++) {
-                        String newValue = (i <= split.length ? split[i - 1] : StringUtils.EMPTY);
+                        String newValue = i <= split.length ? split[i - 1] : StringUtils.EMPTY;
                         List<String> rowIds = row.values().keySet().stream().collect(Collectors.toList());
                         Integer nextSplitIndex = getNextAvailableSplitIndex(rowIds, columnId);
                         row.set(columnId + SPLIT_APPENDIX + "_" + nextSplitIndex, newValue);

@@ -58,9 +58,7 @@ public class HDFSContentCache implements ContentCache {
                 return null;
             }
             final String filteringStepId = stepId;
-            final FileStatus[] statuses = fileSystem.listStatus(preparation, p -> {
-                return p.getName().startsWith(filteringStepId);
-            });
+            final FileStatus[] statuses = fileSystem.listStatus(preparation, p -> p.getName().startsWith(filteringStepId));
             FileStatus electedFile = null;
             int maxTTL = includeEvicted ? -1 : 0;
             for (FileStatus status : statuses) {

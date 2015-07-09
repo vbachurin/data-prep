@@ -61,10 +61,7 @@ public class InMemoryPreparationRepository implements PreparationRepository {
         }
         // first filter on the class (listAll()) and then second filter on the dataset id
         return listAll(Preparation.class).stream()
-                .filter(p -> { //
-                    // filter on the dataset id
-                    return dataSetId.equals(p.getDataSetId());
-                })
+                .filter(p -> dataSetId.equals(p.getDataSetId())) // filter on the dataset id
                 .collect(Collectors.toList());
     }
 
