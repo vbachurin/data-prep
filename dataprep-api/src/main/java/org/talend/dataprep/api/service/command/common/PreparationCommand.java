@@ -2,7 +2,10 @@ package org.talend.dataprep.api.service.command.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -211,7 +214,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
         Preparation preparation;
 
-        public String version;
+        String version;
 
         public InputStream getContent() {
             return content;

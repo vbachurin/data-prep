@@ -1,18 +1,11 @@
 package org.talend.dataprep.dataset.service;
 
-import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.*;
+import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -29,13 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
@@ -61,11 +48,7 @@ import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
 import org.talend.dataprep.user.store.UserDataRepository;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -528,9 +511,9 @@ public class DataSetService {
                 DraftValidator draftValidator = formatGuess.getDraftValidator();
                 // Validate that the new data set metadata removes the draft status
                 DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
-                if (result.draft) {
-                    // FIXME what to do here?? exception?
-                    LOG.warn("dataSetMetadata#{} still a draft", dataSetId);
+                if (result.isDraft()) {
+                    // This is not an exception case: data set may remain a draft after update (although rather unusual).
+                    LOG.warn("Data set #{} is still a draft after update.", dataSetId);
                     return;
                 }
                 // Data set metadata to update is no longer a draft
@@ -559,7 +542,7 @@ public class DataSetService {
     public Iterable<String> favorites() {
         String userId = getUserId();
         UserData userData = userDataRepository.getUserData(userId);
-        return userData != null ? userData.getFavoritesDatasets() : Collections.EMPTY_LIST;
+        return userData != null ? userData.getFavoritesDatasets() : Collections.emptyList();
     }
 
     /**
