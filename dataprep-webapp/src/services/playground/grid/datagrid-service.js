@@ -19,6 +19,7 @@
          * @type {Object}
          */
         self.metadata = null;
+
         /**
          * @ngdoc property
          * @name data
@@ -27,6 +28,15 @@
          * @type {Object}
          */
         self.data = null;
+
+        /**
+         * @ngdoc property
+         * @name stepColumn
+         * @propertyOf data-prep.services.playground.service:DatagridService
+         * @description the column of the current step
+         * @type {number}
+         */
+        self.stepColumn = 0;
 
         /**
          * @ngdoc property
@@ -100,8 +110,10 @@
          * @param {Object} data - the new data (columns and records)
          * @description Update the data in the datagrid
          */
-        self.updateData = function (data) {
+        self.updateData = function (data, stepColumn) {
             self.data = data;
+            //console.log(stepColumn);
+            self.stepColumn = stepColumn;
             updateDataviewRecords(data.records);
         };
 

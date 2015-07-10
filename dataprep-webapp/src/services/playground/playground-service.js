@@ -248,7 +248,7 @@
                     return PreparationService.getContent('head');
                 })
                 .then(function(response) {
-                    DatagridService.updateData(response.data);
+                    DatagridService.updateData(response.data, +column.id);
                     return RecipeService.refresh();
                 })
                 .then(function() {
