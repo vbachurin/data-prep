@@ -11,10 +11,10 @@ $subheader-background: $light-gray;
   .subheader-wrapper {
     @include outer-container;
 
-    ul {
+    >ul {
       padding-top: 10px;
       
-      li {
+      >li {
         float: left;
 
         &.primary {
@@ -24,44 +24,18 @@ $subheader-background: $light-gray;
       
     }
   }
-
-  .subheader-right {
-
-    button {
-      padding-top: 2px;
-      float: right;
-
-      //reset os styles
-      border: 1px solid transparent;
-      outline:none;
-
-      &.btnToggleON {
-        border: 1px solid $medium-gray;
-        background-color: adjust-color($light-gray, $lightness: -10%, $alpha: -0.0)!important;
-      }
-
-      &:hover {
-        background-color: $light-gray!important;
-      }
-    }
-  }
-}
-
-.expand-collapse-RHP{
-  background: $button-toggle url('/assets/images/collapse_right_panel.png') no-repeat 10px 5px !important;
-  padding: 0px 5px 0px 40px!important;
 }
 
 .view-mode{
   float: right;
   color: $medium-gray;
   font-size: 1.4rem;
-  padding: 8px 15px 0px 0px;
+  padding: 8px 15px;
 }
 
 .expand-panel{
   float: right;
   color: $medium-gray;
   font-size: 1.5rem;
-  padding: 6px 15px 0px 15px;
+  padding: 6px 15px;
 }

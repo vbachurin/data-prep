@@ -8,8 +8,10 @@
      * @restrict EA
      * @usage
      <talend-button-dropdown button-text="Click Me" button-action="buttonAction()">
-        <li>Menu 1</li>
-        <li>Menu 2</li>
+        <ul>
+            <li>Menu 1</li>
+            <li>Menu 2</li>
+        </ul>
      </talend-button-dropdown>
      * @param {string} buttonText The text to display in the main button
      * @param {function} buttonAction The callback to execute on main button click
