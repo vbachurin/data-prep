@@ -4,7 +4,6 @@ describe('Recipe controller', function() {
     'use strict';
 
     var createController, scope;
-    var previousStep = {};
     var lastActiveStep = {inactive: false};
 
     beforeEach(module('data-prep.recipe'));
@@ -20,15 +19,12 @@ describe('Recipe controller', function() {
         };
 
         spyOn($rootScope, '$emit').and.callThrough();
-        spyOn(RecipeService, 'getPreviousStep').and.returnValue(previousStep);
-        spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(3);
         spyOn(RecipeService, 'refresh').and.callFake(function() {
             var recipe = RecipeService.getRecipe();
             recipe.splice(0, recipe.length);
             recipe.push(lastActiveStep);
         });
-        spyOn(PreparationService, 'updateStep').and.returnValue($q.when(true));
-        spyOn(PlaygroundService, 'loadStep').and.returnValue($q.when(true));
+        spyOn(PlaygroundService, 'updateStep').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
@@ -60,7 +56,7 @@ describe('Recipe controller', function() {
         expect(ctrl.recipe[0].transformation).toEqual(transformation);
     }));
 
-    it('should create a closure that update the step parameters', inject(function($rootScope, PreparationService) {
+    it('should create a closure that update the step parameters', inject(function($rootScope, PlaygroundService) {
         //given
         var ctrl = createController();
         var step = {
@@ -82,10 +78,10 @@ describe('Recipe controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreparationService.updateStep).toHaveBeenCalledWith(step, parameters);
+        expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, parameters);
     }));
 
-    it('should update step, refresh recipe, load last active step when parameters are different', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
+    it('should update step when parameters are different', inject(function(PlaygroundService) {
         //given
         var ctrl = createController();
         var step = {
@@ -103,14 +99,9 @@ describe('Recipe controller', function() {
 
         //when
         ctrl.updateStep(step, parameters);
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
-        $rootScope.$digest();
 
         //then
-        expect(PreparationService.updateStep).toHaveBeenCalledWith(step, parameters);
-        expect(RecipeService.refresh).toHaveBeenCalled();
-        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(lastActiveStep);
-        expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, parameters);
     }));
 
     it('should hide parameters modal on update step when parameters are different', inject(function($rootScope) {
@@ -138,7 +129,7 @@ describe('Recipe controller', function() {
         expect(ctrl.showModal).toEqual({});
     }));
 
-    it('should do nothing if parameters are unchanged', inject(function($rootScope, PreparationService, RecipeService, PlaygroundService) {
+    it('should do nothing if parameters are unchanged', inject(function(PlaygroundService) {
         //given
         var ctrl = createController();
         var step = {
@@ -156,13 +147,9 @@ describe('Recipe controller', function() {
 
         //when
         ctrl.updateStep(step, parameters);
-        $rootScope.$digest();
 
         //then
-        expect($rootScope.$emit).not.toHaveBeenCalled();
-        expect(PreparationService.updateStep).not.toHaveBeenCalled();
-        expect(RecipeService.refresh).not.toHaveBeenCalled();
-        expect(PlaygroundService.loadStep).not.toHaveBeenCalled();
+        expect(PlaygroundService.updateStep).not.toHaveBeenCalled();
     }));
 
     it('should do nothing on update preview if the step is inactive', inject(function($rootScope, PreviewService) {
