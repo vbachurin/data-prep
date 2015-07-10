@@ -2,6 +2,7 @@ package org.talend.dataprep.api.dataset;
 
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ import org.talend.dataprep.api.dataset.diff.FlagNames;
 /**
  * A DataSetRow is a row of a dataset. Values in data set row are <b>alphabetically</b> ordered by name.
  */
-public class DataSetRow implements Cloneable {
+public class DataSetRow implements Cloneable, Serializable {
 
     /** True if this row is deleted. */
     private boolean deleted;

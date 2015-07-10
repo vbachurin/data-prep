@@ -24,6 +24,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Configuration {
 
+    public enum Volume {
+        LARGE,
+        SMALL
+    }
+    
     /** The export format {@link org.talend.dataprep.api.type.ExportType} */
     private final ExportType format;
 
@@ -36,6 +41,8 @@ public class Configuration {
     /** Where to write the transformed content. */
     private final OutputStream output;
 
+    private final Volume dataVolume;
+
     /** List of transformation context, one per action. */
     private TransformationContext transformationContext;
 
@@ -45,11 +52,13 @@ public class Configuration {
     protected Configuration(final OutputStream output, //
             final ExportType format, //
             final String actions, //
-            final Map<String, Object> arguments) {
+            final Map<String, Object> arguments, //
+            final Volume dataVolume) {
         this.output = output;
         this.format = format;
         this.actions = actions;
         this.arguments = arguments;
+        this.dataVolume = dataVolume;
         this.transformationContext = new TransformationContext();
     }
 
@@ -123,6 +132,10 @@ public class Configuration {
         }
     }
 
+    public Volume volume() {
+        return dataVolume;
+    }
+
     /**
      * Builder pattern used to simplify code writing.
      */
@@ -146,6 +159,9 @@ public class Configuration {
         /** Where to write the transformed content. */
         private OutputStream output;
 
+        /** Gives hint on the amount of data the transformer may expect */
+        private Volume dataVolume = Volume.SMALL;
+
         /**
          * @param output where to write the transformed dataset.
          * @return the builder to chain calls.
@@ -159,7 +175,7 @@ public class Configuration {
          * @return a new {@link Configuration} from the builder setup.
          */
         public Configuration build() {
-            return new Configuration(output, format, actions, arguments);
+            return new Configuration(output, format, actions, arguments, dataVolume);
         }
 
         /**
@@ -192,6 +208,11 @@ public class Configuration {
          */
         public Builder args(final Map<String, Object> arguments) {
             this.arguments = arguments;
+            return this;
+        }
+
+        public Builder volume(Volume dataVolume) {
+            this.dataVolume = dataVolume;
             return this;
         }
 

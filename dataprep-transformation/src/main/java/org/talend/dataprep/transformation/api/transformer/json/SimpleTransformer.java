@@ -171,7 +171,7 @@ class SimpleTransformer implements Transformer {
 
     @Override
     public boolean accept(Configuration configuration) {
-        return Configuration.class.equals(configuration.getClass());
+        return Configuration.class.equals(configuration.getClass()) && configuration.volume() == Configuration.Volume.SMALL;
     }
 
 }

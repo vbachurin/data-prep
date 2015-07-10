@@ -8,6 +8,7 @@ import java.util.function.BiConsumer;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -20,6 +21,9 @@ public class ParsedActions {
 
     /** The list of metadata transformers. */
     private final List<DataSetMetadataAction> metadataTransformers = new LinkedList<>();
+
+    /** The list of all actions that led to closure creation */
+    private List<Action> allActions;
 
     /**
      * Default constructor.
@@ -35,10 +39,15 @@ public class ParsedActions {
     /**
      * Default constructor.
      *
+     * @param allActions The list of all actions that led to closure creation
      * @param rowTransformers The row transformers united into a single consumer.
      * @param metadataTransformers The list of metadata transformers.
      */
-    public ParsedActions(List<DataSetRowAction> rowTransformers, List<DataSetMetadataAction> metadataTransformers) {
+    public ParsedActions(List<Action> allActions, List<DataSetRowAction> rowTransformers, List<DataSetMetadataAction> metadataTransformers) {
+        if (rowTransformers.size() != metadataTransformers.size()) {
+            throw new IllegalArgumentException("Expected same number of metadata and row actions.");
+        }
+        this.allActions = allActions;
         this.rowTransformers.addAll(rowTransformers);
         this.metadataTransformers.addAll(metadataTransformers);
     }
@@ -63,5 +72,9 @@ public class ParsedActions {
      */
     public BiConsumer<RowMetadata, TransformationContext> asUniqueMetadataTransformer() {
         return aggregate(metadataTransformers);
+    }
+
+    public List<Action> getAllActions() {
+        return allActions;
     }
 }

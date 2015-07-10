@@ -22,7 +22,7 @@ public class ActionParser {
 
     /** No op parsed actions. */
     //@formatter:off
-    public static final ParsedActions IDLE_CONSUMER = new ParsedActions((row, context) -> {}, (rowMetadata, context) -> {});
+    public static final ParsedActions IDLE_CONSUMER = new ParsedActions(Action.IDLE_ROW_ACTION, Action.IDLE_METADATA_ACTION);
     //@formatter:on
 
     @Autowired
@@ -51,7 +51,8 @@ public class ActionParser {
             // Create closures from parsed actions
             List<DataSetRowAction> rowActions = new ArrayList<>();
             List<DataSetMetadataAction> metadataActions = new ArrayList<>();
-            for (Action parsedAction : parsedActions.getActions()) {
+            final List<Action> allActions = parsedActions.getActions();
+            for (Action parsedAction : allActions) {
                 final String name = ActionMetadata.ACTION_BEAN_PREFIX + parsedAction.getAction().toLowerCase();
                 final ActionMetadata metadata = context.getBean(name, ActionMetadata.class);
                 final Action action = metadata.create(parsedAction.getParameters());
@@ -59,7 +60,7 @@ public class ActionParser {
                 metadataActions.add(action.getMetadataAction());
             }
             // all set: wraps everything and return to caller
-            return new ParsedActions(rowActions, metadataActions);
+            return new ParsedActions(allActions, rowActions, metadataActions);
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
