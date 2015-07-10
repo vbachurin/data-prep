@@ -84,4 +84,20 @@ describe('Filter search directive', function() {
         //finally
         body.off('keydown', escEventListener);
     });
+
+    it('should empty the input filter search', function() {
+        //given
+        createElement();
+        var ctrl = element.controller('filterSearch');
+        console.log(ctrl);
+        ctrl.filterSearch = 'toto';
+        var event2 = angular.element.Event('blur');
+
+        //when
+        element.find('input[type="search"]').eq(0).trigger(event2);
+        scope.$digest();
+
+        //then
+        expect(ctrl.filterSearch).toBe('');
+    });
 });
