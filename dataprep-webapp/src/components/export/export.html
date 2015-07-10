@@ -1,5 +1,9 @@
 <talend-button-dropdown button-text="{{ ::'EXPORT' | translate }}" button-action="exportCtrl.export()">
-    <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.changeTypeAndExport(exportType)">{{exportType.id}}</li>
+    <ul>
+        <li ng-repeat="exportType in exportCtrl.exportTypes" ng-click="exportCtrl.changeTypeAndExport(exportType)">
+            {{exportType.id}}
+        </li>
+    </ul>
 </talend-button-dropdown>
 
 <talend-modal fullscreen="false"

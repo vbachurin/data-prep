@@ -16,8 +16,10 @@ describe('Button Dropdown directive', function () {
         scope.buttonAction = function() {};
 
         html = '<talend-button-dropdown button-text="Click Me" button-action="buttonAction()">' +
-            '   <li>Menu 1</li>' +
-            '   <li>Menu 2</li>' +
+            '   <ul>' +
+            '       <li>Menu 1</li>' +
+            '       <li>Menu 2</li>' +
+            '   </ul>' +
             '</talend-button-dropdown>';
         element = $compile(html)(scope);
         scope.$digest();

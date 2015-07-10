@@ -41,7 +41,7 @@
     right: 25px;
     width: 1px;
     height: 20px;
-    border-right: 1px solid transparentize($white, .7);
+    background: transparentize($white, .7);
   }
 
   .button-dropdown-side {
@@ -72,19 +72,22 @@
     color: $dropdown-menu-color;
     box-shadow: 3px 3px 18px 3px transparentize(black, 0.8);
     width: 140px;
-    outline: none;
     position: absolute;
-    right: 0px !important;
+    outline: none;
+    left: auto !important;
+    right: 0 !important;
     top: 37px !important;
+    padding: 0;
 
     &:before {
 
       left: 1em;
-      right: 1em;
-      text-align: center;
+      right: 0;
+      text-align: right;
     }
 
     li {
+      width: 100%;
       border-bottom: 1px solid silver;
       color: #333;
       list-style: none;
