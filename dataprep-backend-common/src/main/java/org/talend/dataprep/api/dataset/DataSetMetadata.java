@@ -45,9 +45,9 @@ public class DataSetMetadata {
     @JsonUnwrapped
     private final DataSetGovernance governance = new DataSetGovernance();
 
-    /** Dataset location (default is local). */
+    /** Dataset location. */
     @JsonProperty("location")
-    private DataSetLocation location = new LocalStoreLocation();
+    private DataSetLocation location;
 
     /** Dataset name. */
     @JsonProperty("name")
@@ -274,7 +274,7 @@ public class DataSetMetadata {
         private boolean isFavorite;
 
         /** @see org.talend.dataprep.api.dataset.DataSetMetadata#location */
-        private DataSetLocation location;
+        private DataSetLocation location = new LocalStoreLocation();
 
         /** @see org.talend.dataprep.api.dataset.DataSetContent#nbRecords */
         private int size;
@@ -410,9 +410,7 @@ public class DataSetMetadata {
             metadata.sheetName = this.sheetName;
             metadata.draft = this.draft;
             metadata.setFavorite(this.isFavorite);
-            if (location != null) {
-                metadata.setLocation(location);
-            }
+            metadata.setLocation(location);
             // Content information
             DataSetContent currentContent = metadata.getContent();
             currentContent.setNbRecords(size);
