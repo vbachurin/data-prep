@@ -21,7 +21,7 @@ describe('horizontalBarchart directive', function () {
 			scope = $rootScope.$new();
 			scope.visData = null;
 			scope.clicked = false;
-			scope.onclck = function(obj){
+			scope.onclck = function(){
 				scope.clicked = true;
 			};
 
