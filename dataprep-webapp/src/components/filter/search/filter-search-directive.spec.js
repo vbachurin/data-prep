@@ -89,7 +89,6 @@ describe('Filter search directive', function() {
         //given
         createElement();
         var ctrl = element.controller('filterSearch');
-        console.log(ctrl);
         ctrl.filterSearch = 'toto';
         var event2 = angular.element.Event('blur');
 
