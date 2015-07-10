@@ -1,0 +1,10 @@
+<div class="history">
+    <a ng-click="historyCtrl.service.undo()"
+       ng-class="{'inactive': !historyCtrl.service.canUndo()}">
+        UNDO ({{historyCtrl.service.canUndo()}})
+    </a>
+    <a ng-click="historyCtrl.service.redo()"
+       ng-class="{'inactive': !historyCtrl.service.canRedo()}">
+        REDO ({{historyCtrl.service.canRedo()}})
+    </a>
+</div>
