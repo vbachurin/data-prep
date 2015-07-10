@@ -8,14 +8,14 @@ describe('Column suggestion service', function() {
     beforeEach(inject(function($q, TransformationCacheService) {
         spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(
             [
-                {name: 'rename', category: 'columns'},
-                {name: 'cluster', category: 'quickfix'},
-                {name: 'split', category: 'columns'},
-                {name: 'tolowercase', category: 'case'},
-                {name: 'touppercase', category: 'case'},
-                {name: 'removeempty', category: 'clear'},
-                {name: 'totitlecase', category: 'case'},
-                {name: 'removetrailingspaces', category: 'quickfix'}
+                {name: 'rename', category: 'columns', label:'z'},
+                {name: 'cluster', category: 'quickfix', label:'f'},
+                {name: 'split', category: 'columns', label:'c'},
+                {name: 'tolowercase', category: 'case', label:'v'},
+                {name: 'touppercase', category: 'case', label:'u'},
+                {name: 'removeempty', category: 'clear', label:'a'},
+                {name: 'totitlecase', category: 'case', label:'t'},
+                {name: 'removetrailingspaces', category: 'quickfix', label:'m'}
             ]
         ));
     }));
@@ -44,7 +44,7 @@ describe('Column suggestion service', function() {
         expect(ColumnSuggestionService.currentColumn).toBe(firstSelectedColumn);
     }));
 
-    it('should filter "column" category and group the transformations by category', inject(function($rootScope, ColumnSuggestionService, TransformationCacheService) {
+    it('should filter "column" category, sort and group the transformations by category', inject(function($rootScope, ColumnSuggestionService, TransformationCacheService) {
         //given
         ColumnSuggestionService.currentColumn = {};
 
@@ -63,11 +63,19 @@ describe('Column suggestion service', function() {
         expect('clear' in suggestedTransformations).toBe(true);
 
         expect(suggestedTransformations.quickfix)
-            .toEqual([{name: 'cluster', category: 'quickfix'}, {name: 'removetrailingspaces', category: 'quickfix'}]);
+            .toEqual([{name: 'cluster', category: 'quickfix', label:'f'}, {name: 'removetrailingspaces', category: 'quickfix', label:'m'}]);
         expect(suggestedTransformations.case)
-            .toEqual([{name: 'tolowercase', category: 'case'}, {name: 'touppercase', category: 'case'}, {name: 'totitlecase', category: 'case'}]);
+            .toEqual([{name: 'totitlecase', category: 'case', label:'t'},
+                {name: 'touppercase', category: 'case', label:'u'},
+                {name: 'tolowercase', category: 'case', label:'v'}
+                ]);
         expect(suggestedTransformations.clear)
-            .toEqual([{name: 'removeempty', category: 'clear'}]);
+            .toEqual([{name: 'removeempty', category: 'clear', label:'a'}]);
+
+        //Assert sorted result
+        expect(suggestedTransformations.quickfix[0].label).toEqual('f');
+        expect(suggestedTransformations.case[0].label).toEqual('t');
+        expect(suggestedTransformations.clear[0].label).toEqual('a');
     }));
 
     it('should do nothing when we set the actual selected column', inject(function($rootScope, ColumnSuggestionService, TransformationCacheService) {
