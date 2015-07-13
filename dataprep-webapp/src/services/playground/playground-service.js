@@ -101,7 +101,7 @@
             FilterService.removeAllFilters();
             RecipeService.refresh();
             StatisticsService.resetCharts();
-            DatagridService.setDataset(dataset, data);
+            DatagridService.setDataset(dataset, data, null);
             TransformationCacheService.invalidateCache();
             ColumnSuggestionService.reset();
         };
@@ -190,7 +190,14 @@
          * @description Load a specific step content in the current preparation, and update the recipe
          * @returns {promise} - the process promise
          */
-        self.loadStep = function loadStep(step) {
+        self.loadStep = function loadStep(step, justDeactivatedStep) {
+            var stepColumn;
+            if(justDeactivatedStep){
+                stepColumn = justDeactivatedStep.column.id;
+            }else{
+                stepColumn = step.column.id;
+            }
+
             //step already loaded
             if(RecipeService.getActiveThresholdStep() === step) {
                 return;
@@ -199,7 +206,7 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(step.transformation.stepId)
                 .then(function(response) {
-                    DatagridService.setDataset(self.currentMetadata, response.data);
+                    DatagridService.setDataset(self.currentMetadata, response.data, stepColumn);
                     RecipeService.disableStepsAfter(step);
                 })
                 .finally(function() {

@@ -96,11 +96,12 @@
          * @param {Object} data - the new data to load
          * @description Set dataview records and metadata to the datagrid
          */
-        self.setDataset = function (metadata, data) {
+        self.setDataset = function (metadata, data, stepColumn) {
             updateDataviewRecords(data.records);
 
             self.metadata = metadata;
             self.data = data;
+            self.stepColumn = stepColumn;
         };
 
         /**

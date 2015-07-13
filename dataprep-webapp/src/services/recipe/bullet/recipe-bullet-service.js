@@ -35,7 +35,7 @@
             }
             else {
                 var previousStep = RecipeService.getPreviousStep(step);
-                PlaygroundService.loadStep(previousStep);
+                PlaygroundService.loadStep(previousStep, step);
             }
         };
 
@@ -74,7 +74,7 @@
          */
         this.stepHoverStart = function (step) {
             var index = RecipeService.getStepIndex(step);
-            var stepColumnId = +step.column.id;
+            var stepColumnId = step.column.id;
             _.forEach(RecipeService.getRecipe(), function (element, elementIndex) {
                 element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });
@@ -95,7 +95,7 @@
          * @description On step button leave : reset steps button highlight
          */
         this.stepHoverEnd = function (step) {
-            var stepColumnId = +step.column.id;
+            var stepColumnId = step.column.id;
             _.forEach(RecipeService.getRecipe(), function (element) {
                 element.highlight = false;
             });

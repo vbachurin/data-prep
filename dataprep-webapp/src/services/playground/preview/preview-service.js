@@ -153,7 +153,7 @@
          * It cancel the previous preview first
          */
         self.getPreviewDiffRecords = function(currentStep, previewStep, stepColumnId) {
-            //var stepColumnId = +currentStep.column.id;
+            //var stepColumnId = currentStep.column.id;
             self.cancelPreview(true, stepColumnId);
 
             previewCanceler = $q.defer();
@@ -174,7 +174,7 @@
          * It cancel the previous preview first
          */
         self.getPreviewUpdateRecords = function(currentStep, updateStep, newParams) {
-            var stepColumnId = +currentStep.column.id;
+            var stepColumnId = currentStep.column.id;
             self.cancelPreview(true, stepColumnId);
 
             previewCanceler = $q.defer();

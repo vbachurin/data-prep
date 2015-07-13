@@ -139,6 +139,7 @@
                             DatagridExternalService.updateSuggestionPanel(selectedColumn);
                         }
                         grid.invalidate();
+                        DatagridStyleService.navigateToStepColumn();
                     }
                 };
 
@@ -150,7 +151,9 @@
                  */
                 var onStepChange = function onStepChange(newStepColumn) {
                     if(grid){
-                        grid.gotoCell(0, newStepColumn, false);
+                        if(newStepColumn !== null && typeof newStepColumn !== 'undefined'){
+                            grid.gotoCell(0, newStepColumn, false);
+                        }
                     }
                 };
 
@@ -208,7 +211,7 @@
                 /**
                  * Navigate horizontally in the grid to show the column corresponding to the selected step
                  */
-                scope.$watch(getStepColumn, onStepChange);
+                //scope.$watch(getStepColumn, onStepChange);
 
                 /**
                  * When filter change, displayed values change, so we reset active cell and cell styles

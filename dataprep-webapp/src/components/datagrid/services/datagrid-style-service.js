@@ -16,6 +16,7 @@
             resetCellStyles : resetCellStyles,
             resetColumnStyles : resetColumnStyles,
             selectedColumn : selectedColumn,
+            navigateToStepColumn:navigateToStepColumn,
             manageColumnStyle: manageColumnStyle,
             computeHTMLForLeadingOrTrailingHiddenChars: computeHTMLForLeadingOrTrailingHiddenChars,
             columnFormatter: columnFormatter,
@@ -46,6 +47,13 @@
             lastSelectedColumnId = null;
         }
 
+        /**
+         * @ngdoc method
+         * @name selectedColumn
+         * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * @description returns the selected column object
+         * @return {object}
+         */
         function selectedColumn() {
             if(lastSelectedColumnId) {
                 return _.find(grid.getColumns(), function(column) {
@@ -53,6 +61,23 @@
                 });
             }
         }
+
+        /**
+         * @ngdoc method
+         * @name navigateToStepColumn
+         * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * @description navigates between columns
+         */
+        function navigateToStepColumn(){
+            if(DatagridService.stepColumn !== null && typeof DatagridService.stepColumn !== 'undefined'){
+                _.forEach(grid.getColumns(), function(column, index) {
+                    if(column.id === DatagridService.stepColumn){
+                        grid.gotoCell(0, index, false);
+                    }
+                });
+            }
+        }
+
 
         /**
          * @ngdoc method
