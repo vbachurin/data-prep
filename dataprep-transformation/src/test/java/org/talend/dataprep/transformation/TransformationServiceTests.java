@@ -7,9 +7,6 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.core.Is.is;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Base64;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,10 +33,6 @@ public class TransformationServiceTests {
 
     @Value("${local.server.port}")
     public int port;
-
-    private static String encode(String actions) throws UnsupportedEncodingException {
-        return Base64.getEncoder().encodeToString(actions.getBytes("UTF-8"));
-    }
 
     @Before
     public void setUp() {

@@ -49,7 +49,7 @@ public class FloorTest {
         action = new Floor();
         Map<String, String> parameters = ActionMetadataTestUtils //
                 .parseParameters(action, FloorTest.class.getResourceAsStream("floorAction.json"));
-        consumer = action.create(parameters);
+        consumer = action.create(parameters).getRowAction();
     }
 
     @Test

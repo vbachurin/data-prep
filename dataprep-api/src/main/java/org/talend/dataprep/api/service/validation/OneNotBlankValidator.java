@@ -8,6 +8,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
 
 public class OneNotBlankValidator implements ConstraintValidator<OneNotBlank, Object> {
 
@@ -28,7 +30,7 @@ public class OneNotBlankValidator implements ConstraintValidator<OneNotBlank, Ob
                 }
             }
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
 
         context.disableDefaultConstraintViolation();

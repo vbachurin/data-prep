@@ -213,6 +213,7 @@ public class DataPreparationAPITest {
         final DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
 
         // then
+        assertNotNull(metadata);
         assertEquals("Test with spaces", metadata.getName());
     }
 
@@ -247,6 +248,8 @@ public class DataPreparationAPITest {
         final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertNotNull(dataSetMetadata);
+        assertNotNull(dataSetMetadata.getGovernance());
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
         // when
@@ -254,6 +257,8 @@ public class DataPreparationAPITest {
 
         // then
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertNotNull(dataSetMetadata);
+        assertNotNull(dataSetMetadata.getGovernance());
         assertEquals(Certification.PENDING, dataSetMetadata.getGovernance().getCertificationStep());
         assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
 
@@ -262,6 +267,8 @@ public class DataPreparationAPITest {
 
         // then
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        assertNotNull(dataSetMetadata);
+        assertNotNull(dataSetMetadata.getGovernance());
         assertEquals(Certification.CERTIFIED, dataSetMetadata.getGovernance().getCertificationStep());
         assertThat(dataSetMetadata.getRow().getColumns(), not(empty()));
     }
@@ -547,7 +554,6 @@ public class DataPreparationAPITest {
                 .getResourceAsStream("export/expected_export_default_separator.csv"));
 
         // when
-        Thread.sleep(200);// TODO remove this when a better solution is available
         final String export = given().formParam("exportType", CSV).formParam("datasetId", datasetId).when().get("/api/export")
                 .asString();
 

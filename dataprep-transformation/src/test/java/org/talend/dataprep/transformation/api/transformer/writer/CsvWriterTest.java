@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer.exporter;
+package org.talend.dataprep.transformation.api.transformer.writer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -15,7 +15,6 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.transformer.exporter.csv.CsvWriter;
 
 public class CsvWriterTest {
 

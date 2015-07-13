@@ -42,6 +42,9 @@
                 .filter(function(transfo) {
                     return transfo.category !== COLUMN_CATEGORY;
                 })
+                .sortBy(function(action) {
+                    return action.label;
+                })
                 .groupBy('category')
                 .value();
         };

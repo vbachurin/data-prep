@@ -2,13 +2,12 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.i18n.MessagesBundle;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -17,8 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Model an action to perform on a dataset.
  *
- * At row level, a closure is created for each row, see {@link ActionMetadata#create(Map)}. At row metadata level, a
- * closure is created for the row metadata, see {@link ActionMetadata#createMetadataClosure(Map)}.
+ * An "action" is created for each row, see {@link ActionMetadata#create(Map)}.
  *
  * The actions are called from the
  */
@@ -55,7 +53,7 @@ public interface ActionMetadata {
     /**
      * Returns the list of multiple valued parameters required for this Action to be executed. represented as list box
      * on the front end.
-     * 
+     *
      * @return A list of {@link org.talend.dataprep.transformation.api.action.parameters.Item items}. This should never
      * return null, actions with no item should return empty list.
      **/
@@ -69,37 +67,20 @@ public interface ActionMetadata {
 
     /**
      * Return true if the action can be applied to the given column metadata.
-     * 
+     *
      * @param column the column metadata to transform.
      * @return true if the action can be applied to the given column metadata.
      */
     boolean accept(ColumnMetadata column);
 
     /**
-     * Create a closure to perform the transformation on a DatasetRow according to the parameter.
-     * 
-     * @param parameters A key/value map holding all action dependent configuration.
-     * @return A closure that accepts a DatasetRow, closures are expected to execute safely.
-     */
-    default BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
-        return (row, context) -> {
-            // default empty implementation
-        };
-    }
-
-    /**
-     * Create a closure to perform the transformation at row metadata given the parameters.
+     * Creates an {@link Action action} based on provided parameters.
      *
-     * By default, the original row metadata is returned.
-     *
-     * @param parameters the parameters needed to perform the action.
-     * @return A closure that accepts the dataset row metadata, closures are expected to execute safely.
+     * @param parameters Action-dependent parameters, can be empty.
+     * @return An {@link Action action} that can implement {@link DataSetRowAction row action} and/or
+     * {@link DataSetMetadataAction metadata action}.
      */
-    default BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
-        return (rowMetadata, context) -> {
-            // default empty implementation
-        };
-    }
+    Action create(Map<String, String> parameters);
 
     /**
      * Parse the given json parameter into a map<key, value>.
@@ -123,7 +104,7 @@ public interface ActionMetadata {
      * Adapts the current action metadata to the column. This method may return <code>this</code> if no action specific
      * change should be done. It may return a different instance with information from column (like a default value
      * inferred from column's name).
-     * 
+     *
      * @param column A {@link ColumnMetadata column} information.
      * @return <code>this</code> if no change is required or a new action metadata with information extracted from
      * <code>column</code>.

@@ -6,7 +6,8 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 
 /**
- * Writer used to write transformed datasets. So far it is really json related.
+ * Writer used to write transformed datasets. This interface provides an common abstraction of the output format (JSON,
+ * CSV, Excel...).
  */
 public interface TransformerWriter {
 

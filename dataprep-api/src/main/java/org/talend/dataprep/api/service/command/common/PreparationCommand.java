@@ -2,8 +2,12 @@ package org.talend.dataprep.api.service.command.common;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +62,9 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
      * @throws java.io.IOException
      */
     protected Preparation getPreparation(final String preparationId) throws IOException {
+        if (StringUtils.isEmpty(preparationId)) {
+            throw new IllegalArgumentException("Preparation id cannot be empty.");
+        }
         final HttpGet preparationRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparationId);
         try {
             InputStream content = client.execute(preparationRetrieval).getEntity().getContent();
@@ -126,16 +133,19 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     protected List<Action> getPreparationActions(Preparation preparation, String stepId) throws IOException {
+        if (StringUtils.isEmpty(stepId) || Step.ROOT_STEP.id().equals(stepId)) {
+            // No need for a connection to retrieve an empty list.
+            return Collections.emptyList();
+        }
         final HttpGet actionsRetrieval = new HttpGet(preparationServiceUrl + "/preparations/" + preparation.id()
                 + "/actions/" + stepId);
         try {
             InputStream content = client.execute(actionsRetrieval).getEntity().getContent();
-            List<Action> actions = builder
+            return builder
                     .build()
                     .reader(new TypeReference<List<Action>>() {
                     })
                     .readValue(content);
-            return actions;
         } finally {
             actionsRetrieval.releaseConnection();
         }
@@ -180,15 +190,18 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
                     break;
                 }
             }
+            // Did not find any cache for retrieve preparation details, starts over from original dataset
+            if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
+                final String dataSetId = preparation.getDataSetId();
+                final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
+                ctx.content = retrieveDataSet.execute();
+            }
         } else {
             // Don't allow to work from intermediate cached steps, so start over from root (data set content).
-            transformationStartStep = Step.ROOT_STEP.id();
-        }
-        // Did not find any cache for retrieve preparation details, starts over from original dataset
-        if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
             final String dataSetId = preparation.getDataSetId();
             final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
             ctx.content = retrieveDataSet.execute();
+            transformationStartStep = stepId;
         }
         // Build the actions to execute
         if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
@@ -211,7 +224,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
 
         Preparation preparation;
 
-        public String version;
+        String version;
 
         public InputStream getContent() {
             return content;

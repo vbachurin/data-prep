@@ -20,8 +20,9 @@ describe('horizontalBarchart directive', function () {
 
 			scope = $rootScope.$new();
 			scope.visData = null;
-			scope.onclck = function(obj){
-				console.log(obj);
+			scope.clicked = false;
+			scope.onclck = function(){
+				scope.clicked = true;
 			};
 
 			element = angular.element('<horizontal-barchart id="barChart" width="250" height="400"'+

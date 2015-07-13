@@ -534,9 +534,9 @@ public class DataSetService {
                 DraftValidator draftValidator = formatGuess.getDraftValidator();
                 // Validate that the new data set metadata removes the draft status
                 DraftValidator.Result result = draftValidator.validate(dataSetMetadata);
-                if (result.draft) {
-                    // FIXME what to do here?? exception?
-                    LOG.warn("dataSetMetadata#{} still a draft", dataSetId);
+                if (result.isDraft()) {
+                    // This is not an exception case: data set may remain a draft after update (although rather unusual).
+                    LOG.warn("Data set #{} is still a draft after update.", dataSetId);
                     return;
                 }
                 // Data set metadata to update is no longer a draft
@@ -565,7 +565,7 @@ public class DataSetService {
     public Iterable<String> favorites() {
         String userId = getUserId();
         UserData userData = userDataRepository.getUserData(userId);
-        return userData != null ? userData.getFavoritesDatasets() : Collections.EMPTY_LIST;
+        return userData != null ? userData.getFavoritesDatasets() : Collections.emptyList();
     }
 
     /**

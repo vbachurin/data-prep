@@ -15,7 +15,7 @@ import org.talend.dataprep.exception.TDPException;
 public class LineBasedFormatGuesser implements FormatGuesser {
 
     /** This class' logger. */
-    private static final Logger logger = LoggerFactory.getLogger(LineBasedFormatGuesser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LineBasedFormatGuesser.class);
 
     /** Replacement char used to replace a char that cannot be displayed, typical when you read binary files. */
     private static final int REPLACEMENT_CHAR = 65533;
@@ -75,7 +75,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                             replacementCharsCount++;
                             int replacementCharPercentage = replacementCharsCount * 100 / totalChars;
                             if (replacementCharPercentage > BINARY_DETECTION_THRESHOLD) {
-                                logger.debug("binary stream detected, hence cannot be a CSV");
+                                LOGGER.debug("binary stream detected, hence cannot be a CSV");
                                 return null;
                             }
                         }

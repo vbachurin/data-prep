@@ -12,10 +12,14 @@ public interface DraftValidator {
 
     class Result {
 
-        public boolean draft;
+        private boolean draft;
 
         public Result(boolean draft) {
             this.draft = draft;
+        }
+
+        public boolean isDraft() {
+            return draft;
         }
 
     }

@@ -2,6 +2,7 @@ package org.talend.dataprep.api.dataset;
 
 import static org.talend.dataprep.api.dataset.diff.Flag.*;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ import org.talend.dataprep.api.dataset.diff.FlagNames;
 /**
  * A DataSetRow is a row of a dataset. Values in data set row are <b>alphabetically</b> ordered by name.
  */
-public class DataSetRow implements Cloneable {
+public class DataSetRow implements Cloneable, Serializable {
 
     /** True if this row is deleted. */
     private boolean deleted;
@@ -20,7 +21,7 @@ public class DataSetRow implements Cloneable {
     private DataSetRow oldValue;
 
     /** Values of the dataset row. */
-    private TreeMap<String, String> values;
+    private SortedMap<String, String> values;
 
     /**
      * Default empty constructor.
@@ -228,7 +229,7 @@ public class DataSetRow implements Cloneable {
         }
 
         List<String> idIndexes = columns.stream().map(ColumnMetadata::getId).collect(Collectors.toList());
-        TreeMap<String, String> orderedValues = new TreeMap<>((id1, id2) -> idIndexes.indexOf(id1) - idIndexes.indexOf(id2));
+        SortedMap<String, String> orderedValues = new TreeMap<>((id1, id2) -> idIndexes.indexOf(id1) - idIndexes.indexOf(id2));
         orderedValues.putAll(values);
         final DataSetRow dataSetRow = new DataSetRow();
         dataSetRow.values = orderedValues;

@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer.exporter.tableau;
+package org.talend.dataprep.transformation.api.transformer.writer;
 
 
 import java.io.*;
@@ -47,9 +47,8 @@ public class TableauWriter implements TransformerWriter {
      * Constructor.
      *
      * @param output Where this writer should write.
-     * @throws IOException if an unexpected error occurs.
      */
-    public TableauWriter(final OutputStream output) throws IOException {
+    public TableauWriter(final OutputStream output) {
         this.outputStream = output;
 
         long n = random.nextLong();

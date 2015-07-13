@@ -32,7 +32,7 @@ public class TextClusteringTest {
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
 
-        final BiConsumer<DataSetRow, TransformationContext> consumer = textClustering.create(parameters);
+        final BiConsumer<DataSetRow, TransformationContext> consumer = textClustering.create(parameters).getRowAction();
 
         final List<DataSetRow> rows = new ArrayList<>();
         rows.add(createRow("uglystate", "T@T@"));
@@ -64,7 +64,7 @@ public class TextClusteringTest {
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
 
-        final BiConsumer<DataSetRow, TransformationContext> consumer = textClustering.create(parameters);
+        final BiConsumer<DataSetRow, TransformationContext> consumer = textClustering.create(parameters).getRowAction();
 
         final List<DataSetRow> rows = new ArrayList<>();
         rows.add(createRow("uglystate", "T@T@1"));

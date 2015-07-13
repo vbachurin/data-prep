@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.time.format.DateTimeFormatter;
@@ -9,19 +11,18 @@ import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
@@ -81,6 +82,8 @@ public class ExtractDateTokens extends SingleColumnAction {
             new DateFieldMappingBean(WEEK_OF_YEAR, ChronoField.ALIGNED_WEEK_OF_YEAR), //
     };
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtractDateTokens.class);
+
     private static class DateFieldMappingBean {
 
         String key;
@@ -113,60 +116,8 @@ public class ExtractDateTokens extends SingleColumnAction {
         };
     }
 
-    /**
-     * @see ActionMetadata#createMetadataClosure(Map)
-     */
-    @Override
-    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
-
-        // check the column id parameter
-        String columnId = getColumnIdParameter(parameters);
-
-        JsonFactory jsonFactory = new JsonFactory();
-        ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
-        return (rowMetadata, context) -> {
-
-            List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
-
-            for (ColumnMetadata column : rowMetadata.getColumns()) {
-                ColumnMetadata newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
-                newColumns.add(newColumnMetadata);
-
-                // append the split column
-                if (StringUtils.equals(columnId, column.getId())) {
-                    // apply the new columns to the row metadata
-                    rowMetadata.setColumns(newColumns);
-
-                    // store the current pattern in the context
-                    JsonNode rootNode = getStatisticsNode(mapper, column);
-
-                    JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-                    String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
-                    context.put(PATTERN, datePattern);
-
-                    for (DateFieldMappingBean date_field : DATE_FIELDS) {
-                        if (new Boolean(parameters.get(date_field.key))) {
-                            // create the new column
-                            newColumnMetadata = createNewColumn(column, date_field.key);
-
-                            // add the new column after the current one
-                            rowMetadata.getColumns().add(newColumnMetadata);
-                        }
-                    }
-                }
-            }
-
-        };
-    }
-
-    /**
-     * DOC stef Comment method "createNewColumn".
-     * @param column
-     * @return
-     */
     private ColumnMetadata createNewColumn(ColumnMetadata column, String suffix) {
-        ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+        return ColumnMetadata.Builder //
                 .column() //
                 .computedId(column.getId() + SEPARATOR + suffix) //
                 .name(column.getName() + SEPARATOR + suffix) //
@@ -176,7 +127,6 @@ public class ExtractDateTokens extends SingleColumnAction {
                 .valid(column.getQuality().getValid()) //
                 .headerSize(column.getHeaderSize()) //
                 .build();
-        return newColumnMetadata;
     }
 
     /**
@@ -210,12 +160,9 @@ public class ExtractDateTokens extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
-
-        String columnId = getColumnIdParameter(parameters);
-
-        return (row, context) -> {
-
+    public Action create(Map<String, String> parameters) {
+        return builder().withRow((row, context) -> {
+            String columnId = getColumnIdParameter(parameters);
             // sadly unable to do that outside of the closure since the context is not available
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) context.get(PATTERN));
 
@@ -226,22 +173,60 @@ public class ExtractDateTokens extends SingleColumnAction {
             try {
                 temporalAccessor = dtf.parse(value, new ParsePosition(0));
             } catch (DateTimeParseException e) {
-                // Nothing to do: in this case, temporalAccessor is left null, this will be used bellow to set empty new
-                // value for all fields
+                // Nothing to do: in this case, temporalAccessor is left null, this will be used bellow to set empty
+                // new value for all fields
+                LOGGER.debug("Unable to parse date {}.", value, e);
             }
 
             for (DateFieldMappingBean date_field : DATE_FIELDS) {
-                if (new Boolean(parameters.get(date_field.key))) {
+                if (Boolean.valueOf(parameters.get(date_field.key))) {
                     String newValue = "";
 
-                    if (temporalAccessor != null && // may occurs if date is not parsable with pattern
+                    if (temporalAccessor != null && // may occurs if date can not be parsed with pattern
                             temporalAccessor.isSupported(date_field.field)) {
                         newValue = temporalAccessor.get(date_field.field) + "";
                     }
                     row.set(columnId + SEPARATOR + date_field.key, newValue);
                 }
             }
-        };
+        }).withMetadata((rowMetadata, context) -> {
+            // check the column id parameter
+            String columnId = getColumnIdParameter(parameters);
+
+            JsonFactory jsonFactory = new JsonFactory();
+            ObjectMapper mapper = new ObjectMapper(jsonFactory);
+
+            List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
+
+            for (ColumnMetadata column : rowMetadata.getColumns()) {
+                ColumnMetadata newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
+                newColumns.add(newColumnMetadata);
+
+                // append the split column
+                if (StringUtils.equals(columnId, column.getId())) {
+                    // apply the new columns to the row metadata
+                    rowMetadata.setColumns(newColumns);
+
+                    // store the current pattern in the context
+                    JsonNode rootNode = getStatisticsNode(mapper, column);
+
+                    JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
+                    String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
+                    context.put(PATTERN, datePattern);
+
+                    for (DateFieldMappingBean date_field : DATE_FIELDS) {
+                        if (Boolean.valueOf(parameters.get(date_field.key))) {
+                            // create the new column
+                            newColumnMetadata = createNewColumn(column, date_field.key);
+
+                            // add the new column after the current one
+                            rowMetadata.getColumns().add(newColumnMetadata);
+                        }
+                    }
+                }
+
+            }
+        }).build();
     }
 
     /**

@@ -1,9 +1,10 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -11,10 +12,8 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -102,88 +101,67 @@ public class Split extends SingleColumnAction {
      * @see ActionMetadata#create(Map)
      */
     @Override
-    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
-
-        String columnId = parameters.get(COLUMN_ID);
-        String realSeparator = getSeparator(parameters);
-        int limit = Integer.parseInt(parameters.get(LIMIT));
-
-        return (row, context) -> {
-            // defensive programming
-            if (StringUtils.isEmpty(realSeparator)) {
-                return;
-            }
-            String originalValue = row.get(columnId);
-            if (originalValue != null) {
-                String[] split = originalValue.split(realSeparator, limit);
-                for (int i = 1; i <= limit; i++) {
-                    String newValue = (i <= split.length ? split[i - 1] : StringUtils.EMPTY);
-                    List<String> rowIds = row.values().keySet().stream().collect(Collectors.toList());
-                    Integer nextSplitIndex = getNextAvailableSplitIndex(rowIds, columnId);
-                    row.set(columnId + SPLIT_APPENDIX + "_" + nextSplitIndex, newValue);
-                }
-            }
-        };
-    }
-
-    /**
-     * Update row metadata.
-     *
-     * @see ActionMetadata#createMetadataClosure(Map)
-     */
-    @Override
-    public BiConsumer<RowMetadata, TransformationContext> createMetadataClosure(Map<String, String> parameters) {
-
-        String columnId = parameters.get(COLUMN_ID);
-        int limit = Integer.parseInt(parameters.get(LIMIT));
-
-        return (rowMetadata, context) -> {
+    public Action create(Map<String, String> parameters) {
+        return builder().withRow((row, context) -> {
+            String columnId = parameters.get(COLUMN_ID);
+            String realSeparator = getSeparator(parameters);
+            int limit = Integer.parseInt(parameters.get(LIMIT));
 
             // defensive programming
-            if (StringUtils.isEmpty(getSeparator(parameters))) {
-                return;
-            }
-
-            // go through the columns to be able to 'insert' the new columns just after the one needed.
-            for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
-
-                ColumnMetadata column = rowMetadata.getColumns().get(i);
-                if (!StringUtils.equals(column.getId(), columnId)) {
-                    continue;
+                if (StringUtils.isEmpty(realSeparator)) {
+                    return;
                 }
-
-                for (int j = 1; j <= limit; j++) {
-
-                    // get the new column id
-                    List<String> columnIds = new ArrayList<>(rowMetadata.size());
-                    rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
-
-                    Integer nextAvailableSplitIndex = getNextAvailableSplitIndex(columnIds, column.getId());
-                    if (nextAvailableSplitIndex == null) {
-                        // if this happen, let's not break anything
-                        break;
+                String originalValue = row.get(columnId);
+                if (originalValue != null) {
+                    String[] split = originalValue.split(realSeparator, limit);
+                    for (int i = 1; i <= limit; i++) {
+                        String newValue = i <= split.length ? split[i - 1] : StringUtils.EMPTY;
+                        List<String> rowIds = row.values().keySet().stream().collect(Collectors.toList());
+                        Integer nextSplitIndex = getNextAvailableSplitIndex(rowIds, columnId);
+                        row.set(columnId + SPLIT_APPENDIX + "_" + nextSplitIndex, newValue);
                     }
-
-                    // create the new column
-                    ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .computedId(column.getId() + SPLIT_APPENDIX + '_' + nextAvailableSplitIndex) //
-                            .name(column.getName() + SPLIT_APPENDIX + '_' + nextAvailableSplitIndex) //
-                            .type(Type.get(column.getType())) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-
-                    // add the new column after the current one
-                    rowMetadata.getColumns().add(i + j, newColumnMetadata);
                 }
+            }).withMetadata((rowMetadata, context) -> {
+                String columnId = parameters.get(COLUMN_ID);
+                int limit = Integer.parseInt(parameters.get(LIMIT));
+                // defensive programming
+                if (StringUtils.isEmpty(getSeparator(parameters))) {
+                    return;
+                }
+                // go through the columns to be able to 'insert' the new columns just after the one needed.
+                for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
+                    ColumnMetadata column = rowMetadata.getColumns().get(i);
+                    if (!StringUtils.equals(column.getId(), columnId)) {
+                        continue;
+                    }
+                    for (int j = 1; j <= limit; j++) {
+                        // get the new column id
+                        List<String> columnIds = new ArrayList<>(rowMetadata.size());
+                        rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
 
-            }
-
-        };
+                        Integer nextAvailableSplitIndex = getNextAvailableSplitIndex(columnIds, column.getId());
+                        if (nextAvailableSplitIndex == null) {
+                            // if this happen, let's not break anything
+                            break;
+                        }
+                        // create the new column
+                        ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+                                .column() //
+                                .computedId(column.getId() + SPLIT_APPENDIX + '_' + nextAvailableSplitIndex) //
+                                .name(column.getName() + SPLIT_APPENDIX + '_' + nextAvailableSplitIndex) //
+                                .type(Type.get(column.getType())) //
+                                .empty(column.getQuality().getEmpty()) //
+                                .invalid(column.getQuality().getInvalid()) //
+                                .valid(column.getQuality().getValid()) //
+                                .headerSize(column.getHeaderSize()) //
+                                .build();
+                        // add the new column after the current one
+                        rowMetadata.getColumns().add(i + j, newColumnMetadata);
+                    }
+                }
+            }).build();
     }
+
 
     /**
      * Return the next available split index for the given column within the given ids.
