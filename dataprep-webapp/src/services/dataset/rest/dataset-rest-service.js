@@ -43,7 +43,7 @@
                 method: 'POST',
                 url: RestURLs.datasetUrl,
                 headers: {
-                    'Content-Type': 'application/vnd.remote-ds.http'
+                    'Content-Type': 'application/vnd.remote-ds.'+ parameters.type
                 },
                 data: parameters
             };

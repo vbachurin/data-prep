@@ -44,10 +44,13 @@
   "EXPORT": "Export",
   "EXPORT_CSV": "Export to CSV",
   "EXPORT_TABLEAU": "Export to TABLEAU",
-  "IMPORT_FILE": "Import local file",
-  "IMPORT_REMOTE_FILE": "Import remote file",
   "OK": "Ok",
   "CONFIRM": "Confirm",
+  "_comment": "Import datasets",
+  "IMPORT_DATASET": "Import DataSet",
+  "IMPORT_HTML_DATASET": "Import HTML DataSet",
+  "ENTER_DATASET_URL": "Enter the dataset url",
+
 
   "_comment": "Common",
   "LOADING": "Loading",

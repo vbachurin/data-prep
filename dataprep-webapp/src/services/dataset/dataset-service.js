@@ -212,6 +212,18 @@
 
         /**
          * @ngdoc method
+         * @name urlToDataset
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description Convert import parameters to dataset object for import
+         * @param {Object} importParameters the import parameters (type, name, url...)
+         * @returns {Object} - the adapted dataset infos {name: string, progress: number, file: *, error: boolean}
+         */
+        self.urlToDataset = function(importParameters) {
+            return {name: importParameters.name, progress: 0, file: null, error: false, id: null};
+        };
+
+        /**
+         * @ngdoc method
          * @name getUniqueName
          * @methodOf data-prep.services.dataset.service:DatasetService
          * @param {string} name - the base name
