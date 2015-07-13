@@ -1,0 +1,44 @@
+{
+  "id": "ec718238e9bfe45f58031313b79501a3cc55b186",
+  "dataSetId": "12345",
+  "author": null,
+  "name": null,
+  "steps": [
+    "f6e172c33bdacbc69bca9d32b2bd78174712a171",
+    "2b6ae58738239819df3d8c4063e7cb56f53c0d59"
+  ],
+  "actions": [
+    {
+      "action": "uppercase",
+      "parameters": {
+        "column_name": "lastname"
+      }
+    }
+  ],
+  "metadata": [
+    {
+      "category": "case",
+      "name": "uppercase",
+      "items": [],
+      "parameters": [
+        {
+          "name": "column_id",
+          "type": "string",
+          "description": "The column on which apply this action to",
+          "label": "Column",
+          "default": ""
+        },
+        {
+          "name": "column_name",
+          "type": "string",
+          "description": "The column name on which apply this action to",
+          "label": "Column name",
+          "default": ""
+        }
+      ],
+      "dynamic": false,
+      "description": "Converts all of the cell values in this column to upper case",
+      "label": "Change case to UPPER"
+    }
+  ]
+}
