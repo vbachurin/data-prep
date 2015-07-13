@@ -30,8 +30,7 @@
         "valid": 2,
         "invalidValues": []
       },
-      "id": "0000",
-      "domain": ""
+      "id": "0000"
     },
     {
       "name": "firstname",
@@ -43,8 +42,7 @@
         "valid": 2,
         "invalidValues": []
       },
-      "id": "0001",
-      "domain": "CITY NAME"
+      "id": "0001"
     },
     {
       "name": "lastname",
@@ -56,8 +54,7 @@
         "valid": 2,
         "invalidValues": []
       },
-      "id": "0002",
-      "domain": "FIRSTNAME"
+      "id": "0002"
     },
     {
       "name": "age",
@@ -69,8 +66,7 @@
         "valid": 2,
         "invalidValues": []
       },
-      "id": "0003",
-      "domain": ""
+      "id": "0003"
     },
     {
       "name": "date-of-birth",
@@ -82,8 +78,7 @@
         "valid": 2,
         "invalidValues": []
       },
-      "id": "0004",
-      "domain": "DATE"
+      "id": "0004"
     },
     {
       "name": "alive",
@@ -95,8 +90,7 @@
         "valid": 2,
         "invalidValues": []
       },
-      "id": "0005",
-      "domain": ""
+      "id": "0005"
     },
     {
       "name": "alive_copy",
@@ -108,8 +102,7 @@
         "valid": 2,
         "invalidValues": []
       },
-      "id": "0005_copy",
-      "domain": ""
+      "id": "0005_copy"
     }
   ]
 }
