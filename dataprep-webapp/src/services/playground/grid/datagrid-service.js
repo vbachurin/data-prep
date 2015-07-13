@@ -36,7 +36,7 @@
          * @description the column of the current step
          * @type {number}
          */
-        self.stepColumn = 0;
+        self.stepColumn = null;
 
         /**
          * @ngdoc property
