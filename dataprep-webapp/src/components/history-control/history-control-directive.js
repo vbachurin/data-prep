@@ -7,24 +7,25 @@
      * @description This directive add the buttons and shortcuts to control the history actions
      * @restrict E
      */
-    function HistoryControl($document) {
+    function HistoryControl($document, HistoryService) {
         return {
             restrict: 'E',
             templateUrl: 'components/history-control/history-control.html',
-            controller: 'HistoryControlCtrl',
+            controller: function() {
+                this.service = HistoryService;
+            },
             controllerAs: 'historyCtrl',
-            link: function(scope, iElement, iAttrs, ctrl) {
+            link: function() {
                 //attach Ctrl+Z and Ctrl+Y event
-                $document.on('keydown', function(e) {
-                    var evtobj = window.event? window.event : e;
+                $document.on('keydown', function(evtobj) {
 
                     //CTRL+Z
                     if (evtobj.keyCode === 90 && evtobj.ctrlKey) {
-                        ctrl.service.undo();
+                        HistoryService.undo();
                     }
                     //Ctrl+Y
                     else if (evtobj.keyCode === 89 && evtobj.ctrlKey) {
-                        ctrl.service.redo();
+                        HistoryService.redo();
                     }
                 });
             }

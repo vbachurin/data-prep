@@ -29,6 +29,7 @@ describe('Preparation Service', function () {
         spyOn(PreparationRestService, 'getDetails').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewDiff').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewUpdate').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'removeStep').and.returnValue($q.when(true));
     }));
 
     afterEach(inject(function(PreparationListService) {
@@ -430,5 +431,18 @@ describe('Preparation Service', function () {
 
         //then
         expect(PreparationRestService.getPreviewUpdate).toHaveBeenCalledWith('6cd546546548a745', currentStep, updateStep, newParams, recordsTdpId, canceler);
+    }));
+
+    it('should delete step', inject(function ($q, PreparationService, PreparationRestService) {
+        //given
+        var preparationId = '6cd546546548a745';
+        var stepId = '45ed65cf48981b51';
+        PreparationService.currentPreparationId = preparationId;
+
+        //when
+        PreparationService.removeStep(stepId);
+
+        //then
+        expect(PreparationRestService.removeStep).toHaveBeenCalledWith(preparationId, stepId);
     }));
 });

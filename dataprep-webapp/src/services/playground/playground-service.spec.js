@@ -1,3 +1,4 @@
+/*jshint camelcase: false */
 describe('Playground Service', function () {
     'use strict';
 
@@ -332,7 +333,8 @@ describe('Playground Service', function () {
 
     describe('transformation', function() {
         var result, metadata;
-        beforeEach(inject(function($rootScope, $q, PlaygroundService, PreparationService, DatagridService, RecipeService) {
+        var lastStepId = 'a151e543456413ef51';
+        beforeEach(inject(function($rootScope, $q, PlaygroundService, PreparationService, DatagridService, RecipeService, HistoryService) {
             result = {
                 'records': [{
                     'firstname': 'Grover',
@@ -362,11 +364,14 @@ describe('Playground Service', function () {
 
             spyOn($rootScope, '$emit').and.callThrough();
             spyOn(PreparationService, 'appendStep').and.returnValue($q.when(true));
+            spyOn(PreparationService, 'updateStep').and.returnValue($q.when(true));
+            spyOn(PreparationService, 'removeStep').and.returnValue($q.when(true));
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: result}));
             spyOn(DatagridService, 'updateData').and.returnValue();
             spyOn(RecipeService, 'getLastStep').and.returnValue({
-                transformation: {stepId: 'a151e543456413ef51'}
+                transformation: {stepId: lastStepId}
             });
+            spyOn(HistoryService, 'addAction').and.returnValue();
         }));
 
         describe('append', function() {
@@ -389,7 +394,7 @@ describe('Playground Service', function () {
                 );
             }));
 
-            it('should show/hide loading on append', inject(function ($rootScope, PlaygroundService) {
+            it('should show/hide loading', inject(function ($rootScope, PlaygroundService) {
                 //given
                 var action = 'uppercase';
                 var column = {id: 'firstname'};
@@ -404,7 +409,7 @@ describe('Playground Service', function () {
                 expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
             }));
 
-            it('should refresh recipe on append', inject(function ($rootScope, PlaygroundService, RecipeService) {
+            it('should refresh recipe', inject(function ($rootScope, PlaygroundService, RecipeService) {
                 //given
                 var action = 'uppercase';
                 var column = {id: 'firstname'};
@@ -418,7 +423,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
             }));
 
-            it('should refresh datagrid with head content on append', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService) {
+            it('should refresh datagrid with head content', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService) {
                 //given
                 var action = 'uppercase';
                 var column = {id: 'firstname'};
@@ -432,90 +437,238 @@ describe('Playground Service', function () {
                 expect(PreparationService.getContent).toHaveBeenCalledWith('head');
                 expect(DatagridService.updateData).toHaveBeenCalledWith(result);
             }));
+
+            describe('append history', function() {
+                it('should add undo/redo actions after append transformation', inject(function($rootScope, PlaygroundService, HistoryService) {
+                    //given
+                    var action = 'uppercase';
+                    var column = {id: 'firstname'};
+                    var parameters = {param1: 'param1Value', param2: 4};
+
+                    //when
+                    PlaygroundService.appendStep(action, column, parameters);
+                    $rootScope.$digest();
+
+                    //then
+                    expect(HistoryService.addAction).toHaveBeenCalled();
+                }));
+
+                it('should remove the transformation on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService) {
+                    //given
+                    var action = 'uppercase';
+                    var column = {id: 'firstname'};
+                    var parameters = {param1: 'param1Value', param2: 4};
+
+                    PlaygroundService.appendStep(action, column, parameters);
+                    $rootScope.$digest();
+                    var undo = HistoryService.addAction.calls.argsFor(0)[0];
+
+                    expect(PreparationService.removeStep).not.toHaveBeenCalled();
+
+                    //when
+                    undo();
+
+                    //then
+                    expect(PreparationService.removeStep).toHaveBeenCalledWith('a151e543456413ef51');
+                }));
+
+                it('should refresh recipe on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, RecipeService) {
+                    //given
+                    var action = 'uppercase';
+                    var column = {id: 'firstname'};
+                    var parameters = {param1: 'param1Value', param2: 4};
+
+                    PlaygroundService.appendStep(action, column, parameters);
+                    $rootScope.$digest();
+                    var undo = HistoryService.addAction.calls.argsFor(0)[0];
+
+                    expect(RecipeService.refresh.calls.count()).toBe(1);
+
+                    //when
+                    undo();
+                    $rootScope.$digest();
+
+                    //then
+                    expect(RecipeService.refresh.calls.count()).toBe(2);
+                }));
+
+                it('should refresh datagrid content on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService, DatagridService) {
+                    //given
+                    var action = 'uppercase';
+                    var column = {id: 'firstname'};
+                    var parameters = {param1: 'param1Value', param2: 4};
+
+                    PlaygroundService.appendStep(action, column, parameters);
+                    $rootScope.$digest();
+                    var undo = HistoryService.addAction.calls.argsFor(0)[0];
+
+                    expect(PreparationService.getContent.calls.count()).toBe(1);
+                    expect(DatagridService.updateData.calls.count()).toBe(1);
+
+                    //when
+                    undo();
+                    $rootScope.$digest();
+
+                    //then
+                    expect(PreparationService.getContent.calls.count()).toBe(2);
+                    expect(PreparationService.getContent.calls.argsFor(1)[0]).toBe('head');
+                    expect(DatagridService.updateData.calls.count()).toBe(2);
+                    expect(DatagridService.updateData.calls.argsFor(1)[0]).toBe(result);
+                }));
+            });
         });
 
-        describe('append history', function() {
-            beforeEach(inject(function($q, PreparationService, HistoryService) {
-                spyOn(PreparationService, 'removeStep').and.returnValue($q.when(true));
-                spyOn(HistoryService, 'addAction').and.returnValue();
+        describe('update', function() {
+            var lastActiveIndex = 5;
+            var lastActiveStep = {
+                transformation: {stepId: '24a457bc464e645'},
+                actionParameters: {
+                    action: 'touppercase'
+                }
+            };
+            var oldParameters = {value: 'toto', column_id: '0001'};
+            var stepToUpdate = {
+                transformation: {stepId: '98a7565e4231fc2c7'},
+                actionParameters: {
+                    action: 'delete_on_value',
+                    parameters: oldParameters
+                }
+            };
+
+            beforeEach(inject(function(RecipeService) {
+                spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(lastActiveIndex);
+                spyOn(RecipeService, 'getStep').and.callFake(function(index) {
+                    if(index === lastActiveIndex) {
+                        return lastActiveStep;
+                    }
+                    return stepToUpdate;
+                });
             }));
 
-            it('should add undo/redo actions after append transformation', inject(function($rootScope, PlaygroundService, HistoryService) {
+            it('should update preparation step', inject(function ($rootScope, PlaygroundService, PreparationService) {
                 //given
-                var action = 'uppercase';
-                var column = {id: 'firstname'};
-                var parameters = {param1: 'param1Value', param2: 4};
+                var parameters = {value: 'toto', column_id: '0001'};
 
                 //when
-                PlaygroundService.appendStep(action, column, parameters);
+                PlaygroundService.updateStep(stepToUpdate, parameters);
+
+                //then
+                expect(PreparationService.updateStep).toHaveBeenCalledWith(stepToUpdate, parameters);
+            }));
+
+            it('should show/hide loading', inject(function ($rootScope, PlaygroundService) {
+                //given
+                var parameters = {value: 'toto', column_id: '0001'};
+
+                //when
+                PlaygroundService.updateStep(stepToUpdate, parameters);
+                expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
                 $rootScope.$digest();
 
                 //then
-                expect(HistoryService.addAction).toHaveBeenCalled();
+                expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
             }));
 
-            it('should remove the transformation on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService) {
+            it('should refresh recipe', inject(function ($rootScope, PlaygroundService, RecipeService) {
                 //given
-                var action = 'uppercase';
-                var column = {id: 'firstname'};
-                var parameters = {param1: 'param1Value', param2: 4};
-
-                PlaygroundService.appendStep(action, column, parameters);
-                $rootScope.$digest();
-                var undo = HistoryService.addAction.calls.argsFor(0)[0];
-
-                expect(PreparationService.removeStep).not.toHaveBeenCalled();
+                var parameters = {value: 'toto', column_id: '0001'};
 
                 //when
-                undo();
-
-                //then
-                expect(PreparationService.removeStep).toHaveBeenCalledWith('a151e543456413ef51');
-            }));
-
-            it('should refresh recipe on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, RecipeService) {
-                //given
-                var action = 'uppercase';
-                var column = {id: 'firstname'};
-                var parameters = {param1: 'param1Value', param2: 4};
-
-                PlaygroundService.appendStep(action, column, parameters);
-                $rootScope.$digest();
-                var undo = HistoryService.addAction.calls.argsFor(0)[0];
-
-                expect(RecipeService.refresh.calls.count()).toBe(1);
-
-                //when
-                undo();
+                PlaygroundService.updateStep(stepToUpdate, parameters);
                 $rootScope.$digest();
 
                 //then
-                expect(RecipeService.refresh.calls.count()).toBe(2);
+                expect(RecipeService.refresh).toHaveBeenCalled();
             }));
 
-            it('should refresh datagrid content on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService, DatagridService) {
+            it('should load previous last active step', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService) {
                 //given
-                var action = 'uppercase';
-                var column = {id: 'firstname'};
-                var parameters = {param1: 'param1Value', param2: 4};
-
-                PlaygroundService.appendStep(action, column, parameters);
-                $rootScope.$digest();
-                var undo = HistoryService.addAction.calls.argsFor(0)[0];
-
-                expect(PreparationService.getContent.calls.count()).toBe(1);
-                expect(DatagridService.updateData.calls.count()).toBe(1);
+                var parameters = {value: 'toto', column_id: '0001'};
 
                 //when
-                undo();
+                PlaygroundService.updateStep(stepToUpdate, parameters);
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationService.getContent.calls.count()).toBe(2);
-                expect(PreparationService.getContent.calls.argsFor(1)[0]).toBe('head');
-                expect(DatagridService.updateData.calls.count()).toBe(2);
-                expect(DatagridService.updateData.calls.argsFor(1)[0]).toBe(result);
+                expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId);
+                expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, result);
             }));
+
+            describe('update history', function() {
+                it('should add undo/redo actions after update transformation', inject(function($rootScope, PlaygroundService, HistoryService) {
+                    //given
+                    var parameters = {value: 'toto', column_id: '0001'};
+
+                    //when
+                    PlaygroundService.updateStep(stepToUpdate, parameters);
+                    $rootScope.$digest();
+
+                    //then
+                    expect(HistoryService.addAction).toHaveBeenCalled();
+                }));
+
+                it('should update the transformation with old parameters on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService) {
+                    //given
+                    var parameters = {value: 'toto', column_id: '0001'};
+
+                    PlaygroundService.updateStep(stepToUpdate, parameters);
+                    $rootScope.$digest();
+                    var undo = HistoryService.addAction.calls.argsFor(0)[0];
+
+                    expect(PreparationService.updateStep.calls.count()).toBe(1);
+
+                    //when
+                    undo();
+
+                    //then
+                    expect(PreparationService.updateStep.calls.count()).toBe(2);
+                    var callArgs = PreparationService.updateStep.calls.argsFor(1);
+                    expect(callArgs[0]).toBe(stepToUpdate);
+                    expect(callArgs[1]).toBe(oldParameters);
+                }));
+
+                it('should refresh recipe on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, RecipeService) {
+                    //given
+                    var parameters = {value: 'toto', column_id: '0001'};
+
+                    PlaygroundService.updateStep(stepToUpdate, parameters);
+                    $rootScope.$digest();
+                    var undo = HistoryService.addAction.calls.argsFor(0)[0];
+
+                    expect(RecipeService.refresh.calls.count()).toBe(1);
+
+                    //when
+                    undo();
+                    $rootScope.$digest();
+
+                    //then
+                    expect(RecipeService.refresh.calls.count()).toBe(2);
+                }));
+
+                it('should refresh datagrid content on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService, DatagridService, RecipeService) {
+                    //given
+                    var parameters = {value: 'toto', column_id: '0001'};
+
+                    PlaygroundService.updateStep(stepToUpdate, parameters);
+                    $rootScope.$digest();
+                    var undo = HistoryService.addAction.calls.argsFor(0)[0];
+
+                    expect(PreparationService.getContent.calls.count()).toBe(1);
+                    expect(DatagridService.setDataset.calls.count()).toBe(1);
+
+                    //when
+                    undo();
+                    spyOn(RecipeService, 'getActiveThresholdStep').and.returnValue(); //emulate last active step different to the step to load
+                    $rootScope.$digest();
+
+                    //then
+                    expect(PreparationService.getContent.calls.count()).toBe(2);
+                    expect(PreparationService.getContent.calls.argsFor(1)[0]).toBe(lastActiveStep.transformation.stepId);
+                    expect(DatagridService.setDataset.calls.count()).toBe(2);
+                    expect(DatagridService.setDataset.calls.argsFor(1)[0]).toBe(metadata);
+                    expect(DatagridService.setDataset.calls.argsFor(1)[1]).toBe(result);
+                }));
+            });
         });
     });
 

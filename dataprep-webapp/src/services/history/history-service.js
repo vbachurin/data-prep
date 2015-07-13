@@ -92,10 +92,10 @@
                 return;
             }
 
+            service.undoing = true;
             var action = history.pop();
             $q.when()
                 .then(function() {
-                    service.undoing = true;
                     return action.undo();
                 })
                 .then(function() {
@@ -134,10 +134,10 @@
                 return;
             }
 
+            service.redoing = true;
             var action = undoneHistory.shift();
             $q.when()
                 .then(function() {
-                    service.redoing = true;
                     return action.redo();
                 })
                 .then(function() {
