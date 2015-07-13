@@ -27,6 +27,7 @@ import java.util.function.BiConsumer;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -52,7 +53,7 @@ public class RenameTest {
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 RenameTest.class.getResourceAsStream("renameAction.json"));
-        metadataClosure = action.createMetadataClosure(parameters);
+        metadataClosure = action.create(parameters).getMetadataAction();
     }
 
     @Test
@@ -71,7 +72,7 @@ public class RenameTest {
     }
 
     /**
-     * @see Rename#createMetadataClosure(Map)
+     * @see Action#getMetadataAction()
      */
     @Test
     public void should_update_metadata() {

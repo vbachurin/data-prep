@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.service.command.export;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.api.ExportParameters;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
@@ -45,20 +47,17 @@ public class Export extends PreparationCommand<InputStream> {
         List<Action> actions;
         InputStream content;
         if (StringUtils.isNotBlank(input.getPreparationId())) {
-            // Get name from preparation (preparation is set)
-            final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
-            //
-            name = context.getPreparation().getName();
-            actions = context.getActions();
-            content = context.getContent();
+            final Preparation preparation = getPreparation(input.getPreparationId());
+            name = preparation.getName();
+            actions = getPreparationActions(preparation, input.getStepId());
+            content = getDatasetContent(preparation.getDataSetId());
         } else {
             // Get name from data set
-            final PreparationContext context = getContext(input.getPreparationId(), input.getStepId());
             String dataSetId = input.getDatasetId();
             final JsonNode datasetDetails = getDatasetDetails(dataSetId);
             //
             name = datasetDetails.get("metadata").get("name").textValue();
-            actions = context.getActions();
+            actions = Collections.emptyList();
             content = getDatasetContent(dataSetId);
         }
         // Set response headers

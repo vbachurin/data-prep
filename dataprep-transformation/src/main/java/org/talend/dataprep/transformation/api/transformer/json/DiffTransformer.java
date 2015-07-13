@@ -1,21 +1,25 @@
 package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSet;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.ActionParser;
 import org.talend.dataprep.transformation.api.action.ParsedActions;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.exporter.json.JsonWriter;
-import org.talend.dataprep.transformation.api.transformer.input.TransformerConfiguration;
-import org.talend.dataprep.transformation.api.transformer.type.TransformerStepSelector;
+import org.talend.dataprep.transformation.api.transformer.TransformerWriter;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
+import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 /**
@@ -23,72 +27,112 @@ import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
  * difference between current and previous transformation).
  */
 @Component
-@Scope("request")
 class DiffTransformer implements Transformer {
 
     /** The data-prep ready jackson module. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
-    /** The transformer selector that routes transformation according the content to transform. */
     @Autowired
-    private TransformerStepSelector transformerSelector;
-
-    /** The previous action. */
-    private final ParsedActions previousAction;
-
-    /** The new action to preview. */
-    private final ParsedActions newAction;
-
-    /** The row indexes to show preview (because the preview is not performed on the whole dataset). */
-    private final List<Integer> indexes;
-
-    /**
-     * Constructor.
-     *
-     * @param indexes the indexes of the row to preview the change.
-     * @param previousAction the previous action.
-     * @param newAction the new action to preview.
-     */
-    DiffTransformer(final List<Integer> indexes, final ParsedActions previousAction, final ParsedActions newAction) {
-        this.previousAction = previousAction;
-        this.newAction = newAction;
-        this.indexes = indexes == null ? null : new ArrayList<>(indexes);
-    }
-
+    private ActionParser actionParser;
+    
     /**
      * Starts the transformation in preview mode.
-     *  @param input the dataset content.
-     * @param output where to output the transformation.
+     * @param input the dataset content.
+     * @param configuration The {@link Configuration configuration} for this transformation.
      */
     @Override
-    public void transform(DataSet input, OutputStream output) {
+    public void transform(DataSet input, Configuration configuration) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input cannot be null.");
+        }
+        final PreviewConfiguration previewConfiguration = (PreviewConfiguration) configuration;
+
+        final TransformerWriter writer = configuration.writer();
+
+        final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());
+        final ParsedActions previewActions = actionParser.parse(previewConfiguration.getPreviewActions());
+        final BiConsumer<DataSetRow, TransformationContext> referenceAction = referenceActions.asUniqueRowTransformer();
+        final BiConsumer<RowMetadata, TransformationContext> referenceMetadataAction = referenceActions.asUniqueMetadataTransformer();
+        final BiConsumer<RowMetadata, TransformationContext> previewMetadataAction = previewActions.asUniqueMetadataTransformer();
+        final BiConsumer<DataSetRow, TransformationContext> previewAction = previewActions.asUniqueRowTransformer();
+
+        TransformationContext referenceContext = previewConfiguration.getReferenceContext();
+        TransformationContext previewContext = previewConfiguration.getPreviewContext();
+
+        final List<Integer> indexes = previewConfiguration.getIndexes();
+        final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
+        final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : 0;
+        final Integer maxIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).max().getAsInt() : Integer.MAX_VALUE;
+
+        Stream<DataSetRow> records = input.getRecords();
         try {
-            if (input == null) {
-                throw new IllegalArgumentException("Input cannot be null.");
+            writer.startObject();
+            // Metadata
+            writer.fieldName("columns");
+            RowMetadata referenceMetadata = new RowMetadata(input.getColumns());
+            RowMetadata rowMetadata = new RowMetadata(input.getColumns());
+            referenceMetadataAction.accept(referenceMetadata, referenceContext);
+            previewMetadataAction.accept(rowMetadata, previewContext);
+            rowMetadata.diff(referenceMetadata);
+            writer.write(rowMetadata);
+            // Records
+            writer.fieldName("records");
+            writer.startArray();
+            AtomicInteger index = new AtomicInteger(0);
+            if (referenceAction == null) {
+                throw new IllegalStateException("No old action to perform for preview.");
             }
-            if (output == null) {
-                throw new IllegalArgumentException("Output cannot be null.");
+            final AtomicInteger resultIndexShift = new AtomicInteger();
+            // With preview (no 'old row' and 'new row' to compare when writing results).
+            Stream<Processing[]> process = records
+                    .map(row -> new Processing(row, index.getAndIncrement() - resultIndexShift.get())) //
+                    .map(p -> new Processing[]{new Processing(p.row.clone(), p.index), p}) //
+                    .map(p -> {
+                        referenceAction.accept(p[0].row, referenceContext);
+                        if (p[0].row.isDeleted()) {
+                            resultIndexShift.incrementAndGet();
+                        }
+                        previewAction.accept(p[1].row, previewContext);
+                        return p;
+                    }); //
+            if (indexes != null) {
+                process = process.filter(p -> {
+                    final boolean inRange = p[1].index >= minIndex && p[1].index <= maxIndex;
+                    final boolean include = indexes.contains(p[1].index) || (p[0].row.isDeleted() && !p[1].row.isDeleted());
+                    return inRange && include;
+                });
             }
-
-            //@formatter:off
-            final TransformerConfiguration configuration = from(input)
-                    .output(JsonWriter.create(builder, output))
-                    .indexes(indexes)
-                    .preview(true)
-                    .recordActions(previousAction.getRowTransformer())
-                    .recordActions(newAction.getRowTransformer())
-                    .columnActions(previousAction.getMetadataTransformer())
-                    .columnActions(newAction.getMetadataTransformer())
-                    .build();
-            //@formatter:on
-
-            transformerSelector.process(configuration);
-
-            output.flush();
-
+            process.forEach(p -> {
+                p[1].row.diff(p[0].row);
+                try {
+                    if (p[1].row.shouldWrite()) {
+                        writer.write(p[1].row);
+                    }
+                } catch (IOException e) {
+                    throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+                }
+            });
+            writer.endArray();
+            writer.endObject();
+            writer.flush();
         } catch (IOException e) {
-            throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+        }
+    }
+
+    @Override
+    public boolean accept(Configuration configuration) {
+        return PreviewConfiguration.class.isAssignableFrom(configuration.getClass());
+    }
+
+    public static class Processing {
+        DataSetRow row;
+        int index;
+
+        public Processing(DataSetRow row, int index) {
+            this.row = row;
+            this.index = index;
         }
     }
 }

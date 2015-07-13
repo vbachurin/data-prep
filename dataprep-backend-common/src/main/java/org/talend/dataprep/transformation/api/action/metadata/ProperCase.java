@@ -1,14 +1,14 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 @Component(ProperCase.ACTION_BEAN_PREFIX + ProperCase.PROPER_CASE_ACTION_NAME)
 public class ProperCase extends SingleColumnAction {
@@ -26,14 +26,14 @@ public class ProperCase extends SingleColumnAction {
     }
 
     @Override
-    public BiConsumer<DataSetRow, TransformationContext> create(Map<String, String> parameters) {
-        return (row, context) -> {
+    public Action create(Map<String, String> parameters) {
+        return builder().withRow((row, context) -> {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             if (value != null) {
                 row.set(columnName, WordUtils.capitalizeFully(value));
             }
-        };
+        }).build();
     }
 
     /**

@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
@@ -47,8 +48,9 @@ public class ExtractDateTokensTest {
                 action, //
                 ExtractDateTokensTest.class.getResourceAsStream("extractDateTokensAction.json"));
 
-        rowClosure = action.create(parameters);
-        metadataClosure = action.createMetadataClosure(parameters);
+        final Action action = this.action.create(parameters);
+        rowClosure = action.getRowAction();
+        metadataClosure = action.getMetadataAction();
     }
 
     @Test

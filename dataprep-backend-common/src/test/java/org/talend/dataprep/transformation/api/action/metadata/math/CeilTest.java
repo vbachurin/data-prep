@@ -49,7 +49,7 @@ public class CeilTest {
         action = new Ceil();
         Map<String, String> parameters = ActionMetadataTestUtils //
                 .parseParameters(action, CeilTest.class.getResourceAsStream("ceilAction.json"));
-        consumer = action.create(parameters);
+        consumer = action.create(parameters).getRowAction();
     }
 
     @Test

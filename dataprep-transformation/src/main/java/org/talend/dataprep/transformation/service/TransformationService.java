@@ -34,11 +34,9 @@ import org.talend.dataprep.metrics.VolumeMetered;
 import org.talend.dataprep.transformation.api.action.dynamic.DynamicType;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.GenericParameter;
-import org.talend.dataprep.transformation.api.transformer.Transformer;
-import org.talend.dataprep.transformation.api.transformer.exporter.ExportConfiguration;
-import org.talend.dataprep.transformation.api.transformer.exporter.ExportFactory;
-import org.talend.dataprep.transformation.api.transformer.json.DiffTransformerFactory;
-import org.talend.dataprep.transformation.api.transformer.json.SimpleTransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
+import org.talend.dataprep.transformation.api.transformer.configuration.PreviewConfiguration;
 import org.talend.dataprep.transformation.exception.TransformationErrorCodes;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -62,14 +60,7 @@ public class TransformationService {
     private ActionMetadata[] allActions;
 
     @Autowired
-    private SimpleTransformerFactory simpleFactory;
-
-    @Autowired
-    private DiffTransformerFactory diffFactory;
-
-    @Autowired
-    private ExportFactory exportFactory;
-
+    private TransformerFactory factory;
 
     /**
      * Apply all <code>actions</code> to <code>content</code>. Actions is a Base64-encoded JSON list of
@@ -91,7 +82,7 @@ public class TransformationService {
             HttpServletResponse response, //
             HttpServletRequest request) throws IOException {
         // A transformation is an export to JSON
-        export(ExportType.JSON, actions, content, response, request);
+        transform(ExportType.JSON, actions, content, response, request);
     }
 
 
@@ -109,22 +100,12 @@ public class TransformationService {
     @RequestMapping(value = "/export/{format}", method = POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Export the preparation applying the transformation", notes = "This operation export the input data transformed using the supplied actions in the provided format.", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void export(@ApiParam(value = "Output format.")
-    @PathVariable("format")
-    final ExportType format, //
-            @ApiParam(value = "Actions to perform on content.")
-            @RequestPart(value = "actions", required = false)
-            final Part actions, //
-            @ApiParam(value = "Data set content as JSON.")
-            @RequestPart(value = "content", required = false)
-            final Part content, //
+    public void transform(@ApiParam(value = "Output format.") @PathVariable("format") final ExportType format, //
+            @ApiParam(value = "Actions to perform on content.") @RequestPart(value = "actions", required = false) final Part actions, //
+            @ApiParam(value = "Data set content as JSON.") @RequestPart(value = "content", required = false) final Part content, //
             final HttpServletResponse response, final HttpServletRequest request) {
         final ObjectMapper mapper = builder.build();
-
-        try {
-
-            JsonParser parser = mapper.getFactory().createParser(content.getInputStream());
-
+        try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
             Map<String, Object> arguments = new HashMap<>();
             final Enumeration<String> names = request.getParameterNames();
             while(names.hasMoreElements()){
@@ -141,21 +122,17 @@ public class TransformationService {
 
                 arguments.put(paramName, decodeParamValue);
             }
-            String decodedActions = "";
-            if (actions != null) {
-                decodedActions = IOUtils.toString(actions.getInputStream());
-            }
-            final ExportConfiguration configuration = ExportConfiguration.builder() //
-                    .args(arguments) //
-                    .format(format) //
-                    .actions(decodedActions) //
-                    .build();
-
+            String decodedActions = actions == null ? StringUtils.EMPTY : IOUtils.toString(actions.getInputStream());
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
             response.setContentType(format.getMimeType());
 
-            final Transformer transformer = exportFactory.getExporter(configuration);
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            transformer.transform(dataSet, response.getOutputStream());
+            Configuration configuration = Configuration.builder() //
+                    .format(format)
+                    .args(arguments)
+                    .output(response.getOutputStream()) //
+                    .actions(decodedActions) //
+                    .build();
+            factory.get(configuration).transform(dataSet, configuration);
         } catch(JsonMappingException e) {
             // Ignore (end of input)
         } catch (IOException e) {
@@ -188,29 +165,30 @@ public class TransformationService {
     @RequestMapping(value = "/transform/preview", method = POST, produces = APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "Preview the transformation on input data", notes = "This operation returns the input data diff between the old and the new transformation actions", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @VolumeMetered
-    public void transformPreview(@ApiParam(value = "Old actions to perform on content.")
-    @RequestPart(value = "oldActions", required = false)
-    final Part oldActions, //
-            @ApiParam(value = "New actions to perform on content.")
-            @RequestPart(value = "newActions", required = false)
-            final Part newActions, //
-            @ApiParam(value = "The row indexes to return")
-            @RequestPart(value = "indexes", required = false)
-            final Part indexes, //
-            @ApiParam(value = "Data set content as JSON")
-            @RequestPart
-            final Part content, //
-                                 final HttpServletResponse response) {
+    public void transformPreview(@ApiParam(value = "Old actions to perform on content.") @RequestPart(value = "oldActions", required = false) final Part oldActions, //
+            @ApiParam(value = "New actions to perform on content.") @RequestPart(value = "newActions", required = false) final Part newActions, //
+            @ApiParam(value = "The row indexes to return") @RequestPart(value = "indexes", required = false) final Part indexes, //
+            @ApiParam(value = "Data set content as JSON") @RequestPart(value = "content", required = false) final Part content, //
+            final HttpServletResponse response) {
         final ObjectMapper mapper = builder.build();
-        try {
-            JsonParser parser = mapper.getFactory().createParser(IOUtils.toString(content.getInputStream()));
+        try (JsonParser parser = mapper.getFactory().createParser(content.getInputStream())) {
             final String decodedIndexes = indexes == null ? null : IOUtils.toString(indexes.getInputStream());
             final String decodedOldActions = oldActions == null ? null : IOUtils.toString(oldActions.getInputStream());
             final String decodedNewActions = newActions == null ? null : IOUtils.toString(newActions.getInputStream());
-
-            final Transformer transformer = diffFactory.withIndexes(decodedIndexes).withActions(decodedOldActions, decodedNewActions).get();
             final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            transformer.transform(dataSet, response.getOutputStream());
+
+            final PreviewConfiguration configuration = PreviewConfiguration.preview() //
+                    .withActions(decodedNewActions) //
+                    .withIndexes(decodedIndexes) //
+                    .fromReference( //
+                            Configuration.builder() //
+                                    .format(ExportType.JSON) //
+                                    .output(response.getOutputStream()) //
+                                    .actions(decodedOldActions) //
+                                    .build() //
+                    ) //
+                    .build();
+            factory.get(configuration).transform(dataSet, configuration);
         } catch (IOException e) {
             throw new TDPException(TransformationErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
@@ -301,8 +279,8 @@ public class TransformationService {
     @ApiOperation(value = "Get the available export types")
     @Timed
     public void exportTypes(final HttpServletResponse response) {
-        List<ExportType> exportTypes = exportFactory.getExportTypes();
-        exportTypes.remove(ExportType.JSON);
+        List<ExportType> exportTypes = new ArrayList<>(Arrays.asList(ExportType.values()));
+        exportTypes.remove(ExportType.JSON); // Don't expose JSON to external callers.
         try {
             builder.build() //
                     .writer() //

@@ -52,7 +52,7 @@ public class TrimTest {
                 action, //
                 TrimTest.class.getResourceAsStream("trimAction.json"));
 
-        consumer = action.create(parameters);
+        consumer = action.create(parameters).getRowAction();
     }
 
     @Test

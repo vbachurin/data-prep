@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
@@ -55,8 +56,9 @@ public class SplitTest {
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 SplitTest.class.getResourceAsStream("splitAction.json"));
-        rowClosure = action.create(parameters);
-        metadataClosure = action.createMetadataClosure(parameters);
+        final Action action = this.action.create(parameters);
+        rowClosure = action.getRowAction();
+        metadataClosure = action.getMetadataAction();
     }
 
     @Test
@@ -114,7 +116,7 @@ public class SplitTest {
     }
 
     /**
-     * @see Split#createMetadataClosure(Map)
+     * @see Action#getMetadataAction()
      */
     @Test
     public void should_split_row_with_separator_at_the_end() {
@@ -136,7 +138,7 @@ public class SplitTest {
     }
 
     /**
-     * @see Split#createMetadataClosure(Map)
+     * @see Action#getMetadataAction()
      */
     @Test
     public void should_split_row_no_separator() {
@@ -159,7 +161,7 @@ public class SplitTest {
 
 
     /**
-     * @see Split#createMetadataClosure(Map)
+     * @see Action#getMetadataAction()
      */
     @Test
     public void should_update_metadata() {
@@ -184,7 +186,7 @@ public class SplitTest {
     }
 
     /**
-     * @see Split#createMetadataClosure(Map)
+     * @see Action#getMetadataAction()
      */
     @Test
     public void should_update_metadata_twice() {
@@ -222,7 +224,7 @@ public class SplitTest {
                 nullSeparatorAction, //
                 SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
 
-        BiConsumer<DataSetRow, TransformationContext> closure = nullSeparatorAction.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> closure = nullSeparatorAction.create(parameters).getRowAction();
 
         Map<String, String> values = new HashMap<>();
         values.put("recipe", "lorem bacon");
@@ -246,7 +248,7 @@ public class SplitTest {
                 nullSeparatorAction, //
                 SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
         nullSeparatorAction.create(parameters);
-        BiConsumer<RowMetadata, TransformationContext> closure = nullSeparatorAction.createMetadataClosure(parameters);
+        BiConsumer<RowMetadata, TransformationContext> closure = nullSeparatorAction.create(parameters).getMetadataAction();
 
         List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("recipe", "recipe"));

@@ -1,9 +1,4 @@
-@mixin grid-item-columns($columns) {
-  width: (100% / 12) * $columns;
-}
-
 .preparation-list {
-  $grid-item-columns: 4;
   $grid-item-border-size: 10px;
   $grid-item-border-color: $white;
   $grid-items-background: $super-light-gray;
@@ -11,24 +6,27 @@
 
   $title-color: $black;
   $important-color: $dark-blue;
-
-  width: 100%;
-  padding: 15px;
+  padding: 5px;
+  @include display(flex);
+  @include align-items(flex-start);
+  @include flex-direction(row);
+  @include flex-wrap(wrap);
+  @include align-content(center);
+  @include justify-content(flex-start);
 
   .preparation {
     @include transition(all 0.2s ease-in-out);
     text-align: left;
-    min-width: 285px;
-    max-width: 285px;
-    float: left;
+    width:300px;
+    @include flex-basis(auto);
+    @include flex-shrink(0);
+    @include flex-grow(0);
     position: relative;
     padding: $grid-item-border-size;
     box-shadow: inset 0px 0px 1px 1px $shadow-gray;
     //border: ($grid-item-border-size / 2) solid $grid-item-border-color;
     margin: 5px;
     background-color: $grid-items-background;
-
-    @include grid-item-columns($grid-item-columns);
 
     &:focus,
     &:hover {

@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.transformer.exporter;
+package org.talend.dataprep.transformation.api.transformer.writer;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,8 +11,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -24,6 +22,8 @@ import org.talend.dataprep.api.type.ExportType;
 import org.talend.dataprep.schema.io.XlsUtils;
 import org.talend.dataprep.transformation.Application;
 import org.talend.dataprep.transformation.api.transformer.Transformer;
+import org.talend.dataprep.transformation.api.transformer.TransformerFactory;
+import org.talend.dataprep.transformation.api.transformer.configuration.Configuration;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,36 +34,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @DirtiesContext
 public class XlsExporterTest {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
-    private ExportFactory factory;
+    private TransformerFactory factory;
 
     @Test
     public void write_simple_xls_file() throws Exception {
-
         // given
-        final ExportConfiguration configuration = ExportConfiguration.builder().format(ExportType.XLS).actions("").build();
-        final Transformer exporter = factory.getExporter(configuration);
-
-        final InputStream inputStream = ExportFactory.class.getResourceAsStream("export_dataset.json");
-
         Path path = Files.createTempFile("datarep-foo", "xls");
-
         Files.deleteIfExists(path);
-        final ObjectMapper mapper = builder.build();
-        try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
-            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
-            try (final OutputStream outputStream = Files.newOutputStream(path)) {
+        try (final OutputStream outputStream = Files.newOutputStream(path)) {
+            final Configuration configuration = Configuration.builder() //
+                    .format(ExportType.XLS) //
+                    .output(outputStream) //
+                    .actions("") //
+                    .build();
+            final Transformer exporter = factory.get(configuration);
+            final InputStream inputStream = XlsExporterTest.class.getResourceAsStream("export_dataset.json");
+            final ObjectMapper mapper = builder.build();
+            try (JsonParser parser = mapper.getFactory().createParser(inputStream)) {
+                final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
                 // when
-                exporter.transform(dataSet, outputStream);
-                outputStream.flush();
+                exporter.transform(dataSet, configuration);
             }
         }
-
         Workbook workbook = XlsUtils.getWorkbook(Files.newInputStream(path));
 
         Assertions.assertThat(workbook).isNotNull();

@@ -66,8 +66,8 @@ public class ActionParserTest {
         ParsedActions actualActions = actionParser.parse("");
 
         // when
-        actualActions.getRowTransformer().accept(actualRow, new TransformationContext());
-        actualActions.getMetadataTransformer().accept(actualMetadata, new TransformationContext());
+        actualActions.asUniqueRowTransformer().accept(actualRow, new TransformationContext());
+        actualActions.asUniqueMetadataTransformer().accept(actualMetadata, new TransformationContext());
 
         // then
         Assert.assertEquals(expectedRow, actualRow);
@@ -84,8 +84,8 @@ public class ActionParserTest {
         ParsedActions actualActions = actionParser.parse(json);
 
         // when
-        actualActions.getRowTransformer().accept(actualRow, new TransformationContext());
-        actualActions.getMetadataTransformer().accept(actualMetadata, new TransformationContext());
+        actualActions.asUniqueRowTransformer().accept(actualRow, new TransformationContext());
+        actualActions.asUniqueMetadataTransformer().accept(actualMetadata, new TransformationContext());
 
         // then
         RowMetadata expectedMetadata = getRowMetadata();

@@ -17,12 +17,17 @@
             bindToController: true,
             controllerAs: 'filterCtrl',
             controller: 'FilterSearchCtrl',
-            link: function(scope, iElement) {
+            link: function(scope, iElement, attrs, ctrl) {
                 iElement.bind('keydown', function (e) {
                     if(e.keyCode === 27) {
                         e.stopPropagation();
                     }
                 });
+
+                var inputElement = iElement.find('input');
+                inputElement[0].onblur = function () {
+                    ctrl.filterSearch = '';
+                };
             }
         };
     }

@@ -49,7 +49,7 @@ public class RoundTest {
         roundAction = new Round();
         Map<String, String> parameters = ActionMetadataTestUtils //
                 .parseParameters(roundAction, RoundTest.class.getResourceAsStream("roundAction.json"));
-        consumer = roundAction.create(parameters);
+        consumer = roundAction.create(parameters).getRowAction();
     }
 
     @Test
