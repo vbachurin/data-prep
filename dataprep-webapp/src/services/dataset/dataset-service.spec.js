@@ -50,7 +50,7 @@ describe('Dataset Service', function () {
         expect(result).toBe(datasets);
     }));
 
-    it('should adapt infos to dataset object for upload', inject(function (DatasetService) {
+    it('should adapt info to dataset object for upload', inject(function (DatasetService) {
         //given
         var file = {
             path: '/path/to/file'
@@ -59,7 +59,7 @@ describe('Dataset Service', function () {
         var id = 'e85afAa78556d5425bc2';
 
         //when
-        var dataset = DatasetService.fileToDataset(file, name, id);
+        var dataset = DatasetService.createDatasetInfo(file, name, id);
 
         //then
         expect(dataset.name).toBe(name);
@@ -67,9 +67,10 @@ describe('Dataset Service', function () {
         expect(dataset.file).toBe(file);
         expect(dataset.error).toBe(false);
         expect(dataset.id).toBe(id);
+        expect(dataset.type).toBe('file');
     }));
 
-    it('should return dataset object from remote url', inject(function (DatasetService) {
+    it('should adapt info to dataset object for remote dataset', inject(function (DatasetService) {
         //given
         var importParameters  = {
             type: 'http',
@@ -78,7 +79,7 @@ describe('Dataset Service', function () {
         };
 
         //when
-        var dataset = DatasetService.urlToDataset(importParameters);
+        var dataset = DatasetService.createDatasetInfo(null, importParameters.name, null);
 
         //then
         expect(dataset.name).toBe(importParameters.name);
@@ -86,6 +87,7 @@ describe('Dataset Service', function () {
         expect(dataset.file).toBeNull();
         expect(dataset.error).toBe(false);
         expect(dataset.id).toBeNull();
+        expect(dataset.type).toBe('remote');
     }));
 
     it('should get unique dataset name', inject(function (DatasetService) {

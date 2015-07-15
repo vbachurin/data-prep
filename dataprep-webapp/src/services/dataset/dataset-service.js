@@ -198,28 +198,25 @@
         //--------------------------------------------------------------------------------------------------------------
         /**
          * @ngdoc method
-         * @name fileToDataset
+         * @name createDatasetInfo
          * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Convert file to dataset object for upload
-         * @param {file} file - the file tu upload
+         * @description create the dataset info from the given parameters.
+         * @param {file} file - the file tu upload in case of
          * @param {string} name - the dataset name
          * @param {string} id - the dataset id (used to update existing dataset)
          * @returns {Object} - the adapted dataset infos {name: string, progress: number, file: *, error: boolean}
          */
-        self.fileToDataset = function(file, name, id) {
-            return {name: name, progress: 0, file: file, error: false, id: id};
-        };
+        self.createDatasetInfo = function(file, name, id) {
+            var info = {
+                name: name,
+                progress: 0,
+                file: file,
+                error: false,
+                id: id,
+                type: file === null ? 'remote' : 'file'
+            };
 
-        /**
-         * @ngdoc method
-         * @name urlToDataset
-         * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Convert import parameters to dataset object for import
-         * @param {Object} importParameters the import parameters (type, name, url...)
-         * @returns {Object} - the adapted dataset infos {name: string, progress: number, file: *, error: boolean}
-         */
-        self.urlToDataset = function(importParameters) {
-            return {name: importParameters.name, progress: 0, file: null, error: false, id: null};
+            return info;
         };
 
         /**

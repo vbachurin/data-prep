@@ -99,7 +99,7 @@
                 url: vm.datasetUrl
             };
 
-            var dataset = DatasetService.urlToDataset(importParameters);
+            var dataset = DatasetService.createDatasetInfo(null, importParameters.name);
             vm.uploadingDatasets.push(dataset);
 
             DatasetService.import(importParameters)
@@ -198,7 +198,7 @@
          * @description [PRIVATE] Create a new dataset
          */
         var createDataset = function(file, name) {
-            var dataset = DatasetService.fileToDataset(file, name);
+            var dataset = DatasetService.createDatasetInfo(file, name);
             vm.uploadingDatasets.push(dataset);
 
             DatasetService.create(dataset)
@@ -224,7 +224,7 @@
          * @description [PRIVATE] Update existing dataset
          */
         var updateDataset = function(file, existingDataset) {
-            var dataset = DatasetService.fileToDataset(file, existingDataset.name, existingDataset.id);
+            var dataset = DatasetService.createDatasetInfo(file, existingDataset.name, existingDataset.id);
             vm.uploadingDatasets.push(dataset);
 
             DatasetService.update(dataset)
