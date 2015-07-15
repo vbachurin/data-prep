@@ -113,7 +113,6 @@
          */
         self.updateData = function (data, stepColumn) {
             self.data = data;
-            //console.log(stepColumn);
             self.stepColumn = stepColumn;
             updateDataviewRecords(data.records);
         };

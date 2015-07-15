@@ -255,14 +255,17 @@
                     return PreparationService.getContent('head');
                 })
                 .then(function(response) {
-                    DatagridService.updateData(response.data, +column.id);
-                    return RecipeService.refresh();
-                })
-                .then(function() {
                     if(RecipeService.getRecipe().length === 1) { //first step append
                         self.showRecipe = true;
                     }
+                    DatagridService.updateData(response.data, column.id);
+                    return RecipeService.refresh();
                 })
+                //.then(function() {
+                //    if(RecipeService.getRecipe().length === 1) { //first step append
+                //        self.showRecipe = true;
+                //    }
+                //})
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });
