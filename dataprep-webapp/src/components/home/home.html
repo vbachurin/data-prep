@@ -3,7 +3,8 @@
         <ul id="help-dataset-nav">
             <li class="primary">
 
-                <talend-button-dropdown button-text="{{ ::'IMPORT_DATASET' | translate }}"
+                <talend-button-dropdown button-icon="m"
+                                        button-text="{{ ::'IMPORT_DATASET' | translate }}"
                                         button-action="homeCtrl.startDefaultImport()">
                     <ul>
                         <li ng-repeat="importType in homeCtrl.importTypes" ng-click="homeCtrl.startImport(importType)">
