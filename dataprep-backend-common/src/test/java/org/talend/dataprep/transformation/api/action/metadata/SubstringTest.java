@@ -81,11 +81,142 @@ public class SubstringTest {
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", " ipsum ");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_substring_1", " ipsum ");
         expectedValues.put("last update", "01/01/2015");
 
         rowClosure.accept(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @throws IOException
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_twice() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_substring_2", "acon ");
+        expectedValues.put("steps_substring_1", " ipsum ");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row, new TransformationContext());
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                SubstringTest.class.getResourceAsStream("substringAction.json"));
+
+        parameters.put(Substring.FROM_PARAMETER, "1");
+        parameters.put(Substring.TO_PARAMETER, "6");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @throws IOException
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_the_new_substring() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_substring_1", " ipsum ");
+        expectedValues.put("steps_substring_1_substring_1", "ips");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row, new TransformationContext());
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                SubstringTest.class.getResourceAsStream("substringAction.json"));
+
+        parameters.put(Substring.COLUMN_ID, "steps_substring_1");
+        parameters.put(Substring.FROM_PARAMETER, "1");
+        parameters.put(Substring.TO_PARAMETER, "4");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @see Action#getMetadataAction()
+     */
+    @Test
+    public void should_update_metadata() {
+
+        List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("steps", "steps"));
+        input.add(createMetadata("last update", "last update"));
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        metadataClosure.accept(rowMetadata, new TransformationContext());
+        List<ColumnMetadata> actual = rowMetadata.getColumns();
+
+        List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("recipe", "recipe"));
+        expected.add(createMetadata("steps", "steps"));
+        expected.add(createMetadata("steps_substring_1", "steps_substring_1"));
+        expected.add(createMetadata("last update", "last update"));
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * @see Action#getMetadataAction()
+     */
+    @Test
+    public void should_update_metadata_twice() {
+
+        List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("steps", "steps"));
+        input.add(createMetadata("last update", "last update"));
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        metadataClosure.accept(rowMetadata, new TransformationContext());
+        metadataClosure.accept(rowMetadata, new TransformationContext());
+
+        List<ColumnMetadata> actual = rowMetadata.getColumns();
+
+        List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("recipe", "recipe"));
+        expected.add(createMetadata("steps", "steps"));
+        expected.add(createMetadata("steps_substring_2", "steps_substring_2"));
+        expected.add(createMetadata("steps_substring_1", "steps_substring_1"));
+        expected.add(createMetadata("last update", "last update"));
+
+        assertEquals(expected, actual);
     }
 
     @Test
