@@ -118,7 +118,7 @@
          * </ul>
          * @returns {function} The request callback closure
          */
-        var replaceRecords = function(recordsTdpId, stepColumn) {
+        var replaceRecords = function replaceRecords (recordsTdpId, stepColumn) {
             return function(response) {
                 //save the original data
                 originalData = originalData || DatagridService.data;
@@ -140,7 +140,6 @@
 
                 //update grid
                 var data = {columns: response.data.columns, records: modifiedRecords, preview: true};
-                console.log();
                 DatagridService.updateData(data, stepColumn);
             };
         };
@@ -153,7 +152,6 @@
          * It cancel the previous preview first
          */
         self.getPreviewDiffRecords = function(currentStep, previewStep, stepColumnId) {
-            //var stepColumnId = currentStep.column.id;
             self.cancelPreview(true, stepColumnId);
 
             previewCanceler = $q.defer();

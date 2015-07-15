@@ -653,4 +653,19 @@ describe('Datagrid style service', function () {
             expect(selectedColumn).not.toBeDefined();
         }));
     });
+
+    describe('column navigation for focus purposes', function() {
+        it('should go to the cell (0,col)', inject(function (DatagridStyleService, DatagridService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            DatagridService.stepColumn = '0002';
+            spyOn(gridMock, 'gotoCell').and.returnValue();
+
+            //when
+            DatagridStyleService.navigateToStepColumn();
+
+            //then
+            expect(gridMock.gotoCell).toHaveBeenCalledWith(0, 2, false);
+        }));
+    });
 });

@@ -95,7 +95,10 @@
          * @description On step button leave : reset steps button highlight
          */
         this.stepHoverEnd = function (step) {
-            var stepColumnId = step.column.id;
+            var stepColumnId;
+            if(step){
+                stepColumnId = step.column.id;
+            }
             _.forEach(RecipeService.getRecipe(), function (element) {
                 element.highlight = false;
             });

@@ -31,13 +31,14 @@ function SlickGridMock () {
 
         //slickGrid functions
         autosizeColumns: function() {},
+        invalidate: function() {},
+        invalidateRows: function() {},
         getActiveCell: function() {return this.activeCell;},
         getColumns: function() {return this.columns;},
         getCellFromEvent: function() {return this.cell;},
         getCellNodeBox: function() {return this.box;},
         getRenderedRange: function() {return this.range;},
-        invalidate: function() {},
-        invalidateRows: function() {},
+        gotoCell: function() {},
         render: function() {},
         resetActiveCell: function() {},
         resizeCanvas: function() {},

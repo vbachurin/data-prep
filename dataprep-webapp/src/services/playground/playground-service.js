@@ -15,7 +15,7 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.statistics:StatisticsService
      */
-    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService,
+    function PlaygroundService($rootScope, $q, $timeout, DatasetService, DatagridService, FilterService, RecipeService,
                                TransformationCacheService, ColumnSuggestionService, PreparationService, MessageService, StatisticsService) {
         var self = this;
         self.toggleHappened = null;
@@ -197,7 +197,6 @@
             }else{
                 stepColumn = step.column.id;
             }
-
             //step already loaded
             if(RecipeService.getActiveThresholdStep() === step) {
                 return;
@@ -255,17 +254,17 @@
                     return PreparationService.getContent('head');
                 })
                 .then(function(response) {
-                    if(RecipeService.getRecipe().length === 1) { //first step append
-                        self.showRecipe = true;
-                    }
-                    DatagridService.updateData(response.data, column.id);
-                    return RecipeService.refresh();
+                    var promise = RecipeService.refresh();
+                    promise.then(function() {
+                        if(RecipeService.getRecipe().length === 1) { //first step append
+                            self.showRecipe = true;
+                            $timeout(function(){
+                                DatagridService.updateData(response.data, column.id);
+                            },250);
+                        }
+                    });
+                    return promise;
                 })
-                //.then(function() {
-                //    if(RecipeService.getRecipe().length === 1) { //first step append
-                //        self.showRecipe = true;
-                //    }
-                //})
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });

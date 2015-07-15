@@ -78,17 +78,6 @@
                     return FilterService.filters;
                 };
 
-                /**
-                 * @ngdoc method
-                 * @name getStepColumn
-                 * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] Get the column corresponding to the current selected step
-                 */
-                var getStepColumn = function getStepColumn() {
-                    return DatagridService.stepColumn;
-                };
-
-
                 //------------------------------------------------------------------------------------------------------
                 //---------------------------------------------------UTILS----------------------------------------------
                 //------------------------------------------------------------------------------------------------------
@@ -145,20 +134,6 @@
 
                 /**
                  * @ngdoc method
-                 * @name onStepChange
-                 * @methodOf data-prep.datagrid.directive:Datagrid
-                 * @description [PRIVATE] navigate in the grid to show the corresponding column
-                 */
-                var onStepChange = function onStepChange(newStepColumn) {
-                    if(grid){
-                        if(newStepColumn !== null && typeof newStepColumn !== 'undefined'){
-                            grid.gotoCell(0, newStepColumn, false);
-                        }
-                    }
-                };
-
-                /**
-                 * @ngdoc method
                  * @name onFiltersChange
                  * @methodOf data-prep.datagrid.directive:Datagrid
                  * @description [PRIVATE] Refresh cell styles and scroll to top
@@ -207,11 +182,6 @@
                  * Update grid columns and invalidate grid on data change
                  */
                 scope.$watch(getData, onDataChange);
-
-                /**
-                 * Navigate horizontally in the grid to show the column corresponding to the selected step
-                 */
-                //scope.$watch(getStepColumn, onStepChange);
 
                 /**
                  * When filter change, displayed values change, so we reset active cell and cell styles
