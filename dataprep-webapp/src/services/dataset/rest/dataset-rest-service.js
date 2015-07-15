@@ -41,7 +41,7 @@
         self.import = function(parameters) {
             var req = {
                 method: 'POST',
-                url: RestURLs.datasetUrl,
+                url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(parameters.name),
                 headers: {
                     'Content-Type': 'application/vnd.remote-ds.'+ parameters.type
                 },
