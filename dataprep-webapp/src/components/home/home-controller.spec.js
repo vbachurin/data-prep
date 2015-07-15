@@ -83,6 +83,45 @@ describe('Home controller', function() {
             expect(ctrl.datasetNameModal).toBeTruthy();
         });
 
+
+        describe('Import http remote dataset', function() {
+
+            beforeEach(inject(function(DatasetService) {
+                spyOn(DatasetService, 'import').and.returnValue(uploadDefer.promise);
+            }));
+
+            it('should display http import form', function() {
+                //given
+                expect(ctrl.datasetHttpModal).toBeFalsy();
+
+                //when
+                ctrl.startImport({id: 'http', name: 'from HTTP'});
+
+                //then
+                expect(ctrl.datasetHttpModal).toBeTruthy();
+            });
+
+            it('should create remote http dataset', inject(function(DatasetService, UploadWorkflowService) {
+                //given
+
+                expect(ctrl.uploadingDatasets.length).toBe(0);
+                ctrl.importHttpDataSet();
+                expect(ctrl.uploadingDatasets.length).toBe(1);
+
+                //when
+                uploadDefer.resolve({data: dataset.id});
+                scope.$digest();
+
+                //then
+                expect(DatasetService.import).toHaveBeenCalled();
+                expect(ctrl.uploadingDatasets.length).toBe(0);
+                expect(DatasetService.getDatasetById).toHaveBeenCalledWith(dataset.id);
+                expect(UploadWorkflowService.openDataset).toHaveBeenCalled();
+
+            }));
+
+        });
+
         describe('step 2 with unique name', function() {
 
             beforeEach(inject(function($rootScope, DatasetService) {

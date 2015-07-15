@@ -22,6 +22,7 @@ describe('Dataset Service', function () {
         spyOn(DatasetListService, 'refreshDefaultPreparation').and.returnValue(datasetConsolidation);
         spyOn(DatasetListService, 'delete').and.returnValue($q.when(true));
         spyOn(DatasetListService, 'create').and.returnValue(promiseWithProgress);
+        spyOn(DatasetListService, 'importRemoteDataset').and.returnValue(promiseWithProgress);
         spyOn(DatasetListService, 'update').and.returnValue(promiseWithProgress);
         spyOn(DatasetListService, 'processCertification').and.returnValue($q.when(true));
 
@@ -66,6 +67,25 @@ describe('Dataset Service', function () {
         expect(dataset.file).toBe(file);
         expect(dataset.error).toBe(false);
         expect(dataset.id).toBe(id);
+    }));
+
+    it('should return dataset object from remote url', inject(function (DatasetService) {
+        //given
+        var importParameters  = {
+            type: 'http',
+            name: 'remote dataset',
+            url:  'http://www.lequipe.fr'
+        };
+
+        //when
+        var dataset = DatasetService.urlToDataset(importParameters);
+
+        //then
+        expect(dataset.name).toBe(importParameters.name);
+        expect(dataset.progress).toBe(0);
+        expect(dataset.file).toBeNull();
+        expect(dataset.error).toBe(false);
+        expect(dataset.id).toBeNull();
     }));
 
     it('should get unique dataset name', inject(function (DatasetService) {
@@ -207,6 +227,23 @@ describe('Dataset Service', function () {
         //then
         expect(result).toBe(promiseWithProgress);
         expect(DatasetListService.create).toHaveBeenCalledWith(dataset);
+    }));
+
+    it('should import remote and return the http promise', inject(function ($rootScope, DatasetService, DatasetListService) {
+        //given
+        var importParameters = {
+            type: 'http',
+            name: 'great remote dataset',
+            url:  'http://talend.com'
+        };
+
+        //when
+        var result = DatasetService.import(importParameters);
+        $rootScope.$digest();
+
+        //then
+        expect(result).toBe(promiseWithProgress);
+        expect(DatasetListService.importRemoteDataset).toHaveBeenCalledWith(importParameters);
     }));
 
     it('should consolidate preparations and datasets on dataset creation', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {

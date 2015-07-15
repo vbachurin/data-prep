@@ -35,6 +35,7 @@
         </div>
     </div>
 
+    <!-- Import dataset from local file -->
     <talend-modal fullscreen="false"
                   close-button="true"
                   state="homeCtrl.datasetNameModal">
@@ -54,6 +55,7 @@
     </talend-modal>
 
 
+    <!-- Import remote HTTP dataset -->
     <talend-modal fullscreen="false"
                   close-button="true"
                   state="homeCtrl.datasetHttpModal">
@@ -66,7 +68,8 @@
         <input type="text" ng-model="homeCtrl.datasetUrl" placeholder="http://" required/>
 
         <div class="modal-buttons">
-            <button class="talend-modal-close btn-secondary modal-secondary-button">{{ ::'CANCEL' | translate }}
+            <button class="talend-modal-close btn-secondary modal-secondary-button">
+                {{ ::'CANCEL' | translate }}
             </button>
             <button class="talend-modal-close btn-primary modal-primary-button"
                     ng-click="homeCtrl.importHttpDataSet()"
