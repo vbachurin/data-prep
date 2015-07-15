@@ -3,17 +3,24 @@
               close-button="true"
               on-close="playgroundCtrl.close()">
     <div class="modal-header">
-        <ul>
+        <ul class="left-header">
             <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
+        </ul>
+
+        <ul class="right-header">
+            <li class="preview" ng-show="playgroundCtrl.previewInProgress">
+                <div class="previewBadge">
+                    <img src="assets/images/eye.svg" alt="Blue Square" height="24px" class="previewBadgeElement"/>
+                    <span class="previewBadgeElement">Preview</span>
+                </div>
+            </li>
             <li class="export">
                 <export></export>
             </li>
+            <li>
+                <history-control></history-control>
+            </li>
         </ul>
-
-        <div class="previewBadge" ng-show="playgroundCtrl.previewInProgress">
-            <img src="assets/images/eye.svg" alt="Blue Square" height="24px" class="previewBadgeElement"/>
-            <span class="previewBadgeElement">Preview</span>
-        </div>
     </div>
 
     <div class="modal-body playground">

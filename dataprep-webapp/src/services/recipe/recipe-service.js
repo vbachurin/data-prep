@@ -9,7 +9,6 @@
      * @requires data-prep.services.transformation.service:TransformationService
      */
     function RecipeService(PreparationService, TransformationService) {
-        var self = this;
         var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
 
@@ -40,6 +39,26 @@
          */
         var initialState;
 
+        return {
+            //step utils
+            getActiveThresholdStep: getActiveThresholdStep,
+            getActiveThresholdStepIndex: getActiveThresholdStepIndex,
+            getLastActiveStep: getLastActiveStep,
+            getLastStep: getLastStep,
+            getPreviousStep: getPreviousStep,
+            getRecipe: getRecipe,
+            getStep: getStep,
+            getStepBefore: getStepBefore,
+            getStepIndex: getStepIndex,
+            isFirstStep: isFirstStep,
+            isLastStep: isLastStep,
+
+            //recipe and steps manipulation
+            disableStepsAfter: disableStepsAfter,
+            resetParams: resetParams,
+            refresh: refresh
+        };
+
         //--------------------------------------------------------------------------------------------------------------
         //----------------------------------------------------STEP UTILS------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
@@ -50,9 +69,9 @@
          * @description Return recipe step list
          * @returns {object[]} The recipe step list
          */
-        this.getRecipe = function getRecipe() {
+        function getRecipe() {
             return recipe;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -63,12 +82,12 @@
          * @description Return a recipe step identified by index
          * @returns {object} The recipe step
          */
-        this.getStep = function getStep(index, defaultLast) {
+        function getStep(index, defaultLast) {
             if(index >= recipe.length || index < 0) {
                 return defaultLast ? recipe[recipe.length - 1] : null;
             }
             return recipe[index];
-        };
+        }
 
         /**
          * @ngdoc method
@@ -78,7 +97,7 @@
          * @description Return the step just before the provided index
          * @returns {object} The recipe step
          */
-        this.getStepBefore = function getStepBefore(index) {
+        function getStepBefore(index) {
             if(index <= 0) {
                 return initialState;
             }
@@ -87,7 +106,7 @@
             }
 
             return recipe[index - 1];
-        };
+        }
 
         /**
          * @ngdoc method
@@ -96,10 +115,10 @@
          * @param {object} step The given step
          * @description Get the step before the given one
          */
-        this.getPreviousStep = function getPreviousStep(step) {
+        function getPreviousStep(step) {
             var index = recipe.indexOf(step);
-            return self.getStepBefore(index);
-        };
+            return getStepBefore(index);
+        }
 
         /**
          * @ngdoc method
@@ -107,11 +126,11 @@
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @description [PRIVATE] Reset the current recipe
          */
-        var reset = function reset() {
+        function reset() {
             initialState = null;
             recipe = [];
             activeThresholdStep = null;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -120,9 +139,9 @@
          * @description Get the last active step
          * @returns {object} - the last active step
          */
-        this.getActiveThresholdStep = function getActiveThresholdStep() {
+        function getActiveThresholdStep() {
             return activeThresholdStep;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -131,9 +150,9 @@
          * @description Get the last active step index
          * @returns {number} The last active step index
          */
-        this.getActiveThresholdStepIndex = function getActiveThresholdStepIndex() {
+        function getActiveThresholdStepIndex() {
             return activeThresholdStep ? recipe.indexOf(activeThresholdStep) : recipe.length -1;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -143,9 +162,9 @@
          * @description Get the current clicked step index
          * @returns {number} The current step index
          */
-        this.getStepIndex = function getStepIndex(step) {
+        function getStepIndex(step) {
             return recipe.indexOf(step);
-        };
+        }
 
         /**
          * @ngdoc method
@@ -154,9 +173,9 @@
          * @description Get the last active step (last step if activeThresholdStep var is not set)
          * @returns {object} The last active step
          */
-        this.getLastActiveStep = function getLastActiveStep() {
-            return activeThresholdStep ? activeThresholdStep : recipe[recipe.length - 1];
-        };
+        function getLastActiveStep() {
+            return activeThresholdStep ? activeThresholdStep : getLastStep();
+        }
 
         /**
          * @ngdoc method
@@ -166,9 +185,9 @@
          * @description Test if the provided step is the first step of the recipe
          * @returns {object} The step to test
          */
-        this.isFirstStep = function isFirstStep(step) {
-            return  self.getStepIndex(step) === 0;
-        };
+        function isFirstStep(step) {
+            return  getStepIndex(step) === 0;
+        }
 
         /**
          * @ngdoc method
@@ -178,9 +197,20 @@
          * @description Test if the provided step is the last step of the recipe
          * @returns {object} The step to test
          */
-        this.isLastStep = function isLastStep(step) {
-            return  self.getStepIndex(step) === recipe.length - 1;
-        };
+        function isLastStep(step) {
+            return  step === getLastStep();
+        }
+
+        /**
+         * @ngdoc method
+         * @name getLastStep
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Get the last step of the recipe
+         * @returns {object} The last step
+         */
+        function getLastStep() {
+            return recipe[recipe.length - 1];
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //----------------------------------------------------STEP PARAMS-----------------------------------------------
@@ -193,7 +223,7 @@
          * @param {object} recipeItem The item to reset
          * @description Reset all params of the recipe item, with saved values (param.initialValue)
          */
-        this.resetParams = function resetParams(recipeItem) {
+        function resetParams(recipeItem) {
             //simple parameters
             TransformationService.resetParamValue(recipeItem.transformation.parameters, null);
 
@@ -202,7 +232,7 @@
 
             //clusters
             TransformationService.resetParamValue(recipeItem.transformation.cluster, clusterType);
-        };
+        }
 
         /**
          * @ngdoc method
@@ -213,7 +243,7 @@
          * If a step exists in the old recipe (same stepId == same parent + same content), we reuse them
          * Otherwise, we call the backend
          */
-        var initDynamicParams = function initDynamicParams(recipes) {
+        function initDynamicParams(recipes) {
             var getOldStepById = function(step) {
                 return _.find(recipes.old, function(oldStep) {
                     return oldStep.transformation.stepId === step.transformation.stepId;
@@ -231,7 +261,7 @@
                     var infos = {
                         columnId: step.column.id,
                         preparationId:  PreparationService.currentPreparationId,
-                        stepId: self.getPreviousStep(step).transformation.stepId
+                        stepId: getPreviousStep(step).transformation.stepId
                     };
                     return TransformationService.initDynamicParameters(step.transformation, infos)
                         .then(function() {
@@ -246,7 +276,7 @@
                 })
                 .forEach(initOnStep)
                 .value();
-        };
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //------------------------------------------------------STEPS--------------------------------------------------
@@ -259,7 +289,7 @@
          * @description [PRIVATE] Create a recipe item from Preparation step
          * @returns {object} - the adapted recipe item
          */
-        var createItem = function createItem(actionStep) {
+        function createItem(actionStep) {
             var stepId = actionStep[0];
             var actionValues = actionStep[1];
             var metadata = actionStep[2];
@@ -285,7 +315,7 @@
             TransformationService.initParamsValues(item.transformation, actionValues.parameters);
 
             return item;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -293,7 +323,7 @@
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @description Refresh recipe items with current preparation steps
          */
-        this.refresh = function refresh() {
+        function refresh() {
             if(!PreparationService.currentPreparationId) {
                 return reset();
             }
@@ -321,7 +351,7 @@
                 .then(function(recipes) {
                     initDynamicParams(recipes);
                 });
-        };
+        }
 
         /**
          * @ngdoc method
@@ -330,7 +360,7 @@
          * @param {object} step - the limit between active and inactive
          * @description Disable all steps after the given one
          */
-        this.disableStepsAfter = function disableStepsAfter(step) {
+        function disableStepsAfter(step) {
             var stepFound = step === initialState;
             _.forEach(recipe, function(nextStep) {
                 if(stepFound) {
@@ -344,7 +374,7 @@
                 }
             });
             activeThresholdStep = step;
-        };
+        }
     }
 
     angular.module('data-prep.services.recipe')

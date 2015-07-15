@@ -1,0 +1,108 @@
+{
+  "records": [
+    {
+      "0000": "1",
+      "0001": "Lennon",
+      "0002": "John",
+      "0003": "40",
+      "0004": "10/09/1940",
+      "0005": "false",
+      "0005_copy": "false"
+    },
+    {
+      "0000": "2",
+      "0001": "Bowie",
+      "0002": "David",
+      "0003": "67",
+      "0004": "01/08/1947",
+      "0005": "true",
+      "0005_copy": "true"
+    }
+  ],
+  "columns": [
+    {
+      "name": "id",
+      "headerSize": 0,
+      "type": "integer",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "0000"
+    },
+    {
+      "name": "firstname",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "0001"
+    },
+    {
+      "name": "lastname",
+      "headerSize": 0,
+      "type": "string",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "0002"
+    },
+    {
+      "name": "age",
+      "headerSize": 0,
+      "type": "integer",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "0003"
+    },
+    {
+      "name": "date-of-birth",
+      "headerSize": 0,
+      "type": "date",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "0004"
+    },
+    {
+      "name": "alive",
+      "headerSize": 0,
+      "type": "boolean",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "0005"
+    },
+    {
+      "name": "alive_copy",
+      "headerSize": 0,
+      "type": "boolean",
+      "quality": {
+        "empty": 0,
+        "invalid": 0,
+        "valid": 2,
+        "invalidValues": []
+      },
+      "id": "0005_copy"
+    }
+  ]
+}

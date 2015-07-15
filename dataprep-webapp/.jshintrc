@@ -21,6 +21,7 @@
   "validthis": true,
   "globals": {
     "document": false,
+    "window": false,
     "angular": false,
     // Angular Mocks
     "inject": false,

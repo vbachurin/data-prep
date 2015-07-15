@@ -380,6 +380,27 @@ public class DataPreparationAPITest {
         applyActionFromFile(preparationId, "upper_case_2.json");
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final String firstStep = steps.get(1);
+
+        // when : delete (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_2
+        given().delete("/api/preparations/{preparation}/actions/{action}", preparationId, firstStep)
+               .then()
+               .statusCode(is(200));
+
+        // then : Steps id should have changed due to update
+        steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        assertThat(steps.size(), is(1));
+        assertThat(steps.get(0), is(ROOT_STEP.id()));
+    }
+
+    @Test
+    public void testPreparationDeleteAction() throws Exception {
+        // given
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        applyActionFromFile(preparationId, "upper_case_1.json");
+        applyActionFromFile(preparationId, "upper_case_2.json");
+
+        List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
         assertThat(steps.get(1), is("4e3b0c1e2f2ee1e399f3f8bd8092fe0f2f74e690")); // <- upper_case_1

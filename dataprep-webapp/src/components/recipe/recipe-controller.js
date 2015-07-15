@@ -10,7 +10,7 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
      */
-    function RecipeCtrl($rootScope, RecipeService, PlaygroundService, PreparationService, PreviewService) {
+    function RecipeCtrl(RecipeService, PlaygroundService, PreparationService, PreviewService) {
         var vm = this;
         vm.recipeService = RecipeService;
 
@@ -56,19 +56,9 @@
                 return;
             }
 
-            $rootScope.$emit('talend.loading.start');
-            var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
-            PreparationService.updateStep(step, newParams)
-                .then(RecipeService.refresh)
-                .then(function() {
-                    var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
-                    return PlaygroundService.loadStep(activeStep);
-                })
+            PlaygroundService.updateStep(step, newParams)
                 .then(function() {
                     vm.showModal = {};
-                })
-                .finally(function () {
-                    $rootScope.$emit('talend.loading.stop');
                 });
         };
 

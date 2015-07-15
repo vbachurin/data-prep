@@ -87,5 +87,5 @@
     }
 
     angular.module('data-prep.datagrid')
-        .factory('DatagridGridService', DatagridGridService);
+        .service('DatagridGridService', DatagridGridService);
 })();

@@ -51,7 +51,6 @@
   }
 
   .modal-window { // overlay
-    @include transition(opacity 0.25s ease);
     @include position(fixed, 0px 0px 0px 0px);
     background: $background-transparent;
     opacity: 0;
@@ -98,7 +97,6 @@
   }
 
   .modal-inner {
-    @include transition(opacity 0.25s ease);
     background: $modal-background;
     border-radius: $base-border-radius;
     margin: auto;
@@ -183,8 +181,9 @@
   }
 
   .modal-state:checked + .modal-window {
-    opacity: 1;
     visibility: visible;
+    opacity: 1;
+    @include animation(fadeIn 0.5s);
   }
 
   .modal-state:checked + .modal-window .modal-inner {

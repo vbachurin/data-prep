@@ -1,0 +1,11 @@
+.history {
+  > a {
+    color: $white;
+
+    &.inactive {
+      color: $medium-gray;
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+}
