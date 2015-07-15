@@ -105,44 +105,6 @@ describe('Playground controller', function() {
         expect(PlaygroundService.preparationName).toBe('My preparation');
     }));
 
-    it('should call service create/updateName service with clean name', inject(function(PlaygroundService) {
-        //given
-        var ctrl = createController();
-        ctrl.preparationName = 'My preparation ';
-
-        //when
-        ctrl.changeName();
-
-        //then
-        expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('My preparation');
-    }));
-
-    it('should change route on create/update name', inject(function($rootScope, $state, PreparationService) {
-        //given
-        var ctrl = createController();
-        ctrl.preparationName = 'My preparation ';
-        PreparationService.currentPreparationId = 'fe6843da512545e';
-
-        //when
-        ctrl.changeName();
-        $rootScope.$digest();
-
-        //then
-        expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid : 'fe6843da512545e'}, {location:'replace', inherit:false});
-    }));
-
-    it('should not call service create/updateName service if name is blank', inject(function(PlaygroundService) {
-        //given
-        var ctrl = createController();
-        ctrl.preparationName = ' ';
-
-        //when
-        ctrl.changeName();
-
-        //then
-        expect(PlaygroundService.createOrUpdatePreparation).not.toHaveBeenCalled();
-    }));
-
     it('should bind previewInProgress getter with PreviewService', inject(function(PreviewService) {
         //given
         var ctrl = createController();
@@ -191,7 +153,20 @@ describe('Playground controller', function() {
         expect(ctrl.editionMode).toBe(false);
     });
 
-    it('should create/update preparation and toggle edition mode flag on name edition confirmation', inject(function(PlaygroundService) {
+    it('should create/update preparation with clean name on name edition confirmation', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+
+        ctrl.preparationName = '  my new name  ';
+
+        //when
+        ctrl.confirmPrepNameEdition();
+
+        //then
+        expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my new name');
+    }));
+
+    it('should toggle edition mode flag on name edition confirmation', function() {
         //given
         var ctrl = createController();
         expect(ctrl.editionMode).toBe(true);
@@ -202,8 +177,33 @@ describe('Playground controller', function() {
         ctrl.confirmPrepNameEdition();
 
         //then
-        expect(PlaygroundService.createOrUpdatePreparation).toHaveBeenCalledWith('my new name');
         expect(ctrl.editionMode).toBe(false);
+    });
+
+    it('should change route to preparation route on name edition confirmation', inject(function($rootScope, $state, PreparationService) {
+        //given
+        var ctrl = createController();
+        ctrl.preparationName = 'My preparation ';
+        PreparationService.currentPreparationId = 'fe6843da512545e';
+
+        //when
+        ctrl.confirmPrepNameEdition();
+        $rootScope.$digest();
+
+        //then
+        expect($state.go).toHaveBeenCalledWith('nav.home.preparations', {prepid : 'fe6843da512545e'}, {location:'replace', inherit:false});
+    }));
+
+    it('should not call service create/updateName service if name is blank on name edition confirmation', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        ctrl.preparationName = ' ';
+
+        //when
+        ctrl.confirmPrepNameEdition();
+
+        //then
+        expect(PlaygroundService.createOrUpdatePreparation).not.toHaveBeenCalled();
     }));
 
     it('should reset name and toggle edition mode flag on name edition cancelation', inject(function(PlaygroundService) {

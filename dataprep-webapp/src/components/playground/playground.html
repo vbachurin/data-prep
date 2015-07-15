@@ -1,6 +1,7 @@
 <talend-modal fullscreen="true"
               state="playgroundCtrl.showPlayground"
               close-button="true"
+              before-close="playgroundCtrl.beforeClose()"
               on-close="playgroundCtrl.close()">
     <div class="modal-header">
         <ul class="left-header">
@@ -69,4 +70,30 @@
             <suggestions></suggestions>
         </talend-slidable>
     </div>
+</talend-modal>
+
+<talend-modal
+        fullscreen="false"
+        state="playgroundCtrl.showNameValidation"
+        close-button="true">
+    Save Your Changes ?<br/><br/>
+    You've transformed your dataset in a preparation that can be saved in order to be re-used next time.
+    <br/><br/>
+    Do you want to save it ?
+    <br/><br/>
+    <form name="savePreparationForm" ng-submit="playgroundCtrl.confirmSaveOnClose()">
+
+        Preparation Name: <input type="text"
+                                 placeholder="{{::'ENTER_PREPARATION_NAME' | translate}}"
+                                 ng-model="playgroundCtrl.preparationName"
+                                 not-blank-validation/>
+
+        <div class="modal-buttons">
+            <a class="modal-secondary-button"
+               ng-click="playgroundCtrl.cancelSaveOnClose()">No, Thanks !</a>
+            <button class="modal-primary-button"
+                    ng-disabled="savePreparationForm.$invalid"
+                    type="submit">SAVE IT</button>
+        </div>
+    </form>
 </talend-modal>

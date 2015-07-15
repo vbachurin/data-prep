@@ -22,9 +22,9 @@ describe('Preparation Service', function () {
         spyOn(PreparationListService, 'create').and.returnValue($q.when({data: newPreparationId}));
         spyOn(PreparationListService, 'update').and.returnValue($q.when(true));
         spyOn(PreparationListService, 'delete').and.returnValue($q.when(true));
-        spyOn(PreparationListService, 'updateStep').and.returnValue($q.when(true));
-        spyOn(PreparationListService, 'appendStep').and.returnValue($q.when(true));
 
+        spyOn(PreparationRestService, 'updateStep').and.returnValue($q.when(true));
+        spyOn(PreparationRestService, 'appendStep').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getContent').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getDetails').and.returnValue($q.when(true));
         spyOn(PreparationRestService, 'getPreviewDiff').and.returnValue($q.when(true));
@@ -270,10 +270,16 @@ describe('Preparation Service', function () {
         expect(PreparationListService.refreshMetadataInfos).toHaveBeenCalledWith(datasets);
     }));
 
-    it('should update a preparation step with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationListService) {
+    it('should update a preparation step with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
         //given
         PreparationService.currentPreparationId = '6cd546546548a745';
-        var step = {column: {id: '1', name:'firstname'}};
+        var step = {
+            transformation: {
+                stepId : '867654ab15edf576844c4',
+                name: 'deletematch'
+            },
+            column: {id: '1', name:'firstname'}
+        };
         var parameters = {value: 'Toto'};
 
         //when
@@ -281,23 +287,37 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationListService.updateStep).toHaveBeenCalledWith('6cd546546548a745', step, {value: 'Toto', column_name: 'firstname', column_id: '1'});
+        expect(PreparationRestService.updateStep).toHaveBeenCalledWith(
+            '6cd546546548a745', //prep id
+            '867654ab15edf576844c4',  //step id
+            'deletematch', //step name
+            {value: 'Toto', column_name: 'firstname', column_id: '1'}); //params
     }));
 
-    it('should update a preparation step without parameters (should create it with column id)', inject(function ($rootScope, PreparationService, PreparationListService) {
+    it('should update a preparation step without parameters (should create it with column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
         //given
         PreparationService.currentPreparationId = '6cd546546548a745';
-        var step = {column: {id: '1', name:'firstname'}};
+        var step = {
+            transformation: {
+                stepId : '867654ab15edf576844c4',
+                name: 'touppercase'
+            },
+            column: {id: '1', name:'firstname'}
+        };
 
         //when
         PreparationService.updateStep(step);
         $rootScope.$digest();
 
         //then
-        expect(PreparationListService.updateStep).toHaveBeenCalledWith('6cd546546548a745', step, {column_name: 'firstname', column_id: '1'});
+        expect(PreparationRestService.updateStep).toHaveBeenCalledWith(
+            '6cd546546548a745', //prep id
+            '867654ab15edf576844c4',  //step id
+            'touppercase', //step name
+            {column_name: 'firstname', column_id: '1'}); //params
     }));
 
-    it('should append step to current preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationListService) {
+    it('should append step to current preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
         //given
         PreparationService.currentPreparationId = '6cd546546548a745';
         var metadata = {id: '2430e5df845ab6034c85'};
@@ -310,10 +330,10 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationListService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'cut', {value: 'Toto', column_name: 'firstname', column_id: '1'});
+        expect(PreparationRestService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'cut', {value: 'Toto', column_name: 'firstname', column_id: '1'});
     }));
 
-    it('should append step to current preparation without parameters (should create it with column id)', inject(function ($rootScope, PreparationService, PreparationListService) {
+    it('should append step to current preparation without parameters (should create it with column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
         //given
         PreparationService.currentPreparationId = '6cd546546548a745';
         var metadata = {id: '2430e5df845ab6034c85'};
@@ -325,7 +345,7 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationListService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'uppercase', {column_name: 'firstname', column_id: '1'});
+        expect(PreparationRestService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'uppercase', {column_name: 'firstname', column_id: '1'});
     }));
 
     it('should create a new preparation with generic name on append step if no preparation is loaded', inject(function ($rootScope, PreparationService, PreparationListService) {

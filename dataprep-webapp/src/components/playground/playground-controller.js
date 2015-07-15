@@ -44,8 +44,15 @@
          * @description Change the preparation name
          */
         vm.confirmPrepNameEdition = function confirmPrepNameEdition(){
-            vm.changeName();
-            vm.toggleEditionMode();
+            var cleanName = vm.preparationName.trim();
+            if(!vm.changeNameInProgress && cleanName) {
+                vm.toggleEditionMode();
+                changeName(cleanName)
+                    .then(function() {
+                        return $state.go('nav.home.preparations', {prepid : PreparationService.currentPreparationId}, {location:'replace', inherit:false} );
+                    })
+                    .catch(vm.toggleEditionMode);
+            }
         };
 
         /**
@@ -65,14 +72,38 @@
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
          * @description Create a preparation or update existing preparation name if it already exists
          */
-        vm.changeName = function() {
-            var cleanName = vm.preparationName.trim();
-            if(cleanName) {
-                PlaygroundService.createOrUpdatePreparation(cleanName)
-                    .then(function() {
-                        $state.go('nav.home.preparations', {prepid : PreparationService.currentPreparationId}, {location:'replace', inherit:false} );
-                    });
+        var changeName = function(name) {
+            vm.changeNameInProgress = true;
+            return PlaygroundService.createOrUpdatePreparation(name)
+                .finally(function() {
+                    vm.changeNameInProgress = false;
+                });
+        };
+
+        vm.beforeClose = function beforeClose() {
+            var isPreparationDraft = PreparationService.currentPreparationId && !PlaygroundService.originalPreparationName;
+            if(isPreparationDraft) {
+                vm.showNameValidation = true;
+                return false;
             }
+            return true;
+        };
+
+        var hideAll = function hideAll() {
+            vm.showNameValidation = false;
+            vm.showPlayground = false;
+        };
+
+        vm.cancelSaveOnClose = function cancelSaveOnClose() {
+            PreparationService.deleteCurrentPreparation()
+                .then(hideAll);
+        };
+
+        vm.confirmSaveOnClose = function confirmSaveOnClose() {
+            var cleanName = vm.preparationName.trim();
+            changeName(cleanName)
+                .then(vm.toggleEditionMode)
+                .then(hideAll);
         };
 
         /**

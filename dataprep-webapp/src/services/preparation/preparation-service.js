@@ -31,6 +31,7 @@
             //preparation lifecycle
             create: create,
             delete: deletePreparation,
+            deleteCurrentPreparation: deleteCurrentPreparation,
 
             //update preparation
             setName: setName,
@@ -156,6 +157,13 @@
                 .then(consolidatePreparationsAndDatasets);
         }
 
+        function deleteCurrentPreparation() {
+            var preparationToDelete = _.find(PreparationListService.preparations, function(preparation) {
+                return preparation.id === service.currentPreparationId;
+            });
+            return deletePreparation(preparationToDelete);
+        }
+
         //---------------------------------------------------------------------------------
         //----------------------------------------UPDATE-----------------------------------
         //---------------------------------------------------------------------------------
@@ -194,7 +202,7 @@
         function updateStep(step, parameters) {
             parameters = parameters || {};
             insertColumnInfo(parameters, step.column);
-            return PreparationListService.updateStep(service.currentPreparationId, step, parameters);
+            return PreparationRestService.updateStep(service.currentPreparationId, step.transformation.stepId, step.transformation.name, parameters);
         }
 
 
@@ -228,7 +236,7 @@
             var promise = service.currentPreparationId ? $q.when(service.currentPreparationId) : create(metadata, 'New preparation');
 
             return promise.then(function() {
-                return PreparationListService.appendStep(service.currentPreparationId, action, parameters);
+                return PreparationRestService.appendStep(service.currentPreparationId, action, parameters);
             });
         }
 
