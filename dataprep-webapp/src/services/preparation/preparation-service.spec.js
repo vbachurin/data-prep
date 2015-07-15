@@ -393,7 +393,7 @@ describe('Preparation Service', function () {
             $rootScope.$digest();
 
             //then
-            expect(PreparationListService.create).toHaveBeenCalledWith('2430e5df845ab6034c85', 'New preparation');
+            expect(PreparationListService.create).toHaveBeenCalledWith('2430e5df845ab6034c85', 'Preparation draft');
         }));
 
         it('should complete parameters and return true if the parameters are different', inject(function (PreparationService) {

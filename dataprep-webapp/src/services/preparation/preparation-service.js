@@ -240,7 +240,7 @@
         function appendStep(metadata, action, column, parameters) {
             parameters = parameters || {};
             insertColumnInfo(parameters, column);
-            var promise = service.currentPreparationId ? $q.when(service.currentPreparationId) : create(metadata, 'New preparation');
+            var promise = service.currentPreparationId ? $q.when(service.currentPreparationId) : create(metadata, 'Preparation draft');
 
             return promise.then(function() {
                 return PreparationRestService.appendStep(service.currentPreparationId, action, parameters);
