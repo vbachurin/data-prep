@@ -17,10 +17,9 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetContent;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
-import org.talend.dataprep.dataset.store.content.DataSetContentStore;
+import org.talend.dataprep.dataset.store.content.DataSetContentStoreAdapter;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
-import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.Serializer;
 
 /**
@@ -29,7 +28,7 @@ import org.talend.dataprep.schema.Serializer;
 @Component("ContentStore#local")
 @ConditionalOnProperty(name = "dataset.content.store", havingValue = "hdfs", matchIfMissing = false)
 @ConditionalOnBean(FileSystem.class)
-public class LocalHDFSContentStore implements DataSetContentStore {
+public class LocalHDFSContentStore extends DataSetContentStoreAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalHDFSContentStore.class);
 
@@ -37,9 +36,6 @@ public class LocalHDFSContentStore implements DataSetContentStore {
 
     @Autowired
     private FileSystem fileSystem;
-
-    @Autowired
-    private FormatGuess.Factory factory;
 
     private static Path getPath(DataSetMetadata dataSetMetadata) {
         return new Path(HDFS_DIRECTORY + dataSetMetadata.getId());
