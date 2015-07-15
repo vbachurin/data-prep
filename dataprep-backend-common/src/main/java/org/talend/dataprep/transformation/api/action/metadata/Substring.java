@@ -7,12 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 
 @Component(Substring.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
 public class Substring extends SingleColumnAction {
@@ -23,9 +27,13 @@ public class Substring extends SingleColumnAction {
     /** The column appendix. */
     public static final String APPENDIX = "_substring"; //$NON-NLS-1$
 
-    public static final String FROM_PARAMETER = "from"; //$NON-NLS-1$
+    public static final String FROM_MODE_PARAMETER = "from_mode"; //$NON-NLS-1$
 
-    public static final String TO_PARAMETER = "to"; //$NON-NLS-1$
+    public static final String FROM_INDEX_PARAMETER = "from_index"; //$NON-NLS-1$
+
+    public static final String TO_MODE_PARAMETER = "to_mode"; //$NON-NLS-1$
+
+    public static final String TO_INDEX_PARAMETER = "to_index"; //$NON-NLS-1$
 
     /**
      * @see ActionMetadata#getName()
@@ -44,13 +52,20 @@ public class Substring extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getParameters()
+     * @see ActionMetadata#getItems()@return
      */
     @Override
-    public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
-                new Parameter(FROM_PARAMETER, Type.NUMERIC.getName(), StringUtils.EMPTY),
-                new Parameter(TO_PARAMETER, Type.NUMERIC.getName(), StringUtils.EMPTY) };
+    @Nonnull
+    public Item[] getItems() {
+        Value[] valuesFrom = new Value[] { //
+        new Value("From begining", true), //
+                new Value("From index", new Parameter(FROM_INDEX_PARAMETER, Type.INTEGER.getName(), "0")) };
+
+        Value[] valuesTo = new Value[] { //
+        new Value("To end"), //
+                new Value("To index", true, new Parameter(TO_INDEX_PARAMETER, Type.INTEGER.getName(), "5")) };
+
+        return new Item[] { new Item(FROM_MODE_PARAMETER, "categ", valuesFrom), new Item(TO_MODE_PARAMETER, "categ", valuesTo) };
     }
 
     /**
@@ -59,13 +74,20 @@ public class Substring extends SingleColumnAction {
     @Override
     public Action create(Map<String, String> parameters) {
         String columnId = parameters.get(COLUMN_ID);
-        int fromIndex = Integer.parseInt(parameters.get(FROM_PARAMETER));
-        int toIndex = Integer.parseInt(parameters.get(TO_PARAMETER));
+
+        String fromMode = parameters.get(FROM_MODE_PARAMETER);
+        String toMode = parameters.get(TO_MODE_PARAMETER);
+
+        int fromIndex = (fromMode.equals("From begining") ? 0 : Integer.parseInt(parameters.get(FROM_INDEX_PARAMETER)));
+        int toIndex = Integer.parseInt(parameters.get(TO_INDEX_PARAMETER));
 
         return builder().withRow((row, context) -> {
             String value = row.get(columnId);
+            
+            int realToIndex = (toMode.equals("To end") ? value.length() : toIndex);
+            
             if (value != null) {
-                String newValue = value.substring(fromIndex, toIndex);
+                String newValue = value.substring(fromIndex, realToIndex);
 
                 List<String> rowIds = row.values().keySet().stream().collect(Collectors.toList());
                 Integer nextSplitIndex = getNextAvailableSplitIndex(rowIds, columnId);

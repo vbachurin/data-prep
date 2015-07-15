@@ -117,8 +117,78 @@ public class SubstringTest {
                 action, //
                 SubstringTest.class.getResourceAsStream("substringAction.json"));
 
-        parameters.put(Substring.FROM_PARAMETER, "1");
-        parameters.put(Substring.TO_PARAMETER, "6");
+        parameters.put(Substring.FROM_INDEX_PARAMETER, "1");
+        parameters.put(Substring.TO_INDEX_PARAMETER, "6");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @throws IOException
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_begining() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_substring_1", "Bacon ipsum ");
+        expectedValues.put("last update", "01/01/2015");
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                SubstringTest.class.getResourceAsStream("substringAction.json"));
+
+        parameters.put(Substring.FROM_MODE_PARAMETER, "From begining");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @throws IOException
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_end() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_substring_1", " ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("last update", "01/01/2015");
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                SubstringTest.class.getResourceAsStream("substringAction.json"));
+
+        parameters.put(Substring.TO_MODE_PARAMETER, "To end");
 
         Action alternativeAction = this.action.create(parameters);
         BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
@@ -157,8 +227,8 @@ public class SubstringTest {
                 SubstringTest.class.getResourceAsStream("substringAction.json"));
 
         parameters.put(Substring.COLUMN_ID, "steps_substring_1");
-        parameters.put(Substring.FROM_PARAMETER, "1");
-        parameters.put(Substring.TO_PARAMETER, "4");
+        parameters.put(Substring.FROM_INDEX_PARAMETER, "1");
+        parameters.put(Substring.TO_INDEX_PARAMETER, "4");
 
         Action alternativeAction = this.action.create(parameters);
         BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
