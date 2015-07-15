@@ -157,6 +157,13 @@
                 .then(consolidatePreparationsAndDatasets);
         }
 
+        /**
+         * @ngdoc method
+         * @name deleteCurrentPreparation
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description Delete the current preparation
+         * @returns {promise} The DELETE promise
+         */
         function deleteCurrentPreparation() {
             var preparationToDelete = _.find(PreparationListService.preparations, function(preparation) {
                 return preparation.id === service.currentPreparationId;
