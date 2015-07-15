@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.spark.SparkContext;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,13 +39,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.Application;
-import org.talend.dataprep.dataset.service.Destinations;
 import org.talend.dataprep.dataset.store.DataSetContentStore;
 import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
@@ -351,6 +352,34 @@ public class DataSetServiceTests {
         given().get("/datasets/{id}/preview", "1234") //
                 .then() //
                 .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    public void preview_multi_sheet_with_a_sheet_name() throws Exception {
+
+        // Talend_Desk-Tableau_de_Bord-011214.xls
+
+        String dataSetId = given()
+                .body( IOUtils.toByteArray( DataSetServiceTests.class.getResourceAsStream(
+                    "../Talend_Desk-Tableau_de_Bord-011214.xls" ) ) ).when().post("/datasets").asString();
+
+        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        dataSetMetadataRepository.add(dataSetMetadata);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String json = given().contentType(ContentType.JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
+
+        DataSet dataSet = objectMapper.reader(DataSet.class).readValue(json);
+
+        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().isNotEmpty().hasSize(14);
+
+        json = given().contentType(ContentType.JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId).asString();
+
+        dataSet = objectMapper.reader(DataSet.class).readValue(json);
+
+        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().isNotEmpty().hasSize(7);
+
     }
 
     @Test

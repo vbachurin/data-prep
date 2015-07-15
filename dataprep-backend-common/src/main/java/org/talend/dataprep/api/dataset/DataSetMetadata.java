@@ -219,6 +219,25 @@ public class DataSetMetadata {
         this.favorite = favorite;
     }
 
+    @Override
+    public String toString()
+    {
+        return "DataSetMetadata{" +
+            "id='" + id + '\'' +
+            ", rowMetadata=" + rowMetadata +
+            ", lifecycle=" + lifecycle +
+            ", content=" + content +
+            ", governance=" + governance +
+            ", name='" + name + '\'' +
+            ", author='" + author + '\'' +
+            ", creationDate=" + creationDate +
+            ", sheetName='" + sheetName + '\'' +
+            ", draft=" + draft +
+            ", schemaParserResult=" + schemaParserResult +
+            ", favorite=" + favorite +
+            '}';
+    }
+
     /**
      * Dataset builder.
      */
