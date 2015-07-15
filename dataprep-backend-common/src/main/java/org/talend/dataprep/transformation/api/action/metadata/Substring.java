@@ -79,15 +79,16 @@ public class Substring extends SingleColumnAction {
         String toMode = parameters.get(TO_MODE_PARAMETER);
 
         int fromIndex = (fromMode.equals("From begining") ? 0 : Integer.parseInt(parameters.get(FROM_INDEX_PARAMETER)));
-        int toIndex = Integer.parseInt(parameters.get(TO_INDEX_PARAMETER));
 
         return builder().withRow((row, context) -> {
             String value = row.get(columnId);
-            
-            int realToIndex = (toMode.equals("To end") ? value.length() : toIndex);
-            
+
             if (value != null) {
-                String newValue = value.substring(fromIndex, realToIndex);
+                int realFromIndex = Math.min(fromIndex, value.length());
+                int realToIndex = (toMode.equals("To end") ? value.length() : Math.min(
+                        Integer.parseInt(parameters.get(TO_INDEX_PARAMETER)), value.length()));
+
+                String newValue = (realFromIndex < realToIndex ? value.substring(realFromIndex, realToIndex) : "");
 
                 List<String> rowIds = row.values().keySet().stream().collect(Collectors.toList());
                 Integer nextSplitIndex = getNextAvailableSplitIndex(rowIds, columnId);
@@ -100,27 +101,27 @@ public class Substring extends SingleColumnAction {
                     if (!StringUtils.equals(column.getId(), columnId)) {
                         continue;
                     }
-                        // get the new column id
-                        List<String> columnIds = new ArrayList<>(rowMetadata.size());
-                        rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
+                    // get the new column id
+                    List<String> columnIds = new ArrayList<>(rowMetadata.size());
+                    rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
 
-                        Integer nextAvailableSplitIndex = getNextAvailableSplitIndex(columnIds, column.getId());
-                        if (nextAvailableSplitIndex == null) {
-                            // if this happen, let's not break anything
-                            break;
-                        }
-                        // create the new column
-                        ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
-                                .column() //
+                    Integer nextAvailableSplitIndex = getNextAvailableSplitIndex(columnIds, column.getId());
+                    if (nextAvailableSplitIndex == null) {
+                        // if this happen, let's not break anything
+                        break;
+                    }
+                    // create the new column
+                    ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+                            .column() //
                             .computedId(column.getId() + APPENDIX + '_' + nextAvailableSplitIndex) //
                             .name(column.getName() + APPENDIX + '_' + nextAvailableSplitIndex) //
-                                .type(Type.get(column.getType())) //
-                                .empty(column.getQuality().getEmpty()) //
-                                .invalid(column.getQuality().getInvalid()) //
-                                .valid(column.getQuality().getValid()) //
-                                .headerSize(column.getHeaderSize()) //
-                                .build();
-                        // add the new column after the current one
+                            .type(Type.get(column.getType())) //
+                            .empty(column.getQuality().getEmpty()) //
+                            .invalid(column.getQuality().getInvalid()) //
+                            .valid(column.getQuality().getValid()) //
+                            .headerSize(column.getHeaderSize()) //
+                            .build();
+                    // add the new column after the current one
                     rowMetadata.getColumns().add(i + 1, newColumnMetadata);
                 }
             }).build();

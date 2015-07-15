@@ -90,6 +90,142 @@ public class SubstringTest {
     }
 
     /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_out_of_bound_1() {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ip");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ip");
+        expectedValues.put("steps_substring_1", " ip");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_out_of_bound_2() {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bac");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bac");
+        expectedValues.put("steps_substring_1", "");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_out_of_bound_3() {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "");
+        expectedValues.put("steps_substring_1", "");
+        expectedValues.put("last update", "01/01/2015");
+
+        rowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @throws IOException
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_strange_bounds_1() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_substring_1", "");
+        expectedValues.put("last update", "01/01/2015");
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                SubstringTest.class.getResourceAsStream("substringAction.json"));
+
+        parameters.put(Substring.FROM_INDEX_PARAMETER, "6");
+        parameters.put(Substring.TO_INDEX_PARAMETER, "1");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @throws IOException
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_substring_strange_bounds_2() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("last update", "01/01/2015");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("steps_substring_1", "psum dolor amet swine leberkas pork belly");
+        expectedValues.put("last update", "01/01/2015");
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                SubstringTest.class.getResourceAsStream("substringAction.json"));
+
+        parameters.put(Substring.FROM_INDEX_PARAMETER, "7");
+        parameters.put(Substring.TO_MODE_PARAMETER, "To end");
+        parameters.put(Substring.TO_INDEX_PARAMETER, "");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, new TransformationContext());
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
      * @throws IOException
      * @see Split#create(Map)
      */
