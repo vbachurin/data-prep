@@ -15,7 +15,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
-public class DataSetRowIterator implements Iterator<DataSetRow> {
+class DataSetRowIterator implements Iterator<DataSetRow> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetRowIterator.class);
 
@@ -23,11 +23,11 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
 
     private final DataSetRow row = new DataSetRow();
 
-    public DataSetRowIterator(JsonParser parser) {
+    DataSetRowIterator(JsonParser parser) {
         this.parser = parser;
     }
 
-    public DataSetRowIterator(InputStream inputStream) {
+    DataSetRowIterator(InputStream inputStream) {
         try {
             parser = new JsonFactory().createParser(inputStream);
         } catch (IOException e) {
