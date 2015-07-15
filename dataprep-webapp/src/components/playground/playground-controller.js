@@ -100,10 +100,14 @@
         };
 
         vm.confirmSaveOnClose = function confirmSaveOnClose() {
+            vm.saveInProgress = true;
             var cleanName = vm.preparationName.trim();
             changeName(cleanName)
                 .then(vm.toggleEditionMode)
-                .then(hideAll);
+                .then(hideAll)
+                .finally(function() {
+                    vm.saveInProgress = false;
+                });
         };
 
         /**
