@@ -283,5 +283,75 @@
             "default": ""
          }
        ]
-  }
+  },
+  {
+   "label":"Substring",
+   "name":"substring",
+   "description":"Extracts substring in a new column",
+   "category":"quickfix",
+   "parameters":[
+      {
+         "name":"column_id",
+         "type":"string",
+         "description":"The column on which apply this action to",
+         "label":"Column",
+         "default":""
+      },
+      {
+         "name":"column_name",
+         "type":"string",
+         "default":""
+      }
+   ],
+   "items":[
+      {
+         "name":"from_mode",
+         "category":"categ",
+         "values":[
+            {
+               "name":"From begining",
+               "parameters":[
+
+               ],
+               "default":true
+            },
+            {
+               "name":"From index",
+               "parameters":[
+                  {
+                     "name":"from_index",
+                     "type":"integer",
+                     "default":"0"
+                  }
+               ],
+               "default":false
+            }
+         ]
+      },
+      {
+         "name":"to_mode",
+         "category":"categ",
+         "values":[
+            {
+               "name":"To end",
+               "parameters":[
+
+               ],
+               "default":false
+            },
+            {
+               "name":"To index",
+               "parameters":[
+                  {
+                     "name":"to_index",
+                     "type":"integer",
+                     "default":"5"
+                  }
+               ],
+               "default":true
+            }
+         ]
+      }
+   ]
+}
 ]
