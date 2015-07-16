@@ -374,5 +374,27 @@
             ]
          }
       ]
+   },
+   {
+      "label":"Compute length",
+      "name":"compute_length",
+      "category":"quickfix",
+      "parameters":[
+         {
+            "name":"column_id",
+            "type":"string",
+            "description":"The column on which apply this action to",
+            "label":"Column",
+            "default":""
+         },
+         {
+            "name":"column_name",
+            "type":"string",
+            "description":"The column name on which apply this action to",
+            "label":"Column name",
+            "default":""
+         }
+      ]
    }
 ]
+
