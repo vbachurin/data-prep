@@ -16,7 +16,6 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -25,7 +24,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
@@ -51,7 +49,7 @@ public class ComputeTimeSince extends SingleColumnAction {
     /**
      * The unit in which show the period.
      */
-    private static final String TIME_UNIT = "time_unit";
+    public static final String TIME_UNIT_PARAMETER = "time_unit";
 
     /**
      * Name of the date pattern.
@@ -87,7 +85,7 @@ public class ComputeTimeSince extends SingleColumnAction {
                 new Item.Value(ChronoUnit.MONTHS.name()), //
                 new Item.Value(ChronoUnit.DAYS.name()), //
                 new Item.Value(ChronoUnit.HOURS.name())};
-        return new Item[]{new Item(TIME_UNIT, "categ", values)};
+        return new Item[]{new Item(TIME_UNIT_PARAMETER, "categ", values)};
     }
 
     /**
@@ -96,7 +94,7 @@ public class ComputeTimeSince extends SingleColumnAction {
     @Override
     public Action create(Map<String, String> parameters) {
 
-        TemporalUnit unit=ChronoUnit.valueOf(parameters.get(TIME_UNIT).toUpperCase());
+        TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
 
         return builder().withRow((row, context) -> {
             String columnId = getColumnIdParameter(parameters);
@@ -117,9 +115,9 @@ public class ComputeTimeSince extends SingleColumnAction {
             LocalDate now = LocalDate.now();
             LocalDate valueAsDate = LocalDate.from(temporalAccessor);
 
-            Period period = Period.between(valueAsDate, now);
+            long newValue = unit.between(valueAsDate, now);
 
-            row.set(columnId + APPENDIX, period.get(unit) + "");
+            row.set(columnId + APPENDIX, newValue + "");
 
         }).withMetadata((rowMetadata, context) -> {
 

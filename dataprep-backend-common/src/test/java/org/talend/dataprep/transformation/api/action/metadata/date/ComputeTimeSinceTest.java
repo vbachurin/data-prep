@@ -23,6 +23,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.ComputeLength;
 import org.talend.dataprep.transformation.api.action.metadata.Split;
+import org.talend.dataprep.transformation.api.action.metadata.Substring;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -99,6 +100,43 @@ public class ComputeTimeSinceTest {
         context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy");
 
         rowClosure.accept(row, context);
+        assertEquals(expectedValues, row.values());
+    }
+
+    /**
+     * @see Split#create(Map)
+     */
+    @Test
+    public void should_compute_days() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("last update", "06/15/2015");
+        values.put("steps", "Bacon");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("last update", "06/15/2015");
+        expectedValues.put("last update_time", "31");
+        expectedValues.put("steps", "Bacon");
+
+        TransformationContext context = new TransformationContext();
+        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy");
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json"));
+
+        parameters.put(ComputeTimeSince.TIME_UNIT_PARAMETER, "Days");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, context);
         assertEquals(expectedValues, row.values());
     }
 
