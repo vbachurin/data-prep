@@ -1,30 +1,24 @@
 <div class="preparation-list">
     <div class="preparation" ng-repeat="preparation in preparationListCtrl.preparations track by $index">
-        <p class="title oneline">
-            <a ui-sref="nav.home.preparations({prepid: preparation.id})">{{preparation.name}}</a>
-            <a class="favorite" data-icon="f" ng-class="{selected: preparation.favorite}" ng-click="preparation.favorite = !preparation.favorite"></a>
-        </p>
-        <p class="description">
-            {{::'OWNED_BY' | translate}} <span class="important">{{preparation.author}}</span><br/>
-            {{::'LAST_MODIFICATION' | translate}}: {{preparation.lastModificationDate | date}} {{preparation.lastModificationDate | date:'shortTime'}}
-        </p>
-
-        <div style="position: relative;">
-            <p class="details oneline">
-                <span class="important">{{preparation.dataset.name}}</span>
+        <div class="information">
+            <p class="title one-line"><a ui-sref="nav.home.preparations({prepid: preparation.id})">{{preparation.name}}</a></p>
+            <p class="description">
+                {{::'OWNED_BY' | translate}} <span class="important">{{preparation.author}}</span><br/>
+                {{::'LAST_MODIFICATION' | translate}}: {{preparation.lastModificationDate | date}} {{preparation.lastModificationDate | date:'shortTime'}}
             </p>
 
-            <p class="details nbrows">
-                <span>- {{ preparation.dataset.records}} {{::'ROWS' | translate}}<span>
+            <p class="details">
+                <span class="important name one-line">{{preparation.dataset.name}}</span>&nbsp;- {{ preparation.dataset.records}} {{::'ROWS' | translate}}
+            </p>
+            <p class="details">
+                <span class="important">{{preparation.steps.length - 1}} {{::'STEPS' | translate}}</span> {{::'RECIPE' | translate}}
             </p>
         </div>
 
-        <br/>
+        <div class="actions">
+            <a class="favorite" data-icon="f" ng-class="{selected: preparation.favorite}" ng-click="preparation.favorite = !preparation.favorite"></a>
+            <a class="trash" data-icon="e" ng-click="preparationListCtrl.delete(preparation)"></a>
+        </div>
 
-        <p class="details">
-            <span class="important">{{preparation.steps.length - 1}} {{::'STEPS' | translate}}</span> {{::'RECIPE' |
-            translate}}
-            <a data-icon="e" class="actions" ng-click="preparationListCtrl.delete(preparation)"></a>
-        </p>
     </div>
 </div>

@@ -23,12 +23,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.spark.SparkContext;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -38,15 +40,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.Application;
-import org.talend.dataprep.dataset.service.Destinations;
-import org.talend.dataprep.dataset.store.DataSetContentStore;
-import org.talend.dataprep.dataset.store.DataSetMetadataRepository;
+import org.talend.dataprep.dataset.store.content.DataSetContentStore;
+import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
 import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.user.store.UserDataRepository;
@@ -62,45 +64,15 @@ import com.jayway.restassured.http.ContentType;
 @IntegrationTest
 public class DataSetServiceTests {
 
-    /**
-     * 
-     */
     private static final String T_SHIRT_100_CSV_EXPECTED_JSON = "../t-shirt_100.csv.expected.json";
-
-    /**
-     * 
-     */
     private static final String T_SHIRT_100_CSV = "../t-shirt_100.csv";
-
-    /**
-     * 
-     */
     private static final String US_STATES_TO_CLEAN_CSV = "../us_states_to_clean.csv";
-
-    /**
-     * 
-     */
     private static final String TAGADA2_CSV = "../tagada2.csv";
-
-    /**
-     * 
-     */
     private static final String TAGADA_CSV = "../tagada.csv";
-
-    /**
-     * 
-     */
     private static final String EMPTY_LINES2_JSON = "../empty_lines2.json";
-
-    /**
-     * 
-     */
     private static final String EMPTY_LINES2_CSV = "../empty_lines2.csv";
-
-    /**
-     * 
-     */
     private static final String METADATA_JSON = "../metadata.json";
+
 
     @Value("${local.server.port}")
     public int port;
@@ -115,6 +87,7 @@ public class DataSetServiceTests {
     JmsTemplate jmsTemplate;
 
     @Autowired
+    @Qualifier("ContentStore#local")
     DataSetContentStore contentStore;
 
     @Autowired(required = false)
@@ -224,7 +197,7 @@ public class DataSetServiceTests {
 
         // add favorite
         UserData userData = new UserData("anonymousUser");
-        HashSet<String> favorites = new HashSet<String>();
+        HashSet<String> favorites = new HashSet<>();
         favorites.add(id1);
         favorites.add(id2);
         userData.setFavoritesDatasets(favorites);
@@ -279,7 +252,7 @@ public class DataSetServiceTests {
         assertFalse(isFavorite);
         // add favorite
         UserData userData = new UserData("anonymousUser");
-        HashSet<String> favorites = new HashSet<String>();
+        HashSet<String> favorites = new HashSet<>();
         favorites.add(expectedId);
         userData.setFavoritesDatasets(favorites);
         userDataRepository.setUserData(userData);
@@ -351,6 +324,34 @@ public class DataSetServiceTests {
         given().get("/datasets/{id}/preview", "1234") //
                 .then() //
                 .statusCode(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    public void preview_multi_sheet_with_a_sheet_name() throws Exception {
+
+        // Talend_Desk-Tableau_de_Bord-011214.xls
+
+        String dataSetId = given()
+                .body( IOUtils.toByteArray( DataSetServiceTests.class.getResourceAsStream(
+                    "../Talend_Desk-Tableau_de_Bord-011214.xls" ) ) ).when().post("/datasets").asString();
+
+        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        dataSetMetadataRepository.add(dataSetMetadata);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String json = given().contentType(ContentType.JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
+
+        DataSet dataSet = objectMapper.reader(DataSet.class).readValue(json);
+
+        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().isNotEmpty().hasSize(14);
+
+        json = given().contentType(ContentType.JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId).asString();
+
+        dataSet = objectMapper.reader(DataSet.class).readValue(json);
+
+        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().isNotEmpty().hasSize(7);
+
     }
 
     @Test
@@ -539,7 +540,7 @@ public class DataSetServiceTests {
 
         // add favorite
         UserData userData = new UserData("anonymousUser");
-        HashSet<String> favorites = new HashSet<String>();
+        HashSet<String> favorites = new HashSet<>();
         favorites.add("1234");
         userData.setFavoritesDatasets(favorites);
         userDataRepository.setUserData(userData);
