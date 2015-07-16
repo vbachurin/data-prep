@@ -21,10 +21,12 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
@@ -112,8 +114,8 @@ public class ComputeTimeSince extends SingleColumnAction {
                 LOGGER.debug("Unable to parse date {}.", value, e);
             }
 
-            LocalDate now = LocalDate.now();
-            LocalDate valueAsDate = LocalDate.from(temporalAccessor);
+            Temporal now = (unit == ChronoUnit.HOURS ? LocalDateTime.now() : LocalDate.now());
+            Temporal valueAsDate = (unit == ChronoUnit.HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor));
 
             long newValue = unit.between(valueAsDate, now);
 

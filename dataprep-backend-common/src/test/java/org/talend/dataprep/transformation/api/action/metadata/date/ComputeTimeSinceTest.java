@@ -140,6 +140,40 @@ public class ComputeTimeSinceTest {
         assertEquals(expectedValues, row.values());
     }
 
+    @Test
+    public void should_compute_hours() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("last update", "07/16/2015 13:00");
+        values.put("steps", "Bacon");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("last update", "07/16/2015 13:00");
+        expectedValues.put("last update_time", "2");
+        expectedValues.put("steps", "Bacon");
+
+        TransformationContext context = new TransformationContext();
+        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy HH:mm");
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json"));
+
+        parameters.put(ComputeTimeSince.TIME_UNIT_PARAMETER, "Hours");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, context);
+        assertEquals(expectedValues, row.values());
+    }
+
     /**
      * @see Action#getMetadataAction()
      */
