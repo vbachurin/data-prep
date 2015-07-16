@@ -189,7 +189,15 @@ public class DataPreparationAPITest {
         createPreparationFromDataset(dataSetId, "testPreparation");
 
         // when/then
-        when().delete("/api/datasets/" + dataSetId).then().log().ifValidationFails().assertThat().statusCode(400);
+        final Response response = when().delete("/api/datasets/" + dataSetId);
+
+        //then
+        final int statusCode = response.statusCode();
+        assertThat(statusCode, is(409));
+
+        final String responseAsString = response.asString();
+        final JsonPath json = JsonPath.from(responseAsString);
+        assertThat(json.get("code"), is("TDP_API_DATASET_STILL_IN_USE"));
     }
 
     @Test
