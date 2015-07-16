@@ -122,20 +122,47 @@ public class ExtractEmailDomainTest {
     @Test
     public void test_metadata() {
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("email", "email"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "email"));
+        input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
         metadataClosure.accept(rowMetadata, new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("email", "email"));
-        expected.add(createMetadata("email_local", "email_local"));
-        expected.add(createMetadata("email_domain", "email_domain"));
-        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "email"));
+        expected.add(createMetadata("0003", "email_local"));
+        expected.add(createMetadata("0004", "email_domain"));
+        expected.add(createMetadata("0002", "last update"));
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * @see Action#getMetadataAction()
+     */
+    @Test
+    public void test_metadata_with_multiple_executions() {
+        List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "email"));
+        input.add(createMetadata("0002", "last update"));
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        metadataClosure.accept(rowMetadata, new TransformationContext());
+        metadataClosure.accept(rowMetadata, new TransformationContext());
+        List<ColumnMetadata> actual = rowMetadata.getColumns();
+
+        List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "email"));
+        expected.add(createMetadata("0005", "email_local"));
+        expected.add(createMetadata("0006", "email_domain"));
+        expected.add(createMetadata("0003", "email_local"));
+        expected.add(createMetadata("0004", "email_domain"));
+        expected.add(createMetadata("0002", "last update"));
 
         assertEquals(expected, actual);
     }

@@ -1,0 +1,197 @@
+{
+  "columns": [
+    {
+      "id": "id",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "integer"
+    },
+    {
+      "id": "firstname",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "lastname",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "state",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "registration",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "city",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "birth",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    },
+    {
+      "id": "nbCommands",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "integer"
+    },
+    {
+      "id": "avgAmount",
+      "quality": {
+        "empty": 5,
+        "invalid": 10,
+        "valid": 72
+      },
+      "type": "string"
+    }
+  ],
+  "records": [
+    {
+      "id": "1",
+      "firstname": "Woodrow",
+      "lastname": "Buchanan",
+      "state": "OK",
+      "registration": "06-05-2008",
+      "city": "Honolulu",
+      "birth": "13-01-1977",
+      "nbCommands": "60",
+      "avgAmount": "19.7"
+    },
+    {
+      "id": "2",
+      "firstname": "James",
+      "lastname": "Nixon",
+      "state": "ID",
+      "registration": "01-09-2007",
+      "city": "Austin",
+      "birth": "15-06-1958",
+      "nbCommands": "84",
+      "avgAmount": "36.6"
+    },
+    {
+      "id": "3",
+      "firstname": "Dwight",
+      "lastname": "Hayes",
+      "state": "WI",
+      "registration": "28-06-2008",
+      "city": "Salem",
+      "birth": "25-09-1947",
+      "nbCommands": "72",
+      "avgAmount": "96.2"
+    },
+    {
+      "id": "4",
+      "firstname": "Benjamin",
+      "lastname": "Carter",
+      "state": "MN",
+      "registration": "10-11-2007",
+      "city": "Boston",
+      "birth": "17-01-1986",
+      "nbCommands": "43",
+      "avgAmount": "54.6"
+    },
+    {
+      "id": "5",
+      "firstname": "Millard",
+      "lastname": "Ford",
+      "state": "NM",
+      "registration": "22-01-2008",
+      "city": "Indianapolis",
+      "birth": "03-11-1958",
+      "nbCommands": "26",
+      "avgAmount": "13.7"
+    },
+    {
+      "id": "6",
+      "firstname": "Calvin",
+      "lastname": "Harrison",
+      "state": "ID",
+      "registration": "16-07-2007",
+      "city": "Jackson",
+      "birth": "23-01-1962",
+      "nbCommands": "45",
+      "avgAmount": "31.8"
+    },
+    {
+      "id": "7",
+      "firstname": "George",
+      "lastname": "Grant",
+      "state": "NJ",
+      "registration": "05-06-2008",
+      "city": "Saint Paul",
+      "birth": "24-04-1976",
+      "nbCommands": "2",
+      "avgAmount": "93.1"
+    },
+    {
+      "id": "8",
+      "firstname": "Andrew",
+      "lastname": "Washington",
+      "state": "NY",
+      "registration": "05-10-2008",
+      "city": "Nashville",
+      "birth": "03-07-1958",
+      "nbCommands": "85",
+      "avgAmount": "70.6"
+    },
+    {
+      "id": "9",
+      "firstname": "Jimmy",
+      "lastname": "Carter",
+      "state": "PA",
+      "registration": "15-01-2008",
+      "city": "Richmond",
+      "birth": "18-01-1949",
+      "nbCommands": "51",
+      "avgAmount": "58.9"
+    },
+    {
+      "id": "10",
+      "firstname": "John",
+      "lastname": "Nixon",
+      "state": "CO",
+      "registration": "31-08-2008",
+      "city": "Phoenix",
+      "birth": "07-06-1966",
+      "nbCommands": "37",
+      "avgAmount": "35.2"
+    }
+  ]
+}

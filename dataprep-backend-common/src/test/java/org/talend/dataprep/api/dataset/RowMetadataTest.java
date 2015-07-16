@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ public class RowMetadataTest {
     public void no_diff() {
         // given
         List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(getColumnMetadata("0", "toto"));
-        columns.add(getColumnMetadata("1", "tata"));
-        columns.add(getColumnMetadata("2", "tutu"));
+        columns.add(getColumnMetadata("toto"));
+        columns.add(getColumnMetadata("tata"));
+        columns.add(getColumnMetadata("tutu"));
         RowMetadata rowMetadata = new RowMetadata(columns);
 
         // when
@@ -39,13 +40,13 @@ public class RowMetadataTest {
 
         // given
         List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(getColumnMetadata("0", "toto"));
+        columns.add(getColumnMetadata("toto"));
         RowMetadata reference = new RowMetadata(columns);
 
         // when
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(getColumnMetadata("1", "tata")); // new column
-        expected.add(getColumnMetadata("2", "titi")); // new column
+        expected.add(getColumnMetadata("tata")); // new column
+        expected.add(getColumnMetadata("titi")); // new column
         List<ColumnMetadata> temp = new ArrayList<>();
         temp.addAll(columns);
         temp.addAll(expected);
@@ -66,11 +67,11 @@ public class RowMetadataTest {
 
         // given
         List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(getColumnMetadata("0", "toto"));
+        columns.add(getColumnMetadata("toto"));
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(getColumnMetadata("1", "tata"));
-        expected.add(getColumnMetadata("2", "titi"));
+        expected.add(getColumnMetadata("tata"));
+        expected.add(getColumnMetadata("titi"));
 
         List<ColumnMetadata> temp = new ArrayList<>();
         temp.addAll(columns);
@@ -95,11 +96,11 @@ public class RowMetadataTest {
 
         // given
         List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(getColumnMetadata("0", "toto"));
+        columns.add(getColumnMetadata("toto"));
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(getColumnMetadata("1", "tata"));
-        expected.add(getColumnMetadata("2", "titi"));
+        expected.add(getColumnMetadata("tata"));
+        expected.add(getColumnMetadata("titi"));
 
         List<ColumnMetadata> temp = new ArrayList<>();
         temp.addAll(columns);
@@ -109,8 +110,8 @@ public class RowMetadataTest {
         // when
         temp = new ArrayList<>();
         temp.addAll(columns);
-        temp.add(getColumnMetadata("1", "new tata name")); // updated name
-        temp.add(getColumnMetadata("2", "new titi name")); // updated name
+        temp.add(getColumnMetadata("new tata name")); // updated name
+        temp.add(getColumnMetadata("new titi name")); // updated name
         RowMetadata row = new RowMetadata(temp);
         row.diff(reference);
 
@@ -121,17 +122,15 @@ public class RowMetadataTest {
                 .collect(Collectors.toList());
 
         assertEquals(actual.size(), 2);
-        assertTrue(actual.get(0).getId().equals("1"));
-        assertTrue(actual.get(1).getId().equals("2"));
-
+        assertThat(actual.get(0).getId(), is("0001"));
+        assertThat(actual.get(1).getId(), is("0002"));
     }
 
     /**
-     * @param id the column id.
      * @param name the column name.
      * @return a new column.
      */
-    private ColumnMetadata getColumnMetadata(String id, String name) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).build();
+    private ColumnMetadata getColumnMetadata(String name) {
+        return ColumnMetadata.Builder.column().name(name).type(Type.STRING).build();
     }
 }

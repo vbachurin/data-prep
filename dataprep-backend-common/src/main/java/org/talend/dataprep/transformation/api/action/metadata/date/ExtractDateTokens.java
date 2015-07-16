@@ -119,7 +119,6 @@ public class ExtractDateTokens extends SingleColumnAction {
     private ColumnMetadata createNewColumn(ColumnMetadata column, String suffix) {
         return ColumnMetadata.Builder //
                 .column() //
-                .computedId(column.getId() + SEPARATOR + suffix) //
                 .name(column.getName() + SEPARATOR + suffix) //
                 .type(Type.INTEGER) //
                 .empty(column.getQuality().getEmpty()) //

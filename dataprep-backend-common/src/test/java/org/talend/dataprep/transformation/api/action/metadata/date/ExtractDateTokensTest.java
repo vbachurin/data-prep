@@ -151,9 +151,9 @@ public class ExtractDateTokensTest {
     public void should_update_metadata() throws IOException {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("0001", "0001"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("recipe"));
+        input.add(createMetadata("0001"));
+        input.add(createMetadata("last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
         String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics.json"));
@@ -163,23 +163,23 @@ public class ExtractDateTokensTest {
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("0001", "0001"));
-        expected.add(createMetadata("0001_YEAR", "0001_YEAR", Type.INTEGER));
-        expected.add(createMetadata("0001_MONTH", "0001_MONTH", Type.INTEGER));
-        expected.add(createMetadata("0001_HOUR_24", "0001_HOUR_24", Type.INTEGER));
-        expected.add(createMetadata("0001_MINUTE", "0001_MINUTE", Type.INTEGER));
-        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("recipe"));
+        expected.add(createMetadata("0001"));
+        expected.add(createMetadata("0001_YEAR", Type.INTEGER));
+        expected.add(createMetadata("0001_MONTH", Type.INTEGER));
+        expected.add(createMetadata("0001_HOUR_24", Type.INTEGER));
+        expected.add(createMetadata("0001_MINUTE", Type.INTEGER));
+        expected.add(createMetadata("last update"));
 
         assertEquals(expected, actual);
     }
 
-    private ColumnMetadata createMetadata(String id, String name) {
-        return createMetadata(id, name, Type.STRING);
+    private ColumnMetadata createMetadata(String name) {
+        return createMetadata(name, Type.STRING);
     }
 
-    private ColumnMetadata createMetadata(String id, String name, Type type) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2)
+    private ColumnMetadata createMetadata(String name, Type type) {
+        return ColumnMetadata.Builder.column().name(name).type(type).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
     }
 

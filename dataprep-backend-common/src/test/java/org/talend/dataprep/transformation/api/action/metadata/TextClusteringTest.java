@@ -6,10 +6,7 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 import static org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction.COLUMN_ID;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 import org.assertj.core.api.Assertions;
@@ -81,10 +78,8 @@ public class TextClusteringTest {
     }
 
     private DataSetRow createRow(final String key, final String value) {
-        final DataSetRow row = new DataSetRow();
-        row.set(key, value);
-
-        return row;
+        Map<String, String> values = Collections.singletonMap(key, value);
+        return new DataSetRow(values);
     }
 
     @Test

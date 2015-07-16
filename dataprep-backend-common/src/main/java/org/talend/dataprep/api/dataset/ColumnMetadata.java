@@ -74,37 +74,9 @@ public class ColumnMetadata {
      * @param name the column name.
      * @param typeName the column type.
      */
-    private ColumnMetadata(int id, String name, String typeName) {
-        this.id = computeInternalId(id);
+    private ColumnMetadata(String name, String typeName) {
         this.name = name;
         this.typeName = typeName;
-    }
-
-    /**
-     * Create a column metadata from the given parameters.
-     *
-     * @param computedId the column computed id.
-     * @param name the column name.
-     * @param typeName the column type.
-     */
-    private ColumnMetadata(String computedId, String name, String typeName) {
-        if (StringUtils.isEmpty(computedId)) {
-            throw new IllegalArgumentException("computed id cannot be null for a column metadata");
-        }
-        this.id = computedId;
-        this.name = name;
-        this.typeName = typeName;
-    }
-
-    /**
-     * Set and convert the given id : make sure the id is padded with '000'. So dataset up to 1000 columns should be ok.
-     *
-     * @param id the id as integer.
-     * @return the formatted id.
-     */
-    private String computeInternalId(int id) {
-        DecimalFormat format = new DecimalFormat("0000"); //$NON-NLS-1$
-        return format.format(id);
     }
 
     /**
@@ -252,16 +224,17 @@ public class ColumnMetadata {
         return domain;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     /**
      * This class builder to ease the constructor.
      */
     public static class Builder {
 
         /** The column id. */
-        private Integer id;
-
-        /** The column computedId. */
-        private String computedId;
+        private String id;
 
         /** The column name. */
         private String name;
@@ -309,8 +282,8 @@ public class ColumnMetadata {
          * @return the builder to carry on building the column.
          */
         public ColumnMetadata.Builder id(int id) {
-            this.id = id;
-            return this;
+            DecimalFormat format = new DecimalFormat("0000"); //$NON-NLS-1$
+            return computedId(format.format(id));
         }
 
         /**
@@ -320,7 +293,7 @@ public class ColumnMetadata {
          * @return the builder to carry on building the column.
          */
         public ColumnMetadata.Builder computedId(String computedId) {
-            this.computedId = computedId;
+            this.id = computedId;
             return this;
         }
 
@@ -389,7 +362,7 @@ public class ColumnMetadata {
          * @return the builder to carry on building the column.
          */
         public ColumnMetadata.Builder copy(ColumnMetadata original) {
-            this.computedId = original.getId();
+            this.id = original.getId();
             this.name = original.getName();
             Quality originalQuality = original.getQuality();
             this.empty = originalQuality.getEmpty();
@@ -404,15 +377,12 @@ public class ColumnMetadata {
         /**
          * Build the column with the previously entered values.
          * 
-         * @return the buit column metadata.
+         * @return the built column metadata.
          */
         public ColumnMetadata build() {
             ColumnMetadata columnMetadata;
-            if (id != null) {
-                columnMetadata = new ColumnMetadata(id, name, type.getName());
-            } else {
-                columnMetadata = new ColumnMetadata(computedId, name, type.getName());
-            }
+            columnMetadata = new ColumnMetadata(name, type.getName());
+            columnMetadata.setId(id);
             columnMetadata.getQuality().setEmpty(empty);
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);

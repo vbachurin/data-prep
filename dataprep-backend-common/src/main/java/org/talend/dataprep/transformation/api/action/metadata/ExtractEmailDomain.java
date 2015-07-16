@@ -2,8 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -83,42 +81,23 @@ public class ExtractEmailDomain extends SingleColumnAction {
             }
         }).withMetadata((rowMetadata, context) -> {
             String columnId = parameters.get(COLUMN_ID);
-            List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
-            for (ColumnMetadata column : rowMetadata.getColumns()) {
-                ColumnMetadata newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
-                newColumns.add(newColumnMetadata);
-
-                // append the split column
-                if (StringUtils.equals(columnId, column.getId())) {
-                    newColumnMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .computedId(column.getId() + _LOCAL) //
-                            .name(column.getName() + _LOCAL) //
-                            .type(Type.get(column.getType())) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                    newColumns.add(newColumnMetadata);
-
-                    newColumnMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .computedId(column.getId() + _DOMAIN) //
-                            .name(column.getName() + _DOMAIN) //
-                            .type(Type.get(column.getType())) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                    newColumns.add(newColumnMetadata);
-                }
-
-            }
-
-            // apply the new columns to the row metadata
-            rowMetadata.setColumns(newColumns);
+            final ColumnMetadata column = rowMetadata.getById(columnId);
+            //
+            ColumnMetadata.Builder newColumnMetadata = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + _LOCAL) //
+                    .type(Type.get(column.getType())) //
+                    .headerSize(column.getHeaderSize());
+            columnId = rowMetadata.insertAfter(columnId, newColumnMetadata.build());
+            newColumnMetadata = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + _DOMAIN) //
+                    .type(Type.get(column.getType())) //
+                    .empty(column.getQuality().getEmpty()) //
+                    .invalid(column.getQuality().getInvalid()) //
+                    .valid(column.getQuality().getValid()) //
+                    .headerSize(column.getHeaderSize());
+            rowMetadata.insertAfter(columnId, newColumnMetadata.build());
         }).build();
     }
 }

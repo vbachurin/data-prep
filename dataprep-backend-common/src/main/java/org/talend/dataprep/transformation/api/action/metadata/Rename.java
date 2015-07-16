@@ -2,8 +2,6 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -82,31 +80,10 @@ public class Rename extends SingleColumnAction {
         return builder().withMetadata((rowMetadata, context) -> {
             String columnId = parameters.get(COLUMN_ID);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
-
-            List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size());
-
-            for (ColumnMetadata column : rowMetadata.getColumns()) {
-                ColumnMetadata newColumnMetadata;
-                // rename the column
-                if (StringUtils.equals(columnId, column.getId())) {
-                    newColumnMetadata = ColumnMetadata.Builder.column() //
-                            .computedId(column.getId()) //
-                            .name(newColumnName) // new name
-                            .type(Type.get(column.getType())) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                }
-                // add a copy of the column
-                else {
-                    newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
-                }
-                newColumns.add(newColumnMetadata);
+            final ColumnMetadata column = rowMetadata.getById(columnId);
+            if (column != null) {
+                column.setName(newColumnName);
             }
-
-            rowMetadata.setColumns(newColumns);
         }).build();
     }
 
