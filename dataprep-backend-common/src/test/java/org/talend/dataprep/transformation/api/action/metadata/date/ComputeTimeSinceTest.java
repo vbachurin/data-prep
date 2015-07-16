@@ -95,7 +95,7 @@ public class ComputeTimeSinceTest {
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
         expectedValues.put("last update", "01/01/2010");
-        expectedValues.put("last update_time", "5");
+        expectedValues.put("since_last update_in_years", "5");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
@@ -120,7 +120,7 @@ public class ComputeTimeSinceTest {
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
         expectedValues.put("last update", "06/15/2015");
-        expectedValues.put("last update_time", "31");
+        expectedValues.put("since_last update_in_days", "31");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
@@ -155,7 +155,7 @@ public class ComputeTimeSinceTest {
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
         expectedValues.put("last update", "07/16/2015 13:00");
-        expectedValues.put("last update_time", "5");
+        expectedValues.put("since_last update_in_hours", "5");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
@@ -173,6 +173,88 @@ public class ComputeTimeSinceTest {
 
         Action alternativeAction = this.action.create(parameters);
         BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, context);
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_compute_hours_twice() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("last update", "07/16/2015 13:00");
+        values.put("steps", "Bacon");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("last update", "07/16/2015 13:00");
+        expectedValues.put("since_last update_in_hours", "5");
+        expectedValues.put("steps", "Bacon");
+
+        TransformationContext context = new TransformationContext();
+        context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy HH:mm");
+        context.put(ComputeTimeSince.NOW, LocalDateTime.of(2015, 7, 16, 18, 0));
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json"));
+
+        parameters.put(ComputeTimeSince.TIME_UNIT_PARAMETER, "Hours");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+
+        alternativeRowClosure.accept(row, context);
+        alternativeRowClosure.accept(row, context);
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_compute_twice_diff_units() throws IOException {
+        Map<String, String> values = new HashMap<>();
+        values.put("recipe", "lorem bacon");
+        values.put("last update", "07/16/2015 12:00");
+        values.put("steps", "Bacon");
+        DataSetRow row = new DataSetRow(values);
+
+        Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("recipe", "lorem bacon");
+        expectedValues.put("last update", "07/16/2015 12:00");
+        expectedValues.put("since_last update_in_hours", "25");
+        expectedValues.put("since_last update_in_days", "1");
+        expectedValues.put("steps", "Bacon");
+
+        TransformationContext context = new TransformationContext();
+        context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy HH:mm");
+        context.put(ComputeTimeSince.NOW, LocalDateTime.of(2015, 7, 17, 13, 0));
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json"));
+
+        parameters.put(ComputeTimeSince.TIME_UNIT_PARAMETER, "Days");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        // =====================================================
+        alternativeRowClosure.accept(row, context);
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        parameters.put(ComputeTimeSince.TIME_UNIT_PARAMETER, "Hours");
+
+        alternativeAction = this.action.create(parameters);
+        alternativeRowClosure = alternativeAction.getRowAction();
         // =====================================================
 
         alternativeRowClosure.accept(row, context);
@@ -198,12 +280,90 @@ public class ComputeTimeSinceTest {
         context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy");
 
         metadataClosure.accept(rowMetadata, context);
+
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
         expected.add(createMetadata("last update", "last update"));
-        expected.add(createMetadata("last update_time", "last update_time", Type.INTEGER));
+        expected.add(createMetadata("since_last update_in_years", "since_last update_in_years", Type.INTEGER));
+        expected.add(createMetadata("steps", "steps"));
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * @see Action#getMetadataAction()
+     */
+    @Test
+    public void should_update_metadata_twice() throws IOException {
+
+        List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("steps", "steps"));
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        String statistics = IOUtils.toString(ComputeTimeSinceTest.class.getResourceAsStream("statistics.json"));
+        input.get(1).setStatistics(statistics);
+
+        TransformationContext context = new TransformationContext();
+        context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy");
+
+        metadataClosure.accept(rowMetadata, context);
+        metadataClosure.accept(rowMetadata, context);
+        List<ColumnMetadata> actual = rowMetadata.getColumns();
+
+        List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("recipe", "recipe"));
+        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("since_last update_in_years", "since_last update_in_years", Type.INTEGER));
+        expected.add(createMetadata("steps", "steps"));
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * @see Action#getMetadataAction()
+     */
+    @Test
+    public void should_update_metadata_twice_diff_units() throws IOException {
+
+        List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("recipe", "recipe"));
+        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("steps", "steps"));
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        String statistics = IOUtils.toString(ComputeTimeSinceTest.class.getResourceAsStream("statistics.json"));
+        input.get(1).setStatistics(statistics);
+
+        TransformationContext context = new TransformationContext();
+        context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy");
+
+        metadataClosure.accept(rowMetadata, context);
+
+        // =====================================================
+        // Create a new rowClosure with different params:
+        // =====================================================
+        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json"));
+
+        parameters.put(ComputeTimeSince.TIME_UNIT_PARAMETER, "Days");
+
+        Action alternativeAction = this.action.create(parameters);
+        BiConsumer<RowMetadata, TransformationContext> alternativeMetadataClosure = alternativeAction.getMetadataAction();
+        // =====================================================
+        alternativeMetadataClosure.accept(rowMetadata, context);
+
+        List<ColumnMetadata> actual = rowMetadata.getColumns();
+
+        List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("recipe", "recipe"));
+        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("since_last update_in_days", "since_last update_in_days", Type.INTEGER));
+        expected.add(createMetadata("since_last update_in_years", "since_last update_in_years", Type.INTEGER));
         expected.add(createMetadata("steps", "steps"));
 
         assertEquals(expected, actual);

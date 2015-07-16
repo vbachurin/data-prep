@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -44,9 +43,14 @@ public class ComputeTimeSince extends SingleColumnAction {
     public static final String TIME_SINCE_ACTION_NAME = "compute_time_since"; //$NON-NLS-1$
 
     /**
-     * The column appendix.
+     * The column prefix.
      */
-    public static final String APPENDIX = "_time"; //$NON-NLS-1$
+    public static final String PREFIX = "since_"; //$NON-NLS-1$
+
+    /**
+     * The column suffix.
+     */
+    public static final String SUFFIX = "_in_"; //$NON-NLS-1$
 
     /**
      * The unit in which show the period.
@@ -124,7 +128,7 @@ public class ComputeTimeSince extends SingleColumnAction {
 
             long newValue = unit.between(valueAsDate, now);
 
-            row.set(columnId + APPENDIX, newValue + "");
+            row.set(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase(), newValue + "");
 
         }).withMetadata((rowMetadata, context) -> {
 
@@ -135,7 +139,7 @@ public class ComputeTimeSince extends SingleColumnAction {
 
             List<String> columnIds = new ArrayList<>(rowMetadata.size());
             rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
-            if (!columnIds.contains(columnId + APPENDIX)) {
+            if (!columnIds.contains(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase())) {
 
                 // go through the columns to be able to 'insert' the new columns just after the one needed.
                 for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
@@ -157,8 +161,8 @@ public class ComputeTimeSince extends SingleColumnAction {
                     // create the new column
                     ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
-                            .computedId(column.getId() + APPENDIX) //
-                            .name(column.getName() + APPENDIX) //
+                            .computedId(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase()) //
+                            .name(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase()) //
                             .type(Type.INTEGER) //
                             .empty(column.getQuality().getEmpty()) //
                             .invalid(column.getQuality().getInvalid()) //
