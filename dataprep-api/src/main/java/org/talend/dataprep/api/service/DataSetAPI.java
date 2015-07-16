@@ -96,9 +96,9 @@ public class DataSetAPI extends APIService {
         HttpClient client = getClient();
 
         HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns);
-        try {
+        try (InputStream content = retrievalCommand.execute()){
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
+            IOUtils.copyLarge(content, outputStream);
             outputStream.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
@@ -122,9 +122,9 @@ public class DataSetAPI extends APIService {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
         HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetPreview.class, client, id, metadata, columns, sheetName);
-        try {
+        try (InputStream content = retrievalCommand.execute()) {
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(retrievalCommand.execute(), outputStream);
+            IOUtils.copyLarge(content, outputStream);
             outputStream.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request dataset #{} (pool: {}) done.", id, getConnectionManager().getTotalStats());
@@ -143,9 +143,9 @@ public class DataSetAPI extends APIService {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
         HystrixCommand<InputStream> listCommand = getCommand(DataSetList.class, client);
-        try {
+        try (InputStream content = listCommand.execute()) {
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(listCommand.execute(), outputStream);
+            IOUtils.copyLarge(content, outputStream);
             outputStream.flush();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Listing datasets (pool: {}) done.", getConnectionManager().getTotalStats());
@@ -197,9 +197,9 @@ public class DataSetAPI extends APIService {
         // Asks transformation service for suggested actions for column type and domain
         HystrixCommand<InputStream> getSuggestedActions = getCommand(SuggestDataSetActions.class, client, retrieveMetadata);
         // Returns actions
-        try {
+        try (InputStream content = getSuggestedActions.execute()) {
             ServletOutputStream outputStream = response.getOutputStream();
-            IOUtils.copyLarge(getSuggestedActions.execute(), outputStream);
+            IOUtils.copyLarge(content, outputStream);
             outputStream.flush();
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
