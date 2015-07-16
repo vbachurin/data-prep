@@ -1,0 +1,174 @@
+package org.talend.dataprep.transformation.api.action.metadata.date;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+
+import java.io.IOException;
+import java.text.ParsePosition;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
+@Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
+public class ComputeTimeSince extends SingleColumnAction {
+
+    /**
+     * The action name.
+     */
+    public static final String TIME_SINCE_ACTION_NAME = "compute_time_since"; //$NON-NLS-1$
+
+    /**
+     * The column appendix.
+     */
+    public static final String APPENDIX = "_time"; //$NON-NLS-1$
+
+    /**
+     * Name of the date pattern.
+     */
+    protected static final String PATTERN = "date_pattern"; //$NON-NLS-1$
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
+
+    /**
+     * @see ActionMetadata#getName()
+     */
+    @Override
+    public String getName() {
+        return TIME_SINCE_ACTION_NAME;
+    }
+
+    /**
+     * @see ActionMetadata#getCategory()
+     */
+    @Override
+    public String getCategory() {
+        return ActionCategory.DATE.getDisplayName();
+    }
+
+    /**
+     * @see ActionMetadata#create(Map)
+     */
+    @Override
+    public Action create(Map<String, String> parameters) {
+
+        return builder().withRow((row, context) -> {
+            String columnId = getColumnIdParameter(parameters);
+            // sadly unable to do that outside of the closure since the context is not available
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) context.get(PATTERN));
+
+            String value = row.get(columnId);
+
+            // parse the date
+            TemporalAccessor temporalAccessor = null;
+            try {
+                temporalAccessor = dtf.parse(value, new ParsePosition(0));
+            } catch (DateTimeParseException e) {
+                // Nothing to do: in this case, temporalAccessor is left null
+                LOGGER.debug("Unable to parse date {}.", value, e);
+            }
+
+            LocalDate now = LocalDate.now();
+            LocalDate valueAsDate = LocalDate.from(temporalAccessor);
+
+            Period period = Period.between(valueAsDate, now);
+
+            row.set(columnId + APPENDIX, period.getYears() + "");
+
+        }).withMetadata((rowMetadata, context) -> {
+
+            String columnId = parameters.get(COLUMN_ID);
+
+            JsonFactory jsonFactory = new JsonFactory();
+            ObjectMapper mapper = new ObjectMapper(jsonFactory);
+
+            List<String> columnIds = new ArrayList<>(rowMetadata.size());
+            rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
+            if (!columnIds.contains(columnId + APPENDIX)) {
+
+                // go through the columns to be able to 'insert' the new columns just after the one needed.
+                for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
+                    ColumnMetadata column = rowMetadata.getColumns().get(i);
+                    if (!StringUtils.equals(column.getId(), columnId)) {
+                        continue;
+                    }
+
+                    // store the current pattern in the context
+                    JsonNode rootNode = getStatisticsNode(mapper, column);
+
+                    JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
+                    String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
+                    context.put(PATTERN, datePattern);
+
+                    // create the new column
+                    ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+                            .column() //
+                            .computedId(column.getId() + APPENDIX) //
+                            .name(column.getName() + APPENDIX) //
+                            .type(Type.INTEGER) //
+                            .empty(column.getQuality().getEmpty()) //
+                            .invalid(column.getQuality().getInvalid()) //
+                            .valid(column.getQuality().getValid()) //
+                            .headerSize(column.getHeaderSize()) //
+                            .build();
+                    // add the new column after the current one
+                    rowMetadata.getColumns().add(i + 1, newColumnMetadata);
+                }
+            }
+        }).build();
+    }
+
+    /**
+     * Return the json statistics node.
+     *
+     * @param mapper jackson object mapper.
+     * @param column the column metadata to work on.
+     * @return the json statistics node.
+     */
+    private JsonNode getStatisticsNode(ObjectMapper mapper, ColumnMetadata column) {
+        try {
+            return mapper.readTree(column.getStatistics());
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        }
+    }
+
+    /**
+     * @param parameters the parameters.
+     * @return the column id parameter.
+     */
+    private String getColumnIdParameter(Map<String, String> parameters) {
+        String columnId = parameters.get(COLUMN_ID);
+        if (columnId == null) {
+            throw new IllegalArgumentException("Parameter '" + COLUMN_ID + "' is required for this action");
+        }
+        return columnId;
+    }
+
+    /**
+     * @see ActionMetadata#accept(ColumnMetadata)
+     */
+    @Override
+    public boolean accept(ColumnMetadata column) {
+        return Type.DATE.equals(Type.get(column.getType()));
+    }
+}
