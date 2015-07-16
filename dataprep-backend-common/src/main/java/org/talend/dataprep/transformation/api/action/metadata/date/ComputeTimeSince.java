@@ -15,14 +15,20 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +47,11 @@ public class ComputeTimeSince extends SingleColumnAction {
      * The column appendix.
      */
     public static final String APPENDIX = "_time"; //$NON-NLS-1$
+
+    /**
+     * The unit in which show the period.
+     */
+    private static final String TIME_UNIT = "time_unit";
 
     /**
      * Name of the date pattern.
@@ -66,10 +77,37 @@ public class ComputeTimeSince extends SingleColumnAction {
     }
 
     /**
+     * @see ActionMetadata#getItems()@return
+     */
+    @Override
+    @Nonnull
+    public Item[] getItems() {
+        Item.Value[] values = new Item.Value[]{ //
+                new Item.Value("Years", true), //
+                new Item.Value("Months"), //
+                new Item.Value("Days"), //
+                new Item.Value("Hours")};
+        return new Item[]{new Item(TIME_UNIT, "categ", values)};
+    }
+
+    /**
      * @see ActionMetadata#create(Map)
      */
     @Override
     public Action create(Map<String, String> parameters) {
+
+        TemporalUnit tUnit;
+        switch (parameters.get(TIME_UNIT)) {
+            case "Months":
+                tUnit = ChronoUnit.MONTHS;
+            case "Days":
+                tUnit = ChronoUnit.DAYS;
+            case "Hours":
+                tUnit = ChronoUnit.HOURS;
+            default:
+                tUnit = ChronoUnit.YEARS;
+        }
+        TemporalUnit unit=tUnit; // workaround to make this variable effectively final
 
         return builder().withRow((row, context) -> {
             String columnId = getColumnIdParameter(parameters);
@@ -92,7 +130,7 @@ public class ComputeTimeSince extends SingleColumnAction {
 
             Period period = Period.between(valueAsDate, now);
 
-            row.set(columnId + APPENDIX, period.getYears() + "");
+            row.set(columnId + APPENDIX, period.get(unit) + "");
 
         }).withMetadata((rowMetadata, context) -> {
 
