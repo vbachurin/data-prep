@@ -399,14 +399,14 @@ describe('Datagrid style service', function () {
         it('should add a span before le break line', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
-            var value = '     my\nvalue  ';
+            var value = '     my \nvalue  ';
 
             //when
             var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
 
             //then
             expect(result).toBe(
-                '<span class="hiddenChars">     </span>my<span class="hiddenCharsBreakLine">&nbsp;</span>\nvalue' +
+                '<span class="hiddenChars">     </span>my <span class="hiddenCharsBreakLine">&nbsp;</span>\nvalue' +
                 '<span class="hiddenChars">  </span>'
             );
         }));
@@ -414,14 +414,14 @@ describe('Datagrid style service', function () {
         it('should add a span before le break line (cas multi breaks lines)', inject(function (DatagridStyleService) {
             //given
             DatagridStyleService.init(gridMock);
-            var value = '     my\nnew\nvalue  ';
+            var value = '     my \nnew\nvalue  ';
 
             //when
             var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
 
             //then
             expect(result).toBe(
-                '<span class="hiddenChars">     </span>my<span class="hiddenCharsBreakLine">&nbsp;</span>\n' +
+                '<span class="hiddenChars">     </span>my <span class="hiddenCharsBreakLine">&nbsp;</span>\n' +
                 'new<span class="hiddenCharsBreakLine">&nbsp;</span>\nvalue<span class="hiddenChars">  </span>'
             );
         }));
