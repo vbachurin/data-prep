@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -105,22 +106,28 @@ public class ComputeTimeSinceTest {
      * @see Action#getMetadataAction()
      */
     @Test
-    public void should_update_metadata() {
+    public void should_update_metadata() throws IOException {
 
         List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("steps", "steps"));
         input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("steps", "steps"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        String statistics = IOUtils.toString(ComputeTimeSinceTest.class.getResourceAsStream("statistics.json"));
+        input.get(1).setStatistics(statistics);
+
+        TransformationContext context = new TransformationContext();
+        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy");
+
+        metadataClosure.accept(rowMetadata, context);
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("steps", "steps"));
-        expected.add(createMetadata("steps_length", "steps_length", Type.INTEGER));
         expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("last update_time", "last update_time", Type.INTEGER));
+        expected.add(createMetadata("steps", "steps"));
 
         assertEquals(expected, actual);
     }

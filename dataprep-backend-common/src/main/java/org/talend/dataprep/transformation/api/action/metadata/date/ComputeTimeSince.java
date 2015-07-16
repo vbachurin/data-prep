@@ -83,10 +83,10 @@ public class ComputeTimeSince extends SingleColumnAction {
     @Nonnull
     public Item[] getItems() {
         Item.Value[] values = new Item.Value[]{ //
-                new Item.Value("Years", true), //
-                new Item.Value("Months"), //
-                new Item.Value("Days"), //
-                new Item.Value("Hours")};
+                new Item.Value(ChronoUnit.YEARS.name(), true), //
+                new Item.Value(ChronoUnit.MONTHS.name()), //
+                new Item.Value(ChronoUnit.DAYS.name()), //
+                new Item.Value(ChronoUnit.HOURS.name())};
         return new Item[]{new Item(TIME_UNIT, "categ", values)};
     }
 
@@ -96,18 +96,7 @@ public class ComputeTimeSince extends SingleColumnAction {
     @Override
     public Action create(Map<String, String> parameters) {
 
-        TemporalUnit tUnit;
-        switch (parameters.get(TIME_UNIT)) {
-            case "Months":
-                tUnit = ChronoUnit.MONTHS;
-            case "Days":
-                tUnit = ChronoUnit.DAYS;
-            case "Hours":
-                tUnit = ChronoUnit.HOURS;
-            default:
-                tUnit = ChronoUnit.YEARS;
-        }
-        TemporalUnit unit=tUnit; // workaround to make this variable effectively final
+        TemporalUnit unit=ChronoUnit.valueOf(parameters.get(TIME_UNIT).toUpperCase());
 
         return builder().withRow((row, context) -> {
             String columnId = getColumnIdParameter(parameters);
