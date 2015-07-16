@@ -88,14 +88,14 @@ public class ComputeTimeSinceTest {
     public void should_compute() {
         Map<String, String> values = new HashMap<>();
         values.put("recipe", "lorem bacon");
-        values.put("last update", "01/01/2010");
+        values.put("002", "01/01/2010");
         values.put("steps", "Bacon");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("last update", "01/01/2010");
-        expectedValues.put("since_last update_in_years", "5");
+        expectedValues.put("002", "01/01/2010");
+        expectedValues.put("since_002_in_years", "5");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
@@ -113,14 +113,14 @@ public class ComputeTimeSinceTest {
     public void should_compute_days() throws IOException {
         Map<String, String> values = new HashMap<>();
         values.put("recipe", "lorem bacon");
-        values.put("last update", "06/15/2015");
+        values.put("002", "06/15/2015");
         values.put("steps", "Bacon");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("last update", "06/15/2015");
-        expectedValues.put("since_last update_in_days", "31");
+        expectedValues.put("002", "06/15/2015");
+        expectedValues.put("since_002_in_days", "31");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
@@ -148,14 +148,14 @@ public class ComputeTimeSinceTest {
     public void should_compute_hours() throws IOException {
         Map<String, String> values = new HashMap<>();
         values.put("recipe", "lorem bacon");
-        values.put("last update", "07/16/2015 13:00");
+        values.put("002", "07/16/2015 13:00");
         values.put("steps", "Bacon");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("last update", "07/16/2015 13:00");
-        expectedValues.put("since_last update_in_hours", "5");
+        expectedValues.put("002", "07/16/2015 13:00");
+        expectedValues.put("since_002_in_hours", "5");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
@@ -183,14 +183,14 @@ public class ComputeTimeSinceTest {
     public void should_compute_hours_twice() throws IOException {
         Map<String, String> values = new HashMap<>();
         values.put("recipe", "lorem bacon");
-        values.put("last update", "07/16/2015 13:00");
+        values.put("002", "07/16/2015 13:00");
         values.put("steps", "Bacon");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("last update", "07/16/2015 13:00");
-        expectedValues.put("since_last update_in_hours", "5");
+        expectedValues.put("002", "07/16/2015 13:00");
+        expectedValues.put("since_002_in_hours", "5");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
@@ -219,15 +219,15 @@ public class ComputeTimeSinceTest {
     public void should_compute_twice_diff_units() throws IOException {
         Map<String, String> values = new HashMap<>();
         values.put("recipe", "lorem bacon");
-        values.put("last update", "07/16/2015 12:00");
+        values.put("002", "07/16/2015 12:00");
         values.put("steps", "Bacon");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("last update", "07/16/2015 12:00");
-        expectedValues.put("since_last update_in_hours", "25");
-        expectedValues.put("since_last update_in_days", "1");
+        expectedValues.put("002", "07/16/2015 12:00");
+        expectedValues.put("since_002_in_hours", "25");
+        expectedValues.put("since_002_in_days", "1");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
@@ -269,7 +269,7 @@ public class ComputeTimeSinceTest {
 
         List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("002", "last update"));
         input.add(createMetadata("steps", "steps"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
@@ -285,8 +285,8 @@ public class ComputeTimeSinceTest {
 
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("last update", "last update"));
-        expected.add(createMetadata("since_last update_in_years", "since_last update_in_years", Type.INTEGER));
+        expected.add(createMetadata("002", "last update"));
+        expected.add(createMetadata("since_002_in_years", "since_last update_in_years", Type.INTEGER));
         expected.add(createMetadata("steps", "steps"));
 
         assertEquals(expected, actual);
@@ -300,7 +300,7 @@ public class ComputeTimeSinceTest {
 
         List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("002", "last update"));
         input.add(createMetadata("steps", "steps"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
@@ -316,8 +316,8 @@ public class ComputeTimeSinceTest {
 
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("last update", "last update"));
-        expected.add(createMetadata("since_last update_in_years", "since_last update_in_years", Type.INTEGER));
+        expected.add(createMetadata("002", "last update"));
+        expected.add(createMetadata("since_002_in_years", "since_last update_in_years", Type.INTEGER));
         expected.add(createMetadata("steps", "steps"));
 
         assertEquals(expected, actual);
@@ -331,7 +331,7 @@ public class ComputeTimeSinceTest {
 
         List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("002", "last update"));
         input.add(createMetadata("steps", "steps"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
@@ -361,9 +361,9 @@ public class ComputeTimeSinceTest {
 
         List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("last update", "last update"));
-        expected.add(createMetadata("since_last update_in_days", "since_last update_in_days", Type.INTEGER));
-        expected.add(createMetadata("since_last update_in_years", "since_last update_in_years", Type.INTEGER));
+        expected.add(createMetadata("002", "last update"));
+        expected.add(createMetadata("since_002_in_days", "since_last update_in_days", Type.INTEGER));
+        expected.add(createMetadata("since_002_in_years", "since_last update_in_years", Type.INTEGER));
         expected.add(createMetadata("steps", "steps"));
 
         assertEquals(expected, actual);

@@ -162,7 +162,7 @@ public class ComputeTimeSince extends SingleColumnAction {
                     ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
                             .column() //
                             .computedId(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase()) //
-                            .name(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase()) //
+                            .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
                             .type(Type.INTEGER) //
                             .empty(column.getQuality().getEmpty()) //
                             .invalid(column.getQuality().getInvalid()) //
