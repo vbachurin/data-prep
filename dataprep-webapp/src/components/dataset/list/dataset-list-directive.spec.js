@@ -36,7 +36,7 @@ describe('Dataset list directive', function() {
     beforeEach(module('htmlTemplates'));
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'INVENTORY_DETAILS': "owned by {{author}}, created {{created | moment_from_now}}, contains {{records}} lines"
+            'INVENTORY_DETAILS': 'owned by {{author}}, created {{created | moment_from_now}}, contains {{records}} lines'
         });
         $translateProvider.preferredLanguage('en');
     }));
