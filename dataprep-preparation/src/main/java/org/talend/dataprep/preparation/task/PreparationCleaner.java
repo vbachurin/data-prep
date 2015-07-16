@@ -11,6 +11,7 @@ import org.talend.dataprep.api.preparation.Step;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -27,6 +28,7 @@ public class PreparationCleaner {
 
     /**
      * Get all the step ids that belong to a preparation
+     *
      * @return The step ids
      */
     private Set<String> getPreparationStepIds() {
@@ -38,12 +40,17 @@ public class PreparationCleaner {
 
     /**
      * Remove all the steps which id is not in the preparations step ids
-     * @param steps The steps list to process
+     *
+     * @param steps              The steps list to process
      * @param preparationStepIds The step ids that belongs to at least 1 preparation
      */
     private void cleanSteps(final Collection<Step> steps, final Set<String> preparationStepIds) {
+        final Predicate<Step> isNotRootStep = step -> !Step.ROOT_STEP.getId().equals(step.getId());
+        final Predicate<Step> isOrphan = step -> !preparationStepIds.contains(step.getId());
+
         steps.stream()
-                .filter(step -> !preparationStepIds.contains(step.getId()))
+                .filter(isNotRootStep)
+                .filter(isOrphan)
                 .forEach(repository::remove);
     }
 
@@ -51,7 +58,7 @@ public class PreparationCleaner {
      * Remove the orphan steps (that do NOT belong to any preparation).
      */
     @Scheduled(fixedDelay = 60000)
-    private void removeOrphanSteps() {
+    public void removeOrphanSteps() {
         final Collection<Step> steps = repository.listAll(Step.class);
         final Set<String> preparationStepIds = getPreparationStepIds();
 
