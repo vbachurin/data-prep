@@ -61,7 +61,7 @@ describe('Dataset list directive', function() {
         element.remove();
     });
 
-    it('should render dataset list', function() {
+    it('should render dataset list', function($moment) {
         //when
         createElement();
 
@@ -72,7 +72,7 @@ describe('Dataset list directive', function() {
         expect(strEndsWith(iconSrc, '/assets/images/inventory/csv_file.png')).toBe(true);
         expect(certificationIcon.length).toBe(0);
         expect(element.find('.inventory-title').eq(0).text()).toBe('US States');
-        expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created '+moment('1437020219741','x').fromNow()+', contains  lines');
+        expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created '+$moment('1437020219741','x').fromNow()+', contains  lines');
 
         icon = element.find('.inventory-icon').eq(1);
         iconSrc = icon.find('> img')[0].src;
@@ -80,7 +80,7 @@ describe('Dataset list directive', function() {
         expect(strEndsWith(iconSrc, '/assets/images/inventory/xls_file.png')).toBe(true);
         expect(strEndsWith(certificationIcon, '/assets/images/certification-pending.png')).toBe(true);
         expect(element.find('.inventory-title').eq(1).text()).toBe('Customers');
-        expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created '+moment('143702021974','x').fromNow()+', contains  lines');
+        expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created '+$moment('143702021974','x').fromNow()+', contains  lines');
 
         icon = element.find('.inventory-icon').eq(2);
         iconSrc = icon.find('> img')[0].src;
@@ -88,6 +88,6 @@ describe('Dataset list directive', function() {
         expect(strEndsWith(iconSrc, '/assets/images/inventory/generic_file.png')).toBe(true);
         expect(strEndsWith(certificationIcon, '/assets/images/certification-certified.png')).toBe(true);
         expect(element.find('.inventory-title').eq(2).text()).toBe('Customers 2');
-        expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created '+moment('14370202197','x').fromNow()+', contains  lines');
+        expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created '+$moment('14370202197','x').fromNow()+', contains  lines');
     });
 });
