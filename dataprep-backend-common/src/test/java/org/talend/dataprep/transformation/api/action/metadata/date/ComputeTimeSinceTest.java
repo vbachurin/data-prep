@@ -26,6 +26,8 @@ import org.talend.dataprep.transformation.api.action.metadata.Split;
 import org.talend.dataprep.transformation.api.action.metadata.Substring;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +99,8 @@ public class ComputeTimeSinceTest {
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
-        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy");
+        context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy");
+        context.put(ComputeTimeSince.NOW, LocalDate.of(2015, 7, 16));
 
         rowClosure.accept(row, context);
         assertEquals(expectedValues, row.values());
@@ -121,7 +124,8 @@ public class ComputeTimeSinceTest {
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
-        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy");
+        context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy");
+        context.put(ComputeTimeSince.NOW, LocalDate.of(2015, 7, 16));
 
         // =====================================================
         // Create a new rowClosure with different params:
@@ -151,11 +155,12 @@ public class ComputeTimeSinceTest {
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("recipe", "lorem bacon");
         expectedValues.put("last update", "07/16/2015 13:00");
-        expectedValues.put("last update_time", "2");
+        expectedValues.put("last update_time", "5");
         expectedValues.put("steps", "Bacon");
 
         TransformationContext context = new TransformationContext();
-        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy HH:mm");
+        context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy HH:mm");
+        context.put(ComputeTimeSince.NOW, LocalDateTime.of(2015, 7, 16, 18, 0));
 
         // =====================================================
         // Create a new rowClosure with different params:
@@ -190,7 +195,7 @@ public class ComputeTimeSinceTest {
         input.get(1).setStatistics(statistics);
 
         TransformationContext context = new TransformationContext();
-        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy");
+        context.put(ComputeTimeSince.PATTERN, "MM/dd/yyyy");
 
         metadataClosure.accept(rowMetadata, context);
         List<ColumnMetadata> actual = rowMetadata.getColumns();

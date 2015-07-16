@@ -51,12 +51,17 @@ public class ComputeTimeSince extends SingleColumnAction {
     /**
      * The unit in which show the period.
      */
-    public static final String TIME_UNIT_PARAMETER = "time_unit";
+    public static final String TIME_UNIT_PARAMETER = "time_unit"; //$NON-NLS-1$
 
     /**
      * Name of the date pattern.
      */
     protected static final String PATTERN = "date_pattern"; //$NON-NLS-1$
+
+    /**
+     * Key to store 'now' in context at the begining of the action.
+     */
+    protected static final String NOW = "now"; //$NON-NLS-1$
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
 
@@ -114,7 +119,7 @@ public class ComputeTimeSince extends SingleColumnAction {
                 LOGGER.debug("Unable to parse date {}.", value, e);
             }
 
-            Temporal now = (unit == ChronoUnit.HOURS ? LocalDateTime.now() : LocalDate.now());
+            Temporal now = (Temporal) context.get(NOW);
             Temporal valueAsDate = (unit == ChronoUnit.HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor));
 
             long newValue = unit.between(valueAsDate, now);
@@ -145,6 +150,9 @@ public class ComputeTimeSince extends SingleColumnAction {
                     JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
                     String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
                     context.put(PATTERN, datePattern);
+
+                    Temporal now = (unit == ChronoUnit.HOURS ? LocalDateTime.now() : LocalDate.now());
+                    context.put(NOW, now);
 
                     // create the new column
                     ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
