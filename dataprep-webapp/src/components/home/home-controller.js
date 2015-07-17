@@ -23,8 +23,7 @@
         vm.importTypes = [
             {id: 'local', name: 'Local file'},
             {id: 'http', name: 'from HTTP'},
-            {id: 'hdfs', name: 'from HDFS (Comming soon...)'},
-            {id: 'jdbc', name: 'from JDBC (Comming soon...)'}
+            {id: 'hdfs', name: 'from HDFS'}
         ];
 
         /**
@@ -82,6 +81,10 @@
                     // show http dataset form
                     vm.datasetHttpModal = true;
                     break;
+                case 'hdfs':
+                    // show hdfs dataset form
+                    vm.datasetHdfsModal = true;
+                    break;
                 default:
             }
         };
@@ -95,6 +98,33 @@
         vm.importHttpDataSet = function() {
             var importParameters = {
                 type: 'http',
+                name: vm.datasetName,
+                url: vm.datasetUrl
+            };
+
+            var dataset = DatasetService.createDatasetInfo(null, importParameters.name);
+            vm.uploadingDatasets.push(dataset);
+
+            DatasetService.import(importParameters)
+                .then(function(event) {
+                    vm.uploadingDatasets.splice(vm.uploadingDatasets.indexOf(dataset, 1));
+                    DatasetService.getDatasetById(event.data).then(UploadWorkflowService.openDataset);
+                })
+                .catch(function() {
+                    dataset.error = true;
+                    MessageService.error('IMPORT_ERROR_TITLE', 'IMPORT_ERROR');
+                });
+        };
+
+        /**
+         * @ngdoc method
+         * @name importHdfsDataSet
+         * @methodOf data-prep.home.controller:HomeCtrl
+         * @description Import a remote hdfs dataset.
+         */
+        vm.importHdfsDataSet = function() {
+            var importParameters = {
+                type: 'hdfs',
                 name: vm.datasetName,
                 url: vm.datasetUrl
             };

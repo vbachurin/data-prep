@@ -82,7 +82,6 @@ public class HttpContentStore extends DataSetContentStoreAdapter {
     @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         // nothing to do here since the dataset is already stored
-        LOGGER.warn("storeAsRaw called on a remote http content store... (stack trace is informative)", new Exception());
     }
 
     /**

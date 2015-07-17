@@ -48,8 +48,9 @@
   "CONFIRM": "Confirm",
   "_comment": "Import datasets",
   "IMPORT_DATASET": "Import DataSet",
-  "IMPORT_HTML_DATASET": "Import HTML DataSet",
+  "IMPORT_HTTP_DATASET": "Import HTTP DataSet",
   "ENTER_DATASET_URL": "Enter the dataset url",
+  "IMPORT_HDFS_DATASET": "Import HDFS DataSet",
 
 
   "_comment": "Common",
