@@ -57,7 +57,7 @@
                 template =  _.template(gridHeaderPreviewTemplate)({
                     name: col.name,
                     diffClass: DatagridStyleService.getColumnPreviewStyle(col),
-                    simpleType: ConverterService.simplifyType(col.type)
+                    simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
                 });
             }
             else {
