@@ -112,6 +112,43 @@ $datagrid-cell-font-size: .80em;
       background-color: $green;
     }
 
+    &.active {
+      border: 2px solid $black;
+      height: 19px;
+      padding: 0 7px 2px 3px;
+      background-color: $white;
+    }
+
+    &.editable {
+      padding-left: 0;
+
+      .bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
+
+      textarea {
+        height: auto !important;
+        padding: 0 0 0 2px;
+        margin: 0;
+
+        font-family: $monospace;
+      }
+
+      .checkboxContainer {
+        background: darkgray;
+        color: white;
+        margin-top: -5px;
+        text-align: center;
+        white-space: pre-line;
+
+        input[type="checkbox"] {
+          vertical-align: middle;
+        }
+      }
+    }
+
     .cellNewValue {
       @include cellImitation();
       background-color: rgba(193, 217, 6, 0.5 );
@@ -127,13 +164,6 @@ $datagrid-cell-font-size: .80em;
       @include cellImitation();
       background-color: $light-gray;
       text-decoration: line-through;
-    }
-
-    &.active {
-      border: 2px solid $black;
-      height: 19px;
-      padding: 0 7px 2px 3px;
-      background-color: $white;
     }
 
     .hiddenChars {

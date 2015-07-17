@@ -257,7 +257,6 @@
                 });
 
                 grid.setCellCssStyles('highlight', config);
-                grid.invalidate();
             });
 
             //change selected cell column background

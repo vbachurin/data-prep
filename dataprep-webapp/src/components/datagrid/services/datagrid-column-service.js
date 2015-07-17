@@ -70,7 +70,14 @@
                 name: template,
                 formatter: DatagridStyleService.columnFormatter(col),
                 minWidth: 80,
-                tdpColMetadata: col
+                tdpColMetadata: col,
+                editor: Slick.Editors.TalendEditor(function(item, col, newValue, updateAllCellWithValue) {
+                    console.log(item);
+                    console.log(col);
+                    console.log(newValue);
+                    console.log(updateAllCellWithValue);
+                    console.log('replace ' + item[col] + ' with ' + newValue + (updateAllCellWithValue ? ' on all cell with this value' : ' on row ' + item.tdpId));
+                })
             };
         }
 
