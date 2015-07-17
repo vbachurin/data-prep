@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -226,7 +227,9 @@ public class XlsSchemaParser implements SchemaParser {
                     currentType = Type.NUMERIC;
                     // TODO test if we have a date
                     // TODO create a DATE type?
-                    // HSSFDateUtil.isCellDateFormatted(cell)
+                    if (HSSFDateUtil.isCellDateFormatted( cell )){
+                        currentType = Type.DATE;
+                    }
 
                     break;
                 case Cell.CELL_TYPE_BLANK:
