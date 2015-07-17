@@ -1,23 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.time.LocalDate;
@@ -32,7 +16,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+import javax.annotation.Nonnull;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
 public class ComputeTimeSince extends SingleColumnAction {
@@ -189,18 +191,6 @@ public class ComputeTimeSince extends SingleColumnAction {
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
-    }
-
-    /**
-     * @param parameters the parameters.
-     * @return the column id parameter.
-     */
-    private String getColumnIdParameter(Map<String, String> parameters) {
-        String columnId = parameters.get(COLUMN_ID);
-        if (columnId == null) {
-            throw new IllegalArgumentException("Parameter '" + COLUMN_ID + "' is required for this action");
-        }
-        return columnId;
     }
 
     /**
