@@ -188,7 +188,7 @@ public class DataSetRow implements Cloneable, Serializable {
      */
     @Override
     public DataSetRow clone() {
-        final DataSetRow clone = new DataSetRow(rowMetadata, values);
+        final DataSetRow clone = new DataSetRow(rowMetadata.clone(), values);
         clone.setDeleted(this.isDeleted());
         return clone;
     }

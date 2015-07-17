@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
  * @param <T>
  * @param <U>
  */
-public class Aggregate<T, U> implements BiConsumer<T, U> {
+public class AggregateActions<T, U> implements BiConsumer<T, U> {
 
     /** All aggregated actions */
     private final List<BiConsumer<T, U>> actions;
@@ -20,7 +20,7 @@ public class Aggregate<T, U> implements BiConsumer<T, U> {
      * @param actions {@link BiConsumer Consumers} to be aggregated.
      * @see #aggregate(List)
      */
-    private Aggregate(List<BiConsumer<T, U>> actions) {
+    private AggregateActions(List<BiConsumer<T, U>> actions) {
         this.actions = actions;
     }
 
@@ -33,7 +33,7 @@ public class Aggregate<T, U> implements BiConsumer<T, U> {
      * @return A unique {@link BiConsumer} that wraps all provided consumers in parameter.
      */
     public static <T, U> BiConsumer<T, U> aggregate(List<? extends BiConsumer<T, U>> actions) {
-        return new Aggregate(actions);
+        return new AggregateActions(actions);
     }
 
     /**

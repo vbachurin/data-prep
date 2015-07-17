@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -30,6 +29,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -40,10 +40,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 public class CopyColumnTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
-    /** The metadata consumer to test. */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private DataSetRowAction rowClosure;
 
     /** The action to test. */
     private CopyColumn action;
@@ -60,7 +57,6 @@ public class CopyColumnTest {
 
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
-        metadataClosure = action.getMetadataAction();
     }
 
     @Test
@@ -88,9 +84,8 @@ public class CopyColumnTest {
         expectedValues.put("0002", "01/01/2015");
 
         final TransformationContext context = new TransformationContext();
-        metadataClosure.accept(row.getRowMetadata(), context);
         context.setTransformedRowMetadata(row.getRowMetadata());
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
         assertEquals(expectedValues, row.values());
     }
 
@@ -106,7 +101,7 @@ public class CopyColumnTest {
         input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();

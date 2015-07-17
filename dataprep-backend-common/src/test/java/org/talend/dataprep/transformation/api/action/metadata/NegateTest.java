@@ -8,12 +8,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -24,7 +24,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 public class NegateTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> consumer;
+    private DataSetRowAction consumer;
 
     /** The action to test. */
     private Negate action;
@@ -62,7 +62,7 @@ public class NegateTest {
         expectedValues.put("entity", "R&D");
         expectedValues.put("active", "False"); // true -> false
 
-        consumer.accept(row, new TransformationContext());
+        row = consumer.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -79,7 +79,7 @@ public class NegateTest {
         expectedValues.put("entity", "R&D");
         expectedValues.put("active", "True"); // false -> true
 
-        consumer.accept(row, new TransformationContext());
+        row = consumer.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 

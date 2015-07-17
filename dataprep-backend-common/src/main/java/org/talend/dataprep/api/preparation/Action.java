@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("action")
 public class Action {
 
-    public static final DataSetRowAction IDLE_ROW_ACTION = (row, context) -> {};
+    public static final DataSetRowAction IDLE_ROW_ACTION = (row, context) -> row;
 
     public static final DataSetMetadataAction IDLE_METADATA_ACTION = (metadata, context) -> {};
 

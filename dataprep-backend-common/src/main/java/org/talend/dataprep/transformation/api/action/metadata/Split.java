@@ -2,7 +2,9 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -87,7 +89,7 @@ public class Split extends SingleColumnAction {
 
     /**
      * @param parameters the action parameters.
-     * @return the searator to use according to the given parameters.
+     * @return the separator to use according to the given parameters.
      */
     private String getSeparator(Map<String, String> parameters) {
         return ("other").equals(parameters.get(SEPARATOR_PARAMETER)) ? parameters.get(MANUAL_SEPARATOR_PARAMETER) : parameters
@@ -101,14 +103,19 @@ public class Split extends SingleColumnAction {
      */
     @Override
     public Action create(Map<String, String> parameters) {
-        return builder().withMetadata((rowMetadata, context) -> {
-            String columnId = parameters.get(COLUMN_ID);
-            if (StringUtils.isEmpty(getSeparator(parameters))) {
-                return;
+        return builder().withRow((r, c) -> {
+            // No op cases
+            String realSeparator = getSeparator(parameters);
+            if (StringUtils.isEmpty(realSeparator)) {
+                return r;
             }
-            int limit = Integer.parseInt(parameters.get(LIMIT));
+            String columnId = parameters.get(COLUMN_ID);
             // go through the columns to be able to 'insert' the new columns just after the one needed.
+            int limit = Integer.parseInt(parameters.get(LIMIT));
+            final RowMetadata rowMetadata = r.getRowMetadata();
             final ColumnMetadata column = rowMetadata.getById(columnId);
+            List<String> newColumns = new ArrayList<>();
+            String lastColumnId = columnId;
             for (int i = 0; i < limit; i++) {
                 ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
                         .column() //
@@ -119,30 +126,22 @@ public class Split extends SingleColumnAction {
                         .valid(column.getQuality().getValid()) //
                         .headerSize(column.getHeaderSize()) //
                         .build();
-                columnId = rowMetadata.insertAfter(columnId, newColumnMetadata);
+                final String newColumnId = rowMetadata.insertAfter(lastColumnId, newColumnMetadata);
+                newColumns.add(newColumnId);
+                lastColumnId = newColumnId;
             }
-        }).withRow((row, context) -> {
-            String columnId = parameters.get(COLUMN_ID);
-            String realSeparator = getSeparator(parameters);
-            int limit = Integer.parseInt(parameters.get(LIMIT));
-            if (StringUtils.isEmpty(realSeparator)) {
-                return;
+            // Set the split values in newly created columns
+            String originalValue = r.get(columnId);
+            if (originalValue == null) {
+                return r;
             }
-            String originalValue = row.get(columnId);
-            if (originalValue != null) {
-                final RowMetadata rowMetadata = context.getTransformedRowMetadata();
-                final Iterator<ColumnMetadata> iterator = rowMetadata.getColumns().iterator();
-                while (iterator.hasNext()) {
-                    if (columnId.equals(iterator.next().getId())) {
-                        break;
-                    }
-                }
-                String[] split = originalValue.split(realSeparator, limit);
-                for (int i = 1; i <= limit && iterator.hasNext(); i++) {
-                    String newValue = i <= split.length ? split[i - 1] : StringUtils.EMPTY;
-                    row.set(iterator.next().getId(), newValue);
-                }
+            final Iterator<String> iterator = newColumns.iterator();
+            String[] split = originalValue.split(realSeparator, limit);
+            for (int i = 1; i <= limit && iterator.hasNext(); i++) {
+                String newValue = i <= split.length ? split[i - 1] : StringUtils.EMPTY;
+                r.set(iterator.next(), newValue);
             }
+            return r;
         }).build();
     }
 

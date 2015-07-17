@@ -23,6 +23,7 @@ public abstract class AbstractDefaultIfEmpty extends SingleColumnAction {
             if (value == null || value.trim().length() == 0) {
                 row.set(columnName, parameters.get(DEFAULT_VALUE_PARAMETER));
             }
+            return row;
         }).build();
     }
 }

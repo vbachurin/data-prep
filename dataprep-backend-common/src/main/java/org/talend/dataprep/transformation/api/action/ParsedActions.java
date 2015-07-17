@@ -1,10 +1,11 @@
 package org.talend.dataprep.transformation.api.action;
 
-import static org.talend.dataprep.transformation.api.action.Aggregate.aggregate;
+import static org.talend.dataprep.transformation.api.action.AggregateActions.aggregate;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
@@ -56,15 +57,11 @@ public class ParsedActions {
         return rowTransformers;
     }
 
-    public List<DataSetMetadataAction> getMetadataTransformers() {
-        return metadataTransformers;
-    }
-
     /**
      * @return The row transformers united into a single consumer.
      */
-    public BiConsumer<DataSetRow, TransformationContext> asUniqueRowTransformer() {
-        return aggregate(rowTransformers);
+    public BiFunction<DataSetRow, TransformationContext, DataSetRow> asUniqueRowTransformer() {
+        return AggregateFunctions.aggregate(rowTransformers);
     }
 
     /**

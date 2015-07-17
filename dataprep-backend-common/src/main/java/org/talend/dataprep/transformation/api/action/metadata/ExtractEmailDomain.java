@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 
@@ -66,29 +67,17 @@ public class ExtractEmailDomain extends SingleColumnAction {
     @Override
     public Action create(Map<String, String> parameters) {
         return builder().withRow((row, context) -> {
-            String columnName = parameters.get(COLUMN_ID);
-            String realSeparator = "@";
-
-            String originalValue = row.get(columnName);
-            if (originalValue != null) {
-                String[] split = originalValue.split(realSeparator, 2);
-
-                String local_part = split.length >= 2 ? split[0] : StringUtils.EMPTY;
-                row.set(columnName + _LOCAL, local_part);
-
-                String domain_part = split.length >= 2 ? split[1] : StringUtils.EMPTY;
-                row.set(columnName + _DOMAIN, domain_part);
-            }
-        }).withMetadata((rowMetadata, context) -> {
             String columnId = parameters.get(COLUMN_ID);
+            String originalValue = row.get(columnId);
+            final RowMetadata rowMetadata = row.getRowMetadata();
             final ColumnMetadata column = rowMetadata.getById(columnId);
-            //
+            // Perform metadata level actions (add local + domain columns).
             ColumnMetadata.Builder newColumnMetadata = ColumnMetadata.Builder //
                     .column() //
                     .name(column.getName() + _LOCAL) //
                     .type(Type.get(column.getType())) //
                     .headerSize(column.getHeaderSize());
-            columnId = rowMetadata.insertAfter(columnId, newColumnMetadata.build());
+            String local = rowMetadata.insertAfter(columnId, newColumnMetadata.build());
             newColumnMetadata = ColumnMetadata.Builder //
                     .column() //
                     .name(column.getName() + _DOMAIN) //
@@ -97,7 +86,17 @@ public class ExtractEmailDomain extends SingleColumnAction {
                     .invalid(column.getQuality().getInvalid()) //
                     .valid(column.getQuality().getValid()) //
                     .headerSize(column.getHeaderSize());
-            rowMetadata.insertAfter(columnId, newColumnMetadata.build());
+            String domain = rowMetadata.insertAfter(local, newColumnMetadata.build());
+            // Set the values in newly created columns
+            if (originalValue == null) {
+                return row;
+            }
+            String[] split = originalValue.split("@", 2);
+            String local_part = split.length >= 2 ? split[0] : StringUtils.EMPTY;
+            row.set(local, local_part);
+            String domain_part = split.length >= 2 ? split[1] : StringUtils.EMPTY;
+            row.set(domain, domain_part);
+            return row;
         }).build();
     }
 }

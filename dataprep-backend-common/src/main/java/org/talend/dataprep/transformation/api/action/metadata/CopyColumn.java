@@ -2,8 +2,9 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
-import java.util.Iterator;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -44,6 +45,7 @@ public class CopyColumn extends SingleColumnAction {
      * @see ActionMetadata#getItems()@return
      */
     @Override
+    @Nonnull
     public Item[] getItems() {
         return new Item[] {};
     }
@@ -65,19 +67,7 @@ public class CopyColumn extends SingleColumnAction {
     public Action create(Map<String, String> parameters) {
         return builder().withRow((row, context) -> {
             String columnId = parameters.get(COLUMN_ID);
-            String originalValue = row.get(columnId);
-            final RowMetadata rowMetadata = context.getTransformedRowMetadata();
-            final Iterator<ColumnMetadata> iterator = rowMetadata.getColumns().iterator();
-            while (iterator.hasNext()) {
-                if (columnId.equals(iterator.next().getId())) {
-                    break;
-                }
-            }
-            if (iterator.hasNext()) {
-                row.set(iterator.next().getId(), originalValue);
-            }
-        }).withMetadata((rowMetadata, context) -> {
-            String columnId = parameters.get(COLUMN_ID);
+            final RowMetadata rowMetadata = row.getRowMetadata();
             final ColumnMetadata column = rowMetadata.getById(columnId);
             ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
                     .column() //
@@ -85,7 +75,9 @@ public class CopyColumn extends SingleColumnAction {
                     .type(Type.get(column.getType())) //
                     .headerSize(column.getHeaderSize()) //
                     .build();
-            rowMetadata.insertAfter(columnId, newColumnMetadata);
+            final String copyColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
+            row.set(copyColumn, row.get(columnId));
+            return row;
         }).build();
     }
 }

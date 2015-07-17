@@ -7,13 +7,13 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import static org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction.COLUMN_ID;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 public class TextClusteringTest {
@@ -29,7 +29,7 @@ public class TextClusteringTest {
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
 
-        final BiConsumer<DataSetRow, TransformationContext> consumer = textClustering.create(parameters).getRowAction();
+        final DataSetRowAction consumer = textClustering.create(parameters).getRowAction();
 
         final List<DataSetRow> rows = new ArrayList<>();
         rows.add(createRow("uglystate", "T@T@"));
@@ -38,11 +38,12 @@ public class TextClusteringTest {
         rows.add(createRow("uglystate", "Tata"));
 
         // when
-        rows.stream().forEach((row) -> consumer.accept(row, new TransformationContext()));
+        final TransformationContext context = new TransformationContext();
+        rows.stream().forEach((row) -> consumer.apply(row, context));
 
         // then
-        rows.stream().map((row) -> row.get("uglystate"))
-                .forEach((uglystate) -> Assertions.assertThat(uglystate).isEqualTo("Tata"));
+        rows.stream().map(row -> row.get("uglystate"))
+                .forEach(uglyState -> Assertions.assertThat(uglyState).isEqualTo("Tata"));
     }
 
     @Test
@@ -61,7 +62,7 @@ public class TextClusteringTest {
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
 
-        final BiConsumer<DataSetRow, TransformationContext> consumer = textClustering.create(parameters).getRowAction();
+        final DataSetRowAction consumer = textClustering.create(parameters).getRowAction();
 
         final List<DataSetRow> rows = new ArrayList<>();
         rows.add(createRow("uglystate", "T@T@1"));
@@ -70,11 +71,11 @@ public class TextClusteringTest {
         rows.add(createRow("uglystate", "Tata1"));
 
         // when
-        rows.stream().forEach((row) -> consumer.accept(row, new TransformationContext()));
+        rows.stream().forEach(row -> consumer.apply(row, new TransformationContext()));
 
         // then
         rows.stream().map((row) -> row.get("uglystate"))
-                .forEach((uglystate) -> Assertions.assertThat(uglystate).isNotEqualTo("Tata"));
+                .forEach(uglyState -> Assertions.assertThat(uglyState).isNotEqualTo("Tata"));
     }
 
     private DataSetRow createRow(final String key, final String value) {

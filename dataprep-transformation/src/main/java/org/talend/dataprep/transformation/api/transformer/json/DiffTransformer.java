@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +53,10 @@ class DiffTransformer implements Transformer {
 
         final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());
         final ParsedActions previewActions = actionParser.parse(previewConfiguration.getPreviewActions());
-        final BiConsumer<DataSetRow, TransformationContext> referenceAction = referenceActions.asUniqueRowTransformer();
+        final BiFunction<DataSetRow, TransformationContext, DataSetRow> referenceAction = referenceActions.asUniqueRowTransformer();
         final BiConsumer<RowMetadata, TransformationContext> referenceMetadataAction = referenceActions.asUniqueMetadataTransformer();
         final BiConsumer<RowMetadata, TransformationContext> previewMetadataAction = previewActions.asUniqueMetadataTransformer();
-        final BiConsumer<DataSetRow, TransformationContext> previewAction = previewActions.asUniqueRowTransformer();
+        final BiFunction<DataSetRow, TransformationContext, DataSetRow> previewAction = previewActions.asUniqueRowTransformer();
 
         TransformationContext referenceContext = previewConfiguration.getReferenceContext();
         TransformationContext previewContext = previewConfiguration.getPreviewContext();
@@ -89,11 +90,11 @@ class DiffTransformer implements Transformer {
                     .map(row -> new Processing(row, index.getAndIncrement() - resultIndexShift.get())) //
                     .map(p -> new Processing[]{new Processing(p.row.clone(), p.index), p}) //
                     .map(p -> {
-                        referenceAction.accept(p[0].row, referenceContext);
+                        referenceAction.apply(p[0].row, referenceContext);
                         if (p[0].row.isDeleted()) {
                             resultIndexShift.incrementAndGet();
                         }
-                        previewAction.accept(p[1].row, previewContext);
+                        previewAction.apply(p[1].row, previewContext);
                         return p;
                     }); //
             if (indexes != null) {

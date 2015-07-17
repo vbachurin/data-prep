@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -77,13 +78,15 @@ public class Rename extends SingleColumnAction {
 
     @Override
     public Action create(Map<String, String> parameters) {
-        return builder().withMetadata((rowMetadata, context) -> {
+        return builder().withRow((row, context) -> {
             String columnId = parameters.get(COLUMN_ID);
             String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);
+            final RowMetadata rowMetadata = row.getRowMetadata();
             final ColumnMetadata column = rowMetadata.getById(columnId);
             if (column != null) {
                 column.setName(newColumnName);
             }
+            return row;
         }).build();
     }
 

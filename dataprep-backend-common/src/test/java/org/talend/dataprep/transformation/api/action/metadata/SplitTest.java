@@ -30,6 +30,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -40,10 +41,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 public class SplitTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
-    /** The metadata consumer to test. */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private DataSetRowAction rowClosure;
 
     /** The action to test. */
     private Split action;
@@ -58,7 +56,6 @@ public class SplitTest {
                 SplitTest.class.getResourceAsStream("splitAction.json"));
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
-        metadataClosure = action.getMetadataAction();
     }
 
     @Test
@@ -87,9 +84,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         final TransformationContext context = new TransformationContext();
-        metadataClosure.accept(row.getRowMetadata(), context);
-        context.setTransformedRowMetadata(row.getRowMetadata());
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
         assertEquals(expectedValues, row.values());
     }
 
@@ -114,12 +109,8 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         final TransformationContext context = new TransformationContext();
-        metadataClosure.accept(row.getRowMetadata(), context);
-        context.setTransformedRowMetadata(row.getRowMetadata());
-        rowClosure.accept(row, context);
-        metadataClosure.accept(row.getRowMetadata(), context);
-        context.setTransformedRowMetadata(row.getRowMetadata());
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
+        row = rowClosure.apply(row, context);
         assertEquals(expectedValues, row.values());
     }
 
@@ -142,9 +133,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         final TransformationContext context = new TransformationContext();
-        metadataClosure.accept(row.getRowMetadata(), context);
-        context.setTransformedRowMetadata(row.getRowMetadata());
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
         assertEquals(expectedValues, row.values());
     }
 
@@ -167,9 +156,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         final TransformationContext context = new TransformationContext();
-        metadataClosure.accept(row.getRowMetadata(), context);
-        context.setTransformedRowMetadata(row.getRowMetadata());
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
         assertEquals(expectedValues, row.values());
     }
 
@@ -186,7 +173,7 @@ public class SplitTest {
         input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
@@ -211,8 +198,8 @@ public class SplitTest {
         input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
 
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
@@ -238,7 +225,7 @@ public class SplitTest {
                 nullSeparatorAction, //
                 SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
 
-        BiConsumer<DataSetRow, TransformationContext> closure = nullSeparatorAction.create(parameters).getRowAction();
+        DataSetRowAction closure = nullSeparatorAction.create(parameters).getRowAction();
 
         Map<String, String> values = new HashMap<>();
         values.put("recipe", "lorem bacon");
@@ -247,7 +234,7 @@ public class SplitTest {
         DataSetRow row = new DataSetRow(values);
 
         // when
-        closure.accept(row, new TransformationContext());
+        row = closure.apply(row, new TransformationContext());
 
         // then
         assertEquals(values, row.values());

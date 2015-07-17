@@ -167,4 +167,8 @@ public class RowMetadata {
         addColumn(column, insertIndex);
         return column.getId();
     }
+
+    public RowMetadata clone() {
+        return new RowMetadata(new ArrayList<>(columns));
+    }
 }
