@@ -66,7 +66,6 @@ public class HttpContentStore extends DataSetContentStoreAdapter {
     public InputStream getAsRaw(DataSetMetadata dataSetMetadata) {
         HttpLocation location = (HttpLocation) dataSetMetadata.getLocation();
         HttpGet get = new HttpGet(location.getUrl());
-        // get.setHeader("Accept", "*/*");
         CloseableHttpResponse response;
         try {
             response = httpClient.execute(get);
