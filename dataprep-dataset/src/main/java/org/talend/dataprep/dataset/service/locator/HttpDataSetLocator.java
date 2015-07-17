@@ -31,7 +31,7 @@ public class HttpDataSetLocator implements DataSetLocator {
      */
     @Override
     public boolean accept(String contentType) {
-        return StringUtils.equalsIgnoreCase(MEDIA_TYPE, contentType);
+        return StringUtils.startsWith(contentType, MEDIA_TYPE);
     }
 
     /**

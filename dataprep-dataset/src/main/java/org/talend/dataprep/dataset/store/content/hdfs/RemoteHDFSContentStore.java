@@ -45,7 +45,7 @@ public class RemoteHDFSContentStore extends DataSetContentStoreAdapter {
 
         } catch (IOException e) {
             LOGGER.error("error reading remote HDFS dataset {}", location, e);
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_REMOTE_DATASET_CONTENT, e);
         }
 
     }

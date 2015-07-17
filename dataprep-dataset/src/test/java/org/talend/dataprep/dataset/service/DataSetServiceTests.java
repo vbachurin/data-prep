@@ -47,6 +47,7 @@ import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.Application;
+import org.talend.dataprep.dataset.service.locator.HttpDataSetLocator;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.schema.CSVFormatGuess;
@@ -219,6 +220,42 @@ public class DataSetServiceTests {
         assertThat(after - before, is(1));
         // the next call may fail due to timing issues : TODO // make this synchronized somehow
         assertQueueMessages(dataSetId);
+    }
+
+    @Test
+    public void createRemoteHttp() throws Exception {
+
+        String remoteLocation = "{\"type\": \"http\",\"url\": \"http://localhost:" + port + "/not/so/far/away\"}";
+
+        int before = dataSetMetadataRepository.size();
+        String dataSetId = given() //
+                .body(remoteLocation.getBytes()) //
+                .header("Content-Type", HttpDataSetLocator.MEDIA_TYPE) //
+                .queryParam("name", "test_remote_http") //
+                .when() //
+                .post("/datasets") //
+                .asString();
+
+        int after = dataSetMetadataRepository.size();
+        assertThat(after - before, is(1));
+        // the next call may fail due to timing issues : TODO // make this synchronized somehow
+        assertQueueMessages(dataSetId);
+    }
+
+    @Test
+    public void createRemoteHttpOnMissingResource() throws Exception {
+
+        String remoteLocation = "{\"type\": \"http\",\"url\": \"http://localhost:" + port + "/cannot/be/reached\"}";
+
+        int statusCode = given() //
+                .body(remoteLocation.getBytes()) //
+                .header("Content-Type", HttpDataSetLocator.MEDIA_TYPE) //
+                .queryParam("name", "test_remote_http") //
+                .when() //
+                .post("/datasets") //
+                .statusCode();
+
+        assertEquals(404, statusCode);
     }
 
     @Test
