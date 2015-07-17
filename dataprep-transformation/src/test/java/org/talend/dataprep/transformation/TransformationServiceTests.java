@@ -156,6 +156,16 @@ public class TransformationServiceTests {
     }
 
     @Test
+    public void duplicateAction() throws Exception {
+        String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("duplicateAction.json"));
+        String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test5.json"));
+        String expectedContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test5_duplicateAction.json"));
+        String transformedContent = given().multiPart("actions", actions).multiPart("content", initialContent).when()
+                .post("/transform").asString();
+        assertEquals(expectedContent, transformedContent, false);
+    }
+
+    @Test
     public void deleteEmptyActionString() throws Exception {
         String actions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("deleteEmptyAction.json"));
         String initialContent = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("test3.json"));

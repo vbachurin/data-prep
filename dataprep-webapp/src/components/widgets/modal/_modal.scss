@@ -51,7 +51,6 @@
   }
 
   .modal-window { // overlay
-    @include transition(opacity 0.25s ease);
     @include position(fixed, 0px 0px 0px 0px);
     background: $background-transparent;
     opacity: 0;
@@ -98,7 +97,6 @@
   }
 
   .modal-inner {
-    @include transition(opacity 0.25s ease);
     background: $modal-background;
     border-radius: $base-border-radius;
     margin: auto;
@@ -169,6 +167,25 @@
       }
     }
 
+    .modal-form-row {
+      @include display(flex);
+      @include flex-direction(row);
+      @include flex-wrap(wrap);
+      @include align-items(center);
+      margin-bottom: 10px;
+
+      .param-name {
+        @include flex-basis(150px);
+        @include flex-grow(1);
+      }
+
+      .param-input {
+        @include flex-basis(250px);
+        @include flex-grow(2);
+        margin: 0;
+      }
+    }
+
     a.cta {
       color: white;
       display: inline-block;
@@ -183,8 +200,9 @@
   }
 
   .modal-state:checked + .modal-window {
-    opacity: 1;
     visibility: visible;
+    opacity: 1;
+    @include animation(fadeIn 0.5s);
   }
 
   .modal-state:checked + .modal-window .modal-inner {

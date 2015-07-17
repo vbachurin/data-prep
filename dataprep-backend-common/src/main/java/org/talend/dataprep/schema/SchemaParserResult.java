@@ -75,6 +75,25 @@ public class SchemaParserResult {
         {
             this.columnMetadatas = columnMetadatas;
         }
+
+        @Override
+        public String toString()
+        {
+            return "SheetContent{" +
+                "name='" + name + '\'' +
+                ", columnMetadatas=" + columnMetadatas +
+                '}';
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SchemaParserResult{" +
+            "draft=" + draft +
+            ", sheetContents=" + sheetContents +
+            ", sheetName='" + sheetName + '\'' +
+            '}';
     }
 
     public static class Builder {

@@ -1,20 +1,10 @@
 package org.talend.dataprep.api.preparation;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
-import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -30,11 +20,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.preparation.Application;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.when;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.springframework.test.util.MatcherAssertionErrors.assertThat;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -254,6 +254,130 @@ public class PreparationServiceTest {
         assertThat(preparation.getStep().id(), is("91629cad70f47957bcbcdeac436878cc5f713b8a"));
     }
 
+    @Test
+    public void shouldDeleteLastAction() throws Exception {
+        // Initial preparation
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        // Add UPPERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        final String firstStepId = preparation.getStep().id();
+
+        // Add LOWERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        final String secondStepId = preparation.getStep().id();
+
+        // Delete LOWERCASE
+        when().delete("/preparations/{id}/actions/{action}", preparation.id(), secondStepId);
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getStep().id(), is(firstStepId));
+    }
+
+    @Test
+    public void shouldDeleteAllActions() throws Exception {
+        // Initial preparation
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        // Add UPPERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        final String firstStepId = preparation.getStep().id();
+
+        // Add LOWERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+
+        // Delete UPPERCASE
+        when().delete("/preparations/{id}/actions/{action}", preparation.id(), firstStepId);
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(preparation.getStep().id(), is(ROOT_STEP.getId()));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenActionToDeleteIsRoot() throws Exception {
+        // Initial preparation
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        // Add UPPERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+
+        // Add LOWERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+
+        // Delete ROOT
+        when().delete("/preparations/{id}/actions/{action}", preparation.id(), ROOT_STEP.getId())
+                .then()
+                .statusCode(400)
+                .assertThat()
+                .body("code", is("TDP_PS_PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED"));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenActionDoesntExist() throws Exception {
+        // Initial preparation
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        // Add UPPERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+
+        // Add LOWERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+
+        // Delete unknown step
+        when().delete("/preparations/{id}/actions/{action}", preparation.id(), "azerty")
+                .then()
+                .statusCode(400)
+                .assertThat()
+                .body("code", is("TDP_PS_PREPARATION_STEP_DOES_NOT_EXIST"));
+    }
+
+    @Test
+    public void shouldUpdateModificationData() throws Exception {
+        // Initial preparation
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        // Add UPPERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+
+        // Add LOWERCASE action
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
+                .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
+        preparation = repository.get(preparation.id(), Preparation.class);
+        final String secondStepId = preparation.getStep().id();
+        long oldModificationDate = preparation.getLastModificationDate();
+
+        // Delete LOWERCASE
+        when().delete("/preparations/{id}/actions/{action}", preparation.id(), secondStepId);
+        preparation = repository.get(preparation.id(), Preparation.class);
+        assertThat(oldModificationDate, lessThan(preparation.getLastModificationDate()));
+    }
+
     /**
      * @see org.talend.dataprep.preparation.service.PreparationService#listByDataSet
      */
@@ -283,7 +407,7 @@ public class PreparationServiceTest {
 
     /**
      * Check that the error listing service returns a list parsable of error codes. The content is not checked
-     * 
+     *
      * @throws Exception if an error occurs.
      */
     @Test
@@ -306,7 +430,7 @@ public class PreparationServiceTest {
      * Return a preparation from the given parameters. Simple function used to simplify code writing.
      *
      * @param dataSetId the dataset id.
-     * @param name the preparation name.
+     * @param name      the preparation name.
      * @return a preparation from the given parameters.
      */
     private Preparation getPreparation(String dataSetId, String name) {

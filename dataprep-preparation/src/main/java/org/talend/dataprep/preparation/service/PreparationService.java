@@ -5,6 +5,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST;
+import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED;
+import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_STEP_DOES_NOT_EXIST;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,39 +48,6 @@ public class PreparationService {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
-    /**
-     * Get user name from Spring Security context
-     *
-     * @return "anonymous" if no user is currently logged in, the user name otherwise.
-     */
-    private static String getUserName() {
-        final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String author;
-        if (principal != null) {
-            author = principal.toString();
-        } else {
-            author = "anonymous"; //$NON-NLS-1
-        }
-        return author;
-    }
-
-    private static String getStepId(String version, Preparation preparation) {
-        String stepId;
-        if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
-            stepId = preparation.getStep().id();
-        } else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
-            stepId = ROOT_STEP.id();
-        } else {
-            stepId = version;
-        }
-        return stepId;
-    }
-
-    private List<Action> getActions(String stepId) {
-        return new ArrayList<>(preparationRepository.get(preparationRepository.get(stepId, Step.class).getContent(),
-                PreparationActions.class).getActions());
-    }
-
     @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
@@ -86,12 +56,6 @@ public class PreparationService {
         return preparationRepository.listAll(Preparation.class).stream().map(Preparation::id).collect(toList());
     }
 
-    /**
-     * Return all preparations for the given dataset.
-     *
-     * @param dataSetId the dataSet id.
-     * @return all preparations for the given dataset.
-     */
     @RequestMapping(value = "/preparations", method = GET, params = "dataSetId", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations for the given DataSet id", notes = "Returns the list of preparations for the given Dataset id the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
     @Timed
@@ -113,8 +77,8 @@ public class PreparationService {
     @ApiOperation(value = "Create a preparation", notes = "Returns the id of the created preparation.")
     @Timed
     public String create(@ApiParam("preparation")
-    @RequestBody
-    final Preparation preparation) {
+                         @RequestBody
+                         final Preparation preparation) {
         LOGGER.debug("Create new preparation for data set {}", preparation.getDataSetId());
         preparation.setStep(ROOT_STEP);
         preparation.setAuthor(getUserName());
@@ -172,40 +136,33 @@ public class PreparationService {
     public void append(@PathVariable("id") final String id, //
                        @RequestBody final AppendStep step) {
         LOGGER.debug("Adding actions to preparation #{}", id);
-        final Preparation preparation = preparationRepository.get(id, Preparation.class);
-        if (preparation == null) {
-            LOGGER.error("Preparation #{} does not exist", id);
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
-        }
+        final Preparation preparation = getPreparation(id);
+
         final Step head = preparation.getStep();
         LOGGER.debug("Current head for preparation #{}: {}", id, head);
+
         // Add new actions
         final PreparationActions headContent = preparationRepository.get(head.getContent(), PreparationActions.class);
         final PreparationActions newContent = headContent.append(step.getActions());
         preparationRepository.add(newContent);
+
         // Create new step from new content
         final Step newStep = new Step(head.id(), newContent.id());
         preparationRepository.add(newStep);
+
         // Update preparation head step
-        preparation.setStep(newStep);
-        preparation.updateLastModificationDate();
-        preparationRepository.add(preparation);
+        setPreparationHead(preparation, newStep);
         LOGGER.debug("Added head to preparation #{}: head is now {}", id, newStep.id());
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{action}", method = PUT, consumes = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Updates an action to in a preparation", notes = "Modifies an action in preparation's steps.")
+    @ApiOperation(value = "Updates an action in a preparation", notes = "Modifies an action in preparation's steps.")
     @Timed
     public void updateAction(@PathVariable("id") final String id, //
                              @PathVariable("action") final String action, //
                              @RequestBody final AppendStep step) {
-        // Get preparation
         LOGGER.debug("Modifying actions in preparation #{}", id);
-        final Preparation preparation = preparationRepository.get(id, Preparation.class);
-        if (preparation == null) {
-            LOGGER.error("Preparation #{} does not exist", id);
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
-        }
+        final Preparation preparation = getPreparation(id);
 
         // Get steps from modified to the head
         final Step head = preparation.getStep();
@@ -226,20 +183,53 @@ public class PreparationService {
 
         // Rebuild history from modified step : needed because the ids will be regenerated at each step
         final Step modifiedStep = preparationRepository.get(steps.get(0), Step.class);
-        preparation.setStep(preparationRepository.get(modifiedStep.getParent(), Step.class));
-        preparationRepository.add(preparation);
+        final Step previousStep = preparationRepository.get(modifiedStep.getParent(), Step.class);
+        setPreparationHead(preparation, previousStep);
         for (AppendStep append : appends) {
             append(preparation.getId(), append);
         }
         final Step newHead = preparationRepository.get(id, Preparation.class).getStep();
         LOGGER.debug("Modified head of preparation #{}: head is now {}", newHead.getId());
+
+        //TODO JSO : what to do with the old steps that are deleted but still in repository ?
+    }
+
+    @RequestMapping(value = "/preparations/{id}/actions/{action}", method = DELETE)
+    @ApiOperation(value = "Delete an action in a preparation", notes = "Delete a step and all following steps from a preparation")
+    @Timed
+    public void deleteAction(@PathVariable("id") final String id, //
+                             @PathVariable("action") final String action) throws TDPException {
+        if(ROOT_STEP.getId().equals(action)) {
+            throw new TDPException(PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED);
+        }
+
+        LOGGER.debug("Deleting actions in preparation #{}", id);
+        final Preparation preparation = getPreparation(id);
+
+        // Get all steps
+        final Step head = preparation.getStep();
+        LOGGER.debug("Current head for preparation #{}: {}", id, head);
+        final List<String> steps = PreparationUtils.listSteps(head, ROOT_STEP.getId(), preparationRepository);
+        if (!steps.contains(action)) {
+            throw new TDPException(PREPARATION_STEP_DOES_NOT_EXIST,
+                    TDPExceptionContext.build()
+                            .put("id", id)
+                            .put("stepId", action));
+        }
+
+        // Replace head by the step before the deleted one
+        final Step stepToDelete = preparationRepository.get(action, Step.class);
+        final Step newHead = preparationRepository.get(stepToDelete.getParent(), Step.class);
+        setPreparationHead(preparation, newHead);
+
+        //TODO JSO : what to do with the deleted step and the following steps that are deleted but still in repository ?
     }
 
     @RequestMapping(value = "/preparations/{id}/actions/{version}", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all the actions of a preparation at given version.", notes = "Returns the action JSON at version.")
     @Timed
     public List<Action> getVersionedAction(@ApiParam("id") @PathVariable("id") final String id, //
-                                                 @ApiParam("version") @PathVariable("version") final String version) {
+                                           @ApiParam("version") @PathVariable("version") final String version) {
         LOGGER.debug("Get list of actions of preparations #{} at version {}.", id, version);
         final Preparation preparation = preparationRepository.get(id, Preparation.class);
         if (preparation != null) {
@@ -247,7 +237,7 @@ public class PreparationService {
             final Step step = preparationRepository.get(stepId, Step.class);
             return preparationRepository.get(step.getContent(), PreparationActions.class).getActions();
         } else {
-            throw new TDPException(PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
+            throw new TDPException(PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
         }
     }
 
@@ -268,5 +258,72 @@ public class PreparationService {
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }
+    }
+
+    /**
+     * Get user name from Spring Security context
+     *
+     * @return "anonymous" if no user is currently logged in, the user name otherwise.
+     */
+    private static String getUserName() {
+        final Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal != null) {
+            return principal.toString();
+        }
+        return "anonymous"; //$NON-NLS-1
+    }
+
+    /**
+     * Get the actual step id by converting "head" and "origin" to the hash
+     * @param version The version to convert to step id
+     * @param preparation The preparation
+     * @return The converted step Id
+     */
+    private static String getStepId(final String version, final Preparation preparation) {
+        if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
+            return preparation.getStep().id();
+        }
+        else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
+            return ROOT_STEP.id();
+        }
+        return version;
+    }
+
+    /**
+     * Get actions list from root to the provided step
+     * @param stepId The limit step id
+     * @return The list of actions
+     */
+    private List<Action> getActions(final String stepId) {
+        return new ArrayList<>(preparationRepository.get(preparationRepository.get(stepId, Step.class).getContent(),
+                PreparationActions.class).getActions());
+    }
+
+    /**
+     * Get preparation from id
+     *
+     * @param id The preparation id.
+     * @return The preparation with the provided id
+     * @throws TDPException when no preparation has the provided id
+     */
+    private Preparation getPreparation(final String id) {
+        final Preparation preparation = preparationRepository.get(id, Preparation.class);
+        if (preparation == null) {
+            LOGGER.error("Preparation #{} does not exist", id);
+            throw new TDPException(PREPARATION_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", id));
+        }
+        return preparation;
+    }
+
+    /**
+     * Update the head step of a preparation
+     *
+     * @param preparation The preparation to update
+     * @param head        The head step
+     */
+    private void setPreparationHead(final Preparation preparation, final Step head) {
+        preparation.setStep(head);
+        preparation.updateLastModificationDate();
+        preparationRepository.add(preparation);
     }
 }

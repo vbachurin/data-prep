@@ -25,11 +25,16 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
 public class PreparationAPI extends APIService {
 
-    @RequestMapping(value = "/api/preparations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all preparations.", notes = "Returns the list of preparations the current user is allowed to see.")
     @Timed
     public void listPreparations(
@@ -40,7 +45,7 @@ public class PreparationAPI extends APIService {
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationList.class, client, listFormat);
         try {
-            response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
@@ -50,7 +55,7 @@ public class PreparationAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/preparations", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/preparations", method = POST, consumes = APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
     public String createPreparation(
@@ -63,7 +68,7 @@ public class PreparationAPI extends APIService {
         return preparationId;
     }
 
-    @RequestMapping(value = "/api/preparations/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}", method = PUT, consumes = APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Update a preparation with content in body.", notes = "Returns the updated preparation id.")
     @Timed
     public String updatePreparation(
@@ -77,7 +82,7 @@ public class PreparationAPI extends APIService {
         return preparationId;
     }
 
-    @RequestMapping(value = "/api/preparations/{id}", method = RequestMethod.DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}", method = DELETE, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Delete a preparation by id", notes = "Delete a preparation content based on provided id. Id should be a UUID returned by the list operation. Not valid or non existing preparation id returns empty content.")
     @Timed
     public String deletePreparation(
@@ -90,7 +95,7 @@ public class PreparationAPI extends APIService {
         return preparationId;
     }
 
-    @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}/details", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preparation by id and details.", notes = "Returns the preparation details.")
     @Timed
     public void getPreparation(
@@ -102,7 +107,7 @@ public class PreparationAPI extends APIService {
         try {
             // You cannot use Preparation object mapper here: to serialize steps & actions, you'd need a version
             // repository not available at API level. Code below copies command result direct to response.
-            response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
+            response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(command.execute(), outputStream);
             outputStream.flush();
@@ -112,7 +117,7 @@ public class PreparationAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/preparations/{id}/content", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}/content", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get preparation content by id and at a given version.", notes = "Returns the preparation content at version.")
     @Timed
     public void getPreparation(
@@ -132,7 +137,7 @@ public class PreparationAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/preparations/{id}/actions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}/actions", method = POST, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Adds an action at the end of preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
     @Timed
     public void addPreparationAction(
@@ -145,7 +150,7 @@ public class PreparationAPI extends APIService {
         LOG.debug("Added action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
     }
 
-    @RequestMapping(value = "/api/preparations/{id}/actions/{action}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations/{id}/actions/{action}", method = PUT, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates an action in the preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
     @Timed
     public void updatePreparationAction(
@@ -159,11 +164,24 @@ public class PreparationAPI extends APIService {
         LOG.debug("Updated preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
     }
 
+    @RequestMapping(value = "/api/preparations/{id}/actions/{action}", method = DELETE, produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Delete an action in the preparation.", notes = "Does not return any value, client may expect successful operation based on HTTP status code.")
+    @Timed
+    public void deletePreparationAction(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
+            @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId) {
+        LOG.debug("Deleting preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
+        HttpClient client = getClient();
+        HystrixCommand<Void> command = getCommand(PreparationDeleteAction.class, client, preparationId, stepId);
+        command.execute();
+        LOG.debug("Deleting preparation action at step #{} (pool: {} )...", stepId, getConnectionManager().getTotalStats());
+    }
+
     // ---------------------------------------------------------------------------------
     // ----------------------------------------PREVIEW----------------------------------
     // ---------------------------------------------------------------------------------
 
-    @RequestMapping(value = "/api/preparations/preview/diff", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations/preview/diff", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preview diff between 2 steps of the same preparation.")
     @Timed
     public void previewDiff(@RequestBody PreviewDiffInput input, HttpServletResponse response) {
@@ -177,7 +195,7 @@ public class PreparationAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/preparations/preview/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/api/preparations/preview/update", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a preview diff between the same step of the same preparation but with one step update.")
     public void previewUpdate(@RequestBody PreviewUpdateInput input, HttpServletResponse response) {
         try {

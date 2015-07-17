@@ -7,7 +7,7 @@
      * @description Datagrid private service that manage the grid style
      * @requires data-prep.services.playground.service:DatagridService
      */
-    function DatagridStyleService(DatagridService, ConverterService) {
+    function DatagridStyleService($timeout, DatagridService, ConverterService) {
         var grid;
         var lastSelectedColumnId;
 
@@ -16,7 +16,7 @@
             resetCellStyles : resetCellStyles,
             resetColumnStyles : resetColumnStyles,
             selectedColumn : selectedColumn,
-            navigateToStepColumn:navigateToStepColumn,
+            navigateToFocusedColumn: navigateToFocusedColumn,
             manageColumnStyle: manageColumnStyle,
             computeHTMLForLeadingOrTrailingHiddenChars: computeHTMLForLeadingOrTrailingHiddenChars,
             columnFormatter: columnFormatter,
@@ -64,20 +64,20 @@
 
         /**
          * @ngdoc method
-         * @name navigateToStepColumn
+         * @name navigateToFocusedColumn
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description navigates between columns
          */
-        function navigateToStepColumn(){
-            if(DatagridService.stepColumn !== null && typeof DatagridService.stepColumn !== 'undefined'){
-                _.forEach(grid.getColumns(), function(column, index) {
-                    if(column.id === DatagridService.stepColumn){
-                        grid.gotoCell(0, index, false);
-                    }
+        function navigateToFocusedColumn(){
+            if(DatagridService.focusedColumn) {
+                var columnIndex = _.findIndex(grid.getColumns(), function (column) {
+                    return column.id === DatagridService.focusedColumn;
                 });
+                var viewPort    = grid.getRenderedRange();
+                var centerRow   = +((viewPort.bottom - viewPort.top) / 2).toFixed(0);
+                grid.scrollCellIntoView(viewPort.top + centerRow, columnIndex, false);
             }
         }
-
 
         /**
          * @ngdoc method
@@ -310,5 +310,5 @@
     }
 
     angular.module('data-prep.datagrid')
-        .factory('DatagridStyleService', DatagridStyleService);
+        .service('DatagridStyleService', DatagridStyleService);
 })();

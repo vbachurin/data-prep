@@ -118,7 +118,7 @@
          * </ul>
          * @returns {function} The request callback closure
          */
-        var replaceRecords = function replaceRecords (recordsTdpId, stepColumn) {
+        var replaceRecords = function replaceRecords (recordsTdpId, colIdFromStep) {
             return function(response) {
                 //save the original data
                 originalData = originalData || DatagridService.data;
@@ -140,7 +140,8 @@
 
                 //update grid
                 var data = {columns: response.data.columns, records: modifiedRecords, preview: true};
-                DatagridService.updateData(data, stepColumn);
+                DatagridService.setFocusedColumn(colIdFromStep);
+                DatagridService.updateData(data);
             };
         };
 
@@ -151,14 +152,14 @@
          * @description Call the diff preview service and replace records in the grid.
          * It cancel the previous preview first
          */
-        self.getPreviewDiffRecords = function(currentStep, previewStep, stepColumnId) {
-            self.cancelPreview(true, stepColumnId);
+        self.getPreviewDiffRecords = function(currentStep, previewStep, focusedColId) {
+            self.cancelPreview(true, focusedColId);
 
             previewCanceler = $q.defer();
             displayedTdpIds = getDisplayedTdpIds();
 
             PreparationService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
-                .then(replaceRecords(displayedTdpIds, stepColumnId))
+                .then(replaceRecords(displayedTdpIds, focusedColId))
                 .finally(function() {
                     previewCanceler = null;
                 });
@@ -172,14 +173,14 @@
          * It cancel the previous preview first
          */
         self.getPreviewUpdateRecords = function(currentStep, updateStep, newParams) {
-            var stepColumnId = currentStep.column.id;
-            self.cancelPreview(true, stepColumnId);
+            var focusedColId = currentStep.column.id;
+            self.cancelPreview(true, focusedColId);
 
             previewCanceler = $q.defer();
             displayedTdpIds = getDisplayedTdpIds();
 
             PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
-                .then(replaceRecords(displayedTdpIds, stepColumnId))
+                .then(replaceRecords(displayedTdpIds, focusedColId))
                 .finally(function() {
                     previewCanceler = null;
                 });
@@ -193,7 +194,7 @@
          * @description Cancel the current preview or the pending preview (resolving the cancel promise).
          * The original records is set back into the datagrid
          */
-        self.cancelPreview = function(partial, stepColumnId) {
+        self.cancelPreview = function(partial, focusedColId) {
 
             if(previewCanceler) {
                 previewCanceler.resolve('user cancel');
@@ -201,7 +202,8 @@
             }
 
             if(!partial && originalData) {
-                DatagridService.updateData(originalData, stepColumnId);
+                DatagridService.setFocusedColumn(focusedColId);
+                DatagridService.updateData(originalData);
                 originalData = null;
                 modifiedRecords = null;
                 displayedTdpIds = null;

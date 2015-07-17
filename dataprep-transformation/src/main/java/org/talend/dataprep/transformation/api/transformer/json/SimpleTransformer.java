@@ -66,18 +66,21 @@ class SimpleTransformer implements Transformer {
             final ParsedActions parsedActions = actionParser.parse(configuration.getActions());
             final List<DataSetMetadataAction> metadataActions = parsedActions.getMetadataTransformers();
             final List<DataSetRowAction> rowActions = parsedActions.getRowTransformers();
+            final boolean transformColumns = !input.getColumns().isEmpty();
             TransformationContext context = configuration.getTransformationContext();
             // Metadata transformation
-            final List<ColumnMetadata> dataSetColumns = input.getColumns();
-            RowMetadata rowMetadata = new RowMetadata(dataSetColumns);
-            if (!dataSetColumns.isEmpty()) {
+            RowMetadata rowMetadata = new RowMetadata(input.getColumns());
+            if (transformColumns) {
                 for (DataSetMetadataAction action : metadataActions) {
                     action.accept(rowMetadata, context);
                 }
+                context.setTransformedRowMetadata(rowMetadata);
                 if (writer.requireMetadataForHeader()) {
                     writer.fieldName("columns");
                     writer.write(rowMetadata);
                 }
+            } else {
+                context.setTransformedRowMetadata(rowMetadata);
             }
             // Row transformations
             Stream<DataSetRow> records = input.getRecords();
@@ -91,7 +94,7 @@ class SimpleTransformer implements Transformer {
                 });
             }
             // Configure quality & semantic analysis (if column metadata information is present in stream).
-            final DataType.Type[] types = TypeUtils.convert(dataSetColumns);
+            final DataType.Type[] types = TypeUtils.convert(context.getTransformedRowMetadata().getColumns());
             final URI ddPath = this.getClass().getResource("/luceneIdx/dictionary").toURI(); //$NON-NLS-1$
             final URI kwPath = this.getClass().getResource("/luceneIdx/keyword").toURI(); //$NON-NLS-1$
             final CategoryRecognizerBuilder categoryBuilder = CategoryRecognizerBuilder.newBuilder() //
@@ -103,10 +106,11 @@ class SimpleTransformer implements Transformer {
             if (types.length > 0) {
                 records = records.map(r -> {
                     if (!r.isDeleted()) {
-                        final Map<String, Object> rowValues = r.order(dataSetColumns).values();
+                        final List<ColumnMetadata> columns = context.getTransformedRowMetadata().getColumns();
+                        final Map<String, Object> rowValues = r.order(columns).values();
                         final List<String> strings = stream(rowValues.values().spliterator(), false) //
                                 .map(String::valueOf) //
-                                .collect(Collectors.<String> toList());
+                                .collect(Collectors.<String>toList());
                         analyzer.analyze(strings.toArray(new String[strings.size()]));
                     }
                     return r;
@@ -117,7 +121,7 @@ class SimpleTransformer implements Transformer {
             records.forEach(row -> {
                 if (!row.isDeleted()) {
                     // Clone original value since row instance is reused.
-                    transformedRows.add(row.order(dataSetColumns));
+                    transformedRows.add(row.order(context.getTransformedRowMetadata().getColumns()));
                 }
                 try {
                     if (row.shouldWrite()) {
@@ -128,7 +132,7 @@ class SimpleTransformer implements Transformer {
                 }
             });
             // Column statistics
-            if (!dataSetColumns.isEmpty()) {
+            if (transformColumns) {
                 // Spark statistics
                 final DataSet statisticsDataSet = new DataSet();
                 final DataSetMetadata transformedMetadata = new DataSetMetadata("", //
@@ -142,6 +146,7 @@ class SimpleTransformer implements Transformer {
                 DataSetAnalysis.computeStatistics(statisticsDataSet, sparkContext, builder);
                 // Set new quality information in transformed column metadata
                 final List<Analyzers.Result> results = analyzer.getResult();
+                final List<ColumnMetadata> dataSetColumns = context.getTransformedRowMetadata().getColumns();
                 for (int i = 0; i < results.size(); i++) {
                     final Analyzers.Result result = results.get(i);
                     final ColumnMetadata metadata = dataSetColumns.get(i);
@@ -158,7 +163,7 @@ class SimpleTransformer implements Transformer {
             }
             writer.endArray();
             // Write columns
-            if (!writer.requireMetadataForHeader() && !dataSetColumns.isEmpty()) {
+            if (!writer.requireMetadataForHeader() && transformColumns) {
                 writer.fieldName("columns");
                 writer.write(rowMetadata);
             }

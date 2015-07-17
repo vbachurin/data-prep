@@ -148,27 +148,27 @@ describe('Preparation list directive', function() {
         expect(preparationTiles.length).toBe(2);
 
         var description = preparationTiles.eq(0).find('.description').eq(0).text();
-        var details = preparationTiles.eq(0).find('.details').eq(0).text();
-        var rowsDetails = preparationTiles.eq(0).find('.details').eq(1).text();
-        var stepsDetails = preparationTiles.eq(0).find('.details').eq(2).text();
+        var datasetName = preparationTiles.eq(0).find('.details').eq(0).find('.name').text();
+        var datasetRowsDetails = preparationTiles.eq(0).find('.details').eq(0).text();
+        var stepsDetails = preparationTiles.eq(0).find('.details').eq(1).text();
 
         expect(description).toContain('anonymousUser'); //owner
         expect(description).toContain('27'); //creation date day
         expect(description).toContain('2015'); //creation date year
-        expect(details).toContain('customers_jso_light'); //dataset name
-        expect(rowsDetails).toContain('15'); //dataset nb records
+        expect(datasetName).toContain('customers_jso_light'); //dataset name
+        expect(datasetRowsDetails).toContain('15'); //dataset nb records
         expect(stepsDetails).toContain('3'); //steps
 
         description = preparationTiles.eq(1).find('.description').eq(0).text();
-        details = preparationTiles.eq(1).find('.details').eq(0).text();
-        rowsDetails = preparationTiles.eq(1).find('.details').eq(1).text();
+        datasetName = preparationTiles.eq(1).find('.details').eq(0).find('.name').text();
+        datasetRowsDetails = preparationTiles.eq(1).find('.details').eq(0).text();
         stepsDetails = preparationTiles.eq(1).find('.details').eq(1).text();
 
         expect(description).toContain('anonymousUser'); //owner
         expect(description).toContain('27'); //creation date day
         expect(description).toContain('2015'); //creation date year
-        expect(details).toContain('first_interactions'); //dataset name
-        expect(rowsDetails).toContain('29379'); //dataset nb records
+        expect(datasetName).toContain('first_interactions'); //dataset name
+        expect(datasetRowsDetails).toContain('29379'); //dataset nb records
         expect(stepsDetails).toContain('3'); //steps
     });
 });

@@ -658,14 +658,16 @@ describe('Datagrid style service', function () {
         it('should go to the cell (0,col)', inject(function (DatagridStyleService, DatagridService) {
             //given
             DatagridStyleService.init(gridMock);
-            DatagridService.stepColumn = '0002';
-            spyOn(gridMock, 'gotoCell').and.returnValue();
+            DatagridService.focusedColumn = '0002';
+
+            spyOn(gridMock, 'scrollCellIntoView').and.returnValue();
+            spyOn(gridMock, 'getRenderedRange').and.returnValue({top:100, bottom:150});
 
             //when
-            DatagridStyleService.navigateToStepColumn();
+            DatagridStyleService.navigateToFocusedColumn();
 
             //then
-            expect(gridMock.gotoCell).toHaveBeenCalledWith(0, 2, false);
+            expect(gridMock.scrollCellIntoView).toHaveBeenCalledWith(125, 2, false);
         }));
     });
 });

@@ -34,7 +34,7 @@ describe('Datagrid directive', function() {
         spyOn(DatagridStyleService, 'resetCellStyles').and.returnValue();
         spyOn(DatagridStyleService, 'resetColumnStyles').and.returnValue();
         spyOn(DatagridExternalService, 'updateSuggestionPanel').and.returnValue();
-        spyOn(DatagridStyleService, 'navigateToStepColumn').and.returnValue();
+        spyOn(DatagridStyleService, 'navigateToFocusedColumn').and.returnValue();
     }));
 
     afterEach(function() {
@@ -89,7 +89,7 @@ describe('Datagrid directive', function() {
 
         it('should navigate in the grid to show the interesting column', inject(function(DatagridStyleService) {
             //then
-            expect(DatagridStyleService.navigateToStepColumn).toHaveBeenCalled();
+            expect(DatagridStyleService.navigateToFocusedColumn).toHaveBeenCalled();
         }));
 
         it('should invalidate grid', function() {

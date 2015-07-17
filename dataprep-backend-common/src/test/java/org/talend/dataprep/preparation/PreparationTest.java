@@ -1,7 +1,10 @@
 package org.talend.dataprep.preparation;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -11,6 +14,7 @@ import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.hamcrest.MatcherAssert;
@@ -43,6 +47,33 @@ public class PreparationTest {
         assertThat(repository.get("cdcd5c9a3a475f2298b5ee3f4258f8207ba10879", Step.class), nullValue());
         assertThat(repository.get("f6e172c33bdacbc69bca9d32b2bd78174712a171", PreparationActions.class), nullValue());
         assertThat(repository.get("f6e172c33bdacbc69bca9d32b2bd78174712a171", Step.class), notNullValue());
+    }
+
+    @Test
+    public void testTimestamp() throws Exception {
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        final long time0 = preparation.getLastModificationDate();
+        TimeUnit.MILLISECONDS.sleep(50);
+        preparation.updateLastModificationDate();
+        final long time1 = preparation.getLastModificationDate();
+        assertThat(time0, lessThan(time1));
+    }
+
+    @Test
+    public void testId_withName() throws Exception {
+        // Preparation id with name
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setName("My Preparation");
+        final String id0 = preparation.getId();
+        assertThat(id0, is("e34f3448d71dac403df5305a04086fc88054aa15"));
+        // Same preparation (but with empty name)
+        preparation.setName("");
+        final String id1 = preparation.getId();
+        assertThat(id1, is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
+        // Same preparation (but with null name, null and empty names should be treated all the same)
+        preparation.setName(null);
+        final String id2 = preparation.getId();
+        assertThat(id2, is("ae242b07084aa7b8341867a8be1707f4d52501d1"));
     }
 
     @Test
@@ -214,7 +245,7 @@ public class PreparationTest {
         assertEquals(actual, source);
     }
 
-    private static List<Action> getSimpleAction(final String actionName, final String paramKey, final String paramValue) {
+    public static List<Action> getSimpleAction(final String actionName, final String paramKey, final String paramValue) {
         final Action action = new Action();
         action.setAction(actionName);
         action.getParameters().put(paramKey, paramValue);

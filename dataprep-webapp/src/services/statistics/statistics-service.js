@@ -182,5 +182,5 @@
     }
 
     angular.module('data-prep.services.statistics')
-        .factory('StatisticsService', StatisticsService);
+        .service('StatisticsService', StatisticsService);
 })();

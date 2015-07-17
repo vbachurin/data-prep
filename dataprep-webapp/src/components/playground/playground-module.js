@@ -10,6 +10,7 @@
      * @requires data-prep.export
      * @requires data-prep.filter-search
      * @requires data-prep.filter-list
+     * @requires data-prep.history-control
      * @requires data-prep.recipe
      * @requires data-prep.suggestions
      * @requires data-prep.services.preparation
@@ -24,6 +25,7 @@
         'data-prep.export',
         'data-prep.filter-search',
         'data-prep.filter-list',
+        'data-prep.history-control',
         'data-prep.recipe',
         'data-prep.horizontalBarchart',
         'data-prep.suggestions',

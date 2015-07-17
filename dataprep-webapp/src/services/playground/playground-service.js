@@ -14,60 +14,69 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.statistics:StatisticsService
+     * @requires data-prep.services.history:HistoryService
      */
-    function PlaygroundService($rootScope, $q, $timeout, DatasetService, DatagridService, FilterService, RecipeService,
-                               TransformationCacheService, ColumnSuggestionService, PreparationService, MessageService, StatisticsService) {
-        var self = this;
-        self.toggleHappened = null;
+    function PlaygroundService($rootScope, $q, DatasetService, DatagridService, FilterService, RecipeService,
+                               TransformationCacheService, ColumnSuggestionService, PreparationService, MessageService,
+                               StatisticsService, HistoryService) {
+        var service = {
+            /**
+             * @ngdoc property
+             * @name visible
+             * @propertyOf data-prep.services.playground.service:PlaygroundService
+             * @description the visibility control
+             */
+            visible: false,
+            /**
+             * @ngdoc property
+             * @name currentMetadata
+             * @propertyOf data-prep.services.playground.service:PlaygroundService
+             * @description the loaded metadata
+             */
+            currentMetadata: null,
+            /**
+             * @ngdoc property
+             * @name originalPreparationName
+             * @propertyOf data-prep.services.playground.service:PlaygroundService
+             * @description the original preparation name - used to check if the name has changed
+             */
+            originalPreparationName: '',
+            /**
+             * @ngdoc property
+             * @name preparationName
+             * @propertyOf data-prep.services.playground.service:PlaygroundService
+             * @description the current preparation
+             */
+            preparationName: '',
+            /**
+             * @ngdoc property
+             * @name showRecipe
+             * @propertyOf data-prep.services.playground.service:PlaygroundService
+             * @description Flag that pilot the recipe panel display
+             */
+            showRecipe: false,
+            /**
+             * @ngdoc property
+             * @name preparationNameEditionMode
+             * @propertyOf data-prep.services.playground.service:PlaygroundService
+             * @description Flag that the name edition mode.
+             * The edition mode is active when user open an existing preparation, and inactive for a new preparation
+             */
+            preparationNameEditionMode: true,
 
-        /**
-         * @ngdoc property
-         * @name visible
-         * @propertyOf data-prep.services.playground.service:PlaygroundService
-         * @description the visibility control
-         */
-        self.visible = false;
+            //init/load
+            show: show,
+            hide: hide,
+            initPlayground: initPlayground,
+            load: load,
+            loadStep: loadStep,
 
-        /**
-         * @ngdoc property
-         * @name currentMetadata
-         * @propertyOf data-prep.services.playground.service:PlaygroundService
-         * @description the loaded metadata
-         */
-        self.currentMetadata = null;
-
-        /**
-         * @ngdoc property
-         * @name originalPreparationName
-         * @propertyOf data-prep.services.playground.service:PlaygroundService
-         * @description the original preparation name - used to check if the name has changed
-         */
-        self.originalPreparationName = '';
-
-        /**
-         * @ngdoc property
-         * @name preparationName
-         * @propertyOf data-prep.services.playground.service:PlaygroundService
-         * @description the current preparation
-         */
-        self.preparationName = '';
-
-        /**
-         * @ngdoc property
-         * @name showRecipe
-         * @propertyOf data-prep.services.playground.service:PlaygroundService
-         * @description Flag that pilot the recipe panel display
-         */
-        self.showRecipe = false;
-
-        /**
-         * @ngdoc property
-         * @name preparationNameEditionMode
-         * @propertyOf data-prep.services.playground.service:PlaygroundService
-         * @description Flag that the name edition mode.
-         * The edition mode is active when user open an existing preparation, and inactive for a new preparation
-         */
-        self.preparationNameEditionMode = true;
+            //preparation
+            createOrUpdatePreparation: createOrUpdatePreparation,
+            appendStep: appendStep,
+            updateStep: updateStep
+        };
+        return service;
 
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------VISIBILITY--------------------------------------------
@@ -78,9 +87,9 @@
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @description Display the playground
          */
-        self.show = function show() {
-            self.visible = true;
-        };
+        function show() {
+            service.visible = true;
+        }
 
         /**
          * @ngdoc method
@@ -88,28 +97,30 @@
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @description Hide the playground
          */
-        self.hide = function hide() {
-            self.visible = false;
-        };
+        function hide() {
+            service.visible = false;
+        }
 
         //------------------------------------------------------------------------------------------------------
         //-------------------------------------------------INIT/LOAD--------------------------------------------
         //------------------------------------------------------------------------------------------------------
-        var reset = function reset(dataset, data) {
-            self.currentMetadata = dataset;
+        function reset(dataset, data) {
+            service.currentMetadata = dataset;
 
             FilterService.removeAllFilters();
             RecipeService.refresh();
             StatisticsService.resetCharts();
-            DatagridService.setDataset(dataset, data, null);
+            DatagridService.setFocusedColumn(null);
+            DatagridService.setDataset(dataset, data);
             TransformationCacheService.invalidateCache();
             ColumnSuggestionService.reset();
-        };
+            HistoryService.clear();
+        }
 
-        var setName = function setName(name) {
-            self.preparationName = name;
-            self.originalPreparationName = name;
-        };
+        function setName(name) {
+            service.preparationName = name;
+            service.originalPreparationName = name;
+        }
 
         /**
          * @ngdoc method
@@ -121,8 +132,8 @@
          - Otherwise, the playground is reset with the wanted dataset
          * @returns {Promise} The process promise
          */
-        self.initPlayground = function initPlayground(dataset) {
-            if(!self.currentMetadata || PreparationService.currentPreparationId || dataset.id !== self.currentMetadata.id) {
+        function initPlayground(dataset) {
+            if(!service.currentMetadata || PreparationService.currentPreparationId || dataset.id !== service.currentMetadata.id) {
                 PreparationService.currentPreparationId = null;
 
                 return DatasetService.getContent(dataset.id, false)
@@ -137,14 +148,14 @@
 
                         setName('');
                         reset(dataset, data);
-                        self.showRecipe = false;
-                        self.preparationNameEditionMode = true;
+                        service.showRecipe = false;
+                        service.preparationNameEditionMode = true;
                     });
             }
             else {
                 return $q.when(true);
             }
-        };
+        }
 
         /**
          * @ngdoc method
@@ -160,7 +171,7 @@
          </ul>
          * @returns {Promise} - the process promise
          */
-        self.load = function load(preparation) {
+        function load(preparation) {
             if(PreparationService.currentPreparationId !== preparation.id) {
                 // Update current preparation id before preparation operations
                 PreparationService.currentPreparationId = preparation.id;
@@ -170,8 +181,8 @@
                     .then(function(response) {
                         setName(preparation.name);
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
-                        self.showRecipe = true;
-                        self.preparationNameEditionMode = false;
+                        service.showRecipe = true;
+                        service.preparationNameEditionMode = false;
                     })
                     .finally(function() {
                         $rootScope.$emit('talend.loading.stop');
@@ -180,7 +191,7 @@
             else {
                 return $q.when(true);
             }
-        };
+        }
 
         /**
          * @ngdoc method
@@ -190,12 +201,12 @@
          * @description Load a specific step content in the current preparation, and update the recipe
          * @returns {promise} - the process promise
          */
-        self.loadStep = function loadStep(step, justDeactivatedStep) {
-            var stepColumn;
+        function loadStep(step, justDeactivatedStep) {
+            var colIdFromStep;
             if(justDeactivatedStep){
-                stepColumn = justDeactivatedStep.column.id;
+                colIdFromStep = justDeactivatedStep.column.id;
             }else{
-                stepColumn = step.column.id;
+                colIdFromStep = step.column.id;
             }
             //step already loaded
             if(RecipeService.getActiveThresholdStep() === step) {
@@ -205,13 +216,14 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(step.transformation.stepId)
                 .then(function(response) {
-                    DatagridService.setDataset(self.currentMetadata, response.data, stepColumn);
+                    DatagridService.setFocusedColumn(colIdFromStep);
+                    DatagridService.setDataset(service.currentMetadata, response.data);
                     RecipeService.disableStepsAfter(step);
                 })
                 .finally(function() {
                     $rootScope.$emit('talend.loading.stop');
                 });
-        };
+        }
 
         //------------------------------------------------------------------------------------------------------
         //------------------------------------------------PREPARATION-------------------------------------------
@@ -224,51 +236,137 @@
          * @description Create a new preparation or change its name if it already exists
          * @returns {Promise} The process promise
          */
-        self.createOrUpdatePreparation = function createOrUpdatePreparation(name) {
-            if(self.originalPreparationName !== name) {
-                return PreparationService.setName(self.currentMetadata, name)
+        function createOrUpdatePreparation(name) {
+            if(service.originalPreparationName !== name) {
+                return PreparationService.setName(service.currentMetadata, name)
                     .then(function() {
-                        self.originalPreparationName = name;
-                        self.preparationName = name;
+                        service.originalPreparationName = name;
+                        service.preparationName = name;
                     });
             }
             else {
                 return $q.reject();
             }
-        };
+        }
 
         /**
          * @ngdoc method
-         * @name transform
+         * @name appendStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} action The action name
+         * @param {object} column The columns metadata
+         * @param {object} params The transformation params
+         * @description Call an execution of a transformation on the column in the current preparation and add an entry
+         * in actions history
+         */
+        function appendStep(action, column, params) {
+            var append = executeAppendStep.bind(service, service.currentMetadata, action, column, params);
+
+            return append().then(function() {
+                var lastStepId = RecipeService.getLastStep().transformation.stepId;
+                var cancelAppend = executeRemoveStep.bind(service, lastStepId, column);
+                HistoryService.addAction(cancelAppend, append);
+            });
+        }
+
+        /**
+         * @ngdoc method
+         * @name executeAppendStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {object} metadata The dataset metadata
          * @param {string} action The action name
          * @param {object} column The columns metadata
          * @param {object} params The transformation params
          * @description Perform a transformation on the column in the current preparation, refresh the recipe and the
          * data. If there is no preparation yet, PreparationService create it.
          */
-        self.appendStep = function appendStep(action, column, params) {
+        function executeAppendStep(metadata, action, column, params) {
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.appendStep(self.currentMetadata, action, column, params)
+            return PreparationService.appendStep(metadata, action, column, params)
                 .then(function() {
-                    return PreparationService.getContent('head');
-                })
-                .then(function(response) {
-                    var promise = RecipeService.refresh();
-                    promise.then(function() {
-                        if(RecipeService.getRecipe().length === 1) { //first step append
-                            self.showRecipe = true;
-                            $timeout(function(){
-                                DatagridService.updateData(response.data, column.id);
-                            },250);
-                        }
-                    });
-                    return promise;
+                    return $q.all([updateRecipe(), updateDatagrid(column)]);
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });
-        };
+        }
+
+        /**
+         * @ngdoc method
+         * @name updateStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {object} step The step to update
+         * @param {object} newParams The new parameters
+         * @description Call an execution of a transformation update on the provided step and add an entry in the
+         * actions history
+         */
+        function updateStep(step, newParams) {
+            var oldParams = step.actionParameters.parameters;
+            var stepIndex = RecipeService.getStepIndex(step);
+            var update = executeUpdateStep.bind(service, step, newParams);
+
+            return update().then(function() {
+                var newStep = RecipeService.getStep(stepIndex);
+                var cancelUpdate = executeUpdateStep.bind(service, newStep, oldParams);
+                HistoryService.addAction(cancelUpdate, update);
+            });
+        }
+
+        /**
+         * @ngdoc method
+         * @name executeUpdateStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {object} step The step to update
+         * @param {object} newParams The new parameters
+         * @description Perform a transformation update on the provided step.
+         */
+        function executeUpdateStep(step, newParams) {
+            $rootScope.$emit('talend.loading.start');
+            var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
+            return PreparationService.updateStep(step, newParams)
+                .then(updateRecipe)
+                .then(function() {
+                    var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
+                    return loadStep(activeStep);
+                })
+                .finally(function () {
+                    $rootScope.$emit('talend.loading.stop');
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name executeRemoveStep
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} stepId The step id to remove
+         * @description Perform a transformation removal identified by the step id
+         */
+        function executeRemoveStep(stepId, column) {
+            return PreparationService.removeStep(stepId)
+                .then(function() {
+                    return $q.all([updateRecipe(), updateDatagrid(column)]);
+                });
+        }
+
+        //------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------UTILS----------------------------------------------
+        //------------------------------------------------------------------------------------------------------
+        function updateDatagrid(column) {
+            return PreparationService.getContent('head')
+                .then(function(response) {
+                    DatagridService.setFocusedColumn(column.id);
+                    DatagridService.updateData(response.data);
+                });
+        }
+
+        function updateRecipe() {
+            return RecipeService.refresh()
+                .then(function() {
+                    if(RecipeService.getRecipe().length === 1) { //first step append
+                        service.showRecipe = true;
+                    }
+                });
+        }
     }
 
     angular.module('data-prep.services.playground')
