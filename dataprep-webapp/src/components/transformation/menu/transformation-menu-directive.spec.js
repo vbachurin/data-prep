@@ -22,7 +22,6 @@ describe('Transformation menu directive', function () {
 
     it('should render a simple action', function() {
         //given
-        var body = angular.element('body');
         scope.menu = [{label: 'uppercase'}];
 
         //when
