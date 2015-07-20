@@ -10,14 +10,18 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.dataprep.transformation.api.action.metadata;
+package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+
+import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.COLUMNS;
 
 /**
  * Base class for all single column action.
@@ -57,5 +61,12 @@ public abstract class SingleColumnAction implements ActionMetadata {
     @Nonnull
     public Item[] getItems() {
         return new Item[0];
+    }
+
+    /**
+     * @see ActionMetadata#getScope()
+     */
+    public ScopeCategory getScope() {
+        return COLUMNS;
     }
 }

@@ -8,6 +8,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
+import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -49,6 +50,11 @@ public interface ActionMetadata {
      * @return A 'category' for the action used to group similar actions (eg. 'math', 'repair'...).
      */
     String getCategory();
+
+    /**
+     * @return The transformation scope category for the action (eg. 'column', 'cell', 'table', ...).
+     */
+    ScopeCategory getScope();
 
     /**
      * Returns the list of multiple valued parameters required for this Action to be executed. represented as list box
