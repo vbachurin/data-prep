@@ -69,10 +69,13 @@ public class HttpContentStore extends DataSetContentStoreAdapter {
         CloseableHttpResponse response;
         try {
             response = httpClient.execute(get);
+            if (response.getStatusLine().getStatusCode() >= 400) {
+                throw new IOException("error fetching " + location.getUrl() + " -> " + response.getStatusLine());
+            }
             LOGGER.debug("HTTP remote dataset {} fetched from {}", dataSetMetadata, location.getUrl());
             return response.getEntity().getContent();
         } catch (IOException e) {
-            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_DATASET_CONTENT, e);
+            throw new TDPException(DataSetErrorCodes.UNABLE_TO_READ_REMOTE_DATASET_CONTENT, e);
         }
     }
 
@@ -82,7 +85,6 @@ public class HttpContentStore extends DataSetContentStoreAdapter {
     @Override
     public void storeAsRaw(DataSetMetadata dataSetMetadata, InputStream dataSetContent) {
         // nothing to do here since the dataset is already stored
-        LOGGER.warn("storeAsRaw called on a remote http content store... (stack trace is informative)", new Exception());
     }
 
     /**

@@ -115,6 +115,37 @@ describe('Home controller', function() {
             expect(UploadWorkflowService.openDataset).toHaveBeenCalled();
 
         }));
+
+        it('should display hdfs import form', function() {
+            //given
+            expect(ctrl.datasetHdfsModal).toBeFalsy();
+
+            //when
+            ctrl.startImport({id: 'hdfs', name: 'from HDFS'});
+
+            //then
+            expect(ctrl.datasetHdfsModal).toBeTruthy();
+        });
+
+        it('should create remote hdfs dataset', inject(function(DatasetService, UploadWorkflowService) {
+            //given
+            expect(ctrl.uploadingDatasets.length).toBe(0);
+            ctrl.importHdfsDataSet();
+            expect(ctrl.uploadingDatasets.length).toBe(1);
+
+            //when
+            uploadDefer.resolve({data: dataset.id});
+            scope.$digest();
+
+            //then
+            expect(DatasetService.createDatasetInfo).toHaveBeenCalledWith(null, 'my cool dataset');
+            expect(DatasetService.import).toHaveBeenCalled();
+            expect(ctrl.uploadingDatasets.length).toBe(0);
+            expect(DatasetService.getDatasetById).toHaveBeenCalledWith(dataset.id);
+            expect(UploadWorkflowService.openDataset).toHaveBeenCalled();
+
+        }));
+
         describe('step 2 with unique name', function() {
 
             beforeEach(inject(function($rootScope, DatasetService) {
