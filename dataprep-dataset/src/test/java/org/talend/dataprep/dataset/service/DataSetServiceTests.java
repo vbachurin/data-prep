@@ -22,48 +22,23 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.spark.SparkContext;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
-import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
-import org.talend.dataprep.dataset.Application;
-import org.talend.dataprep.dataset.service.locator.HttpDataSetLocator;
-import org.talend.dataprep.dataset.store.content.DataSetContentStore;
-import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
+import org.talend.dataprep.dataset.DataSetBaseTest;
 import org.talend.dataprep.schema.CSVFormatGuess;
-import org.talend.dataprep.schema.FormatGuess;
-import org.talend.dataprep.user.store.UserDataRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@IntegrationTest
-public class DataSetServiceTests {
+public class DataSetServiceTests extends DataSetBaseTest {
 
     private static final String T_SHIRT_100_CSV_EXPECTED_JSON = "../t-shirt_100.csv.expected.json";
     private static final String T_SHIRT_100_CSV = "../t-shirt_100.csv";
@@ -75,82 +50,7 @@ public class DataSetServiceTests {
     private static final String METADATA_JSON = "../metadata.json";
 
 
-    @Value("${local.server.port}")
-    public int port;
 
-    @Autowired
-    DataSetMetadataRepository dataSetMetadataRepository;
-
-    @Autowired
-    UserDataRepository userDataRepository;
-
-    @Autowired
-    JmsTemplate jmsTemplate;
-
-    @Autowired
-    @Qualifier("ContentStore#local")
-    DataSetContentStore contentStore;
-
-    @Autowired(required = false)
-    SparkContext sparkContext;
-
-    @Autowired
-    FormatGuess.Factory factory;
-
-    /** This class" logger. */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private void assertQueueMessages(String dataSetId) throws Exception {
-        // Wait for Spark jobs to finish
-        if (sparkContext != null) {
-            while (!sparkContext.jobProgressListener().activeJobs().isEmpty()) {
-                // TODO Is there a better way to wait for all Spark jobs to complete?
-                Thread.sleep(200);
-            }
-        }
-        // Wait for queue messages
-        waitForQueue(Destinations.QUALITY_ANALYSIS, dataSetId);
-        waitForQueue(Destinations.STATISTICS_ANALYSIS, dataSetId);
-        // Asserts on metadata status
-        DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
-        DataSetLifecycle lifecycle = metadata.getLifecycle();
-        assertThat(lifecycle.contentIndexed(), is(true));
-        assertThat(lifecycle.schemaAnalyzed(), is(true));
-        assertThat(lifecycle.qualityAnalyzed(), is(true));
-    }
-
-    private void waitForQueue(String queueName, String dataSetId) {
-        // Wait for potential update still in progress
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
-        lock.lock();
-        lock.unlock();
-        // Ensure queues are empty
-        try {
-            boolean isEmpty = false;
-            while (!isEmpty) {
-                isEmpty = jmsTemplate.browse(queueName, (session, browser) -> !browser.getEnumeration().hasMoreElements());
-                if (!isEmpty) {
-                    Thread.sleep(200);
-                }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Before
-    public void setUp() {
-        RestAssured.port = port;
-        dataSetMetadataRepository.clear();
-        contentStore.clear();
-        userDataRepository.clear();
-    }
-
-    @org.junit.After
-    public void tearDown() {
-        dataSetMetadataRepository.clear();
-        contentStore.clear();
-    }
 
     @Test
     public void CORSHeaders() throws Exception {
@@ -220,42 +120,6 @@ public class DataSetServiceTests {
         assertThat(after - before, is(1));
         // the next call may fail due to timing issues : TODO // make this synchronized somehow
         assertQueueMessages(dataSetId);
-    }
-
-    @Test
-    public void createRemoteHttp() throws Exception {
-
-        String remoteLocation = "{\"type\": \"http\",\"url\": \"http://localhost:" + port + "/not/so/far/away\"}";
-
-        int before = dataSetMetadataRepository.size();
-        String dataSetId = given() //
-                .body(remoteLocation.getBytes()) //
-                .header("Content-Type", HttpDataSetLocator.MEDIA_TYPE) //
-                .queryParam("name", "test_remote_http") //
-                .when() //
-                .post("/datasets") //
-                .asString();
-
-        int after = dataSetMetadataRepository.size();
-        assertThat(after - before, is(1));
-        // the next call may fail due to timing issues : TODO // make this synchronized somehow
-        assertQueueMessages(dataSetId);
-    }
-
-    @Test
-    public void createRemoteHttpOnMissingResource() throws Exception {
-
-        String remoteLocation = "{\"type\": \"http\",\"url\": \"http://localhost:" + port + "/cannot/be/reached\"}";
-
-        int statusCode = given() //
-                .body(remoteLocation.getBytes()) //
-                .header("Content-Type", HttpDataSetLocator.MEDIA_TYPE) //
-                .queryParam("name", "test_remote_http") //
-                .when() //
-                .post("/datasets") //
-                .statusCode();
-
-        assertEquals(404, statusCode);
     }
 
     @Test
