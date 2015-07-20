@@ -61,7 +61,7 @@ describe('Dataset list directive', function() {
         element.remove();
     });
 
-    it('should render dataset list', function($moment) {
+    it('should render dataset list', inject(function($moment) {
         //when
         createElement();
 
@@ -89,5 +89,5 @@ describe('Dataset list directive', function() {
         expect(strEndsWith(certificationIcon, '/assets/images/certification-certified.png')).toBe(true);
         expect(element.find('.inventory-title').eq(2).text()).toBe('Customers 2');
         expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created '+$moment('14370202197','x').fromNow()+', contains  lines');
-    });
+    }));
 });
