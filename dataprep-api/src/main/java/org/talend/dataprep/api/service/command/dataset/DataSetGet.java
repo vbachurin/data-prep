@@ -49,19 +49,21 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
     @Override
     protected InputStream run() throws Exception {
 
-        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata="
-                + metadata + "&columns=" + columns);
-        final HttpResponse response = client.execute(contentRetrieval);
-        return handleResponse(response, contentRetrieval);
-    }
-
-    private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval) throws IOException {
-        int statusCode = response.getStatusLine().getStatusCode();
         // Look if initial data set content was previously cached
         final Preparation preparation = Preparation.defaultPreparation(dataSetId);
         if (contentCache.has(preparation.id(), Step.ROOT_STEP.id())) {
             return contentCache.get(preparation.id(), Step.ROOT_STEP.id());
         }
+
+        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata="
+                + metadata + "&columns=" + columns);
+        final HttpResponse response = client.execute(contentRetrieval);
+        return handleResponse(response, contentRetrieval, preparation);
+    }
+
+    private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval, Preparation preparation)
+            throws IOException {
+        int statusCode = response.getStatusLine().getStatusCode();
         // No cache, query the data set service for content
         if (statusCode >= 200 && statusCode < 400) {
             if (statusCode == HttpStatus.SC_NO_CONTENT) {

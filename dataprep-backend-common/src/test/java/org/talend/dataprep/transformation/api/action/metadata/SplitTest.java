@@ -84,8 +84,7 @@ public class SplitTest {
         expectedValues.put("0002", "01/01/2015");
 
         final TransformationContext context = new TransformationContext();
-        row = rowClosure.apply(row, context);
-        assertEquals(expectedValues, row.values());
+        assertEquals(expectedValues, rowClosure.apply(row, context).values());
     }
 
     /**

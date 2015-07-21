@@ -172,12 +172,12 @@ public class ColumnMetadata {
     @Override
     public String toString() {
         return "ColumnMetadata{" + //
-                "quality=" + quality + //
-                ", id='" + id + '\'' + //
+                "id='" + id + '\'' + //
                 ", name='" + name + '\'' + //
                 ", typeName='" + typeName + '\'' + //
                 ", headerSize=" + headerSize + //
                 ", diffFlagValue='" + diffFlagValue + '\'' + //
+                ", quality=" + quality + '\'' + //
                 ", statistics='" + statistics + '\'' + //
                 '}';
     }

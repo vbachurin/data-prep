@@ -67,6 +67,7 @@ public class ParsedActions {
     /**
      * @return The list of metadata transformers.
      */
+    @Deprecated
     public BiConsumer<RowMetadata, TransformationContext> asUniqueMetadataTransformer() {
         return aggregate(metadataTransformers);
     }
