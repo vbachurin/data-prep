@@ -5,7 +5,7 @@
    * @ngdoc object
    * @name data-prep.filters
    * @description This module contains the filters
-   * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
+   * @requires angular-momentjs
    */
   angular.module('data-prep.filters', [
     'angular-momentjs'

@@ -10,6 +10,8 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
+     * @requires angular-momentjs
+     * @requires data-prep.filters
      */
     angular.module('data-prep.dataset-list', [
         'ui.router',
