@@ -131,7 +131,6 @@ public class RowMetadata {
      * @return the column position within the given columns.
      */
     private int findColumnPosition(List<ColumnMetadata> columns, String colId) {
-
         for (int i = 0; i < columns.size(); i++) {
             if (columns.get(i).getId().equals(colId)) {
                 return i;

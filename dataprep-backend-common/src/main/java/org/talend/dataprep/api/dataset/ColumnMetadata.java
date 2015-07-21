@@ -3,9 +3,7 @@ package org.talend.dataprep.api.dataset;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
@@ -70,7 +68,6 @@ public class ColumnMetadata {
     /**
      * Create a column metadata from the given parameters.
      *
-     * @param id the column technical id.
      * @param name the column name.
      * @param typeName the column type.
      */
@@ -257,6 +254,12 @@ public class ColumnMetadata {
         /** The column diff flag (null by default). */
         private String diffFlagValue = null;
 
+        /** The column statistics. */
+        private String statistics = null;
+
+        /** The invalid values. */
+        private Set<String> invalidValues = new HashSet<>();
+
         /**
          * @return A ColumnMetadata builder.
          */
@@ -298,6 +301,17 @@ public class ColumnMetadata {
         }
 
         /**
+         * Set the column statistics.
+         *
+         * @param statistics the column statistics to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder statistics(String statistics) {
+            this.statistics = statistics;
+            return this;
+        }
+
+        /**
          * Set the type of the column.
          * 
          * @param type the type of the column to set.
@@ -330,6 +344,17 @@ public class ColumnMetadata {
          */
         public ColumnMetadata.Builder invalid(int value) {
             invalid = value;
+            return this;
+        }
+
+        /**
+         * Set the invalid values of the column.
+         *
+         * @param invalidValues the invalid values of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder invalidValues(Set<String> invalidValues) {
+            this.invalidValues = invalidValues;
             return this;
         }
 
@@ -368,9 +393,11 @@ public class ColumnMetadata {
             this.empty = originalQuality.getEmpty();
             this.invalid = originalQuality.getInvalid();
             this.valid = originalQuality.getValid();
+            this.invalidValues = originalQuality.getInvalidValues();
             this.headerSize = original.getHeaderSize();
             this.type = Type.get(original.getType());
             this.diffFlagValue = original.getDiffFlagValue();
+            this.statistics = original.getStatistics();
             return this;
         }
 
@@ -386,8 +413,10 @@ public class ColumnMetadata {
             columnMetadata.getQuality().setEmpty(empty);
             columnMetadata.getQuality().setInvalid(invalid);
             columnMetadata.getQuality().setValid(valid);
+            columnMetadata.getQuality().setInvalidValues(invalidValues);
             columnMetadata.setHeaderSize(this.headerSize);
             columnMetadata.setDiffFlagValue(this.diffFlagValue);
+            columnMetadata.setStatistics(this.statistics);
             return columnMetadata;
         }
     }

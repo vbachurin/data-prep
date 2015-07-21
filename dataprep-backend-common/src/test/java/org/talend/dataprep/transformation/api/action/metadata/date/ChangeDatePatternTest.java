@@ -81,14 +81,14 @@ public class ChangeDatePatternTest {
     @Test
     public void should_change_column_metadata() throws IOException {
         // given
-        ColumnMetadata column = ColumnMetadata.Builder.column().id(1).name("due_date").type(Type.DATE).build();
-        RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(column));
         String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
-        column.setStatistics(statistics);
+        ColumnMetadata column = ColumnMetadata.Builder.column().id(1).name("due_date").statistics(statistics).type(Type.DATE)
+                .build();
+        RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(column));
 
         // when
         TransformationContext context = new TransformationContext();
-        rowClosure.apply(new DataSetRow(rowMetadata), context);
+        DataSetRow actual = rowClosure.apply(new DataSetRow(rowMetadata), context);
 
         // then
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());

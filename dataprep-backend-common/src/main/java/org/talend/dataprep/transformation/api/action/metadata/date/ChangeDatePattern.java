@@ -84,6 +84,7 @@ public class ChangeDatePattern extends SingleColumnAction {
         String columnId = getColumnIdParameter(parameters);
         SimpleDateFormat newDateFormat = getDateFormat(getNewPattern(parameters));
         return builder().withRow((row, context) -> {
+
             // parse and checks the new date pattern
             final RowMetadata rowMetadata = row.getRowMetadata();
             String newPattern = getDateFormat(getNewPattern(parameters)).toPattern();
