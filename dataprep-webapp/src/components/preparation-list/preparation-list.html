@@ -4,7 +4,7 @@
             <p class="title one-line"><a ui-sref="nav.home.preparations({prepid: preparation.id})">{{preparation.name}}</a></p>
             <p class="description">
                 {{::'OWNED_BY' | translate}} <span class="important">{{preparation.author}}</span><br/>
-                {{::'LAST_MODIFICATION' | translate}}: {{preparation.lastModificationDate | date}} {{preparation.lastModificationDate | date:'shortTime'}}
+                {{::'LAST_MODIFICATION' | translate}}: {{preparation.lastModificationDate | moment_from_now}}
             </p>
 
             <p class="details">

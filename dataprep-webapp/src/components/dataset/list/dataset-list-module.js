@@ -20,13 +20,8 @@
         'data-prep.services.playground',
         'data-prep.services.utils',
         'data-prep.services.uploadWorkflowService',
-        'angular-momentjs'
-    ])
-    // TODO maybe could be move in an external filters file?
-    .filter('moment_from_now', function($moment) {
-              return function(dateString,format) {
-                return $moment(dateString,format?format:'x').fromNow();
-              };
-    });
+        'angular-momentjs',
+        'data-prep.filters'
+    ]);
 
 })();
