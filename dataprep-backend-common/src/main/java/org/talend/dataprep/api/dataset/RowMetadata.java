@@ -21,8 +21,11 @@ public class RowMetadata {
     @JsonProperty("ColumnMetadata")
     private List<ColumnMetadata> columns = new ArrayList<>();
 
+    /**
+     * Default empty constructor.
+     */
     public RowMetadata() {
-        System.out.println("");
+        // nothing special here
     }
 
     /**
@@ -112,13 +115,29 @@ public class RowMetadata {
         // process the deleted columns (add the deleted ones)
         reference.getColumns().forEach(referenceColumn -> {
             if (getById(referenceColumn.getId()) == null) {
+                int position = findColumnPosition(reference.getColumns(), referenceColumn.getId());
                 referenceColumn.setDiffFlagValue(Flag.DELETE.getValue());
-                columns.add(referenceColumn);
+                columns.add(position, referenceColumn);
             }
         });
 
-        // sort the columns so that the deleted ones get placed where the were
-        columns.sort((col1, col2) -> col1.getId().compareTo(col2.getId()));
+    }
+
+    /**
+     * Return the column position within the given columns.
+     *
+     * @param columns the list of columns to search the column from.
+     * @param colId the wanted column id.
+     * @return the column position within the given columns.
+     */
+    private int findColumnPosition(List<ColumnMetadata> columns, String colId) {
+
+        for (int i = 0; i < columns.size(); i++) {
+            if (columns.get(i).getId().equals(colId)) {
+                return i;
+            }
+        }
+        return columns.size();
     }
 
     /**
@@ -168,7 +187,13 @@ public class RowMetadata {
         return column.getId();
     }
 
+    /**
+     * @see Object#clone()
+     */
     public RowMetadata clone() {
-        return new RowMetadata(new ArrayList<>(columns));
+        // also copy the columns !
+        List<ColumnMetadata> copyColumns = new ArrayList<>(columns.size());
+        columns.forEach(col -> copyColumns.add(ColumnMetadata.Builder.column().copy(col).build()));
+        return new RowMetadata(new ArrayList<>(copyColumns));
     }
 }

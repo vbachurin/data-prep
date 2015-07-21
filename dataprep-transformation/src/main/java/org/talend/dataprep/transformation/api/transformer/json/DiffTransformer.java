@@ -75,16 +75,21 @@ class DiffTransformer implements Transformer {
             // Metadata
             writer.fieldName("columns");
 
-            DataSetRow rowMetadata = new DataSetRow(new RowMetadata(input.getColumns()));
-            if (previewActions.getAllActions().isEmpty() == false) {
-                rowMetadata = previewAction.apply(rowMetadata, previewContext);
+            RowMetadata rowMetadata = new RowMetadata(input.getColumns());
+            RowMetadata referenceMetadata = rowMetadata.clone();
+
+            // only apply preview actions if there's any
+            if (!previewActions.getAllActions().isEmpty()) {
+                rowMetadata = previewAction.apply(new DataSetRow(rowMetadata), previewContext).getRowMetadata();
             }
 
-            DataSetRow referenceMetadata = new DataSetRow(new RowMetadata(input.getColumns()));
-            referenceMetadata = referenceAction.apply(referenceMetadata, referenceContext);
+            // only apply actions if there's any
+            if (!referenceActions.getAllActions().isEmpty()) {
+                referenceMetadata = referenceAction.apply(new DataSetRow(referenceMetadata), referenceContext).getRowMetadata();
+            }
 
-            rowMetadata.getRowMetadata().diff(referenceMetadata.getRowMetadata());
-            writer.write(rowMetadata.getRowMetadata());
+            rowMetadata.diff(referenceMetadata);
+            writer.write(rowMetadata);
 
             // Records
             writer.fieldName("records");
