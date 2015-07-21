@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -30,6 +29,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -40,10 +40,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 public class CopyColumnTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
-    /** The metadata consumer to test. */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private DataSetRowAction rowClosure;
 
     /** The action to test. */
     private CopyColumn action;
@@ -60,7 +57,6 @@ public class CopyColumnTest {
 
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
-        metadataClosure = action.getMetadataAction();
     }
 
     @Test
@@ -76,18 +72,20 @@ public class CopyColumnTest {
     @Test
     public void should_split_row() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("steps_copy", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0003", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        final TransformationContext context = new TransformationContext();
+        context.setTransformedRowMetadata(row.getRowMetadata());
+        row = rowClosure.apply(row, context);
         assertEquals(expectedValues, row.values());
     }
 
@@ -98,19 +96,19 @@ public class CopyColumnTest {
     public void should_update_metadata() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("steps", "steps"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "steps"));
+        input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("steps", "steps"));
-        expected.add(createMetadata("steps_copy", "steps_copy"));
-        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "steps"));
+        expected.add(createMetadata("0003", "steps_copy"));
+        expected.add(createMetadata("0002", "last update"));
 
         assertEquals(expected, actual);
     }

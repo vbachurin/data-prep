@@ -8,12 +8,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -27,7 +27,7 @@ public class DeleteEmptyTest {
     private DeleteEmpty deleteEmpty;
 
     /** The consumer out of the action. */
-    private BiConsumer<DataSetRow, TransformationContext> consumer;
+    private DataSetRowAction consumer;
 
     /**
      * Default constructor.
@@ -55,7 +55,7 @@ public class DeleteEmptyTest {
         values.put("name", "David Bowie");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertTrue(dsr.isDeleted());
 
         // Assert that action did not change the row values
@@ -69,7 +69,7 @@ public class DeleteEmptyTest {
         values.put("city", null);
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertTrue(dsr.isDeleted());
     }
 
@@ -80,7 +80,7 @@ public class DeleteEmptyTest {
         values.put("city", "");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertTrue(dsr.isDeleted());
     }
 
@@ -91,7 +91,7 @@ public class DeleteEmptyTest {
         values.put("city", " ");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertTrue(dsr.isDeleted());
     }
 
@@ -102,7 +102,7 @@ public class DeleteEmptyTest {
         values.put("city", "-");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
 
         // Assert that action did not change the row values
@@ -117,7 +117,7 @@ public class DeleteEmptyTest {
         values.put("city", " a value ");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
     }
 
@@ -128,7 +128,7 @@ public class DeleteEmptyTest {
         values.put("city", "true");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
     }
 
@@ -139,7 +139,7 @@ public class DeleteEmptyTest {
         values.put("city", "45");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
     }
 
@@ -150,7 +150,7 @@ public class DeleteEmptyTest {
         values.put("city", "-12");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
     }
 
@@ -161,7 +161,7 @@ public class DeleteEmptyTest {
         values.put("city", "0.001");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
     }
 

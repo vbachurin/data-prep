@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
@@ -21,15 +22,17 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
 
     private final JsonParser parser;
 
-    private final DataSetRow row = new DataSetRow();
+    private final DataSetRow row;
 
-    public DataSetRowIterator(JsonParser parser) {
+    public DataSetRowIterator(JsonParser parser, RowMetadata rowMetadata) {
         this.parser = parser;
+        row = new DataSetRow(rowMetadata);
     }
 
     public DataSetRowIterator(InputStream inputStream) {
         try {
             parser = new JsonFactory().createParser(inputStream);
+            row = new DataSetRow(new RowMetadata());
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }

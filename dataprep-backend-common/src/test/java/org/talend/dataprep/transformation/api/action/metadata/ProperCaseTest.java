@@ -20,12 +20,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -39,7 +39,7 @@ public class ProperCaseTest {
     private ProperCase action;
 
     /** The consumer out of the action. */
-    private BiConsumer<DataSetRow, TransformationContext> consumer;
+    private DataSetRowAction consumer;
 
     /**
      * Constructor.
@@ -67,7 +67,7 @@ public class ProperCaseTest {
         values.put("band", "the beatles");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
 
         assertEquals("The Beatles", dsr.get("band"));
     }
@@ -78,7 +78,7 @@ public class ProperCaseTest {
         values.put("band", "THE BEATLES");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
 
         assertEquals("The Beatles", dsr.get("band"));
     }
@@ -89,7 +89,7 @@ public class ProperCaseTest {
         values.put("bando", "the beatles");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
 
         assertEquals("the beatles", dsr.get("bando"));
     }

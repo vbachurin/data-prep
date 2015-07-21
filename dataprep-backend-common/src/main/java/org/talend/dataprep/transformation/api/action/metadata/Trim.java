@@ -59,6 +59,7 @@ public class Trim extends SingleColumnAction {
                 String newValue = value.trim();
                 row.set(columnName, newValue);
             }
+            return row;
         }).build();
     }
 

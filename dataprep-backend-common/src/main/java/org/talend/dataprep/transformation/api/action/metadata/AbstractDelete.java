@@ -30,6 +30,7 @@ public abstract class AbstractDelete extends SingleColumnAction {
             if (toDelete(parameters, value)) {
                 row.setDeleted(true);
             }
+            return row;
         }).build();
     }
 

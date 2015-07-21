@@ -204,7 +204,7 @@ public class DataSetRowTest {
         List<ColumnMetadata> newOrder = new ArrayList<ColumnMetadata>() {
 
             {
-                add(column().computedId("firstName").type(Type.STRING).build());
+                add(column().type(Type.STRING).build());
             }
         };
         try {

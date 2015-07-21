@@ -3,7 +3,7 @@ package org.talend.dataprep.transformation.api.transformer.json;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +51,11 @@ class DiffTransformer implements Transformer {
         final TransformerWriter writer = configuration.writer();
 
         final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());
-        final ParsedActions previewActions = actionParser.parse(previewConfiguration.getPreviewActions());
-        final BiConsumer<DataSetRow, TransformationContext> referenceAction = referenceActions.asUniqueRowTransformer();
-        final BiConsumer<RowMetadata, TransformationContext> referenceMetadataAction = referenceActions.asUniqueMetadataTransformer();
-        final BiConsumer<RowMetadata, TransformationContext> previewMetadataAction = previewActions.asUniqueMetadataTransformer();
-        final BiConsumer<DataSetRow, TransformationContext> previewAction = previewActions.asUniqueRowTransformer();
-
+        final BiFunction<DataSetRow, TransformationContext, DataSetRow> referenceAction = referenceActions.asUniqueRowTransformer();
         TransformationContext referenceContext = previewConfiguration.getReferenceContext();
+
+        final ParsedActions previewActions = actionParser.parse(previewConfiguration.getPreviewActions());
+        final BiFunction<DataSetRow, TransformationContext, DataSetRow> previewAction = previewActions.asUniqueRowTransformer();
         TransformationContext previewContext = previewConfiguration.getPreviewContext();
 
         final List<Integer> indexes = previewConfiguration.getIndexes();
@@ -67,33 +65,48 @@ class DiffTransformer implements Transformer {
 
         Stream<DataSetRow> records = input.getRecords();
         try {
+
+            // defensive programming
+            if (referenceAction == null) {
+                throw new IllegalStateException("No old action to perform for preview.");
+            }
+
             writer.startObject();
             // Metadata
             writer.fieldName("columns");
-            RowMetadata referenceMetadata = new RowMetadata(input.getColumns());
+
             RowMetadata rowMetadata = new RowMetadata(input.getColumns());
-            referenceMetadataAction.accept(referenceMetadata, referenceContext);
-            previewMetadataAction.accept(rowMetadata, previewContext);
+            RowMetadata referenceMetadata = rowMetadata.clone();
+
+            // only apply preview actions if there's any
+            if (!previewActions.getAllActions().isEmpty()) {
+                rowMetadata = previewAction.apply(new DataSetRow(rowMetadata), previewContext).getRowMetadata();
+            }
+
+            // only apply actions if there's any
+            if (!referenceActions.getAllActions().isEmpty()) {
+                referenceMetadata = referenceAction.apply(new DataSetRow(referenceMetadata), referenceContext).getRowMetadata();
+            }
+
             rowMetadata.diff(referenceMetadata);
             writer.write(rowMetadata);
+
             // Records
             writer.fieldName("records");
             writer.startArray();
             AtomicInteger index = new AtomicInteger(0);
-            if (referenceAction == null) {
-                throw new IllegalStateException("No old action to perform for preview.");
-            }
+
             final AtomicInteger resultIndexShift = new AtomicInteger();
             // With preview (no 'old row' and 'new row' to compare when writing results).
             Stream<Processing[]> process = records
                     .map(row -> new Processing(row, index.getAndIncrement() - resultIndexShift.get())) //
-                    .map(p -> new Processing[]{new Processing(p.row.clone(), p.index), p}) //
+                    .map(p -> new Processing[] { new Processing(p.row.clone(), p.index), p }) //
                     .map(p -> {
-                        referenceAction.accept(p[0].row, referenceContext);
+                        referenceAction.apply(p[0].row, referenceContext);
                         if (p[0].row.isDeleted()) {
                             resultIndexShift.incrementAndGet();
                         }
-                        previewAction.accept(p[1].row, previewContext);
+                        previewAction.apply(p[1].row, previewContext);
                         return p;
                     }); //
             if (indexes != null) {

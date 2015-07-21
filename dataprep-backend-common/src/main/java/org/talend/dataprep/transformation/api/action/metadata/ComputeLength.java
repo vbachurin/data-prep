@@ -2,14 +2,11 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 
@@ -47,44 +44,31 @@ public class ComputeLength extends SingleColumnAction {
      */
     @Override
     public Action create(Map<String, String> parameters) {
-        String columnId = parameters.get(COLUMN_ID);
-
-
         return builder().withRow((row, context) -> {
+            String columnId = parameters.get(COLUMN_ID);
+            final RowMetadata rowMetadata = row.getRowMetadata();
+            final ColumnMetadata column = rowMetadata.getById(columnId);
+            // Metadata actions
+            // create the new column
+            ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + APPENDIX) //
+                    .type(Type.INTEGER) //
+                    .empty(column.getQuality().getEmpty()) //
+                    .invalid(column.getQuality().getInvalid()) //
+                    .valid(column.getQuality().getValid()) //
+                    .headerSize(column.getHeaderSize()) //
+                    .build();
+            // add the new column after the current one
+            final String lengthColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
+            // Set length value
             String value = row.get(columnId);
-
             if (value != null) {
-                String newValue = value.length() + "";
-
-                row.set(columnId + APPENDIX, newValue);
+                row.set(lengthColumn, String.valueOf(value.length()));
+            } else {
+                row.set(lengthColumn, "0");
             }
-        }).withMetadata((rowMetadata, context) -> {
-            List<String> columnIds = new ArrayList<>(rowMetadata.size());
-            rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
-            if (!columnIds.contains(columnId + APPENDIX)) {
-
-                // go through the columns to be able to 'insert' the new columns just after the one needed.
-                for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
-                    ColumnMetadata column = rowMetadata.getColumns().get(i);
-                    if (!StringUtils.equals(column.getId(), columnId)) {
-                        continue;
-                    }
-
-                    // create the new column
-                    ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .computedId(column.getId() + APPENDIX) //
-                            .name(column.getName() + APPENDIX) //
-                            .type(Type.INTEGER) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                    // add the new column after the current one
-                    rowMetadata.getColumns().add(i + 1, newColumnMetadata);
-                }
-            }
+            return row;
         }).build();
     }
 
