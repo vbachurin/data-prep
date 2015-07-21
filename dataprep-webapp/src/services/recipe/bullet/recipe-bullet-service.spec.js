@@ -2,7 +2,7 @@ describe('Recipe Bullet service', function () {
     'use strict';
 
     var createController, scope;
-    var previousStep = {};
+    var previousStep = {column:{id:'0003'}};
     var lastActiveStep = {inactive: false};
 
     beforeEach(module('data-prep.services.recipe'));
@@ -36,14 +36,14 @@ describe('Recipe Bullet service', function () {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
-            {},
-            {},
-            {},
-            {}
+            {column:{id:'0001'}},
+            {column:{id:'0001'}},
+            {column:{id:'0005'}},
+            {column:{id:'0006'}}
         );
 
         //when
-        RecipeBulletService.stepHoverStart(1);
+        RecipeBulletService.stepHoverStart(recipe[1]);
 
         //then
         expect(recipe[0].highlight).toBeFalsy();
@@ -57,13 +57,13 @@ describe('Recipe Bullet service', function () {
         var recipe = RecipeService.getRecipe();
         recipe.push(
             {},
-            {inactive: true},
-            {inactive: true},
-            {inactive: true}
+            {inactive: true, column:{id:'0001'}},
+            {inactive: true, column:{id:'0004'}},
+            {inactive: true, column:{id:'0005'}}
         );
 
         //when
-        RecipeBulletService.stepHoverStart(2);
+        RecipeBulletService.stepHoverStart(recipe[2]);
 
         //then
         expect(recipe[0].highlight).toBeFalsy();
@@ -76,35 +76,35 @@ describe('Recipe Bullet service', function () {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
-            {id: '1'},
-            {id: '2'},
-            {id: '3'},
-            {id: '4'}
+            {id: '1', column:{id:'0002'}},
+            {id: '2', column:{id:'0005'}},
+            {id: '3', column:{id:'0004'}},
+            {id: '4', column:{id:'0005'}}
         );
         RecipeService.disableStepsAfter(recipe[0]);
 
         //when
-        RecipeBulletService.stepHoverStart(2);
+        RecipeBulletService.stepHoverStart(recipe[2]);
         $timeout.flush(99);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
         $timeout.flush(1);
 
         //then
-        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[0], recipe[2]);
+        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[0], recipe[2], '0004');
     }));
 
     it('should cancel pending preview action on step hover', inject(function ($timeout, RecipeService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
-            {id: '1'},
-            {id: '2'},
-            {id: '3'},
-            {id: '4'}
+            {id: '1', column:{id:'0002'}},
+            {id: '2', column:{id:'0005'}},
+            {id: '3', column:{id:'0004'}},
+            {id: '4', column:{id:'0005'}}
         );
 
         //when
-        RecipeBulletService.stepHoverStart(2);
+        RecipeBulletService.stepHoverStart(recipe[2]);
 
         //then
         expect($timeout.cancel).toHaveBeenCalled();
@@ -113,8 +113,8 @@ describe('Recipe Bullet service', function () {
     it('should deactivate all the recipe', inject(function (RecipeService, PlaygroundService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
-        var step1 = {inactive: false};
-        var step2 = {inactive: false};
+        var step1 = {inactive: false, column:{id:'0005'}};
+        var step2 = {inactive: false, column:{id:'0004'}};
         recipe.push(step1);
         recipe.push(step2);
 
@@ -122,14 +122,14 @@ describe('Recipe Bullet service', function () {
         RecipeBulletService.toggleRecipe();
 
         //then
-        expect(PlaygroundService.loadStep).toHaveBeenCalledWith({});
+        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep, step1);
     }));
 
     it('should reactivate all the recipe', inject(function (RecipeService, PlaygroundService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
-        var step1 = {inactive: true};
-        var step2 = {inactive: true};
+        var step1 = {inactive: true, column:{id:'0005'}};
+        var step2 = {inactive: true, column:{id:'0004'}};
         recipe.push(step1);
         recipe.push(step2);
 
@@ -143,8 +143,8 @@ describe('Recipe Bullet service', function () {
     it('should reactivate the recipe at the last active step before deactivation action', inject(function (RecipeService, PlaygroundService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
-        var step1 = {inactive: true};
-        var step2 = {inactive: true};
+        var step1 = {inactive: true, column:{id:'0005'}};
+        var step2 = {inactive: true, column:{id:'0004'}};
         recipe.push(step1);
         recipe.push(step2);
 
@@ -161,20 +161,20 @@ describe('Recipe Bullet service', function () {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
-            {id: '1'},
-            {id: '2'},
-            {id: '3'},
-            {id: '4'}
+            {id: '1', column:{id:'0005'}},
+            {id: '2', column:{id:'0004'}},
+            {id: '3', column:{id:'0000'}},
+            {id: '4', column:{id:'0001'}}
         );
 
         //when
-        RecipeBulletService.stepHoverStart(2);
+        RecipeBulletService.stepHoverStart(recipe[2]);
         $timeout.flush(99);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
         $timeout.flush(1);
 
         //then
-        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], recipe[1]);
+        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], recipe[1], '0000');
     }));
 
     it('should remove highlight on mouse hover end', inject(function (RecipeService, RecipeBulletService) {
@@ -182,9 +182,9 @@ describe('Recipe Bullet service', function () {
         var recipe = RecipeService.getRecipe();
         recipe.push(
             {},
-            {highlight: true},
-            {highlight: true},
-            {highlight: true}
+            {highlight: true, column:{id:'0002'}},
+            {highlight: true, column:{id:'0005'}},
+            {highlight: true, column:{id:'0001'}}
         );
 
         //when
@@ -220,7 +220,7 @@ describe('Recipe Bullet service', function () {
 
     it('should load current step content if the step is first inactive', inject(function (PlaygroundService, RecipeBulletService) {
         //given
-        var step = {inactive: true};
+        var step = {inactive: true, column:{id:'0001'}};
 
         //when
         RecipeBulletService.toggleStep(step);
@@ -231,18 +231,18 @@ describe('Recipe Bullet service', function () {
 
     it('should load previous step content if the step is first active', inject(function (PlaygroundService, RecipeBulletService) {
         //given
-        var step = {inactive: false};
+        var step = {inactive: false, column:{id:'0001'}};
 
         //when
         RecipeBulletService.toggleStep(step);
 
         //then
-        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
+        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep, step);
     }));
 
     it('should cancel current preview on toggle', inject(function (PreviewService, RecipeBulletService) {
         //given
-        var step = {inactive: true};
+        var step = {inactive: true, column:{id:'0001'}};
 
         //when
         RecipeBulletService.toggleStep(step);

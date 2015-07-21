@@ -19,6 +19,7 @@
          * @type {Object}
          */
         self.metadata = null;
+
         /**
          * @ngdoc property
          * @name data
@@ -27,6 +28,15 @@
          * @type {Object}
          */
         self.data = null;
+
+        /**
+         * @ngdoc property
+         * @name stepColumn
+         * @propertyOf data-prep.services.playground.service:DatagridService
+         * @description the column of the current step
+         * @type {number}
+         */
+        self.stepColumn = null;
 
         /**
          * @ngdoc property
@@ -73,9 +83,19 @@
          */
         self.setDataset = function (metadata, data) {
             updateDataviewRecords(data.records);
-
             self.metadata = metadata;
             self.data = data;
+        };
+
+        /**
+         * @ngdoc method
+         * @name setFocusedColumn
+         * @methodOf data-prep.services.playground.service:DatagridService
+         * @param {string} focusedColumn - the id of the recently focused column
+         * @description updates the focusedColumn id
+         */
+        self.setFocusedColumn = function (focusedColumn){
+            self.focusedColumn = focusedColumn;
         };
 
         /**

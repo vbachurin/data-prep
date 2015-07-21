@@ -18,6 +18,7 @@ import org.talend.dataprep.exception.ErrorCode;
 public enum DataSetErrorCodes implements ErrorCode {
     UNEXPECTED_IO_EXCEPTION(500),
     UNABLE_TO_READ_DATASET_CONTENT(500),
+    UNABLE_TO_READ_REMOTE_DATASET_CONTENT(404),
     UNEXPECTED_JMS_EXCEPTION(500),
     UNABLE_TO_CLEAR_DATASETS(500),
     UNABLE_TO_DELETE_DATASET(400, "dataSetId"),

@@ -8,19 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.DataSetLocation;
-import org.talend.dataprep.api.dataset.location.HttpLocation;
+import org.talend.dataprep.api.dataset.location.HdfsLocation;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Dataset locator for remote http datasets.
+ * Dataset locator for remote hdfs datasets.
  */
 @Component
-public class HttpDataSetLocator implements DataSetLocator {
+public class HdfsDataSetLocator implements DataSetLocator {
 
-    /** DataSet media type for remote http datasets. */
-    public static final String MEDIA_TYPE = "application/vnd.remote-ds.http";
+    /** DataSet media type for remote hdfs datasets. */
+    public static final String MEDIA_TYPE = "application/vnd.remote-ds.hdfs";
 
     /** Jackson builder. */
     @Autowired
@@ -41,7 +41,7 @@ public class HttpDataSetLocator implements DataSetLocator {
     public DataSetLocation getLocation(InputStream connectionParameters) throws IOException {
         ObjectMapper mapper = builder.build();
         JsonParser parser = mapper.getFactory().createParser(connectionParameters);
-        HttpLocation location = mapper.reader(DataSetLocation.class).readValue(parser);
+        HdfsLocation location = mapper.reader(DataSetLocation.class).readValue(parser);
         return location;
     }
 

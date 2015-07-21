@@ -7,7 +7,7 @@
      * @description Datagrid private service that manage the grid style
      * @requires data-prep.services.playground.service:DatagridService
      */
-    function DatagridStyleService(DatagridService, ConverterService) {
+    function DatagridStyleService($timeout, DatagridService, ConverterService) {
         var grid;
         var lastSelectedColumnId;
 
@@ -16,6 +16,7 @@
             resetCellStyles : resetCellStyles,
             resetColumnStyles : resetColumnStyles,
             selectedColumn : selectedColumn,
+            navigateToFocusedColumn: navigateToFocusedColumn,
             manageColumnStyle: manageColumnStyle,
             computeHTMLForLeadingOrTrailingHiddenChars: computeHTMLForLeadingOrTrailingHiddenChars,
             columnFormatter: columnFormatter,
@@ -46,11 +47,35 @@
             lastSelectedColumnId = null;
         }
 
+        /**
+         * @ngdoc method
+         * @name selectedColumn
+         * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * @description returns the selected column object
+         * @return {object}
+         */
         function selectedColumn() {
             if(lastSelectedColumnId) {
                 return _.find(grid.getColumns(), function(column) {
                     return column.id === lastSelectedColumnId;
                 });
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name navigateToFocusedColumn
+         * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * @description navigates between columns
+         */
+        function navigateToFocusedColumn(){
+            if(DatagridService.focusedColumn) {
+                var columnIndex = _.findIndex(grid.getColumns(), function (column) {
+                    return column.id === DatagridService.focusedColumn;
+                });
+                var viewPort    = grid.getRenderedRange();
+                var centerRow   = +((viewPort.bottom - viewPort.top) / 2).toFixed(0);
+                grid.scrollCellIntoView(viewPort.top + centerRow, columnIndex, false);
             }
         }
 

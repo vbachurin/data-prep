@@ -69,8 +69,7 @@
          * @description Trigger actions called at mouse enter
          */
         vm.stepHoverStart = function() {
-            var index = RecipeService.getStepIndex(vm.step);
-            RecipeBulletService.stepHoverStart(index);
+            RecipeBulletService.stepHoverStart(vm.step);
         };
 
         /**
@@ -79,7 +78,9 @@
          * @methodOf data-prep.recipe.controller:RecipeBulletCtrl
          * @description Trigger actions called at mouse leave
          */
-        vm.stepHoverEnd = RecipeBulletService.stepHoverEnd;
+        vm.stepHoverEnd = function() {
+            RecipeBulletService.stepHoverEnd(vm.step);
+        };
 
         /**
          * @ngdoc method

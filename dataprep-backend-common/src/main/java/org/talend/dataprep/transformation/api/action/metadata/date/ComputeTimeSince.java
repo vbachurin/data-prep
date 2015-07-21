@@ -18,6 +18,9 @@ import org.talend.dataprep.transformation.api.action.metadata.common.SingleColum
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 import javax.annotation.Nonnull;
+
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.time.LocalDate;
@@ -31,8 +34,6 @@ import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
 public class ComputeTimeSince extends SingleColumnAction {
@@ -189,18 +190,6 @@ public class ComputeTimeSince extends SingleColumnAction {
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
-    }
-
-    /**
-     * @param parameters the parameters.
-     * @return the column id parameter.
-     */
-    private String getColumnIdParameter(Map<String, String> parameters) {
-        String columnId = parameters.get(COLUMN_ID);
-        if (columnId == null) {
-            throw new IllegalArgumentException("Parameter '" + COLUMN_ID + "' is required for this action");
-        }
-        return columnId;
     }
 
     /**

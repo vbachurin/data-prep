@@ -4,7 +4,7 @@
     /**
      * @ngdoc service
      * @name data-prep.services.preparation.service:PreparationService
-     * @description Preparation list service. his service manage the operations that touches the preparations
+     * @description Preparation list service. this service manage the operations that touches the preparations
      * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.dataset.service:DatasetListService
