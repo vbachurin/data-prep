@@ -108,18 +108,84 @@
                         }
                     };
 
+                    //These variables are used to separate click and double click action
+                    var DELAY = 300, clicks = 0, timer = null;
+
+                    //Transform text to input for rename
+                    function updateVal(currentEle, value) {
+
+                        action.off('click');
+
+                        $(currentEle).html('<input class="thVal" type="text" value="' + value + '" />');
+                        $('.thVal').focus();
+                        $('.thVal').select();
+
+                        $('.thVal').keyup(function (event) {
+                            if (event.keyCode === 13) {
+                                $(currentEle).html($('.thVal').val().trim());
+                                action.on('click', detectClickAction);
+                            }
+                        });
+
+                        $('.thVal').on('blur', function () {
+                            $(currentEle).html($('.thVal').val().trim());
+                            //setTimeout prevent the "click" event from being fired on blur
+                            setTimeout(function() {
+                                action.on('click', detectClickAction);
+                            }, 200);
+
+                        });
+                    }
+
                     //Click : Show/focus or hide menu on action zone click
-                    action.click(function () {
+                    var singleClickAction= function () {
                         var isVisible = menu.hasClass('show-menu');
                         hideAllDropDowns();
-
                         if (isVisible) {
                             hideMenu();
                         }
                         else {
                             showMenu();
                         }
-                    });
+                    };
+
+                    //DleClick : Show an input to rename the column
+                    var doubleClickAction = function () {
+
+                        var isVisible = menu.hasClass('show-menu');
+                        hideAllDropDowns();
+                        if (isVisible) {
+                            hideMenu();
+                        }
+                        var currentEle = iElement.find('.grid-header-title');
+                        var value = iElement.find('.grid-header-title').html();
+                        updateVal(currentEle, value);
+                    };
+
+                    //Detect the double click
+                    var detectClickAction = function () {
+                        clicks++;  //count clicks
+                        if(clicks === 1) {
+                            timer = setTimeout(function() {
+                                singleClickAction();
+                                clicks = 0;  //after action performed, reset counter
+                            }, DELAY);
+                        } else {
+                            clearTimeout(timer);  //prevent single-click action
+                            doubleClickAction();
+                            clicks = 0;  //after action performed, reset counter
+                        }
+                    };
+
+                    //Bind click and dblclick event to 'action'
+                    action
+                        .on('click',detectClickAction)
+                        .on('mousedown', function(event){
+                            event.stopPropagation();  //stopPropagation mousedown of body
+                        })
+                        .on('dblclick', function(e){
+                            e.preventDefault();  //cancel system double-click event
+                        });
 
                     //Click : hide menu on item select if 'closeOnSelect' is not false
                     menu.click(function (event) {
