@@ -13,8 +13,9 @@
      * @requires data-prep.datagrid.service:DatagridStyleService
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function DatagridColumnService($rootScope, $compile, DatagridStyleService, DatagridService, ConverterService) {
+    function DatagridColumnService($rootScope, $compile, DatagridStyleService, DatagridService, ConverterService, PlaygroundService) {
         var grid;
 
         var gridHeaderPreviewTemplate =
@@ -71,13 +72,7 @@
                 formatter: DatagridStyleService.columnFormatter(col),
                 minWidth: 80,
                 tdpColMetadata: col,
-                editor: Slick.Editors.TalendEditor(function(item, col, newValue, updateAllCellWithValue) {
-                    console.log(item);
-                    console.log(col);
-                    console.log(newValue);
-                    console.log(updateAllCellWithValue);
-                    console.log('replace ' + item[col] + ' with ' + newValue + (updateAllCellWithValue ? ' on all cell with this value' : ' on row ' + item.tdpId));
-                })
+                editor: Slick.Editors.TalendEditor(PlaygroundService.editCell)
             };
         }
 

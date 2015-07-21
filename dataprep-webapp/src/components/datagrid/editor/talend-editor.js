@@ -8,6 +8,7 @@
         return function TalendEditorClosure(args) {
             var $container, $input, $checkboxContainer, $checkbox;
             var defaultValue, previousValue, currentValue;
+            var inputLineHeight;
 
             function updateRowsNb() {
                 currentValue = $input.val();
@@ -16,8 +17,8 @@
                 }
 
                 $input.attr('rows', 1);
-                var lht = parseInt($input.css('lineHeight'),10);
-                var lines = $input.prop('scrollHeight') / lht;
+                inputLineHeight = inputLineHeight || parseInt($input.css('lineHeight'),10);
+                var lines = $input.prop('scrollHeight') / inputLineHeight;
                 $input.attr('rows', lines);
 
                 previousValue = currentValue;
