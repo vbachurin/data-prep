@@ -1,4 +1,6 @@
-<talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
+<talend-dropdown on-open="datagridHeaderCtrl.initTransformations()"
+                 menu-items="datagridHeaderCtrl.transformations"
+                 column="datagridHeaderCtrl.column">
     <div class="dropdown-container grid-header">
         <div class="dropdown-action">
             <div class="grid-header-title dropdown-button">{{ datagridHeaderCtrl.column.name }}</div>

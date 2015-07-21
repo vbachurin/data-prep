@@ -32,7 +32,7 @@
      * @param {class} dropdown-menu The menu to open
      * @param {class} divider `dropdown-menu > li.divider` : menu items divider
      */
-    function TalendDropdown($window) {
+    function TalendDropdown($window, PlaygroundService) {
         return {
             restrict: 'EA',
             replace: true,
@@ -40,7 +40,10 @@
             templateUrl: 'components/widgets/dropdown/dropdown.html',
             scope: {
                 closeOnSelect: '=',
-                onOpen: '&'
+                onOpen: '&',
+                column: '=',
+                menuItems: '='
+
             },
             bindToController: true,
             controller: function() {},
@@ -110,9 +113,13 @@
 
                     //These variables are used to separate click and double click action
                     var DELAY = 300, clicks = 0, timer = null;
+                    var RENAME_ACTION = 'rename_column';
+                    //Call ctrl.onOpen() to get transformations
+                    ctrl.onOpen();
+                    var renameTransformation = null;
 
                     //Transform text to input for rename
-                    function updateVal(currentEle, value) {
+                    var updateVal = function (currentEle, value) {
 
                         action.off('click');
 
@@ -122,23 +129,54 @@
 
                         $('.thVal').keyup(function (event) {
                             if (event.keyCode === 13) {
-                                $(currentEle).html($('.thVal').val().trim());
-                                action.on('click', detectClickAction);
+
+                                renameTransformation = _.filter(ctrl.menuItems, function(menu) {
+                                    return menu.name === RENAME_ACTION;
+                                })[0];
+
+                                var params = {};
+                                if (renameTransformation.parameters) {
+                                    _.forEach(renameTransformation.parameters, function (paramItem) {
+                                        paramItem.value = $('.thVal').val().trim();
+                                        params[paramItem.name] = paramItem.value;
+                                    });
+                                }
+
+                                PlaygroundService.appendStep(RENAME_ACTION, ctrl.column, params)
+                                    .then(function() {
+                                        $(currentEle).html($('.thVal').val().trim());
+                                        action.on('click', detectClickAction);
+                                    });
                             }
                         });
 
                         $('.thVal').on('blur', function () {
-                            $(currentEle).html($('.thVal').val().trim());
-                            //setTimeout prevent the "click" event from being fired on blur
-                            setTimeout(function() {
-                                action.on('click', detectClickAction);
-                            }, 200);
 
+                            renameTransformation = _.filter(ctrl.menuItems, function(menu) {
+                                return menu.name === RENAME_ACTION;
+                            })[0];
+
+                            var params = {};
+                            if (renameTransformation.parameters) {
+                                _.forEach(renameTransformation.parameters, function (paramItem) {
+                                    paramItem.value = $('.thVal').val().trim();
+                                    params[paramItem.name] = paramItem.value;
+                                });
+                            }
+
+                            PlaygroundService.appendStep(RENAME_ACTION, ctrl.column, params)
+                                .then(function() {
+                                    $(currentEle).html($('.thVal').val().trim());
+                                    //setTimeout prevent the "click" event from being fired on blur
+                                    setTimeout(function() {
+                                        action.on('click', detectClickAction);
+                                    }, 200);
+                                });
                         });
-                    }
+                    };
 
                     //Click : Show/focus or hide menu on action zone click
-                    var singleClickAction= function () {
+                    var singleClickAction = function () {
                         var isVisible = menu.hasClass('show-menu');
                         hideAllDropDowns();
                         if (isVisible) {
