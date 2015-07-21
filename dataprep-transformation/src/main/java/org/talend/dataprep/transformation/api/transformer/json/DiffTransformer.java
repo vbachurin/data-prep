@@ -99,7 +99,7 @@ class DiffTransformer implements Transformer {
             final AtomicInteger resultIndexShift = new AtomicInteger();
             // With preview (no 'old row' and 'new row' to compare when writing results).
             Stream<Processing[]> process = records
-                    .map(row -> new Processing(row.clone(), index.getAndIncrement() - resultIndexShift.get())) //
+                    .map(row -> new Processing(row, index.getAndIncrement() - resultIndexShift.get())) //
                     .map(p -> new Processing[] { new Processing(p.row.clone(), p.index), p }) //
                     .map(p -> {
                         referenceAction.apply(p[0].row, referenceContext);
