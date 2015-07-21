@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -114,7 +113,7 @@ public class SplitTest {
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see Action#getRowAction()
      */
     @Test
     public void should_split_row_with_separator_at_the_end() {
@@ -137,7 +136,7 @@ public class SplitTest {
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see Action#getRowAction()
      */
     @Test
     public void should_split_row_no_separator() {
@@ -161,7 +160,7 @@ public class SplitTest {
 
 
     /**
-     * @see Action#getMetadataAction()
+     * @see Action#getRowAction()
      */
     @Test
     public void should_update_metadata() {
@@ -186,7 +185,7 @@ public class SplitTest {
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see Action#getRowAction()
      */
     @Test
     public void should_update_metadata_twice() {
@@ -248,7 +247,7 @@ public class SplitTest {
                 nullSeparatorAction, //
                 SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
         nullSeparatorAction.create(parameters);
-        BiConsumer<RowMetadata, TransformationContext> closure = nullSeparatorAction.create(parameters).getMetadataAction();
+        DataSetRowAction rowAction = nullSeparatorAction.create(parameters).getRowAction();
 
         List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("recipe", "recipe"));
@@ -257,10 +256,10 @@ public class SplitTest {
         RowMetadata rowMetadata = new RowMetadata(input);
 
         // when
-        closure.accept(rowMetadata, new TransformationContext());
+        DataSetRow actual = rowAction.apply(new DataSetRow(rowMetadata), new TransformationContext());
 
         // then
-        assertEquals(input, rowMetadata.getColumns());
+        assertEquals(input, actual.getRowMetadata().getColumns());
     }
 
     @Test

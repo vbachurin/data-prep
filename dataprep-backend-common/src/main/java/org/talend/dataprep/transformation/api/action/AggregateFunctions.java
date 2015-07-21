@@ -49,7 +49,7 @@ public class AggregateFunctions<T, U, R> implements BiFunction<T, U, R> {
                 .filter(action -> action != null) //
                 .map(action -> action.apply(t, u)) //
                 .collect(Collectors.toList());
-        // TODO is there any better solution than returning null when there's no action to perform ?
+        // TODO @François is there any better solution than returning null when there's no action to perform ?
         if (collect.isEmpty()) {
             return null;
         }

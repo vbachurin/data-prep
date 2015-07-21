@@ -51,14 +51,10 @@ class DiffTransformer implements Transformer {
         final TransformerWriter writer = configuration.writer();
 
         final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());
-        // final BiConsumer<RowMetadata, TransformationContext> referenceMetadataAction =
-        // referenceActions.asUniqueMetadataTransformer();
         final BiFunction<DataSetRow, TransformationContext, DataSetRow> referenceAction = referenceActions.asUniqueRowTransformer();
         TransformationContext referenceContext = previewConfiguration.getReferenceContext();
 
         final ParsedActions previewActions = actionParser.parse(previewConfiguration.getPreviewActions());
-        // final BiConsumer<RowMetadata, TransformationContext> previewMetadataAction =
-        // previewActions.asUniqueMetadataTransformer();
         final BiFunction<DataSetRow, TransformationContext, DataSetRow> previewAction = previewActions.asUniqueRowTransformer();
         TransformationContext previewContext = previewConfiguration.getPreviewContext();
 
