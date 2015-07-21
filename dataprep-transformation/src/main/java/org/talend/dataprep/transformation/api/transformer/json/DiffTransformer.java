@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +50,9 @@ class DiffTransformer implements Transformer {
             throw new IllegalArgumentException("Input cannot be null.");
         }
         final PreviewConfiguration previewConfiguration = (PreviewConfiguration) configuration;
-
         final TransformerWriter writer = configuration.writer();
 
+        //parse and extract diff configuration
         final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());
         final ParsedActions previewActions = actionParser.parse(previewConfiguration.getPreviewActions());
         final BiConsumer<DataSetRow, TransformationContext> referenceAction = referenceActions.asUniqueRowTransformer();
@@ -57,17 +60,40 @@ class DiffTransformer implements Transformer {
         final BiConsumer<RowMetadata, TransformationContext> previewMetadataAction = previewActions.asUniqueMetadataTransformer();
         final BiConsumer<DataSetRow, TransformationContext> previewAction = previewActions.asUniqueRowTransformer();
 
-        TransformationContext referenceContext = previewConfiguration.getReferenceContext();
-        TransformationContext previewContext = previewConfiguration.getPreviewContext();
+        final TransformationContext referenceContext = previewConfiguration.getReferenceContext();
+        final TransformationContext previewContext = previewConfiguration.getPreviewContext();
 
-        final List<Integer> indexes = previewConfiguration.getIndexes();
+        //extract TDP ids infos
+        final List<Long> indexes = previewConfiguration.getIndexes();
         final boolean isIndexLimited = indexes != null && !indexes.isEmpty();
-        final Integer minIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).min().getAsInt() : 0;
-        final Integer maxIndex = isIndexLimited ? indexes.stream().mapToInt(Integer::intValue).max().getAsInt() : Integer.MAX_VALUE;
+        final Long minIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).min().getAsLong() : 0L;
+        final Long maxIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).max().getAsLong() : Long.MAX_VALUE;
 
-        Stream<DataSetRow> records = input.getRecords();
+        //records process lambdas
+        final Predicate<DataSetRow> isWithinWantedIndexes = row -> row.getTdpId() >= minIndex && row.getTdpId() <= maxIndex;
+        final Function<DataSetRow, DataSetRow[]> createClone = row -> new DataSetRow[]{row.clone(), row};
+        final Function<DataSetRow[], DataSetRow[]> applyTransformations = rows -> {
+            referenceAction.accept(rows[0], referenceContext);
+            previewAction.accept(rows[1], previewContext);
+            return rows;
+        };
+        final Predicate<DataSetRow[]> shouldWriteDiff = rows -> indexes == null || // no wanted index, we process all rows
+                indexes.contains(rows[0].getTdpId()) || // row is a wanted diff row
+                rows[0].isDeleted() && !rows[1].isDeleted(); // row is deleted but preview is not
+        final Consumer<DataSetRow[]> writeDiff = rows -> {
+            rows[1].diff(rows[0]);
+            try {
+                if (rows[1].shouldWrite()) {
+                    writer.write(rows[1]);
+                }
+            } catch (IOException e) {
+                throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+            }
+        };
+
         try {
             writer.startObject();
+
             // Metadata
             writer.fieldName("columns");
             RowMetadata referenceMetadata = new RowMetadata(input.getColumns());
@@ -76,43 +102,21 @@ class DiffTransformer implements Transformer {
             previewMetadataAction.accept(rowMetadata, previewContext);
             rowMetadata.diff(referenceMetadata);
             writer.write(rowMetadata);
+
             // Records
             writer.fieldName("records");
             writer.startArray();
-            AtomicInteger index = new AtomicInteger(0);
             if (referenceAction == null) {
                 throw new IllegalStateException("No old action to perform for preview.");
             }
-            final AtomicInteger resultIndexShift = new AtomicInteger();
-            // With preview (no 'old row' and 'new row' to compare when writing results).
-            Stream<Processing[]> process = records
-                    .map(row -> new Processing(row, index.getAndIncrement() - resultIndexShift.get())) //
-                    .map(p -> new Processing[]{new Processing(p.row.clone(), p.index), p}) //
-                    .map(p -> {
-                        referenceAction.accept(p[0].row, referenceContext);
-                        if (p[0].row.isDeleted()) {
-                            resultIndexShift.incrementAndGet();
-                        }
-                        previewAction.accept(p[1].row, previewContext);
-                        return p;
-                    }); //
-            if (indexes != null) {
-                process = process.filter(p -> {
-                    final boolean inRange = p[1].index >= minIndex && p[1].index <= maxIndex;
-                    final boolean include = indexes.contains(p[1].index) || (p[0].row.isDeleted() && !p[1].row.isDeleted());
-                    return inRange && include;
-                });
-            }
-            process.forEach(p -> {
-                p[1].row.diff(p[0].row);
-                try {
-                    if (p[1].row.shouldWrite()) {
-                        writer.write(p[1].row);
-                    }
-                } catch (IOException e) {
-                    throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
-                }
-            });
+
+            input.getRecords() //
+                    .filter(isWithinWantedIndexes) //
+                    .map(createClone) //
+                    .map(applyTransformations) //
+                    .filter(shouldWriteDiff) //
+                    .forEach(writeDiff);
+
             writer.endArray();
             writer.endObject();
             writer.flush();
@@ -124,15 +128,5 @@ class DiffTransformer implements Transformer {
     @Override
     public boolean accept(Configuration configuration) {
         return PreviewConfiguration.class.isAssignableFrom(configuration.getClass());
-    }
-
-    public static class Processing {
-        DataSetRow row;
-        int index;
-
-        public Processing(DataSetRow row, int index) {
-            this.row = row;
-            this.index = index;
-        }
     }
 }

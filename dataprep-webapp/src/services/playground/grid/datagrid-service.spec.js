@@ -40,7 +40,7 @@ describe('Datagrid service', function() {
         DatagridService.metadata = {name: 'my dataset'};
         DatagridService.data = {columns: [], records: []};
 
-        var data = {'records': [{col: 'value'}]};
+        var data = {'records': [{tdpId: 1, col: 'value'}]};
 
         //when
         DatagridService.updateData(data);
@@ -237,12 +237,12 @@ describe('Datagrid service', function() {
     it('should return the rows containing non empty searched value', inject(function(DatagridService) {
         //given
         DatagridService.setDataset({}, {columns: [], records: [
-            {text: 'mon toto est ici'},
-            {text: 'ma tata est la'},
-            {text: 'la tata est ici'},
-            {text: 'mon toto est la'},
-            {text: 'mi titi est ici'},
-            {text: 'mi titi est la'}
+            {tdpId: 1, text: 'mon toto est ici'},
+            {tdpId: 2, text: 'ma tata est la'},
+            {tdpId: 3, text: 'la tata est ici'},
+            {tdpId: 4, text: 'mon toto est la'},
+            {tdpId: 5, text: 'mi titi est ici'},
+            {tdpId: 6, text: 'mi titi est la'}
         ]});
 
         //when
@@ -255,12 +255,12 @@ describe('Datagrid service', function() {
     it('should return the rows with empty value', inject(function(DatagridService) {
         //given
         DatagridService.setDataset({}, {columns: [], records: [
-            {text: 'mon toto est ici'},
-            {text: ''},
-            {text: 'la tata est ici'},
-            {text: 'mon toto est la'},
-            {text: ''},
-            {text: 'mi titi est la'}
+            {tdpId: 1, text: 'mon toto est ici'},
+            {tdpId: 2, text: ''},
+            {tdpId: 3, text: 'la tata est ici'},
+            {tdpId: 4, text: 'mon toto est la'},
+            {tdpId: 5, text: ''},
+            {tdpId: 6, text: 'mi titi est la'}
         ]});
 
         //when
