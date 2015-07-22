@@ -161,14 +161,15 @@
                 returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>';
             }
 
-            if (hiddenCharsRegExpMatch[2]){
-                var hiddenCharsRegExpMatchSubArray = hiddenCharsRegExpMatch[2].split('\n');
-                for (var i=0; i < hiddenCharsRegExpMatchSubArray.length; i++){
-                    returnStr += hiddenCharsRegExpMatchSubArray[i];
-                    if(i !== (hiddenCharsRegExpMatchSubArray.length -1)){
-                        returnStr += '<span class="hiddenCharsBreakLine">&nbsp;</span>\n';
-                    }
-                }
+            //breaking lines indicator
+            var lines = value.trim().split('\n');
+            if(lines.length < 2) {
+                returnStr += hiddenCharsRegExpMatch[2] ;
+            }
+            else {
+                _.forEach(lines, function(line, index) {
+                    returnStr += line + (index === lines.length -1 ? '' : '↵\n');
+                });
             }
 
             //trailing hidden chars

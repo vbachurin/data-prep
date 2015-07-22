@@ -182,7 +182,7 @@ describe('Datagrid tooltip service', function() {
                 record: item,
                 colId: '0003',
                 position: {x: 500, y: 300},
-                htmlStr: 'toto<span class="hiddenCharsBreakLine">&nbsp;</span>\ntoto'
+                htmlStr: 'toto↵\ntoto'
             });
             expect(DatagridTooltipService.showTooltip).toBeTruthy();
         }));
