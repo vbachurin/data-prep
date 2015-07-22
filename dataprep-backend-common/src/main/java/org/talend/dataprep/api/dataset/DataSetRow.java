@@ -17,7 +17,7 @@ public class DataSetRow implements Cloneable, Serializable {
     public static final String TDP_ID = "tdpId";
 
     /** Metadata information (columns...) about this DataSetRow */
-    private final RowMetadata rowMetadata;
+    private RowMetadata rowMetadata;
 
     /** Values of the dataset row. */
     private SortedMap<String, String> values = new TreeMap<>();
@@ -192,6 +192,7 @@ public class DataSetRow implements Cloneable, Serializable {
     public void clear() {
         deleted = false;
         oldValue = null;
+        rowMetadata = null;
         values.clear();
     }
 
@@ -274,5 +275,9 @@ public class DataSetRow implements Cloneable, Serializable {
 
     public void setTdpId(Long tdpId) {
         this.tdpId = tdpId;
+    }
+
+    public void setRowMetadata(RowMetadata rowMetadata) {
+        this.rowMetadata = rowMetadata;
     }
 }

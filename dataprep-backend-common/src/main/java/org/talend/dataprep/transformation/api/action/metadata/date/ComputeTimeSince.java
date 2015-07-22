@@ -24,9 +24,9 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -137,7 +137,7 @@ public class ComputeTimeSince extends SingleColumnAction {
                     // Nothing to do: in this case, temporalAccessor is left null
                     LOGGER.debug("Unable to parse date {}.", value, e);
                     row.set(newColumnMetadata.getId(), "");
-                    return row;
+                return row;
                 }
 
                 Temporal valueAsDate = (unit == ChronoUnit.HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate

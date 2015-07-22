@@ -15,10 +15,12 @@ describe('Moment filter', function () {
         expect(result).toEqual('a day ago');
     }));
 
+    /*
     it('should transform date to human readable moment', inject(function ($filter) {
         // given
         var date = new Date();
         date.setDate(date.getDate() - 1);
+
         var dateAsString = date.getFullYear() + '/' +
             (date.getMonth() < 10 ? '0' : '') + (date.getMonth() + 1) + '/' +
             (date.getDate() < 10 ? '0' : '') + date.getDate();
@@ -29,4 +31,5 @@ describe('Moment filter', function () {
         // then
         expect(result).toEqual('a day ago');
     }));
+    */
 });

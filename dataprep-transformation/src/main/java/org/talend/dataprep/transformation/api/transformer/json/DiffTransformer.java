@@ -2,12 +2,10 @@ package org.talend.dataprep.transformation.api.transformer.json;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -38,9 +36,10 @@ class DiffTransformer implements Transformer {
 
     @Autowired
     private ActionParser actionParser;
-    
+
     /**
      * Starts the transformation in preview mode.
+     *
      * @param input the dataset content.
      * @param configuration The {@link Configuration configuration} for this transformation.
      */
@@ -54,12 +53,12 @@ class DiffTransformer implements Transformer {
 
         //parse and extract diff configuration
         final ParsedActions referenceActions = actionParser.parse(previewConfiguration.getReferenceActions());
-        final BiFunction<DataSetRow, TransformationContext, DataSetRow> referenceAction = referenceActions.asUniqueRowTransformer();
-        TransformationContext referenceContext = previewConfiguration.getReferenceContext();
+        InternalTransformationContext reference = new InternalTransformationContext(referenceActions,
+                previewConfiguration.getReferenceContext());
 
         final ParsedActions previewActions = actionParser.parse(previewConfiguration.getPreviewActions());
-        final BiFunction<DataSetRow, TransformationContext, DataSetRow> previewAction = previewActions.asUniqueRowTransformer();
-        TransformationContext previewContext = previewConfiguration.getPreviewContext();
+        InternalTransformationContext preview = new InternalTransformationContext(previewActions,
+                previewConfiguration.getPreviewContext());
 
         //extract TDP ids infos
         final List<Long> indexes = previewConfiguration.getIndexes();
@@ -67,32 +66,10 @@ class DiffTransformer implements Transformer {
         final Long minIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).min().getAsLong() : 0L;
         final Long maxIndex = isIndexLimited ? indexes.stream().mapToLong(Long::longValue).max().getAsLong() : Long.MAX_VALUE;
 
-        //records process lambdas
-        final Predicate<DataSetRow> isWithinWantedIndexes = row -> row.getTdpId() >= minIndex && row.getTdpId() <= maxIndex;
-        final Function<DataSetRow, DataSetRow[]> createClone = row -> new DataSetRow[]{row.clone(), row};
-        final Function<DataSetRow[], DataSetRow[]> applyTransformations = rows -> {
-            referenceAction.accept(rows[0], referenceContext);
-            previewAction.accept(rows[1], previewContext);
-            return rows;
-        };
-        final Predicate<DataSetRow[]> shouldWriteDiff = rows -> indexes == null || // no wanted index, we process all rows
-                indexes.contains(rows[0].getTdpId()) || // row is a wanted diff row
-                rows[0].isDeleted() && !rows[1].isDeleted(); // row is deleted but preview is not
-        final Consumer<DataSetRow[]> writeDiff = rows -> {
-            rows[1].diff(rows[0]);
-            try {
-                if (rows[1].shouldWrite()) {
-                    writer.write(rows[1]);
-                }
-            } catch (IOException e) {
-                throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
-            }
-        };
-
         try {
 
             // defensive programming
-            if (referenceAction == null) {
+            if (reference.getAction() == null) {
                 throw new IllegalStateException("No old action to perform for preview.");
             }
 
@@ -104,32 +81,22 @@ class DiffTransformer implements Transformer {
             RowMetadata rowMetadata = new RowMetadata(input.getColumns());
             RowMetadata referenceMetadata = rowMetadata.clone();
 
-            // only apply preview actions if there's any
-            if (!previewActions.getAllActions().isEmpty()) {
-                rowMetadata = previewAction.apply(new DataSetRow(rowMetadata), previewContext).getRowMetadata();
-            }
+            rowMetadata = preview.apply(new DataSetRow(rowMetadata)).getRowMetadata();
+            referenceMetadata = reference.apply(new DataSetRow(referenceMetadata)).getRowMetadata();
 
-            // only apply actions if there's any
-            if (!referenceActions.getAllActions().isEmpty()) {
-                referenceMetadata = referenceAction.apply(new DataSetRow(referenceMetadata), referenceContext).getRowMetadata();
-            }
-            
             rowMetadata.diff(referenceMetadata);
             writer.write(rowMetadata);
 
             // Records
             writer.fieldName("records");
             writer.startArray();
-            if (referenceAction == null) {
-                throw new IllegalStateException("No old action to perform for preview.");
-            }
 
             input.getRecords() //
-                    .filter(isWithinWantedIndexes) //
-                    .map(createClone) //
-                    .map(applyTransformations) //
-                    .filter(shouldWriteDiff) //
-                    .forEach(writeDiff);
+                    .filter(isWithinWantedIndexes(minIndex, maxIndex)) //
+                    .map(createClone()) //
+                    .map(applyTransformations(reference, preview)) //
+                    .filter(shouldWriteDiff(indexes)) //
+                    .forEach(writeDiff(writer));
 
             writer.endArray();
             writer.endObject();
@@ -143,4 +110,72 @@ class DiffTransformer implements Transformer {
     public boolean accept(Configuration configuration) {
         return PreviewConfiguration.class.isAssignableFrom(configuration.getClass());
     }
+
+    private Predicate<DataSetRow> isWithinWantedIndexes(Long minIndex, Long maxIndex) {
+        return row -> row.getTdpId() >= minIndex && row.getTdpId() <= maxIndex;
+    }
+
+    private Function<DataSetRow, DataSetRow[]> createClone() {
+        return row -> new DataSetRow[] { row.clone(), row };
+    }
+
+    private Function<DataSetRow[], DataSetRow[]> applyTransformations(InternalTransformationContext reference,
+            InternalTransformationContext preview) {
+        return rows -> {
+            reference.apply(rows[0]);
+            preview.apply(rows[1]);
+            return rows;
+        };
+    }
+
+    private Predicate<DataSetRow[]> shouldWriteDiff(List<Long> indexes) {
+        return rows -> indexes == null || // no wanted index, we process all rows
+                indexes.contains(rows[0].getTdpId()) || // row is a wanted diff row
+                rows[0].isDeleted() && !rows[1].isDeleted(); // row is deleted but preview is not
+    }
+
+    private Consumer<DataSetRow[]> writeDiff(TransformerWriter writer) {
+        return rows -> {
+            rows[1].diff(rows[0]);
+            try {
+                if (rows[1].shouldWrite()) {
+                    writer.write(rows[1]);
+                }
+            } catch (IOException e) {
+                throw new TDPException(TransformationErrorCodes.UNABLE_TRANSFORM_DATASET, e);
+            }
+        };
+    }
+
+    private class InternalTransformationContext {
+
+        ParsedActions parsedActions;
+
+        private BiFunction<DataSetRow, TransformationContext, DataSetRow> action;
+
+        private TransformationContext context;
+
+        public InternalTransformationContext(ParsedActions parsedActions, TransformationContext context) {
+            this.parsedActions = parsedActions;
+            this.action = parsedActions.asUniqueRowTransformer();
+            this.context = context;
+        }
+
+        public BiFunction<DataSetRow, TransformationContext, DataSetRow> getAction() {
+            return action;
+        }
+
+        public TransformationContext getContext() {
+            return context;
+        }
+
+        public DataSetRow apply(DataSetRow dataSetRow) {
+            // only apply actions if there is any
+            if (parsedActions.getAllActions().isEmpty()) {
+                return dataSetRow;
+            }
+            return action.apply(dataSetRow, context);
+        }
+    }
+
 }

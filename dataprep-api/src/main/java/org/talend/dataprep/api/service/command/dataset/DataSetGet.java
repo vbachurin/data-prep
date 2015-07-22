@@ -69,7 +69,6 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             contentRetrieval.releaseConnection();
             return new ByteArrayInputStream(new byte[0]);
         } else if (statusCode == HttpStatus.SC_OK) {
-            final Preparation preparation = Preparation.defaultPreparation(dataSetId);
             final OutputStream cacheEntry = contentCache.put(preparation.id(), Step.ROOT_STEP.id(), ContentCache.TimeToLive.DEFAULT);
             final InputStream content = response.getEntity().getContent();
             final InputStream dataSetInput = new ReleasableInputStream(content, contentRetrieval::releaseConnection);
