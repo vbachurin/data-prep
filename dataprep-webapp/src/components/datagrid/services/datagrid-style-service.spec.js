@@ -402,7 +402,6 @@ describe('Datagrid style service', function () {
             var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
 
             //then
-            console.log(result);
             expect(result).toBe('<span class="hiddenChars">     </span>my ↵\nnew↵\nvalue<span class="hiddenChars">  </span>');
         }));
     });
