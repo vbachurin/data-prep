@@ -6,11 +6,11 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -19,6 +19,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
@@ -30,10 +31,7 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
 public class ExtractDateTokensTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
-    /** The metadata consumer to test. */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private DataSetRowAction rowClosure;
 
     /** The action to test. */
     private ExtractDateTokens action;
@@ -50,7 +48,11 @@ public class ExtractDateTokensTest {
 
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
-        metadataClosure = action.getMetadataAction();
+    }
+
+    private static void setStatistics(DataSetRow row, String columnId, InputStream statisticsContent) throws IOException {
+        String statistics = IOUtils.toString(statisticsContent);
+        row.getRowMetadata().getById(columnId).setStatistics(statistics);
     }
 
     @Test
@@ -61,7 +63,7 @@ public class ExtractDateTokensTest {
     }
 
     @Test
-    public void should_process_row() {
+    public void should_process_row() throws Exception {
 
         // given
         Map<String, String> values = new HashMap<>();
@@ -69,28 +71,28 @@ public class ExtractDateTokensTest {
         values.put("0001", "04/25/1999");
         values.put("0002", "tata");
         DataSetRow row = new DataSetRow(values);
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         TransformationContext context = new TransformationContext();
-        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy");
 
         // when
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
 
         // then
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
         expectedValues.put("0001", "04/25/1999");
-        expectedValues.put("0001_YEAR", "1999");
-        expectedValues.put("0001_MONTH", "4");
-        expectedValues.put("0001_HOUR_24", "");
-        expectedValues.put("0001_MINUTE", "");
+        expectedValues.put("0003", "1999");
+        expectedValues.put("0004", "4");
+        expectedValues.put("0005", "");
+        expectedValues.put("0006", "");
         expectedValues.put("0002", "tata");
 
         assertEquals(expectedValues, row.values());
     }
 
     @Test
-    public void should_process_row_with_time() {
+    public void should_process_row_with_time() throws Exception {
 
         // given
         Map<String, String> values = new HashMap<>();
@@ -98,28 +100,28 @@ public class ExtractDateTokensTest {
         values.put("0001", "04/25/1999 15:45");
         values.put("0002", "tata");
         DataSetRow row = new DataSetRow(values);
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy_HH_mm.json"));
 
         TransformationContext context = new TransformationContext();
-        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy HH:mm");
 
         // when
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
 
         // then
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
         expectedValues.put("0001", "04/25/1999 15:45");
-        expectedValues.put("0001_YEAR", "1999");
-        expectedValues.put("0001_MONTH", "4");
-        expectedValues.put("0001_HOUR_24", "15");
-        expectedValues.put("0001_MINUTE", "45");
+        expectedValues.put("0003", "1999");
+        expectedValues.put("0004", "4");
+        expectedValues.put("0005", "15");
+        expectedValues.put("0006", "45");
         expectedValues.put("0002", "tata");
 
         assertEquals(expectedValues, row.values());
     }
 
     @Test
-    public void should_process_row_wrong_pattern() {
+    public void should_process_row_wrong_pattern() throws Exception {
 
         // given
         Map<String, String> values = new HashMap<>();
@@ -127,21 +129,20 @@ public class ExtractDateTokensTest {
         values.put("0001", "25-04-1999");
         values.put("0002", "tata");
         DataSetRow row = new DataSetRow(values);
-
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
         TransformationContext context = new TransformationContext();
-        context.put(ExtractDateTokens.PATTERN, "MM/dd/yyyy");
 
         // when
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
 
         // then
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
         expectedValues.put("0001", "25-04-1999");
-        expectedValues.put("0001_YEAR", "");
-        expectedValues.put("0001_MONTH", "");
-        expectedValues.put("0001_HOUR_24", "");
-        expectedValues.put("0001_MINUTE", "");
+        expectedValues.put("0003", "");
+        expectedValues.put("0004", "");
+        expectedValues.put("0005", "");
+        expectedValues.put("0006", "");
         expectedValues.put("0002", "tata");
 
         assertEquals(expectedValues, row.values());
@@ -151,35 +152,29 @@ public class ExtractDateTokensTest {
     public void should_update_metadata() throws IOException {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("0001", "0001"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000"));
+        input.add(createMetadata("0001"));
+        input.add(createMetadata("0002"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics.json"));
+        String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
         input.get(1).setStatistics(statistics);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
-        List<ColumnMetadata> actual = rowMetadata.getColumns();
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
 
-        List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("0001", "0001"));
-        expected.add(createMetadata("0001_YEAR", "0001_YEAR", Type.INTEGER));
-        expected.add(createMetadata("0001_MONTH", "0001_MONTH", Type.INTEGER));
-        expected.add(createMetadata("0001_HOUR_24", "0001_HOUR_24", Type.INTEGER));
-        expected.add(createMetadata("0001_MINUTE", "0001_MINUTE", Type.INTEGER));
-        expected.add(createMetadata("last update", "last update"));
-
-        assertEquals(expected, actual);
+        assertNotNull(rowMetadata.getById("0003"));
+        assertNotNull(rowMetadata.getById("0004"));
+        assertNotNull(rowMetadata.getById("0005"));
+        assertNotNull(rowMetadata.getById("0006"));
+        assertNull(rowMetadata.getById("0007"));
     }
 
-    private ColumnMetadata createMetadata(String id, String name) {
-        return createMetadata(id, name, Type.STRING);
+    private ColumnMetadata createMetadata(String id) {
+        return createMetadata(id, Type.STRING);
     }
 
-    private ColumnMetadata createMetadata(String id, String name, Type type) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(type).headerSize(12).empty(0).invalid(2)
+    private ColumnMetadata createMetadata(String id, Type type) {
+        return ColumnMetadata.Builder.column().computedId(id).type(type).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
     }
 

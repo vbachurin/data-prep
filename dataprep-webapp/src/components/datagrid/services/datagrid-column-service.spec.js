@@ -65,27 +65,26 @@ describe('Datagrid column service', function () {
 
             //then
             var gridColumns = gridMock.getColumns();
-            expect(gridColumns[0]).toEqual({
-                id: '0000',
-                field: '0000',
-                name: '<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col0</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>',
-                formatter: formatter,
-                minWidth: 80,
-                tdpColMetadata: { id: '0000', name: 'col0', type: 'string' } });
-            expect(gridColumns[1]).toEqual({
-                id: '0001',
-                field: '0001',
-                name: '<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>       <div class="grid-header-type ng-binding">number</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>',
-                formatter: formatter,
-                minWidth: 80,
-                tdpColMetadata: { id: '0001', name: 'col1', type: 'integer' } });
-            expect(gridColumns[2]).toEqual({
-                id: '0002',
-                field: '0002',
-                name: '<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col2</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>',
-                formatter: formatter,
-                minWidth: 80,
-                tdpColMetadata: { id: '0002', name: 'col2', type: 'string' } });
+            expect(gridColumns[0].id).toEqual('0000');
+            expect(gridColumns[0].field).toEqual('0000');
+            expect(gridColumns[0].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col0</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(gridColumns[0].formatter).toEqual(formatter);
+            expect(gridColumns[0].minWidth).toEqual(80);
+            expect(gridColumns[0].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' } );
+
+            expect(gridColumns[1].id).toEqual('0001');
+            expect(gridColumns[1].field).toEqual('0001');
+            expect(gridColumns[1].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>       <div class="grid-header-type ng-binding">number</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(gridColumns[1].formatter).toEqual(formatter);
+            expect(gridColumns[1].minWidth).toEqual(80);
+            expect(gridColumns[1].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );
+
+            expect(gridColumns[2].id).toEqual('0002');
+            expect(gridColumns[2].field).toEqual('0002');
+            expect(gridColumns[2].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col2</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(gridColumns[2].formatter).toEqual(formatter);
+            expect(gridColumns[2].minWidth).toEqual(80);
+            expect(gridColumns[2].tdpColMetadata).toEqual({ id: '0002', name: 'col2', type: 'string' } );
         }));
 
         it('should create and set new grid columns', inject(function(DatagridColumnService) {
@@ -94,27 +93,26 @@ describe('Datagrid column service', function () {
 
             //then
             var gridColumns = gridMock.getColumns();
-            expect(gridColumns[0]).toEqual({
-                id: '0000',
-                field: '0000',
-                name: '<div id="datagrid-header-0"></div>',
-                formatter: formatter,
-                minWidth: 80,
-                tdpColMetadata: { id: '0000', name: 'col0', type: 'string' } });
-            expect(gridColumns[1]).toEqual({
-                id: '0001',
-                field: '0001',
-                name: '<div id="datagrid-header-1"></div>',
-                formatter: formatter,
-                minWidth: 80,
-                tdpColMetadata: { id: '0001', name: 'col1', type: 'integer' } });
-            expect(gridColumns[2]).toEqual({
-                id: '0002',
-                field: '0002',
-                name: '<div id="datagrid-header-2"></div>',
-                formatter: formatter,
-                minWidth: 80,
-                tdpColMetadata: { id: '0002', name: 'col2', type: 'string' } });
+            expect(gridColumns[0].id).toEqual('0000');
+            expect(gridColumns[0].field).toEqual('0000');
+            expect(gridColumns[0].name).toEqual('<div id="datagrid-header-0"></div>');
+            expect(gridColumns[0].formatter).toEqual(formatter);
+            expect(gridColumns[0].minWidth).toEqual(80);
+            expect(gridColumns[0].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' } );
+
+            expect(gridColumns[1].id).toEqual('0001');
+            expect(gridColumns[1].field).toEqual('0001');
+            expect(gridColumns[1].name).toEqual('<div id="datagrid-header-1"></div>');
+            expect(gridColumns[1].formatter).toEqual(formatter);
+            expect(gridColumns[1].minWidth).toEqual(80);
+            expect(gridColumns[1].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );
+
+            expect(gridColumns[2].id).toEqual('0002');
+            expect(gridColumns[2].field).toEqual('0002');
+            expect(gridColumns[2].name).toEqual('<div id="datagrid-header-2"></div>');
+            expect(gridColumns[2].formatter).toEqual(formatter);
+            expect(gridColumns[2].minWidth).toEqual(80);
+            expect(gridColumns[2].tdpColMetadata).toEqual({ id: '0002', name: 'col2', type: 'string' } );
         }));
 
         it('should fill colHeaderElements with datagrid headers', inject(function(DatagridColumnService) {

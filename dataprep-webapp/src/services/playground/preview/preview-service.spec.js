@@ -1,4 +1,4 @@
-describe('Preparation Service', function () {
+describe('Preview Service', function () {
     'use strict';
 
     var gridRangeIndex = {top: 0, bottom: 5};
@@ -101,6 +101,11 @@ describe('Preparation Service', function () {
                     return data.records[10];
             }
             return null;
+        });
+
+        //simulate datagrid get index from original array by TDP ID. Here we consider tdpId = row index in the record array
+        spyOn(DatagridService.dataView, 'getIdxById').and.callFake(function(tdpId) {
+            return tdpId;
         });
     }));
 

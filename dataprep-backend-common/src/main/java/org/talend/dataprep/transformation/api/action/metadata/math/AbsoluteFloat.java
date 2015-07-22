@@ -20,9 +20,9 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 
 /**
  * This will compute the absolute value for numerical columns
@@ -54,7 +54,7 @@ public class AbsoluteFloat extends SingleColumnAction {
                 try {
                     double doubleValue = Double.parseDouble(value);
                     double absValue = Math.abs(doubleValue);
-                    if (absValue == (long) absValue) {// this will prevent having .0 for longs.
+                    if (absValue == (long) absValue) { // this will prevent having .0 for longs.
                         absValueStr = String.format("%d", (long) absValue); //$NON-NLS-1$
                     } else {
                         absValueStr = String.format("%s", absValue); //$NON-NLS-1$
@@ -71,8 +71,9 @@ public class AbsoluteFloat extends SingleColumnAction {
                 }
                 if (absValueStr != null) {
                     row.set(columnName, absValueStr);
-                }// else not a int or a float to do nothing.
-            }// else no value set for this column so do nothing
+                } // else not a int or a float to do nothing.
+            } // else no value set for this column so do nothing
+            return row;
         }).build();
     }
 

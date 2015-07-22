@@ -27,11 +27,6 @@ public class ColumnMetadataTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void should_not_allow_empty_id() {
-        ColumnMetadata.Builder.column().type(Type.STRING).build();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void should_not_allow_empty_Type() {
         ColumnMetadata.Builder.column().type(null).build();
     }

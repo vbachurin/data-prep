@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
@@ -147,18 +148,31 @@ public class DataSetServiceTests extends DataSetBaseTest {
         int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
         assertTrue("statusCode is:" + statusCode,
                 statusCode == HttpStatus.ACCEPTED.value() || statusCode == HttpStatus.OK.value());
+    }
 
-        // test Favorites
-        boolean isFavorite = from(when().get("/datasets/{id}/content", expectedId).asString()).get("metadata.favorite");
+    @Test
+    public void testFavorite() {
+        //given
+        final String datasetId = UUID.randomUUID().toString();
+        final DataSetMetadata dataSetMetadata = metadata().id(datasetId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
+        dataSetMetadataRepository.add(dataSetMetadata);
+        contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
+
+        final UserData userData = new UserData("anonymousUser");
+        userDataRepository.setUserData(userData);
+        final Set<String> favorites = new HashSet<>();
+        favorites.add(datasetId);
+
+        boolean isFavorite = from(when().get("/datasets/{id}/content", datasetId).asString()).get("metadata.favorite");
         assertFalse(isFavorite);
-        // add favorite
-        UserData userData = new UserData("anonymousUser");
-        HashSet<String> favorites = new HashSet<>();
-        favorites.add(expectedId);
+
+        //when
         userData.setFavoritesDatasets(favorites);
         userDataRepository.setUserData(userData);
 
-        isFavorite = from(when().get("/datasets/{id}/content", expectedId).asString()).get("metadata.favorite");
+        //then
+        isFavorite = from(when().get("/datasets/{id}/content", datasetId).asString()).get("metadata.favorite");
         assertTrue(isFavorite);
     }
 
@@ -256,48 +270,80 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
-    public void test1() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
+    public void should_get_content_from_semi_colon_csv() throws Exception {
+        //given
+        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
                 .queryParam("Content-Type", "text/csv") //
                 .when() //
                 .post("/datasets") //
                 .asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
-        String contentAsString = IOUtils.toString(content);
 
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../test1.json");
+        //when
+        final InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
+
+        //then
+        final String contentAsString = IOUtils.toString(content);
+        final InputStream expected = DataSetServiceTests.class.getResourceAsStream("../content/test1.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
-    public void test2() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA2_CSV)))
+    public void should_get_content_from_coma_csv() throws Exception {
+        //given
+        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA2_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
-        String contentAsString = IOUtils.toString(content);
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../test1.json");
+
+        //when
+        final InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
+
+        //then
+        final String contentAsString = IOUtils.toString(content);
+        final InputStream expected = DataSetServiceTests.class.getResourceAsStream("../content/test1.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
     @Test
-    public void test3() throws Exception {
-        String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+    public void should_get_content_from_updated_dataset() throws Exception {
+        //given
+        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
                 .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
         assertQueueMessages(dataSetId);
-        // Update content
+
+        //given: update content
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw");
         assertQueueMessages(dataSetId);
-        InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
-        String contentAsString = IOUtils.toString(content);
-        InputStream expected = DataSetServiceTests.class.getResourceAsStream("../test2.json");
+
+        //when
+        final InputStream content = when().get("/datasets/{id}/content?metadata=false&columns=false", dataSetId).asInputStream();
+        final String contentAsString = IOUtils.toString(content);
+
+        //then
+        final InputStream expected = DataSetServiceTests.class.getResourceAsStream("../content/test2.json");
         assertThat(contentAsString, sameJSONAsFile(expected));
+
         // Update name
         String expectedName = "testOfADataSetName";
         given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada3.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw?name=" + expectedName);
+        assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is(expectedName));
+    }
+
+    @Test
+    public void should_update_dataset_name() throws Exception {
+        //given
+        final String dataSetId = given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV)))
+                .queryParam("Content-Type", "text/csv").when().post("/datasets").asString();
+        assertQueueMessages(dataSetId);
+
+        //when
+        final String expectedName = "testOfADataSetName";
+        given().body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream("../tagada3.csv")))
+                .queryParam("Content-Type", "text/csv").when().put("/datasets/" + dataSetId + "/raw?name=" + expectedName);
+
+        //then
         assertThat(dataSetMetadataRepository.get(dataSetId).getName(), is(expectedName));
     }
 

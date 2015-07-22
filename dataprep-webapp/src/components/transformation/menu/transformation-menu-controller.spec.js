@@ -152,4 +152,19 @@ describe('Transform menu controller', function () {
             {param1: 'param1Value', param2: 4});
         expect(ctrl.showModal).toBeFalsy();
     }));
+
+    it('should create transform function closure from menu', inject(function ($rootScope, PlaygroundService) {
+        //given
+        var ctrl = createController();
+        var menu = {name: 'transfo_name', category: 'case', parameters: [{name: 'param1', type: 'text', default: '.'}]};
+        var params = {param1: 'value'};
+
+        //when
+        var closure = ctrl.transformClosure(menu);
+        expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
+        closure(params);
+
+        //then
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('transfo_name', column, params);
+    }));
 });

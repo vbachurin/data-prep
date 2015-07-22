@@ -204,7 +204,7 @@ public class DataSetRowTest {
         List<ColumnMetadata> newOrder = new ArrayList<ColumnMetadata>() {
 
             {
-                add(column().computedId("firstName").type(Type.STRING).build());
+                add(column().type(Type.STRING).build());
             }
         };
         try {
@@ -220,6 +220,19 @@ public class DataSetRowTest {
         } catch (IllegalArgumentException e) {
             // Expected
         }
+    }
+
+    @Test
+    public void should_return_values_with_tdp_id() {
+        //given
+        final DataSetRow row = createRow(defaultValues(), false);
+        row.setTdpId(1L);
+
+        //when
+        final Map<String, Object> values = row.valuesWithId();
+
+        //then
+        assertThat(values.get("tdpId"), is(1L));
     }
 
     /**

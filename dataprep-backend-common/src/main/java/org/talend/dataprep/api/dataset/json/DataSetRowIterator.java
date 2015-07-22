@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.dataset.json;
 
+import static org.talend.dataprep.api.dataset.DataSetRow.TDP_ID;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -8,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
@@ -21,15 +24,23 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
 
     private final JsonParser parser;
 
-    private final DataSetRow row = new DataSetRow();
+    private DataSetRow row;
 
-    public DataSetRowIterator(JsonParser parser) {
+    private final RowMetadata rowMetadata;
+
+    private long nextRowId = 0;
+
+    public DataSetRowIterator(JsonParser parser, RowMetadata rowMetadata) {
         this.parser = parser;
+        this.rowMetadata = rowMetadata;
+        this.row = new DataSetRow(rowMetadata);
     }
 
     public DataSetRowIterator(InputStream inputStream) {
         try {
-            parser = new JsonFactory().createParser(inputStream);
+            this.parser = new JsonFactory().createParser(inputStream);
+            this.rowMetadata = new RowMetadata();
+            this.row = new DataSetRow(rowMetadata);
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }
@@ -46,6 +57,8 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
             String currentFieldName = StringUtils.EMPTY;
             JsonToken nextToken;
             row.clear();
+            row.setRowMetadata(rowMetadata.clone());
+            row.setTdpId(nextRowId++);
             while ((nextToken = parser.nextToken()) != JsonToken.END_OBJECT) {
                 if (nextToken == null) {
                     // End of input, return the current row.
@@ -58,7 +71,12 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
                     currentFieldName = parser.getText();
                     break;
                 case VALUE_STRING:
-                    row.set(currentFieldName, parser.getText());
+                    if(TDP_ID.equals(currentFieldName)) {
+                        row.setTdpId(Long.parseLong(parser.getText()));
+                    }
+                    else {
+                        row.set(currentFieldName, parser.getText());
+                    }
                     break;
                 case VALUE_NULL:
                     row.set(currentFieldName, "");

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -30,6 +29,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -42,12 +42,7 @@ public class ComputeLengthTest {
     /**
      * The row consumer to test.
      */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
-    /**
-     * The metadata consumer to test.
-     */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private DataSetRowAction rowClosure;
 
     /**
      * The action to test.
@@ -64,7 +59,6 @@ public class ComputeLengthTest {
                 ComputeLengthTest.class.getResourceAsStream("computeLengthAction.json"));
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
-        metadataClosure = action.getMetadataAction();
     }
 
     @Test
@@ -80,18 +74,18 @@ public class ComputeLengthTest {
     @Test
     public void should_compute_length() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon");
-        expectedValues.put("steps_length", "5");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon");
+        expectedValues.put("0003", "5");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -101,41 +95,41 @@ public class ComputeLengthTest {
     @Test
     public void should_compute_length_empty() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "");
-        expectedValues.put("steps_length", "0");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "");
+        expectedValues.put("0003", "0");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
     /**
-     * @throws IOException
      * @see Split#create(Map)
      */
     @Test
     public void should_compute_length_twice() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon");
-        expectedValues.put("steps_length", "5");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon");
+        expectedValues.put("0004", "5");
+        expectedValues.put("0003", "5");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -146,19 +140,19 @@ public class ComputeLengthTest {
     public void should_update_metadata() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("steps", "steps"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "steps"));
+        input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("steps", "steps"));
-        expected.add(createMetadata("steps_length", "steps_length", Type.INTEGER));
-        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "steps"));
+        expected.add(createMetadata("0003", "steps_length", Type.INTEGER));
+        expected.add(createMetadata("0002", "last update"));
 
         assertEquals(expected, actual);
     }
@@ -170,20 +164,21 @@ public class ComputeLengthTest {
     public void should_update_metadata_twice() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("steps", "steps"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "steps"));
+        input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("steps", "steps"));
-        expected.add(createMetadata("steps_length", "steps_length", Type.INTEGER));
-        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "steps"));
+        expected.add(createMetadata("0004", "steps_length", Type.INTEGER));
+        expected.add(createMetadata("0003", "steps_length", Type.INTEGER));
+        expected.add(createMetadata("0002", "last update"));
 
         assertEquals(expected, actual);
     }

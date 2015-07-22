@@ -3,7 +3,7 @@
     {
       "action": "extractemaildomain",
       "parameters": {
-        "column_id": "email",
+        "column_id": "0001",
         "column_name": "email"
       }
     }

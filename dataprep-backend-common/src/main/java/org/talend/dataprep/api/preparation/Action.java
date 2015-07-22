@@ -4,89 +4,112 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.annotation.Transient;
-import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
+/**
+ * Class used to wrap DataSetRowAction into json.
+ */
 @JsonRootName("action")
 public class Action {
 
-    public static final DataSetRowAction IDLE_ROW_ACTION = (row, context) -> {};
+    /** Default noop action. */
+    public static final DataSetRowAction IDLE_ROW_ACTION = (row, context) -> row;
 
-    public static final DataSetMetadataAction IDLE_METADATA_ACTION = (metadata, context) -> {};
-
+    /** The wrapped row action. */
     @Transient
     private final transient DataSetRowAction rowAction;
 
-    @Transient
-    private final transient DataSetMetadataAction metadataAction;
-
+    /** Json description of the action. */
     private String action;
 
+    /** Parameters needed for the action. */
     private Map<String, String> parameters = new HashMap<>(1);
 
+    /**
+     * Default empty constructor.
+     */
     public Action() {
         rowAction = IDLE_ROW_ACTION;
-        metadataAction = IDLE_METADATA_ACTION;
     }
 
-    public Action(DataSetRowAction rowAction, DataSetMetadataAction metadataAction) {
+    /**
+     * Create an Action from the given RowAction.
+     * 
+     * @param rowAction the row action to build the Action from.
+     */
+    public Action(DataSetRowAction rowAction) {
         this.rowAction = rowAction;
-        this.metadataAction = metadataAction;
     }
 
+    /**
+     * @return the json description of the action.
+     */
     public String getAction() {
         return action;
     }
 
+    /**
+     * @param action the json description of the action to set.
+     */
     public void setAction(String action) {
         this.action = action;
     }
 
+    /**
+     * @return the action parameters.
+     */
     public Map<String, String> getParameters() {
         return parameters;
     }
 
+    /**
+     * @param parameters the action parameters to set.
+     */
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * @return the row action.
+     */
     @JsonIgnore(true)
     @Transient
     public DataSetRowAction getRowAction() {
         return rowAction;
     }
 
-    @JsonIgnore(true)
-    @Transient
-    public DataSetMetadataAction getMetadataAction() {
-        return metadataAction;
-    }
-
+    /**
+     * Builder used to ease the Action creation.
+     */
     public static class Builder {
 
+        /** The default noop action. */
         private DataSetRowAction rowAction = IDLE_ROW_ACTION;
 
-        private DataSetMetadataAction metadataAction = IDLE_METADATA_ACTION;
-
+        /**
+         * @return the Builder to use.
+         */
         public static Builder builder() {
             return new Builder();
         }
 
+        /**
+         * @param rowAction add the given row action to the builder.
+         * @return the current builder to carry on building.
+         */
         public Builder withRow(DataSetRowAction rowAction) {
             this.rowAction = rowAction;
             return this;
         }
 
-        public Builder withMetadata(DataSetMetadataAction metadataAction) {
-            this.metadataAction = metadataAction;
-            return this;
-        }
-
+        /**
+         * @return the built row action.
+         */
         public Action build() {
-            return new Action(rowAction, metadataAction);
+            return new Action(rowAction);
         }
 
     }
