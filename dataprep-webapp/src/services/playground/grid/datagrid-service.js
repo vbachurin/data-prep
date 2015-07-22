@@ -62,27 +62,12 @@
 
         /**
          * @ngdoc method
-         * @name insertUniqueIds
-         * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {Object[]} records - the records to adapt
-         * @description [PRIVATE] Insert unique id for each record (needed for DataView)
-         */
-        var insertUniqueIds = function (records) {
-            _.forEach(records, function (item, index) {
-                item.tdpId = index;
-            });
-        };
-
-        /**
-         * @ngdoc method
          * @name updateDataviewRecords
          * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object[]} records - the records to insert
          * @description [PRIVATE] Set dataview records
          */
         var updateDataviewRecords = function (records) {
-            insertUniqueIds(records);
-
             self.dataView.beginUpdate();
             self.dataView.setItems(records, 'tdpId');
             self.dataView.endUpdate();

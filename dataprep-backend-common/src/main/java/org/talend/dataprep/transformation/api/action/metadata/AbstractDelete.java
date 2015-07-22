@@ -5,6 +5,8 @@ import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 import java.util.Map;
 
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 
 /**
  * Abstract class used as base class for delete actions.

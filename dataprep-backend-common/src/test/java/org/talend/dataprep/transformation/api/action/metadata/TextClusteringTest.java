@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
-import static org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction.COLUMN_ID;
+import static org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction.COLUMN_ID;
 
 import java.util.*;
 

@@ -18,9 +18,9 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 

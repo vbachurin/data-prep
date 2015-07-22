@@ -68,28 +68,32 @@ describe('filter search controller', function() {
                 '0001': 'AL',
                 '0002': 'My Alabama',
                 '0003': 'Montgomery',
-                '0004': 'Birmingham city'
+                '0004': 'Birmingham city',
+                tdpId: 0
             },
             {
                 '0000': '2',
                 '0001': 'AK',
                 '0002': 'Alaska',
                 '0003': 'Juneau',
-                '0004': 'Anchorage'
+                '0004': 'Anchorage',
+                tdpId: 1
             },
             {
                 '0000': '3',
                 '0001': 'AL',
                 '0002': 'My Alabama 2',
                 '0003': 'Montgomery',
-                '0004': 'Birmingham city'
+                '0004': 'Birmingham city',
+                tdpId: 2
             },
             {
                 '0000': '3',
                 '0001': 'AL',
                 '0002': 'My Alabama 3',
                 '0003': 'Montgomery',
-                '0004': 'Alabama city'
+                '0004': 'Alabama city',
+                tdpId: 3
             }
         ]
     };

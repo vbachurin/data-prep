@@ -5,13 +5,13 @@
      * @ngdoc object
      * @name data-prep.dataset-list
      * @description This module contains the controller and directives to manage the dataset list
-     * @requires talend.widget.service:TalendConfirmService
-     * @requires data-prep.services.dataset.service:DatasetService
-     * @requires data-prep.services.playground.service:PlaygroundService
-     * @requires data-prep.services.utils.service:MessageService
-     * @requires data-prep.services.uploadWorkflowService.service:UploadWorkflowService
-     * @requires angular-momentjs
-     * @requires data-prep.filters
+     * @requires talend.widget
+     * @requires ddata-prep.dataset-xls-preview
+     * @requires data-prep.services.dataset
+     * @requires data-prep.services.playground
+     * @requires data-prep.services.utils
+     * @requires data-prep.services.uploadWorkflowService
+     * @requires data-prep.services.utils
      */
     angular.module('data-prep.dataset-list', [
         'ui.router',
@@ -22,8 +22,6 @@
         'data-prep.services.playground',
         'data-prep.services.utils',
         'data-prep.services.uploadWorkflowService',
-        'angular-momentjs',
-        'data-prep.filters'
+        'data-prep.services.utils'
     ]);
-
 })();

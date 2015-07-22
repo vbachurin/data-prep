@@ -133,21 +133,6 @@ describe('Datagrid style service', function () {
                 43: { '0001': 'highlight' }
             });
         }));
-
-        it('should invalidate grid on cell click', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var cell = 1;
-            var row = 28;
-            var args = {cell: cell, row: row};
-
-            //when
-            var onClick = gridMock.onClick.subscribe.calls.argsFor(0)[0];
-            onClick(null, args);
-
-            //then
-            expect(gridMock.invalidate).toHaveBeenCalled();
-        }));
     });
 
     describe('on active cell changed event', function () {

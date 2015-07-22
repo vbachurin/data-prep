@@ -20,9 +20,9 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 
 /**
  * This will compute the absolute value for numerical columns

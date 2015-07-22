@@ -222,6 +222,19 @@ public class DataSetRowTest {
         }
     }
 
+    @Test
+    public void should_return_values_with_tdp_id() {
+        //given
+        final DataSetRow row = createRow(defaultValues(), false);
+        row.setTdpId(1L);
+
+        //when
+        final Map<String, Object> values = row.valuesWithId();
+
+        //then
+        assertThat(values.get("tdpId"), is(1L));
+    }
+
     /**
      * @param values the values of the row to return.
      * @param isDeleted true if the row is deleted.

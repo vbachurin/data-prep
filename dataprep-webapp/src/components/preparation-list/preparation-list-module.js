@@ -9,13 +9,11 @@
      * @requires talend.widget
      * @requires data-prep.services.preparation
      * @requires data-prep.services.playground
-     * @requires data-prep.filters
      */
     angular.module('data-prep.preparation-list', [
         'ui.router',
         'talend.widget',
         'data-prep.services.preparation',
-        'data-prep.services.playground',
-        'data-prep.filters'
+        'data-prep.services.playground'
     ]);
 })();

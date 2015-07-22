@@ -49,8 +49,6 @@ public class JsonWriterTest {
         columns.add(column2);
 
         String expectedOutput = IOUtils.toString(JsonWriterTest.class.getResourceAsStream("expected_columns.json"));
-        // final String expectedOutput =
-        // "[{\"name\":\"id\",\"headerSize\":0,\"type\":\"string\",\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"0001\",\"statistics\":{},\"domain\":\"\"},{\"name\":\"firstname\",\"headerSize\":0,\"type\":\"string\",\"quality\":{\"empty\":0,\"invalid\":0,\"valid\":0},\"id\":\"0002\",\"statistics\":{},\"domain\":\"\"}]";
 
         // when
         writer.write(new RowMetadata(columns));
@@ -61,7 +59,7 @@ public class JsonWriterTest {
     }
 
     @Test
-    public void write_should_write_row() throws IOException {
+    public void write_should_write_row_with_tdp_id() throws IOException {
         // given
         Map<String, String> values = new HashMap<String, String>() {
             {
@@ -70,8 +68,9 @@ public class JsonWriterTest {
             }
         };
         final DataSetRow row = new DataSetRow(values);
+        row.setTdpId(23L);
 
-        final String expectedCsv = "{\"firstname\":\"Superman\",\"id\":\"64a5456ac148b64524ef165\"}";
+        final String expectedCsv = "{\"firstname\":\"Superman\",\"id\":\"64a5456ac148b64524ef165\",\"tdpId\":23}";
 
         // when
         writer.write(row);

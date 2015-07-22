@@ -73,8 +73,9 @@
         <script src="../bower_components/jquery-ui/jquery-ui.js"></script>
         <script src="../bower_components/threedubmedia.jquery.event/event.drag/jquery.event.drag.js"></script>
         <script src="../bower_components/slickgrid/slick.core.js"></script>
-        <script src="../bower_components/slickgrid/slick.grid.js"></script>
         <script src="../bower_components/slickgrid/slick.dataview.js"></script>
+        <script src="../bower_components/slickgrid/slick.editors.js"></script>
+        <script src="../bower_components/slickgrid/slick.grid.js"></script>
         <script src="../bower_components/angular-mass-autocomplete/massautocomplete.min.js"></script>
         <script src="../bower_components/highcharts-ng/dist/highcharts-ng.js"></script>
         <script src="../bower_components/highcharts/highcharts.js"></script>
@@ -85,13 +86,13 @@
         <script src="../bower_components/d3-tip/index.js"></script>
         <script src="../bower_components/intro.js/intro.js"></script>
         <script src="../bower_components/moment/moment.js"></script>
-        <script src="../bower_components/angular-momentjs/angular-momentjs.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
         <!-- build:js({.tmp,src}) scripts/app.js -->
         <!-- inject:js -->
         <script src="services/utils/utils-module.js"></script>
+        <script src="services/utils/moment/moment-filter.js"></script>
         <script src="services/utils/message/message-service.js"></script>
         <script src="services/utils/converter/converter-service.js"></script>
         <script src="services/utils/constants/utils-rest-urls-constants.js"></script>
@@ -199,7 +200,6 @@
         <script src="components/home/home-controller.js"></script>
         <script src="components/history-control/history-control-module.js"></script>
         <script src="components/history-control/history-control-directive.js"></script>
-        <script src="components/filters/filters.js"></script>
         <script src="components/filter/search/filter-search-module.js"></script>
         <script src="components/filter/search/filter-search-directive.js"></script>
         <script src="components/filter/search/filter-search-controller.js"></script>
@@ -233,6 +233,7 @@
         <script src="components/datagrid/header/datagrid-header-module.js"></script>
         <script src="components/datagrid/header/datagrid-header-directive.js"></script>
         <script src="components/datagrid/header/datagrid-header-controller.js"></script>
+        <script src="components/datagrid/editor/talend-editor.js"></script>
         <script src="components/datagrid/datagrid-directive.js"></script>
         <script src="components/datagrid/datagrid-controller.js"></script>
         <script src="assets/maps/us-all.js"></script>

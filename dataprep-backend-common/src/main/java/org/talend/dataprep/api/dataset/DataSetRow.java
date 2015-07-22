@@ -14,6 +14,7 @@ import org.talend.dataprep.api.type.Type;
  * A DataSetRow is a row of a dataset. Values in data set row are <b>alphabetically</b> ordered by name.
  */
 public class DataSetRow implements Cloneable, Serializable {
+    public static final String TDP_ID = "tdpId";
 
     /** Metadata information (columns...) about this DataSetRow */
     private final RowMetadata rowMetadata;
@@ -26,6 +27,9 @@ public class DataSetRow implements Cloneable, Serializable {
 
     /** the old value used for the diff. */
     private DataSetRow oldValue;
+
+    /** Row id */
+    private Long tdpId;
 
     /**
      * Default empty constructor.
@@ -173,6 +177,14 @@ public class DataSetRow implements Cloneable, Serializable {
         return result;
     }
 
+    public Map<String, Object> valuesWithId() {
+        final Map<String, Object> values = values();
+        if(getTdpId() != null) {
+            values.put(TDP_ID, getTdpId());
+        }
+        return values;
+    }
+
     /**
      * Clear all values in this row and reset state as it was when created (e.g. {@link #isDeleted()} returns
      * <code>false</code>).
@@ -190,6 +202,7 @@ public class DataSetRow implements Cloneable, Serializable {
     public DataSetRow clone() {
         final DataSetRow clone = new DataSetRow(rowMetadata.clone(), values);
         clone.setDeleted(this.isDeleted());
+        clone.setTdpId(this.tdpId);
         return clone;
     }
 
@@ -253,5 +266,13 @@ public class DataSetRow implements Cloneable, Serializable {
         final DataSetRow dataSetRow = new DataSetRow(rowMetadata);
         dataSetRow.values = orderedValues;
         return dataSetRow;
+    }
+
+    public Long getTdpId() {
+        return tdpId;
+    }
+
+    public void setTdpId(Long tdpId) {
+        this.tdpId = tdpId;
     }
 }

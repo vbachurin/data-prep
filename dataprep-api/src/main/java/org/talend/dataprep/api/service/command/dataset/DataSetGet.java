@@ -48,7 +48,6 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
 
     @Override
     protected InputStream run() throws Exception {
-
         // Look if initial data set content was previously cached
         final Preparation preparation = Preparation.defaultPreparation(dataSetId);
         if (contentCache.has(preparation.id(), Step.ROOT_STEP.id())) {
@@ -65,24 +64,23 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             throws IOException {
         int statusCode = response.getStatusLine().getStatusCode();
         // No cache, query the data set service for content
-        if (statusCode >= 200 && statusCode < 400) {
-            if (statusCode == HttpStatus.SC_NO_CONTENT) {
-                // Immediately release connection
-                contentRetrieval.releaseConnection();
-                return new ByteArrayInputStream(new byte[0]);
-            } else if (statusCode == HttpStatus.SC_OK) {
-                final OutputStream cacheEntry = contentCache.put(preparation.id(), Step.ROOT_STEP.id(), ContentCache.TimeToLive.DEFAULT);
-                final InputStream content = response.getEntity().getContent();
-                final InputStream dataSetInput = new ReleasableInputStream(content, contentRetrieval::releaseConnection);
-                return new CloneInputStream(dataSetInput, cacheEntry);
-            }
+        if (statusCode == HttpStatus.SC_NO_CONTENT) {
+            // Immediately release connection
+            contentRetrieval.releaseConnection();
+            return new ByteArrayInputStream(new byte[0]);
+        } else if (statusCode == HttpStatus.SC_OK) {
+            final Preparation preparation = Preparation.defaultPreparation(dataSetId);
+            final OutputStream cacheEntry = contentCache.put(preparation.id(), Step.ROOT_STEP.id(), ContentCache.TimeToLive.DEFAULT);
+            final InputStream content = response.getEntity().getContent();
+            final InputStream dataSetInput = new ReleasableInputStream(content, contentRetrieval::releaseConnection);
+            return new CloneInputStream(dataSetInput, cacheEntry);
         } else if (statusCode >= 400) { // Error (4xx & 5xx codes)
             final ObjectMapper build = builder.build();
             final JsonErrorCode errorCode = build.reader(JsonErrorCode.class).readValue(response.getEntity().getContent());
             errorCode.setHttpStatus(statusCode);
             throw new TDPException(errorCode);
         }
-        Exception cause = new Exception(response.getStatusLine().getStatusCode() + response.getStatusLine().getReasonPhrase());
+        final Exception cause = new Exception(response.getStatusLine().getStatusCode() + response.getStatusLine().getReasonPhrase());
         throw new TDPException(APIErrorCodes.UNABLE_TO_RETRIEVE_DATASET_CONTENT, cause, TDPExceptionContext.build().put("id",
                 dataSetId));
     }

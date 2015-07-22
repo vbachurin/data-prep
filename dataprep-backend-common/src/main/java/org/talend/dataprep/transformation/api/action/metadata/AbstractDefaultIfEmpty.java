@@ -5,6 +5,8 @@ import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 import java.util.Map;
 
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 
 public abstract class AbstractDefaultIfEmpty extends SingleColumnAction {
 

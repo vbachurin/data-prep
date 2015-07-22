@@ -24,12 +24,12 @@ public class DataSetRowIteratorTest {
 
         // given
         List<DataSetRow> expectedRows = new ArrayList<>();
-        expectedRows.add(getDataSetRow("Sheriff Woody", "Tom Hanks", "1995–present"));
-        expectedRows.add(getDataSetRow("Buzz Lightyear", "", "1995–present"));
-        expectedRows.add(getDataSetRow("Mr. Potato Head", "Don Rickles", "1995–present"));
+        expectedRows.add(getDataSetRow(2, "Sheriff Woody", "Tom Hanks", "1995–present"));
+        expectedRows.add(getDataSetRow(3, "Buzz Lightyear", "", "1995–present"));
+        expectedRows.add(getDataSetRow(5, "Mr. Potato Head", "Don Rickles", "1995–present"));
 
         // when
-        InputStream json = DataSetRowIteratorTest.class.getResourceAsStream("datasetrow.json");
+        final InputStream json = DataSetRowIteratorTest.class.getResourceAsStream("datasetrow.json");
         DataSetRowIterator iterator = new DataSetRowIterator(json);
 
         List<DataSetRow> actual = new ArrayList<>();
@@ -42,12 +42,14 @@ public class DataSetRowIteratorTest {
 
     }
 
-    private DataSetRow getDataSetRow(String... data) {
-        DecimalFormat format = new DecimalFormat("0000");
-        Map<String, String> values = new HashMap<>();
+    private DataSetRow getDataSetRow(final long tdpId, String... data) {
+        final DecimalFormat format = new DecimalFormat("0000");
+        final Map<String, String> values = new HashMap<>();
         for (int i = 0; i < data.length; i++) {
             values.put(format.format(i), data[i]);
         }
-        return new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
+        row.setTdpId(tdpId);
+        return row;
     }
 }
