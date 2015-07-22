@@ -17,10 +17,8 @@ import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
@@ -32,7 +30,7 @@ import org.talend.dataprep.transformation.api.action.metadata.common.SingleColum
  * 
  * @see Math#floor(double)
  */
-public abstract class AbstractRound extends SingleColumnAction implements DataSetRowAction {
+public abstract class AbstractRound extends SingleColumnAction {
 
     /**
      * @see ActionMetadata#getCategory()
@@ -58,6 +56,7 @@ public abstract class AbstractRound extends SingleColumnAction implements DataSe
                     // Nan: nothing to do, but fail silently (no change in value)
                 }
             }
+            return row;
         }).build();
     }
 
@@ -71,10 +70,5 @@ public abstract class AbstractRound extends SingleColumnAction implements DataSe
         Type columnType = Type.get(column.getType());
         // in order to 'clean' integer typed columns, this function needs to be allowed on any numeric types
         return Type.NUMERIC.isAssignableFrom(columnType);
-    }
-
-    @Override
-    public void accept(DataSetRow dataSetRow, TransformationContext transformationContext) {
-
     }
 }

@@ -73,6 +73,7 @@ public class AbsoluteInt extends SingleColumnAction {
                     row.set(columnName, absValueStr);
                 }// else not a int or a float to do nothing.
             }// else no value set for this column so do nothing
+            return row;
         }).build();
     }
 

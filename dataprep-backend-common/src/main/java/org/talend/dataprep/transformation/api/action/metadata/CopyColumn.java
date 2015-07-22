@@ -2,13 +2,13 @@ package org.talend.dataprep.transformation.api.action.metadata;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import javax.annotation.Nonnull;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
@@ -47,6 +47,7 @@ public class CopyColumn extends SingleColumnAction {
      * @see ActionMetadata#getItems()@return
      */
     @Override
+    @Nonnull
     public Item[] getItems() {
         return new Item[] {};
     }
@@ -67,40 +68,18 @@ public class CopyColumn extends SingleColumnAction {
     @Override
     public Action create(Map<String, String> parameters) {
         return builder().withRow((row, context) -> {
-            String columnName = parameters.get(COLUMN_ID);
-            String originalValue = row.get(columnName);
-            if (originalValue != null) {
-                row.set(columnName + COPY_APPENDIX, originalValue);
-            }
-        }).withMetadata((rowMetadata, context) -> {
-
             String columnId = parameters.get(COLUMN_ID);
-
-            List<ColumnMetadata> newColumns = new ArrayList<>(rowMetadata.size() + 1);
-
-            for (ColumnMetadata column : rowMetadata.getColumns()) {
-                ColumnMetadata newColumnMetadata = ColumnMetadata.Builder.column().copy(column).build();
-                newColumns.add(newColumnMetadata);
-
-                // append the split column
-                if (StringUtils.equals(columnId, column.getId())) {
-                    newColumnMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .computedId(column.getId() + COPY_APPENDIX) //
-                            .name(column.getName() + COPY_APPENDIX) //
-                            .type(Type.get(column.getType())) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                    newColumns.add(newColumnMetadata);
-                }
-
-            }
-
-            // apply the new columns to the row metadata
-            rowMetadata.setColumns(newColumns);
+            final RowMetadata rowMetadata = row.getRowMetadata();
+            final ColumnMetadata column = rowMetadata.getById(columnId);
+            ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
+                    .column() //
+                    .name(column.getName() + COPY_APPENDIX) //
+                    .type(Type.get(column.getType())) //
+                    .headerSize(column.getHeaderSize()) //
+                    .build();
+            final String copyColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
+            row.set(copyColumn, row.get(columnId));
+            return row;
         }).build();
     }
 }

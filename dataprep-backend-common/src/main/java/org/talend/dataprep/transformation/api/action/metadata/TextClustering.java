@@ -46,6 +46,7 @@ public class TextClustering extends AbstractDynamicAction {
             if (replaceValue != null) {
                 row.set(columnName, replaceValue);
             }
+            return row;
         }).build();
     }
 

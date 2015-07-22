@@ -3,7 +3,7 @@
     {
       "action": "substring",
       "parameters": {
-        "column_id": "steps",
+        "column_id": "0001",
         "column_name": "steps",
         "from_mode": "From index",
         "from_index": "5",

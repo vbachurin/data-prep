@@ -59,6 +59,7 @@ public class Cut extends SingleColumnAction {
             if (value != null) {
                 row.set(columnName, value.replace(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
             }
+            return row;
         }).build();
     }
 

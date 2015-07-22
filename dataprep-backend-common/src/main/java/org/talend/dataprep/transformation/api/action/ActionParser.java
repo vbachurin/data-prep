@@ -22,12 +22,14 @@ public class ActionParser {
 
     /** No op parsed actions. */
     //@formatter:off
-    public static final ParsedActions IDLE_CONSUMER = new ParsedActions(Action.IDLE_ROW_ACTION, Action.IDLE_METADATA_ACTION);
+    public static final ParsedActions IDLE_CONSUMER = new ParsedActions(Action.IDLE_ROW_ACTION);
     //@formatter:on
 
+    /** The dataprep ready jackson builder. */
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
+    /** The dataprep spring application context. */
     @Autowired
     private ApplicationContext context;
 
@@ -57,10 +59,9 @@ public class ActionParser {
                 final ActionMetadata metadata = context.getBean(name, ActionMetadata.class);
                 final Action action = metadata.create(parsedAction.getParameters());
                 rowActions.add(action.getRowAction());
-                metadataActions.add(action.getMetadataAction());
             }
             // all set: wraps everything and return to caller
-            return new ParsedActions(allActions, rowActions, metadataActions);
+            return new ParsedActions(allActions, rowActions);
         } catch (Exception e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
         }

@@ -35,6 +35,7 @@ public class ProperCase extends SingleColumnAction {
             if (value != null) {
                 row.set(columnName, WordUtils.capitalizeFully(value));
             }
+            return row;
         }).build();
     }
 
