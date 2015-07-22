@@ -18,7 +18,7 @@ public class DataSetRowStreamSerializer extends JsonSerializer<Stream<DataSetRow
         generator.writeStartArray();
         value.forEach(row -> {
             try {
-                generator.writeObject(row.values());
+                generator.writeObject(row.valuesWithId());
             } catch (IOException e) {
                 throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
             }

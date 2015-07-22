@@ -133,21 +133,6 @@ describe('Datagrid style service', function () {
                 43: { '0001': 'highlight' }
             });
         }));
-
-        it('should invalidate grid on cell click', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var cell = 1;
-            var row = 28;
-            var args = {cell: cell, row: row};
-
-            //when
-            var onClick = gridMock.onClick.subscribe.calls.argsFor(0)[0];
-            onClick(null, args);
-
-            //then
-            expect(gridMock.invalidate).toHaveBeenCalled();
-        }));
     });
 
     describe('on active cell changed event', function () {
@@ -676,6 +661,23 @@ describe('Datagrid style service', function () {
 
             //then
             expect(selectedColumn).not.toBeDefined();
+        }));
+    });
+
+    describe('column navigation for focus purposes', function() {
+        it('should go to the cell (0,col)', inject(function (DatagridStyleService, DatagridService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            DatagridService.focusedColumn = '0002';
+
+            spyOn(gridMock, 'scrollCellIntoView').and.returnValue();
+            spyOn(gridMock, 'getRenderedRange').and.returnValue({top:100, bottom:150});
+
+            //when
+            DatagridStyleService.navigateToFocusedColumn();
+
+            //then
+            expect(gridMock.scrollCellIntoView).toHaveBeenCalledWith(125, 2, false);
         }));
     });
 });

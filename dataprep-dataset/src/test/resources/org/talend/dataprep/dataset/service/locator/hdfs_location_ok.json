@@ -1,0 +1,4 @@
+{
+  "type": "hdfs",
+  "url": "hdfs://localhost:8020/path/to/file"
+}

@@ -15,6 +15,8 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
+import static org.talend.dataprep.api.dataset.DataSetRow.TDP_ID;
+
 public class DataSetRowIterator implements Iterator<DataSetRow> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetRowIterator.class);
@@ -22,6 +24,8 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
     private final JsonParser parser;
 
     private final DataSetRow row = new DataSetRow();
+
+    private long nextRowId = 0;
 
     public DataSetRowIterator(JsonParser parser) {
         this.parser = parser;
@@ -46,6 +50,7 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
             String currentFieldName = StringUtils.EMPTY;
             JsonToken nextToken;
             row.clear();
+            row.setTdpId(nextRowId++);
             while ((nextToken = parser.nextToken()) != JsonToken.END_OBJECT) {
                 if (nextToken == null) {
                     // End of input, return the current row.
@@ -58,7 +63,12 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
                     currentFieldName = parser.getText();
                     break;
                 case VALUE_STRING:
-                    row.set(currentFieldName, parser.getText());
+                    if(TDP_ID.equals(currentFieldName)) {
+                        row.setTdpId(Long.parseLong(parser.getText()));
+                    }
+                    else {
+                        row.set(currentFieldName, parser.getText());
+                    }
                     break;
                 case VALUE_NULL:
                     row.set(currentFieldName, "");

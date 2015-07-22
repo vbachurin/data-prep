@@ -8,7 +8,7 @@ describe('Recipe Bullet controller', function () {
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
         step = {
-            transformation: {stepId: '138ea798bc56'}
+            transformation: {stepId: '138ea798bc56', column:{id:'0002'}}
         };
 
         createController = function () {
@@ -87,7 +87,6 @@ describe('Recipe Bullet controller', function () {
 
     it('should call hover start action', inject(function (RecipeService, RecipeBulletService) {
         //given
-        spyOn(RecipeService, 'getStepIndex').and.returnValue(3);
         spyOn(RecipeBulletService, 'stepHoverStart').and.returnValue();
         var ctrl = createController();
 
@@ -95,8 +94,7 @@ describe('Recipe Bullet controller', function () {
         ctrl.stepHoverStart();
 
         //then
-        expect(RecipeService.getStepIndex).toHaveBeenCalledWith(step);
-        expect(RecipeBulletService.stepHoverStart).toHaveBeenCalledWith(3);
+        expect(RecipeBulletService.stepHoverStart).toHaveBeenCalledWith(step);
     }));
 
     it('should call hover end action', inject(function (RecipeBulletService) {
@@ -108,7 +106,7 @@ describe('Recipe Bullet controller', function () {
         ctrl.stepHoverEnd();
 
         //then
-        expect(RecipeBulletService.stepHoverEnd).toHaveBeenCalled();
+        expect(RecipeBulletService.stepHoverEnd).toHaveBeenCalledWith(step);
     }));
 
     it('should call toggle step action', inject(function (RecipeBulletService) {

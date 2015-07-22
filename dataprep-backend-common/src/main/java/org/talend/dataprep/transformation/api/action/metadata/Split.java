@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -176,28 +178,12 @@ public class Split extends SingleColumnAction {
 
         for (int i = 1; i < 1000; i++) {
             String temp = columnId + SPLIT_APPENDIX + '_' + i;
-            if (!contains(columnsId, temp)) {
+            if (!columnsId.contains(temp)) {
                 return i;
             }
         }
 
         return null;
-    }
-
-    /**
-     * Return true if the given list of String contains the wanted one.
-     *
-     * @param strings the list of Strings to search.
-     * @param wanted the wanted string.
-     * @return true if the given list of String contains the wanted one.
-     */
-    private boolean contains(List<String> strings, String wanted) {
-        for (String current : strings) {
-            if (StringUtils.equals(current, wanted)) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

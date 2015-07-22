@@ -35,7 +35,7 @@
             }
             else {
                 var previousStep = RecipeService.getPreviousStep(step);
-                PlaygroundService.loadStep(previousStep);
+                PlaygroundService.loadStep(previousStep, step);
             }
         };
 
@@ -72,17 +72,19 @@
          *     <li>highlight active buttons under the one (including the one)</li>
          * </ul>
          */
-        this.stepHoverStart = function (index) {
+        this.stepHoverStart = function (step) {
+            var index = RecipeService.getStepIndex(step);
+            var stepColumnId = step.column.id;
             _.forEach(RecipeService.getRecipe(), function (element, elementIndex) {
                 element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });
 
             $timeout.cancel(previewTimeout);
             if (RecipeService.getRecipe()[index].inactive) {
-                previewTimeout = $timeout(previewAppend.bind(self, index), 100);
+                previewTimeout = $timeout(previewAppend.bind(self, index, stepColumnId), 100);
             }
             else {
-                previewTimeout = $timeout(previewDisable.bind(self, index), 100);
+                previewTimeout = $timeout(previewDisable.bind(self, index, stepColumnId), 100);
             }
         };
 
@@ -92,13 +94,13 @@
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
          * @description On step button leave : reset steps button highlight
          */
-        this.stepHoverEnd = function () {
+        this.stepHoverEnd = function (step) {
             _.forEach(RecipeService.getRecipe(), function (element) {
                 element.highlight = false;
             });
 
             $timeout.cancel(previewTimeout);
-            previewTimeout = $timeout(PreviewService.cancelPreview, 100);
+            previewTimeout = $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id), 100);
         };
 
         //---------------------------------------------------------------------------------------------
@@ -111,11 +113,11 @@
          * @param {string} stepPosition The step position index to preview
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the disabled targeted step
          */
-        var previewAppend = function (stepPosition) {
+        var previewAppend = function (stepPosition, stepColumnId) {
             var previewStep = RecipeService.getStep(stepPosition);
             var currentStep = RecipeService.getLastActiveStep();
 
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep);
+            PreviewService.getPreviewDiffRecords(currentStep, previewStep, stepColumnId);
         };
 
         /**
@@ -125,11 +127,11 @@
          * @param {string} stepPosition The step position index to disable for the preview
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the step before the active targeted step
          */
-        var previewDisable = function (stepPosition) {
+        var previewDisable = function (stepPosition, stepColumnId) {
             var previewStep = RecipeService.getStepBefore(stepPosition);
             var currentStep = RecipeService.getLastActiveStep();
 
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep);
+            PreviewService.getPreviewDiffRecords(currentStep, previewStep, stepColumnId);
         };
     }
 
