@@ -12,28 +12,28 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.COLUMNS;
+import javax.annotation.Nonnull;
+import java.util.Map;
 
 /**
  * Base class for all single column action.
  */
 public abstract class SingleColumnAction implements ActionMetadata {
 
-    /** Name of the parameter for the column id. */
+    /**
+     * Name of the parameter for the column id.
+     */
     public static final String COLUMN_ID = "column_id"; //$NON-NLS-1$
 
-    /** The parameter object for the column id. */
+    /**
+     * The parameter object for the column id.
+     */
     public static final Parameter COLUMN_ID_PARAMETER = new Parameter(COLUMN_ID, Type.STRING.getName(), StringUtils.EMPTY);
 
     /**
@@ -43,7 +43,9 @@ public abstract class SingleColumnAction implements ActionMetadata {
      */
     public static final String COLUMN_NAME = "column_name"; //$NON-NLS-1$
 
-    /** The parameter object for the column name. */
+    /**
+     * The parameter object for the column name.
+     */
     public static final Parameter COLUMN_NAME_PARAMETER = new Parameter(COLUMN_NAME, Type.STRING.getName(), StringUtils.EMPTY);
 
     /**
@@ -51,25 +53,18 @@ public abstract class SingleColumnAction implements ActionMetadata {
      */
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER };
+        return new Parameter[]{COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER};
     }
 
     /**
      * By default, no Item.
-     * 
+     *
      * @see ActionMetadata#getItems()
      */
     @Override
     @Nonnull
     public Item[] getItems() {
         return new Item[0];
-    }
-
-    /**
-     * @see ActionMetadata#getScope()
-     */
-    public ScopeCategory getScope() {
-        return COLUMNS;
     }
 
     /**

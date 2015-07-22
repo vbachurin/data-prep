@@ -1,9 +1,5 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -13,10 +9,16 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
+import java.util.Map;
+
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+
 @Component(Cut.ACTION_BEAN_PREFIX + Cut.CUT_ACTION_NAME)
 public class Cut extends SingleColumnAction {
 
-    /** The action name. */
+    /**
+     * The action name.
+     */
     public static final String CUT_ACTION_NAME = "cut"; //$NON-NLS-1$
 
     public static final String PATTERN_PARAMETER = "pattern"; //$NON-NLS-1$
@@ -42,8 +44,8 @@ public class Cut extends SingleColumnAction {
      */
     @Override
     public Parameter[] getParameters() {
-        return new Parameter[] { COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
-                new Parameter(PATTERN_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY) };
+        return new Parameter[]{COLUMN_ID_PARAMETER, COLUMN_NAME_PARAMETER,
+                new Parameter(PATTERN_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY)};
     }
 
     /**

@@ -1,24 +1,22 @@
 package org.talend.dataprep.transformation.api.action.metadata;
 
-import java.util.Iterator;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.i18n.MessagesBundle;
 import org.talend.dataprep.transformation.api.action.DataSetMetadataAction;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
-import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Model an action to perform on a dataset.
- *
+ * <p>
  * An "action" is created for each row, see {@link ActionMetadata#create(Map)}.
- *
+ * <p>
  * The actions are called from the
  */
 public interface ActionMetadata {
@@ -50,11 +48,6 @@ public interface ActionMetadata {
      * @return A 'category' for the action used to group similar actions (eg. 'math', 'repair'...).
      */
     String getCategory();
-
-    /**
-     * @return The transformation scope category for the action (eg. 'column', 'cell', 'table', ...).
-     */
-    ScopeCategory getScope();
 
     /**
      * Returns the list of multiple valued parameters required for this Action to be executed. represented as list box
