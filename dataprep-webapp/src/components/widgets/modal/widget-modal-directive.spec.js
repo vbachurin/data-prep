@@ -403,12 +403,13 @@ describe('Dropdown directive', function () {
             scope.closeButton = false;
             createFormElement();
 
-            //set a text in secondInput
-            $('#secondInput').val('city');
-
             var body = angular.element('body');
             body.append(element);
+
+            element.find('#secondInput').val('city');
+
             expect(document.activeElement).not.toBe(element);
+            expect(window.getSelection().toString()).toBeFalsy();
 
             //when
             scope.state = true;
