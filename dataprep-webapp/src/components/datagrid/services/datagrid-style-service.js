@@ -6,8 +6,9 @@
      * @name data-prep.datagrid.service:DatagridStyleService
      * @description Datagrid private service that manage the grid style
      * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.utils.service:ConverterService
      */
-    function DatagridStyleService($timeout, DatagridService, ConverterService) {
+    function DatagridStyleService(DatagridService, ConverterService) {
         var grid;
         var lastSelectedColumnId;
 
