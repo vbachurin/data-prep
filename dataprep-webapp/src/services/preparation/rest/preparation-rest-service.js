@@ -50,11 +50,16 @@
          * @methodOf data-prep.services.preparation.service:PreparationRestService
          * @param {string} preparationId The preparation id to load
          * @param {string} version The version (step id) to load
+         * @param {int} sample optional sample size
          * @description Get preparation records at the specific 'version' step
          * @returns {promise} The GET promise
          */
-        function getContent(preparationId, version) {
-            return $http.get(RestURLs.preparationUrl + '/' + preparationId + '/content?version=' + version);
+        function getContent(preparationId, version, sample) {
+            var url = RestURLs.preparationUrl + '/' + preparationId + '/content?version=' + version;
+            if (sample) {
+                url += '&sample='+sample;
+            }
+            return $http.get(url);
         }
 
         /**

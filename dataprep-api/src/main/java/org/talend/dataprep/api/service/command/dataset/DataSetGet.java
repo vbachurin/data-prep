@@ -3,6 +3,7 @@ package org.talend.dataprep.api.service.command.dataset;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -19,33 +20,79 @@ import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.HystrixCommand;
 
+/**
+ * Command to get a dataset.
+ */
 @Component
 @Scope("request")
 public class DataSetGet extends DataPrepCommand<InputStream> {
 
+    /** The dataset id. */
     private final String dataSetId;
 
+    /** True if the metadata is requested. */
     private final boolean metadata;
 
+    /** True if the columns are requested. */
     private final boolean columns;
 
+    /** Optional sample size (if null or <=0, the full dataset is returned). */
+    private Optional<Long> sample;
+
+    /**
+     * Constructor.
+     *
+     * @param client the http client to use.
+     * @param dataSetId the requested dataset id.
+     * @param metadata true if the metadata is requested.
+     * @param columns true if the columns is requested.
+     */
     public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns) {
         super(PreparationAPI.TRANSFORM_GROUP, client);
         this.dataSetId = dataSetId;
         this.metadata = metadata;
         this.columns = columns;
+        this.sample = Optional.empty();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param client the http client to use.
+     * @param dataSetId the requested dataset id.
+     * @param metadata true if the metadata is requested.
+     * @param columns true if the columns is requested.
+     * @param sample optional sample size (if null or <=0, the full dataset is returned).
+     */
+    public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns, Long sample) {
+        this(client, dataSetId, metadata, columns);
+        this.sample = sample == null ? Optional.empty() : Optional.of(sample);
+    }
+
+    /**
+     * @see HystrixCommand#run()
+     */
     @Override
     protected InputStream run() throws Exception {
-
-        final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata="
-                + metadata + "&columns=" + columns);
+        String url = datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata=" + metadata + "&columns=" + columns;
+        if (sample.isPresent()) {
+            url += "&sample=" + sample.get();
+        }
+        final HttpGet contentRetrieval = new HttpGet(url);
         final HttpResponse response = client.execute(contentRetrieval);
         return handleResponse(response, contentRetrieval);
     }
 
+    /**
+     * Handle the response.
+     *
+     * @param response the http response.
+     * @param contentRetrieval the response content retrieval.
+     * @return the dataset content.
+     * @throws IOException if an error occurs.
+     */
     private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval) throws IOException {
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200 && statusCode < 400) {

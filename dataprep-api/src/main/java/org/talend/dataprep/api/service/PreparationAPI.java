@@ -1,5 +1,8 @@
 package org.talend.dataprep.api.service;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,11 +27,6 @@ import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -123,10 +121,11 @@ public class PreparationAPI extends APIService {
     public void getPreparation(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
+            @RequestParam(required = false) @ApiParam(name = "sample", value = "Size of the wanted sample, if missing, the full preparation content is returned") Long sample, //
             HttpServletResponse response) {
         LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version);
+        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version, sample);
         try (InputStream preparationContent = command.execute()){
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(preparationContent, outputStream);

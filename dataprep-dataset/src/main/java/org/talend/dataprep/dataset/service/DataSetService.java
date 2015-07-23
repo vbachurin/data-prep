@@ -161,7 +161,7 @@ public class DataSetService {
      * remote csv.
      * @param response The HTTP response to interact with caller.
      * @return The new data id.
-     * @see #get(boolean, boolean, String, HttpServletResponse)
+     * @see #get(boolean, boolean, Long, String, HttpServletResponse)
      */
     @RequestMapping(value = "/datasets", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
@@ -210,6 +210,7 @@ public class DataSetService {
      *
      * @param metadata If <code>true</code>, includes data set metadata information.
      * @param columns If <code>true</code>, includes column metadata information (column types...).
+     * @param sample Size of the wanted sample, if missing, the full dataset is returned.
      * @param dataSetId A data set id.
      * @param response The HTTP response to interact with caller.
      */
@@ -220,6 +221,7 @@ public class DataSetService {
     public DataSet get(
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata, //
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include column information in the response") boolean columns, //
+            @RequestParam(required = false) @ApiParam(name = "sample", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
@@ -246,7 +248,12 @@ public class DataSetService {
             if (columns) {
                 dataSet.setColumns(dataSetMetadata.getRow().getColumns());
             }
-            dataSet.setRecords(contentStore.stream(dataSetMetadata));
+            // deal with the sample size or the full dataset
+            if (sample != null && sample > 0) {
+                dataSet.setRecords(contentStore.sample(dataSetMetadata, sample));
+            } else {
+                dataSet.setRecords(contentStore.stream(dataSetMetadata));
+            }
             return dataSet;
         } finally {
             lock.unlock();

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  * @see HDFSContentCache
  */
 @Component
-@ConditionalOnMissingBean(ContentCache.class)
+@ConditionalOnMissingBean(HDFSContentCache.class)
 public class NoOpContentCache implements ContentCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NoOpContentCache.class);

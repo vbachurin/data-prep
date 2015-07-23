@@ -105,11 +105,12 @@
          * @name getContent
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {string} version The version (step id) to load
+         * @param {int} sample The wanted sample size (or null for the full preparation content).
          * @description Get preparation records at the specific 'version' step
          * @returns {promise} The GET promise
          */
-        function getContent(version) {
-            return PreparationRestService.getContent(service.currentPreparationId, version);
+        function getContent(version, sample) {
+            return PreparationRestService.getContent(service.currentPreparationId, version, sample);
         }
 
         /**

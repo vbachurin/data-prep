@@ -16,6 +16,7 @@ describe('Playground controller', function() {
         };
 
         spyOn(PlaygroundService, 'createOrUpdatePreparation').and.returnValue($q.when(true));
+        spyOn(PlaygroundService, 'changeSampleSize').and.returnValue($q.when(true));
         spyOn($state, 'go').and.returnValue();
 
     }));
@@ -220,5 +221,26 @@ describe('Playground controller', function() {
         //then
         expect(ctrl.preparationName).toBe('my old name');
         expect(ctrl.editionMode).toBe(false);
+    }));
+
+    it('should init sample size to full dataset', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        //when
+        PlaygroundService.show();
+        //then
+        expect(ctrl.selectedSampleSize.value).toBe(100);
+    }));
+
+    it('should call PlayGroundService when the sample size is changed', inject(function(PlaygroundService) {
+        //given
+        var ctrl = createController();
+        ctrl.selectedSampleSize = 500;
+
+        //when
+        ctrl.changeSampleSize();
+
+        //then
+        expect(PlaygroundService.changeSampleSize).toHaveBeenCalledWith(500);
     }));
 });

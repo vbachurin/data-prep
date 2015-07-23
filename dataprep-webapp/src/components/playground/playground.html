@@ -5,6 +5,14 @@
     <div class="modal-header">
         <ul class="left-header">
             <li translate="FILE_DETAILS" translate-value-name="{{playgroundCtrl.metadata.name}}" translate-value-records="{{playgroundCtrl.metadata.records}}"></li>
+            <li>
+                <span>Sample size</span>
+                <select ng-model="playgroundCtrl.selectedSampleSize"
+                        ng-options="size.display for size in playgroundCtrl.sampleSizes"
+                        ng-change="playgroundCtrl.changeSampleSize()"
+                        class="sample">
+                </select>
+            </li>
         </ul>
 
         <ul class="right-header">

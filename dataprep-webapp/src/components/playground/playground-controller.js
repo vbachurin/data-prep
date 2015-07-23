@@ -28,6 +28,37 @@
         vm.toggleRecipe = RecipeBulletService.toggleRecipe;
 
         /**
+         * @ngdoc property
+         * @name sampleSizes
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description List all the available sample size.
+         */
+        vm.sampleSizes = [
+            {display:'50', value: 50},
+            {display:'100', value: 100},
+            {display:'500', value: 500},
+            {display:'full dataset', value: 'full dataset'}
+        ];
+
+        /**
+         * @ngdoc property
+         * @name selectedSampleSize
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description the selected sample size.
+         */
+        vm.selectedSampleSize = vm.sampleSizes[1]; //default is 100
+
+        /**
+         * @ngdoc method
+         * @name changeSampleSize
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description change the sample size.
+         */
+        vm.changeSampleSize = function changeSampleSize(){
+            PlaygroundService.changeSampleSize(vm.selectedSampleSize.value);
+        };
+
+        /**
          * @ngdoc method
          * @name toggleEditionMode
          * @methodOf data-prep.playground.controller:PlaygroundCtrl

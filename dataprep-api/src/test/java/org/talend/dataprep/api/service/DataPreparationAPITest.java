@@ -205,6 +205,52 @@ public class DataPreparationAPITest {
     }
 
     @Test
+    public void testDataSetGetWithSample() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when
+        final String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=16", dataSetId)
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(16));
+    }
+
+    @Test
+    public void testDataSetGetWithSampleZero() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when
+        final String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=0", dataSetId)
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+    }
+
+    @Test
+    public void testDataSetGetWithSampleWhenSampleIsInvalid() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when
+        int status = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=10.6", dataSetId).statusCode();
+        assertThat(status, is(400));
+
+        status = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=ghqmskjh", dataSetId).statusCode();
+        assertThat(status, is(400));
+
+    }
+
+    @Test
     public void testDataSetCreateWithSpace() throws Exception {
         // given
         String dataSetId = createDataset("testCreate.csv", "Test with spaces", "text/csv");

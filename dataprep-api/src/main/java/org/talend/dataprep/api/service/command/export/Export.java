@@ -50,7 +50,7 @@ public class Export extends PreparationCommand<InputStream> {
             final Preparation preparation = getPreparation(input.getPreparationId());
             name = preparation.getName();
             actions = getPreparationActions(preparation, input.getStepId());
-            content = getDatasetContent(preparation.getDataSetId());
+            content = getDatasetContent(preparation.getDataSetId(), false, true);
         } else {
             // Get name from data set
             String dataSetId = input.getDatasetId();
@@ -58,7 +58,7 @@ public class Export extends PreparationCommand<InputStream> {
             //
             name = datasetDetails.get("metadata").get("name").textValue();
             actions = Collections.emptyList();
-            content = getDatasetContent(dataSetId);
+            content = getDatasetContent(dataSetId, false, true);
         }
         // Set response headers
         response.setContentType(input.getExportType().getMimeType());
