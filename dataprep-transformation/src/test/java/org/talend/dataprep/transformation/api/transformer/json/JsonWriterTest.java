@@ -7,7 +7,9 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -59,9 +61,13 @@ public class JsonWriterTest {
     @Test
     public void write_should_write_row_with_tdp_id() throws IOException {
         // given
-        final DataSetRow row = new DataSetRow();
-        row.set("id", "64a5456ac148b64524ef165");
-        row.set("firstname", "Superman");
+        Map<String, String> values = new HashMap<String, String>() {
+            {
+                put("id", "64a5456ac148b64524ef165");
+                put("firstname", "Superman");
+            }
+        };
+        final DataSetRow row = new DataSetRow(values);
         row.setTdpId(23L);
 
         final String expectedCsv = "{\"firstname\":\"Superman\",\"id\":\"64a5456ac148b64524ef165\",\"tdpId\":23}";

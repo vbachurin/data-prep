@@ -380,6 +380,30 @@ describe('Datagrid style service', function () {
             //then
             expect(result).toBe('<span class="hiddenChars">     </span>my value<span class="hiddenChars">  </span>');
         }));
+
+        it('should add a line breaking arrow at the end of each line', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            var value = 'my \nnew\nvalue';
+
+            //when
+            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+
+            //then
+            expect(result).toBe('my ↵\nnew↵\nvalue');
+        }));
+
+        it('should adapt input with line breaking arrow and leading/trailing spaces spans', inject(function (DatagridStyleService) {
+            //given
+            DatagridStyleService.init(gridMock);
+            var value = '     my \nnew\nvalue  ';
+
+            //when
+            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
+
+            //then
+            expect(result).toBe('<span class="hiddenChars">     </span>my ↵\nnew↵\nvalue<span class="hiddenChars">  </span>');
+        }));
     });
 
     describe('column formatter', function() {

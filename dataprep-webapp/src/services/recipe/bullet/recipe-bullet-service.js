@@ -95,16 +95,12 @@
          * @description On step button leave : reset steps button highlight
          */
         this.stepHoverEnd = function (step) {
-            var stepColumnId;
-            if(step){
-                stepColumnId = step.column.id;
-            }
             _.forEach(RecipeService.getRecipe(), function (element) {
                 element.highlight = false;
             });
 
             $timeout.cancel(previewTimeout);
-            previewTimeout = $timeout(PreviewService.cancelPreview.bind(null, false, stepColumnId), 100);
+            previewTimeout = $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id), 100);
         };
 
         //---------------------------------------------------------------------------------------------

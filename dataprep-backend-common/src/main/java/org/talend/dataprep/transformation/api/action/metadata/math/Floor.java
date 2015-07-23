@@ -27,7 +27,7 @@ public class Floor extends AbstractRound {
     public static final String FLOOR_ACTION_NAME = "floor"; //$NON-NLS-1$
 
     /**
-     * @see ActionMetadata#getName()
+     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getName()
      */
     @Override
     public String getName() {

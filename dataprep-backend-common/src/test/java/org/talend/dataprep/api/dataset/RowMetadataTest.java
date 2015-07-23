@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ public class RowMetadataTest {
     public void no_diff() {
         // given
         List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(getColumnMetadata("0", "toto"));
-        columns.add(getColumnMetadata("1", "tata"));
-        columns.add(getColumnMetadata("2", "tutu"));
+        columns.add(getColumnMetadata("toto"));
+        columns.add(getColumnMetadata("tata"));
+        columns.add(getColumnMetadata("tutu"));
         RowMetadata rowMetadata = new RowMetadata(columns);
 
         // when
@@ -39,26 +40,27 @@ public class RowMetadataTest {
 
         // given
         List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(getColumnMetadata("0", "toto"));
+        columns.add(getColumnMetadata("toto", 0));
         RowMetadata reference = new RowMetadata(columns);
 
         // when
-        List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(getColumnMetadata("1", "tata")); // new column
-        expected.add(getColumnMetadata("2", "titi")); // new column
-        List<ColumnMetadata> temp = new ArrayList<>();
-        temp.addAll(columns);
-        temp.addAll(expected);
-        RowMetadata row = new RowMetadata(temp);
+        List<ColumnMetadata> rowCols = new ArrayList<>();
+        rowCols.add(getColumnMetadata("tata", 1)); // new column
+        rowCols.add(reference.getColumns().get(0));
+        rowCols.add(getColumnMetadata("titi", 2)); // new column
+        RowMetadata row = new RowMetadata(rowCols);
+
         row.diff(reference);
 
-        // then (collect the columns with the new flag only and compare them with
-        // the expected result)
-        List<ColumnMetadata> actual = row.getColumns().stream() //
-                .filter(column -> Flag.NEW.getValue().equals(column.getDiffFlagValue())) //
-                .collect(Collectors.toList());
+        // then checks the diff flags as well as the order
+        checkColumn(row.getColumns().get(0), "tata", Flag.NEW.getValue()); // tata (new)
+        checkColumn(row.getColumns().get(1), "toto", null); // toto
+        checkColumn(row.getColumns().get(2), "titi", Flag.NEW.getValue()); // titi (new)
+    }
 
-        assertEquals(expected, actual);
+    private void checkColumn(ColumnMetadata column, String name, String flag) {
+        assertEquals(column.getName(), name);
+        assertEquals(column.getDiffFlagValue(), flag);
     }
 
     @Test
@@ -66,28 +68,22 @@ public class RowMetadataTest {
 
         // given
         List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(getColumnMetadata("0", "toto"));
+        columns.add(getColumnMetadata("toto", 1));
 
-        List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(getColumnMetadata("1", "tata"));
-        expected.add(getColumnMetadata("2", "titi"));
-
-        List<ColumnMetadata> temp = new ArrayList<>();
-        temp.addAll(columns);
-        temp.addAll(expected);
-        RowMetadata reference = new RowMetadata(temp);
+        List<ColumnMetadata> cols = new ArrayList<>();
+        cols.add(getColumnMetadata("tata", 0));
+        cols.add(columns.get(0));
+        cols.add(getColumnMetadata("titi", 2));
+        RowMetadata reference = new RowMetadata(cols);
 
         // when
         RowMetadata row = new RowMetadata(columns); // deleted columns 1 & 2
         row.diff(reference);
 
-        // then (collect the columns with the new flag only and compare them with
-        // the expected result)
-        List<ColumnMetadata> actual = row.getColumns().stream() //
-                .filter(column -> Flag.DELETE.getValue().equals(column.getDiffFlagValue())) //
-                .collect(Collectors.toList());
-
-        assertEquals(expected, actual);
+        // then checks the diff flags as well as the order
+        checkColumn(row.getColumns().get(0), "tata", Flag.DELETE.getValue()); // tata (new)
+        checkColumn(row.getColumns().get(1), "toto", null); // toto
+        checkColumn(row.getColumns().get(2), "titi", Flag.DELETE.getValue()); // titi (new)
     }
 
     @Test
@@ -95,11 +91,11 @@ public class RowMetadataTest {
 
         // given
         List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(getColumnMetadata("0", "toto"));
+        columns.add(getColumnMetadata("toto"));
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(getColumnMetadata("1", "tata"));
-        expected.add(getColumnMetadata("2", "titi"));
+        expected.add(getColumnMetadata("tata"));
+        expected.add(getColumnMetadata("titi"));
 
         List<ColumnMetadata> temp = new ArrayList<>();
         temp.addAll(columns);
@@ -109,8 +105,8 @@ public class RowMetadataTest {
         // when
         temp = new ArrayList<>();
         temp.addAll(columns);
-        temp.add(getColumnMetadata("1", "new tata name")); // updated name
-        temp.add(getColumnMetadata("2", "new titi name")); // updated name
+        temp.add(getColumnMetadata("new tata name")); // updated name
+        temp.add(getColumnMetadata("new titi name")); // updated name
         RowMetadata row = new RowMetadata(temp);
         row.diff(reference);
 
@@ -121,17 +117,40 @@ public class RowMetadataTest {
                 .collect(Collectors.toList());
 
         assertEquals(actual.size(), 2);
-        assertTrue(actual.get(0).getId().equals("1"));
-        assertTrue(actual.get(1).getId().equals("2"));
+        assertThat(actual.get(0).getId(), is("0001"));
+        assertThat(actual.get(1).getId(), is("0002"));
+    }
 
+    @Test
+    public void clone_should_duplicate_columns() {
+        // given
+        List<ColumnMetadata> columns = new ArrayList<>();
+        columns.add(getColumnMetadata("toto", 2));
+        RowMetadata row = new RowMetadata(columns);
+
+        // when
+        RowMetadata clone = row.clone();
+        clone.getColumns().get(0).setName("NOT toto");
+
+        // then
+        assertEquals(row.getColumns().get(0).getName(), "toto");
     }
 
     /**
-     * @param id the column id.
      * @param name the column name.
      * @return a new column.
      */
-    private ColumnMetadata getColumnMetadata(String id, String name) {
-        return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).build();
+    private ColumnMetadata getColumnMetadata(String name) {
+        return ColumnMetadata.Builder.column().name(name).type(Type.STRING).build();
     }
+
+    /**
+     * @param name the column name.
+     * @param id the column id.
+     * @return a new column.
+     */
+    private ColumnMetadata getColumnMetadata(String name, int id) {
+        return ColumnMetadata.Builder.column().name(name).type(Type.STRING).id(id).build();
+    }
+
 }

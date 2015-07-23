@@ -54,23 +54,21 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             return contentCache.get(preparation.id(), Step.ROOT_STEP.id());
         }
 
-        // Not in cache : call the real service
         final HttpGet contentRetrieval = new HttpGet(datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata="
                 + metadata + "&columns=" + columns);
         final HttpResponse response = client.execute(contentRetrieval);
-        return handleResponse(response, contentRetrieval);
+        return handleResponse(response, contentRetrieval, preparation);
     }
 
-    private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval) throws IOException {
+    private InputStream handleResponse(final HttpResponse response, final HttpGet contentRetrieval, Preparation preparation)
+            throws IOException {
         int statusCode = response.getStatusLine().getStatusCode();
-
         // No cache, query the data set service for content
         if (statusCode == HttpStatus.SC_NO_CONTENT) {
             // Immediately release connection
             contentRetrieval.releaseConnection();
             return new ByteArrayInputStream(new byte[0]);
         } else if (statusCode == HttpStatus.SC_OK) {
-            final Preparation preparation = Preparation.defaultPreparation(dataSetId);
             final OutputStream cacheEntry = contentCache.put(preparation.id(), Step.ROOT_STEP.id(), ContentCache.TimeToLive.DEFAULT);
             final InputStream content = response.getEntity().getContent();
             final InputStream dataSetInput = new ReleasableInputStream(content, contentRetrieval::releaseConnection);

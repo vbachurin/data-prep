@@ -45,11 +45,12 @@ public class UpperCase extends SingleColumnAction {
             String columnId = parameters.get(COLUMN_ID);
             String value = row.get(columnId);
             if (value == null) {
-                return;
+                return row;
             }
 
             String newValue = value.toUpperCase();
             row.set(columnId, newValue);
+            return row;
         }).build();
     }
 

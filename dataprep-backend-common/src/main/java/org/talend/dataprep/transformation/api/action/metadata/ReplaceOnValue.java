@@ -66,6 +66,8 @@ public class ReplaceOnValue extends SingleColumnAction {
                 final String toReplace = parameters.get(REPLACE_VALUE_PARAMETER);
                 row.set(columnName, toReplace);
             }
+
+            return row;
         }).build();
     }
 

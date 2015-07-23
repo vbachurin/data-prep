@@ -59,6 +59,8 @@ public class AbsoluteInt extends AbstractAbsolute {
                     row.set(columnName, absValueStr);
                 }
             }
+
+            return row;
         }).build();
     }
 

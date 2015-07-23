@@ -52,6 +52,7 @@ public class Negate extends SingleColumnAction {
                 Boolean boolValue = Boolean.valueOf(value);
                 row.set(columnName, WordUtils.capitalizeFully("" + !boolValue)); //$NON-NLS-1$
             }
+            return row;
         }).build();
     }
 

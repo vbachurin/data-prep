@@ -12,22 +12,16 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+
+import java.util.Map;
+
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 
 /**
  * This will compute the absolute value for numerical columns.
@@ -57,13 +51,15 @@ public class AbsoluteFloat extends AbstractAbsolute {
 
             if (value != null) {
                 absValueStr = executeOnFloat(value);
-                if(absValueStr == null) {
+                if (absValueStr == null) {
                     absValueStr = executeOnLong(value);
                 }
-                if(absValueStr != null) {
+                if (absValueStr != null) {
                     row.set(columnName, absValueStr);
                 }
             }
+
+            return row;
         }).build();
     }
 

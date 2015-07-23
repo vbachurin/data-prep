@@ -44,11 +44,12 @@ public class LowerCase extends SingleColumnAction {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             if (value == null) {
-                return;
+                return row;
             }
 
             String newValue = value.toLowerCase();
             row.set(columnName, newValue);
+            return row;
         }).build();
     }
 
