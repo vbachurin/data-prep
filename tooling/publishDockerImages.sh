@@ -1,12 +1,5 @@
 #! /bin/bash
 
-# called after a build. Do the following:
-# - tags images with talend-registry
-# - saves images as a tar
-# - gzip this tar
-# - upload tar.gz to ftp
-# - push images to talend-registry
-
 cd `dirname $0`
 
 version=$1
@@ -16,9 +9,13 @@ if [ -z "$version"  ]; then
   exit 1
 fi
 
-images='talend/dataprep-api talend/dataprep-dataset talend/dataprep-transformation talend/dataprep-preparation talend/dataprep-webapp'
 registry=talend-registry:5000
+
+# folder (on local machine) where to put bins at the end (where builds can be downloaded)
 path_for_bins=/home/build-admin/Products/data-prep/
+path_for_bins=/tmp/tagada/
+
+# the fig file, that will be publish with the docker images
 original_fig_file='../dataprep-platform/src/main/resources/fig_backend_data_web.yml'
 
 # use to name produced files in code bellow
@@ -27,7 +24,7 @@ timestamp=`date +%Y%m%d%H%M%S`
 tar_archive='dataprep-images_'$version'_'$timestamp'.tar'
 final_fig_file='dataprep-images_'$version'_'$timestamp'.yml'
 
-# tags locally produces docker images with registry name (in order to push them later)
+# tags locally produced docker images with registry name (in order to push them later)
 docker_tag() {
   echo '==========================================='
   echo 'docker tag'
@@ -40,19 +37,31 @@ docker_tag() {
   echo ' '
 }
 
+# based on the modified docker-compose file, computes 3 lists:
+computes_docker_images_lists() {
+  # list of images that are not build on this server, and then should be pulled before added to tar:
+  external_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -E 'mongo|data:'`
+
+  # list of images that are build on this server:
+  internal_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E 'mongo|data:'`
+
+  # all images:
+  list=$internal_list' '$external_list
+}
+
+# explicitely pulls images produced externally, to be sure to put the last version in the archive:
+pull_external() {
+  for image in $external_list;
+  do
+    docker pull $image
+  done
+}
+
 build_archive_images() {
   echo '==========================================='
   echo 'archive images'
   echo '==========================================='
-  for image in $images;
-  do
-    list+=$registry/$image:$version
-    list+=' '
-  done
-  list+=$registry'/talend/dataprep-data:'$version' mongo:latest'
 
-  docker pull $registry'/talend/dataprep-data:'$version
-  docker pull mongo:latest
   echo 'docker save to '$tar_archive
   time docker save --output=$tar_archive $list
 
@@ -80,7 +89,7 @@ push_docker_images() {
   echo 'docker push'
   echo '==========================================='
 
-  for image in $images;
+  for image in $internal_list;
   do
     completeName=$image:$version
     time docker push $registry/$completeName
@@ -91,6 +100,8 @@ push_docker_images() {
 
 docker_tag
 produce_compose_file
+computes_docker_images_lists
+pull_external
 build_archive_images
 publish_files
 push_docker_images
