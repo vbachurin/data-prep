@@ -1,12 +1,6 @@
 {
   "actions": [
     {
-      "action": "uppercase",
-      "parameters": {
-        "column_id": "lastname"
-      }
-    },
-    {
       "action": "lowercase",
       "parameters": {
         "column_id": "firstname"

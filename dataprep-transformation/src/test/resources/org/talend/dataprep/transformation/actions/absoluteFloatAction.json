@@ -1,0 +1,10 @@
+{
+  "actions": [
+    {
+      "action": "absolute_float",
+      "parameters": {
+        "column_id": "avgAmount"
+      }
+    }
+  ]
+}
