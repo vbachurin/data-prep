@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 
 @Component(ProperCase.ACTION_BEAN_PREFIX + ProperCase.PROPER_CASE_ACTION_NAME)
 public class ProperCase extends SingleColumnAction {
@@ -33,6 +35,7 @@ public class ProperCase extends SingleColumnAction {
             if (value != null) {
                 row.set(columnName, WordUtils.capitalizeFully(value));
             }
+            return row;
         }).build();
     }
 

@@ -137,8 +137,9 @@ describe('Preparation list directive', function() {
         element.remove();
     });
 
-    it('should render preparations tiles', function() {
+    it('should render preparations tiles', inject(function($filter) {
         //given
+        var momentize = $filter('TDPMoment');
 
         //when
         createElement();
@@ -153,8 +154,7 @@ describe('Preparation list directive', function() {
         var stepsDetails = preparationTiles.eq(0).find('.details').eq(1).text();
 
         expect(description).toContain('anonymousUser'); //owner
-        expect(description).toContain('27'); //creation date day
-        expect(description).toContain('2015'); //creation date year
+        expect(description).toContain(momentize('1427447300300')); //lastModification date ago
         expect(datasetName).toContain('customers_jso_light'); //dataset name
         expect(datasetRowsDetails).toContain('15'); //dataset nb records
         expect(stepsDetails).toContain('3'); //steps
@@ -165,10 +165,9 @@ describe('Preparation list directive', function() {
         stepsDetails = preparationTiles.eq(1).find('.details').eq(1).text();
 
         expect(description).toContain('anonymousUser'); //owner
-        expect(description).toContain('27'); //creation date day
-        expect(description).toContain('2015'); //creation date year
+        expect(description).toContain(momentize('1427447330693')); //lastModification date ago
         expect(datasetName).toContain('first_interactions'); //dataset name
         expect(datasetRowsDetails).toContain('29379'); //dataset nb records
         expect(stepsDetails).toContain('3'); //steps
-    });
+    }));
 });

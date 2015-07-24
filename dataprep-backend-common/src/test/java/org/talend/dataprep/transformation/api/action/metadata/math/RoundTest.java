@@ -20,12 +20,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
@@ -40,7 +40,7 @@ public class RoundTest {
     private Round roundAction;
 
     /** The consumer out of the consumer. */
-    private BiConsumer<DataSetRow, TransformationContext> consumer;
+    private DataSetRowAction consumer;
 
     /**
      * Constructor.
@@ -64,7 +64,7 @@ public class RoundTest {
         values.put("aNumber", input);
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertEquals(expected, dsr.get("aNumber"));
     }
 

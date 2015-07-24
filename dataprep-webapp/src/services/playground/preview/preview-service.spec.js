@@ -1,4 +1,4 @@
-describe('Preparation Service', function () {
+describe('Preview Service', function () {
     'use strict';
 
     var gridRangeIndex = {top: 0, bottom: 5};
@@ -78,10 +78,11 @@ describe('Preparation Service', function () {
     beforeEach(inject(function ($q, PreviewService, DatagridService, PreparationService) {
         DatagridService.data = data;
         PreviewService.gridRangeIndex = gridRangeIndex;
-        
+
         spyOn(PreparationService, 'getPreviewDiff').and.returnValue($q.when(diff));
         spyOn(PreparationService, 'getPreviewUpdate').and.returnValue($q.when(diff));
         spyOn(DatagridService, 'updateData').and.returnValue(null);
+        spyOn(DatagridService, 'setFocusedColumn').and.returnValue();
 
         //simulate datagrid get item to have displayedTdpIds = [0,1,2,6,7,10]
         spyOn(DatagridService.dataView, 'getItem').and.callFake(function(id) {
@@ -101,16 +102,27 @@ describe('Preparation Service', function () {
             }
             return null;
         });
+
+        //simulate datagrid get index from original array by TDP ID. Here we consider tdpId = row index in the record array
+        spyOn(DatagridService.dataView, 'getIdxById').and.callFake(function(tdpId) {
+            return tdpId;
+        });
     }));
 
     it('should call and display a diff preview', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
         //given
-        var currentStep = {transformation: { stepId: '1'}};
-        var previewStep = {transformation: { stepId: '2'}};
+        var currentStep = {
+            column:{id:'0001'},
+            transformation: { stepId: '1'}
+        };
+        var previewStep = {
+            column:{id:'0002'},
+            transformation: { stepId: '2'}
+        };
         var displayedTdpIds = [0,1,2,6,7,10];
 
         //when
-        PreviewService.getPreviewDiffRecords(currentStep, previewStep);
+        PreviewService.getPreviewDiffRecords(currentStep, previewStep, '0001');
         $rootScope.$digest();
 
         //then
@@ -122,6 +134,7 @@ describe('Preparation Service', function () {
         expect(previewArgs[2]).toEqual(displayedTdpIds);
 
         expect(DatagridService.updateData).toHaveBeenCalledWith(modifiedData);
+        expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith('0001');
     }));
 
     it('should filter preview records according to active filters', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
@@ -134,7 +147,7 @@ describe('Preparation Service', function () {
         });
 
         //when
-        PreviewService.getPreviewDiffRecords(currentStep, previewStep);
+        PreviewService.getPreviewDiffRecords(currentStep, previewStep, '000');
         $rootScope.$digest();
 
         //then
@@ -146,8 +159,14 @@ describe('Preparation Service', function () {
 
     it('should call and display a update preview', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
         //given
-        var currentStep = {transformation: { stepId: '1'}};
-        var previewStep = {transformation: { stepId: '2'}};
+        var currentStep = {
+            column:{id:'0001'},
+            transformation: { stepId: '1'}
+        };
+        var previewStep = {
+            column:{id:'0002'},
+            transformation: { stepId: '2'}
+        };
         var newParams = {value: '--'};
         var displayedTdpIds = [0,1,2,6,7,10];
 
@@ -164,6 +183,7 @@ describe('Preparation Service', function () {
         expect(previewArgs[2]).toBe(newParams);
         expect(previewArgs[3]).toEqual(displayedTdpIds);
 
+        expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith('0001');
         expect(DatagridService.updateData).toHaveBeenCalledWith(modifiedData);
     }));
 

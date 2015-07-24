@@ -4,7 +4,7 @@
     /**
      * @ngdoc service
      * @name data-prep.services.preparation.service:PreparationService
-     * @description Preparation list service. his service manage the operations that touches the preparations
+     * @description Preparation list service. this service manage the operations that touches the preparations
      * @requires data-prep.services.preparation.service:PreparationListService
      * @requires data-prep.services.preparation.service:PreparationRestService
      * @requires data-prep.services.dataset.service:DatasetListService
@@ -31,6 +31,7 @@
             //preparation lifecycle
             create: create,
             delete: deletePreparation,
+            deleteCurrentPreparation: deleteCurrentPreparation,
 
             //update preparation
             setName: setName,
@@ -157,6 +158,20 @@
                 .then(consolidatePreparationsAndDatasets);
         }
 
+        /**
+         * @ngdoc method
+         * @name deleteCurrentPreparation
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @description Delete the current preparation
+         * @returns {promise} The DELETE promise
+         */
+        function deleteCurrentPreparation() {
+            var preparationToDelete = _.find(PreparationListService.preparations, function(preparation) {
+                return preparation.id === service.currentPreparationId;
+            });
+            return deletePreparation(preparationToDelete);
+        }
+
         //---------------------------------------------------------------------------------
         //----------------------------------------UPDATE-----------------------------------
         //---------------------------------------------------------------------------------
@@ -195,7 +210,7 @@
         function updateStep(step, parameters) {
             parameters = parameters || {};
             insertColumnInfo(parameters, step.column);
-            return PreparationListService.updateStep(service.currentPreparationId, step, parameters);
+            return PreparationRestService.updateStep(service.currentPreparationId, step.transformation.stepId, step.transformation.name, parameters);
         }
 
 
@@ -226,10 +241,10 @@
         function appendStep(metadata, action, column, parameters) {
             parameters = parameters || {};
             insertColumnInfo(parameters, column);
-            var promise = service.currentPreparationId ? $q.when(service.currentPreparationId) : create(metadata, 'New preparation');
+            var promise = service.currentPreparationId ? $q.when(service.currentPreparationId) : create(metadata, 'Preparation draft');
 
             return promise.then(function() {
-                return PreparationListService.appendStep(service.currentPreparationId, action, parameters);
+                return PreparationRestService.appendStep(service.currentPreparationId, action, parameters);
             });
         }
 

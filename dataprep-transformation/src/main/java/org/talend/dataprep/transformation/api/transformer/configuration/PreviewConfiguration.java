@@ -17,12 +17,12 @@ public class PreviewConfiguration extends Configuration {
     private final String previewActions;
 
     /** Indexes of rows (used in diff). */
-    private final List<Integer> indexes;
+    private final List<Long> indexes;
 
     /** List of transformation context, one per action. */
     private final TransformationContext context = new TransformationContext();
 
-    protected PreviewConfiguration(Configuration configuration, String previewActions, List<Integer> indexes) {
+    protected PreviewConfiguration(Configuration configuration, String previewActions, List<Long> indexes) {
         super(configuration.output(), configuration.format(), configuration.getActions(), configuration.getArguments(), configuration.volume());
         this.previewActions = previewActions;
         this.indexes = indexes;
@@ -40,7 +40,7 @@ public class PreviewConfiguration extends Configuration {
         return context;
     }
 
-    public List<Integer> getIndexes() {
+    public List<Long> getIndexes() {
         return indexes;
     }
 
@@ -58,13 +58,13 @@ public class PreviewConfiguration extends Configuration {
     public static class Builder {
 
         /** Indexes of rows. */
-        private List<Integer> indexes;
+        private List<Long> indexes;
 
         private String previewActions;
 
         private Configuration reference;
 
-        private List<Integer> parseIndexes(final String indexes) {
+        private List<Long> parseIndexes(final String indexes) {
             if (indexes == null) {
                 return null;
             }
@@ -72,9 +72,9 @@ public class PreviewConfiguration extends Configuration {
                 final ObjectMapper mapper = new ObjectMapper(new JsonFactory());
                 final JsonNode json = mapper.readTree(indexes);
 
-                final List<Integer> result = new ArrayList<>(json.size());
+                final List<Long> result = new ArrayList<>(json.size());
                 for (JsonNode index : json) {
-                    result.add(index.intValue());
+                    result.add(index.longValue());
                 }
                 return result;
             } catch (IOException e) {
@@ -82,17 +82,17 @@ public class PreviewConfiguration extends Configuration {
             }
         }
 
-        public Builder withIndexes(String indexes) {
+        public Builder withIndexes(final String indexes) {
             this.indexes = parseIndexes(indexes);
             return this;
         }
 
-        public Builder withActions(String previewActions) {
+        public Builder withActions(final String previewActions) {
             this.previewActions = previewActions;
             return this;
         }
 
-        public Builder fromReference(Configuration reference) {
+        public Builder fromReference(final Configuration reference) {
             this.reference = reference;
             return this;
         }

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -31,6 +30,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -45,10 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ExtractEmailDomainTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
-    /** The metadata consumer to test. */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private DataSetRowAction rowClosure;
 
     /** The action to test. */
     private ExtractEmailDomain action;
@@ -65,7 +62,6 @@ public class ExtractEmailDomainTest {
         Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").fields());
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
-        metadataClosure = action.getMetadataAction();
     }
 
     @Test
@@ -81,38 +77,38 @@ public class ExtractEmailDomainTest {
     @Test
     public void test_values() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("email", "david.bowie@yopmail.com");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "david.bowie@yopmail.com");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("email", "david.bowie@yopmail.com");
-        expectedValues.put("email_local", "david.bowie");
-        expectedValues.put("email_domain", "yopmail.com");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "david.bowie@yopmail.com");
+        expectedValues.put("0003", "david.bowie");
+        expectedValues.put("0004", "yopmail.com");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
     @Test
     public void test_values_invalid() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("email", "david.bowie");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "david.bowie");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("email", "david.bowie");
-        expectedValues.put("email_local", "");
-        expectedValues.put("email_domain", "");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "david.bowie");
+        expectedValues.put("0003", "");
+        expectedValues.put("0004", "");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -122,20 +118,48 @@ public class ExtractEmailDomainTest {
     @Test
     public void test_metadata() {
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("email", "email"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "email"));
+        input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        DataSetRow row = new DataSetRow(rowMetadata);
+        row = rowClosure.apply(row, new TransformationContext());
+        List<ColumnMetadata> actual = row.getRowMetadata().getColumns();
+
+        List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "email"));
+        expected.add(createMetadata("0003", "email_local"));
+        expected.add(createMetadata("0004", "email_domain"));
+        expected.add(createMetadata("0002", "last update"));
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * @see Action#getMetadataAction()
+     */
+    @Test
+    public void test_metadata_with_multiple_executions() {
+        List<ColumnMetadata> input = new ArrayList<>();
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "email"));
+        input.add(createMetadata("0002", "last update"));
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("email", "email"));
-        expected.add(createMetadata("email_local", "email_local"));
-        expected.add(createMetadata("email_domain", "email_domain"));
-        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "email"));
+        expected.add(createMetadata("0005", "email_local"));
+        expected.add(createMetadata("0006", "email_domain"));
+        expected.add(createMetadata("0003", "email_local"));
+        expected.add(createMetadata("0004", "email_domain"));
+        expected.add(createMetadata("0002", "last update"));
 
         assertEquals(expected, actual);
     }

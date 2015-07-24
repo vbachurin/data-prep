@@ -11,6 +11,7 @@ describe('Playground Service', function () {
         spyOn(FilterService, 'removeAllFilters').and.returnValue();
         spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
         spyOn(DatagridService, 'setDataset').and.returnValue();
+        spyOn(DatagridService, 'setFocusedColumn').and.returnValue();
         spyOn(PreparationService, 'create').and.returnValue($q.when(true));
         spyOn(PreparationService, 'setName').and.returnValue($q.when(true));
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
@@ -102,6 +103,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).toHaveBeenCalled();
                 expect(DatagridService.setDataset).toHaveBeenCalledWith(dataset, content);
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
+                expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(null);
                 expect(ColumnSuggestionService.reset).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
             };
@@ -110,6 +112,7 @@ describe('Playground Service', function () {
                 expect(RecipeService.refresh).not.toHaveBeenCalled();
                 expect(DatagridService.setDataset).not.toHaveBeenCalled();
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
+                expect(DatagridService.setFocusedColumn).not.toHaveBeenCalled();
                 expect(ColumnSuggestionService.reset).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
             };
@@ -298,16 +301,21 @@ describe('Playground Service', function () {
             expect($rootScope.$emit).not.toHaveBeenCalled();
         }));
 
-        it('should load preparation content at a specific step', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
+        it('should load preparation content at a specific step with the clicked step', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
             //given
             var step = {
+                column: {id: '0000'},
                 transformation: {stepId: 'a4353089cb0e039ac2'}
+            };
+            var justDeactivatedStep = {
+                column: {id: '0001'},
+                transformation: {stepId: 'bbb53089cb0e039ac2'}
             };
             var metadata = {id: '1', name: 'my dataset'};
             PlaygroundService.currentMetadata = metadata;
 
             //when
-            PlaygroundService.loadStep(step);
+            PlaygroundService.loadStep(step, justDeactivatedStep);
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
             $rootScope.$apply();
 
@@ -317,12 +325,39 @@ describe('Playground Service', function () {
             expect(RecipeService.refresh).not.toHaveBeenCalled();
             expect(RecipeService.disableStepsAfter).toHaveBeenCalledWith(step);
             expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, data);
+            expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith('0001');
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
+        }));
+
+        it('should load preparation content at a specific step without the clicked step', inject(function($rootScope, PlaygroundService, FilterService, RecipeService, DatagridService) {
+            //given
+            var step = {
+                column: {id: '0000'},
+                transformation: {stepId: 'a4353089cb0e039ac2'}
+            };
+            var justDeactivatedStep = null;
+            var metadata = {id: '1', name: 'my dataset'};
+            PlaygroundService.currentMetadata = metadata;
+
+            //when
+            PlaygroundService.loadStep(step, justDeactivatedStep);
+            expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
+            $rootScope.$apply();
+
+            //then
+            expect(PlaygroundService.currentMetadata).toBe(metadata);
+            expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
+            expect(RecipeService.refresh).not.toHaveBeenCalled();
+            expect(RecipeService.disableStepsAfter).toHaveBeenCalledWith(step);
+            expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, data);
+            expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith('0000');
             expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.stop');
         }));
 
         it('should do nothing if current step (threshold between active and inactive) is already selected', inject(function($rootScope, PlaygroundService, RecipeService, PreparationService) {
             //given
             var step = {
+                column: {id: '0000'},
                 transformation: {stepId: 'a4353089cb0e039ac2'}
             };
             spyOn(RecipeService, 'getActiveThresholdStep').and.returnValue(step);
@@ -473,6 +508,7 @@ describe('Playground Service', function () {
 
                 //then
                 expect(PreparationService.getContent).toHaveBeenCalledWith('head', 'full');
+                expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
                 expect(DatagridService.updateData).toHaveBeenCalledWith(result);
             }));
 
@@ -491,7 +527,7 @@ describe('Playground Service', function () {
                     expect(HistoryService.addAction).toHaveBeenCalled();
                 }));
 
-                it('should remove the transformation on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService) {
+                it('should remove the transformation on UNDO', inject(function(DatagridService, $rootScope, PlaygroundService, HistoryService, PreparationService) {
                     //given
                     var action = 'uppercase';
                     var column = {id: 'firstname'};
@@ -508,9 +544,10 @@ describe('Playground Service', function () {
 
                     //then
                     expect(PreparationService.removeStep).toHaveBeenCalledWith('a151e543456413ef51');
+                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
                 }));
 
-                it('should refresh recipe on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, RecipeService) {
+                it('should refresh recipe on UNDO', inject(function($rootScope, DatagridService, PlaygroundService, HistoryService, RecipeService) {
                     //given
                     var action = 'uppercase';
                     var column = {id: 'firstname'};
@@ -528,6 +565,7 @@ describe('Playground Service', function () {
 
                     //then
                     expect(RecipeService.refresh.calls.count()).toBe(2);
+                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
                 }));
 
                 it('should refresh datagrid content on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService, DatagridService) {
@@ -550,6 +588,7 @@ describe('Playground Service', function () {
                     //then
                     expect(PreparationService.getContent.calls.count()).toBe(2);
                     expect(PreparationService.getContent.calls.argsFor(1)[0]).toBe('head');
+                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
                     expect(DatagridService.updateData.calls.count()).toBe(2);
                     expect(DatagridService.updateData.calls.argsFor(1)[0]).toBe(result);
                 }));
@@ -559,6 +598,7 @@ describe('Playground Service', function () {
         describe('update', function() {
             var lastActiveIndex = 5;
             var lastActiveStep = {
+                column:{id:'0000'},
                 transformation: {stepId: '24a457bc464e645'},
                 actionParameters: {
                     action: 'touppercase'
@@ -566,6 +606,7 @@ describe('Playground Service', function () {
             };
             var oldParameters = {value: 'toto', column_id: '0001'};
             var stepToUpdate = {
+                column:{id:'0001'},
                 transformation: {stepId: '98a7565e4231fc2c7'},
                 actionParameters: {
                     action: 'delete_on_value',
@@ -630,6 +671,7 @@ describe('Playground Service', function () {
 
                 //then
                 expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, 'full');
+                expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(lastActiveStep.column.id);
                 expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, result);
             }));
 
@@ -704,6 +746,7 @@ describe('Playground Service', function () {
                     expect(PreparationService.getContent.calls.count()).toBe(2);
                     expect(PreparationService.getContent.calls.argsFor(1)[0]).toBe(lastActiveStep.transformation.stepId);
                     expect(DatagridService.setDataset.calls.count()).toBe(2);
+                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(lastActiveStep.column.id);
                     expect(DatagridService.setDataset.calls.argsFor(1)[0]).toBe(metadata);
                     expect(DatagridService.setDataset.calls.argsFor(1)[1]).toBe(result);
                 }));

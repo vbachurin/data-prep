@@ -19,6 +19,7 @@
          * @type {Object}
          */
         self.metadata = null;
+
         /**
          * @ngdoc property
          * @name data
@@ -27,6 +28,15 @@
          * @type {Object}
          */
         self.data = null;
+
+        /**
+         * @ngdoc property
+         * @name stepColumn
+         * @propertyOf data-prep.services.playground.service:DatagridService
+         * @description the column of the current step
+         * @type {number}
+         */
+        self.stepColumn = null;
 
         /**
          * @ngdoc property
@@ -52,27 +62,12 @@
 
         /**
          * @ngdoc method
-         * @name insertUniqueIds
-         * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {Object[]} records - the records to adapt
-         * @description [PRIVATE] Insert unique id for each record (needed for DataView)
-         */
-        var insertUniqueIds = function (records) {
-            _.forEach(records, function (item, index) {
-                item.tdpId = index;
-            });
-        };
-
-        /**
-         * @ngdoc method
          * @name updateDataviewRecords
          * @methodOf data-prep.services.playground.service:DatagridService
          * @param {Object[]} records - the records to insert
          * @description [PRIVATE] Set dataview records
          */
         var updateDataviewRecords = function (records) {
-            insertUniqueIds(records);
-
             self.dataView.beginUpdate();
             self.dataView.setItems(records, 'tdpId');
             self.dataView.endUpdate();
@@ -88,9 +83,19 @@
          */
         self.setDataset = function (metadata, data) {
             updateDataviewRecords(data.records);
-
             self.metadata = metadata;
             self.data = data;
+        };
+
+        /**
+         * @ngdoc method
+         * @name setFocusedColumn
+         * @methodOf data-prep.services.playground.service:DatagridService
+         * @param {string} focusedColumn - the id of the recently focused column
+         * @description updates the focusedColumn id
+         */
+        self.setFocusedColumn = function (focusedColumn){
+            self.focusedColumn = focusedColumn;
         };
 
         /**

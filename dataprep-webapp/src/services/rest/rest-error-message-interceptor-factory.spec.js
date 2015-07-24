@@ -81,7 +81,7 @@ describe('Rest message interceptor factory', function () {
 
     it('should show expected error message when dataset deletion cannot be processed', inject(function ($rootScope, $http, MessageService) {
         //given
-        $httpBackend.expectGET('testService').respond(400, {code:'TDP_API_UNABLE_TO_DELETE_DATASET'});
+        $httpBackend.expectGET('testService').respond(400, {code:'TDP_API_DATASET_STILL_IN_USE'});
 
         //when
         $http.get('testService');
@@ -90,6 +90,19 @@ describe('Rest message interceptor factory', function () {
 
         //then
         expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'DELETE_DATASET_ERROR');
+    }));
+
+    it('should show generic message when code is unknown', inject(function ($rootScope, $http, MessageService) {
+        //given
+        $httpBackend.expectGET('testService').respond(400, {code:'TDP_XXXXX'});
+
+        //when
+        $http.get('testService');
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(MessageService.error).toHaveBeenCalledWith('SERVER_ERROR_TITLE', 'GENERIC_ERROR');
     }));
 
 });

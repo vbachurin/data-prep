@@ -152,7 +152,7 @@ $border-color: #CECECE;
     border-radius: 5px;
     color: white;
     background-color: $background-blue;
-    .favorite-true{
+    &.favorite-true{
       opacity: 1;
       color: orange;
     }
@@ -163,3 +163,4 @@ $border-color: #CECECE;
   opacity: 1;
   color: orange;
 }
+

@@ -20,7 +20,7 @@ public class HDFS {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HDFS.class);
 
-    @Value("hdfs.location")
+    @Value("${hdfs.location}")
     private String hdfsLocation;
 
     @Bean

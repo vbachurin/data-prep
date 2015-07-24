@@ -13,13 +13,14 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -48,21 +49,6 @@ public class ChangeDatePattern extends SingleColumnAction {
     private static final Parameter CUSTOM_PATTERN_PARAMETER = new Parameter(CUSTOM_PATTERN, Type.STRING.getName(),
             StringUtils.EMPTY);
 
-    /** Name of the old pattern parameter. */
-    protected static final String OLD_PATTERN = "old_pattern"; //$NON-NLS-1$
-
-    /**
-     * @param parameters the parameters.
-     * @return the column id parameter.
-     */
-    private String getColumnIdParameter(Map<String, String> parameters) {
-        String columnId = parameters.get(COLUMN_ID);
-        if (columnId == null) {
-            throw new IllegalArgumentException("Parameter '" + COLUMN_ID + "' is required for this action");
-        }
-        return columnId;
-    }
-
     /**
      * Return the json statistics node.
      *
@@ -86,49 +72,47 @@ public class ChangeDatePattern extends SingleColumnAction {
         String columnId = getColumnIdParameter(parameters);
         SimpleDateFormat newDateFormat = getDateFormat(getNewPattern(parameters));
         return builder().withRow((row, context) -> {
-            // sadly unable to do that outside of the closure since the context is not available
-                SimpleDateFormat currentDateFormat = getDateFormat((String) context.get(OLD_PATTERN));
 
-                // parse the
-                String value = row.get(columnId);
-                Date date = null;
-                try {
-                    date = currentDateFormat.parse(value);
-                    row.set(columnId, newDateFormat.format(date));
-                } catch (ParseException e) {
-                    // cannot parse the date, let's leave it as is
-                }
-            }).withMetadata((rowMetadata, context) -> {
-                // parse and checks the new date pattern
-                String newPattern = getDateFormat(getNewPattern(parameters)).toPattern();
+            // parse and checks the new date pattern
+            final RowMetadata rowMetadata = row.getRowMetadata();
+            String newPattern = getDateFormat(getNewPattern(parameters)).toPattern();
+            JsonFactory jsonFactory = new JsonFactory();
+            ObjectMapper mapper = new ObjectMapper(jsonFactory);
+            ColumnMetadata column = rowMetadata.getById(columnId);
+            // defensive programming
+            if (column == null) {
+                return row;
+            }
+            // store the current pattern in the context
+            JsonNode rootNode = getStatisticsNode(mapper, column);
+            JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
+            String futureExPattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
+            // update the pattern in the column
+            try {
+                ((ObjectNode) mostUsedPatternNode).put("pattern", newPattern); //$NON-NLS-1$
+                StringWriter temp = new StringWriter(1000);
 
-                JsonFactory jsonFactory = new JsonFactory();
-                ObjectMapper mapper = new ObjectMapper(jsonFactory);
-                ColumnMetadata column = rowMetadata.getById(columnId);
-                // defensive programming
-                if (column == null) {
-                    return;
-                }
-
-                // store the current pattern in the context
-                JsonNode rootNode = getStatisticsNode(mapper, column);
-
-                JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-                String futureExPattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
-                context.put(OLD_PATTERN, futureExPattern);
-
-                // update the pattern in the column
-                try {
-                    ((ObjectNode) mostUsedPatternNode).put("pattern", newPattern); //$NON-NLS-1$
-                    StringWriter temp = new StringWriter(1000);
-
-                    JsonGenerator generator = jsonFactory.createGenerator(temp);
-                    mapper.writeTree(generator, rootNode);
-                    column.setStatistics(temp.toString());
-                } catch (IOException e) {
-                    throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
-                }
-            }).build();
+                JsonGenerator generator = jsonFactory.createGenerator(temp);
+                mapper.writeTree(generator, rootNode);
+                column.setStatistics(temp.toString());
+            } catch (IOException e) {
+                throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
+            }
+            // Change the date pattern
+            SimpleDateFormat currentDateFormat = getDateFormat(futureExPattern);
+            String value = row.get(columnId);
+            if (value == null) {
+                return row;
+            }
+            Date date = null;
+            try {
+                date = currentDateFormat.parse(value);
+                row.set(columnId, newDateFormat.format(date));
+            } catch (ParseException e) {
+                // cannot parse the date, let's leave it as is
+            }
+            return row;
+        }).build();
     }
 
     /**
@@ -186,7 +170,7 @@ public class ChangeDatePattern extends SingleColumnAction {
         values.add(new Item.Value("custom", CUSTOM_PATTERN_PARAMETER));
         values.get(0).setDefault(true);
 
-        return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[] {})) };
+        return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()])) };
     }
 
     /**

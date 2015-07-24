@@ -62,22 +62,34 @@
             var indexes = _.range(self.gridRangeIndex.top, self.gridRangeIndex.bottom + 1);
             return  _.chain(indexes)
                 .map(DatagridService.dataView.getItem)
-                .filter(function(item) {
-                    return item;
-                })
                 .value();
         };
 
         /**
          * @ngdoc method
-         * @name getDisplayedRows
+         * @name getDisplayedTdpIds
          * @methodOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] Get the displayed rows TDP ids
-         * @returns {object[]} The displayed rows TDP ids
+         * @description [PRIVATE] Get the rows TDP ids
+         * @params {Array} records The records where to extract the TDP ids
+         * @returns {object[]} The rows TDP ids
          */
-        var getDisplayedTdpIds = function() {
-           return _.map(getDisplayedRows(), function(element) {
+        var getDisplayedTdpIds = function(records) {
+           return _.map(records, function(element) {
                return element.tdpId;
+           });
+        };
+
+        /**
+         * @ngdoc method
+         * @name getRecordsIndexes
+         * @methodOf data-prep.services.playground.service:PreviewService
+         * @description [PRIVATE] Get the rows indexes in the data array
+         * @params {Array} records The records where to extract the indexes
+         * @returns {object[]} The rows indexes
+         */
+        var getRecordsIndexes = function(records) {
+           return _.map(records, function(record) {
+               return DatagridService.dataView.getIdxById(record.tdpId);
            });
         };
 
@@ -118,7 +130,7 @@
          * </ul>
          * @returns {function} The request callback closure
          */
-        var replaceRecords = function(recordsTdpId) {
+        var replaceRecords = function(displayedRows, colIdFromStep) {
             return function(response) {
                 //save the original data
                 originalData = originalData || DatagridService.data;
@@ -128,18 +140,20 @@
                 var viableRecords = filterViableRecord(response.data.records);
 
                 //insert records at the tdp ids insertion points
-                _.forEach(recordsTdpId, function(tdpId) {
+                var recordsIndexes = getRecordsIndexes(displayedRows);
+                _.forEach(recordsIndexes, function(tdpId) {
                     modifiedRecords[tdpId] = viableRecords.shift();
                 });
 
                 //if all viable records are not already inserted, we insert them after the last targeted tdp id
-                var insertionIndex = recordsTdpId[recordsTdpId.length - 1] + 1;
+                var insertionIndex = _.max(recordsIndexes) + 1;
                 while(viableRecords.length) {
                     modifiedRecords[insertionIndex++] = viableRecords.shift();
                 }
 
                 //update grid
                 var data = {columns: response.data.columns, records: modifiedRecords, preview: true};
+                DatagridService.setFocusedColumn(colIdFromStep);
                 DatagridService.updateData(data);
             };
         };
@@ -151,14 +165,15 @@
          * @description Call the diff preview service and replace records in the grid.
          * It cancel the previous preview first
          */
-        self.getPreviewDiffRecords = function(currentStep, previewStep) {
-            self.cancelPreview(true);
+        self.getPreviewDiffRecords = function(currentStep, previewStep, focusedColId) {
+            self.cancelPreview(true, focusedColId);
 
             previewCanceler = $q.defer();
-            displayedTdpIds = getDisplayedTdpIds();
+            var displayedRows = getDisplayedRows();
+            displayedTdpIds = getDisplayedTdpIds(displayedRows);
 
             PreparationService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
-                .then(replaceRecords(displayedTdpIds))
+                .then(replaceRecords(displayedRows, focusedColId))
                 .finally(function() {
                     previewCanceler = null;
                 });
@@ -172,13 +187,15 @@
          * It cancel the previous preview first
          */
         self.getPreviewUpdateRecords = function(currentStep, updateStep, newParams) {
-            self.cancelPreview(true);
+            var focusedColId = currentStep.column.id;
+            self.cancelPreview(true, focusedColId);
 
             previewCanceler = $q.defer();
-            displayedTdpIds = getDisplayedTdpIds();
+            var displayedRows = getDisplayedRows();
+            displayedTdpIds = getDisplayedTdpIds(displayedRows);
 
             PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
-                .then(replaceRecords(displayedTdpIds))
+                .then(replaceRecords(displayedRows, focusedColId))
                 .finally(function() {
                     previewCanceler = null;
                 });
@@ -192,7 +209,7 @@
          * @description Cancel the current preview or the pending preview (resolving the cancel promise).
          * The original records is set back into the datagrid
          */
-        self.cancelPreview = function(partial) {
+        self.cancelPreview = function(partial, focusedColId) {
 
             if(previewCanceler) {
                 previewCanceler.resolve('user cancel');
@@ -200,6 +217,7 @@
             }
 
             if(!partial && originalData) {
+                DatagridService.setFocusedColumn(focusedColId);
                 DatagridService.updateData(originalData);
                 originalData = null;
                 modifiedRecords = null;

@@ -13,8 +13,9 @@
      * @requires data-prep.datagrid.service:DatagridStyleService
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function DatagridColumnService($rootScope, $compile, DatagridStyleService, DatagridService, ConverterService) {
+    function DatagridColumnService($rootScope, $compile, DatagridStyleService, DatagridService, ConverterService, PlaygroundService) {
         var grid;
 
         var gridHeaderPreviewTemplate =
@@ -57,7 +58,7 @@
                 template =  _.template(gridHeaderPreviewTemplate)({
                     name: col.name,
                     diffClass: DatagridStyleService.getColumnPreviewStyle(col),
-                    simpleType: ConverterService.simplifyType(col.type)
+                    simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
                 });
             }
             else {
@@ -70,7 +71,8 @@
                 name: template,
                 formatter: DatagridStyleService.columnFormatter(col),
                 minWidth: 80,
-                tdpColMetadata: col
+                tdpColMetadata: col,
+                editor: Slick.Editors.TalendEditor(PlaygroundService.editCell)
             };
         }
 

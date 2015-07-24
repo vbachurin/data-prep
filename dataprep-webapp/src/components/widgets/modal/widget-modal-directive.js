@@ -111,6 +111,7 @@
                 closeButton: '=',
                 fullscreen: '=',
                 disableEnter: '=',
+                beforeClose: '&',
                 onClose: '&'
             },
             bindToController: true,
@@ -127,6 +128,7 @@
                     var body = angular.element('body');
                     var innerElement = iElement.find('.modal-inner').eq(0);
                     var primaryButton = iElement.find('.modal-primary-button').eq(0);
+                    var hasBeforeEachFn = iAttrs.beforeClose !== undefined;
 
                     /**
                      * @ngdoc method
@@ -135,7 +137,12 @@
                      * @description [PRIVATE] Hide modal action
                      */
                     var hideModal = function() {
-                        $timeout(ctrl.hide);
+                        $timeout(function() {
+                            if(hasBeforeEachFn && !ctrl.beforeClose()) {
+                                return;
+                            }
+                            ctrl.hide();
+                        });
                     };
 
                     /**
@@ -229,10 +236,13 @@
                             innerElement.focus();
 
                             //focus on first input (ignore first because it's the state checkbox)
-                            var inputs = iElement.find('input:not(".no-focus")');
-                            if(inputs.length > 1) {
-                                inputs.eq(1).focus();
-                            }
+                            $timeout(function() {
+                                var inputs = iElement.find('input:not(".no-focus")');
+                                if(inputs.length > 1) {
+                                    inputs.eq(1).focus();
+                                    inputs.eq(1).select();
+                                }
+                            });
                         } else if(oldValue) {
                             ctrl.onClose();
                             deregisterAndFocusOnLastModal(innerElement);

@@ -83,7 +83,8 @@
             //preparation
             createOrUpdatePreparation: createOrUpdatePreparation,
             appendStep: appendStep,
-            updateStep: updateStep
+            updateStep: updateStep,
+            editCell: editCell
         };
         return service;
 
@@ -119,6 +120,7 @@
             FilterService.removeAllFilters();
             RecipeService.refresh();
             StatisticsService.resetCharts();
+            DatagridService.setFocusedColumn(null);
             DatagridService.setDataset(dataset, data);
             TransformationCacheService.invalidateCache();
             ColumnSuggestionService.reset();
@@ -277,7 +279,13 @@
          * @description Load a specific step content in the current preparation, and update the recipe
          * @returns {promise} - the process promise
          */
-        function loadStep(step) {
+        function loadStep(step, justDeactivatedStep) {
+            var colIdFromStep;
+            if(justDeactivatedStep){
+                colIdFromStep = justDeactivatedStep.column.id;
+            }else{
+                colIdFromStep = step.column.id;
+            }
             //step already loaded
             if(RecipeService.getActiveThresholdStep() === step) {
                 return;
@@ -286,6 +294,7 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
+                    DatagridService.setFocusedColumn(colIdFromStep);
                     DatagridService.setDataset(service.currentMetadata, response.data);
                     RecipeService.disableStepsAfter(step);
                 })
@@ -333,7 +342,7 @@
 
             return append().then(function() {
                 var lastStepId = RecipeService.getLastStep().transformation.stepId;
-                var cancelAppend = executeRemoveStep.bind(service, lastStepId);
+                var cancelAppend = executeRemoveStep.bind(service, lastStepId, column);
                 HistoryService.addAction(cancelAppend, append);
             });
         }
@@ -353,7 +362,7 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.appendStep(metadata, action, column, params)
                 .then(function() {
-                    return $q.all([updateRecipe(), updateDatagrid()]);
+                    return $q.all([updateRecipe(), updateDatagrid(column)]);
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
@@ -410,19 +419,27 @@
          * @param {string} stepId The step id to remove
          * @description Perform a transformation removal identified by the step id
          */
-        function executeRemoveStep(stepId) {
+        function executeRemoveStep(stepId, column) {
             return PreparationService.removeStep(stepId)
                 .then(function() {
-                    return $q.all([updateRecipe(), updateDatagrid()]);
+                    return $q.all([updateRecipe(), updateDatagrid(column)]);
                 });
         }
 
+        function editCell(rowItem, colId, newValue, updateAllCellWithValue) {
+            console.log(rowItem);
+            console.log(colId);
+            console.log(newValue);
+            console.log(updateAllCellWithValue);
+            console.log('replace ' + rowItem[colId] + ' with ' + newValue + (updateAllCellWithValue ? ' on all cell with this value' : ' on row ' + rowItem.tdpId));
+        }
         //------------------------------------------------------------------------------------------------------
         //---------------------------------------------------UTILS----------------------------------------------
         //------------------------------------------------------------------------------------------------------
-        function updateDatagrid() {
+        function updateDatagrid(column) {
             return PreparationService.getContent('head', service.selectedSampleSize.value)
                 .then(function(response) {
+                    DatagridService.setFocusedColumn(column.id);
                     DatagridService.updateData(response.data);
                 });
         }
