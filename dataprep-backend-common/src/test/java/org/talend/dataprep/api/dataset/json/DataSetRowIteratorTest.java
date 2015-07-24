@@ -20,7 +20,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 public class DataSetRowIteratorTest {
 
     @Test
-    public void should_iterate_row() throws IOException {
+    public void should_iterate_row_with_id() throws IOException {
 
         // given
         List<DataSetRow> expectedRows = new ArrayList<>();
@@ -30,7 +30,7 @@ public class DataSetRowIteratorTest {
 
         // when
         final InputStream json = DataSetRowIteratorTest.class.getResourceAsStream("datasetrow.json");
-        DataSetRowIterator iterator = new DataSetRowIterator(json);
+        DataSetRowIterator iterator = new DataSetRowIterator(json, true);
 
         List<DataSetRow> actual = new ArrayList<>();
         while (iterator.hasNext()) {
@@ -39,17 +39,42 @@ public class DataSetRowIteratorTest {
 
         // then
         Assert.assertEquals(expectedRows, actual);
+    }
 
+    @Test
+    public void should_iterate_row_without_id() throws IOException {
+
+        // given
+        List<DataSetRow> expectedRows = new ArrayList<>();
+        expectedRows.add(getDataSetRow("Sheriff Woody", "Tom Hanks", "1995–present"));
+        expectedRows.add(getDataSetRow("Buzz Lightyear", "", "1995–present"));
+        expectedRows.add(getDataSetRow("Mr. Potato Head", "Don Rickles", "1995–present"));
+
+        // when
+        final InputStream json = DataSetRowIteratorTest.class.getResourceAsStream("datasetrow.json");
+        DataSetRowIterator iterator = new DataSetRowIterator(json, false);
+
+        List<DataSetRow> actual = new ArrayList<>();
+        while (iterator.hasNext()) {
+            actual.add(iterator.next().clone());
+        }
+
+        // then
+        Assert.assertEquals(expectedRows, actual);
     }
 
     private DataSetRow getDataSetRow(final long tdpId, String... data) {
+        DataSetRow row = getDataSetRow(data);
+        row.setTdpId(tdpId);
+        return row;
+    }
+
+    private DataSetRow getDataSetRow(String... data) {
         final DecimalFormat format = new DecimalFormat("0000");
         final Map<String, String> values = new HashMap<>();
         for (int i = 0; i < data.length; i++) {
             values.put(format.format(i), data[i]);
         }
-        final DataSetRow row = new DataSetRow(values);
-        row.setTdpId(tdpId);
-        return row;
+        return new DataSetRow(values);
     }
 }

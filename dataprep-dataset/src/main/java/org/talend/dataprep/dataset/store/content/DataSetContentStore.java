@@ -45,7 +45,20 @@ public interface DataSetContentStore {
      * @return A valid <b>{@link DataSetRow}</b> stream.
      */
     default Stream<DataSetRow> stream(DataSetMetadata dataSetMetadata) {
-        final Iterable<DataSetRow> rowIterable = () -> new DataSetRowIterator(get(dataSetMetadata));
+        final Iterable<DataSetRow> rowIterable = () -> new DataSetRowIterator(get(dataSetMetadata), true);
+        return StreamSupport.stream(rowIterable.spliterator(), false);
+    }
+
+    /**
+     * Same as {@link DataSetContentStore#stream(DataSetMetadata)} but adds tdpId to the values.
+     *
+     * This is needed by the DQ library that needs columns and values to be the same.
+     *
+     * @param dataSetMetadata The {@link DataSetMetadata data set} to read rows from.
+     * @return A valid <b>{@link DataSetRow}</b> stream with tdpIds.
+     */
+    default Stream<DataSetRow> streamWithoutRowId(DataSetMetadata dataSetMetadata) {
+        final Iterable<DataSetRow> rowIterable = () -> new DataSetRowIterator(get(dataSetMetadata), false);
         return StreamSupport.stream(rowIterable.spliterator(), false);
     }
 
