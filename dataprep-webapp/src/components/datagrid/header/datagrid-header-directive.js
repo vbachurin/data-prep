@@ -19,7 +19,7 @@
      </datagrid-header>
      * @param {object} column The column metadata
      */
-    function DatagridHeader() {
+    function DatagridHeader($timeout) {
         return {
             restrict: 'E',
             templateUrl: 'components/datagrid/header/datagrid-header.html',
@@ -32,6 +32,99 @@
             controller: 'DatagridHeaderCtrl',
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
+
+                    //The double-click on the column header is managed in datagrid-header-directive.js
+                    //whereas the click is managed in widget-dropdown-directive.js
+                    $timeout(function() {
+
+                        var gridHeaderTitle = iElement.find('.grid-header-title');
+                        var gridHeaderTitleInput = null;
+
+                        var updateVal = function () {
+
+                            gridHeaderTitleInput = iElement.find('.grid-header-title-input');
+
+                            //Manage ENTER
+                            gridHeaderTitleInput
+                                .keyup(function (event) {
+                                        if (event.keyCode === 13) {
+                                            if(ctrl.updateEnabled) {
+                                                ctrl.updateColumnName(ctrl.column);
+                                            } else {
+                                                $timeout(function() {
+                                                    ctrl.setEditMode(false);
+                                                });
+                                                event.stopPropagation();
+                                                gridHeaderTitleInput.off('blur');
+                                            }
+
+                                        }
+                                });
+
+                            //Manage ESC
+                            gridHeaderTitleInput
+                                .keydown(function (event) {
+                                    if (event.keyCode === 27) {
+                                        $timeout(function() {
+                                            ctrl.setEditMode(false);
+                                        });
+                                        event.stopPropagation();
+                                        gridHeaderTitleInput.off('blur');
+                                    }
+                                });
+
+                            //Manage Click on input
+                            gridHeaderTitleInput
+                                .on('click', function(e){
+                                    e.preventDefault();  //cancel system double-click event
+                                    e.stopPropagation();
+                                });
+
+                            //Manage Unfocus Input
+                            gridHeaderTitleInput
+                                .on('blur', function () {
+                                    if(ctrl.updateEnabled) {
+                                        ctrl.updateColumnName(ctrl.column);
+                                    } else {
+                                        $timeout(function() {
+                                            ctrl.setEditMode(false);
+                                        });
+                                        event.stopPropagation();
+                                        gridHeaderTitleInput.off('blur');
+                                    }
+
+                                });
+                        };
+
+
+                        //Detect the double click
+                        var detectClickAction = function (events) {
+
+                            $timeout(function() {
+                                ctrl.setEditMode(true);
+                            });
+
+                            $timeout(function() {
+                                updateVal();
+                            });
+
+                            $timeout(function() {
+                                gridHeaderTitleInput.focus();
+                                gridHeaderTitleInput.select();
+                            }, 100);
+
+
+                        };
+
+                        //Bind dblclick event to 'gridHeaderTitle'
+                        gridHeaderTitle.on('dblclick',detectClickAction);
+
+                    });
+
+
+
+
+
                     /**
                      * Close transformation menu on retrieve error
                      */

@@ -32,7 +32,7 @@
      * @param {class} dropdown-menu The menu to open
      * @param {class} divider `dropdown-menu > li.divider` : menu items divider
      */
-    function TalendDropdown($window, PlaygroundService) {
+    function TalendDropdown($window) {
         return {
             restrict: 'EA',
             replace: true,
@@ -40,10 +40,7 @@
             templateUrl: 'components/widgets/dropdown/dropdown.html',
             scope: {
                 closeOnSelect: '=',
-                onOpen: '&',
-                column: '=',
-                menuItems: '='
-
+                onOpen: '&'
             },
             bindToController: true,
             controller: function() {},
@@ -111,69 +108,7 @@
                         }
                     };
 
-                    //These variables are used to separate click and double click action
                     var DELAY = 300, clicks = 0, timer = null;
-                    var RENAME_ACTION = 'rename_column';
-                    //Call ctrl.onOpen() to get transformations
-                    ctrl.onOpen();
-                    var renameTransformation = null;
-
-                    //Transform text to input for rename
-                    var updateVal = function (currentEle, value) {
-
-                        action.off('click');
-
-                        $(currentEle).html('<input class="thVal" type="text" value="' + value + '" />');
-                        $('.thVal').focus();
-                        $('.thVal').select();
-
-                        $('.thVal').keyup(function (event) {
-                            if (event.keyCode === 13) {
-
-                                renameTransformation = _.filter(ctrl.menuItems, function(menu) {
-                                    return menu.name === RENAME_ACTION;
-                                })[0];
-
-                                var params = {};
-                                if (renameTransformation.parameters) {
-                                    _.forEach(renameTransformation.parameters, function (paramItem) {
-                                        paramItem.value = $('.thVal').val().trim();
-                                        params[paramItem.name] = paramItem.value;
-                                    });
-                                }
-
-                                PlaygroundService.appendStep(RENAME_ACTION, ctrl.column, params)
-                                    .then(function() {
-                                        $(currentEle).html($('.thVal').val().trim());
-                                        action.on('click', detectClickAction);
-                                    });
-                            }
-                        });
-
-                        $('.thVal').on('blur', function () {
-
-                            renameTransformation = _.filter(ctrl.menuItems, function(menu) {
-                                return menu.name === RENAME_ACTION;
-                            })[0];
-
-                            var params = {};
-                            if (renameTransformation.parameters) {
-                                _.forEach(renameTransformation.parameters, function (paramItem) {
-                                    paramItem.value = $('.thVal').val().trim();
-                                    params[paramItem.name] = paramItem.value;
-                                });
-                            }
-
-                            PlaygroundService.appendStep(RENAME_ACTION, ctrl.column, params)
-                                .then(function() {
-                                    $(currentEle).html($('.thVal').val().trim());
-                                    //setTimeout prevent the "click" event from being fired on blur
-                                    setTimeout(function() {
-                                        action.on('click', detectClickAction);
-                                    }, 200);
-                                });
-                        });
-                    };
 
                     //Click : Show/focus or hide menu on action zone click
                     var singleClickAction = function () {
@@ -187,19 +122,6 @@
                         }
                     };
 
-                    //DleClick : Show an input to rename the column
-                    var doubleClickAction = function () {
-
-                        var isVisible = menu.hasClass('show-menu');
-                        hideAllDropDowns();
-                        if (isVisible) {
-                            hideMenu();
-                        }
-                        var currentEle = iElement.find('.grid-header-title');
-                        var value = iElement.find('.grid-header-title').html();
-                        updateVal(currentEle, value);
-                    };
-
                     //Detect the double click
                     var detectClickAction = function () {
                         clicks++;  //count clicks
@@ -209,8 +131,8 @@
                                 clicks = 0;  //after action performed, reset counter
                             }, DELAY);
                         } else {
+                            hideAllDropDowns();
                             clearTimeout(timer);  //prevent single-click action
-                            doubleClickAction();
                             clicks = 0;  //after action performed, reset counter
                         }
                     };
