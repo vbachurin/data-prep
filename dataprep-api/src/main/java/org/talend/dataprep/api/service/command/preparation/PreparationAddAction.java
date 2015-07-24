@@ -17,6 +17,7 @@ import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 @Component
 @Scope("request")
@@ -45,8 +46,8 @@ public class PreparationAddAction extends DataPrepCommand<Void> {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode >= 200) {
                 // Invalidate cache for preparation's head (if any)
-                if (contentCache.has(id, "head")) {
-                    contentCache.evict(id, "head");
+                if (contentCache.has(new ContentCacheKey(id, "head"))) {
+                    contentCache.evict(new ContentCacheKey(id, "head"));
                 }
                 return null;
             }

@@ -13,6 +13,7 @@ import org.talend.dataprep.api.service.command.CloneInputStream;
 import org.talend.dataprep.api.service.command.common.PreparationCommand;
 import org.talend.dataprep.api.service.command.transformation.Transform;
 import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.netflix.hystrix.HystrixCommand;
 
@@ -77,9 +78,8 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
         if (preparationContext.fromCache()) {
             return content;
         } else {
-            final OutputStream newCacheEntry = contentCache.put(id, //
-                    preparationContext.getVersion(), //
-                    ContentCache.TimeToLive.DEFAULT);
+            ContentCacheKey key = new ContentCacheKey(id, preparationContext.getVersion());
+            final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
             return new CloneInputStream(content, newCacheEntry);
         }
     }

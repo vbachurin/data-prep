@@ -35,6 +35,7 @@ import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -221,9 +222,10 @@ public class DataPreparationAPITest {
 
         // then
         final Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
-        assertThat(cache.has(preparation.id(), ROOT_STEP.id()), is(false));
+        ContentCacheKey key = new ContentCacheKey(preparation.id(), ROOT_STEP.id());
+        assertThat(cache.has(key), is(false));
         when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
-        assertThat(cache.has(preparation.id(), ROOT_STEP.id()), is(true));
+        assertThat(cache.has(key), is(true));
 
         // then (check if cached content is the expected one).
         final String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
@@ -519,9 +521,10 @@ public class DataPreparationAPITest {
         final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json");
 
         // when
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
+        ContentCacheKey key = new ContentCacheKey(preparationId, ROOT_STEP.id());
+        assertThat(cache.has(key), is(false));
         final String content = when().get("/api/preparations/{id}/content", preparationId).asString();
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
+        assertThat(cache.has(key), is(true));
 
         // then
         assertThat(content, sameJSONAsFile(expected));
@@ -545,9 +548,12 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
 
         // Cache is lazily populated
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
-        assertThat(cache.has(preparationId, steps.get(0)), is(false));
-        assertThat(cache.has(preparationId, steps.get(1)), is(false));
+        ContentCacheKey rootKey = new ContentCacheKey(preparationId, ROOT_STEP.id());
+        assertThat(cache.has(rootKey), is(false));
+        ContentCacheKey step0Key = new ContentCacheKey(preparationId, steps.get(0));
+        assertThat(cache.has(step0Key), is(false));
+        ContentCacheKey step1Key = new ContentCacheKey(preparationId, steps.get(1));
+        assertThat(cache.has(step1Key), is(false));
 
         // Request preparation content at different versions (preparation has 2 steps -> Root + Upper Case).
         assertThat(when().get("/api/preparations/{id}/content", preparationId).asString(),
@@ -564,9 +570,9 @@ public class DataPreparationAPITest {
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
 
         // After all these preparation get content, cache should be populated with content
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
-        assertThat(cache.has(preparationId, steps.get(0)), is(true));
-        assertThat(cache.has(preparationId, steps.get(1)), is(true));
+        assertThat(cache.has(rootKey), is(true));
+        assertThat(cache.has(step0Key), is(true));
+        assertThat(cache.has(step1Key), is(true));
     }
 
     @Test

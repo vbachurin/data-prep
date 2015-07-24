@@ -54,85 +54,91 @@ public class HDFSContentCacheTest {
     @Test
     public void testHas() throws Exception {
         // Cache is empty when test starts, has() must return false for content
-        assertThat(cache.has(PREPARATION_ID, STEP_ID), is(false));
+        assertThat(cache.has(new ContentCacheKey(PREPARATION_ID, STEP_ID)), is(false));
     }
 
     @Test
     public void testPut() throws Exception {
         // Put a content in cache...
-        assertThat(cache.has(PREPARATION_ID, STEP_ID), is(false));
-        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, ContentCache.TimeToLive.DEFAULT)) {
+        ContentCacheKey key = new ContentCacheKey(PREPARATION_ID, STEP_ID);
+        assertThat(cache.has(key), is(false));
+        try (OutputStream entry = cache.put(key, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
         // ... has() must return true
-        assertThat(cache.has(PREPARATION_ID, STEP_ID), is(true));
+        assertThat(cache.has(key), is(true));
     }
 
     @Test
     public void testPutOrigin() throws Exception {
+        ContentCacheKey origin = new ContentCacheKey(PREPARATION_ID, "origin");
+        ContentCacheKey key = new ContentCacheKey(PREPARATION_ID, Step.ROOT_STEP.id());
         // Put a content in cache...
-        assertThat(cache.has(PREPARATION_ID, "origin"), is(false));
-        assertThat(cache.has(PREPARATION_ID, Step.ROOT_STEP.id()), is(false));
-        try (OutputStream entry = cache.put(PREPARATION_ID, Step.ROOT_STEP.id(), ContentCache.TimeToLive.DEFAULT)) {
+        assertThat(cache.has(origin), is(false));
+        assertThat(cache.has(key), is(false));
+        try (OutputStream entry = cache.put(key, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
         // ... has() must return true
-        assertThat(cache.has(PREPARATION_ID, "origin"), is(true));
-        assertThat(cache.has(PREPARATION_ID, Step.ROOT_STEP.id()), is(true));
+        assertThat(cache.has(origin), is(true));
+        assertThat(cache.has(key), is(true));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongPut_Head() throws Exception {
         // Put a content in cache with "head" is not accepted
-        cache.put(PREPARATION_ID, "head", ContentCache.TimeToLive.DEFAULT);
+        cache.put(new ContentCacheKey(PREPARATION_ID, "head"), ContentCache.TimeToLive.DEFAULT);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongPut_Origin() throws Exception {
         // Put a content in cache with "origin" is not accepted
-        cache.put(PREPARATION_ID, "origin", ContentCache.TimeToLive.DEFAULT);
+        cache.put(new ContentCacheKey(PREPARATION_ID, "origin"), ContentCache.TimeToLive.DEFAULT);
     }
 
     @Test
     public void testGet() throws Exception {
+        ContentCacheKey key = new ContentCacheKey(PREPARATION_ID, STEP_ID);
         // Put a content in cache...
-        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, ContentCache.TimeToLive.DEFAULT)) {
+        try (OutputStream entry = cache.put(key, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
         // ... get() should return this content back.
-        final String actual = IOUtils.toString(cache.get(PREPARATION_ID, STEP_ID));
+        final String actual = IOUtils.toString(cache.get(key));
         assertThat(actual, is("content"));
     }
 
     @Test
     public void testEvict() throws Exception {
+        ContentCacheKey key = new ContentCacheKey(PREPARATION_ID, STEP_ID);
         // Put a content in cache...
-        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, ContentCache.TimeToLive.DEFAULT)) {
+        try (OutputStream entry = cache.put(key, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
-        assertThat(cache.has(PREPARATION_ID, STEP_ID), is(true));
+        assertThat(cache.has(key), is(true));
         // ... evict() it...
-        cache.evict(PREPARATION_ID, STEP_ID);
+        cache.evict(key);
         // ... has() must immediately return false
-        assertThat(cache.has(PREPARATION_ID, STEP_ID), is(false));
+        assertThat(cache.has(key), is(false));
     }
 
     @Test
     public void testJanitor() throws Exception {
+        ContentCacheKey key = new ContentCacheKey(PREPARATION_ID, STEP_ID);
         // Put a content in cache...
-        try (OutputStream entry = cache.put(PREPARATION_ID, STEP_ID, ContentCache.TimeToLive.DEFAULT)) {
+        try (OutputStream entry = cache.put(key, ContentCache.TimeToLive.DEFAULT)) {
             entry.write("content".getBytes());
             entry.flush();
         }
-        assertThat(cache.has(PREPARATION_ID, STEP_ID), is(true));
+        assertThat(cache.has(key), is(true));
         // ... evict() it...
-        cache.evict(PREPARATION_ID, STEP_ID);
+        cache.evict(key);
         // ... file still exists...
-        final Path path = HDFSContentCache.getPath(PREPARATION_ID, STEP_ID, true, fileSystem);
+        final Path path = HDFSContentCache.getPath(key, true, fileSystem);
         assertThat(fileSystem.exists(path), is(true));
         // ... then run a clean up...
         cache.janitor();
@@ -142,12 +148,12 @@ public class HDFSContentCacheTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetPath_nullPreparation() throws Exception {
-        cache.has(null, STEP_ID);
+        cache.has(new ContentCacheKey(null, STEP_ID));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetPath_nullStep() throws Exception {
-        cache.has(PREPARATION_ID, null);
+        cache.has(new ContentCacheKey(PREPARATION_ID, null));
     }
 
 }

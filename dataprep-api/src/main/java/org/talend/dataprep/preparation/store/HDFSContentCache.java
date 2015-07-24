@@ -34,20 +34,25 @@ public class HDFSContentCache implements ContentCache {
 
     /**
      * Return the HDFS {@link Path path} for a preparation at a given step. The <code>includeEvicted</code> boolean
-     * indicates whether {@link #evict(String, String) evicted} content should be included in search.
-     * @param preparationId A non-null preparation id.
-     * @param stepId A non-null step id.
+     * indicates whether {@link #evict(ContentCacheKey) evicted} content should be included in search.
+     * 
+     * @param key content cache key.
      * @param includeEvicted <code>true</code> if method should also look into evicted content, <code>false</code>
-     *                       otherwise.
+     * otherwise.
      * @param fileSystem The HDFS instance to use for search.
      * @return The {@link Path path} to the content or <code>null</code> if not found.
      */
-    static Path getPath(String preparationId, String stepId, boolean includeEvicted, FileSystem fileSystem) {
+    static Path getPath(ContentCacheKey key, boolean includeEvicted, FileSystem fileSystem) {
         try {
+
+            String preparationId = key.getPreparationId();
+            String stepId = key.getStepId();
+
             if (preparationId == null) {
                 throw new IllegalArgumentException("Preparation id cannot be null.");
             }
-            if (stepId == null) {
+
+            if (key.getStepId() == null) {
                 throw new IllegalArgumentException("Step id cannot be null.");
             }
             if ("origin".equalsIgnoreCase(stepId)) {
@@ -76,24 +81,31 @@ public class HDFSContentCache implements ContentCache {
         }
     }
 
+    /**
+     * @see ContentCache#has(ContentCacheKey)
+     */
     @Override
-    public boolean has(String preparationId, String stepId) {
-        final Path path = getPath(preparationId, stepId, false, fileSystem);
+    public boolean has(ContentCacheKey key) {
+        final Path path = getPath(key, false, fileSystem);
         final boolean exists = path != null;
         if (exists) {
-            LOGGER.debug("[{} @{}] Cache hit.", preparationId, stepId);
+            LOGGER.debug("[{}] Cache hit.", key);
         } else {
-            LOGGER.debug("[{} @{}] Cache miss.", preparationId, stepId);
+            LOGGER.debug("[{}] Cache miss.", key);
         }
         return exists;
     }
 
+    /**
+     * @see ContentCache#get(ContentCacheKey)
+     */
     @Override
-    public InputStream get(String preparationId, String stepId) {
+    public InputStream get(ContentCacheKey key) {
         try {
-            final Path path = getPath(preparationId, stepId, false, fileSystem);
+            final Path path = getPath(key, false, fileSystem);
             if (path == null) {
-                throw new IllegalArgumentException("No cache for preparation #" + preparationId + " @ " + stepId);
+                throw new IllegalArgumentException(
+                        "No cache for preparation #" + key.getPreparationId() + " @ " + key.getStepId());
             }
             return fileSystem.open(path);
         } catch (IOException e) {
@@ -101,13 +113,20 @@ public class HDFSContentCache implements ContentCache {
         }
     }
 
+    /**
+     * @see ContentCache#put(ContentCacheKey, TimeToLive)
+     */
     @Override
-    public OutputStream put(String preparationId, String stepId, TimeToLive timeToLive) {
+    public OutputStream put(ContentCacheKey key, TimeToLive timeToLive) {
         try {
+
+            String preparationId = key.getPreparationId();
+            String stepId = key.getStepId();
+
             if ("head".equals(stepId) || "origin".equals(stepId)) {
                 throw new IllegalArgumentException("Illegal shortcut for preparation step '" + stepId + "'.");
             }
-            LOGGER.debug("[{} @{}] Cache add.", preparationId, stepId);
+            LOGGER.debug("[{}] Cache add.", key);
             // Adds suffix for time to live checks
             final Path preparation = new Path("preparations/" + preparationId + "/" + stepId);
             final Path path = preparation.suffix("." + String.valueOf(System.currentTimeMillis() + timeToLive.getTime()));
@@ -122,13 +141,16 @@ public class HDFSContentCache implements ContentCache {
         }
     }
 
+    /**
+     * @see ContentCache#evict(ContentCacheKey)
+     */
     @Override
-    public void evict(String preparationId, String stepId) {
+    public void evict(ContentCacheKey key) {
         try {
-            LOGGER.debug("[{} @{}] Evict.", preparationId, stepId);
-            final Path path = getPath(preparationId, stepId, false, fileSystem);
+            LOGGER.debug("[{}] Evict.", key);
+            final Path path = getPath(key, false, fileSystem);
             if (path == null) {
-                LOGGER.debug("[{} @{}] Evict failed: file already deleted.", preparationId, stepId);
+                LOGGER.debug("[{}] Evict failed: file already deleted.", key);
                 return;
             }
             fileSystem.rename(path, path.suffix(".0"));
@@ -137,6 +159,9 @@ public class HDFSContentCache implements ContentCache {
         }
     }
 
+    /**
+     * @see ContentCache#clear()
+     */
     @Override
     public void clear() {
         try {
