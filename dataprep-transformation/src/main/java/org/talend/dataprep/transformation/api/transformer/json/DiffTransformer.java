@@ -170,6 +170,7 @@ class DiffTransformer implements Transformer {
         }
 
         public DataSetRow apply(DataSetRow dataSetRow) {
+            // TODO @François is there a better way ?
             // only apply actions if there is any
             if (parsedActions.getAllActions().isEmpty()) {
                 return dataSetRow;
