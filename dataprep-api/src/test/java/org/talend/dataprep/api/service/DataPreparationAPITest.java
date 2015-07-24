@@ -220,19 +220,28 @@ public class DataPreparationAPITest {
         assertThat(records.size(), is(16));
     }
 
+
     @Test
-    public void testDataSetGetWithSampleZero() throws Exception {
+    public void testDataSetGetWithSampleZeroOrFull() throws Exception {
         // given
         final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
 
-        // when
-        final String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=0", dataSetId)
+        // when 0
+        String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=0", dataSetId)
                 .asString();
 
-        // then
+        // then full content
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(contentAsString);
         JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+
+        // when full
+        contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=full", dataSetId).asString();
+
+        // then full content
+        rootNode = mapper.readTree(contentAsString);
+        records = rootNode.findPath("records");
         assertThat(records.size(), is(100));
     }
 
@@ -241,12 +250,22 @@ public class DataPreparationAPITest {
         // given
         final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
 
-        // when
-        int status = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=10.6", dataSetId).statusCode();
-        assertThat(status, is(400));
+        // when (decimal number)
+        String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=10.6", dataSetId).asString();
 
-        status = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=ghqmskjh", dataSetId).statusCode();
-        assertThat(status, is(400));
+        // then (full content)
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+
+        // when (
+        contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=ghqmskjh", dataSetId).asString();
+
+        // then (full content)
+        rootNode = mapper.readTree(contentAsString);
+        records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
 
     }
 
@@ -521,6 +540,50 @@ public class DataPreparationAPITest {
         assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
         assertThat(cache.has(preparationId, steps.get(0)), is(true));
         assertThat(cache.has(preparationId, steps.get(1)), is(true));
+    }
+
+    @Test
+    public void shouldGetPreparationContent() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content", preparationId).asString();
+
+        // then
+        assertThat(preparationContent,
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("t-shirt_100.csv.expected.json")));
+    }
+
+    @Test
+    public void shouldGetPreparationContentSample() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content?sample=53", preparationId).asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(preparationContent);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(53));
+    }
+
+    @Test
+    public void shouldGetPreparationContentWhenInvalidSample() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content?sample=mdljshf", preparationId)
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(preparationContent);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
     }
 
     /**
