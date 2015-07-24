@@ -151,7 +151,7 @@ describe('Preparation Service', function () {
         $rootScope.$digest();
 
         //then
-        expect(PreparationRestService.getContent).toHaveBeenCalledWith('4385fa764bce39593a405d91bc88', version);
+        expect(PreparationRestService.getContent).toHaveBeenCalledWith('4385fa764bce39593a405d91bc88', version, undefined);
     }));
 
     it('should get current preparation details from ListService', inject(function ($rootScope, PreparationService, PreparationRestService) {

@@ -54,7 +54,7 @@
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
          * @description change the sample size.
          */
-        vm.changeSampleSize = function changeSampleSize(){
+        vm.changeSampleSize = function changeSampleSize() {
             PlaygroundService.changeSampleSize(vm.selectedSampleSize.value);
         };
 
@@ -64,7 +64,7 @@
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
          * @description Toggle the edition mode flag
          */
-        vm.toggleEditionMode = function toggleEditionMode(){
+        vm.toggleEditionMode = function toggleEditionMode() {
             vm.editionMode = !vm.editionMode;
         };
 
@@ -74,7 +74,7 @@
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
          * @description Change the preparation name
          */
-        vm.confirmPrepNameEdition = function confirmPrepNameEdition(){
+        vm.confirmPrepNameEdition = function confirmPrepNameEdition() {
             vm.changeName();
             vm.toggleEditionMode();
         };

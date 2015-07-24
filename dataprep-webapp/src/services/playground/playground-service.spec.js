@@ -196,7 +196,7 @@ describe('Playground Service', function () {
         }));
     });
 
-    describe('load existing dataset', function() {
+    describe('load existing preparation', function() {
         var data = {
             records: [{id: '0', firstname: 'toto'}, {id: '1', firstname: 'tata'}, {id: '2', firstname: 'titi'}]
         };
@@ -333,6 +333,34 @@ describe('Playground Service', function () {
             //then
             expect($rootScope.$emit).not.toHaveBeenCalledWith('talend.loading.start');
             expect(PreparationService.getContent).not.toHaveBeenCalled();
+        }));
+
+        it('should load preparation sample when sample size is changed', inject(function(PlaygroundService, PreparationService, RecipeService) {
+            //given
+            PreparationService.currentPreparationId = '5746518486846';
+
+            var lastActiveStep = {transformation: {stepId: '53df45d3s8425'}};
+            spyOn(RecipeService, 'getActiveThresholdStep').and.returnValue(lastActiveStep);
+
+            //when
+            PlaygroundService.changeSampleSize(50);
+
+            //then
+            expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, 50);
+        }));
+
+        it('should load the full preparation sample when sample size is changed to full dataset', inject(function(PlaygroundService, PreparationService, RecipeService) {
+            //given
+            PreparationService.currentPreparationId = '5746518486846';
+
+            var lastActiveStep = {transformation: {stepId: '53df45d3s8425'}};
+            spyOn(RecipeService, 'getActiveThresholdStep').and.returnValue(lastActiveStep);
+
+            //when
+            PlaygroundService.changeSampleSize('full dataset');
+
+            //then
+            expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, null);
         }));
     });
 
@@ -792,6 +820,33 @@ describe('Playground Service', function () {
 
             //then
             expect(PlaygroundService.preparationNameEditionMode).toBe(false);
+        }));
+    });
+
+    describe('dataset management when no preparation is done yet', function() {
+
+        it('should load dataset sample when sample size is changed', inject(function(PlaygroundService, PreparationService, DatasetService) {
+            //given
+            PreparationService.currentPreparationId = null;
+            PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
+
+            //when
+            PlaygroundService.changeSampleSize(50);
+
+            //then
+            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, 50);
+        }));
+
+        it('should load dataset sample when sample size is changed', inject(function(PlaygroundService, PreparationService, DatasetService) {
+            //given
+            PreparationService.currentPreparationId = null;
+            PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
+
+            //when
+            PlaygroundService.changeSampleSize('full dataset');
+
+            //then
+            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, null);
         }));
     });
 });

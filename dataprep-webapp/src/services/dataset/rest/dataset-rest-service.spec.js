@@ -135,6 +135,27 @@ describe('Dataset Rest Service', function () {
         expect(result).toEqual(data);
     }));
 
+    it('should call dataset get content rest service with the given sample size', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var result = null;
+        var datasetId = 'e85afAa78556d5425bc2';
+        var data = [{column: [], records: []}];
+
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl + '/e85afAa78556d5425bc2?metadata=false&sample=123')
+            .respond(200, data);
+
+        //when
+        DatasetRestService.getContent(datasetId, false, 123).then(function (data) {
+            result = data;
+        });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(result).toEqual(data);
+    }));
+
     it('should call dataset certification rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var datasetId = 'e85afAa78556d5425bc2';

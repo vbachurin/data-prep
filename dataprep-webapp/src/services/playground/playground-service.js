@@ -174,10 +174,10 @@
 
             // deal with preparation or dataset
             if (PreparationService.currentPreparationId) {
-                return changeDataSetSampleSize(size);
+                return changePreparationSampleSize(size);
             }
             else {
-                return changePreparationSampleSize(size);
+                return changeDataSetSampleSize(size);
             }
         }
 
@@ -189,9 +189,14 @@
          * @description change the sample size for the dataset.
          * @returns {Promise} The process promise
          */
-        function changeDataSetSampleSize(size) {
+        function changePreparationSampleSize(size) {
+
+            // get the current step
+            var step = RecipeService.getActiveThresholdStep();
+
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.getContent('head', size)
+
+            return PreparationService.getContent(step.transformation.stepId, size)
                 .then(function(response) {
                     DatagridService.setDataset(service.currentMetadata, response.data);
                 })
@@ -208,7 +213,7 @@
          * @description change the sample size for the preparation.
          * @returns {Promise} The process promise
          */
-        function changePreparationSampleSize(size) {
+        function changeDataSetSampleSize(size) {
             $rootScope.$emit('talend.loading.start');
             return DatasetService.getContent(service.currentMetadata.id, true, size)
                 .then(function (data) {
