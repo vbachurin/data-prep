@@ -340,10 +340,12 @@ describe('Playground Service', function () {
             PreparationService.currentPreparationId = '5746518486846';
 
             var lastActiveStep = {transformation: {stepId: '53df45d3s8425'}};
-            spyOn(RecipeService, 'getActiveThresholdStep').and.returnValue(lastActiveStep);
+            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(2);
+            spyOn(RecipeService, 'getStep').and.returnValue(lastActiveStep);
 
             //when
-            PlaygroundService.changeSampleSize(50);
+            PlaygroundService.selectedSampleSize={name: '50', value:50};
+            PlaygroundService.changeSampleSize();
 
             //then
             expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, 50);
@@ -354,13 +356,15 @@ describe('Playground Service', function () {
             PreparationService.currentPreparationId = '5746518486846';
 
             var lastActiveStep = {transformation: {stepId: '53df45d3s8425'}};
-            spyOn(RecipeService, 'getActiveThresholdStep').and.returnValue(lastActiveStep);
+            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(2);
+            spyOn(RecipeService, 'getStep').and.returnValue(lastActiveStep);
 
             //when
-            PlaygroundService.changeSampleSize('full dataset');
+            PlaygroundService.selectedSampleSize={name: 'full dataset', value:'full'};
+            PlaygroundService.changeSampleSize();
 
             //then
-            expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, null);
+            expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, 'full');
         }));
     });
 
@@ -461,13 +465,14 @@ describe('Playground Service', function () {
                 var action = 'uppercase';
                 var column = {id: 'firstname'};
                 var parameters = {param1: 'param1Value', param2: 4};
+                PlaygroundService.selectedSampleSize = {value: 'full'};
 
                 //when
                 PlaygroundService.appendStep(action, column, parameters);
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationService.getContent).toHaveBeenCalledWith('head');
+                expect(PreparationService.getContent).toHaveBeenCalledWith('head', 'full');
                 expect(DatagridService.updateData).toHaveBeenCalledWith(result);
             }));
 
@@ -617,13 +622,14 @@ describe('Playground Service', function () {
             it('should load previous last active step', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService) {
                 //given
                 var parameters = {value: 'toto', column_id: '0001'};
+                PlaygroundService.selectedSampleSize = {value: 'full'};
 
                 //when
                 PlaygroundService.updateStep(stepToUpdate, parameters);
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId);
+                expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, 'full');
                 expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, result);
             }));
 
@@ -831,7 +837,8 @@ describe('Playground Service', function () {
             PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
 
             //when
-            PlaygroundService.changeSampleSize(50);
+            PlaygroundService.selectedSampleSize = {value:50};
+            PlaygroundService.changeSampleSize();
 
             //then
             expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, 50);
@@ -843,10 +850,11 @@ describe('Playground Service', function () {
             PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
 
             //when
-            PlaygroundService.changeSampleSize('full dataset');
+            PlaygroundService.selectedSampleSize = {value:'full'};
+            PlaygroundService.changeSampleSize();
 
             //then
-            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, null);
+            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, 'full');
         }));
     });
 });

@@ -232,15 +232,4 @@ describe('Playground controller', function() {
         expect(ctrl.selectedSampleSize.value).toBe(100);
     }));
 
-    it('should call PlayGroundService when the sample size is changed', inject(function(PlaygroundService) {
-        //given
-        var ctrl = createController();
-        ctrl.selectedSampleSize = ctrl.sampleSizes[2];
-
-        //when
-        ctrl.changeSampleSize();
-
-        //then
-        expect(PlaygroundService.changeSampleSize).toHaveBeenCalledWith(ctrl.sampleSizes[2].value);
-    }));
 });

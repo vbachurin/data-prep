@@ -121,11 +121,18 @@ public class PreparationAPI extends APIService {
     public void getPreparation(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
-            @RequestParam(required = false) @ApiParam(name = "sample", value = "Size of the wanted sample, if missing, the full preparation content is returned") Long sample, //
+            @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full preparation content is returned") String sample, //
             HttpServletResponse response) {
         LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version, sample);
+        Long sampleValue;
+        try {
+            sampleValue = Long.parseLong(sample);
+        } catch (NumberFormatException e) {
+            sampleValue = null;
+        }
+        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version,
+                sampleValue);
         try (InputStream preparationContent = command.execute()){
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(preparationContent, outputStream);

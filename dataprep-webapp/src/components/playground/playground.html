@@ -9,7 +9,7 @@
                 <span>Sample size</span>
                 <select ng-model="playgroundCtrl.selectedSampleSize"
                         ng-options="size.display for size in playgroundCtrl.sampleSizes"
-                        ng-change="playgroundCtrl.changeSampleSize()"
+                        ng-change="playgroundCtrl.playgroundService.changeSampleSize()"
                         class="sample">
                 </select>
             </li>

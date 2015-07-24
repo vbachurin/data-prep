@@ -37,26 +37,9 @@
             {display:'50', value: 50},
             {display:'100', value: 100},
             {display:'500', value: 500},
-            {display:'full dataset', value: 'full dataset'}
+            {display:'full dataset', value: 'full'}
         ];
-
-        /**
-         * @ngdoc property
-         * @name selectedSampleSize
-         * @methodOf data-prep.playground.controller:PlaygroundCtrl
-         * @description the selected sample size.
-         */
-        vm.selectedSampleSize = vm.sampleSizes[1]; //default is 100
-
-        /**
-         * @ngdoc method
-         * @name changeSampleSize
-         * @methodOf data-prep.playground.controller:PlaygroundCtrl
-         * @description change the sample size.
-         */
-        vm.changeSampleSize = function changeSampleSize() {
-            PlaygroundService.changeSampleSize(vm.selectedSampleSize.value);
-        };
+        vm.playgroundService.selectedSampleSize=vm.sampleSizes[1];
 
         /**
          * @ngdoc method
@@ -174,6 +157,25 @@
             },
             set: function(value) {
                 this.playgroundService.preparationName = value;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name selectedSampleSize
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description The selected sample size
+     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
+     */
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'selectedSampleSize', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.playgroundService.selectedSampleSize;
+            },
+            set: function(value) {
+                this.playgroundService.selectedSampleSize = value;
             }
         });
 

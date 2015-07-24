@@ -88,7 +88,7 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
-            @RequestParam(required = false) @ApiParam(name = "sample", value = "Size of the wanted sample, if missing, the full dataset is returned") Long sample, //
+            @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full dataset is returned") String sample, //
             HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
@@ -96,7 +96,14 @@ public class DataSetAPI extends APIService {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
 
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns, sample);
+        Long sampleValue;
+        try {
+            sampleValue = Long.parseLong(sample);
+        } catch (NumberFormatException e) {
+            sampleValue = null;
+        }
+
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns, sampleValue);
         try {
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(retrievalCommand.execute(), outputStream);

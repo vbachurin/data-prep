@@ -64,6 +64,14 @@
              */
             preparationNameEditionMode: true,
 
+            /**
+             * @ngdoc property
+             * @name selectedSampleSize
+             * @methodOf data-prep.services.playground.service:PlaygroundService
+             * @description the selected sample size.
+             */
+            selectedSampleSize:{},
+
             //init/load
             show: show,
             hide: hide,
@@ -136,7 +144,7 @@
             if(!service.currentMetadata || PreparationService.currentPreparationId || dataset.id !== service.currentMetadata.id) {
                 PreparationService.currentPreparationId = null;
 
-                return DatasetService.getContent(dataset.id, false)
+                return DatasetService.getContent(dataset.id, false, service.selectedSampleSize.value)
                     .then(function(data) {
                         //TODO : temporary fix because asked to.
                         //TODO : when error status during import and get dataset content is managed by backend,
@@ -161,23 +169,16 @@
          * @ngdoc method
          * @name changeSampleSize
          * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @param {int} the wanted sample size
          * @description change the sample size
          * @returns {Promise} The process promise
          */
-         function changeSampleSize(size) {
-
-            // no size to get the full dataset
-            if (size === 'full dataset') {
-                size = null;
-            }
-
+         function changeSampleSize() {
             // deal with preparation or dataset
             if (PreparationService.currentPreparationId) {
-                return changePreparationSampleSize(size);
+                return changePreparationSampleSize();
             }
             else {
-                return changeDataSetSampleSize(size);
+                return changeDataSetSampleSize();
             }
         }
 
@@ -189,14 +190,15 @@
          * @description change the sample size for the dataset.
          * @returns {Promise} The process promise
          */
-        function changePreparationSampleSize(size) {
+        function changePreparationSampleSize() {
 
             // get the current step
-            var step = RecipeService.getActiveThresholdStep();
+            var index = RecipeService.getActiveThresholdStepIndex();
+            var step = RecipeService.getStep(index);
 
             $rootScope.$emit('talend.loading.start');
 
-            return PreparationService.getContent(step.transformation.stepId, size)
+            return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
                     DatagridService.setDataset(service.currentMetadata, response.data);
                 })
@@ -213,9 +215,9 @@
          * @description change the sample size for the preparation.
          * @returns {Promise} The process promise
          */
-        function changeDataSetSampleSize(size) {
+        function changeDataSetSampleSize() {
             $rootScope.$emit('talend.loading.start');
-            return DatasetService.getContent(service.currentMetadata.id, true, size)
+            return DatasetService.getContent(service.currentMetadata.id, true, service.selectedSampleSize.value)
                 .then(function (data) {
                     //TODO : temporary fix because asked to.
                     //TODO : when error status during import and get dataset content is managed by backend,
@@ -251,7 +253,7 @@
                 PreparationService.currentPreparationId = preparation.id;
 
                 $rootScope.$emit('talend.loading.start');
-                return PreparationService.getContent('head')
+                return PreparationService.getContent('head', service.selectedSampleSize.value)
                     .then(function(response) {
                         setName(preparation.name);
                         reset(preparation.dataset ? preparation.dataset : {id: preparation.dataSetId}, response.data);
@@ -282,7 +284,7 @@
             }
 
             $rootScope.$emit('talend.loading.start');
-            return PreparationService.getContent(step.transformation.stepId)
+            return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
                     DatagridService.setDataset(service.currentMetadata, response.data);
                     RecipeService.disableStepsAfter(step);
@@ -419,7 +421,7 @@
         //---------------------------------------------------UTILS----------------------------------------------
         //------------------------------------------------------------------------------------------------------
         function updateDatagrid() {
-            return PreparationService.getContent('head')
+            return PreparationService.getContent('head', service.selectedSampleSize.value)
                 .then(function(response) {
                     DatagridService.updateData(response.data);
                 });
