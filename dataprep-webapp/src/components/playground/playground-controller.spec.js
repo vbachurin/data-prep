@@ -340,7 +340,7 @@ describe('Playground controller', function() {
             expect(ctrl.showNameValidation).toBe(false);
             expect(ctrl.showPlayground).toBe(false);
         });
-    }));
+    });
 
     it('should init sample size to full dataset', inject(function(PlaygroundService) {
         //given

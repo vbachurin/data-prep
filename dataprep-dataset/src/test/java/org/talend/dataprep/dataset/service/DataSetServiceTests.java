@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
@@ -165,7 +164,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         userDataRepository.setUserData(userData);
 
 
-        isFavorite = from(when().get("/datasets/{id}/content", datasetId).asString()).get("metadata.favorite");
+        isFavorite = from(when().get("/datasets/{id}/content", expectedId).asString()).get("metadata.favorite");
         assertTrue(isFavorite);
     }
 
