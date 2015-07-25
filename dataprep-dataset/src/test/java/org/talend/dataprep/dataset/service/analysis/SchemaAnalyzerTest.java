@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.Application;
 import org.talend.dataprep.dataset.service.DataSetServiceTests;
@@ -120,9 +121,10 @@ public class SchemaAnalyzerTest {
             assertThat(column.getName(), is(expectedNames[i]));
             assertThat( column.getType(), is( expectedTypes[i].getName() ) );
             assertThat( column.getDomain(), is( expectedDomains[i++] ) );
-            Assertions.assertThat( column.getSemanticDomains() ).isNotNull().isNotEmpty().hasSize( 5 );
-
-            //Assertions.assertThat( column.getSemanticDomains() ).contains(  )
+            Assertions.assertThat( column.getSemanticDomains() ).isNotNull().isNotEmpty().hasSize( 5 )
+                .contains( new SemanticDomain("FR_POSTAL_CODE","FR POSTAL CODE", 7), //
+                           new SemanticDomain("US_POSTAL_CODE","US POSTAL CODE", 7));
+            
         }
     }
 

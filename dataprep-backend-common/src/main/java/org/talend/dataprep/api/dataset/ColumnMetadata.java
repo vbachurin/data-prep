@@ -62,9 +62,12 @@ public class ColumnMetadata {
 
     @JsonProperty("domain")
     private String domain = StringUtils.EMPTY;
-
+    
     @JsonProperty("domainLabel")
     private String domainLabel = StringUtils.EMPTY;
+
+    @JsonProperty("domainCount")
+    private long domainCount;
 
     @JsonProperty("semanticDomains")
     private List<SemanticDomain> semanticDomains = Collections.emptyList();
@@ -279,6 +282,14 @@ public class ColumnMetadata {
 
     public void setSemanticDomains( List<SemanticDomain> semanticDomains ) {
         this.semanticDomains = semanticDomains;
+    }
+
+    public long getDomainCount() {
+        return domainCount;
+    }
+
+    public void setDomainCount(long domainCount) {
+        this.domainCount = domainCount;
     }
 
     /**

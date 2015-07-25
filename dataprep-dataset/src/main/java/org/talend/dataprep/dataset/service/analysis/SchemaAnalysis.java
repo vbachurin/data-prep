@@ -132,6 +132,12 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                                 semanticDomains.add(new SemanticDomain(entry.getKey().getCategoryId(), //
                                         entry.getKey().getCategoryName(), //
                                         entry.getValue()));
+
+                                if (StringUtils.equals( nextColumn.getDomain(), entry.getKey().getCategoryId() )){
+                                    nextColumn.setDomainLabel( entry.getKey().getCategoryName() );
+                                    nextColumn.setDomainCount( entry.getValue() );
+                                }
+
                             }
                             nextColumn.setSemanticDomains( semanticDomains );
                         }
