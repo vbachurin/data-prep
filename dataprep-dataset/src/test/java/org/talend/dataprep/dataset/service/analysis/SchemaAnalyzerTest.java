@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 
+import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,8 +50,8 @@ public class SchemaAnalyzerTest {
 
     @Test
     public void testNoDataSetFound() throws Exception {
-        schemaAnalysis.analyze("1234");
-        assertThat(repository.get("1234"), nullValue());
+        schemaAnalysis.analyze( "1234" );
+        assertThat( repository.get( "1234" ), nullValue() );
     }
 
     @Test
@@ -93,6 +94,35 @@ public class SchemaAnalyzerTest {
         for (ColumnMetadata column : metadata.getRow().getColumns()) {
             assertThat(column.getName(), is(expectedNames[i++]));
             assertThat(column.getType(), is(expectedTypes[j++].getName()));
+        }
+    }
+
+    /**
+     * See <a href="https://jira.talendforge.org/browse/TDP-279">https://jira.talendforge.org/browse/TDP-279</a>.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTDP_279() throws Exception {
+        final DataSetMetadata metadata = metadata().id("1234").build();
+        repository.add(metadata);
+        contentStore.storeAsRaw(metadata, DataSetServiceTests.class.getResourceAsStream("../post_code.xls"));
+        formatAnalysis.analyze("1234");
+        // Analyze schema
+        schemaAnalysis.analyze("1234");
+        assertThat(metadata.getLifecycle().schemaAnalyzed(), is(true));
+        String[] expectedNames = { "zip" };
+        Type[] expectedTypes = { Type.INTEGER };
+        String[] expectedDomains = { "FR_POSTAL_CODE" };
+        int i = 0;
+
+        for (ColumnMetadata column : metadata.getRow().getColumns()) {
+            assertThat(column.getName(), is(expectedNames[i]));
+            assertThat( column.getType(), is( expectedTypes[i].getName() ) );
+            assertThat( column.getDomain(), is( expectedDomains[i++] ) );
+            Assertions.assertThat( column.getSemanticDomains() ).isNotNull().isNotEmpty().hasSize( 5 );
+
+            //Assertions.assertThat( column.getSemanticDomains() ).contains(  )
         }
     }
 

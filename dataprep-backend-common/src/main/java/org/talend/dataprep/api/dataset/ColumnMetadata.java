@@ -3,12 +3,15 @@ package org.talend.dataprep.api.dataset;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
+import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
@@ -60,11 +63,17 @@ public class ColumnMetadata {
     @JsonProperty("domain")
     private String domain = StringUtils.EMPTY;
 
+    @JsonProperty("domainLabel")
+    private String domainLabel = StringUtils.EMPTY;
+
+    @JsonProperty("semanticDomains")
+    private List<SemanticDomain> semanticDomains = Collections.emptyList();
+
     /**
      * Default empty constructor.
      */
     public ColumnMetadata() {
-
+        // no op
     }
 
     /**
@@ -198,16 +207,20 @@ public class ColumnMetadata {
     }
 
     @Override
-    public String toString() {
-        return "ColumnMetadata{" + //
-                "quality=" + quality + //
-                ", id='" + id + '\'' + //
-                ", name='" + name + '\'' + //
-                ", typeName='" + typeName + '\'' + //
-                ", headerSize=" + headerSize + //
-                ", diffFlagValue='" + diffFlagValue + '\'' + //
-                ", statistics='" + statistics + '\'' + //
-                '}';
+    public String toString()
+    {
+        return "ColumnMetadata{" +
+            "quality=" + quality +
+            ", id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", typeName='" + typeName + '\'' +
+            ", headerSize=" + headerSize +
+            ", diffFlagValue='" + diffFlagValue + '\'' +
+            ", statistics='" + statistics + '\'' +
+            ", domain='" + domain + '\'' +
+            ", domainLabel='" + domainLabel + '\'' +
+            ", semanticDomains=" + semanticDomains +
+            '}';
     }
 
     /**
@@ -250,6 +263,22 @@ public class ColumnMetadata {
 
     public String getDomain() {
         return domain;
+    }
+
+    public String getDomainLabel() {
+        return domainLabel;
+    }
+
+    public void setDomainLabel(String domainLabel) {
+        this.domainLabel = domainLabel;
+    }
+
+    public List<SemanticDomain> getSemanticDomains() {
+        return semanticDomains;
+    }
+
+    public void setSemanticDomains( List<SemanticDomain> semanticDomains ) {
+        this.semanticDomains = semanticDomains;
     }
 
     /**
