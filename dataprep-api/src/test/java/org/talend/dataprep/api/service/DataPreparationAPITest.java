@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +80,7 @@ public class DataPreparationAPITest {
         environment.getPropertySources().addFirst(connectionInformation);
     }
 
-    @org.junit.After
+    @After
     public void tearDown() {
         dataSetMetadataRepository.clear();
         contentStore.clear();
