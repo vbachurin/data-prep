@@ -124,7 +124,7 @@ public class SchemaAnalyzerTest {
             Assertions.assertThat( column.getSemanticDomains() ).isNotNull().isNotEmpty().hasSize( 5 )
                 .contains( new SemanticDomain("FR_POSTAL_CODE","FR POSTAL CODE", 7), //
                            new SemanticDomain("US_POSTAL_CODE","US POSTAL CODE", 7));
-            
+
         }
     }
 
