@@ -1,0 +1,11 @@
+{
+  "actions": [
+    {
+      "action": "trim",
+      "parameters": {
+        "column_id": "band",
+        "scope": "column"
+      }
+    }
+  ]
+}

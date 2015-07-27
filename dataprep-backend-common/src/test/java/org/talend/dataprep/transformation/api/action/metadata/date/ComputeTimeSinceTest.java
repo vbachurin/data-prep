@@ -263,15 +263,15 @@ public class ComputeTimeSinceTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.accept(getColumn(Type.DATE)));
+        assertTrue(action.acceptColumn(getColumn(Type.DATE)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.accept(getColumn(Type.NUMERIC)));
-        assertFalse(action.accept(getColumn(Type.FLOAT)));
-        assertFalse(action.accept(getColumn(Type.STRING)));
-        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
+        assertFalse(action.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 
     /**
@@ -295,7 +295,7 @@ public class ComputeTimeSinceTest {
 
     /**
      * Return a ComputeTimeSince closure with the given unit.
-     * 
+     *
      * @param unit the unit to use.
      * @return a ComputeTimeSince closure with the given unit.
      */

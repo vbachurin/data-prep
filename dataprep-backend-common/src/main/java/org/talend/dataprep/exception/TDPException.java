@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.talend.dataprep.exception.error.ErrorCode;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 
 import com.fasterxml.jackson.core.JsonFactory;

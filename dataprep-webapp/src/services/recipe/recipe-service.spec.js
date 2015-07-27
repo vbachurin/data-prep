@@ -84,7 +84,8 @@ describe('Recipe service', function () {
                             'type': 'string',
                             'description': 'parameter.column_name.desc',
                             'label': 'parameter.column_name.label',
-                            'default': ''
+                            'default': '',
+                            implicit: true
                         }
                     ],
                     'description': 'action.uppercase.desc',
@@ -102,7 +103,8 @@ describe('Recipe service', function () {
                             'type': 'string',
                             'description': 'parameter.column_name.desc',
                             'label': 'parameter.column_name.label',
-                            'default': ''
+                            'default': '',
+                            implicit: true
                         },
                         {
                             'name': 'default_value',
@@ -129,7 +131,8 @@ describe('Recipe service', function () {
                             'type': 'string',
                             'description': 'parameter.column_name.desc',
                             'label': 'parameter.column_name.label',
-                            'default': ''
+                            'default': '',
+                            implicit: true
                         }
                     ],
                     'description': 'action.negate.desc',
@@ -148,7 +151,8 @@ describe('Recipe service', function () {
                             'type': 'string',
                             'description': 'parameter.column_name.desc',
                             'label': 'parameter.column_name.label',
-                            'default': ''
+                            'default': '',
+                            implicit: true
                         },
                         {
                             'name': 'pattern',
@@ -175,7 +179,8 @@ describe('Recipe service', function () {
                             'type': 'string',
                             'description': 'The column on which apply this action to',
                             'label': 'Column',
-                            'default': ''
+                            'default': '',
+                            implicit: true
                         }
                     ],
                     'description': 'Replace all similar values with the right one',
@@ -212,7 +217,8 @@ describe('Recipe service', function () {
                             'type': 'string',
                             'description': 'parameter.column_name.desc',
                             'label': 'parameter.column_name.label',
-                            'default': ''
+                            'default': '',
+                            implicit: true
                         }
                     ],
                     'category': 'repair',

@@ -15,7 +15,7 @@ import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.ReleasableInputStream;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
-import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
 @Component

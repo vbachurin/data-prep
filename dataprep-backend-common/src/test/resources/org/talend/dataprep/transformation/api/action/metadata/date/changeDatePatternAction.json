@@ -4,7 +4,8 @@
       "action": "change_date_pattern",
       "parameters": {
         "column_id": "0001",
-        "new_pattern": "dd - MMM - yyyy"
+        "new_pattern": "dd - MMM - yyyy",
+        "scope": "column"
       }
     }
   ]

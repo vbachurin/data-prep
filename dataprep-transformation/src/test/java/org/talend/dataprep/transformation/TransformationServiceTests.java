@@ -445,6 +445,7 @@ public class TransformationServiceTests {
                 .asString();
 
         //then
+        System.out.println(response);
         assertEquals(expectedSuggestions, response, false);
     }
 
@@ -546,11 +547,11 @@ public class TransformationServiceTests {
     //------------------------------------------------------------------------------------------------------------------
 
     private String getSingleTransformation() {
-        return "{\"actions\": [ { \"action\": \"uppercase\", \"parameters\":{ \"column_id\": \"lastname\" } } ]}";
+        return "{\"actions\": [ { \"action\": \"uppercase\", \"parameters\":{ \"column_id\": \"lastname\", \"scope\": \"column\" } } ]}";
     }
 
     private String getMultipleTransformation() {
-        return "{\"actions\": [ { \"action\": \"uppercase\", \"parameters\":{ \"column_id\": \"lastname\" } }, { \"action\": \"uppercase\",\"parameters\":{ \"column_id\": \"firstname\" } }, { \"action\": \"delete_on_value\", \"parameters\":{ \"column_id\":\"city\", \"value\": \"Columbia\" } } ]}";
+        return "{\"actions\": [ { \"action\": \"uppercase\", \"parameters\":{ \"column_id\": \"lastname\", \"scope\": \"column\" } }, { \"action\": \"uppercase\",\"parameters\":{ \"column_id\": \"firstname\", \"scope\": \"column\" } }, { \"action\": \"delete_on_value\", \"parameters\":{ \"column_id\":\"city\", \"value\": \"Columbia\", \"scope\": \"column\" } } ]}";
     }
 
 }

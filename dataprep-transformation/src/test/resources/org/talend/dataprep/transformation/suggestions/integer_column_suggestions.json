@@ -1,69 +1,46 @@
 [
-   {
-      "name":"fillemptywithdefaultinteger",
-      "parameters":[
-         {
-           "name": "column_id",
-            "type":"string",
-            "default":"",
-            "description":"The column on which apply this action to",
-            "label":"Column"
-         },
-        {
-          "name": "column_name",
-          "type": "string",
-          "default": ""
-        },
-         {
-            "name":"default_value",
-            "type":"integer",
-            "default":"0",
-            "description":"The value to set in empty cells",
-            "label":"Value"
-         }
-      ],
-      "items":[
-
-      ],
-      "category":"quickfix",
-      "description":"Fill empty cells of this column with given value",
-      "label":"Fill empty cells with value..."
-   },
-   {
-      "name":"absolute_int",
-      "parameters":[
-         {
-           "name": "column_id",
-            "type":"string",
-            "default":"",
-            "description":"The column on which apply this action to",
-            "label":"Column"
-         },
-        {
-          "name": "column_name",
-          "type": "string",
-          "default": ""
-        }
-      ],
-      "category":"math",
-      "items":[
-
-      ]
-   },
-   {
-    "name": "delete_empty",
+  {
+    "name": "fillemptywithdefaultinteger",
     "parameters": [
       {
         "name": "column_id",
         "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
         "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "default_value",
+        "type": "integer",
+        "implicit": false,
+        "description": "The value to set in empty cells",
+        "label": "Value",
+        "default": "0"
       }
-    ]
+    ],
+    "category": "quickfix",
+    "items": [
+    ],
+    "dynamic": false,
+    "description": "Fill empty cells of this column with given value",
+    "label": "Fill empty cells with value..."
   },
   {
     "name": "delete_on_value",
@@ -71,113 +48,294 @@
       {
         "name": "column_id",
         "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "value",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "name": "round",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "name": "floor",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "name": "ceil",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "category": "columns",
-    "items": [],
-    "name": "rename_column",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
+        "implicit": true,
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "implicit": false,
+        "description": "The value to search",
+        "label": "Value",
+        "default": ""
+      }
+    ],
+    "category": "cleansing",
+    "items": [
+    ],
+    "dynamic": false,
+    "description": "Delete rows that have a specific value in cell in this column",
+    "label": "Delete lines that match..."
+  },
+  {
+    "name": "delete_empty",
+    "category": "cleansing",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Delete rows that have this cell empty",
+    "label": "Delete lines with empty cell"
+  },
+  {
+    "name": "ceil",
+    "category": "math",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Return the smallest integer value that is greater than or equal to the argument",
+    "label": "Ceil value"
+  },
+  {
+    "name": "floor",
+    "category": "math",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Return the largest integer value that is less than or equal to the argument",
+    "label": "Floor value"
+  },
+  {
+    "category": "math",
+    "name": "absolute_int",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Compute the absolute value for all numeric values of this column.",
+    "label": "Absolute value"
+  },
+  {
+    "name": "round",
+    "category": "math",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Round value to the closest integer",
+    "label": "Round value"
+  },
+  {
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
         "default": ""
       },
       {
         "name": "new_column_name",
         "type": "string",
+        "implicit": false,
         "description": "The new column name",
         "label": "New name",
         "default": "id"
       }
     ],
+    "category": "columns",
+    "name": "rename_column",
+    "items": [
+    ],
+    "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
   },
   {
-      "label": "Duplicate",
-      "name":"copy",
-      "description": "Creates an exact copy of this column",
-      "category": "columns",
-      "parameters": [
-         {
-            "name": "column_id",
-            "type": "string",
-            "description": "The column on which apply this action to",
-            "label": "Column",
-            "default": ""
-         },
-         {
-            "name": "column_name",
-            "type": "string",
-            "description": "The column name on which apply this action to",
-            "label": "Column name",
-            "default": ""
-         }
-       ]
+    "category": "columns",
+    "items": [
+    ],
+    "name": "copy",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Creates an exact copy of this column",
+    "label": "Duplicate"
   }
 ]

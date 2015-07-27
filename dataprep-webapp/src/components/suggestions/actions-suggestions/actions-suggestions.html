@@ -1,13 +1,13 @@
 <div class="actions-suggestions">
     <div class="title">Actions{{ actionsSuggestionsCtrl.column.name ? ': ' + actionsSuggestionsCtrl.column.name : '' }}</div>
-    <div class="Description" ng-if="! actionsSuggestionsCtrl.suggestions">Select a column to display its actions</div>
+    <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
     
-    <talend-tabs ng-if="actionsSuggestionsCtrl.suggestions">
+    <talend-tabs ng-if="actionsSuggestionsCtrl.columnSuggestions">
         <talend-tabs-item title="Text">Coming soon ...</talend-tabs-item>
         <talend-tabs-item title="Cell">Coming soon ...</talend-tabs-item>
         <talend-tabs-item title="Line">Coming soon ...</talend-tabs-item>
         <talend-tabs-item title="Column" default="true">
-            <div ng-repeat="(category, transformations) in actionsSuggestionsCtrl.suggestions track by category">
+            <div ng-repeat="(category, transformations) in actionsSuggestionsCtrl.columnSuggestions track by category">
                 <!--<div class="action-category">{{category}}</div>-->
 
                 <talend-accordions class="menu">
@@ -16,13 +16,13 @@
                         <!-- no static parameters -->
                         <a class="trigger"
                            ng-switch-when="false"
-                           ng-click="actionsSuggestionsCtrl.select(transfo)">{{transfo.label}}</a>
+                           ng-click="actionsSuggestionsCtrl.select(transfo, 'column')">{{transfo.label}}</a>
 
                         <!-- with static parameters -->
                         <a class="trigger" ng-switch-when="true">{{transfo.label}}</a>
                         <ul class="content" ng-switch-when="true">
                             <transform-params transformation="transfo"
-                                              on-submit="actionsSuggestionsCtrl.transformClosure(transfo)(params)"></transform-params>
+                                              on-submit="actionsSuggestionsCtrl.transformClosure(transfo, 'column')(params)"></transform-params>
                         </ul>
 
                     </talend-accordions-item>
@@ -63,7 +63,7 @@
                 <i data-icon="e" class="icon continuous-rotate"></i>
             </div>
             <transform-params transformation="actionsSuggestionsCtrl.dynamicTransformation"
-                              on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation)(params)"></transform-params>
+                              on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation, actionsSuggestionsCtrl.dynamicScope)(params)"></transform-params>
         </div>
         <div ng-if="!actionsSuggestionsCtrl.showHideModalContent">
             <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>

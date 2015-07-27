@@ -51,7 +51,7 @@ describe('Actions suggestions controller', function() {
         ColumnSuggestionService.transformations = transformations;
 
         //then
-        expect(ctrl.suggestions).toBe(transformations);
+        expect(ctrl.columnSuggestions).toBe(transformations);
     }));
 
     describe('with initiated state', function() {
@@ -99,33 +99,34 @@ describe('Actions suggestions controller', function() {
             var ctrl = createController();
 
             //when
-            ctrl.select(transformation);
+            ctrl.select(transformation, 'column');
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', column, undefined);
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', column, {scope: 'column'});
         }));
 
-        it('should set current dynamic transformation and', inject(function() {
+        it('should set current dynamic transformation and scope on dynamic transformation selection', inject(function() {
             //given
             var transformation = {name: 'cluster', dynamic: true};
             var ctrl = createController();
             ctrl.dynamicTransformation = null;
 
             //when
-            ctrl.select(transformation);
+            ctrl.select(transformation, 'column');
 
             //then
             expect(ctrl.dynamicTransformation).toBe(transformation);
+            expect(ctrl.dynamicScope).toBe('column');
         }));
 
-        it('should init dynamic params', inject(function(TransformationService) {
+        it('should init dynamic params on dynamic transformation selection', inject(function(TransformationService) {
             //given
             var transformation = {name: 'cluster', dynamic: true};
 
             var ctrl = createController();
 
             //when
-            ctrl.select(transformation);
+            ctrl.select(transformation, 'column');
 
             //then
             expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(transformation, {
@@ -142,7 +143,7 @@ describe('Actions suggestions controller', function() {
             ctrl.dynamicFetchInProgress = false;
 
             //when
-            ctrl.select(transformation);
+            ctrl.select(transformation, 'column');
             expect(ctrl.dynamicFetchInProgress).toBe(true);
             $rootScope.$digest();
 

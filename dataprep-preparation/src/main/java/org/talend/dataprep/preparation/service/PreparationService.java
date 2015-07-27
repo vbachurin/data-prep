@@ -24,7 +24,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.*;
-import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;

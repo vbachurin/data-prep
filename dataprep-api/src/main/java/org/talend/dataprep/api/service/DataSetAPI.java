@@ -8,12 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.dataset.*;
 import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActions;
-import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.metrics.Timed;
 

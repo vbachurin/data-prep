@@ -4,14 +4,16 @@
       "action": "uppercase",
       "parameters": {
         "column_id": "0002",
-        "column_name": "lastname"
+        "column_name": "lastname",
+        "scope": "column"
       }
     },
     {
       "action": "uppercase",
       "parameters": {
         "column_id": "0001",
-        "column_name": "firstname"
+        "column_name": "firstname",
+        "scope": "column"
       }
     }
   ]

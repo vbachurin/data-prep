@@ -3,7 +3,8 @@
     {
       "action": "uppercase",
       "parameters": {
-        "column_id": "0002"
+        "column_id": "0002",
+        "scope": "column"
       }
     }
   ]

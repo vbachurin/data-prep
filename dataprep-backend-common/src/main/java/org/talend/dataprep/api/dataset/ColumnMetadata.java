@@ -8,7 +8,7 @@ import java.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;

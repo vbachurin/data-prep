@@ -5,7 +5,8 @@
       "parameters": {
         "column_id": "0001",
         "column_name": "last update",
-        "time_unit": "Years"
+        "time_unit": "Years",
+        "scope": "column"
       }
     }
   ]
