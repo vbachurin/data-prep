@@ -23,7 +23,8 @@ describe('Dropdown directive', function () {
 
     describe('closeable dropdown', function () {
 
-        beforeEach(inject(function ($rootScope, $compile) {
+        beforeEach(inject(function ($rootScope, $compile, $window) {
+
             scope = $rootScope.$new();
 
             html = '<talend-dropdown id="dropdown1">' +
@@ -44,7 +45,7 @@ describe('Dropdown directive', function () {
             scope.$digest();
         }));
 
-        it('should show dropdown-menu on dropdown-action click', function () {
+        it('should show dropdown-menu on dropdown-action click', function (done) {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
             expect(menu.hasClass('show-menu')).toBe(false);
@@ -53,7 +54,12 @@ describe('Dropdown directive', function () {
             clickDropdownToggle();
 
             //then
-            expect(menu.hasClass('show-menu')).toBe(true);
+            //setTimeout with 300ms is used because of the timer to detect the single click in the directive
+            setTimeout(function() {
+                expect(menu.hasClass('show-menu')).toBe(true);
+                done();
+            }, 300);
+
         });
 
         it('should focus on dropdown menu when it is shown', function () {
@@ -73,68 +79,115 @@ describe('Dropdown directive', function () {
             jasmine.clock().uninstall();
         });
 
-        it('should show dropdown-menu on dropdown-action click when menu is visible', function () {
+        it('should show dropdown-menu on dropdown-action click when menu is visible', function (done) {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
             clickDropdownToggle();
-            expect(menu.hasClass('show-menu')).toBe(true);
 
-            //when
-            clickDropdownToggle();
+            setTimeout(function() {
+                expect(menu.hasClass('show-menu')).toBe(true);
 
-            //then
-            expect(menu.hasClass('show-menu')).toBe(false);
+                //when
+                clickDropdownToggle();
+
+                //then
+                setTimeout(function() {
+                    expect(menu.hasClass('show-menu')).toBe(false);
+                    done();
+                }, 300);
+
+            }, 300);
+
+
         });
 
-        it('should hide dropdown-menu on item click', function () {
+
+        it('should hide dropdown-menu on item click', function (done) {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
             clickDropdownToggle();
-            expect(menu.hasClass('show-menu')).toBe(true);
 
-            //when
-            clickDropdownItem();
+            setTimeout(function() {
+                expect(menu.hasClass('show-menu')).toBe(true);
 
-            //then
-            expect(menu.hasClass('show-menu')).toBe(false);
+                //when
+                clickDropdownItem();
+
+                //then
+                expect(menu.hasClass('show-menu')).toBe(false);
+                done();
+            }, 300);
+
+
+
         });
 
-        it('should register window scroll handler on open', inject(function ($window) {
-            //given
-            expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
+        it('should register window scroll handler on open', function(done) {
 
-            //when
-            clickDropdownToggle();
+            inject(function($window) {
+                //given
+                expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
 
-            //then
-            expect($._data(angular.element($window)[0], 'events')).toBeDefined();
-            expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
-        }));
+                //when
+                clickDropdownToggle();
 
-        it('should unregister window scroll on close', inject(function ($window) {
-            //given
-            clickDropdownToggle();
-            expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
+                //then
+                setTimeout(function () {
+                    expect($._data(angular.element($window)[0], 'events')).toBeDefined();
+                    expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
+                    done();
+                }, 300);
 
-            //when
-            clickDropdownToggle();
+            });
 
-            //then
-            expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
-        }));
+        });
 
-        it('should hide dropdown-menu on body mousedown', function () {
+        it('should unregister window scroll on close', function ( done) {
+
+            inject(function($window) {
+
+                //given
+                clickDropdownToggle();
+
+                setTimeout(function() {
+                    expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
+
+                    //when
+                    clickDropdownToggle();
+
+                    //then
+                    setTimeout(function() {
+                        expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
+                        done();
+                    }, 300);
+
+                }, 300);
+
+
+
+            })
+
+        });
+
+        it('should hide dropdown-menu on body mousedown', function (done) {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
 
             clickDropdownToggle();
-            expect(menu.hasClass('show-menu')).toBe(true);
 
-            //when
-            angular.element('body').mousedown();
+            setTimeout(function() {
 
-            //then
-            expect(menu.hasClass('show-menu')).toBe(false);
+                expect(menu.hasClass('show-menu')).toBe(true);
+
+                //when
+                angular.element('body').mousedown();
+
+                //then
+                expect(menu.hasClass('show-menu')).toBe(false);
+                done();
+
+            }, 300);
+
         });
 
         it('should unregister body mousedown on element remove', function () {
@@ -148,7 +201,7 @@ describe('Dropdown directive', function () {
             expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
         });
 
-        it('should stop mousedown propagation on dropdown-menu mousedown', function () {
+        it('should stop mousedown propagation on dropdown-menu mousedown', function (done) {
             //given
             var bodyMouseDown = false;
             angular.element('body').mousedown(function () {
@@ -159,30 +212,43 @@ describe('Dropdown directive', function () {
             element.find('.dropdown-menu').mousedown();
 
             //then
-            expect(bodyMouseDown).toBe(false);
+            setTimeout(function() {
+                expect(bodyMouseDown).toBe(false);
+                done();
+            }, 300);
+
         });
 
-        it('should hide dropdown menu on ESC', function () {
+        it('should hide dropdown menu on ESC', function (done) {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
             clickDropdownToggle();
-            expect(menu.hasClass('show-menu')).toBe(true);
 
-            var event = angular.element.Event('keydown');
-            event.keyCode = 27;
+            setTimeout(function() {
+                expect(menu.hasClass('show-menu')).toBe(true);
 
-            //when
-            menu.trigger(event);
+                var event = angular.element.Event('keydown');
+                event.keyCode = 27;
 
-            //then
-            expect(menu.hasClass('show-menu')).toBe(false);
+                //when
+                menu.trigger(event);
+
+                //then
+                expect(menu.hasClass('show-menu')).toBe(false);
+                done();
+            }, 300);
+
         });
 
-        it('should not hide dropdown menu on not ESC keydown', function () {
+        it('should not hide dropdown menu on not ESC keydown', function (done) {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
             clickDropdownToggle();
-            expect(menu.hasClass('show-menu')).toBe(true);
+
+            setTimeout(function() {
+                expect(menu.hasClass('show-menu')).toBe(true);
+            }, 300);
+
 
             var event = angular.element.Event('keydown');
             event.keyCode = 13;
@@ -191,7 +257,11 @@ describe('Dropdown directive', function () {
             menu.trigger(event);
 
             //then
-            expect(menu.hasClass('show-menu')).toBe(true);
+            setTimeout(function() {
+                expect(menu.hasClass('show-menu')).toBe(true);
+                done();
+            }, 300);
+
         });
 
         it('should focus on dropdown action when menu is hidden by ESC', function () {
@@ -242,17 +312,24 @@ describe('Dropdown directive', function () {
             scope.$digest();
         }));
 
-        it('should not hide dropdown-menu on item click if closeOnSelect is false', function () {
+        it('should not hide dropdown-menu on item click if closeOnSelect is false', function (done) {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
             clickDropdownToggle();
-            expect(menu.hasClass('show-menu')).toBe(true);
+
+            setTimeout(function() {
+                expect(menu.hasClass('show-menu')).toBe(true);
+            }, 300);
 
             //when
             clickDropdownItem();
 
             //then
-            expect(menu.hasClass('show-menu')).toBe(true);
+            setTimeout(function() {
+                expect(menu.hasClass('show-menu')).toBe(true);
+                done();
+            }, 300);
+
         });
     });
 
@@ -281,7 +358,7 @@ describe('Dropdown directive', function () {
             scope.$digest();
         }));
 
-        it('should call action on open click', function () {
+        it('should call action on open click', function (done) {
             //given
             expect(scope.onOpen).not.toHaveBeenCalled();
 
@@ -289,7 +366,11 @@ describe('Dropdown directive', function () {
             clickDropdownToggle();
 
             //then
-            expect(scope.onOpen).toHaveBeenCalled();
+            setTimeout(function() {
+                expect(scope.onOpen).toHaveBeenCalled();
+                done();
+            }, 300);
+
         });
     });
 });

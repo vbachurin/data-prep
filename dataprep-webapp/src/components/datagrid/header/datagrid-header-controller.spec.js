@@ -104,6 +104,7 @@ describe('Datagrid header controller', function () {
     };
 
     beforeEach(module('data-prep.datagrid-header'));
+    beforeEach(module('data-prep.services.playground'));
 
     beforeEach(inject(function($rootScope, $controller) {
         scope = $rootScope.$new();
@@ -179,6 +180,34 @@ describe('Datagrid header controller', function () {
             //then
             expect(ctrl.transformationsRetrieveError).toBeTruthy();
             expect(ctrl.initTransformationsInProgress).toBeFalsy();
+        }));
+    });
+
+
+    describe('with update column name', function() {
+
+        beforeEach(inject(function ($q, PlaygroundService) {
+            spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
+        }));
+
+        it('should go back to read-only mode', inject(function(PlaygroundService, $rootScope) {
+            //given
+            var ctrl = createController();
+            ctrl.newName = 'newName';
+
+            //when
+            ctrl.updateColumnName(column);
+            spyOn(ctrl, 'setEditMode');
+            $rootScope.$digest();
+
+            //then
+            var params = {new_column_name: 'newName'};
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('rename_column', column, params);
+
+            expect(ctrl.setEditMode).toHaveBeenCalledWith(false);
+            expect(ctrl.isEditMode).toBeFalsy();
+            expect(ctrl.updateEnabled).toBeFalsy();
+
         }));
     });
 

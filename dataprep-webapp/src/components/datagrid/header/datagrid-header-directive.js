@@ -6,6 +6,7 @@
      * @name data-prep.datagrid-header.directive:DatagridHeader
      * @description This directive takes care of a datagrid header item. It creates the header dropdown menu.
      * On creation, it calculate the quality bar values.
+     * On double-click, it allows to rename the column name.
      *
      * Watchers:
      * <ul>
@@ -33,8 +34,10 @@
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
 
-                    //The double-click on the column header is managed in datagrid-header-directive.js
-                    //whereas the click is managed in widget-dropdown-directive.js
+                    /**
+                     * The double-click on the column header is managed in datagrid-header-directive.js
+                     * whereas the click is managed in widget-dropdown-directive.js
+                     */
                     $timeout(function() {
 
                         var gridHeaderTitle = iElement.find('.grid-header-title');
@@ -42,7 +45,7 @@
 
                         var updateVal = function () {
 
-                            gridHeaderTitleInput = iElement.find('.grid-header-title-input');
+                            gridHeaderTitleInput = iElement.find('.grid-header-title-input').eq(0);
 
                             //Manage ENTER
                             gridHeaderTitleInput
@@ -57,7 +60,6 @@
                                                 event.stopPropagation();
                                                 gridHeaderTitleInput.off('blur');
                                             }
-
                                         }
                                 });
 
@@ -89,16 +91,13 @@
                                         $timeout(function() {
                                             ctrl.setEditMode(false);
                                         });
-                                        event.stopPropagation();
-                                        gridHeaderTitleInput.off('blur');
                                     }
-
                                 });
                         };
 
 
                         //Detect the double click
-                        var detectClickAction = function (events) {
+                        var detectClickAction = function () {
 
                             $timeout(function() {
                                 ctrl.setEditMode(true);
@@ -112,18 +111,13 @@
                                 gridHeaderTitleInput.focus();
                                 gridHeaderTitleInput.select();
                             }, 100);
-
-
                         };
+
 
                         //Bind dblclick event to 'gridHeaderTitle'
                         gridHeaderTitle.on('dblclick',detectClickAction);
 
                     });
-
-
-
-
 
                     /**
                      * Close transformation menu on retrieve error

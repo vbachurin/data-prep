@@ -108,9 +108,20 @@
                         }
                     };
 
+
+                    /**
+                     * The double-click on the column header is managed in datagrid-header-directive.js
+                     * whereas the click is managed in widget-dropdown-directive.js
+                     *
+                     * These variables are used to separate click and double click action
+                     *
+                     */
+
                     var DELAY = 300, clicks = 0, timer = null;
 
-                    //Click : Show/focus or hide menu on action zone click
+                    /**
+                     * Click : Show/focus or hide menu on action zone click
+                     */
                     var singleClickAction = function () {
                         var isVisible = menu.hasClass('show-menu');
                         hideAllDropDowns();
@@ -122,7 +133,9 @@
                         }
                     };
 
-                    //Detect the double click
+                    /**
+                     * Detect the double click
+                     */
                     var detectClickAction = function () {
                         clicks++;  //count clicks
                         if(clicks === 1) {
@@ -131,23 +144,24 @@
                                 clicks = 0;  //after action performed, reset counter
                             }, DELAY);
                         } else {
-                            hideAllDropDowns();
+                            hideAllDropDowns(); // Close all dropdown when double-click on header
                             clearTimeout(timer);  //prevent single-click action
                             clicks = 0;  //after action performed, reset counter
                         }
                     };
 
-                    //Bind click and dblclick event to 'action'
+                    /**
+                     * Bind click and dblclick event to 'action'
+                     */
                     action
                         .on('click',detectClickAction)
                         .on('mousedown', function(event){
-                            event.stopPropagation();  //stopPropagation mousedown of body
-                        })
-                        .on('dblclick', function(e){
-                            e.preventDefault();  //cancel system double-click event
+                            event.stopPropagation();  //stopPropagation mousedown of body to hide menu
                         });
 
-                    //Click : hide menu on item select if 'closeOnSelect' is not false
+                    /**
+                     * Click : hide menu on item select if 'closeOnSelect' is not false
+                     */
                     menu.click(function (event) {
                         event.stopPropagation();
                         if (ctrl.closeOnSelect !== false) {
@@ -155,12 +169,16 @@
                         }
                     });
 
-                    //Mousedown : stop propagation not to hide dropdown
+                    /**
+                     * Mousedown : stop propagation not to hide dropdown
+                     */
                     menu.mousedown(function(event) {
                         event.stopPropagation();
                     });
 
-                    //ESC keydown : hide menu, set focus on dropdown action and stop propagation
+                    /**
+                     * ESC keydown : hide menu, set focus on dropdown action and stop propagation
+                     */
                     menu.keydown(function(event) {
                         if(event.keyCode === 27) {
                             hideMenu();
@@ -169,14 +187,20 @@
                         }
                     });
 
-                    //make action and menu focusable
+                    /**
+                     * make action and menu focusable
+                     */
                     action.attr('tabindex', '1');
                     menu.attr('tabindex', '2');
 
-                    //hide menu on body mousedown
+                    /**
+                     * hide menu on body mousedown
+                     */
                     body.mousedown(hideMenu);
 
-                    //on element destroy, we destroy the scope which unregister body mousedown and window scroll handlers
+                    /**
+                     * on element destroy, we destroy the scope which unregister body mousedown and window scroll handlers
+                     */
                     iElement.on('$destroy', function () {
                         scope.$destroy();
                     });
