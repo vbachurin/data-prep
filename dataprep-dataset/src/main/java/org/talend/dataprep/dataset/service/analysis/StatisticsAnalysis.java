@@ -70,7 +70,7 @@ public class StatisticsAnalysis implements AsynchronousDataSetAnalyzer {
         datasetLock.lock();
         try {
             DataSetMetadata metadata = repository.get(dataSetId);
-            try (Stream<DataSetRow> stream = store.stream(metadata)) {
+            try (Stream<DataSetRow> stream = store.streamWithoutRowId(metadata)) {
                 if (metadata != null) {
                     if (!metadata.getLifecycle().schemaAnalyzed()) {
                         LOGGER.debug("Schema information must be computed before quality analysis can be performed, ignoring message");
