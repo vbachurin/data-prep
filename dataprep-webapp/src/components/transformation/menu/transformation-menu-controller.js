@@ -13,6 +13,8 @@
     function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService, ConverterService) {
         var vm = this;
         vm.converterService = ConverterService;
+        vm.types = TransformationService.types;
+
 
         /**
          * @ngdoc method
@@ -67,6 +69,10 @@
             };
         };
 
+        vm.changeType = function(type){
+          vm.column.domain = type;
+        };
+
         /**
          * @ngdoc method
          * @name transform
@@ -80,7 +86,9 @@
                     vm.showModal = false;
                 });
         };
+
     }
+
 
     angular.module('data-prep.transformation-menu')
         .controller('TransformMenuCtrl', TransformMenuCtrl);

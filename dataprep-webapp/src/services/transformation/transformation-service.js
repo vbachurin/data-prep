@@ -12,6 +12,9 @@
         var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
 
+        var self = this;
+        self.types = [];
+
         /**
          * @ngdoc method
          * @name isColumnInfo
@@ -95,6 +98,14 @@
                     var menus = cleanParamsAndItems(response.data);
                     return adaptInputTypes(menus);
                 });
+        };
+
+        this.refreshTypes = function refreshTypes() {
+            return TransformationRestService.getTypes()
+                .then(function (response) {
+                          self.types = response.data;
+                          return self.types;
+                      });
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -270,6 +281,8 @@
                 });
         };
 
+
+        self.types = this.refreshTypes();
     }
 
     angular.module('data-prep.services.transformation')

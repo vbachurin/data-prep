@@ -3,8 +3,9 @@
     <li class="more">
         <a>This column is a &nbsp;<span class="info">{{menuCtrl.column.domain ? menuCtrl.column.domain : menuCtrl.converterService.simplifyType(menuCtrl.column.type)}}</span></a>
         <ul class="submenu">
-            <li ng-repeat="semanticDomain in menuCtrl.column.semanticDomains"><a href="#">{{ ::semanticDomain.label | translate }}</a></li>
+            <li ng-repeat="semanticDomain in menuCtrl.column.semanticDomains"><a href="#" ng-click="menuCtrl.changeType(semanticDomain.id)">{{ ::semanticDomain.label | translate }}</a></li>
             <li class="divider"></li>
+            <li ng-repeat="type in menuCtrl.types"><a href="#" ng-click="menuCtrl.changeType(type.id)">{{ ::type.id }}</a></li>
         </ul>
     </li>
     <li class="divider"></li>

@@ -22,6 +22,10 @@
             return $http.post(RestURLs.transformUrl + '/suggest/column', stringifiedColumn);
         };
 
+        this.getTypes = function(){
+            return $http.get(RestURLs.serverUrl + '/api/types');
+        };
+
         /**
          * @ngdoc method
          * @name getDynamicParameters
