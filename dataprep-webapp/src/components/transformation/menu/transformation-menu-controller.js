@@ -69,6 +69,13 @@
             };
         };
 
+        /**
+         * @ngdoc method
+         * @name changeType
+         * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
+         * @param type the new domain/type of the column
+         * @description change the domain/type for the column
+         */
         vm.changeType = function(type){
           vm.column.domain = type;
         };

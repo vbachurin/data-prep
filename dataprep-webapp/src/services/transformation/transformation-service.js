@@ -282,6 +282,7 @@
         };
 
 
+        // load types on start as they don't really change
         self.types = this.refreshTypes();
     }
 
