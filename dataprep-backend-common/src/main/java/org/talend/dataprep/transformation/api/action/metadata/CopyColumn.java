@@ -94,6 +94,10 @@ public class CopyColumn extends SingleColumnAction {
                             .valid(column.getQuality().getValid()) //
                             .headerSize(column.getHeaderSize()) //
                             .build();
+                    newColumnMetadata.setDomain( column.getDomain() );
+                    newColumnMetadata.setDomainCount( column.getDomainCount() );
+                    newColumnMetadata.setDomainLabel( column.getDomainLabel() );
+                    newColumnMetadata.setSemanticDomains( column.getSemanticDomains() );
                     newColumns.add(newColumnMetadata);
                 }
 
