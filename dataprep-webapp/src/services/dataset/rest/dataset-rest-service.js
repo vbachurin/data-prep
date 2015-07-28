@@ -116,6 +116,21 @@
             return $http.put(RestURLs.datasetUrl + '/' + datasetId + '/processcertification');
         };
 
+
+        /**
+         * @ngdoc method
+         * @name updateColumn
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Update the dataset column
+         * @param {string} datasetId The dataset id
+         * @param {column} the column content
+         * @returns {Promise} The POST promise
+         */
+        self.updateColumn = function(datasetId,column){
+            console.log("datasetId:"+datasetId+",column:"+column.id);
+            return $http.post(RestURLs.datasetUrl + '/' + datasetId + '/column', column);
+        };
+
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Content----------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------

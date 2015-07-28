@@ -9,8 +9,9 @@
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.transformation.service:TransformationService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.dataset.service:DatasetService
      */
-    function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService, ConverterService) {
+    function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService, ConverterService, DatasetService) {
         var vm = this;
         vm.converterService = ConverterService;
         vm.types = TransformationService.types;
@@ -82,6 +83,7 @@
           vm.column.domainLabel = typeLabel;
           vm.column.domainCount = count;
           console.log("vm.column.domain:"+vm.column.domain+",vm.column.domainLabel:" + vm.column.domainLabel+",vm.column.domainCount:"+vm.column.domainCount);
+          DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column);
         };
 
         /**

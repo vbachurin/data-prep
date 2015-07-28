@@ -33,6 +33,7 @@ public enum APIErrorCodes implements ErrorCode {
     UNABLE_TO_GET_DYNAMIC_ACTION_PARAMS(400),
     UNABLE_TO_SET_FAVORITE_DATASET(400, "id"),
     DATASET_STILL_IN_USE(409, "dataSetId", "preparations"),
+    UNABLE_TO_UPDATE_COLUMN(400, "id"),
     DATASET_REDIRECT(301);
 
     /** The http status to use. */

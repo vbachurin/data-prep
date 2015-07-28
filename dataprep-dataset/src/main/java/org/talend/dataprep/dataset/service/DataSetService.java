@@ -635,7 +635,7 @@ public class DataSetService {
      * @param dataSetId the id if the data set.
      * @param columnMetadata the column metadata to update
      */
-    @RequestMapping(value = "/datasets/{id}/column", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/datasets/{id}/column", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiOperation(value = "update only a column", notes = "")
     @Timed
     public void updateDatasetColumn(

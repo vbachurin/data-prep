@@ -89,6 +89,21 @@ public class DataSetAPI extends APIService {
         return result;
     }
 
+    @RequestMapping(value = "/api/datasets/{id}/column", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a dataset.", consumes = APPLICATION_JSON_VALUE, produces = TEXT_PLAIN_VALUE, //
+        notes = "Update a data set based on content provided in POST body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    public String updateColumn(@ApiParam(value = "Id of the data set to update") @PathVariable(value = "id") String id,
+                         @ApiParam(value = "content") InputStream columnContent) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating or updating dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
+        }
+        HttpClient client = getClient();
+        HystrixCommand<String> creation = getCommand(UpdateColumn.class, client, id, columnContent);
+        String result = creation.execute();
+        LOG.debug("Dataset creation or update for #{} done.", id);
+        return result;
+    }
+
     @RequestMapping(value = "/api/datasets/{id}", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get a data set by id.", produces = APPLICATION_JSON_VALUE, notes = "Get a data set based on given id.")
     public void get(

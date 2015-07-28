@@ -679,7 +679,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
             .body( stringWriter.toString() ) //
             .when() //
             .contentType( ContentType.JSON ) //
-            .put( "/datasets/{dataSetId}/column", dataSetId );
+            .post( "/datasets/{dataSetId}/column", dataSetId );
 
 
         json = given().contentType(ContentType.JSON ).get( "/datasets/{id}/preview?sheetName=Tableau de bord",

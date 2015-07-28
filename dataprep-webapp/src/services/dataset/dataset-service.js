@@ -179,6 +179,17 @@
             });
         };
 
+        /**
+         * @ngdoc method
+         * @name updateColumn
+         * @methodOf data-prep.services.dataset.service:DatasetService
+         * @description Update the dataset column
+         * @param {string} datasetId The dataset id
+         * @param {column} the column content
+         * @returns {Promise} The POST promise
+         */
+        self.updateColumn = DatasetRestService.updateColumn;
+
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Content----------------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
