@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,41 +61,37 @@ public class ActionParserTest {
         DataSetRow actualRow = getDataSetRow();
         DataSetRow expectedRow = actualRow.clone();
 
-        RowMetadata actualMetadata = getRowMetadata();
         RowMetadata expectedMetadata = getRowMetadata();
 
         ParsedActions actualActions = actionParser.parse("");
 
         // when
-        actualActions.asUniqueRowTransformer().accept(actualRow, new TransformationContext());
-        actualActions.asUniqueMetadataTransformer().accept(actualMetadata, new TransformationContext());
+        actualActions.asUniqueRowTransformer().apply(actualRow, new TransformationContext());
 
         // then
-        Assert.assertEquals(expectedRow, actualRow);
-        Assert.assertEquals(expectedMetadata, actualMetadata);
+        assertEquals(expectedRow, actualRow);
+        assertEquals(expectedMetadata, actualRow.getRowMetadata());
     }
 
     @Test
     public void should_return_expected_actions() throws IOException {
         // given
         DataSetRow actualRow = getDataSetRow();
-        RowMetadata actualMetadata = getRowMetadata();
 
         String json = IOUtils.toString(ActionParserTest.class.getResourceAsStream("actions.json"));
         ParsedActions actualActions = actionParser.parse(json);
 
         // when
-        actualActions.asUniqueRowTransformer().accept(actualRow, new TransformationContext());
-        actualActions.asUniqueMetadataTransformer().accept(actualMetadata, new TransformationContext());
+        actualRow = actualActions.asUniqueRowTransformer().apply(actualRow, new TransformationContext());
 
         // then
         RowMetadata expectedMetadata = getRowMetadata();
         expectedMetadata.getById("0001").setName("blah blah blah");
-        Assert.assertEquals(expectedMetadata, actualMetadata);
+        assertEquals(expectedMetadata, actualRow.getRowMetadata());
 
         DataSetRow expectedRow = getDataSetRow();
-        expectedRow.values().put("0001", "TOTO");
-        Assert.assertEquals(expectedRow, actualRow);
+        expectedRow.set("0000", "TOTO");
+        assertEquals(expectedRow, actualRow);
     }
 
 
@@ -103,10 +100,10 @@ public class ActionParserTest {
      */
     private DataSetRow getDataSetRow() {
         Map<String, String> values = new HashMap<>();
-        values.put("0001", "toto");
-        values.put("0002", "123456");
-        values.put("0003", "true");
-        return new DataSetRow(values);
+        values.put("0000", "toto");
+        values.put("0001", "123456");
+        values.put("0002", "true");
+        return new DataSetRow(getRowMetadata(), values);
     }
 
     /**

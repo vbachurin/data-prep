@@ -6,8 +6,9 @@
      * @name data-prep.datagrid.service:DatagridStyleService
      * @description Datagrid private service that manage the grid style
      * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.utils.service:ConverterService
      */
-    function DatagridStyleService($timeout, DatagridService, ConverterService) {
+    function DatagridStyleService(DatagridService, ConverterService) {
         var grid;
         var lastSelectedColumnId;
 
@@ -169,7 +170,8 @@
          * @name computeHTMLForLeadingOrTrailingHiddenChars
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description split the string value into leading chars, text and trailing char and create html element using
-         * the class hiddenChars to specify the hiddenChars.
+         * the class hiddenChars to specify the hiddenChars.If the text contains break lines, the class
+         * hiddenCharsBreakLine is used to notice it.
          * @param {string} value The string value to adapt
          */
         function computeHTMLForLeadingOrTrailingHiddenChars(value){
@@ -185,13 +187,21 @@
                 returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>';
             }
 
-            returnStr += hiddenCharsRegExpMatch[2] ;
+            //breaking lines indicator
+            var lines = value.trim().split('\n');
+            if(lines.length < 2) {
+                returnStr += hiddenCharsRegExpMatch[2] ;
+            }
+            else {
+                _.forEach(lines, function(line, index) {
+                    returnStr += line + (index === lines.length -1 ? '' : '↵\n');
+                });
+            }
 
             //trailing hidden chars
             if (hiddenCharsRegExpMatch[3]){
                 returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
             }
-
             return returnStr;
         }
 
@@ -282,7 +292,6 @@
                 });
 
                 grid.setCellCssStyles('highlight', config);
-                grid.invalidate();
             });
 
             //change selected cell column background

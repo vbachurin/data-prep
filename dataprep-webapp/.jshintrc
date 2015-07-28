@@ -48,6 +48,8 @@
     // Highcharts
     "Highcharts": false,
     "d3":false,
-    "introJs": false
+    "introJs": false,
+    // MomentJS
+    "moment": false
   }
 }

@@ -186,9 +186,10 @@ describe('Recipe Bullet service', function () {
             {highlight: true, column:{id:'0005'}},
             {highlight: true, column:{id:'0001'}}
         );
+        var step = {column: {id: '0001'}};
 
         //when
-        RecipeBulletService.stepHoverEnd();
+        RecipeBulletService.stepHoverEnd(step);
 
         //then
         expect(recipe[0].highlight).toBeFalsy();
@@ -198,8 +199,11 @@ describe('Recipe Bullet service', function () {
     }));
 
     it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function ($timeout, PreviewService, RecipeBulletService) {
+        //given
+        var step = {column: {id: '0001'}};
+
         //when
-        RecipeBulletService.stepHoverEnd();
+        RecipeBulletService.stepHoverEnd(step);
         $timeout.flush(99);
         expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
         $timeout.flush(1);
@@ -210,9 +214,10 @@ describe('Recipe Bullet service', function () {
 
     it('should cancel pending preview action on mouse hover end', inject(function ($timeout, RecipeBulletService) {
         //given
+        var step = {column: {id: '0001'}};
 
         //when
-        RecipeBulletService.stepHoverEnd();
+        RecipeBulletService.stepHoverEnd(step);
 
         //then
         expect($timeout.cancel).toHaveBeenCalled();

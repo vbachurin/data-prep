@@ -20,12 +20,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -36,7 +36,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 public class LowerCaseTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> closure;
+    private DataSetRowAction closure;
 
     /** The action to test. */
     private LowerCase action;
@@ -78,7 +78,7 @@ public class LowerCaseTest {
         expectedValues.put("entity", "r&d"); // R&D --> r&d
         expectedValues.put("joined", "May 20th 2015");
 
-        closure.accept(row, new TransformationContext());
+        row = closure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -96,7 +96,7 @@ public class LowerCaseTest {
         expectedValues.put("name", "Vincent");
         expectedValues.put("joined", "May 20th 2015");
 
-        closure.accept(row, new TransformationContext());
+        row = closure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 

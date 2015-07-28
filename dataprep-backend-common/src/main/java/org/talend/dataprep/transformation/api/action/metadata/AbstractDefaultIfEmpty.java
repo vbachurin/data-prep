@@ -5,6 +5,8 @@ import static org.talend.dataprep.api.preparation.Action.Builder.builder;
 import java.util.Map;
 
 import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 
 public abstract class AbstractDefaultIfEmpty extends SingleColumnAction {
 
@@ -23,6 +25,7 @@ public abstract class AbstractDefaultIfEmpty extends SingleColumnAction {
             if (value == null || value.trim().length() == 0) {
                 row.set(columnName, parameters.get(DEFAULT_VALUE_PARAMETER));
             }
+            return row;
         }).build();
     }
 }

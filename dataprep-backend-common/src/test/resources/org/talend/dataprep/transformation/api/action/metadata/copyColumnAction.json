@@ -3,7 +3,7 @@
     {
       "action": "copy",
       "parameters": {
-        "column_id": "steps",
+        "column_id": "0001",
         "column_name": "steps"
       }
     }

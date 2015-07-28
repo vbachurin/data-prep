@@ -1,4 +1,4 @@
-describe('Dataset list directive', function() {
+describe('Dataset list directive', function () {
     'use strict';
 
     function strEndsWith(str, suffix) {
@@ -36,14 +36,14 @@ describe('Dataset list directive', function() {
     beforeEach(module('htmlTemplates'));
     beforeEach(module('pascalprecht.translate', function ($translateProvider) {
         $translateProvider.translations('en', {
-            'INVENTORY_DETAILS': 'owned by {{author}}, created {{created | moment_from_now}}, contains {{records}} lines'
+            'INVENTORY_DETAILS': 'owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines'
         });
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function($rootScope, $compile, $q, DatasetService) {
+    beforeEach(inject(function ($rootScope, $compile, $q, DatasetService) {
         scope = $rootScope.$new();
-        createElement = function() {
+        createElement = function () {
             element = angular.element('<dataset-list></dataset-list>');
             $compile(element)(scope);
             scope.$digest();
@@ -51,17 +51,20 @@ describe('Dataset list directive', function() {
         };
 
         spyOn(DatasetService, 'datasetsList').and.returnValue(datasets);
-        spyOn(DatasetService, 'getDatasets').and.callFake(function() {
+        spyOn(DatasetService, 'getDatasets').and.callFake(function () {
             return $q.when(datasets);
         });
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render dataset list', function($moment) {
+    it('should render dataset list', inject(function ($filter) {
+        //given
+        var momentize = $filter('TDPMoment');
+
         //when
         createElement();
 
@@ -72,7 +75,7 @@ describe('Dataset list directive', function() {
         expect(strEndsWith(iconSrc, '/assets/images/inventory/csv_file.png')).toBe(true);
         expect(certificationIcon.length).toBe(0);
         expect(element.find('.inventory-title').eq(0).text()).toBe('US States');
-        expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created '+$moment('1437020219741','x').fromNow()+', contains  lines');
+        expect(element.find('.inventory-description').eq(0).text()).toBe('owned by anonymousUser, created ' + momentize('1437020219741') + ', contains  lines');
 
         icon = element.find('.inventory-icon').eq(1);
         iconSrc = icon.find('> img')[0].src;
@@ -80,7 +83,7 @@ describe('Dataset list directive', function() {
         expect(strEndsWith(iconSrc, '/assets/images/inventory/xls_file.png')).toBe(true);
         expect(strEndsWith(certificationIcon, '/assets/images/certification-pending.png')).toBe(true);
         expect(element.find('.inventory-title').eq(1).text()).toBe('Customers');
-        expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created '+$moment('143702021974','x').fromNow()+', contains  lines');
+        expect(element.find('.inventory-description').eq(1).text()).toBe('owned by anonymousUser, created ' + momentize('143702021974') + ', contains  lines');
 
         icon = element.find('.inventory-icon').eq(2);
         iconSrc = icon.find('> img')[0].src;
@@ -88,6 +91,6 @@ describe('Dataset list directive', function() {
         expect(strEndsWith(iconSrc, '/assets/images/inventory/generic_file.png')).toBe(true);
         expect(strEndsWith(certificationIcon, '/assets/images/certification-certified.png')).toBe(true);
         expect(element.find('.inventory-title').eq(2).text()).toBe('Customers 2');
-        expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created '+$moment('14370202197','x').fromNow()+', contains  lines');
-    });
+        expect(element.find('.inventory-description').eq(2).text()).toBe('owned by anonymousUser, created ' + momentize('14370202197') + ', contains  lines');
+    }));
 });

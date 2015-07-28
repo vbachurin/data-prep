@@ -16,7 +16,7 @@
   "SELECT_DATASET_DESCRIPTION": "Select a dataset or a folder to access its details",
 
   "_comment": "Inventory",
-  "INVENTORY_DETAILS": "owned by {{author}}, created {{created | moment_from_now}}, contains {{records}} lines",
+  "INVENTORY_DETAILS": "owned by {{author}}, created {{created | TDPMoment}}, contains {{records}} lines",
   "NAME_SORT": "Name",
   "SORTED_BY": "Sorted by",
   "UPLOAD_ERROR": "Upload error",
@@ -48,8 +48,9 @@
   "CONFIRM": "Confirm",
   "_comment": "Import datasets",
   "IMPORT_DATASET": "Import DataSet",
-  "IMPORT_HTML_DATASET": "Import HTML DataSet",
+  "IMPORT_HTTP_DATASET": "Import HTTP DataSet",
   "ENTER_DATASET_URL": "Enter the dataset url",
+  "IMPORT_HDFS_DATASET": "Import HDFS DataSet",
 
 
   "_comment": "Common",

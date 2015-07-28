@@ -350,7 +350,7 @@
             "category":"categ",
             "values":[
                {
-                  "name":"From begining",
+                  "name":"From beginning",
                   "parameters":[
 
                   ],
@@ -412,6 +412,41 @@
             "type":"string",
             "description":"The column name on which apply this action to",
             "label":"Column name",
+            "default":""
+         }
+      ]
+   },
+   {
+      "label":"Replace cells that match...",
+      "name":"replace_on_value",
+      "category":"quickfix",
+      "parameters":[
+         {
+            "name":"column_id",
+            "type":"string",
+            "description":"The column on which apply this action to",
+            "label":"Column",
+            "default":""
+         },
+         {
+            "name":"column_name",
+            "type":"string",
+            "description":"The column name on which apply this action to",
+            "label":"Column name",
+            "default":""
+         },
+         {
+            "name":"cell_value",
+            "type":"string",
+            "description":"The current cell value",
+            "label":"Current",
+            "default":""
+         },
+         {
+            "name":"replace_value",
+            "type":"string",
+            "description":"The new value to set",
+            "label":"Replace",
             "default":""
          }
       ]

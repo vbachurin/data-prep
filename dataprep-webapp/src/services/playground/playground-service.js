@@ -74,7 +74,8 @@
             //preparation
             createOrUpdatePreparation: createOrUpdatePreparation,
             appendStep: appendStep,
-            updateStep: updateStep
+            updateStep: updateStep,
+            editCell: editCell
         };
         return service;
 
@@ -348,6 +349,13 @@
                 });
         }
 
+        function editCell(rowItem, colId, newValue, updateAllCellWithValue) {
+            console.log(rowItem);
+            console.log(colId);
+            console.log(newValue);
+            console.log(updateAllCellWithValue);
+            console.log('replace ' + rowItem[colId] + ' with ' + newValue + (updateAllCellWithValue ? ' on all cell with this value' : ' on row ' + rowItem.tdpId));
+        }
         //------------------------------------------------------------------------------------------------------
         //---------------------------------------------------UTILS----------------------------------------------
         //------------------------------------------------------------------------------------------------------

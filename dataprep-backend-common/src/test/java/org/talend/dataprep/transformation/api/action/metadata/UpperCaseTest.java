@@ -20,12 +20,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -40,7 +40,7 @@ public class UpperCaseTest {
     private UpperCase action;
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
+    private DataSetRowAction rowClosure;
 
     /**
      * Constructor.
@@ -76,7 +76,7 @@ public class UpperCaseTest {
         expectedValues.put("city", "VANCOUVER"); // Vancouver --> VANCOUVER
         expectedValues.put("country", "Canada");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -94,7 +94,7 @@ public class UpperCaseTest {
         expectedValues.put("country", "Canada");
         expectedValues.put("capital", "Ottawa");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 

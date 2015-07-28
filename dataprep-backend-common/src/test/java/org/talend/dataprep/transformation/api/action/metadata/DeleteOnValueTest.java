@@ -20,12 +20,12 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -39,7 +39,7 @@ public class DeleteOnValueTest {
     DeleteOnValue action;
 
     /** the action out of the consumer. */
-    private BiConsumer<DataSetRow, TransformationContext> consumer;
+    private DataSetRowAction consumer;
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ public class DeleteOnValueTest {
         values.put("city", "Berlin");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertTrue(dsr.isDeleted());
 
         // Assert that action did not change the row values
@@ -84,7 +84,7 @@ public class DeleteOnValueTest {
         values.put("city", " Berlin"); // notice the space before ' Berlin'
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertTrue(dsr.isDeleted());
 
         assertEquals("David Bowie", dsr.get("name"));
@@ -98,7 +98,7 @@ public class DeleteOnValueTest {
         values.put("city", "Berlin "); // notice the space after 'Berlin '
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertTrue(dsr.isDeleted());
 
         // Assert that action did not change the row values
@@ -113,7 +113,7 @@ public class DeleteOnValueTest {
         values.put("city", " Berlin "); // notice the spaces enclosing ' Berlin '
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertTrue(dsr.isDeleted());
 
         // Assert that action did not change the row values
@@ -127,7 +127,7 @@ public class DeleteOnValueTest {
         values.put("name", "David Bowie");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
 
         // Assert that action did not change the row values
@@ -141,7 +141,7 @@ public class DeleteOnValueTest {
         values.put("city", "berlin");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
 
         // Assert that action did not change the row values
@@ -156,7 +156,7 @@ public class DeleteOnValueTest {
         values.put("city", "üBerlin");
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertFalse(dsr.isDeleted());
 
         // Assert that action did not change the row values
