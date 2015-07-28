@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.context.annotation.Scope;
@@ -35,7 +36,7 @@ public class UpdateColumn
 
     @Override
     protected String run() throws Exception {
-        HttpPut contentUpdate = new HttpPut(datasetServiceUrl + "/datasets/" + dataSetId + "/column"); //$NON-NLS-1$ //$NON-NLS-2$
+        HttpPost contentUpdate = new HttpPost(datasetServiceUrl + "/datasets/" + dataSetId + "/column"); //$NON-NLS-1$ //$NON-NLS-2$
         contentUpdate.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
         try {
             contentUpdate.setEntity(new InputStreamEntity(columnContent));
