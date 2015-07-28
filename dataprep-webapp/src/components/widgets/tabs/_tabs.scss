@@ -1,6 +1,5 @@
 talend-tabs {
   @include flex-column();
-  padding-bottom: 20px;
 
   >.tabs {
     @include flex-row();

@@ -28,5 +28,4 @@ describe('ColumnProfile controller', function() {
 		//then
 		expect(StatisticsService.addFilter).toHaveBeenCalledWith(obj.data);
 	}));
-
 });

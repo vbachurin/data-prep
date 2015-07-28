@@ -4,7 +4,7 @@
     function ActionsSuggestions() {
         return {
             restrict: 'E',
-            templateUrl: 'components/suggestions/actions-suggestions/actions-suggestions.html',
+            templateUrl: 'components/suggestions-stats/actions-suggestions/actions-suggestions.html',
             bindToController: true,
             controllerAs: 'actionsSuggestionsCtrl',
             controller: 'ActionsSuggestionsCtrl'

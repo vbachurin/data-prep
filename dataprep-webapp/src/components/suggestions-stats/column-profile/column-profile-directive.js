@@ -4,7 +4,7 @@
     function ColumnProfile() {
         return {
             restrict: 'E',
-            templateUrl: 'components/suggestions/column-profile/column-profile.html',
+            templateUrl: 'components/suggestions-stats/column-profile/column-profile.html',
             bindToController: true,
             controllerAs: 'columnProfileCtrl',
             controller: 'ColumnProfileCtrl'

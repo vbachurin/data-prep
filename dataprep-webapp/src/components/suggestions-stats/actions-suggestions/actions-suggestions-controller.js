@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc controller
-     * @name data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+     * @name data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
      * @description Actions suggestion controller
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PlaygroundService
@@ -15,7 +15,7 @@
         /**
          * @ngdoc property
          * @name dynamicTransformation
-         * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description The dynamic param transformation to display
          */
         vm.dynamicTransformation = null;
@@ -23,7 +23,7 @@
         /**
          * @ngdoc property
          * @name dynamicFetchInProgress
-         * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description Flag that indicates if a fetch of dynamic parameters is in progress
          */
         vm.dynamicFetchInProgress = false;
@@ -31,7 +31,7 @@
         /**
          * @ngdoc property
          * @name showDynamicModal
-         * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description Flag that change the dynamic parameters modal display
          */
         vm.showDynamicModal = false;
@@ -39,7 +39,7 @@
         /**
          * @ngdoc method
          * @name initDynamicParams
-         * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description [PRIVATE] Fetch the transformation dynamic parameters and inject them into transformation menu params
          * @returns {promise} The GET request promise
          */
@@ -56,7 +56,7 @@
         /**
          * @ngdoc property
          * @name showHideModalContent
-         * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description show/hides the dynamic transformation or the alert message
          */
         vm.showHideModalContent = null;
@@ -64,7 +64,7 @@
         /**
          * @ngdoc method
          * @name checkDynamicResponse
-         * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description [PRIVATE] sets the showHideModalContent and the emptyParamsMsg properties
          */
         vm.checkDynamicResponse = function showHideModalContent (){
@@ -105,7 +105,7 @@
         /**
          * @ngdoc method
          * @name select
-         * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description Transformation selection.
          <ul>
             <li>Dynamic transformation : fetch the dynamic parameters and show the modal</li>
@@ -132,7 +132,7 @@
         /**
          * @ngdoc method
          * @name transformClosure
-         * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+         * @methodOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
          * @description Transformation application closure. It take the transformation to build the closure.
          * The closure then take the parameters and append the new step in the current preparation
          */
@@ -149,7 +149,7 @@
     /**
      * @ngdoc property
      * @name column
-     * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
      * @description The transformations column.
      * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.currentColumn
      */
@@ -165,7 +165,7 @@
     /**
      * @ngdoc property
      * @name suggestions
-     * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
+     * @propertyOf data-prep.actions-suggestions-stats.controller:ActionsSuggestionsCtrl
      * @description The suggested transformations list.
      * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.transformations
      */

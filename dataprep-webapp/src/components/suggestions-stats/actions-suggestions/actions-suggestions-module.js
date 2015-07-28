@@ -3,7 +3,7 @@
 
     /**
      * @ngdoc object
-     * @name data-prep.actions-suggestions
+     * @name data-prep.actions-suggestions-stats
      * @description This module contains the controller and directives to manage suggested transformation list
      * @requires talend.widget
      * @requires data-prep.services.transformation
