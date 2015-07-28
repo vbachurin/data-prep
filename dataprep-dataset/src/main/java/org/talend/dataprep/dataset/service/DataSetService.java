@@ -5,7 +5,14 @@ import static org.talend.dataprep.api.dataset.DataSetMetadata.Builder.metadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.TimeZone;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -22,10 +29,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.DistributedLock;
-import org.talend.dataprep.api.dataset.*;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
+import org.talend.dataprep.api.dataset.DataSetLocation;
+import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.service.analysis.AsynchronousDataSetAnalyzer;
@@ -46,7 +64,11 @@ import org.talend.dataprep.schema.FormatGuess;
 import org.talend.dataprep.schema.SchemaParserResult;
 import org.talend.dataprep.user.store.UserDataRepository;
 
-import com.wordnik.swagger.annotations.*;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 @RestController
 @Api(value = "datasets", basePath = "/datasets", description = "Operations on data sets")
@@ -223,7 +245,7 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the requested data set") String dataSetId, //
             HttpServletResponse response) {
         response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE); //$NON-NLS-1$
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
         lock.lock();
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
@@ -289,7 +311,7 @@ public class DataSetService {
         try {
             DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
             if (dataSetMetadata != null) {
-                LOG.trace("Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+                LOG.trace( "Current certification step is " + dataSetMetadata.getGovernance().getCertificationStep() );
 
                 if (dataSetMetadata.getGovernance().getCertificationStep() == Certification.NONE) {
                     dataSetMetadata.getGovernance().setCertificationStep(Certification.PENDING);
@@ -302,7 +324,7 @@ public class DataSetService {
                     dataSetMetadataRepository.add(dataSetMetadata);
                 }
 
-                LOG.debug("New certification step is " + dataSetMetadata.getGovernance().getCertificationStep());
+                LOG.debug( "New certification step is " + dataSetMetadata.getGovernance().getCertificationStep() );
             }// else do nothing if the dataset does not exists
         } finally {
             datasetLock.unlock();
@@ -340,7 +362,7 @@ public class DataSetService {
             lock.unlock();
         }
         // Content was changed, so queue events (format analysis, content indexing for search...)
-        queueEvents(dataSetId);
+        queueEvents( dataSetId );
     }
 
     /**
@@ -375,7 +397,7 @@ public class DataSetService {
         DataSet dataSet = new DataSet();
         completeWithUserData(metadata);
         dataSet.setMetadata(metadata);
-        dataSet.setColumns(metadata.getRow().getColumns());
+        dataSet.setColumns( metadata.getRow().getColumns() );
         return dataSet;
     }
 
@@ -503,7 +525,7 @@ public class DataSetService {
     public void updateDataSet(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set to update") String dataSetId,
             @RequestBody DataSetMetadata dataSetMetadata) {
-        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock( dataSetId );
         lock.lock();
         try {
             LOG.debug("updateDataSet: {}", dataSetMetadata);
@@ -585,11 +607,9 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the favorite data set, do nothing is the id does not exist.") String dataSetId) {
         String userId = getUserId();
         // check that dataset exists
-        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get( dataSetId );
         if (dataSetMetadata != null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("{} favorite dataset for #{} for user {}", unset ? "Unset" : "Set", dataSetId, userId); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-            }
+            LOG.debug("{} favorite dataset for #{} for user {}", unset ? "Unset" : "Set", dataSetId, userId); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
             UserData userData = userDataRepository.getUserData(userId);
             if (unset) {// unset the favorites
@@ -601,11 +621,71 @@ public class DataSetService {
                 if (userData == null) {// let's create a new UserData
                     userData = new UserData(userId);
                 }// else already created so just update it.
-                userData.addFavoriteDataset(dataSetId);
+                userData.addFavoriteDataset( dataSetId );
                 userDataRepository.setUserData(userData);
             }
         } else {// no dataset found so throws an error
             throw new TDPException(DataSetErrorCodes.DATASET_DOES_NOT_EXIST, TDPExceptionContext.build().put("id", dataSetId));
+        }
+    }
+
+    /**
+     * Update the column of the data set
+     * 
+     * @param dataSetId the id if the data set.
+     * @param columnMetadata the column metadata to update
+     */
+    @RequestMapping(value = "/datasets/{id}/column", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "update only a column", notes = "")
+    @Timed
+    public void updateDatasetColumn(
+            @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set, do nothing is the id does not exist.") String dataSetId,
+            @RequestBody ColumnMetadata columnMetadata) {
+
+
+
+        final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
+        lock.lock();
+        try
+        {
+
+            // check that dataset exists
+            DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get( dataSetId );
+            if ( dataSetMetadata != null )
+            {
+                LOG.debug( "update dataset column for #{} with {}", dataSetId, columnMetadata );
+
+                // yup java8 stream etc.... doesn't have any way to find the index....
+                int idx = -1, i = 0;
+                for ( ColumnMetadata column : dataSetMetadata.getRow().getColumns() )
+                {
+                    if ( StringUtils.equals( column.getId(), columnMetadata.getId() ) )
+                    {
+                        idx = i;
+                        break;
+                    }
+                    i++;
+                }
+
+                if (idx == -1){
+                    throw new TDPException( DataSetErrorCodes.COLUMN_DOES_NOT_EXIST, //
+                                            TDPExceptionContext.build().put( "id", dataSetId ) //
+                                            .put( "columnid", columnMetadata.getId() ));
+                }
+
+                dataSetMetadata.getRow().getColumns().set( idx, columnMetadata );
+
+                dataSetMetadataRepository.add( dataSetMetadata );
+
+            }
+            else
+            {
+                // no dataset found so throws an error
+                throw new TDPException( DataSetErrorCodes.DATASET_DOES_NOT_EXIST,
+                                        TDPExceptionContext.build().put( "id", dataSetId ) );
+            }
+        } finally {
+            lock.unlock();
         }
     }
 }
