@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -30,6 +29,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 /**
@@ -40,10 +40,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 public class SubstringTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
-    /** The metadata consumer to test. */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private DataSetRowAction rowClosure;
 
     /** The action to test. */
     private Substring action;
@@ -58,7 +55,6 @@ public class SubstringTest {
                 SubstringTest.class.getResourceAsStream("substringAction.json"));
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
-        metadataClosure = action.getMetadataAction();
     }
 
     @Test
@@ -74,18 +70,18 @@ public class SubstringTest {
     @Test
     public void should_substring() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("steps_substring_1", " ipsum ");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0003", " ipsum ");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -95,18 +91,18 @@ public class SubstringTest {
     @Test
     public void should_substring_out_of_bound_1() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ip");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ip");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ip");
-        expectedValues.put("steps_substring_1", " ip");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ip");
+        expectedValues.put("0003", " ip");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -116,18 +112,18 @@ public class SubstringTest {
     @Test
     public void should_substring_out_of_bound_2() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bac");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bac");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bac");
-        expectedValues.put("steps_substring_1", "");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bac");
+        expectedValues.put("0003", "");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -137,18 +133,18 @@ public class SubstringTest {
     @Test
     public void should_substring_out_of_bound_3() {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "");
-        expectedValues.put("steps_substring_1", "");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "");
+        expectedValues.put("0003", "");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -159,16 +155,16 @@ public class SubstringTest {
     @Test
     public void should_substring_strange_bounds_1() throws IOException {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("steps_substring_1", "");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0003", "");
+        expectedValues.put("0002", "01/01/2015");
 
         // =====================================================
         // Create a new rowClosure with different params:
@@ -181,10 +177,10 @@ public class SubstringTest {
         parameters.put(Substring.TO_INDEX_PARAMETER, "1");
 
         Action alternativeAction = this.action.create(parameters);
-        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        DataSetRowAction alternativeRowClosure = alternativeAction.getRowAction();
         // =====================================================
 
-        alternativeRowClosure.accept(row, new TransformationContext());
+        row = alternativeRowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -195,16 +191,16 @@ public class SubstringTest {
     @Test
     public void should_substring_strange_bounds_2() throws IOException {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("steps_substring_1", "psum dolor amet swine leberkas pork belly");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0003", "psum dolor amet swine leberkas pork belly");
+        expectedValues.put("0002", "01/01/2015");
 
         // =====================================================
         // Create a new rowClosure with different params:
@@ -218,10 +214,10 @@ public class SubstringTest {
         parameters.put(Substring.TO_INDEX_PARAMETER, "");
 
         Action alternativeAction = this.action.create(parameters);
-        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        DataSetRowAction alternativeRowClosure = alternativeAction.getRowAction();
         // =====================================================
 
-        alternativeRowClosure.accept(row, new TransformationContext());
+        row = alternativeRowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -232,19 +228,19 @@ public class SubstringTest {
     @Test
     public void should_substring_twice() throws IOException {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("steps_substring_2", "acon ");
-        expectedValues.put("steps_substring_1", " ipsum ");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0004", "acon ");
+        expectedValues.put("0003", " ipsum ");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
 
         // =====================================================
         // Create a new rowClosure with different params:
@@ -257,10 +253,10 @@ public class SubstringTest {
         parameters.put(Substring.TO_INDEX_PARAMETER, "6");
 
         Action alternativeAction = this.action.create(parameters);
-        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        DataSetRowAction alternativeRowClosure = alternativeAction.getRowAction();
         // =====================================================
 
-        alternativeRowClosure.accept(row, new TransformationContext());
+        row = alternativeRowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -271,16 +267,16 @@ public class SubstringTest {
     @Test
     public void should_substring_begining() throws IOException {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("steps_substring_1", "Bacon ipsum ");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0003", "Bacon ipsum ");
+        expectedValues.put("0002", "01/01/2015");
 
         // =====================================================
         // Create a new rowClosure with different params:
@@ -289,13 +285,13 @@ public class SubstringTest {
                 action, //
                 SubstringTest.class.getResourceAsStream("substringAction.json"));
 
-        parameters.put(Substring.FROM_MODE_PARAMETER, "From begining");
+        parameters.put(Substring.FROM_MODE_PARAMETER, "From beginning");
 
         Action alternativeAction = this.action.create(parameters);
-        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        DataSetRowAction alternativeRowClosure = alternativeAction.getRowAction();
         // =====================================================
 
-        alternativeRowClosure.accept(row, new TransformationContext());
+        row = alternativeRowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -306,16 +302,16 @@ public class SubstringTest {
     @Test
     public void should_substring_end() throws IOException {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("steps_substring_1", " ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0003", " ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0002", "01/01/2015");
 
         // =====================================================
         // Create a new rowClosure with different params:
@@ -327,10 +323,10 @@ public class SubstringTest {
         parameters.put(Substring.TO_MODE_PARAMETER, "To end");
 
         Action alternativeAction = this.action.create(parameters);
-        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        DataSetRowAction alternativeRowClosure = alternativeAction.getRowAction();
         // =====================================================
 
-        alternativeRowClosure.accept(row, new TransformationContext());
+        row = alternativeRowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -341,19 +337,19 @@ public class SubstringTest {
     @Test
     public void should_substring_the_new_substring() throws IOException {
         Map<String, String> values = new HashMap<>();
-        values.put("recipe", "lorem bacon");
-        values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        values.put("last update", "01/01/2015");
+        values.put("0000", "lorem bacon");
+        values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        values.put("0002", "01/01/2015");
         DataSetRow row = new DataSetRow(values);
 
         Map<String, String> expectedValues = new HashMap<>();
-        expectedValues.put("recipe", "lorem bacon");
-        expectedValues.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
-        expectedValues.put("steps_substring_1", " ipsum ");
-        expectedValues.put("steps_substring_1_substring_1", "ips");
-        expectedValues.put("last update", "01/01/2015");
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
+        expectedValues.put("0003", " ipsum ");
+        expectedValues.put("0004", "ips");
+        expectedValues.put("0002", "01/01/2015");
 
-        rowClosure.accept(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
 
         // =====================================================
         // Create a new rowClosure with different params:
@@ -362,15 +358,15 @@ public class SubstringTest {
                 action, //
                 SubstringTest.class.getResourceAsStream("substringAction.json"));
 
-        parameters.put(Substring.COLUMN_ID, "steps_substring_1");
+        parameters.put(Substring.COLUMN_ID, "0003"); // Substring from newly created column
         parameters.put(Substring.FROM_INDEX_PARAMETER, "1");
         parameters.put(Substring.TO_INDEX_PARAMETER, "4");
 
         Action alternativeAction = this.action.create(parameters);
-        BiConsumer<DataSetRow, TransformationContext> alternativeRowClosure = alternativeAction.getRowAction();
+        DataSetRowAction alternativeRowClosure = alternativeAction.getRowAction();
         // =====================================================
 
-        alternativeRowClosure.accept(row, new TransformationContext());
+        row = alternativeRowClosure.apply(row, new TransformationContext());
         assertEquals(expectedValues, row.values());
     }
 
@@ -381,19 +377,19 @@ public class SubstringTest {
     public void should_update_metadata() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("steps", "steps"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "steps"));
+        input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("steps", "steps"));
-        expected.add(createMetadata("steps_substring_1", "steps_substring_1"));
-        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "steps"));
+        expected.add(createMetadata("0003", "steps_substring"));
+        expected.add(createMetadata("0002", "last update"));
 
         assertEquals(expected, actual);
     }
@@ -405,22 +401,23 @@ public class SubstringTest {
     public void should_update_metadata_twice() {
 
         List<ColumnMetadata> input = new ArrayList<>();
-        input.add(createMetadata("recipe", "recipe"));
-        input.add(createMetadata("steps", "steps"));
-        input.add(createMetadata("last update", "last update"));
+        input.add(createMetadata("0000", "recipe"));
+        input.add(createMetadata("0001", "steps"));
+        input.add(createMetadata("0002", "last update"));
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        DataSetRow row = new DataSetRow(rowMetadata);
+        row = rowClosure.apply(row, new TransformationContext());
+        row = rowClosure.apply(row, new TransformationContext());
 
-        List<ColumnMetadata> actual = rowMetadata.getColumns();
+        List<ColumnMetadata> actual = row.getRowMetadata().getColumns();
 
         List<ColumnMetadata> expected = new ArrayList<>();
-        expected.add(createMetadata("recipe", "recipe"));
-        expected.add(createMetadata("steps", "steps"));
-        expected.add(createMetadata("steps_substring_2", "steps_substring_2"));
-        expected.add(createMetadata("steps_substring_1", "steps_substring_1"));
-        expected.add(createMetadata("last update", "last update"));
+        expected.add(createMetadata("0000", "recipe"));
+        expected.add(createMetadata("0001", "steps"));
+        expected.add(createMetadata("0004", "steps_substring"));
+        expected.add(createMetadata("0003", "steps_substring"));
+        expected.add(createMetadata("0002", "last update"));
 
         assertEquals(expected, actual);
     }

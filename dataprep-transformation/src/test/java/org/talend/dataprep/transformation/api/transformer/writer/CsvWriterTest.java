@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -46,7 +47,7 @@ public class CsvWriterTest {
     @Test
     public void write_should_throw_exception_when_write_columns_have_not_been_called() throws Exception {
         // given
-        final DataSetRow row = new DataSetRow();
+        final DataSetRow row = new DataSetRow(Collections.emptyMap());
 
         // when
         try {
@@ -66,7 +67,7 @@ public class CsvWriterTest {
         final ColumnMetadata column2 = ColumnMetadata.Builder.column().id(2).name("firstname").type(Type.STRING).build();
         final List<ColumnMetadata> columns = Arrays.asList(column1, column2);
 
-        final DataSetRow row = new DataSetRow();
+        final DataSetRow row = new DataSetRow(Collections.emptyMap());
         row.set("0001", "64a5456ac148b64524ef165");
         row.set("0002", "Superman");
 

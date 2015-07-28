@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 
 /**
  * Uppercase a column in a row.
@@ -43,11 +45,12 @@ public class UpperCase extends SingleColumnAction {
             String columnId = parameters.get(COLUMN_ID);
             String value = row.get(columnId);
             if (value == null) {
-                return;
+                return row;
             }
 
             String newValue = value.toUpperCase();
             row.set(columnId, newValue);
+            return row;
         }).build();
     }
 

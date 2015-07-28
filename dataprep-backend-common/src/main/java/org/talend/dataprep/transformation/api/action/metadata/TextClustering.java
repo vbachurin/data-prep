@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 @Component(TextClustering.ACTION_BEAN_PREFIX + TextClustering.TEXT_CLUSTERING)
 public class TextClustering extends AbstractDynamicAction {
@@ -45,6 +46,7 @@ public class TextClustering extends AbstractDynamicAction {
             if (replaceValue != null) {
                 row.set(columnName, replaceValue);
             }
+            return row;
         }).build();
     }
 

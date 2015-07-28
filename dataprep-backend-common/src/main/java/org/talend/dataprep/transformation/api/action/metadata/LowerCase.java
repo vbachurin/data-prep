@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 
 /**
  * Lower case a column in a dataset row.
@@ -43,11 +44,12 @@ public class LowerCase extends SingleColumnAction {
             String columnName = parameters.get(COLUMN_ID);
             String value = row.get(columnName);
             if (value == null) {
-                return;
+                return row;
             }
 
             String newValue = value.toLowerCase();
             row.set(columnName, newValue);
+            return row;
         }).build();
     }
 

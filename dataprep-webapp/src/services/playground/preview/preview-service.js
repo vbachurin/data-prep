@@ -62,22 +62,34 @@
             var indexes = _.range(self.gridRangeIndex.top, self.gridRangeIndex.bottom + 1);
             return  _.chain(indexes)
                 .map(DatagridService.dataView.getItem)
-                .filter(function(item) {
-                    return item;
-                })
                 .value();
         };
 
         /**
          * @ngdoc method
-         * @name getDisplayedRows
+         * @name getDisplayedTdpIds
          * @methodOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] Get the displayed rows TDP ids
-         * @returns {object[]} The displayed rows TDP ids
+         * @description [PRIVATE] Get the rows TDP ids
+         * @params {Array} records The records where to extract the TDP ids
+         * @returns {object[]} The rows TDP ids
          */
-        var getDisplayedTdpIds = function() {
-           return _.map(getDisplayedRows(), function(element) {
+        var getDisplayedTdpIds = function(records) {
+           return _.map(records, function(element) {
                return element.tdpId;
+           });
+        };
+
+        /**
+         * @ngdoc method
+         * @name getRecordsIndexes
+         * @methodOf data-prep.services.playground.service:PreviewService
+         * @description [PRIVATE] Get the rows indexes in the data array
+         * @params {Array} records The records where to extract the indexes
+         * @returns {object[]} The rows indexes
+         */
+        var getRecordsIndexes = function(records) {
+           return _.map(records, function(record) {
+               return DatagridService.dataView.getIdxById(record.tdpId);
            });
         };
 
@@ -118,7 +130,7 @@
          * </ul>
          * @returns {function} The request callback closure
          */
-        var replaceRecords = function replaceRecords (recordsTdpId, colIdFromStep) {
+        var replaceRecords = function(displayedRows, colIdFromStep) {
             return function(response) {
                 //save the original data
                 originalData = originalData || DatagridService.data;
@@ -128,12 +140,13 @@
                 var viableRecords = filterViableRecord(response.data.records);
 
                 //insert records at the tdp ids insertion points
-                _.forEach(recordsTdpId, function(tdpId) {
+                var recordsIndexes = getRecordsIndexes(displayedRows);
+                _.forEach(recordsIndexes, function(tdpId) {
                     modifiedRecords[tdpId] = viableRecords.shift();
                 });
 
                 //if all viable records are not already inserted, we insert them after the last targeted tdp id
-                var insertionIndex = recordsTdpId[recordsTdpId.length - 1] + 1;
+                var insertionIndex = _.max(recordsIndexes) + 1;
                 while(viableRecords.length) {
                     modifiedRecords[insertionIndex++] = viableRecords.shift();
                 }
@@ -156,10 +169,11 @@
             self.cancelPreview(true, focusedColId);
 
             previewCanceler = $q.defer();
-            displayedTdpIds = getDisplayedTdpIds();
+            var displayedRows = getDisplayedRows();
+            displayedTdpIds = getDisplayedTdpIds(displayedRows);
 
             PreparationService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
-                .then(replaceRecords(displayedTdpIds, focusedColId))
+                .then(replaceRecords(displayedRows, focusedColId))
                 .finally(function() {
                     previewCanceler = null;
                 });
@@ -177,10 +191,11 @@
             self.cancelPreview(true, focusedColId);
 
             previewCanceler = $q.defer();
-            displayedTdpIds = getDisplayedTdpIds();
+            var displayedRows = getDisplayedRows();
+            displayedTdpIds = getDisplayedTdpIds(displayedRows);
 
             PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
-                .then(replaceRecords(displayedTdpIds, focusedColId))
+                .then(replaceRecords(displayedRows, focusedColId))
                 .finally(function() {
                     previewCanceler = null;
                 });

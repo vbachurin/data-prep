@@ -1,0 +1,325 @@
+[
+  {
+    "category":"columns",
+    "items":[
+
+    ],
+    "name":"copy",
+    "parameters":[
+      {
+        "name":"column_id",
+        "type":"string",
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
+      },
+      {
+        "name":"column_name",
+        "type":"string",
+        "description":"The column name on which apply this action to",
+        "label":"Column name",
+        "default":""
+      }
+    ],
+    "dynamic":false,
+    "description":"Creates an exact copy of this column",
+    "label":"Duplicate"
+  },
+  {
+    "parameters":[
+      {
+        "name":"column_id",
+        "type":"string",
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
+      },
+      {
+        "name":"column_name",
+        "type":"string",
+        "description":"The column name on which apply this action to",
+        "label":"Column name",
+        "default":""
+      },
+      {
+        "name":"new_column_name",
+        "type":"string",
+        "description":"The new column name",
+        "label":"New name",
+        "default":null
+      }
+    ],
+    "category":"columns",
+    "name":"rename_column",
+    "items":[
+
+    ],
+    "dynamic":false,
+    "description":"Rename this column",
+    "label":"Rename"
+  },
+  {
+    "name":"delete_empty",
+    "category":"cleansing",
+    "items":[
+
+    ],
+    "parameters":[
+      {
+        "name":"column_id",
+        "type":"string",
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
+      },
+      {
+        "name":"column_name",
+        "type":"string",
+        "description":"The column name on which apply this action to",
+        "label":"Column name",
+        "default":""
+      }
+    ],
+    "dynamic":false,
+    "description":"Delete rows that have this cell empty",
+    "label":"Delete lines with empty cell"
+  },
+  {
+    "category":"date",
+    "items":[
+      {
+        "name":"time_unit",
+        "category":"categ",
+        "values":[
+          {
+            "name":"YEARS",
+            "parameters":[
+
+            ],
+            "default":true
+          },
+          {
+            "name":"MONTHS",
+            "parameters":[
+
+            ],
+            "default":false
+          },
+          {
+            "name":"DAYS",
+            "parameters":[
+
+            ],
+            "default":false
+          },
+          {
+            "name":"HOURS",
+            "parameters":[
+
+            ],
+            "default":false
+          }
+        ],
+        "description":"The unit in which you want the result",
+        "label":"Time unit"
+      }
+    ],
+    "name":"compute_time_since",
+    "parameters":[
+      {
+        "name":"column_id",
+        "type":"string",
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
+      },
+      {
+        "name":"column_name",
+        "type":"string",
+        "description":"The column name on which apply this action to",
+        "label":"Column name",
+        "default":""
+      }
+    ],
+    "dynamic":false,
+    "description":"Computes time elapsed since this date in the desired unit",
+    "label":"Compute time since"
+  },
+  {
+    "category":"date",
+    "items":[
+      {
+        "name":"new_pattern",
+        "category":"patterns",
+        "values":[
+          {
+            "name":"MM.dd.yyyy",
+            "parameters":[
+
+            ],
+            "default":true
+          },
+          {
+            "name":"MMM.dd.yyyy",
+            "parameters":[
+
+            ],
+            "default":false
+          },
+          {
+            "name":"MMMM dd yyyy",
+            "parameters":[
+
+            ],
+            "default":false
+          },
+          {
+            "name":"MM.dd.yyyy HH:mm:ss",
+            "parameters":[
+
+            ],
+            "default":false
+          },
+          {
+            "name":"custom",
+            "parameters":[
+              {
+                "name":"custom_date_pattern",
+                "type":"string",
+                "description":"e.g. dd/MM/yyyy for day/month/year",
+                "label":"Enter your own date pattern",
+                "default":""
+              }
+            ],
+            "default":false
+          }
+        ],
+        "description":"Choose the date pattern to use in the list or make your own",
+        "label":"New date pattern to use"
+      }
+    ],
+    "name":"change_date_pattern",
+    "parameters":[
+      {
+        "name":"column_id",
+        "type":"string",
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
+      },
+      {
+        "name":"column_name",
+        "type":"string",
+        "description":"The column name on which apply this action to",
+        "label":"Column name",
+        "default":""
+      }
+    ],
+    "dynamic":false,
+    "description":"Change date pattern to use on a date column",
+    "label":"Change date pattern"
+  },
+  {
+    "category":"date",
+    "name":"extract_date_tokens",
+    "parameters":[
+      {
+        "name":"column_id",
+        "type":"string",
+        "description":"The column on which apply this action to",
+        "label":"Column",
+        "default":""
+      },
+      {
+        "name":"column_name",
+        "type":"string",
+        "description":"The column name on which apply this action to",
+        "label":"Column name",
+        "default":""
+      },
+      {
+        "name":"YEAR",
+        "type":"boolean",
+        "description":"Extracts year field",
+        "label":"Year",
+        "default":"true"
+      },
+      {
+        "name":"MONTH",
+        "type":"boolean",
+        "description":"Extracts month of year field",
+        "label":"Month of year",
+        "default":"true"
+      },
+      {
+        "name":"DAY",
+        "type":"boolean",
+        "description":"Extracts day of month field",
+        "label":"Day of month",
+        "default":"true"
+      },
+      {
+        "name":"HOUR_12",
+        "type":"boolean",
+        "description":"Extracts the hour within the AM/PM, from 0 to 11",
+        "label":"Hour of am-pm",
+        "default":"false"
+      },
+      {
+        "name":"AM_PM",
+        "type":"boolean",
+        "description":"Extracts the AM/PM within the day, from 0 (AM) to 1 (PM)",
+        "label":"The am-pm-of-day",
+        "default":"false"
+      },
+      {
+        "name":"HOUR_24",
+        "type":"boolean",
+        "description":"Extracts the hour within the day, from 0 to 23",
+        "label":"Hour of day",
+        "default":"true"
+      },
+      {
+        "name":"MINUTE",
+        "type":"boolean",
+        "description":"Extracts minute of hour",
+        "label":"Minute",
+        "default":"true"
+      },
+      {
+        "name":"SECOND",
+        "type":"boolean",
+        "description":"Extracts second of minute",
+        "label":"Second",
+        "default":"false"
+      },
+      {
+        "name":"DAY_OF_WEEK",
+        "type":"boolean",
+        "description":"Extracts the day of week, such as Tuesday",
+        "label":"Day of week",
+        "default":"false"
+      },
+      {
+        "name":"DAY_OF_YEAR",
+        "type":"boolean",
+        "description":"Extracts the day of year. This has values from 1 to 365 in standard years and 1 to 366 in leap years",
+        "label":"Day of year",
+        "default":"false"
+      },
+      {
+        "name":"WEEK_OF_YEAR",
+        "type":"boolean",
+        "description":"Extracts concept of the count of weeks within the period of a year where the weeks are aligned to the start of the year",
+        "label":"Week of year",
+        "default":"false"
+      }
+    ],
+    "items":[
+
+    ],
+    "dynamic":false,
+    "description":"Creates columns with year, month, day, etc...",
+    "label":"Extract date tokens"
+  }
+]

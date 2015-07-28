@@ -1,4 +1,4 @@
-package org.talend.dataprep.transformation.api.action.metadata;
+package org.talend.dataprep.transformation.api.action.metadata.category;
 
 /**
  * List all actions category.

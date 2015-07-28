@@ -3,7 +3,7 @@
     {
       "action": "split",
       "parameters": {
-        "column_id": "steps",
+        "column_id": "0001",
         "column_name": "steps",
         "separator": "other",
         "manual_separator": " ",

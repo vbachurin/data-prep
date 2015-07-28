@@ -29,11 +29,11 @@
     "d3": "~3.5.5",
     "d3-tip": "~0.6.7",
     "intro.js": "~1.0.0",
-    "moment": "2.10.3",
-    "angular-momentjs": "0.2.2"
+    "moment": "2.10.3"
   },
   "devDependencies": {
-    "angular-mocks": "1.4.1"
+    "angular-mocks": "1.4.1",
+    "moment": "~2.10.3"
   },
   "resolutions": {
     "angular": "1.4.1",
@@ -48,8 +48,9 @@
     "slickgrid": {
       "main": [
         "slick.core.js",
-        "slick.grid.js",
         "slick.dataview.js",
+        "slick.editors.js",
+        "slick.grid.js",
         "slick.grid.css",
         "controls/slick.pager.css"
       ]

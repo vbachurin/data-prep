@@ -22,13 +22,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -39,8 +40,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
  */
 public class RenameTest {
 
-    /** The metadata consumer to test. */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private final DataSetRowAction metadataClosure;
 
     /** The action to test. */
     private Rename action;
@@ -53,7 +53,7 @@ public class RenameTest {
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 RenameTest.class.getResourceAsStream("renameAction.json"));
-        metadataClosure = action.create(parameters).getMetadataAction();
+        metadataClosure = action.create(parameters).getRowAction();
     }
 
     @Test
@@ -91,7 +91,7 @@ public class RenameTest {
         input.add(metadata);
         RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.accept(rowMetadata, new TransformationContext());
+        metadataClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
 
         List<ColumnMetadata> actual = rowMetadata.getColumns();
 

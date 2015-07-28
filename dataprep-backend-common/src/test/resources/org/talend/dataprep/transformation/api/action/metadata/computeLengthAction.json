@@ -3,7 +3,7 @@
     {
       "action": "compute_length",
       "parameters": {
-        "column_id": "steps",
+        "column_id": "0001",
         "column_name": "steps"
       }
     }
