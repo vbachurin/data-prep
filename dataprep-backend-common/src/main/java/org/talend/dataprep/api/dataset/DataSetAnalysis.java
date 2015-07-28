@@ -56,6 +56,16 @@ public class DataSetAnalysis {
                         }
                         generator.writeEndObject();
                         generator.writeEndArray();
+                        // Statistics
+                        generator.writeFieldName("statistics"); //$NON-NLS-1$
+                        generator.writeStartObject();
+                        {
+                            generator.writeNumberField("count", metadata.getContent().getNbRecords()); //$NON-NLS-1$
+                            generator.writeNumberField("empty", column.getQuality().getEmpty()); //$NON-NLS-1$
+                            generator.writeNumberField("valid", column.getQuality().getValid()); //$NON-NLS-1$
+                            generator.writeNumberField("invalid", column.getQuality().getInvalid()); //$NON-NLS-1$
+                        }
+                        generator.writeEndObject();
                     }
                     generator.writeEndObject();
                 }
