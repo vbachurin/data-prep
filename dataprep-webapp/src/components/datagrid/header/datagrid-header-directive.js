@@ -41,62 +41,65 @@
                     $timeout(function() {
 
                         var gridHeaderTitle = iElement.find('.grid-header-title');
-                        var gridHeaderTitleInput = null;
+                        var gridHeaderTitleInput = iElement.find('.grid-header-title-input').eq(0);
+
+                        //Manage ENTER on input
+                        gridHeaderTitleInput
+                            .keyup(function (event) {
+                                if (event.keyCode === 13) {
+                                    updateValAction (event, true, true);
+                                }
+                            });
+
+                        //Manage ESC on input
+                        gridHeaderTitleInput
+                            .keydown(function (event) {
+
+                                if (event.keyCode === 27) {
+                                    $timeout(function() {
+                                        ctrl.resetColumnName();
+                                        ctrl.setEditMode(false);
+                                    });
+                                    event.stopPropagation();
+                                    gridHeaderTitleInput.off('blur');
+                                }
+                            });
+
+                        //Manage Click on input
+                        gridHeaderTitleInput
+                            .on('click', function(e){
+                                e.preventDefault();  //cancel system double-click event
+                                e.stopPropagation();
+                            });
 
                         var updateVal = function () {
 
-                            gridHeaderTitleInput = iElement.find('.grid-header-title-input').eq(0);
+                            //Manage Unfocus on input
+                            gridHeaderTitleInput.off('blur');
 
-                            //Manage ENTER
                             gridHeaderTitleInput
-                                .keyup(function (event) {
-                                        if (event.keyCode === 13) {
-                                            if(ctrl.canUpdate()) {
-                                                ctrl.updateColumnName(ctrl.column);
-                                            } else {
-                                                $timeout(function() {
-                                                    ctrl.setEditMode(false);
-                                                });
-                                                event.stopPropagation();
-                                                gridHeaderTitleInput.off('blur');
-                                            }
-                                        }
-                                });
-
-                            //Manage ESC
-                            gridHeaderTitleInput
-                                .keydown(function (event) {
-
-                                    if (event.keyCode === 27) {
-                                        $timeout(function() {
-                                            ctrl.resetColumnName();
-                                            ctrl.setEditMode(false);
-                                        });
-                                        event.stopPropagation();
-                                        gridHeaderTitleInput.off('blur');
-                                    }
-                                });
-
-                            //Manage Click on input
-                            gridHeaderTitleInput
-                                .on('click', function(e){
-                                    e.preventDefault();  //cancel system double-click event
-                                    e.stopPropagation();
-                                });
-
-                            //Manage Unfocus Input
-                            gridHeaderTitleInput
-                                .on('blur', function () {
-                                    if(ctrl.canUpdate()) {
-                                        ctrl.updateColumnName(ctrl.column);
-                                    } else {
-                                        $timeout(function() {
-                                            ctrl.setEditMode(false);
-                                        });
-                                    }
+                                .on('blur', function (event) {
+                                    updateValAction (event, false, false);
                                 });
                         };
 
+                        var updateValAction = function (event, disableBlur, stopPropagationOption) {
+                            if(ctrl.canUpdate()) {
+                                ctrl.updateColumnName(ctrl.column);
+                            } else {
+                                $timeout(function() {
+                                    ctrl.setEditMode(false);
+                                });
+
+                                if (stopPropagationOption) {
+                                    event.stopPropagation();
+                                }
+
+                                if (disableBlur) {
+                                    gridHeaderTitleInput.off('blur');
+                                }
+                            }
+                        }
 
                         //Detect the double click
                         var detectClickAction = function () {
@@ -114,7 +117,6 @@
                                 gridHeaderTitleInput.select();
                             }, 100);
                         };
-
 
                         //Bind dblclick event to 'gridHeaderTitle'
                         gridHeaderTitle.on('dblclick',detectClickAction);

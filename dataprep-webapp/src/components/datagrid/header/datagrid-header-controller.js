@@ -93,7 +93,15 @@
          * @description set isEditMode value
          */
         vm.setEditMode = function (bool) {
+
             vm.isEditMode = bool;
+
+            //reinitialization when no save preparation
+            if (bool) {
+                vm.newName = vm.column.name;
+                vm.oldName = vm.newName;
+            }
+
         };
 
 
