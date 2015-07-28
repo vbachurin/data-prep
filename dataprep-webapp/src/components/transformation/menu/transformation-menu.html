@@ -1,13 +1,13 @@
 <ul>
-    <!-- BEGIN : Hard coded transformations for demo purpose -->
     <li class="more">
         <a>This column is a &nbsp;<span class="info">{{menuCtrl.column.domain ? menuCtrl.column.domain : menuCtrl.converterService.simplifyType(menuCtrl.column.type)}}</span></a>
         <ul class="submenu">
-            <li ng-repeat="semanticDomain in menuCtrl.column.semanticDomains"><a href="#" ng-click="menuCtrl.changeType(semanticDomain.id)">{{ ::semanticDomain.label | translate }}</a></li>
+            <li ng-repeat="semanticDomain in menuCtrl.column.semanticDomains"><a href="#" ng-click="menuCtrl.changeType(semanticDomain.id,semanticDomain.label,semanticDomain.count)">{{ ::semanticDomain.label | translate }}</a></li>
             <li class="divider"></li>
-            <li ng-repeat="type in menuCtrl.types"><a href="#" ng-click="menuCtrl.changeType(type.id)">{{ ::type.id }}</a></li>
+            <li ng-repeat="type in menuCtrl.types"><a href="#" ng-click="menuCtrl.changeType(type.id,type.labelKey,0)">{{ ::type.labelKey | translate }}</a></li>
         </ul>
     </li>
+    <!-- BEGIN : Hard coded transformations for demo purpose -->
     <li class="divider"></li>
     <li class="more">
         <a href="#">Sort is &nbsp;<span class="info">not defined</span></a>

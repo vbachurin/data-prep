@@ -74,10 +74,14 @@
          * @name changeType
          * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
          * @param type the new domain/type of the column
+         * @param typeLabel the new domain/type label of the column
          * @description change the domain/type for the column
          */
-        vm.changeType = function(type){
-          vm.column.domain = type;
+        vm.changeType = function(typeId,typeLabel,count){
+          vm.column.domain = typeId;
+          vm.column.domainLabel = typeLabel;
+          vm.column.domainCount = count;
+          console.log("vm.column.domain:"+vm.column.domain+",vm.column.domainLabel:" + vm.column.domainLabel+",vm.column.domainCount:"+vm.column.domainCount);
         };
 
         /**
