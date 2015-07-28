@@ -201,7 +201,7 @@ describe('Datagrid header controller', function () {
             $rootScope.$digest();
 
             //then
-            var params = {new_column_name: 'newName'};
+            var params = {'new_column_name': 'newName'};
             expect(PlaygroundService.appendStep).toHaveBeenCalledWith('rename_column', column, params);
 
             expect(ctrl.setEditMode).toHaveBeenCalledWith(false);

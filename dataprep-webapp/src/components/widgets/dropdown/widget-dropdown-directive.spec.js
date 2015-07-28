@@ -23,7 +23,7 @@ describe('Dropdown directive', function () {
 
     describe('closeable dropdown', function () {
 
-        beforeEach(inject(function ($rootScope, $compile, $window) {
+        beforeEach(inject(function ($rootScope, $compile) {
 
             scope = $rootScope.$new();
 
@@ -162,10 +162,7 @@ describe('Dropdown directive', function () {
                     }, 300);
 
                 }, 300);
-
-
-
-            })
+            });
 
         });
 

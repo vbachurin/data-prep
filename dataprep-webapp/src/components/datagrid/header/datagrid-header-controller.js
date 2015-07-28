@@ -16,6 +16,7 @@
         vm.converterService = ConverterService;
 
         vm.newName = vm.column.name;
+        vm.oldName = vm.newName;
         vm.isEditMode = false;
         vm.updateEnabled = false;
         vm.RENAME_ACTION = 'rename_column';
@@ -63,6 +64,7 @@
                 .then(function() {
                     vm.setEditMode(false);
                     vm.updateEnabled = false;
+                    vm.oldName = vm.newName;
                 });
         };
 
@@ -73,8 +75,14 @@
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
          * @description Called when the column name is changed
          */
-        vm.enableUpdate = function () {
-            vm.updateEnabled = true;
+        vm.canUpdate = function () {
+            if(vm.oldName !== vm.newName && vm.newName !== '') {
+                return true;
+            } else {
+                vm.resetColumnName();
+                return false;
+            }
+
         };
 
 
@@ -86,6 +94,17 @@
          */
         vm.setEditMode = function (bool) {
             vm.isEditMode = bool;
+        };
+
+
+        /**
+         * @ngdoc method
+         * @name resetColumnName
+         * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description reset newName
+         */
+        vm.resetColumnName = function () {
+            vm.newName = vm.oldName;
         };
 
 

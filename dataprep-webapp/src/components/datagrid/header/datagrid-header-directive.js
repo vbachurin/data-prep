@@ -51,7 +51,7 @@
                             gridHeaderTitleInput
                                 .keyup(function (event) {
                                         if (event.keyCode === 13) {
-                                            if(ctrl.updateEnabled) {
+                                            if(ctrl.canUpdate()) {
                                                 ctrl.updateColumnName(ctrl.column);
                                             } else {
                                                 $timeout(function() {
@@ -66,8 +66,10 @@
                             //Manage ESC
                             gridHeaderTitleInput
                                 .keydown(function (event) {
+
                                     if (event.keyCode === 27) {
                                         $timeout(function() {
+                                            ctrl.resetColumnName();
                                             ctrl.setEditMode(false);
                                         });
                                         event.stopPropagation();
@@ -85,7 +87,7 @@
                             //Manage Unfocus Input
                             gridHeaderTitleInput
                                 .on('blur', function () {
-                                    if(ctrl.updateEnabled) {
+                                    if(ctrl.canUpdate()) {
                                         ctrl.updateColumnName(ctrl.column);
                                     } else {
                                         $timeout(function() {
