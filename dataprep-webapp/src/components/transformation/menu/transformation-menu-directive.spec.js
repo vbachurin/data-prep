@@ -1,11 +1,13 @@
 describe('Transformation menu directive', function () {
     'use strict';
     var scope, createElement, element;
+    var types = {};
 
     beforeEach(module('data-prep.transformation-menu'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function($q,$rootScope, $compile,TransformationRestService) {
+        spyOn(TransformationRestService, 'getTypes' ).and.returnValue($q.when(types));
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<transform-menu column="column" menu-items="menu"></transform-menu>');

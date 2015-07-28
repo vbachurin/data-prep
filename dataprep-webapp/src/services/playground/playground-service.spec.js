@@ -4,6 +4,8 @@ describe('Playground Service', function () {
 
     var content = {column: [], records: []};
 
+    var types = {};
+
     beforeEach(module('data-prep.services.playground'));
 
     beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatagridService, PreparationService, TransformationCacheService, ColumnSuggestionService, HistoryService,
@@ -18,7 +20,7 @@ describe('Playground Service', function () {
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
         spyOn(ColumnSuggestionService, 'reset').and.returnValue();
         spyOn(HistoryService, 'clear').and.returnValue();
-        spyOn(TransformationRestService, 'getTypes' ).and.returnValue();
+        spyOn(TransformationRestService, 'getTypes' ).and.returnValue($q.when(types));
     }));
 
     it('should init visible flag to false', inject(function(PlaygroundService) {

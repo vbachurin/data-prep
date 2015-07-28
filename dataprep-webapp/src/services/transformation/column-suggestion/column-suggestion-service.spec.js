@@ -5,7 +5,7 @@ describe('Column suggestion service', function() {
     var secondSelectedColumn = {id: '0002', name: 'col2'};
 
     beforeEach(module('data-prep.services.transformation'));
-    beforeEach(inject(function($q, TransformationCacheService) {
+    beforeEach(inject(function($q, TransformationCacheService,TransformationRestService) {
         spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(
             [
                 {name: 'rename', category: 'columns', label:'z'},
@@ -18,6 +18,7 @@ describe('Column suggestion service', function() {
                 {name: 'removetrailingspaces', category: 'quickfix', label:'m'}
             ]
         ));
+        spyOn(TransformationRestService, 'getTypes' ).and.returnValue($q.when({}));
     }));
 
     it('should reset the current selected column and suggested transformations', inject(function(ColumnSuggestionService) {
