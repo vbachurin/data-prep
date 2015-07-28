@@ -82,7 +82,6 @@
           vm.column.domain = typeId;
           vm.column.domainLabel = typeLabel;
           vm.column.domainCount = count;
-          console.log("vm.column.domain:"+vm.column.domain+",vm.column.domainLabel:" + vm.column.domainLabel+",vm.column.domainCount:"+vm.column.domainCount);
           DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column);
         };
 

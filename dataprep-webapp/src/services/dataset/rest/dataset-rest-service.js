@@ -127,7 +127,6 @@
          * @returns {Promise} The POST promise
          */
         self.updateColumn = function(datasetId,column){
-            console.log("datasetId:"+datasetId+",column:"+column.id);
             return $http.post(RestURLs.datasetUrl + '/' + datasetId + '/column', column);
         };
 
