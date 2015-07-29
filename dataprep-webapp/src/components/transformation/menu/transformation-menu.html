@@ -25,7 +25,7 @@
     <!-- END : Hard coded transformations for demo purpose -->
 
     <li ng-repeat="menu in menuCtrl.menuItems track by menu.name"
-        ng-click="menuCtrl.select(menu)">
+        ng-click="menuCtrl.select(menu, 'column')">
 
         <a>{{ menu.label }}</a>
     </li>
@@ -49,6 +49,6 @@
         <i data-icon="e" class="icon continuous-rotate"></i>
     </div>
     <transform-params transformation="menuCtrl.selectedMenu"
-                      on-submit="menuCtrl.transformClosure(menuCtrl.selectedMenu)(params)"></transform-params>
+                      on-submit="menuCtrl.transformClosure(menuCtrl.selectedMenu, menuCtrl.selectedScope)(params)"></transform-params>
 
 </talend-modal>
