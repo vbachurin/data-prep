@@ -16,7 +16,12 @@ describe('Dropdown directive', function () {
         elm.find('a[role="menuitem"]').eq(0).click();
     };
 
+    beforeEach(function () {
+        jasmine.clock().install();
+    });
     afterEach(function () {
+        jasmine.clock().uninstall();
+
         scope.$destroy();
         element.remove();
     });
@@ -28,43 +33,38 @@ describe('Dropdown directive', function () {
             scope = $rootScope.$new();
 
             html = '<talend-dropdown id="dropdown1">' +
-            '    <div class="dropdown-container grid-header">' +
-            '        <div class="dropdown-action">' +
-            '            <div class="grid-header-title dropdown-button">{{ column.id }}</div>' +
-            '            <div class="grid-header-type">{{ column.type }}</div>' +
-            '        </div>' +
-            '        <ul class="dropdown-menu grid-header-menu" style="display:none;">' +
-            '            <li role="presentation"><a role="menuitem" href="#">Hide Column</a></li>' +
-            '            <li class="divider"></li>' +
-            '            <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>' +
-            '            <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>' +
-            '        </ul>' +
-            '    </div>' +
-            '</talend-dropdown>';
+                '    <div class="dropdown-container grid-header">' +
+                '        <div class="dropdown-action">' +
+                '            <div class="grid-header-title dropdown-button">{{ column.id }}</div>' +
+                '            <div class="grid-header-type">{{ column.type }}</div>' +
+                '        </div>' +
+                '        <ul class="dropdown-menu grid-header-menu" style="display:none;">' +
+                '            <li role="presentation"><a role="menuitem" href="#">Hide Column</a></li>' +
+                '            <li class="divider"></li>' +
+                '            <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>' +
+                '            <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>' +
+                '        </ul>' +
+                '    </div>' +
+                '</talend-dropdown>';
             element = $compile(html)(scope);
             scope.$digest();
         }));
 
-        it('should show dropdown-menu on dropdown-action click', function (done) {
+        it('should show dropdown-menu on dropdown-action click', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
             expect(menu.hasClass('show-menu')).toBe(false);
 
             //when
             clickDropdownToggle();
+            jasmine.clock().tick(250);
 
             //then
-            //setTimeout with 300ms is used because of the timer to detect the single click in the directive
-            setTimeout(function() {
-                expect(menu.hasClass('show-menu')).toBe(true);
-                done();
-            }, 300);
-
+            expect(menu.hasClass('show-menu')).toBe(true);
         });
 
         it('should focus on dropdown menu when it is shown', function () {
             //given
-            jasmine.clock().install();
             var menu = element.find('.dropdown-menu').eq(0)[0];
             var body = angular.element('body');
             body.append(element);
@@ -76,115 +76,71 @@ describe('Dropdown directive', function () {
 
             //then
             expect(document.activeElement).not.toBe(element.find('.dropdown-menu').eq(0)[0]);
-            jasmine.clock().uninstall();
         });
 
-        it('should show dropdown-menu on dropdown-action click when menu is visible', function (done) {
+        it('should hide dropdown-menu on dropdown-action click when menu is visible', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
+            menu.addClass('show-menu');
+
+            //when
             clickDropdownToggle();
+            jasmine.clock().tick(250);
 
-            setTimeout(function() {
-                expect(menu.hasClass('show-menu')).toBe(true);
-
-                //when
-                clickDropdownToggle();
-
-                //then
-                setTimeout(function() {
-                    expect(menu.hasClass('show-menu')).toBe(false);
-                    done();
-                }, 300);
-
-            }, 300);
-
-
+            //then
+            expect(menu.hasClass('show-menu')).toBe(false);
         });
 
-
-        it('should hide dropdown-menu on item click', function (done) {
+        it('should hide dropdown-menu on item click', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
+            menu.addClass('show-menu');
+
+            //when
+            clickDropdownItem();
+            jasmine.clock().tick(250);
+
+            //then
+            expect(menu.hasClass('show-menu')).toBe(false);
+        });
+
+        it('should register window scroll handler on open', inject(function ($window) {
+            //given
+            expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
+
+            //when
             clickDropdownToggle();
+            jasmine.clock().tick(250);
 
-            setTimeout(function() {
-                expect(menu.hasClass('show-menu')).toBe(true);
+            //then
+            expect($._data(angular.element($window)[0], 'events')).toBeDefined();
+            expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
+        }));
 
-                //when
-                clickDropdownItem();
+        it('should unregister window scroll on close', inject(function ($window) {
+            //given
+            clickDropdownToggle();
+            jasmine.clock().tick(250);
+            expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
 
-                //then
-                expect(menu.hasClass('show-menu')).toBe(false);
-                done();
-            }, 300);
+            //when
+            clickDropdownToggle();
+            jasmine.clock().tick(250);
 
+            //then
+            expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
+        }));
 
-
-        });
-
-        it('should register window scroll handler on open', function(done) {
-
-            inject(function($window) {
-                //given
-                expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
-
-                //when
-                clickDropdownToggle();
-
-                //then
-                setTimeout(function () {
-                    expect($._data(angular.element($window)[0], 'events')).toBeDefined();
-                    expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
-                    done();
-                }, 300);
-
-            });
-
-        });
-
-        it('should unregister window scroll on close', function ( done) {
-
-            inject(function($window) {
-
-                //given
-                clickDropdownToggle();
-
-                setTimeout(function() {
-                    expect($._data(angular.element($window)[0], 'events').scroll.length).toBe(1);
-
-                    //when
-                    clickDropdownToggle();
-
-                    //then
-                    setTimeout(function() {
-                        expect($._data(angular.element($window)[0], 'events')).not.toBeDefined();
-                        done();
-                    }, 300);
-
-                }, 300);
-            });
-
-        });
-
-        it('should hide dropdown-menu on body mousedown', function (done) {
+        it('should hide dropdown-menu on body mousedown', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
+            menu.addClass('show-menu');
 
-            clickDropdownToggle();
+            //when
+            angular.element('body').mousedown();
 
-            setTimeout(function() {
-
-                expect(menu.hasClass('show-menu')).toBe(true);
-
-                //when
-                angular.element('body').mousedown();
-
-                //then
-                expect(menu.hasClass('show-menu')).toBe(false);
-                done();
-
-            }, 300);
-
+            //then
+            expect(menu.hasClass('show-menu')).toBe(false);
         });
 
         it('should unregister body mousedown on element remove', function () {
@@ -198,7 +154,7 @@ describe('Dropdown directive', function () {
             expect($._data(angular.element('body')[0], 'events')).not.toBeDefined();
         });
 
-        it('should stop mousedown propagation on dropdown-menu mousedown', function (done) {
+        it('should stop mousedown propagation on dropdown-menu mousedown', function () {
             //given
             var bodyMouseDown = false;
             angular.element('body').mousedown(function () {
@@ -207,45 +163,31 @@ describe('Dropdown directive', function () {
 
             //when
             element.find('.dropdown-menu').mousedown();
+            jasmine.clock().tick(250);
 
             //then
-            setTimeout(function() {
-                expect(bodyMouseDown).toBe(false);
-                done();
-            }, 300);
-
+            expect(bodyMouseDown).toBe(false);
         });
 
-        it('should hide dropdown menu on ESC', function (done) {
+        it('should hide dropdown menu on ESC', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
-            clickDropdownToggle();
+            menu.addClass('show-menu');
 
-            setTimeout(function() {
-                expect(menu.hasClass('show-menu')).toBe(true);
+            var event = angular.element.Event('keydown');
+            event.keyCode = 27;
 
-                var event = angular.element.Event('keydown');
-                event.keyCode = 27;
+            //when
+            menu.trigger(event);
 
-                //when
-                menu.trigger(event);
-
-                //then
-                expect(menu.hasClass('show-menu')).toBe(false);
-                done();
-            }, 300);
-
+            //then
+            expect(menu.hasClass('show-menu')).toBe(false);
         });
 
-        it('should not hide dropdown menu on not ESC keydown', function (done) {
+        it('should not hide dropdown menu on not ESC keydown', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
-            clickDropdownToggle();
-
-            setTimeout(function() {
-                expect(menu.hasClass('show-menu')).toBe(true);
-            }, 300);
-
+            menu.addClass('show-menu');
 
             var event = angular.element.Event('keydown');
             event.keyCode = 13;
@@ -254,17 +196,11 @@ describe('Dropdown directive', function () {
             menu.trigger(event);
 
             //then
-            setTimeout(function() {
-                expect(menu.hasClass('show-menu')).toBe(true);
-                done();
-            }, 300);
-
+            expect(menu.hasClass('show-menu')).toBe(true);
         });
 
         it('should focus on dropdown action when menu is hidden by ESC', function () {
             //given
-            jasmine.clock().install();
-
             var action = element.find('.dropdown-action').eq(0);
             var menu = element.find('.dropdown-menu').eq(0);
             angular.element('body').append(element);
@@ -282,9 +218,24 @@ describe('Dropdown directive', function () {
 
             //then
             expect(document.activeElement).toBe(action[0]);
-            jasmine.clock().uninstall();
         });
 
+        it('should NOT show menu on double click', function () {
+            //given
+            var menu = element.find('.dropdown-menu').eq(0);
+            expect(menu.hasClass('show-menu')).toBe(false);
+
+            //when
+            clickDropdownToggle();
+            jasmine.clock().tick(50);
+            expect(menu.hasClass('show-menu')).toBe(false);
+
+            clickDropdownToggle();
+            jasmine.clock().tick(50);
+
+            //then
+            expect(menu.hasClass('show-menu')).toBe(false);
+        });
     });
 
     describe('not closeable on click dropdown', function () {
@@ -292,41 +243,34 @@ describe('Dropdown directive', function () {
             scope = $rootScope.$new();
 
             html = '<talend-dropdown id="dropdown1" close-on-select="false">' +
-            '    <div class="dropdown-container grid-header">' +
-            '        <div class="dropdown-action">' +
-            '            <div class="grid-header-title dropdown-button">{{ column.id }}</div>' +
-            '            <div class="grid-header-type">{{ column.type }}</div>' +
-            '        </div>' +
-            '        <ul class="dropdown-menu grid-header-menu" style="display:none;">' +
-            '            <li role="presentation"><a role="menuitem" href="#">Hide Column</a></li>' +
-            '            <li class="divider"></li>' +
-            '            <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>' +
-            '            <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>' +
-            '        </ul>' +
-            '    </div>' +
-            '</talend-dropdown>';
+                '    <div class="dropdown-container grid-header">' +
+                '        <div class="dropdown-action">' +
+                '            <div class="grid-header-title dropdown-button">{{ column.id }}</div>' +
+                '            <div class="grid-header-type">{{ column.type }}</div>' +
+                '        </div>' +
+                '        <ul class="dropdown-menu grid-header-menu" style="display:none;">' +
+                '            <li role="presentation"><a role="menuitem" href="#">Hide Column</a></li>' +
+                '            <li class="divider"></li>' +
+                '            <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>' +
+                '            <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>' +
+                '        </ul>' +
+                '    </div>' +
+                '</talend-dropdown>';
             element = $compile(html)(scope);
             scope.$digest();
         }));
 
-        it('should not hide dropdown-menu on item click if closeOnSelect is false', function (done) {
+        it('should not hide dropdown-menu on item click if closeOnSelect is false', function () {
             //given
             var menu = element.find('.dropdown-menu').eq(0);
-            clickDropdownToggle();
-
-            setTimeout(function() {
-                expect(menu.hasClass('show-menu')).toBe(true);
-            }, 300);
+            menu.addClass('show-menu');
 
             //when
             clickDropdownItem();
+            jasmine.clock().tick(250);
 
             //then
-            setTimeout(function() {
-                expect(menu.hasClass('show-menu')).toBe(true);
-                done();
-            }, 300);
-
+            expect(menu.hasClass('show-menu')).toBe(true);
         });
     });
 
@@ -338,36 +282,33 @@ describe('Dropdown directive', function () {
             spyOn(scope, 'onOpen').and.returnValue(true);
 
             html = '<talend-dropdown id="dropdown1" on-open="onOpen()">' +
-            '    <div class="dropdown-container grid-header">' +
-            '        <div class="dropdown-action">' +
-            '            <div class="grid-header-title dropdown-button">{{ column.id }}</div>' +
-            '            <div class="grid-header-type">{{ column.type }}</div>' +
-            '        </div>' +
-            '        <ul class="dropdown-menu grid-header-menu" style="display:none;">' +
-            '            <li role="presentation"><a role="menuitem" href="#">Hide Column</a></li>' +
-            '            <li class="divider"></li>' +
-            '            <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>' +
-            '            <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>' +
-            '        </ul>' +
-            '    </div>' +
-            '</talend-dropdown>';
+                '    <div class="dropdown-container grid-header">' +
+                '        <div class="dropdown-action">' +
+                '            <div class="grid-header-title dropdown-button">{{ column.id }}</div>' +
+                '            <div class="grid-header-type">{{ column.type }}</div>' +
+                '        </div>' +
+                '        <ul class="dropdown-menu grid-header-menu" style="display:none;">' +
+                '            <li role="presentation"><a role="menuitem" href="#">Hide Column</a></li>' +
+                '            <li class="divider"></li>' +
+                '            <li role="presentation"><a role="menuitem" href="#">Split first Space</a></li>' +
+                '            <li role="presentation"><a role="menuitem" href="#">Uppercase</a></li>' +
+                '        </ul>' +
+                '    </div>' +
+                '</talend-dropdown>';
             element = $compile(html)(scope);
             scope.$digest();
         }));
 
-        it('should call action on open click', function (done) {
+        it('should call action on open click', function () {
             //given
             expect(scope.onOpen).not.toHaveBeenCalled();
 
             //when
             clickDropdownToggle();
+            jasmine.clock().tick(250);
 
             //then
-            setTimeout(function() {
-                expect(scope.onOpen).toHaveBeenCalled();
-                done();
-            }, 300);
-
+            expect(scope.onOpen).toHaveBeenCalled();
         });
     });
 });
