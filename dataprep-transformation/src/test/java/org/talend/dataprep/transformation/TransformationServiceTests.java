@@ -467,6 +467,25 @@ public class TransformationServiceTests {
         assertEquals(expectedSuggestions, response, false);
     }
 
+    @Test
+    public void dateColumnSuggestWithStringType() throws Exception {
+        //given
+        final String columnMetadata = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("suggestions/date_column_string_type.json"));
+        final String expectedSuggestions = IOUtils.toString(TransformationServiceTests.class.getResourceAsStream("suggestions/date_column_string_type_suggestions.json"));
+
+        //when
+        final String response = given() //
+                .contentType(JSON) //
+                .body(columnMetadata) //
+                .when() //
+                .post("/suggest/column") //
+                .asString();
+
+        //then
+        assertEquals(expectedSuggestions, response, false);
+    }
+
+
     //------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------Diff------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------------
