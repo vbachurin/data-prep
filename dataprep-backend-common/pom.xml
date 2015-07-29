@@ -97,7 +97,7 @@
             <artifactId>org.talend.datascience.common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.talend.studio</groupId>
+            <groupId>org.talend.dataquality</groupId>
             <artifactId>org.talend.dataquality.semantic</artifactId>
         </dependency>
         <!-- UNIT TEST DEPENDENCIES -->

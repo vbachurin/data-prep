@@ -24,7 +24,7 @@
         </dependency>
         <!-- Data Quality - Content analysis -->
         <dependency>
-            <groupId>org.talend.studio</groupId>
+            <groupId>org.talend.dataquality</groupId>
             <artifactId>org.talend.dataquality.semantic</artifactId>
         </dependency>
         <dependency>
