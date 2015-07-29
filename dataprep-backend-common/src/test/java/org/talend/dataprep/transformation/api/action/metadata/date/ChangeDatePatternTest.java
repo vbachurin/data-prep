@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the ChangeDatePattern action.
- * 
+ *
  * @see ChangeDatePattern
  */
 public class ChangeDatePatternTest {
@@ -73,7 +73,7 @@ public class ChangeDatePatternTest {
     @Test(expected = IllegalArgumentException.class)
     public void should_check_new_pattern_parameter_when_dealing_with_row_metadata() {
         Map<String, String> missingParameters = new HashMap<>();
-        missingParameters.put(ChangeDatePattern.COLUMN_ID, "0000");
+        missingParameters.put("column_id", "0000");
         missingParameters.put(ChangeDatePattern.NEW_PATTERN, "toto");
         action.create(missingParameters);
     }
@@ -110,7 +110,7 @@ public class ChangeDatePatternTest {
     @Test(expected = IllegalArgumentException.class)
     public void should_check_new_pattern_parameter_when_dealing_with_row() {
         Map<String, String> insufficientParams = new HashMap<>();
-        insufficientParams.put(ChangeDatePattern.COLUMN_ID, "0000");
+        insufficientParams.put("column_id", "0000");
         action.create(insufficientParams);
     }
 
@@ -179,14 +179,14 @@ public class ChangeDatePatternTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.accept(getColumn(Type.DATE)));
+        assertTrue(action.acceptColumn(getColumn(Type.DATE)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.accept(getColumn(Type.NUMERIC)));
-        assertFalse(action.accept(getColumn(Type.FLOAT)));
-        assertFalse(action.accept(getColumn(Type.STRING)));
-        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
+        assertFalse(action.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 }

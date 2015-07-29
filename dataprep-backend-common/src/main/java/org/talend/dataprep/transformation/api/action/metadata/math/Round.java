@@ -13,7 +13,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
  * This will compute the absolute value for numerical columns.
@@ -21,7 +21,9 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
 @Component(Round.ACTION_BEAN_PREFIX + Round.ROUND_ACTION_NAME)
 public class Round extends AbstractRound {
 
-    /** The action name. */
+    /**
+     * The action name.
+     */
     public static final String ROUND_ACTION_NAME = "round"; //$NON-NLS-1$
 
     /**
@@ -32,6 +34,7 @@ public class Round extends AbstractRound {
         return ROUND_ACTION_NAME;
     }
 
+    @Override
     protected int compute(double from) {
         return (int) Math.round(from);
     }

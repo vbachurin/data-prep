@@ -13,7 +13,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
  * This will compute the Returns the smallest (closest to negative infinity) value that is greater than or equal to the
@@ -35,6 +35,7 @@ public class Ceil extends AbstractRound {
         return CELL_ACTION_NAME;
     }
 
+    @Override
     protected int compute(double from) {
         return (int) Math.ceil(from);
     }

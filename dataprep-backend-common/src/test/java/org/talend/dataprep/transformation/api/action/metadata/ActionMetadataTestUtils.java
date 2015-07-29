@@ -11,6 +11,7 @@ import org.talend.dataprep.api.type.Type;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
  * Utility class for action metadata unit tests.

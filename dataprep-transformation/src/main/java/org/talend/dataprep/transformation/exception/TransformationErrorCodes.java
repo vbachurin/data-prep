@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.talend.dataprep.exception.ErrorCode;
+import org.talend.dataprep.exception.error.ErrorCode;
 
 /**
  * Transformation error codes.

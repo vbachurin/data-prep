@@ -1,8 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 
-public abstract class AbstractAbsolute  extends SingleColumnAction {
+public abstract class AbstractAbsolute  extends AbstractActionMetadata {
 
     /**
      * Try to parse and return the absolute value of a long value as string

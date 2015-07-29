@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.netflix.hystrix.exception.HystrixRuntimeException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 @Configuration
 @Aspect

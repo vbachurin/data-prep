@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.talend.dataprep.api.dataset.DataSetLifecycle;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
-import org.talend.dataprep.exception.ErrorCode;
+import org.talend.dataprep.exception.error.ErrorCode;
 
 /**
  * Dataset error codes.

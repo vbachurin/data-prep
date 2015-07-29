@@ -3,7 +3,7 @@ package org.talend.dataprep.exception.json;
 import java.util.Collection;
 import java.util.List;
 
-import org.talend.dataprep.exception.ErrorCode;
+import org.talend.dataprep.exception.error.ErrorCode;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

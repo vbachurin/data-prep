@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
  * Transformation context used by ActionMetadata to store/access contextual values while running.
@@ -11,7 +12,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
  * The purpose of this class is to have a small memory footprint and not store the whole dataset. To prevent misuse of
  * this class in future / open developments, it's final.
  *
- * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#create(Map)
+ * @see ActionMetadata#create(Map)
  */
 public final class TransformationContext {
 

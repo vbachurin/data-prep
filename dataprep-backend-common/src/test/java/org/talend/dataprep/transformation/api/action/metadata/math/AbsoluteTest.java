@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the absolute actions.
- * 
+ *
  * @see AbsoluteFloat
  * @see AbsoluteFloat
  */
@@ -256,25 +256,25 @@ public class AbsoluteTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(absIntAction.accept(getColumn(Type.INTEGER)));
-        assertTrue(absFloatAction.accept(getColumn(Type.FLOAT)));
-        assertTrue(absFloatAction.accept(getColumn(Type.DOUBLE)));
+        assertTrue(absIntAction.acceptColumn(getColumn(Type.INTEGER)));
+        assertTrue(absFloatAction.acceptColumn(getColumn(Type.FLOAT)));
+        assertTrue(absFloatAction.acceptColumn(getColumn(Type.DOUBLE)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(absIntAction.accept(getColumn(Type.NUMERIC)));
-        assertFalse(absIntAction.accept(getColumn(Type.DOUBLE)));
-        assertFalse(absIntAction.accept(getColumn(Type.FLOAT)));
-        assertFalse(absIntAction.accept(getColumn(Type.STRING)));
-        assertFalse(absIntAction.accept(getColumn(Type.DATE)));
-        assertFalse(absIntAction.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.DOUBLE)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.FLOAT)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.BOOLEAN)));
 
-        assertFalse(absFloatAction.accept(getColumn(Type.NUMERIC)));
-        assertFalse(absFloatAction.accept(getColumn(Type.INTEGER)));
-        assertFalse(absFloatAction.accept(getColumn(Type.STRING)));
-        assertFalse(absFloatAction.accept(getColumn(Type.DATE)));
-        assertFalse(absFloatAction.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.INTEGER)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.BOOLEAN)));
 
     }
 }

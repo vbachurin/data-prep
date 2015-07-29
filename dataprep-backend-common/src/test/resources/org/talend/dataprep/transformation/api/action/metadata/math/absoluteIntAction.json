@@ -3,7 +3,8 @@
     {
       "action": "absolute_int",
       "parameters": {
-        "column_id": "int_column"
+        "column_id": "int_column",
+        "scope": "column"
       }
     }
   ]

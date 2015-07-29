@@ -1,113 +1,46 @@
 [
   {
-    "category": "case",
-    "items": [
-    ],
-    "name": "uppercase",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "category": "case",
-    "items": [
-    ],
-    "name": "lowercase",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "category": "case",
-    "items": [
-    ],
-    "name": "propercase",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "category": "quickfix",
-    "items": [
-    ],
-    "name": "trim",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "category": "quickfix",
-    "items": [
-    ],
     "name": "fillemptywithdefault",
     "parameters": [
       {
         "name": "column_id",
         "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
         "default": ""
       },
       {
         "name": "default_value",
         "type": "string",
+        "implicit": false,
+        "description": "The value to set in empty cells",
+        "label": "Value",
         "default": ""
       }
-    ]
-  },
-  {
-    "name": "delete_empty",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      }
-    ]
+    ],
+    "category": "quickfix",
+    "items": [
+    ],
+    "dynamic": false,
+    "description": "Fill empty cells of this column with given value",
+    "label": "Fill empty cells with text..."
   },
   {
     "name": "delete_on_value",
@@ -115,73 +48,155 @@
       {
         "name": "column_id",
         "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "value",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "category": "quickfix",
-    "items": [
-    ],
-    "name": "cut",
-    "label": "Remove part of the text...",
-    "description": "Remove specified text from cells in this column",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "default": ""
-      },
-      {
-        "name": "pattern",
-        "type": "string",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "category": "columns",
-    "items": [
-    ],
-    "name": "rename_column",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
+        "implicit": true,
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "implicit": false,
+        "description": "The value to search",
+        "label": "Value",
+        "default": ""
+      }
+    ],
+    "category": "cleansing",
+    "items": [
+    ],
+    "dynamic": false,
+    "description": "Delete rows that have a specific value in cell in this column",
+    "label": "Delete lines that match..."
+  },
+  {
+    "name": "delete_empty",
+    "category": "cleansing",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Delete rows that have this cell empty",
+    "label": "Delete lines with empty cell"
+  },
+  {
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
         "default": ""
       },
       {
         "name": "new_column_name",
         "type": "string",
+        "implicit": false,
         "description": "The new column name",
         "label": "New name",
         "default": "firstname"
       }
     ],
+    "category": "columns",
+    "name": "rename_column",
+    "items": [
+    ],
+    "dynamic": false,
     "description": "Rename this column",
     "label": "Rename"
+  },
+  {
+    "category": "columns",
+    "items": [
+    ],
+    "name": "copy",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Creates an exact copy of this column",
+    "label": "Duplicate"
   },
   {
     "category": "quickfix",
@@ -214,6 +229,7 @@
               {
                 "name": "manual_separator",
                 "type": "string",
+                "implicit": false,
                 "description": "Choose your own separator",
                 "label": "Manual separator",
                 "default": ""
@@ -231,23 +247,74 @@
       {
         "name": "column_id",
         "type": "string",
+        "implicit": true,
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
         "default": ""
       },
       {
         "name": "limit",
         "type": "integer",
+        "implicit": false,
+        "description": "Number of token to split the value in",
+        "label": "Limit",
         "default": "2"
       }
     ],
+    "dynamic": false,
     "description": "Split column from separators",
     "label": "Split the text in parts..."
+  },
+  {
+    "category": "case",
+    "name": "lowercase",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Converts all of the cell values in this column to lower case",
+    "label": "Change case to lower"
   },
   {
     "category": "quickfix",
@@ -259,13 +326,25 @@
       {
         "name": "column_id",
         "type": "string",
+        "implicit": true,
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
         "default": ""
       }
     ],
@@ -273,46 +352,42 @@
     "label": "Find and group similar text..."
   },
   {
-    "label": "Duplicate",
-    "name": "copy",
-    "description": "Creates an exact copy of this column",
-    "category": "columns",
-    "parameters": [
-      {
-        "name": "column_id",
-        "type": "string",
-        "description": "The column on which apply this action to",
-        "label": "Column",
-        "default": ""
-      },
-      {
-        "name": "column_name",
-        "type": "string",
-        "description": "The column name on which apply this action to",
-        "label": "Column name",
-        "default": ""
-      }
-    ]
-  },
-  {
-    "label": "Substring",
-    "name": "substring",
-    "description": "Extracts substring in a new column",
     "category": "quickfix",
+    "items": [
+    ],
+    "name": "trim",
     "parameters": [
       {
         "name": "column_id",
         "type": "string",
+        "implicit": true,
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
         "default": ""
       }
     ],
+    "dynamic": false,
+    "description": "Remove trailing and leading spaces",
+    "label": "Remove trailing and leading spaces"
+  },
+  {
+    "category": "quickfix",
     "items": [
       {
         "name": "from_mode",
@@ -330,12 +405,17 @@
               {
                 "name": "from_index",
                 "type": "integer",
+                "implicit": false,
+                "description": "Index of the original value that starts the new one",
+                "label": "Begining index",
                 "default": "0"
               }
             ],
             "default": false
           }
-        ]
+        ],
+        "description": "Select begining mode of the substring",
+        "label": "From"
       },
       {
         "name": "to_mode",
@@ -353,58 +433,117 @@
               {
                 "name": "to_index",
                 "type": "integer",
+                "implicit": false,
+                "description": "Index of the original value that ends the new one",
+                "label": "End index",
                 "default": "5"
               }
             ],
             "default": true
           }
-        ]
+        ],
+        "description": "Select end mode of the substring",
+        "label": "To"
       }
-    ]
+    ],
+    "name": "substring",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Extracts substring in a new column",
+    "label": "Substring"
   },
   {
-    "label": "Compute length",
+    "category": "quickfix",
     "name": "compute_length",
-    "category": "quickfix",
+    "items": [
+    ],
     "parameters": [
       {
         "name": "column_id",
         "type": "string",
+        "implicit": true,
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
-        "description": "The column name on which apply this action to",
-        "label": "Column name",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
         "default": ""
       }
-    ]
+    ],
+    "dynamic": false,
+    "description": "Extracts the number of digits of this column to a new one",
+    "label": "Compute length"
   },
   {
-    "label": "Replace cells that match...",
-    "name": "replace_on_value",
     "category": "quickfix",
+    "name": "replace_on_value",
     "parameters": [
       {
         "name": "column_id",
         "type": "string",
+        "implicit": true,
         "description": "The column on which apply this action to",
         "label": "Column",
         "default": ""
       },
       {
-        "name": "column_name",
+        "name": "row_id",
         "type": "string",
-        "description": "The column name on which apply this action to",
-        "label": "Column name",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
         "default": ""
       },
       {
         "name": "cell_value",
         "type": "string",
+        "implicit": false,
         "description": "The current cell value",
         "label": "Current",
         "default": ""
@@ -412,11 +551,129 @@
       {
         "name": "replace_value",
         "type": "string",
+        "implicit": false,
         "description": "The new value to set",
         "label": "Replace",
         "default": ""
       }
-    ]
+    ],
+    "items": [
+    ],
+    "dynamic": false,
+    "description": "Replace cells that have a specific value",
+    "label": "Replace cells that match..."
+  },
+  {
+    "category": "case",
+    "name": "propercase",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Converts all of the cell values in this column to title case (i.e. \"data prep\" -> \"Data Prep\") ",
+    "label": "Change case to Title"
+  },
+  {
+    "category": "case",
+    "name": "uppercase",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Converts all of the cell values in this column to upper case",
+    "label": "Change case to UPPER"
+  },
+  {
+    "category": "quickfix",
+    "name": "cut",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      },
+      {
+        "name": "pattern",
+        "type": "string",
+        "implicit": false,
+        "description": "The pattern to cut in this column",
+        "label": "Pattern",
+        "default": ""
+      }
+    ],
+    "items": [
+    ],
+    "dynamic": false,
+    "description": "Remove specified text from cells in this column",
+    "label": "Remove part of the text..."
   }
 ]
-

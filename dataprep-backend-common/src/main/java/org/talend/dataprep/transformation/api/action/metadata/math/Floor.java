@@ -13,27 +13,31 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
 import org.springframework.stereotype.Component;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
  * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
  * is equal to a mathematical integer.
- * 
+ *
  * @see Math#floor(double)
  */
 @Component(Floor.ACTION_BEAN_PREFIX + Floor.FLOOR_ACTION_NAME)
 public class Floor extends AbstractRound {
 
-    /** The action name. */
+    /**
+     * The action name.
+     */
     public static final String FLOOR_ACTION_NAME = "floor"; //$NON-NLS-1$
 
     /**
-     * @see org.talend.dataprep.transformation.api.action.metadata.ActionMetadata#getName()
+     * @see ActionMetadata#getName()
      */
     @Override
     public String getName() {
         return FLOOR_ACTION_NAME;
     }
 
+    @Override
     protected int compute(double from) {
         return (int) Math.floor(from);
     }

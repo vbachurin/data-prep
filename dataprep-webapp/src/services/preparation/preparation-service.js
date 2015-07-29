@@ -36,7 +36,7 @@
             //update preparation
             setName: setName,
             updateStep: updateStep,
-            insertColumnInfo: insertColumnInfo,
+            copyImplicitParameters: copyImplicitParameters,
             appendStep: appendStep,
             removeStep: removeStep,
             paramsHasChanged: paramsHasChanged,
@@ -207,11 +207,8 @@
          * @returns {promise} The PUT promise
          */
         function updateStep(step, parameters) {
-            parameters = parameters || {};
-            insertColumnInfo(parameters, step.column);
             return PreparationRestService.updateStep(service.currentPreparationId, step.transformation.stepId, step.transformation.name, parameters);
         }
-
 
         /**
          * @ngdoc method
@@ -219,11 +216,37 @@
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {object} parameters The parameters to update the column from
          * @param {object} column The update source.
+         * @description Inject the columns implicit values
          */
         function insertColumnInfo(parameters, column) {
             /*jshint camelcase: false */
             parameters.column_id = column.id;
             parameters.column_name = column.name;
+        }
+
+        /**
+         * @ngdoc method
+         * @name copyImplicitParameters
+         * @methodOf data-prep.services.preparation.service:PreparationService
+         * @param {object} parameters The parameters to copy into
+         * @param {object} originalParameters The original parameters containing the implicit parameters values
+         * @description Copy the original implicit parameters values into new parameters
+         */
+        function copyImplicitParameters(parameters, originalParameters) {
+            /*jshint camelcase: false */
+            parameters.scope = originalParameters.scope;
+
+            if('column_id' in originalParameters) {
+                parameters.column_id = originalParameters.column_id;
+            }
+
+            if('column_name' in originalParameters) {
+                parameters.column_name = originalParameters.column_name;
+            }
+
+            if('row_id' in originalParameters) {
+                parameters.row_id = originalParameters.row_id;
+            }
         }
 
         /**
@@ -269,8 +292,6 @@
          * @returns {boolean} true if parameters has changed, false otherwise
          */
         function paramsHasChanged(step, newParams) {
-            newParams = newParams || {};
-            insertColumnInfo(newParams, step.column);
             return JSON.stringify(newParams) !== JSON.stringify(step.actionParameters.parameters);
         }
 

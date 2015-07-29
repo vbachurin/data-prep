@@ -1,0 +1,12 @@
+{
+  "actions": [
+    {
+      "action": "delete_on_value",
+      "parameters": {
+        "column_id": "city",
+        "value": "Berlin",
+        "scope": "column"
+      }
+    }
+  ]
+}
