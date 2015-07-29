@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-import static org.talend.dataprep.exception.error.TransformationErrorCodes.MISSING_TRANSFORMATION_SCOPE_PARAMETER;
+import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE_PARAMETER;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
 
 /**
@@ -111,7 +111,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      */
     private void checkScopeConsistency(final ScopeCategory scope, final Map<String, String> parameters) {
         if (!scope.checkMandatoryParameters(parameters)) {
-            throw new TDPException(MISSING_TRANSFORMATION_SCOPE_PARAMETER);
+            throw new TDPException(MISSING_ACTION_SCOPE_PARAMETER);
         }
 
         if (!this.acceptScope(scope)) {
