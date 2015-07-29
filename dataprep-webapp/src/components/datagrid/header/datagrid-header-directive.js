@@ -16,7 +16,7 @@
      * @restrict E
      * @usage
      <datagrid-header
-            column="column">
+     column="column">
      </datagrid-header>
      * @param {object} column The column metadata
      */
@@ -33,94 +33,112 @@
             controller: 'DatagridHeaderCtrl',
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
+                    var gridHeaderTitle, gridHeaderTitleInput;
 
                     /**
-                     * The double-click on the column header is managed in datagrid-header-directive.js
-                     * whereas the click is managed in widget-dropdown-directive.js
+                     * @ngdoc method
+                     * @name setEditionMode
+                     * @methodOf data-prep.datagrid-header.directive:DatagridHeader
+                     * @param {boolean} value The new edition mode value
+                     * @description Set edition mode to the provided value. This trigger a $digest.
                      */
-                    $timeout(function() {
+                    function setEditionMode(value) {
+                        $timeout(function () {
+                            ctrl.setEditMode(value);
+                        });
+                    }
 
-                        var gridHeaderTitle = iElement.find('.grid-header-title');
-                        var gridHeaderTitleInput = iElement.find('.grid-header-title-input').eq(0);
+                    /**
+                     * @ngdoc method
+                     * @name setEditionMode
+                     * @methodOf data-prep.datagrid-header.directive:DatagridHeader
+                     * @description Update column name if it has changed, just toggle edition mode otherwise
+                     */
+                    function executeRenameAction() {
+                        if (ctrl.nameHasChanged()) {
+                            ctrl.updateColumnName();
+                        }
+                        else {
+                            ctrl.resetColumnName();
+                            setEditionMode(false);
+                        }
+                    }
 
-                        //Manage ENTER on input
-                        gridHeaderTitleInput
-                            .keyup(function (event) {
-                                if (event.keyCode === 13) {
-                                    updateValAction (event, true, true);
-                                }
-                            });
+                    /**
+                     * @ngdoc method
+                     * @name attachBlurListener
+                     * @methodOf data-prep.datagrid-header.directive:DatagridHeader
+                     * @description Attach a 'Blur' event listener on input. It executes the column rename.
+                     */
+                    function attachBlurListener() {
+                        gridHeaderTitleInput.on('blur', function () {
+                            executeRenameAction();
+                        });
+                    }
 
-                        //Manage ESC on input
+                    /**
+                     * @ngdoc method
+                     * @name attachKeyListener
+                     * @methodOf data-prep.datagrid-header.directive:DatagridHeader
+                     * @description Attach a 'Keydown' event listener on input. It handles the ENTER and ESC button
+                     */
+                    function attachKeyListener() {
                         gridHeaderTitleInput
                             .keydown(function (event) {
-
-                                if (event.keyCode === 27) {
-                                    $timeout(function() {
+                                event.stopPropagation();
+                                switch (event.keyCode) {
+                                    case 13 : //ENTER
+                                        gridHeaderTitleInput.blur();
+                                        break;
+                                    case 27 : //ESC
                                         ctrl.resetColumnName();
-                                        ctrl.setEditMode(false);
-                                    });
-                                    event.stopPropagation();
-                                    gridHeaderTitleInput.off('blur');
+                                        gridHeaderTitleInput.blur();
+                                        break;
                                 }
                             });
+                    }
 
-                        //Manage Click on input
-                        gridHeaderTitleInput
-                            .on('click', function(e){
-                                e.preventDefault();  //cancel system double-click event
-                                e.stopPropagation();
-                            });
+                    /**
+                     * @ngdoc method
+                     * @name attachDisableInputClick
+                     * @methodOf data-prep.datagrid-header.directive:DatagridHeader
+                     * @description Disable all click in the input to prevent header and dropdown actions
+                     */
+                    function attachDisableInputClick() {
+                        gridHeaderTitleInput.on('click', function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        });
+                    }
 
-                        var updateVal = function () {
+                    /**
+                     * @ngdoc method
+                     * @name attachDblClickListener
+                     * @methodOf data-prep.datagrid-header.directive:DatagridHeader
+                     * @description Attach a 'DblClick' event listener on title. It toggle edition mode and focus/select input text
+                     */
+                    function attachDblClickListener() {
+                        gridHeaderTitle.on('dblclick', function () {
+                            setEditionMode(true);
 
-                            //Manage Unfocus on input
-                            gridHeaderTitleInput.off('blur');
-
-                            gridHeaderTitleInput
-                                .on('blur', function (event) {
-                                    updateValAction (event, false, false);
-                                });
-                        };
-
-                        var updateValAction = function (event, disableBlur, stopPropagationOption) {
-                            if(ctrl.canUpdate()) {
-                                ctrl.updateColumnName(ctrl.column);
-                            } else {
-                                $timeout(function() {
-                                    ctrl.setEditMode(false);
-                                });
-
-                                if (stopPropagationOption) {
-                                    event.stopPropagation();
-                                }
-
-                                if (disableBlur) {
-                                    gridHeaderTitleInput.off('blur');
-                                }
-                            }
-                        }
-
-                        //Detect the double click
-                        var detectClickAction = function () {
-
-                            $timeout(function() {
-                                ctrl.setEditMode(true);
-                            });
-
-                            $timeout(function() {
-                                updateVal();
-                            });
-
-                            $timeout(function() {
+                            $timeout(function () {
                                 gridHeaderTitleInput.focus();
                                 gridHeaderTitleInput.select();
                             }, 100);
-                        };
+                        });
+                    }
 
-                        //Bind dblclick event to 'gridHeaderTitle'
-                        gridHeaderTitle.on('dblclick',detectClickAction);
+                    /**
+                     * Get the title and input elements, attach their listeners
+                     */
+                    $timeout(function () {
+                        gridHeaderTitle = iElement.find('.grid-header-title');
+                        gridHeaderTitleInput = iElement.find('.grid-header-title-input').eq(0);
 
+                        attachKeyListener();
+                        attachDblClickListener();
+                        attachBlurListener();
+                        attachDisableInputClick();
                     });
 
                     /**
@@ -137,7 +155,7 @@
                             }
                         });
 
-                    iElement.on('$destroy', function() {
+                    iElement.on('$destroy', function () {
                         scope.$destroy();
                     });
                 }

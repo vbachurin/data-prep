@@ -11,15 +11,29 @@
      */
     function DatagridHeaderCtrl(TransformationCacheService, ConverterService, PlaygroundService) {
         var COLUMN_CATEGORY = 'columns';
+        var RENAME_ACTION = 'rename_column';
+        var originalName;
 
         var vm = this;
         vm.converterService = ConverterService;
 
-        vm.newName = vm.column.name;
-        vm.oldName = vm.newName;
+        /**
+         * @ngdoc property
+         * @name newName
+         * @propertyOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description the new column modified name
+         * @type {string}
+         */
+        vm.newName = null;
+
+        /**
+         * @ngdoc property
+         * @name isEditMode
+         * @propertyOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
+         * @description the flag to switch column name edition mode
+         * @type {string}
+         */
         vm.isEditMode = false;
-        vm.updateEnabled = false;
-        vm.RENAME_ACTION = 'rename_column';
 
         /**
          * @ngdoc method
@@ -27,7 +41,7 @@
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
          * @description Get transformations from REST call
          */
-        vm.initTransformations = function () {
+        vm.initTransformations = function initTransformations() {
             if (!vm.transformations && !vm.initTransformationsInProgress) {
                 vm.transformationsRetrieveError = false;
                 vm.initTransformationsInProgress = true;
@@ -47,42 +61,34 @@
             }
         };
 
-
         /**
          * @ngdoc method
          * @name updateColumnName
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
          * @description update the new column name
          */
-        vm.updateColumnName = function (col) {
+        vm.updateColumnName = function updateColumnName() {
+            var params = {
+                /*jshint camelcase: false */
+                new_column_name: vm.newName,
+                scope: 'column'
+            };
 
-            var params = {};
-            var paramName = 'new_column_name';
-            params[paramName] = vm.newName;
-
-            PlaygroundService.appendStep(vm.RENAME_ACTION, col, params)
+            PlaygroundService.appendStep(RENAME_ACTION, vm.column, params)
                 .then(function() {
                     vm.setEditMode(false);
-                    vm.updateEnabled = false;
-                    vm.oldName = vm.newName;
+                    originalName = vm.newName;
                 });
         };
 
-
         /**
          * @ngdoc method
-         * @name enableUpdate
+         * @name nameHasChanged
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description Called when the column name is changed
+         * @description Check if the new name is correct for column name change
          */
-        vm.canUpdate = function () {
-            if(vm.oldName !== vm.newName && vm.newName !== '') {
-                return true;
-            } else {
-                vm.resetColumnName();
-                return false;
-            }
-
+        vm.nameHasChanged = function nameHasChanged() {
+            return vm.newName && originalName !== vm.newName;
         };
 
 
@@ -90,18 +96,15 @@
          * @ngdoc method
          * @name setEditMode
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description set isEditMode value
+         * @description Set isEditMode to provided value
+         * @param {boolean} bool The new edit mode value
          */
-        vm.setEditMode = function (bool) {
-
+        vm.setEditMode = function setEditMode(bool) {
             vm.isEditMode = bool;
 
-            //reinitialization when no save preparation
             if (bool) {
-                vm.newName = vm.column.name;
-                vm.oldName = vm.newName;
+                vm.newName = originalName = vm.column.name;
             }
-
         };
 
 
@@ -109,10 +112,10 @@
          * @ngdoc method
          * @name resetColumnName
          * @methodOf data-prep.datagrid-header.controller:DatagridHeaderCtrl
-         * @description reset newName
+         * @description Reset newName with the original name
          */
-        vm.resetColumnName = function () {
-            vm.newName = vm.oldName;
+        vm.resetColumnName = function resetColumnName() {
+            vm.newName = originalName;
         };
 
 

@@ -1,85 +1,76 @@
-describe('Dataset column header directive', function() {
+describe('Dataset column header directive', function () {
     'use strict';
-    var scope, createElement, element;
+    var scope, createElement, element, ctrl;
     var body = angular.element('body');
+    var column = {
+        'id': '0001',
+        'name': 'MostPopulousCity',
+        'quality': {
+            'empty': 5,
+            'invalid': 10,
+            'valid': 72
+        },
+        'type': 'string'
+    };
 
     beforeEach(module('data-prep.datagrid-header'));
     beforeEach(module('htmlTemplates'));
 
-    afterEach(function() {
+    beforeEach(inject(function ($rootScope, $compile, $timeout) {
+        scope = $rootScope.$new(true);
+        scope.column = column;
+
+        createElement = function () {
+            element = angular.element('<datagrid-header column="column"></datagrid-header>');
+            body.append(element);
+            $compile(element)(scope);
+            scope.$digest();
+            $timeout.flush();
+
+            ctrl = element.controller('datagridHeader');
+            spyOn(ctrl, 'updateColumnName').and.returnValue();
+        };
+    }));
+
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-
-    beforeEach(inject(function($rootScope, $compile, $timeout) {
-
-        scope = $rootScope.$new(true);
-        createElement = function(directiveScope) {
-            element = angular.element('<datagrid-header column="column"></datagrid-header>');
-            body.append(element);
-            $compile(element)(directiveScope);
-            directiveScope.$digest();
-            $timeout.flush();
-        };
-    }));
-    
-    it('should display column title and domain', function() {
+    it('should display column title and domain', function () {
         //given
         scope.column = {
-            'id': '0',
-            'name': 'MostPopulousCity',
-            'quality': {
-                'empty': 5,
-                'invalid': 10,
-                'valid': 72
+            id: '0001',
+            name: 'MostPopulousCity',
+            quality: {
+                empty: 5,
+                invalid: 10,
+                valid: 72
             },
-            'type': 'string',
-            'domain': 'city'
+            type: 'string',
+            domain: 'city'
         };
 
         //when
-        createElement(scope);
+        createElement();
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
         expect(element.find('.grid-header-type').text()).toBe('city');
     });
 
-    it('should display column title and type', function() {
-        //given
-        scope.column = {
-            'id': '0',
-            'name': 'MostPopulousCity',
-            'quality': {
-                'empty': 5,
-                'invalid': 10,
-                'valid': 72
-            },
-            'type': 'string'
-        };
-
+    it('should display column title and type when there is no domain', function () {
         //when
-        createElement(scope);
+        createElement();
 
         //then
         expect(element.find('.grid-header-title').text()).toBe('MostPopulousCity');
         expect(element.find('.grid-header-type').text()).toBe('text');
     });
 
-    it('should close dropdown on get transform list error', function(done) {
+    it('should close dropdown on get transform list error', function (done) {
         //given
-        scope.column = {
-            'id': 'MostPopulousCity',
-            'quality': {
-                'empty': 5,
-                'invalid': 10,
-                'valid': 72
-            },
-            'type': 'string'
-        };
-
-        createElement(scope);
+        createElement();
         var menu = element.find('.grid-header-menu').eq(0);
         menu.addClass('show-menu');
 
@@ -88,33 +79,19 @@ describe('Dataset column header directive', function() {
         scope.$apply();
 
         //then
-       setTimeout(function() {
-           expect(menu.hasClass('show-menu')).toBe(false);
-           done();
-       }, 300);
+        setTimeout(function () {
+            expect(menu.hasClass('show-menu')).toBe(false);
+            done();
+        }, 250);
 
     });
 
-    it('should show input to rename column name when double click', inject(function($rootScope, $timeout) {
+    it('should show input to rename column name when double click', inject(function ($rootScope, $timeout) {
         //given
-        scope.column = {
-            'id': '0000',
-            'name': 'MostPopulousCity',
-            'quality': {
-                'empty': 5,
-                'invalid': 10,
-                'valid': 72
-            },
-            'type': 'string'
-        };
+        createElement();
 
-        createElement(scope);
         var headerTitle = element.find('.grid-header-title').eq(0);
-
-        var ctrl = element.controller('datagridHeader');
-
         expect(ctrl.isEditMode).toBeFalsy();
-        expect(ctrl.updateEnabled).toBeFalsy();
 
         //when
         headerTitle.dblclick();
@@ -122,296 +99,121 @@ describe('Dataset column header directive', function() {
 
         //then
         expect(ctrl.isEditMode).toBeTruthy();
+    }));
 
+    it('should select input text when edition mode is tuned on', inject(function ($rootScope, $timeout) {
+        //given
+        createElement();
+
+        var headerTitle = element.find('.grid-header-title').eq(0);
+
+        //when
+        headerTitle.dblclick();
+        $timeout.flush();
+
+        //then
         expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]);
         expect(window.getSelection().toString()).toBe('MostPopulousCity');
 
     }));
 
+    it('should switch from input to text on ESC keydown', inject(function ($timeout) {
+        //given
+        createElement();
 
-    it('should switch from input to text on  ESC keydown', function (done) {
+        ctrl.setEditMode(true);
 
+        var event = angular.element.Event('keydown');
+        event.keyCode = 27;
 
-        inject(function($timeout) {
+        //when
+        element.find('.grid-header-title-input').eq(0).trigger(event);
+        $timeout.flush();
 
-            //given
-            scope.column = {
-                'id': '0000',
-                'name': 'MostPopulousCity',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            };
+        //then
+        expect(ctrl.isEditMode).toBe(false);
+    }));
 
-            createElement(scope);
-            var headerTitle = element.find('.grid-header-title').eq(0);
+    it('should reset column name on ESC keydown', function () {
+        //given
+        createElement();
 
-            var ctrl = element.controller('datagridHeader');
+        ctrl.setEditMode(true);
+        ctrl.newName = 'toto';
 
-            expect(ctrl.isEditMode).toBeFalsy();
-            expect(ctrl.updateEnabled).toBeFalsy();
+        var event = angular.element.Event('keydown');
+        event.keyCode = 27;
 
-            //when
-            headerTitle.dblclick();
-            $timeout.flush();
+        //when
+        element.find('.grid-header-title-input').eq(0).trigger(event);
 
-            //then
-            expect(ctrl.isEditMode).toBeTruthy();
-            expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]);
-            expect(window.getSelection().toString()).toBe('MostPopulousCity');
-
-
-            //given
-            var event = angular.element.Event('keydown');
-            event.keyCode = 27;
-
-            //when
-            element.find('.grid-header-title-input').eq(0).trigger(event);
-            $timeout.flush();
-
-            //then
-            setTimeout(function() {
-                expect(ctrl.isEditMode).toBeFalsy();
-                expect(ctrl.updateEnabled).toBeFalsy();
-                done();
-            }, 100);
-
-        });
-
+        //then
+        expect(ctrl.newName).toBe('MostPopulousCity');
     });
 
+    it('should switch from input to text on ENTER event without changes', inject(function ($timeout) {
+        //given
+        createElement();
 
-    it('should switch from input to text on  ENTER keyup when no changes', function (done) {
+        ctrl.setEditMode(true);
 
-        inject(function($rootScope, $timeout) {
+        var event = angular.element.Event('keydown');
+        event.keyCode = 13;
 
-            //given
-            scope.column = {
-                'id': '0000',
-                'name': 'MostPopulousCity',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            };
+        //when
+        element.find('.grid-header-title-input').eq(0).trigger(event);
+        $timeout.flush();
 
-            createElement(scope);
-            var headerTitle = element.find('.grid-header-title').eq(0);
+        //then
+        expect(ctrl.isEditMode).toBe(false);
+    }));
 
-            var ctrl = element.controller('datagridHeader');
+    it('should submit update on ENTER with changes', function () {
+        //given
+        createElement();
 
-            expect(ctrl.isEditMode).toBeFalsy();
-            expect(ctrl.updateEnabled).toBeFalsy();
+        ctrl.setEditMode(true);
+        ctrl.newName = 'MostPopulousCityInTheWorld';
 
-            //when
-            headerTitle.dblclick();
-            $timeout.flush();
+        var event = angular.element.Event('keydown');
+        event.keyCode = 13;
 
-            //then
-            expect(ctrl.isEditMode).toBeTruthy();
-            expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]);
-            expect(window.getSelection().toString()).toBe('MostPopulousCity');
+        //when
+        element.find('.grid-header-title-input').eq(0).trigger(event);
 
-
-            //given
-            var event = angular.element.Event('keyup');
-            event.keyCode = 13;
-
-            //when
-            element.find('.grid-header-title-input').eq(0).trigger(event);
-            spyOn(ctrl, 'updateColumnName');
-
-            $timeout.flush();
-
-            //then
-            setTimeout(function() {
-                expect(ctrl.isEditMode).toBeFalsy();
-                expect(ctrl.updateEnabled).toBeFalsy();
-                expect(ctrl.updateColumnName).not.toHaveBeenCalled();
-                done();
-            }, 100);
-
-        });
-
+        //then
+        expect(ctrl.updateColumnName).toHaveBeenCalled();
     });
 
-    it('should submit update on  ENTER keyup when changes', function (done) {
+    it('should switch from input to text on BLUR event without changes', inject(function ($timeout) {
+        //given
+        createElement();
 
-        inject(function($rootScope, $timeout, PlaygroundService, $q) {
+        ctrl.setEditMode(true);
 
-            spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
+        var event = angular.element.Event('blur');
 
-            //given
-            scope.column = {
-                'id': '0000',
-                'name': 'MostPopulousCity',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            };
+        //when
+        element.find('.grid-header-title-input').eq(0).trigger(event);
+        $timeout.flush();
 
-            createElement(scope);
-            var headerTitle = element.find('.grid-header-title').eq(0);
+        //then
+        expect(ctrl.isEditMode).toBe(false);
+    }));
 
-            var ctrl = element.controller('datagridHeader');
+    it('should submit update on BLUR event with changes', function () {
+        //given
+        createElement();
 
-            expect(ctrl.isEditMode).toBeFalsy();
-            expect(ctrl.updateEnabled).toBeFalsy();
+        ctrl.setEditMode(true);
+        ctrl.newName = 'MostPopulousCityInTheWorld';
 
-            //when
-            headerTitle.dblclick();
-            $timeout.flush();
+        var event = angular.element.Event('blur');
 
-            //then
-            expect(ctrl.isEditMode).toBeTruthy();
-            expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]);
-            expect(window.getSelection().toString()).toBe('MostPopulousCity');
+        //when
+        element.find('.grid-header-title-input').eq(0).trigger(event);
 
-
-            //given
-            ctrl.newName='MostPopulousCityInTheWorld';
-
-            var event = angular.element.Event('keyup');
-            event.keyCode = 13;
-
-            //when
-            element.find('.grid-header-title-input').eq(0).trigger(event);
-            spyOn(ctrl, 'updateColumnName');
-
-            $rootScope.$digest();
-
-            //then
-            setTimeout(function() {
-                expect(ctrl.isEditMode).toBeFalsy();
-                expect(ctrl.updateEnabled).toBeFalsy();
-                expect(ctrl.oldName).toBe('MostPopulousCityInTheWorld');
-                done();
-            }, 1);
-
-        });
-
-    });
-
-
-    it('should switch from input to text on  BLUR event when no changes', function (done) {
-
-        inject(function($rootScope, $timeout) {
-
-            //given
-            scope.column = {
-                'id': '0000',
-                'name': 'MostPopulousCity',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            };
-
-            createElement(scope);
-            var headerTitle = element.find('.grid-header-title').eq(0);
-
-            var ctrl = element.controller('datagridHeader');
-
-            expect(ctrl.isEditMode).toBeFalsy();
-            expect(ctrl.updateEnabled).toBeFalsy();
-
-            //when
-            headerTitle.dblclick();
-            $timeout.flush();
-
-            //then
-            expect(ctrl.isEditMode).toBeTruthy();
-            expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]);
-            expect(window.getSelection().toString()).toBe('MostPopulousCity');
-
-
-            //given
-            var event = angular.element.Event('blur');
-
-            //when
-            element.find('.grid-header-title-input').eq(0).trigger(event);
-            spyOn(ctrl, 'updateColumnName');
-
-            $timeout.flush();
-
-            //then
-            setTimeout(function() {
-                expect(ctrl.isEditMode).toBeFalsy();
-                expect(ctrl.updateEnabled).toBeFalsy();
-                expect(ctrl.updateColumnName).not.toHaveBeenCalled();
-                done();
-            }, 100);
-
-        });
-
-    });
-
-    it('should submit update on  BLUR event when changes', function (done) {
-
-        inject(function($rootScope, $timeout, PlaygroundService, $q) {
-
-            spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
-
-            //given
-            scope.column = {
-                'id': '0000',
-                'name': 'MostPopulousCity',
-                'quality': {
-                    'empty': 5,
-                    'invalid': 10,
-                    'valid': 72
-                },
-                'type': 'string'
-            };
-
-            createElement(scope);
-            var headerTitle = element.find('.grid-header-title').eq(0);
-
-            var ctrl = element.controller('datagridHeader');
-
-            expect(ctrl.isEditMode).toBeFalsy();
-            expect(ctrl.updateEnabled).toBeFalsy();
-
-            //when
-            headerTitle.dblclick();
-            $timeout.flush();
-
-            //then
-            expect(ctrl.isEditMode).toBeTruthy();
-            expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]);
-            expect(window.getSelection().toString()).toBe('MostPopulousCity');
-
-
-            //given
-            ctrl.newName='MostPopulousCityInTheWorld';
-
-            var event = angular.element.Event('blur');
-
-            //when
-            element.find('.grid-header-title-input').eq(0).trigger(event);
-            spyOn(ctrl, 'updateColumnName');
-
-            $rootScope.$digest();
-
-            //then
-            setTimeout(function() {
-                expect(ctrl.isEditMode).toBeFalsy();
-                expect(ctrl.updateEnabled).toBeFalsy();
-                expect(ctrl.oldName).toBe('MostPopulousCityInTheWorld');
-                done();
-            }, 1);
-
-        });
-
+        //then
+        expect(ctrl.updateColumnName).toHaveBeenCalled();
     });
 });
