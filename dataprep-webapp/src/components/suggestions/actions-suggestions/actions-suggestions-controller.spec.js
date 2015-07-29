@@ -25,7 +25,7 @@ describe('Actions suggestions controller', function() {
 
         //then
         expect(ctrl.dynamicTransformation).toBe(null);
-        expect(ctrl.showHideModalContent).toBe(null);
+        expect(ctrl.showModalContent).toBe(null);
         expect(ctrl.dynamicFetchInProgress).toBe(false);
         expect(ctrl.showDynamicModal).toBe(false);
     }));
@@ -160,6 +160,7 @@ describe('Actions suggestions controller', function() {
             ctrl.checkDynamicResponse();
 
             //then
+            expect(ctrl.showModalContent).toBe(false);
             expect(ctrl.emptyParamsMsg).toEqual('NO_CLUSTERS_ACTION_MSG');
         }));
 
@@ -172,6 +173,7 @@ describe('Actions suggestions controller', function() {
             ctrl.checkDynamicResponse();
 
             //then
+            expect(ctrl.showModalContent).toBe(false);
             expect(ctrl.emptyParamsMsg).toEqual('NO_CHOICES_ACTION_MSG');
         }));
 
@@ -184,6 +186,7 @@ describe('Actions suggestions controller', function() {
             ctrl.checkDynamicResponse();
 
             //then
+            expect(ctrl.showModalContent).toBe(false);
             expect(ctrl.emptyParamsMsg).toEqual('NO_PARAMS_ACTION_MSG');
         }));
 
@@ -196,7 +199,7 @@ describe('Actions suggestions controller', function() {
             ctrl.checkDynamicResponse();
 
             //then
-            expect(ctrl.showHideModalContent).toBe(true);
+            expect(ctrl.showModalContent).toBe(true);
         }));
 
         it('should show dynamic parameters transformation in a modal', inject(function() {
@@ -208,7 +211,7 @@ describe('Actions suggestions controller', function() {
             ctrl.checkDynamicResponse();
 
             //then
-            expect(ctrl.showHideModalContent).toBe(true);
+            expect(ctrl.showModalContent).toBe(true);
         }));
 
         it('should show dynamic choices transformation in a modal', inject(function() {
@@ -220,7 +223,7 @@ describe('Actions suggestions controller', function() {
             ctrl.checkDynamicResponse();
 
             //then
-            expect(ctrl.showHideModalContent).toBe(true);
+            expect(ctrl.showModalContent).toBe(true);
         }));
     });
 });

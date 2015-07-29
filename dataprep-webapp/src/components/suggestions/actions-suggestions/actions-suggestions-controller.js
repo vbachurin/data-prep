@@ -55,25 +55,26 @@
 
         /**
          * @ngdoc property
-         * @name showHideModalContent
+         * @name showModalContent
          * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
          * @description show/hides the dynamic transformation or the alert message
          */
-        vm.showHideModalContent = null;
+        vm.showModalContent = null;
 
         /**
          * @ngdoc method
          * @name checkDynamicResponse
          * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
-         * @description [PRIVATE] sets the showHideModalContent and the emptyParamsMsg properties
+         * @description [PRIVATE] sets the showModalContent and the emptyParamsMsg properties
          */
-        vm.checkDynamicResponse = function showHideModalContent (){
+        vm.checkDynamicResponse = function showModalContent (){
             //transformation type :cluster
             if(vm.dynamicTransformation.cluster){
                 if(vm.dynamicTransformation.cluster.clusters.length){
-                    vm.showHideModalContent = true;
+                    vm.showModalContent = true;
                 }
                 else{
+                    vm.showModalContent = false;
                     vm.emptyParamsMsg = 'NO_CLUSTERS_ACTION_MSG';
                 }
             }
@@ -81,9 +82,10 @@
             //transformation type :simpleParams
             else if(vm.dynamicTransformation.parameters){
                 if(vm.dynamicTransformation.parameters.length){
-                    vm.showHideModalContent = true;
+                    vm.showModalContent = true;
                 }
                 else{
+                    vm.showModalContent = false;
                     vm.emptyParamsMsg = 'NO_CHOICES_ACTION_MSG';
                 }
             }
@@ -91,9 +93,10 @@
             //transformation type :choice
             else if(vm.dynamicTransformation.items){
                 if(vm.dynamicTransformation.items.length){
-                    vm.showHideModalContent = true;
+                    vm.showModalContent = true;
                 }
                 else{
+                    vm.showModalContent = false;
                     vm.emptyParamsMsg = 'NO_PARAMS_ACTION_MSG';
                 }
             }

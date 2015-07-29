@@ -55,7 +55,7 @@
                   close-button="true"
                   ng-if="actionsSuggestionsCtrl.showDynamicModal">
 
-        <div ng-if="actionsSuggestionsCtrl.showHideModalContent">
+        <div ng-if="actionsSuggestionsCtrl.showModalContent">
             <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
             <div class="modal-subtitle">{{ actionsSuggestionsCtrl.dynamicTransformation.description }}</div>
 
@@ -65,7 +65,7 @@
             <transform-params transformation="actionsSuggestionsCtrl.dynamicTransformation"
                               on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation, actionsSuggestionsCtrl.dynamicScope)(params)"></transform-params>
         </div>
-        <div ng-if="!actionsSuggestionsCtrl.showHideModalContent">
+        <div ng-if="!actionsSuggestionsCtrl.showModalContent">
             <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
 
             <div class="modal-subtitle">{{ actionsSuggestionsCtrl.emptyParamsMsg | translate }}</div>
