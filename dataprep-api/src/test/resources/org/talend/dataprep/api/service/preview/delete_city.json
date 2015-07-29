@@ -4,7 +4,8 @@
       "action": "delete_on_value",
       "parameters": {
         "column_id": "0006",
-        "value": "Gotham city"
+        "value": "Gotham city",
+        "scope": "column"
       }
     }
   ]

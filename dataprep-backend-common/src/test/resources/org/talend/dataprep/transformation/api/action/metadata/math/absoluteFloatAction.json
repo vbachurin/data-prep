@@ -3,7 +3,8 @@
     {
       "action": "absolute_float",
       "parameters": {
-        "column_id": "float_column"
+        "column_id": "float_column",
+        "scope": "column"
       }
     }
   ]

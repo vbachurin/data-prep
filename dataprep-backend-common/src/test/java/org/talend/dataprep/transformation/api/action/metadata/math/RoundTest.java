@@ -20,18 +20,18 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
 /**
  * Test class for Round action. Creates one consumer, and test it.
- * 
+ *
  * @see Round
  */
 public class RoundTest {
@@ -40,7 +40,7 @@ public class RoundTest {
     private Round roundAction;
 
     /** The consumer out of the consumer. */
-    private BiConsumer<DataSetRow, TransformationContext> consumer;
+    private DataSetRowAction consumer;
 
     /**
      * Constructor.
@@ -64,7 +64,7 @@ public class RoundTest {
         values.put("aNumber", input);
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertEquals(expected, dsr.get("aNumber"));
     }
 
@@ -98,16 +98,16 @@ public class RoundTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(roundAction.accept(getColumn(Type.NUMERIC)));
-        assertTrue(roundAction.accept(getColumn(Type.INTEGER)));
-        assertTrue(roundAction.accept(getColumn(Type.DOUBLE)));
-        assertTrue(roundAction.accept(getColumn(Type.FLOAT)));
+        assertTrue(roundAction.acceptColumn(getColumn(Type.NUMERIC)));
+        assertTrue(roundAction.acceptColumn(getColumn(Type.INTEGER)));
+        assertTrue(roundAction.acceptColumn(getColumn(Type.DOUBLE)));
+        assertTrue(roundAction.acceptColumn(getColumn(Type.FLOAT)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(roundAction.accept(getColumn(Type.STRING)));
-        assertFalse(roundAction.accept(getColumn(Type.DATE)));
-        assertFalse(roundAction.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(roundAction.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(roundAction.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(roundAction.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 }

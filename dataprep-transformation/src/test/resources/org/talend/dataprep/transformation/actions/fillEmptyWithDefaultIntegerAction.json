@@ -1,0 +1,12 @@
+{
+  "actions": [
+    {
+      "action": "fillemptywithdefaultinteger",
+      "parameters": {
+        "column_id": "nbCommands",
+        "default_value": 5,
+        "scope": "column"
+      }
+    }
+  ]
+}

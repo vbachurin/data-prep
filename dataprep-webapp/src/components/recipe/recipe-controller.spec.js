@@ -92,7 +92,7 @@ describe('Recipe controller', function() {
             },
             actionParameters: {
                 action: 'cut',
-                parameters: {pattern: '.', column_name: 'state'}
+                parameters: {pattern: '.', column_name: 'state', column_id: '0001', scope: 'column'}
             }
         };
         var parameters = {pattern: '-'};
@@ -101,7 +101,7 @@ describe('Recipe controller', function() {
         ctrl.updateStep(step, parameters);
 
         //then
-        expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, parameters);
+        expect(PlaygroundService.updateStep).toHaveBeenCalledWith(step, {pattern: '-', column_name: 'state', column_id: '0001', scope: 'column'});
     }));
 
     it('should hide parameters modal on update step when parameters are different', inject(function($rootScope) {
@@ -217,7 +217,7 @@ describe('Recipe controller', function() {
             },
             actionParameters: {
                 action: 'cut',
-                parameters: {pattern: '.', column_id: '0', column_name: 'state'}
+                parameters: {pattern: '.', column_id: '0', column_name: 'state', scope: 'column'}
             }
         };
         var parameters = {pattern: '--'};
@@ -228,6 +228,6 @@ describe('Recipe controller', function() {
         $rootScope.$digest();
 
         //then
-        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(lastActiveStep, step, {pattern: '--', column_id: '0', column_name: 'state'});
+        expect(PreviewService.getPreviewUpdateRecords).toHaveBeenCalledWith(lastActiveStep, step, {pattern: '--', column_id: '0', column_name: 'state', scope: 'column'});
     }));
 });

@@ -1,0 +1,13 @@
+{
+  "actions": [
+    {
+      "action": "replace_on_value",
+      "parameters": {
+        "column_id": "lastname",
+        "cell_value": "Mitchell",
+        "replace_value": "Jimmy",
+        "scope": "column"
+      }
+    }
+  ]
+}

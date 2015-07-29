@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 /**
  * Unit test for the TDPException

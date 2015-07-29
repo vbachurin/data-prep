@@ -55,50 +55,50 @@
 
         /**
          * @ngdoc property
-         * @name showHideModalContent
+         * @name showModalContent
          * @propertyOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
          * @description show/hides the dynamic transformation or the alert message
          */
-        vm.showHideModalContent = null;
+        vm.showModalContent = null;
 
         /**
          * @ngdoc method
          * @name checkDynamicResponse
          * @methodOf data-prep.actions-suggestions.controller:ActionsSuggestionsCtrl
-         * @description [PRIVATE] sets the showHideModalContent and the emptyParamsMsg properties
+         * @description [PRIVATE] sets the showModalContent and the emptyParamsMsg properties
          */
-        vm.checkDynamicResponse = function showHideModalContent (){
+        vm.checkDynamicResponse = function showModalContent (){
             //transformation type :cluster
             if(vm.dynamicTransformation.cluster){
                 if(vm.dynamicTransformation.cluster.clusters.length){
-                    vm.showHideModalContent = true;
+                    vm.showModalContent = true;
                 }
                 else{
+                    vm.showModalContent = false;
                     vm.emptyParamsMsg = 'NO_CLUSTERS_ACTION_MSG';
                 }
-                return;
             }
 
             //transformation type :simpleParams
-            if(vm.dynamicTransformation.parameters){
+            else if(vm.dynamicTransformation.parameters){
                 if(vm.dynamicTransformation.parameters.length){
-                    vm.showHideModalContent = true;
+                    vm.showModalContent = true;
                 }
                 else{
+                    vm.showModalContent = false;
                     vm.emptyParamsMsg = 'NO_CHOICES_ACTION_MSG';
                 }
-                return;
             }
 
             //transformation type :choice
-            if(vm.dynamicTransformation.items){
+            else if(vm.dynamicTransformation.items){
                 if(vm.dynamicTransformation.items.length){
-                    vm.showHideModalContent = true;
+                    vm.showModalContent = true;
                 }
                 else{
+                    vm.showModalContent = false;
                     vm.emptyParamsMsg = 'NO_PARAMS_ACTION_MSG';
                 }
-                return;
             }
         };
 
@@ -112,9 +112,10 @@
             <li>Static transformation : append the new step in the current preparation</li>
          </ul>
          */
-        vm.select = function select(transfo) {
+        vm.select = function select(transfo, transfoScope) {
             if(transfo.dynamic) {
                 vm.dynamicTransformation = transfo;
+                vm.dynamicScope = transfoScope;
                 vm.dynamicFetchInProgress = true;
                 vm.showDynamicModal = true;
 
@@ -125,7 +126,7 @@
                 });
             }
             else {
-                vm.transformClosure(transfo)();
+                vm.transformClosure(transfo, transfoScope)();
             }
         };
 
@@ -136,8 +137,10 @@
          * @description Transformation application closure. It take the transformation to build the closure.
          * The closure then take the parameters and append the new step in the current preparation
          */
-        vm.transformClosure = function transform(transfo) {
+        vm.transformClosure = function transform(transfo, transfoScope) {
             return function(params) {
+                params = params || {};
+                params.scope = transfoScope;
                 PlaygroundService.appendStep(transfo.name, vm.column, params)
                     .then(function() {
                         vm.showDynamicModal = false;
@@ -170,7 +173,7 @@
      * This is bound to {@link data-prep.services.transformation:ColumnSuggestionService ColumnSuggestionService}.transformations
      */
     Object.defineProperty(ActionsSuggestionsCtrl.prototype,
-        'suggestions', {
+        'columnSuggestions', {
             enumerable: true,
             configurable: false,
             get: function () {

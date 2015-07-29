@@ -3,25 +3,20 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 import javax.annotation.Nonnull;
-
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-
-import java.io.IOException;
 import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,12 +26,13 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+import static org.talend.dataprep.api.type.Type.INTEGER;
+
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
-public class ComputeTimeSince extends SingleColumnAction {
+public class ComputeTimeSince extends AbstractActionMetadata implements IColumnAction {
 
     /**
      * The action name.
@@ -59,16 +55,19 @@ public class ComputeTimeSince extends SingleColumnAction {
     public static final String TIME_UNIT_PARAMETER = "time_unit"; //$NON-NLS-1$
 
     /**
-     * Name of the date pattern.
+     * This class' logger.
      */
-    protected static final String PATTERN = "date_pattern"; //$NON-NLS-1$
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
 
     /**
-     * Key to store 'now' in context at the begining of the action.
+     * Temporal unit to use. This must be set before transformation
      */
-    protected static final String NOW = "now"; //$NON-NLS-1$
+    private TemporalUnit unit;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
+    /**
+     * Actual time. This must be set before transformation
+     */
+    private Temporal now;
 
     /**
      * @see ActionMetadata#getName()
@@ -96,107 +95,80 @@ public class ComputeTimeSince extends SingleColumnAction {
                 new Item.Value(ChronoUnit.YEARS.name(), true), //
                 new Item.Value(ChronoUnit.MONTHS.name()), //
                 new Item.Value(ChronoUnit.DAYS.name()), //
-                new Item.Value(ChronoUnit.HOURS.name())};
+                new Item.Value(HOURS.name())};
         return new Item[]{new Item(TIME_UNIT_PARAMETER, "categ", values)};
     }
 
-    /**
-     * @see ActionMetadata#create(Map)
-     */
     @Override
-    public Action create(Map<String, String> parameters) {
-
-        TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
-
-        return builder().withRow((row, context) -> {
-            String columnId = getColumnIdParameter(parameters);
-            // sadly unable to do that outside of the closure since the context is not available
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern((String) context.get(PATTERN));
-
-            String value = row.get(columnId);
-
-            // parse the date
-            TemporalAccessor temporalAccessor = null;
-            try {
-                temporalAccessor = dtf.parse(value, new ParsePosition(0));
-            } catch (DateTimeParseException e) {
-                // Nothing to do: in this case, temporalAccessor is left null
-                LOGGER.debug("Unable to parse date {}.", value, e);
-            }
-
-            Temporal now = (Temporal) context.get(NOW);
-            Temporal valueAsDate = (unit == ChronoUnit.HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor));
-
-            long newValue = unit.between(valueAsDate, now);
-
-            row.set(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase(), newValue + "");
-
-        }).withMetadata((rowMetadata, context) -> {
-
-            String columnId = parameters.get(COLUMN_ID);
-
-            JsonFactory jsonFactory = new JsonFactory();
-            ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
-            List<String> columnIds = new ArrayList<>(rowMetadata.size());
-            rowMetadata.getColumns().forEach(columnMetadata -> columnIds.add(columnMetadata.getId()));
-            if (!columnIds.contains(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase())) {
-
-                // go through the columns to be able to 'insert' the new columns just after the one needed.
-                for (int i = 0; i < rowMetadata.getColumns().size(); i++) {
-                    ColumnMetadata column = rowMetadata.getColumns().get(i);
-                    if (!StringUtils.equals(column.getId(), columnId)) {
-                        continue;
-                    }
-
-                    // store the current pattern in the context
-                    JsonNode rootNode = getStatisticsNode(mapper, column);
-
-                    JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-                    String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
-                    context.put(PATTERN, datePattern);
-
-                    Temporal now = (unit == ChronoUnit.HOURS ? LocalDateTime.now() : LocalDate.now());
-                    context.put(NOW, now);
-
-                    // create the new column
-                    ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
-                            .column() //
-                            .computedId(PREFIX + columnId + SUFFIX + unit.toString().toLowerCase()) //
-                            .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
-                            .type(Type.INTEGER) //
-                            .empty(column.getQuality().getEmpty()) //
-                            .invalid(column.getQuality().getInvalid()) //
-                            .valid(column.getQuality().getValid()) //
-                            .headerSize(column.getHeaderSize()) //
-                            .build();
-                    // add the new column after the current one
-                    rowMetadata.getColumns().add(i + 1, newColumnMetadata);
-                }
-            }
-        }).build();
+    protected void beforeApply(Map<String, String> parameters) {
+        unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
+        now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
     }
 
-    /**
-     * Return the json statistics node.
-     *
-     * @param mapper jackson object mapper.
-     * @param column the column metadata to work on.
-     * @return the json statistics node.
-     */
-    private JsonNode getStatisticsNode(ObjectMapper mapper, ColumnMetadata column) {
+    @Override
+    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+        final ColumnMetadata column = row.getRowMetadata().getById(columnId);
+
+        // create the new column and add the new column after the current one
+        final ColumnMetadata newColumnMetadata = createNewColumn(column);
+        row.getRowMetadata().insertAfter(columnId, newColumnMetadata);
+
+        // parse the date
+        final DateTimeFormatter dtf = getCurrentDatePatternFormatter(column);
+        final String value = row.get(columnId);
         try {
-            return mapper.readTree(column.getStatistics());
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            final TemporalAccessor temporalAccessor = dtf.parse(value, new ParsePosition(0));
+            final Temporal valueAsDate = (unit == HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor));
+            final long newValue = unit.between(valueAsDate, now);
+            row.set(newColumnMetadata.getId(), newValue + "");
+        } catch (DateTimeParseException e) {
+            // Nothing to do: in this case, temporalAccessor is left null
+            LOGGER.debug("Unable to parse date {}.", value, e);
+            row.set(newColumnMetadata.getId(), "");
         }
     }
 
     /**
-     * @see ActionMetadata#accept(ColumnMetadata)
+     * Create a new column to host the computed time
+     *
+     * @param column the original column metadata
+     * @return the new column metadata
+     */
+    private ColumnMetadata createNewColumn(ColumnMetadata column) {
+        return ColumnMetadata.Builder //
+                .column() //
+                .copy(column)//
+                .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
+                .computedId(null) // remove the id
+                .statistics("{}") // clear the statistics
+                .type(INTEGER)//
+                .build();
+    }
+
+    /**
+     * Get the current date pattern
+     *
+     * @param column the column metadata
+     * @return a new date formatter that fit the current pattern
+     */
+    private DateTimeFormatter getCurrentDatePatternFormatter(final ColumnMetadata column) {
+        //json reader to parse statistics as JSON format
+        final JsonFactory jsonFactory = new JsonFactory();
+        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
+
+        //get date pattern from statistics
+        final JsonNode rootNode = getStatisticsNode(mapper, column);
+        final JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
+        final String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
+
+        return DateTimeFormatter.ofPattern(datePattern);
+    }
+
+    /**
+     * @see ActionMetadata#acceptColumn(ColumnMetadata)
      */
     @Override
-    public boolean accept(ColumnMetadata column) {
+    public boolean acceptColumn(ColumnMetadata column) {
         return Type.DATE.equals(Type.get(column.getType()));
     }
 }

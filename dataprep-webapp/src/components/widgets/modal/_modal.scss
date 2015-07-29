@@ -202,7 +202,7 @@
   .modal-state:checked + .modal-window {
     visibility: visible;
     opacity: 1;
-    @include animation(fadeIn 0.5s);
+    @include animation(fadeIn 0.25s);
   }
 
   .modal-state:checked + .modal-window .modal-inner {
@@ -214,7 +214,6 @@
       padding: 0;
 
       .modal-inner {
-        background: transparent;
         overflow: auto;
 
         width: 100%;
@@ -230,7 +229,6 @@
         width: $navigation-height;
         height: $navigation-height;
         line-height: $navigation-height - 1px;
-        //border: 1px solid #000000;
         cursor: pointer;
 
         position: absolute;
@@ -295,10 +293,6 @@
               display: inline-block;
               margin: 0;
               width: auto;
-
-              &.discret-input {
-                background: transparent;
-              }
             }
           }
         }

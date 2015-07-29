@@ -1,19 +1,14 @@
 package org.talend.dataprep.api.dataset.json;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.*;
 import org.talend.dataprep.api.dataset.location.HttpLocation;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.schema.CSVFormatGuess;
 
@@ -182,4 +177,36 @@ public class DataSetJSONTest {
         assertThat(dataSet.getMetadata(), nullValue());
         assertThat(dataSet.getColumns().size(), is(0));
     }
+
+    @Test
+    public void should_iterate_row_with_metadata() throws IOException {
+        // given
+        String[] columnNames = new String[] {"id", "firstname", "lastname", "state", "registration", "city", "birth", "nbCommands", "avgAmount"};
+
+        final InputStream input = DataSetJSONTest.class.getResourceAsStream("dataSetRowMetadata.json");
+        final ObjectMapper mapper = builder.build();
+        try (JsonParser parser = mapper.getFactory().createParser(input)) {
+            final DataSet dataSet = mapper.reader(DataSet.class).readValue(parser);
+            final Iterator<DataSetRow> iterator = dataSet.getRecords().iterator();
+
+            List<ColumnMetadata> actualColumns = new ArrayList<>();
+            int recordCount = 0;
+            while (iterator.hasNext()) {
+                final DataSetRow next = iterator.next();
+                actualColumns = next.getRowMetadata().getColumns();
+                assertThat(actualColumns, not(empty()));
+                recordCount++;
+            }
+
+            // then
+            assertEquals(10, recordCount);
+            for (int i = 0; i < actualColumns.size(); i++) {
+                final ColumnMetadata column = actualColumns.get(i);
+                assertEquals(columnNames[i], column.getId());
+            }
+        } catch (Exception e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        }
+    }
+
 }

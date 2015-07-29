@@ -12,24 +12,22 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
-
 /**
- * This will compute the absolute value for numerical columns
- *
+ * This will compute the absolute value for numerical columns.
+ * This action is faster than the AbsoluteInt one on columns with more float values
  */
 @Component(AbsoluteFloat.ACTION_BEAN_PREFIX + AbsoluteFloat.ABSOLUTE_FLOAT_ACTION_NAME)
-public class AbsoluteFloat extends SingleColumnAction {
+public class AbsoluteFloat extends AbstractAbsolute implements IColumnAction {
 
     public static final String ABSOLUTE_FLOAT_ACTION_NAME = "absolute_float"; //$NON-NLS-1$
 
@@ -44,44 +42,27 @@ public class AbsoluteFloat extends SingleColumnAction {
     }
 
     @Override
-    public Action create(Map<String, String> parameters) {
-        return builder().withRow((row, context) -> {
-            String columnName = parameters.get(COLUMN_ID);
-            String value = row.get(columnName);
-            String absValueStr = null;
-            if (value != null) {
-                // try float first
-                try {
-                    double doubleValue = Double.parseDouble(value);
-                    double absValue = Math.abs(doubleValue);
-                    if (absValue == (long) absValue) {// this will prevent having .0 for longs.
-                        absValueStr = String.format("%d", (long) absValue); //$NON-NLS-1$
-                    } else {
-                        absValueStr = String.format("%s", absValue); //$NON-NLS-1$
-                    }
-                } catch (NumberFormatException nfe2) {
-                    // try long
-                    try {
-                        long longValue = Long.parseLong(value);
-                        absValueStr = Long.toString(Math.abs(longValue));
-                    } catch (NumberFormatException nfe1) {
-                        // the value is not a long nor a float so ignores it
-                        // and let absValue to be null.
-                    }
-                }
-                if (absValueStr != null) {
-                    row.set(columnName, absValueStr);
-                }// else not a int or a float to do nothing.
-            }// else no value set for this column so do nothing
-        }).build();
-    }
-
-    /**
-     * @see ActionMetadata#accept(ColumnMetadata)
-     */
-    @Override
-    public boolean accept(ColumnMetadata column) {
+    public boolean acceptColumn(ColumnMetadata column) {
         return Type.FLOAT.equals(Type.get(column.getType())) || Type.DOUBLE.equals(Type.get(column.getType()));
     }
 
+    @Override
+    protected void beforeApply(Map<String, String> parameters) {
+    }
+
+    @Override
+    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+        final String value = row.get(columnId);
+        if (value == null) {
+            return;
+        }
+
+        String absValueStr = executeOnFloat(value);
+        if (absValueStr == null) {
+            absValueStr = executeOnLong(value);
+        }
+        if (absValueStr != null) {
+            row.set(columnId, absValueStr);
+        }
+    }
 }

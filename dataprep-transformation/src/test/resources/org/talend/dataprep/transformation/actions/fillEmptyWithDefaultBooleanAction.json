@@ -1,0 +1,12 @@
+{
+  "actions": [
+    {
+      "action": "fillemptywithdefaultboolean",
+      "parameters": {
+        "column_id": "tagada",
+        "default_value": "True",
+        "scope": "column"
+      }
+    }
+  ]
+}

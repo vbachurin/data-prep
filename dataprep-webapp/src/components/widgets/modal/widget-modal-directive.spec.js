@@ -396,7 +396,7 @@ describe('Dropdown directive', function () {
             expect(document.activeElement.className).toBe('modal-inner');
         });
 
-        it('should focus on second input on show coz first has "no-focus" class', function () {
+        it('should focus on second input on show and select the text coz first has "no-focus" class', inject(function($timeout) {
             //given
             scope.fullscreen = false;
             scope.state = false;
@@ -405,15 +405,21 @@ describe('Dropdown directive', function () {
 
             var body = angular.element('body');
             body.append(element);
+
+            element.find('#secondInput').val('city');
+
             expect(document.activeElement).not.toBe(element);
+            expect(window.getSelection().toString()).toBeFalsy();
 
             //when
             scope.state = true;
             scope.$digest();
+            $timeout.flush();
 
             //then
             expect(document.activeElement.id).toBe('secondInput');
-        });
+            expect(window.getSelection().toString()).toBe('city');
+        }));
 
         it('should focus on next last shown modal on focused modal close', function () {
             //given : init

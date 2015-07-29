@@ -20,18 +20,18 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
 /**
  * Test class for Floor action. Creates one consumer, and test it.
- * 
+ *
  * @see Floor
  */
 public class FloorTest {
@@ -40,7 +40,7 @@ public class FloorTest {
     private Floor action;
 
     /** The consumer out of the consumer. */
-    private BiConsumer<DataSetRow, TransformationContext> consumer;
+    private DataSetRowAction consumer;
 
     /**
      * Constructor.
@@ -64,7 +64,7 @@ public class FloorTest {
         values.put("aNumber", input);
         DataSetRow dsr = new DataSetRow(values);
 
-        consumer.accept(dsr, new TransformationContext());
+        dsr = consumer.apply(dsr, new TransformationContext());
         assertEquals(expected, dsr.get("aNumber"));
     }
 
@@ -98,16 +98,16 @@ public class FloorTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.accept(getColumn(Type.NUMERIC)));
-        assertTrue(action.accept(getColumn(Type.INTEGER)));
-        assertTrue(action.accept(getColumn(Type.DOUBLE)));
-        assertTrue(action.accept(getColumn(Type.FLOAT)));
+        assertTrue(action.acceptColumn(getColumn(Type.NUMERIC)));
+        assertTrue(action.acceptColumn(getColumn(Type.INTEGER)));
+        assertTrue(action.acceptColumn(getColumn(Type.DOUBLE)));
+        assertTrue(action.acceptColumn(getColumn(Type.FLOAT)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.accept(getColumn(Type.STRING)));
-        assertFalse(action.accept(getColumn(Type.DATE)));
-        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(action.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 }

@@ -20,7 +20,6 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -28,6 +27,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the absolute actions.
- * 
+ *
  * @see AbsoluteFloat
  * @see AbsoluteFloat
  */
@@ -50,9 +50,9 @@ public class AbsoluteTest {
 
     private AbsoluteInt absIntAction;
 
-    private BiConsumer<DataSetRow, TransformationContext> absFloatConsumer;
+    private DataSetRowAction absFloatConsumer;
 
-    private BiConsumer<DataSetRow, TransformationContext> absIntConsumer;
+    private DataSetRowAction absIntConsumer;
 
     @Test
     public void testAdaptFloat() throws Exception {
@@ -100,7 +100,7 @@ public class AbsoluteTest {
         values.put(FLOAT_COLUMN, "5.42"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absFloatConsumer.accept(dsr, new TransformationContext());
+        dsr = absFloatConsumer.apply(dsr, new TransformationContext());
         assertEquals("5.42", dsr.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -110,7 +110,7 @@ public class AbsoluteTest {
         values.put(INT_COLUMN, "5.42"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absIntConsumer.accept(dsr, new TransformationContext());
+        dsr = absIntConsumer.apply(dsr, new TransformationContext());
         assertEquals("5.42", dsr.get(INT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -120,7 +120,7 @@ public class AbsoluteTest {
         values.put(FLOAT_COLUMN, "-5.42"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absFloatConsumer.accept(dsr, new TransformationContext());
+        dsr = absFloatConsumer.apply(dsr, new TransformationContext());
         assertEquals("5.42", dsr.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -130,7 +130,7 @@ public class AbsoluteTest {
         values.put(INT_COLUMN, "-5.42"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absIntConsumer.accept(dsr, new TransformationContext());
+        dsr = absIntConsumer.apply(dsr, new TransformationContext());
         assertEquals("5.42", dsr.get(INT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -140,7 +140,7 @@ public class AbsoluteTest {
         values.put(FLOAT_COLUMN, "42"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absFloatConsumer.accept(dsr, new TransformationContext());
+        dsr = absFloatConsumer.apply(dsr, new TransformationContext());
         assertEquals("42", dsr.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -150,7 +150,7 @@ public class AbsoluteTest {
         values.put(INT_COLUMN, "42"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absIntConsumer.accept(dsr, new TransformationContext());
+        dsr = absIntConsumer.apply(dsr, new TransformationContext());
         assertEquals("42", dsr.get(INT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -160,7 +160,7 @@ public class AbsoluteTest {
         values.put(FLOAT_COLUMN, "-542"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absFloatConsumer.accept(dsr, new TransformationContext());
+        dsr = absFloatConsumer.apply(dsr, new TransformationContext());
         assertEquals("542", dsr.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -170,7 +170,7 @@ public class AbsoluteTest {
         values.put(INT_COLUMN, "-542"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absIntConsumer.accept(dsr, new TransformationContext());
+        dsr = absIntConsumer.apply(dsr, new TransformationContext());
         assertEquals("542", dsr.get(INT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -180,7 +180,7 @@ public class AbsoluteTest {
         values.put(FLOAT_COLUMN, "-0"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absFloatConsumer.accept(dsr, new TransformationContext());
+        dsr = absFloatConsumer.apply(dsr, new TransformationContext());
         assertEquals("0", dsr.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -190,7 +190,7 @@ public class AbsoluteTest {
         values.put(INT_COLUMN, "-0"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absIntConsumer.accept(dsr, new TransformationContext());
+        dsr = absIntConsumer.apply(dsr, new TransformationContext());
         assertEquals("0", dsr.get(INT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -200,7 +200,7 @@ public class AbsoluteTest {
         values.put(FLOAT_COLUMN, ""); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absFloatConsumer.accept(dsr, new TransformationContext());
+        dsr = absFloatConsumer.apply(dsr, new TransformationContext());
         assertEquals("", dsr.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -210,7 +210,7 @@ public class AbsoluteTest {
         values.put(INT_COLUMN, ""); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absIntConsumer.accept(dsr, new TransformationContext());
+        dsr = absIntConsumer.apply(dsr, new TransformationContext());
         assertEquals("", dsr.get(INT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -220,7 +220,7 @@ public class AbsoluteTest {
         values.put(FLOAT_COLUMN, "foobar"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absFloatConsumer.accept(dsr, new TransformationContext());
+        dsr = absFloatConsumer.apply(dsr, new TransformationContext());
         assertEquals("foobar", dsr.get(FLOAT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -230,7 +230,7 @@ public class AbsoluteTest {
         values.put(INT_COLUMN, "foobar"); //$NON-NLS-1$
         DataSetRow dsr = new DataSetRow(values);
 
-        absIntConsumer.accept(dsr, new TransformationContext());
+        dsr = absIntConsumer.apply(dsr, new TransformationContext());
         assertEquals("foobar", dsr.get(INT_COLUMN)); //$NON-NLS-1$
     }
 
@@ -240,7 +240,7 @@ public class AbsoluteTest {
         values.put("wrong_column", "-12"); //$NON-NLS-1$ //$NON-NLS-2$
         DataSetRow dsr = new DataSetRow(values);
 
-        absFloatConsumer.accept(dsr, new TransformationContext());
+        dsr = absFloatConsumer.apply(dsr, new TransformationContext());
         assertEquals("-12", dsr.get("wrong_column")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
@@ -250,31 +250,31 @@ public class AbsoluteTest {
         values.put("wrong_column", "-13"); //$NON-NLS-1$ //$NON-NLS-2$
         DataSetRow dsr = new DataSetRow(values);
 
-        absIntConsumer.accept(dsr, new TransformationContext());
+        dsr = absIntConsumer.apply(dsr, new TransformationContext());
         assertEquals("-13", dsr.get("wrong_column")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Test
     public void should_accept_column() {
-        assertTrue(absIntAction.accept(getColumn(Type.INTEGER)));
-        assertTrue(absFloatAction.accept(getColumn(Type.FLOAT)));
-        assertTrue(absFloatAction.accept(getColumn(Type.DOUBLE)));
+        assertTrue(absIntAction.acceptColumn(getColumn(Type.INTEGER)));
+        assertTrue(absFloatAction.acceptColumn(getColumn(Type.FLOAT)));
+        assertTrue(absFloatAction.acceptColumn(getColumn(Type.DOUBLE)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(absIntAction.accept(getColumn(Type.NUMERIC)));
-        assertFalse(absIntAction.accept(getColumn(Type.DOUBLE)));
-        assertFalse(absIntAction.accept(getColumn(Type.FLOAT)));
-        assertFalse(absIntAction.accept(getColumn(Type.STRING)));
-        assertFalse(absIntAction.accept(getColumn(Type.DATE)));
-        assertFalse(absIntAction.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.DOUBLE)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.FLOAT)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(absIntAction.acceptColumn(getColumn(Type.BOOLEAN)));
 
-        assertFalse(absFloatAction.accept(getColumn(Type.NUMERIC)));
-        assertFalse(absFloatAction.accept(getColumn(Type.INTEGER)));
-        assertFalse(absFloatAction.accept(getColumn(Type.STRING)));
-        assertFalse(absFloatAction.accept(getColumn(Type.DATE)));
-        assertFalse(absFloatAction.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.INTEGER)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(absFloatAction.acceptColumn(getColumn(Type.BOOLEAN)));
 
     }
 }

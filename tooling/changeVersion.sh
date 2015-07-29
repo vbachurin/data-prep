@@ -24,7 +24,7 @@ changeVersionInFile () {
   cp /tmp/tmp_file $1
 }
 
-changeVersionInFile dataprep-webapp/src/index.html
+changeVersionInFile dataprep-webapp/src/components/navbar/navbar.html
 changeVersionInFile dataprep-platform/src/main/resources/fig_backend.yml
 changeVersionInFile dataprep-platform/src/main/resources/fig_backend_data.yml
 changeVersionInFile dataprep-platform/src/main/resources/fig_backend_data_web.yml

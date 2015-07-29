@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.error.ErrorList;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.ErrorCode;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.exception.error.ErrorCode;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 
@@ -85,7 +85,6 @@ public class CommonAPI extends APIService {
         generator.flush();
     }
 
-
     /**
      * Describe the supported Types
      *
@@ -97,7 +96,6 @@ public class CommonAPI extends APIService {
         LOG.debug("Listing supported types");
         return Type.values();
     }
-
 
     /**
      * Write the given error codes to the generator.

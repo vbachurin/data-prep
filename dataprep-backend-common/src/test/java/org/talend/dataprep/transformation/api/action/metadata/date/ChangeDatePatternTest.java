@@ -6,10 +6,10 @@ import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -18,6 +18,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 
@@ -27,16 +28,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit test for the ChangeDatePattern action.
- * 
+ *
  * @see ChangeDatePattern
  */
 public class ChangeDatePatternTest {
 
     /** The row consumer to test. */
-    private BiConsumer<DataSetRow, TransformationContext> rowClosure;
-
-    /** The metadata consumer to test. */
-    private BiConsumer<RowMetadata, TransformationContext> metadataClosure;
+    private DataSetRowAction rowClosure;
 
     /** The action to test. */
     private ChangeDatePattern action;
@@ -53,7 +51,11 @@ public class ChangeDatePatternTest {
 
         final Action action = this.action.create(parameters);
         rowClosure = action.getRowAction();
-        metadataClosure = action.getMetadataAction();
+    }
+
+    private static void setStatistics(DataSetRow row, String columnId, InputStream statisticsContent) throws IOException {
+        String statistics = IOUtils.toString(statisticsContent);
+        row.getRowMetadata().getById(columnId).setStatistics(statistics);
     }
 
     @Test
@@ -71,7 +73,7 @@ public class ChangeDatePatternTest {
     @Test(expected = IllegalArgumentException.class)
     public void should_check_new_pattern_parameter_when_dealing_with_row_metadata() {
         Map<String, String> missingParameters = new HashMap<>();
-        missingParameters.put(ChangeDatePattern.COLUMN_ID, "0000");
+        missingParameters.put("column_id", "0000");
         missingParameters.put(ChangeDatePattern.NEW_PATTERN, "toto");
         action.create(missingParameters);
     }
@@ -79,18 +81,16 @@ public class ChangeDatePatternTest {
     @Test
     public void should_change_column_metadata() throws IOException {
         // given
-        ColumnMetadata column = ColumnMetadata.Builder.column().id(1).name("due_date").type(Type.DATE).build();
+        String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics_yyyy-MM-dd.json"));
+        ColumnMetadata column = ColumnMetadata.Builder.column().id(1).name("due_date").statistics(statistics).type(Type.DATE)
+                .build();
         RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(column));
-        String statistics = IOUtils.toString(ChangeDatePatternTest.class.getResourceAsStream("statistics.json"));
-        column.setStatistics(statistics);
 
         // when
         TransformationContext context = new TransformationContext();
-        metadataClosure.accept(rowMetadata, context);
+        DataSetRow actual = rowClosure.apply(new DataSetRow(rowMetadata), context);
 
         // then
-        assertEquals("yyyy-MM-dd", context.get(ChangeDatePattern.OLD_PATTERN));
-
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
         JsonNode rootNode = mapper.readTree(column.getStatistics());
         String actualPattern = rootNode.get("patternFrequencyTable").get(0).get("pattern").textValue();
@@ -110,12 +110,12 @@ public class ChangeDatePatternTest {
     @Test(expected = IllegalArgumentException.class)
     public void should_check_new_pattern_parameter_when_dealing_with_row() {
         Map<String, String> insufficientParams = new HashMap<>();
-        insufficientParams.put(ChangeDatePattern.COLUMN_ID, "0000");
+        insufficientParams.put("column_id", "0000");
         action.create(insufficientParams);
     }
 
     @Test
-    public void should_process_row() {
+    public void should_process_row() throws Exception {
 
         // given
         Map<String, String> values = new HashMap<>();
@@ -123,12 +123,12 @@ public class ChangeDatePatternTest {
         values.put("0001", "04/25/1999");
         values.put("0002", "tata");
         DataSetRow row = new DataSetRow(values);
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         TransformationContext context = new TransformationContext();
-        context.put(ChangeDatePattern.OLD_PATTERN, "MM/dd/yyyy");
 
         // when
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
 
         // then
         Map<String, String> expectedValues = new HashMap<>();
@@ -140,38 +140,38 @@ public class ChangeDatePatternTest {
     }
 
     @Test
-    public void should_process_row_when_value_does_not_match_pattern() {
+    public void should_process_row_when_value_does_not_match_pattern() throws Exception {
         // given
         Map<String, String> values = new HashMap<>();
         values.put("0000", "toto");
         values.put("0001", "05.28.99");
         values.put("0002", "tata");
         DataSetRow row = new DataSetRow(values);
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         TransformationContext context = new TransformationContext();
-        context.put(ChangeDatePattern.OLD_PATTERN, "MM/dd/yyyy");
 
         // when
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
 
         // then (values should be unchanged)
         assertEquals(values, row.values());
     }
 
     @Test
-    public void should_process_row_when_value_is_empty() {
+    public void should_process_row_when_value_is_empty() throws Exception {
         // given
         Map<String, String> values = new HashMap<>();
         values.put("0000", "toto");
         values.put("0001", "");
         values.put("0002", "tata");
         DataSetRow row = new DataSetRow(values);
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
         TransformationContext context = new TransformationContext();
-        context.put(ChangeDatePattern.OLD_PATTERN, "MM/dd/yyyy");
 
         // when
-        rowClosure.accept(row, context);
+        row = rowClosure.apply(row, context);
 
         // then (values should be unchanged)
         assertEquals(values, row.values());
@@ -179,14 +179,14 @@ public class ChangeDatePatternTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.accept(getColumn(Type.DATE)));
+        assertTrue(action.acceptColumn(getColumn(Type.DATE)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.accept(getColumn(Type.NUMERIC)));
-        assertFalse(action.accept(getColumn(Type.FLOAT)));
-        assertFalse(action.accept(getColumn(Type.STRING)));
-        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
+        assertFalse(action.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 }

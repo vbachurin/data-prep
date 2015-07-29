@@ -65,6 +65,17 @@ list+=$registry'/talend/dataprep-data:'$version' mongo:latest'
 
 timestamp=`date +%Y%m%d%H%M%S`
 tar_archive='dataprep-images_'$version'_'$timestamp'.tar'
+original_fig_file='../dataprep-platform/src/main/resources/fig_backend_data_web.yml'
+final_fig_file='dataprep-images_'$version'_'$timestamp'.yml'
+
+#===========================================
+# Add talend-registry to images
+#===========================================
+from='image: talend/'
+to='image: talend-registry:5000/talend/'
+sed "s|$from|$to|g" $original_fig_file > $final_fig_file
+#===========================================
+
 docker pull $registry'/talend/dataprep-data:'$version
 docker pull mongo:latest
 echo 'docker save to '$tar_archive
@@ -80,7 +91,7 @@ echo '==========================================='
 echo 'Move archive to definitive place'
 echo '==========================================='
 mkdir $path_for_bins --parents
-mv $tar_archive $tar_archive.md5sum $path_for_bins
+mv $tar_archive $tar_archive.md5sum $final_fig_file $path_for_bins
 echo '==========================================='
 
 echo '==========================================='

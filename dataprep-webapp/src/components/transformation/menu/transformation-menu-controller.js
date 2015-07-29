@@ -14,7 +14,7 @@
     function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService, ConverterService, DatasetService) {
         var vm = this;
         vm.converterService = ConverterService;
-        vm.types = TransformationService.types;
+        vm.types = {};
 
 
         /**
@@ -98,6 +98,9 @@
                     vm.showModal = false;
                 });
         };
+
+        // load types on start as they don't really change
+        vm.types = TransformationService.getTypes();
 
     }
 

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.talend.dataprep.api.dataset.json.ColumnContextDeserializer;
 import org.talend.dataprep.api.dataset.json.DataSetRowStreamDeserializer;
 import org.talend.dataprep.api.dataset.json.DataSetRowStreamSerializer;
 
@@ -21,6 +22,7 @@ public class DataSet {
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty(value = "columns", required = false)
+    @JsonDeserialize(using = ColumnContextDeserializer.class)
     List<ColumnMetadata> columns = new LinkedList<>();
 
     @JsonProperty(value = "records", required = false)
