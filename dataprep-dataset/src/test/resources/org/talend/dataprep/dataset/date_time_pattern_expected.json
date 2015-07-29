@@ -1,0 +1,53 @@
+{
+  "count": 5,
+  "valid": 5,
+  "invalid": 0,
+  "empty": 0,
+  "max": "NaN",
+  "min": "NaN",
+  "mean": "NaN",
+  "variance": "NaN",
+  "duplicateCount": 0,
+  "distinctCount": 5,
+  "frequencyTable": [
+    {
+      "data": "12/12/2005 12:50:49",
+      "occurrences": 1
+    },
+    {
+      "data": "02/02/2050 09:08:21",
+      "occurrences": 1
+    },
+    {
+      "data": "10/11/2003 10:06:25",
+      "occurrences": 1
+    },
+    {
+      "data": "01/01/1980 11:07:50",
+      "occurrences": 1
+    },
+    {
+      "data": "01/08/1890 08:08:07",
+      "occurrences": 1
+    }
+  ],
+  "patternFrequencyTable": [
+    {
+      "pattern": "dd/MM/yyyy HH:mm:ss",
+      "occurrences": 5
+    }
+  ],
+  "quantiles": {
+    "median": "NaN",
+    "lowerQuantile": "NaN",
+    "upperQuantile": "NaN"
+  },
+  "histogram": [],
+  "textLengthSummary": {
+    "minimalLength": "NaN",
+    "minimalLengthWithBlank": "NaN",
+    "maximalLength": "NaN",
+    "averageLength": "NaN",
+    "averageLengthWithBlank": "NaN"
+  }
+}
