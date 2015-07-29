@@ -45,7 +45,7 @@ describe('Actions suggestions controller', function() {
     it('should bind "suggestions" getter to ColumnSuggestionService.transformations', inject(function(ColumnSuggestionService) {
         //given
         var ctrl = createController();
-        var transformations = {'case': [{name: 'tolowercase'}, {name: 'touppercase'}]};
+        var transformations = [{name: 'tolowercase'}, {name: 'touppercase'}];
 
         //when
         ColumnSuggestionService.transformations = transformations;
