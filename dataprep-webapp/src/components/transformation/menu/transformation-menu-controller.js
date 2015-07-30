@@ -45,11 +45,12 @@
          *     <li>parameter or choice required : show modal</li>
          * </ul>
          */
-        vm.select = function (menu) {
+        vm.select = function (menu, scope) {
             if(menu.dynamic) {
                 vm.dynamicFetchInProgress = true;
                 vm.showModal = true;
                 vm.selectedMenu = menu;
+                vm.selectedScope = scope;
 
                 //get new parameters
                 initDynamicParams(menu).finally(function() {
@@ -59,14 +60,17 @@
             else if (menu.parameters || menu.items) {
                 vm.showModal = true;
                 vm.selectedMenu = menu;
+                vm.selectedScope = scope;
             }
             else {
-                vm.transform(menu);
+                vm.transformClosure(menu, scope)();
             }
         };
 
-        vm.transformClosure = function(menu) {
+        vm.transformClosure = function(menu, scope) {
             return function(params) {
+                params = params || {};
+                params.scope = scope;
                 vm.transform(menu, params);
             };
         };

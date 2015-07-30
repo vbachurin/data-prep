@@ -72,7 +72,7 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements IColum
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        final ColumnMetadata newColumnMetadata = createNewcolumn(column);
+        final ColumnMetadata newColumnMetadata = createNewColumn(column);
         final String copyColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
 
         row.set(copyColumn, row.get(columnId));
@@ -84,11 +84,12 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements IColum
      * @param column the current column
      * @return the copied column
      */
-    private ColumnMetadata createNewcolumn(final ColumnMetadata column) {
+    private ColumnMetadata createNewColumn(final ColumnMetadata column) {
         return ColumnMetadata.Builder //
                 .column() //
                 .name(column.getName() + COPY_APPENDIX) //
                 .type(Type.get(column.getType())) //
+                .statistics(column.getStatistics()) //
                 .headerSize(column.getHeaderSize()) //
                 .build();
     }

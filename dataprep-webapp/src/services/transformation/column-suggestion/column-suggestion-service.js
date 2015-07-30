@@ -38,15 +38,17 @@
          * @returns {object} An object containing {key: value} = {category: [transformations]}
          */
         var filterAndGroup = function filterAndGroup(transfos) {
-            return _.chain(transfos)
+
+            var sortedAndUngroupedTrans = _.chain(transfos)
                 .filter(function(transfo) {
                     return transfo.category !== COLUMN_CATEGORY;
                 })
                 .sortBy(function(action) {
-                    return action.label;
+                    return action.label.toLowerCase();
                 })
-                .groupBy('category')
                 .value();
+
+            return sortedAndUngroupedTrans;
         };
 
         /**
