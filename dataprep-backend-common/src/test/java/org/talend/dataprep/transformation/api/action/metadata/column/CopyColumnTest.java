@@ -92,7 +92,7 @@ public class CopyColumnTest {
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see Action#getRowAction()
      */
     @Test
     public void should_update_metadata() {
@@ -116,12 +116,27 @@ public class CopyColumnTest {
     }
 
     @Test
-    public void should_accept_column() {
-        assertTrue(action.acceptColumn(getColumn(Type.ANY)));
+    public void should_copy_statistics() throws Exception {
+        List<ColumnMetadata> input = new ArrayList<>();
+        final ColumnMetadata original = createMetadata("0001", "column");
+        original.setStatistics("{}");
+        input.add(original);
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
+
+        List<ColumnMetadata> expected = new ArrayList<>();
+        expected.add(createMetadata("0001", "column"));
+        final ColumnMetadata transformed = createMetadata("0002", "column");
+        original.setStatistics("{}");
+        expected.add(transformed);
+
+        assertEquals(expected.get(1).getStatistics(), original.getStatistics());
     }
 
     @Test
-    public void should_not_accept_column() {
+    public void should_accept_column() {
+        assertTrue(action.acceptColumn(getColumn(Type.ANY)));
     }
 
     /**

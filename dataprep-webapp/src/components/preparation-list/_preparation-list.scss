@@ -60,6 +60,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      max-width: 240px;
     }
 
     .information {
@@ -86,7 +87,7 @@
         padding-left: 10px;
 
         .name {
-          max-width: 71%;
+          max-width: 120px;
           float: left;
         }
       }
