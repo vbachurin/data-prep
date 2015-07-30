@@ -46,13 +46,15 @@ describe('Transform menu controller', function () {
         //given
         var ctrl = createController();
         var menu = {parameters: [{name: 'param1', type: 'text', default: '.'}]};
+        var scope = 'column';
 
         //when
-        ctrl.select(menu);
+        ctrl.select(menu, scope);
 
         //then
         expect(ctrl.showModal).toBeTruthy();
         expect(ctrl.selectedMenu).toBe(menu);
+        expect(ctrl.selectedScope).toBe(scope);
         expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
     }));
 
@@ -60,28 +62,30 @@ describe('Transform menu controller', function () {
         //given
         var ctrl = createController();
         var menu = {items: [{name: 'choice', values: [{name: 'choice1'}, {name: 'choice2'}]}]};
+        var scope = 'column';
 
         //when
-        ctrl.select(menu);
+        ctrl.select(menu, scope);
 
         //then
         expect(ctrl.showModal).toBeTruthy();
         expect(ctrl.selectedMenu).toBe(menu);
+        expect(ctrl.selectedScope).toBe(scope);
         expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
     }));
 
-    it('should call transform on simple menu select', inject(function ($rootScope, PlaygroundService) {
+    it('should call transform on simple menu select', inject(function (PlaygroundService) {
         //given
         var ctrl = createController();
         var menu = {name: 'uppercase', category: 'case'};
+        var scope = 'column';
 
         //when
-        ctrl.select(menu);
-        $rootScope.$digest();
+        ctrl.select(menu, scope);
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', column, undefined);
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', column, {scope: scope});
     }));
 
     it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService) {
@@ -158,13 +162,14 @@ describe('Transform menu controller', function () {
         var ctrl = createController();
         var menu = {name: 'transfo_name', category: 'case', parameters: [{name: 'param1', type: 'text', default: '.'}]};
         var params = {param1: 'value'};
+        var scope = 'column';
 
         //when
-        var closure = ctrl.transformClosure(menu);
+        var closure = ctrl.transformClosure(menu, scope);
         expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
         closure(params);
 
         //then
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('transfo_name', column, params);
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('transfo_name', column, {param1: 'value', scope: scope});
     }));
 });

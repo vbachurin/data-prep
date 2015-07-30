@@ -35,7 +35,7 @@ describe('Button Dropdown directive', function () {
         expect(scope.buttonAction).toHaveBeenCalled();
     });
 
-    it('should show dropdown menu on side button click', function() {
+    it('should show dropdown menu on side button click', function(done) {
         //given
         var menu = element.find('.dropdown-menu').eq(0);
         expect(menu.hasClass('show-menu')).toBe(false);
@@ -44,6 +44,10 @@ describe('Button Dropdown directive', function () {
         element.find('.button-dropdown-side').eq(0).click();
 
         //then
-        expect(menu.hasClass('show-menu')).toBe(true);
+        setTimeout(function() {
+            expect(menu.hasClass('show-menu')).toBe(true);
+            done();
+        }, 300);
+
     });
 });

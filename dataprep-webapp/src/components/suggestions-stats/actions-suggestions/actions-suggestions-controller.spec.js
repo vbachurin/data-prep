@@ -1,4 +1,4 @@
-describe('Actions suggestions controller', function() {
+describe('Actions suggestions-stats controller', function() {
     'use strict';
 
     var createController, scope;
@@ -42,10 +42,10 @@ describe('Actions suggestions controller', function() {
         expect(ctrl.column).toBe(column);
     }));
 
-    it('should bind "suggestions" getter to ColumnSuggestionService.transformations', inject(function(ColumnSuggestionService) {
+    it('should bind "suggestions-stats" getter to ColumnSuggestionService.transformations', inject(function(ColumnSuggestionService) {
         //given
         var ctrl = createController();
-        var transformations = {'case': [{name: 'tolowercase'}, {name: 'touppercase'}]};
+        var transformations = [{name: 'tolowercase'}, {name: 'touppercase'}];
 
         //when
         ColumnSuggestionService.transformations = transformations;
