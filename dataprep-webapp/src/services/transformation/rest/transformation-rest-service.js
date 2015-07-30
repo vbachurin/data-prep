@@ -22,16 +22,6 @@
             return $http.post(RestURLs.transformUrl + '/suggest/column', stringifiedColumn);
         };
 
-        /**
-         * @ngdoc method
-         * @name getTypes
-         * @methodOf data-prep.services.transformation.service:TransformationRestService
-         * @description return all primitive types managed by dataprep
-         * @returns {HttpPromise} The GET promise
-         */
-        this.getTypes = function(){
-            return $http.get(RestURLs.serverUrl + '/api/types');
-        };
 
         /**
          * @ngdoc method

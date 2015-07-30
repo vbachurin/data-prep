@@ -11,11 +11,10 @@
      * @requires data-prep.services.utils.service:ConverterService
      * @requires data-prep.services.dataset.service:DatasetService
      */
-    function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService, ConverterService, DatasetService) {
+    function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService, ConverterService, DatasetService,TypesService) {
         var vm = this;
         vm.converterService = ConverterService;
-        vm.types = {};
-
+        vm.types = TypesService.types;
 
         /**
          * @ngdoc method
@@ -98,9 +97,6 @@
                     vm.showModal = false;
                 });
         };
-
-        // load types on start as they don't really change
-        vm.types = TransformationService.getTypes();
 
     }
 

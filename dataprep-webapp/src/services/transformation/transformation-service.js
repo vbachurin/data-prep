@@ -16,8 +16,7 @@
             getTransformations: getTransformations,
             resetParamValue: resetParamValue,
             initParamsValues: initParamsValues,
-            initDynamicParameters: initDynamicParameters,
-            getTypes: getTypes
+            initDynamicParameters: initDynamicParameters
         };
 
 
@@ -102,13 +101,6 @@
                     var menus = cleanParamsAndItems(response.data);
                     return adaptInputTypes(menus);
                 });
-        }
-
-        function getTypes() {
-            return TransformationRestService.getTypes()
-                .then(function (response) {
-                          return response.data;
-                      });
         }
 
         //--------------------------------------------------------------------------------------------------------------
