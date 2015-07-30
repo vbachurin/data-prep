@@ -8,7 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Preparation;
@@ -33,11 +33,11 @@ public class PreparationUpdate extends DataPrepCommand<String> {
 
     @Override
     protected String run() throws Exception {
-        final String preparationJSONValue = getJsonWriter().writeValueAsString(preparation);
+        final byte[] preparationJSONValue = getJsonWriter().writeValueAsBytes(preparation);
         final HttpPut preparationCreation = new HttpPut(preparationServiceUrl + "/preparations/" + id);
         try {
             preparationCreation.setHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE);
-            preparationCreation.setEntity(new StringEntity(preparationJSONValue));
+            preparationCreation.setEntity(new ByteArrayEntity(preparationJSONValue));
 
             final HttpResponse response = client.execute(preparationCreation);
             final int statusCode = response.getStatusLine().getStatusCode();
