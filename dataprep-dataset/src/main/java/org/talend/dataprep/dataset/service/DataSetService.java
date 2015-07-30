@@ -642,8 +642,6 @@ public class DataSetService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Id of the data set, do nothing is the id does not exist.") String dataSetId,
             @RequestBody ColumnMetadata columnMetadata) {
 
-
-
         final DistributedLock lock = dataSetMetadataRepository.createDatasetMetadataLock(dataSetId);
         lock.lock();
         try
