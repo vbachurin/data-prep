@@ -20,7 +20,6 @@ describe('Playground Service', function () {
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
         spyOn(ColumnSuggestionService, 'reset').and.returnValue();
         spyOn(HistoryService, 'clear').and.returnValue();
-        spyOn(TransformationRestService, 'getTypes' ).and.returnValue($q.when(types));
     }));
 
     it('should init visible flag to false', inject(function(PlaygroundService) {

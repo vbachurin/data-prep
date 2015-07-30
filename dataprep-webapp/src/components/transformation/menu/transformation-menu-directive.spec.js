@@ -6,8 +6,8 @@ describe('Transformation menu directive', function () {
     beforeEach(module('data-prep.transformation-menu'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($q,$rootScope, $compile,TransformationRestService) {
-        spyOn(TransformationRestService, 'getTypes' ).and.returnValue($q.when(types));
+    beforeEach(inject(function($q,$rootScope, $compile,TypesService) {
+
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<transform-menu column="column" menu-items="menu"></transform-menu>');
@@ -15,6 +15,7 @@ describe('Transformation menu directive', function () {
             scope.$digest();
             return element;
         };
+        spyOn(TypesService, 'getTypes').and.returnValue($q.when(types));
     }));
 
     afterEach(function() {

@@ -18,7 +18,6 @@ describe('Column suggestion service', function() {
                 {name: 'removetrailingspaces', category: 'quickfix', label:'m'}
             ]
         ));
-        spyOn(TransformationRestService, 'getTypes' ).and.returnValue($q.when({}));
     }));
 
     it('should reset the current selected column and suggested transformations', inject(function(ColumnSuggestionService) {
