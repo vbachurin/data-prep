@@ -24,7 +24,8 @@
             scope: {
                 buttonIcon: '@',
                 buttonText: '@',
-                buttonAction: '&'
+                buttonAction: '&',
+                buttonActionOnContainer: '='
             },
             bindToController: true,
             controller: function() {},

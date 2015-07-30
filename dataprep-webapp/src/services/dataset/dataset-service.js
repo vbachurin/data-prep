@@ -113,11 +113,21 @@
          * @ngdoc method
          * @name refreshDatasets
          * @methodOf data-prep.services.dataset.service:DatasetService
-         * @description Refresh the dataset list
+         * @param {string} sortType : sort by sortType
+         * @param {string} sortOrder :  sort by sortType in sortOrder order
+         * @description Refresh the dataset list with sorting parameters
          * @returns {promise} The process promise
          */
-        self.refreshDatasets = function() {
-            return DatasetListService.refreshDatasets()
+        self.refreshDatasets = function(sortType, sortOrder) {
+
+            if(typeof sortType === 'undefined' || !sortType) {
+                sortType = null;
+            }
+
+            if(typeof sortOrder === 'undefined' || !sortOrder) {
+                sortOrder = null;
+            }
+            return DatasetListService.refreshDatasets(sortType, sortOrder)
                 .then(consolidatePreparationsAndDatasets);
         };
 

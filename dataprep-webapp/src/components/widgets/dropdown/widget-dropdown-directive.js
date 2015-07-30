@@ -40,7 +40,8 @@
             templateUrl: 'components/widgets/dropdown/dropdown.html',
             scope: {
                 closeOnSelect: '=',
-                onOpen: '&'
+                onOpen: '&',
+                showOnContainerClick: '='
             },
             bindToController: true,
             controller: function() {},
@@ -108,8 +109,11 @@
                         }
                     };
 
-                    //Click : Show/focus or hide menu on action zone click
-                    action.click(function () {
+
+                    /**
+                     * show or hide the menu depending on its current state
+                     */
+                    var actionMenu = function() {
                         var isVisible = menu.hasClass('show-menu');
                         hideAllDropDowns();
 
@@ -119,6 +123,11 @@
                         else {
                             showMenu();
                         }
+                    };
+
+                    //Click : Show/focus or hide menu on action zone click
+                    action.click(function () {
+                        actionMenu();
                     });
 
                     //Click : hide menu on item select if 'closeOnSelect' is not false
@@ -142,6 +151,14 @@
                             setFocusOn(action);
                         }
                     });
+
+                    //Click : Show/focus or hide menu on container zone click
+                    if(ctrl.showOnContainerClick === true){
+                        container.click(function () {
+                            actionMenu();
+                        });
+                    }
+
 
                     //make action and menu focusable
                     action.attr('tabindex', '1');

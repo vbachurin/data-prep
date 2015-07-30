@@ -1,0 +1,63 @@
+$button-background-color: $white;
+$button-color-text: $black;
+
+.dataset {
+
+  @mixin button-dropdown-restyle() {
+    background: $button-background-color;
+    color: $button-color-text;
+    text-align: right;
+  }
+
+
+  .inventory-sort-item {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    box-align: stretch;
+    -webkit-align-items: stretch;
+    -moz-align-items: stretch;
+    -ms-align-items: stretch;
+    -o-align-items: stretch;
+    align-items: stretch;
+    -ms-flex-align: stretch;
+    box-orient: vertical;
+    justify-content: flex-end;
+    align-items: baseline;
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-direction: row;
+    font-size: 0.9em;
+  }
+
+  .button-dropdown-longtext .button-dropdown-main{
+
+    @include button-dropdown-restyle();
+
+    width: 90px;
+    padding: 0 3px 0 5px;
+  }
+
+  .button-dropdown-shorttext .button-dropdown-main{
+
+    @include button-dropdown-restyle();
+
+    width: 50px;
+    padding: 0 3px 0 5px;
+  }
+
+  .inventory-sort-item .button-dropdown-side {
+
+    @include button-dropdown-restyle();
+
+    padding: 0 5px 0 0;
+  }
+
+  .sort-text-spaces {
+    padding: 0 5px 0 5px;
+  }
+
+
+
+}

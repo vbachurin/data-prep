@@ -22,6 +22,68 @@
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
 
+        vm.sortSelected = {};
+        vm.sortSelected.id = 'date';
+        vm.sortSelected.name = 'NAME_SORT';
+
+        vm.sortOrderSelected = {};
+        vm.sortOrderSelected.id = 'desc';
+        vm.sortOrderSelected.name = 'DESC_ORDER';
+
+        /**
+         * @ngdoc property
+         * @name sortList
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description List of supported sort.
+         * @type {object[]}
+         */
+        vm.sortList = [
+            {id: 'name', name: 'NAME_SORT'},
+            {id: 'date', name: 'DATE_SORT'}
+        ];
+
+        /**
+         * @ngdoc property
+         * @name orderList
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description List of sorting order.
+         * @type {object[]}
+         */
+        vm.orderList = [
+            {id: 'asc', name: 'ASC_ORDER'},
+            {id: 'desc', name: 'DESC_ORDER'}
+        ];
+
+        /**
+         * @ngdoc method
+         * @name sort
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description sort dataset by sortType by calling refreshDatasets from DatasetService
+         * @param {object} sortType : criteria to sort
+         */
+        vm.updateSortBy = function(sortType) {
+            vm.sortSelected.id = sortType.id;
+            vm.sortSelected.name = sortType.name;
+
+            DatasetService.refreshDatasets( vm.sortSelected.id, vm.sortOrderSelected.id);
+
+        };
+
+        /**
+         * @ngdoc method
+         * @name sort
+         * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description sort dataset in order (ASC or DESC) by calling refreshDatasets from DatasetService
+         * @param {object} order : ASC(ascending) or DESC(descending)
+         */
+        vm.updateSortOrder = function(order) {
+            vm.sortOrderSelected.id = order.id;
+            vm.sortOrderSelected.name = order.name;
+
+            DatasetService.refreshDatasets( vm.sortSelected.id,  vm.sortOrderSelected.id);
+
+        };
+
         /**
          * @ngdoc method
          * @name open

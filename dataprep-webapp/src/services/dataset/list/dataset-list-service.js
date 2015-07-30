@@ -25,12 +25,14 @@
          * @ngdoc method
          * @name refreshDatasets
          * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @param {string} sortType : sort by sortType
+         * @param {string} sortOrder :  sort by sortType in sortOrder order
          * @description Refresh datasets if no refresh is pending
          * @returns {promise} - the pending GET promise
          */
-        var refreshDatasets = function refreshDatasets() {
+        var refreshDatasets = function refreshDatasets(sortType, sortOrder) {
             if(! datasetsPromise) {
-                datasetsPromise = DatasetRestService.getDatasets()
+                datasetsPromise = DatasetRestService.getDatasets(sortType, sortOrder)
                     .then(function(res) {
                         self.datasets = res.data;
                         datasetsPromise = null;

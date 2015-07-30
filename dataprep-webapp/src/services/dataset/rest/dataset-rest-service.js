@@ -86,11 +86,13 @@
          * @ngdoc method
          * @name getDatasets
          * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @param {string} sortType : sort by sortType
+         * @param {string} sortOrder :  sort by sortType in sortOrder order
          * @description Get the dataset list
          * @returns {Promise} - the GET call promise
          */
-        self.getDatasets = function() {
-            return $http.get(RestURLs.datasetUrl);
+        self.getDatasets = function(sortType, sortOrder) {
+            return $http.get(RestURLs.datasetUrl + '?sort=' + sortType + '&order=' + sortOrder);
         };
 
         /**

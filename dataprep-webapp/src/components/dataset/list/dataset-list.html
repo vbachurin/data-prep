@@ -1,5 +1,38 @@
-<div class="inventory">
-    <div class="inventory-sort">{{ ::'SORTED_BY' | translate }} {{ ::'NAME_SORT' | translate }}</div>
+<div class="inventory dataset">
+    <div class="inventory-sort">
+        <div class="inventory-sort-item">
+
+            <div class="sort-text-spaces">{{ ::'SORTED_BY' | translate }}</div>
+            <div class="button-dropdown-sort button-dropdown-shorttext">
+                <talend-button-dropdown button-icon=""
+                                        button-text="{{datasetListCtrl.sortSelected.name | translate }}"
+                                        button-action=""
+                                        button-action-on-container="true">
+                    <ul>
+                        <li ng-repeat="sortType in datasetListCtrl.sortList" ng-click="datasetListCtrl.updateSortBy(sortType)">
+                            {{sortType.name | translate}}
+                        </li>
+                    </ul>
+                </talend-button-dropdown>
+            </div>
+            <div class="sort-text-spaces"> {{ ::'SORT_IN' | translate }} </div>
+            <div class="button-dropdown-order button-dropdown-longtext">
+                <talend-button-dropdown button-icon=""
+                                        button-text="{{datasetListCtrl.sortOrderSelected.name | translate }}"
+                                        button-action=""
+                                        button-action-on-container="true">
+                    <ul>
+                        <li ng-repeat="orderType in datasetListCtrl.orderList" ng-click="datasetListCtrl.updateSortOrder(orderType)">
+                            {{orderType.name | translate}}
+                        </li>
+                    </ul>
+                </talend-button-dropdown>
+            </div>
+            <div class="sort-text-spaces"> {{ ::'SORT_ORDER' | translate }} </div>
+
+        </div>
+
+    </div>
 
     <div class="inventory-entry" ng-repeat="dataset in datasetListCtrl.datasets track by $index" ng-switch="dataset.draft" id="dataset_{{$index}}" >
 
