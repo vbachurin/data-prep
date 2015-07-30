@@ -1,13 +1,12 @@
 package org.talend.dataprep.api.service.command.transformation;
 
 import java.io.InputStream;
-import java.io.StringWriter;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
@@ -36,9 +35,8 @@ public class SuggestDataSetActions extends ChainedCommand<InputStream, DataSetMe
         post.setHeader(new BasicHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE));
         DataSetMetadata metadata = getInput();
         ObjectMapper objectMapper = builder.build();
-        StringWriter dataSetMetadataJSON = new StringWriter();
-        objectMapper.writer().writeValue(dataSetMetadataJSON, metadata);
-        post.setEntity(new StringEntity(dataSetMetadataJSON.toString()));
+        byte[] dataSetMetadataJSON  = objectMapper.writer().writeValueAsBytes(metadata);
+        post.setEntity(new ByteArrayEntity(dataSetMetadataJSON));
         HttpResponse response = client.execute(post);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= 200) {

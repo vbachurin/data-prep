@@ -1,29 +1,5 @@
 package org.talend.dataprep.api.preparation;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.talend.dataprep.preparation.Application;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static junit.framework.TestCase.assertTrue;
@@ -36,6 +12,32 @@ import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.preparation.Application;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
@@ -47,6 +49,9 @@ public class PreparationServiceTest {
 
     @Autowired
     private PreparationRepository repository;
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     @Before
     public void setUp() {
@@ -148,6 +153,28 @@ public class PreparationServiceTest {
         assertThat(preparation.id(), is("0d291a2159ae36ee9177b8b845b3c8f1b0e0f30b"));
         assertThat(preparation.getName(), is("test_name_updated"));
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
+    }
+
+    @Test
+    public void updateWithSpecialArguments() throws Exception {
+        Preparation preparation = new Preparation();
+        preparation.setDataSetId("1234");
+        preparation.setName("test_name");
+        String preparationId = given().contentType(ContentType.JSON).body(builder.build().writer().writeValueAsBytes(preparation))
+                .when().put("/preparations").asString();
+        assertThat(preparationId, is("170e086992df1848b8fc9459d87938af6be78720"));
+
+        // Test preparation details update
+        preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8"))
+                .when().put("/preparations/{id}", preparationId).asString();
+
+        // Preparation id should change (new name)
+        assertThat(preparationId, is("f7c4550ce8f9e7071c638b71e2930e3dd65ac3c0"));
+        Collection<Preparation> preparations = repository.listAll(Preparation.class);
+        assertThat(preparations.size(), is(1));
+        preparation = preparations.iterator().next();
+        assertThat(preparation.id(), is("f7c4550ce8f9e7071c638b71e2930e3dd65ac3c0"));
+        assertThat(preparation.getName(), is("éàçè"));
     }
 
     @Test
