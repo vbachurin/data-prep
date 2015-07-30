@@ -10,19 +10,26 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.InputStreamEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
+import org.talend.dataprep.api.preparation.Preparation;
+import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.preparation.store.ContentCache;
 
 @Component
 @Scope("request")
 public class UpdateColumn
     extends DataPrepCommand<String> {
+
+    @Autowired
+    ContentCache contentCache;
 
     private final String dataSetId;
 
@@ -46,6 +53,13 @@ public class UpdateColumn
                 if (statusCode == HttpStatus.SC_NO_CONTENT) {
                     return StringUtils.EMPTY;
                 } else if (statusCode == HttpStatus.SC_OK) {
+
+                    // do this async?
+                    final Preparation preparation = Preparation.defaultPreparation(dataSetId);
+                    if (contentCache.has(preparation.id(), Step.ROOT_STEP.id())) {
+                        contentCache.evict( preparation.id(), Step.ROOT_STEP.id());
+                    }
+
                     return IOUtils.toString(response.getEntity().getContent());
                 }
             }
