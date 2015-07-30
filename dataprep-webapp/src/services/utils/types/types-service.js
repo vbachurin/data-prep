@@ -14,7 +14,7 @@
         /**
          * @ngdoc method
          * @name getTypes
-         * @methodOf data-prep.services.transformation.service:TransformationRestService
+         * @methodOf data-prep.services.utils.service:TypesService
          * @description return all primitive types managed by dataprep
          * @returns {HttpPromise} The GET promise
          */

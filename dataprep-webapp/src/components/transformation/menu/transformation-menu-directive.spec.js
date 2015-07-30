@@ -1,13 +1,12 @@
 describe('Transformation menu directive', function () {
     'use strict';
-    var scope, createElement, element;
-    var types = {};
+    var scope, createElement, element,$httpBackend;
 
     beforeEach(module('data-prep.transformation-menu'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($q,$rootScope, $compile,TypesService) {
-
+    beforeEach(inject(function($q,$rootScope,$compile,$injector) {
+        $httpBackend = $injector.get('$httpBackend');
         scope = $rootScope.$new();
         createElement = function() {
             element = angular.element('<transform-menu column="column" menu-items="menu"></transform-menu>');
@@ -15,7 +14,6 @@ describe('Transformation menu directive', function () {
             scope.$digest();
             return element;
         };
-        spyOn(TypesService, 'getTypes').and.returnValue($q.when(types));
     }));
 
     afterEach(function() {
@@ -23,7 +21,12 @@ describe('Transformation menu directive', function () {
         element.remove();
     });
 
-    it('should render a simple action', function() {
+    it('should render a simple action', inject(function(RestURLs) {
+
+        $httpBackend
+            .expectGET(RestURLs.serverUrl + '/api/types')
+            .respond(200, {});
+
         //given
         scope.menu = [{label: 'uppercase'}];
 
@@ -32,9 +35,14 @@ describe('Transformation menu directive', function () {
 
         //then
         expect(element.find('li[ng-click="menuCtrl.select(menu, \'column\')"]').text().trim()).toBe('uppercase');
-    });
+    }));
 
-    it('should render an action with parameters', function() {
+    it('should render an action with parameters', inject(function(RestURLs) {
+
+        $httpBackend
+            .expectGET(RestURLs.serverUrl + '/api/types')
+            .respond(200, {});
+
         //given
         scope.menu = [{
             name: 'menuWithParam',
@@ -70,9 +78,14 @@ describe('Transformation menu directive', function () {
         var paramsElements = angular.element('body').find('.transformation-params');
         expect(paramsElements.length).toBe(1);
         expect(paramsElements.is(':visible')).toBe(true);
-    });
+    }));
 
-    it('should render an action with simple choice', function() {
+    it('should render an action with simple choice', inject(function(RestURLs) {
+
+        $httpBackend
+            .expectGET(RestURLs.serverUrl + '/api/types')
+            .respond(200, {});
+
         //given
         scope.menu = [{
             name: 'menuWithParam',
@@ -105,9 +118,14 @@ describe('Transformation menu directive', function () {
         var paramsElements = angular.element('body').find('.transformation-params');
         expect(paramsElements.length).toBe(1);
         expect(paramsElements.is(':visible')).toBe(true);
-    });
+    }));
 
-    it('should render multiple menu items', function() {
+    it('should render multiple menu items', inject(function(RestURLs) {
+
+        $httpBackend
+            .expectGET(RestURLs.serverUrl + '/api/types')
+            .respond(200, {});
+
         //given
         scope.menu = [
             {label: 'uppercase'},
@@ -155,9 +173,14 @@ describe('Transformation menu directive', function () {
         expect(menuItems.eq(0).text().trim()).toBe('uppercase');
         expect(menuItems.eq(1).text().trim()).toBe('menu with choice');
         expect(menuItems.eq(2).text().trim()).toBe('menu with param');
-    });
+    }));
 
-    it('should display selected item parameters', function() {
+    it('should display selected item parameters', inject(function(RestURLs) {
+
+        $httpBackend
+            .expectGET(RestURLs.serverUrl + '/api/types')
+            .respond(200, {});
+
         //given
         scope.menu = [
             {label: 'uppercase'},
@@ -221,5 +244,5 @@ describe('Transformation menu directive', function () {
         expect(paramsElements.is(':visible')).toBe(true);
         expect(paramsElements.find('input').length).toBe(2);
         expect(paramsElements.find('select').length).toBe(0);
-    });
+    }));
 });

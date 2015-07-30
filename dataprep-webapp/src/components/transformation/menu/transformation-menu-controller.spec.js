@@ -3,7 +3,7 @@
 describe('Transform menu controller', function () {
     'use strict';
 
-    var createController, scope;
+    var createController, scope, $httpBackend;
 
     var metadata = {
         'id': '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
@@ -28,7 +28,9 @@ describe('Transform menu controller', function () {
 
     beforeEach(module('data-prep.transformation-menu'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, TypesService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, $injector) {
+
+        $httpBackend = $injector.get('$httpBackend');
 
         scope = $rootScope.$new();
 
@@ -43,7 +45,6 @@ describe('Transform menu controller', function () {
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when(true));
-        spyOn(TypesService, 'getTypes').and.returnValue($q.when(types));
 
     }));
 
@@ -93,7 +94,12 @@ describe('Transform menu controller', function () {
         expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', column, {scope: scope});
     }));
 
-    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService) {
+    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService, RestURLs) {
+
+        $httpBackend
+            .expectGET(RestURLs.serverUrl + '/api/types')
+            .respond(200, {});
+
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -116,7 +122,12 @@ describe('Transform menu controller', function () {
         );
     }));
 
-    it('should display modal and set flags on dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService) {
+    it('should display modal and set flags on dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService, RestURLs) {
+
+        $httpBackend
+            .expectGET(RestURLs.serverUrl + '/api/types')
+            .respond(200, {});
+
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -136,7 +147,12 @@ describe('Transform menu controller', function () {
         expect(ctrl.dynamicFetchInProgress).toBeFalsy();
     }));
 
-    it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService) {
+    it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService, RestURLs) {
+
+        $httpBackend
+            .expectGET(RestURLs.serverUrl + '/api/types')
+            .respond(200, {});
+
         //given
         var ctrl = createController();
         ctrl.showModal = true;
