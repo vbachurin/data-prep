@@ -290,6 +290,30 @@ describe('Preparation Service', function () {
     });
 
     describe('steps', function() {
+        it('should copy implicit parameters when they are in original params', inject(function(PreparationService) {
+            //given
+            var newParams = {value: 'tata'};
+            var oldParams = {value: 'toto', scope: 'cell', column_id: '0001', row_id: '256', column_name: 'state'};
+
+            //when
+            PreparationService.copyImplicitParameters(newParams, oldParams);
+
+            //then
+            expect(newParams).toEqual({value: 'tata', scope: 'cell', column_id: '0001', row_id: '256', column_name: 'state'});
+        }));
+
+        it('should NOT copy implicit parameters when they are NOT in original params', inject(function(PreparationService) {
+            //given
+            var newParams = {value: 'tata'};
+            var oldParams = {value: 'toto', scope: 'cell'};
+
+            //when
+            PreparationService.copyImplicitParameters(newParams, oldParams);
+
+            //then
+            expect(newParams).toEqual({value: 'tata', scope: 'cell'});
+        }));
+
         it('should delete step', inject(function ($q, PreparationService, PreparationRestService) {
             //given
             var preparationId = '6cd546546548a745';
@@ -303,7 +327,7 @@ describe('Preparation Service', function () {
             expect(PreparationRestService.removeStep).toHaveBeenCalledWith(preparationId, stepId);
         }));
 
-        it('should update a preparation step with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
+        it('should update a preparation step with provided parameters', inject(function ($rootScope, PreparationService, PreparationRestService) {
             //given
             PreparationService.currentPreparationId = '6cd546546548a745';
             var step = {
@@ -313,7 +337,7 @@ describe('Preparation Service', function () {
                 },
                 column: {id: '1', name:'firstname'}
             };
-            var parameters = {value: 'Toto'};
+            var parameters = {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'};
 
             //when
             PreparationService.updateStep(step, parameters);
@@ -324,30 +348,7 @@ describe('Preparation Service', function () {
                 '6cd546546548a745', //prep id
                 '867654ab15edf576844c4',  //step id
                 'deletematch', //step name
-                {value: 'Toto', column_name: 'firstname', column_id: '1'}); //params
-        }));
-
-        it('should update a preparation step without parameters (should create it with column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
-            //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
-            var step = {
-                transformation: {
-                    stepId : '867654ab15edf576844c4',
-                    name: 'touppercase'
-                },
-                column: {id: '1', name:'firstname'}
-            };
-
-            //when
-            PreparationService.updateStep(step);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationRestService.updateStep).toHaveBeenCalledWith(
-                '6cd546546548a745', //prep id
-                '867654ab15edf576844c4',  //step id
-                'touppercase', //step name
-                {column_name: 'firstname', column_id: '1'}); //params
+                {value: 'Toto', column_name: 'firstname', column_id: '1', scope: 'column'}); //params
         }));
 
         it('should append step to current preparation with completed parameters (add column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
@@ -396,7 +397,7 @@ describe('Preparation Service', function () {
             expect(PreparationListService.create).toHaveBeenCalledWith('2430e5df845ab6034c85', 'Preparation draft');
         }));
 
-        it('should complete parameters and return true if the parameters are different', inject(function (PreparationService) {
+        it('should return true if the parameters are different', inject(function (PreparationService) {
             //given
             var step = {
                 column: {
@@ -416,7 +417,7 @@ describe('Preparation Service', function () {
             expect(result).toBe(true);
         }));
 
-        it('should complete parameters and return false if the parameters are the same', inject(function (PreparationService) {
+        it('should return false if the parameters are the same', inject(function (PreparationService) {
             //given
             var step = {
                 column: {
@@ -427,29 +428,10 @@ describe('Preparation Service', function () {
                     parameters: {value: '--', column_id: '1', column_name: 'firstname'}
                 }
             };
-            var newParams = {value: '--'};
+            var newParams = {value: '--', column_id: '1', column_name: 'firstname'};
 
             //when
             var result = PreparationService.paramsHasChanged(step, newParams);
-
-            //then
-            expect(result).toBe(false);
-        }));
-
-        it('should create parameters and return false when step has no parameters', inject(function (PreparationService) {
-            //given
-            var step = {
-                column: {
-                    id: '0',
-                    name: 'firstname'
-                },
-                actionParameters: {
-                    parameters: {column_id: '0', column_name: 'firstname'}
-                }
-            };
-
-            //when
-            var result = PreparationService.paramsHasChanged(step, null);
 
             //then
             expect(result).toBe(false);

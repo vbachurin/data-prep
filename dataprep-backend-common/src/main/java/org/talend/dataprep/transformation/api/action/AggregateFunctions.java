@@ -6,16 +6,16 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
- * A aggregator for multiple {@link BiConsumer consumers}. May be removed if a standard replacement is found.
- *
- * @param <T> the type of the first argument to the function.
+ * A aggregator for multiple {@link BiConsumer consumers}. May be removed if a standard replacement is found. The
+ * functions <b>must</b> have same return type as first parameter (but this is enforced by generic signature).
+ * 
+ * @param <T> the type of both first argument result of the function.
  * @param <U> the type of the second argument to the function.
- * @param <R> the type of the result of the function.
  */
-public class AggregateFunctions<T, U, R> implements BiFunction<T, U, R> {
+public class AggregateFunctions<T, U> implements BiFunction<T, U, T> {
 
     /** All aggregated functions */
-    private final List<BiFunction<T, U, R>> functions;
+    private final List<? extends BiFunction<T, U, T>> functions;
 
     /**
      * Create a {@link BiFunction} instance that groups all functions in parameters.
@@ -23,7 +23,7 @@ public class AggregateFunctions<T, U, R> implements BiFunction<T, U, R> {
      * @param actions {@link BiFunction Functions} to be aggregated.
      * @see #aggregate(List)
      */
-    private AggregateFunctions(List<BiFunction<T, U, R>> actions) {
+    private AggregateFunctions(List<? extends BiFunction<T, U, T>> actions) {
         this.functions = actions;
     }
 
@@ -31,28 +31,29 @@ public class AggregateFunctions<T, U, R> implements BiFunction<T, U, R> {
      * Aggregate all provided functions into one {@link BiConsumer} implementation.
      * 
      * @param functions {@link BiConsumer Consumers} to be aggregated.
-     * @param <T> the type of the first argument to the function.
+     * @param <T> the type of both first argument and return type of the function.
      * @param <U> the type of the second argument to the function.
-     * @param <R> the type of the result of the function.
      * @return A unique {@link BiConsumer} that wraps all provided consumers in parameter.
      */
-    public static <T, U, R> BiFunction<T, U, R> aggregate(List<? extends BiFunction<T, U, R>> functions) {
-        return new AggregateFunctions(functions);
+    public static <T, U> BiFunction<T, U, T> aggregate(List<? extends BiFunction<T, U, T>> functions) {
+        return new AggregateFunctions<>(functions);
     }
 
     /**
      * @see BiFunction#apply(Object, Object)
      */
     @Override
-    public R apply(T t, U u) {
-        final List<R> collect = functions.stream() //
+    public T apply(T t, U u) {
+        if (functions.isEmpty()) {
+            return t;
+        }
+        final List<T> collect = functions.stream() //
                 .filter(action -> action != null) //
                 .map(action -> action.apply(t, u)) //
                 .collect(Collectors.toList());
-        // TODO @François is there any better solution than returning null when there's no action to perform ?
         if (collect.isEmpty()) {
-            return null;
+            return t;
         }
-        return collect.get(collect.size() - 1);
+        return collect.get(collect.size() - 1); // Return the last transformed result
     }
 }

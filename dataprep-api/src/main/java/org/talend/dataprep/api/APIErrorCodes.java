@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.talend.dataprep.exception.ErrorCode;
+import org.talend.dataprep.exception.error.ErrorCode;
 
 public enum APIErrorCodes implements ErrorCode {
     UNABLE_TO_DELETE_PREPARATION(400),

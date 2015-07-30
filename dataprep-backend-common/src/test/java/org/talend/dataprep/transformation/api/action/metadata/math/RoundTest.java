@@ -31,7 +31,7 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
 
 /**
  * Test class for Round action. Creates one consumer, and test it.
- * 
+ *
  * @see Round
  */
 public class RoundTest {
@@ -98,16 +98,16 @@ public class RoundTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(roundAction.accept(getColumn(Type.NUMERIC)));
-        assertTrue(roundAction.accept(getColumn(Type.INTEGER)));
-        assertTrue(roundAction.accept(getColumn(Type.DOUBLE)));
-        assertTrue(roundAction.accept(getColumn(Type.FLOAT)));
+        assertTrue(roundAction.acceptColumn(getColumn(Type.NUMERIC)));
+        assertTrue(roundAction.acceptColumn(getColumn(Type.INTEGER)));
+        assertTrue(roundAction.acceptColumn(getColumn(Type.DOUBLE)));
+        assertTrue(roundAction.acceptColumn(getColumn(Type.FLOAT)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(roundAction.accept(getColumn(Type.STRING)));
-        assertFalse(roundAction.accept(getColumn(Type.DATE)));
-        assertFalse(roundAction.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(roundAction.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(roundAction.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(roundAction.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 }

@@ -1,30 +1,26 @@
 <div class="actions-suggestions">
     <div class="title">Actions{{ actionsSuggestionsCtrl.column.name ? ': ' + actionsSuggestionsCtrl.column.name : '' }}</div>
-    <div class="Description" ng-if="! actionsSuggestionsCtrl.suggestions">Select a column to display its actions</div>
+    <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
     
-    <talend-tabs ng-if="actionsSuggestionsCtrl.suggestions">
+    <talend-tabs ng-if="actionsSuggestionsCtrl.columnSuggestions">
         <talend-tabs-item title="Text">Coming soon ...</talend-tabs-item>
         <talend-tabs-item title="Cell">Coming soon ...</talend-tabs-item>
         <talend-tabs-item title="Line">Coming soon ...</talend-tabs-item>
         <talend-tabs-item title="Column" default="true">
-            <div ng-repeat="(category, transformations) in actionsSuggestionsCtrl.suggestions track by category">
+            <div ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions">
                 <!--<div class="action-category">{{category}}</div>-->
-
                 <talend-accordions class="menu">
-                    <talend-accordions-item ng-repeat="transfo in transformations track by $index"
-                                            ng-switch="!!(transfo.parameters || transfo.items)">
-                        <!-- no static parameters -->
+                    <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)">
+                        <!--no static parameters-->
                         <a class="trigger"
                            ng-switch-when="false"
-                           ng-click="actionsSuggestionsCtrl.select(transfo)">{{transfo.label}}</a>
-
-                        <!-- with static parameters -->
+                           ng-click="actionsSuggestionsCtrl.select(transfo, 'column')">{{transfo.label}}</a>
+                        <!--with static parameters-->
                         <a class="trigger" ng-switch-when="true">{{transfo.label}}</a>
                         <ul class="content" ng-switch-when="true">
                             <transform-params transformation="transfo"
-                                              on-submit="actionsSuggestionsCtrl.transformClosure(transfo)(params)"></transform-params>
+                                              on-submit="actionsSuggestionsCtrl.transformClosure(transfo, 'column')(params)"></transform-params>
                         </ul>
-
                     </talend-accordions-item>
                 </talend-accordions>
             </div>
@@ -55,7 +51,7 @@
                   close-button="true"
                   ng-if="actionsSuggestionsCtrl.showDynamicModal">
 
-        <div ng-if="actionsSuggestionsCtrl.showHideModalContent">
+        <div ng-if="actionsSuggestionsCtrl.showModalContent">
             <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
             <div class="modal-subtitle">{{ actionsSuggestionsCtrl.dynamicTransformation.description }}</div>
 
@@ -63,9 +59,9 @@
                 <i data-icon="e" class="icon continuous-rotate"></i>
             </div>
             <transform-params transformation="actionsSuggestionsCtrl.dynamicTransformation"
-                              on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation)(params)"></transform-params>
+                              on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation, actionsSuggestionsCtrl.dynamicScope)(params)"></transform-params>
         </div>
-        <div ng-if="!actionsSuggestionsCtrl.showHideModalContent">
+        <div ng-if="!actionsSuggestionsCtrl.showModalContent">
             <div class="modal-title">{{ actionsSuggestionsCtrl.dynamicTransformation.label }}</div>
 
             <div class="modal-subtitle">{{ actionsSuggestionsCtrl.emptyParamsMsg | translate }}</div>

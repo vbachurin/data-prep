@@ -12,25 +12,24 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-
 import java.util.Map;
 
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 
 /**
  * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
  * is equal to a mathematical integer.
- * 
+ *
  * @see Math#floor(double)
  */
-public abstract class AbstractRound extends SingleColumnAction {
+public abstract class AbstractRound extends AbstractActionMetadata implements IColumnAction {
 
     /**
      * @see ActionMetadata#getCategory()
@@ -40,33 +39,32 @@ public abstract class AbstractRound extends SingleColumnAction {
         return ActionCategory.MATH.getDisplayName();
     }
 
-    /**
-     * @see ActionMetadata#create(Map)
-     */
     @Override
-    public Action create(Map<String, String> parameters) {
-        return builder().withRow((row, context) -> {
-            String columnName = parameters.get(COLUMN_ID);
-            String value = row.get(columnName);
-            if (value != null) {
-                try {
-                    int result = compute(Double.valueOf(value));
-                    row.set(columnName, String.valueOf(result));
-                } catch (NumberFormatException nfe2) {
-                    // Nan: nothing to do, but fail silently (no change in value)
-                }
-            }
-            return row;
-        }).build();
+    protected void beforeApply(Map<String, String> parameters) {
+    }
+
+    @Override
+    public void applyOnColumn(final DataSetRow row, final TransformationContext context, final Map<String, String> parameters, final String columnId) {
+        final String value = row.get(columnId);
+        if (value == null) {
+            return;
+        }
+
+        try {
+            int result = compute(Double.valueOf(value));
+            row.set(columnId, String.valueOf(result));
+        } catch (NumberFormatException nfe2) {
+            // Nan: nothing to do, but fail silently (no change in value)
+        }
     }
 
     abstract protected int compute(double from);
 
     /**
-     * @see ActionMetadata#accept(ColumnMetadata)
+     * @see ActionMetadata#acceptColumn(ColumnMetadata)
      */
     @Override
-    public boolean accept(ColumnMetadata column) {
+    public boolean acceptColumn(ColumnMetadata column) {
         Type columnType = Type.get(column.getType());
         // in order to 'clean' integer typed columns, this function needs to be allowed on any numeric types
         return Type.NUMERIC.isAssignableFrom(columnType);

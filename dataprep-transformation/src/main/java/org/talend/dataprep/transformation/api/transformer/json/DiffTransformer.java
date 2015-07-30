@@ -170,10 +170,6 @@ class DiffTransformer implements Transformer {
         }
 
         public DataSetRow apply(DataSetRow dataSetRow) {
-            // only apply actions if there is any
-            if (parsedActions.getAllActions().isEmpty()) {
-                return dataSetRow;
-            }
             return action.apply(dataSetRow, context);
         }
     }

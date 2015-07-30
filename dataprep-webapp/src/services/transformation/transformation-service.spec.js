@@ -134,8 +134,8 @@ describe('Transformation Service', function () {
                 'category': 'case',
                 items: [],
                 parameters: [
-                    {name: 'column_name', type: 'string'},
-                    {name: 'column_id', type: 'string'}
+                    {name: 'column_name', type: 'string', implicit: true},
+                    {name: 'column_id', type: 'string', implicit: true}
                 ]
             },
             {
@@ -143,8 +143,8 @@ describe('Transformation Service', function () {
                 'category': 'case',
                 items: [],
                 parameters: [
-                    {name: 'column_name', type: 'string'},
-                    {name: 'column_id', type: 'string'}
+                    {name: 'column_name', type: 'string', implicit: true},
+                    {name: 'column_id', type: 'string', implicit: true}
                 ]
             },
             {
@@ -152,8 +152,8 @@ describe('Transformation Service', function () {
                 'category': 'split',
                 items: [],
                 parameters: [
-                    {name: 'column_name', type: 'string'},
-                    {name: 'column_id', type: 'string'},
+                    {name: 'column_name', type: 'string', implicit: true},
+                    {name: 'column_id', type: 'string', implicit: true},
                     {name: 'value', type: 'string'}
                 ]
             },
@@ -161,8 +161,8 @@ describe('Transformation Service', function () {
                 'name': 'split',
                 'category': 'split',
                 parameters: [
-                    {name: 'column_name', type: 'string'},
-                    {name: 'column_id', type: 'string'}
+                    {name: 'column_name', type: 'string', implicit: true},
+                    {name: 'column_id', type: 'string', implicit: true}
                 ],
                 'items': [{
                     name: 'mode',
@@ -479,7 +479,7 @@ describe('Transformation Service', function () {
         //given
         var transformation = {
             parameters: [
-                {name: 'column_name', type: 'text', value: 'col'},
+                {name: 'column_id', type: 'text', value: 'col', implicit: true},
                 {name: 'pattern', type: 'text', default: 'toto'}
             ]
         };

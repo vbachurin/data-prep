@@ -1,7 +1,9 @@
 <talend-dropdown on-open="datagridHeaderCtrl.initTransformations()">
     <div class="dropdown-container grid-header">
         <div class="dropdown-action">
-            <div class="grid-header-title dropdown-button">{{ datagridHeaderCtrl.column.name }}</div>
+            <div class="grid-header-title dropdown-button" ng-show="!datagridHeaderCtrl.isEditMode">{{ datagridHeaderCtrl.column.name }}</div>
+            <input class="grid-header-title-input" type="text" ng-show="datagridHeaderCtrl.isEditMode" ng-model="datagridHeaderCtrl.newName"/>
+
             <div class="grid-header-type" ng-if="datagridHeaderCtrl.column.domain">{{ datagridHeaderCtrl.column.domain }}</div>
             <div class="grid-header-type" ng-if="(!datagridHeaderCtrl.column.domain)">{{ datagridHeaderCtrl.converterService.simplifyType(datagridHeaderCtrl.column.type) }}</div>
         </div>

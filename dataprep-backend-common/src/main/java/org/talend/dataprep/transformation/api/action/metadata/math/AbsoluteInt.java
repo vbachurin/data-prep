@@ -12,24 +12,22 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.preparation.Action;
+import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 
 /**
  * This will compute the absolute value for numerical columns
  * This action is faster than the AbsoluteFloat one on columns with more int values
  */
 @Component(AbsoluteInt.ACTION_BEAN_PREFIX + AbsoluteInt.ABSOLUTE_INT_ACTION_NAME)
-public class AbsoluteInt extends AbstractAbsolute {
+public class AbsoluteInt extends AbstractAbsolute implements IColumnAction {
 
     public static final String ABSOLUTE_INT_ACTION_NAME = "absolute_int"; //$NON-NLS-1$
 
@@ -44,32 +42,27 @@ public class AbsoluteInt extends AbstractAbsolute {
     }
 
     @Override
-    public Action create(Map<String, String> parameters) {
-        return builder().withRow((row, context) -> {
-            final String columnName = parameters.get(COLUMN_ID);
-            final String value = row.get(columnName);
-            String absValueStr;
-
-            if (value != null) {
-                absValueStr = executeOnLong(value);
-                if(absValueStr == null) {
-                    absValueStr = executeOnFloat(value);
-                }
-                if(absValueStr != null) {
-                    row.set(columnName, absValueStr);
-                }
-            }
-
-            return row;
-        }).build();
-    }
-
-    /**
-     * @see ActionMetadata#accept(ColumnMetadata)
-     */
-    @Override
-    public boolean accept(ColumnMetadata column) {
+    public boolean acceptColumn(ColumnMetadata column) {
         return Type.INTEGER.equals(Type.get(column.getType()));
     }
 
+    @Override
+    protected void beforeApply(Map<String, String> parameters) {
+    }
+
+    @Override
+    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+        final String value = row.get(columnId);
+        if (value == null) {
+            return;
+        }
+
+        String absValueStr = executeOnLong(value);
+        if (absValueStr == null) {
+            absValueStr = executeOnFloat(value);
+        }
+        if (absValueStr != null) {
+            row.set(columnId, absValueStr);
+        }
+    }
 }

@@ -12,16 +12,23 @@
         var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
 
+        return {
+            getTransformations: getTransformations,
+            resetParamValue: resetParamValue,
+            initParamsValues: initParamsValues,
+            initDynamicParameters: initDynamicParameters
+        };
+
         /**
          * @ngdoc method
-         * @name isColumnInfo
+         * @name isExplicitParameter
          * @methodOf data-prep.services.transformation.service:TransformationService
-         * @param {object} param - the paramters to check
-         * @description [PRIVATE] Return true if the parameter is 'column_id' or 'column_name'
+         * @param {object} param the parameter to check
+         * @description Return true if the parameter is explicit based on the 'implicit' flag
          */
-        var isColumnInfo = function isColumnInfo(param) {
-            return param.name === 'column_id' || param.name === 'column_name';
-        };
+        function isExplicitParameter(param) {
+            return !param.implicit;
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //------------------------------------------Transformation suggestions------------------------------------------
@@ -31,44 +38,42 @@
          * @name cleanParamsAndItems
          * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object[]} menus - the menus to clean
-         * @description [PRIVATE] Remove 'column_id' and 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
+         * @description Remove 'column_id' and 'column_name' parameters (automatically sent), and clean empty arrays (choices and params)
          */
-        var cleanParamsAndItems = function cleanParamsAndItems(menus) {
+        function cleanParamsAndItems(menus) {
             return _.forEach(menus, function(menu) {
                 //params
-                var filteredParameters = _.filter(menu.parameters, function(param) {
-                    return !isColumnInfo(param);
-                });
+                var filteredParameters = _.filter(menu.parameters, isExplicitParameter);
                 menu.parameters = filteredParameters.length ? filteredParameters : null;
 
                 //items
                 menu.items = menu.items.length ? menu.items : null;
             });
-        };
+        }
 
         /**
          * @ngdoc method
          * @name insertType
          * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object[]} menu - the menu item with parameters to adapt
-         * @description [PRIVATE] Insert adapted html input type in each parameter in the menu
+         * @description Insert adapted html input type in each parameter in the menu
          */
-        var insertType = function insertType(menu) {
+        function insertType(menu) {
             if(menu.parameters) {
                 _.forEach(menu.parameters, function(param) {
                     param.inputType = ConverterService.toInputType(param.type);
                 });
             }
-        };
+        }
 
         /**
          * @ngdoc method
          * @name adaptInputTypes
          * @methodOf data-prep.services.transformation.service:TransformationService
          * @param {object[]} menus - the menus with parameters to adapt
-         * @description [PRIVATE] Adapt each parameter type to HTML input type
+         * @description Adapt each parameter type to HTML input type
          */
-        var adaptInputTypes = function adaptInputTypes(menus) {
+        function adaptInputTypes(menus) {
             _.forEach(menus, function(menu) {
                 insertType(menu);
 
@@ -80,7 +85,7 @@
             });
 
             return menus;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -89,13 +94,13 @@
          * @param {object} stringifiedColumn The transformations target column as string
          * @description Get transformations from REST call, clean and adapt them
          */
-        this.getTransformations = function getTransformations(stringifiedColumn) {
+        function getTransformations(stringifiedColumn) {
             return TransformationRestService.getTransformations(stringifiedColumn)
                 .then(function(response) {
                     var menus = cleanParamsAndItems(response.data);
                     return adaptInputTypes(menus);
                 });
-        };
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //------------------------------------------Transformation parameters-------------------------------------------
@@ -109,7 +114,7 @@
          * @param {string} type The param type
          * @description [PRIVATE] Reset params values with saved initial values
          */
-        this.resetParamValue = function resetParamValue(params, type) {
+        function resetParamValue(params, type) {
             if(!params) {
                 return;
             }
@@ -142,7 +147,7 @@
                 default:
                     executeOnSimpleParams(params);
             }
-        };
+        }
 
         /**
          * @ngdoc method
@@ -150,20 +155,18 @@
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @param {object} parameters The parameters
          * @param {object} paramValues The parameters initial values
-         * @description [PRIVATE] Init parameters initial value and type
+         * @description Init parameters initial value and type
          * @returns {object[]} The parameters with initialized values
          */
-        var initParameters = function initParameters(parameters, paramValues) {
+        function initParameters(parameters, paramValues) {
             return _.chain(parameters)
-                .filter(function(param) {
-                    return !isColumnInfo(param);
-                })
+                .filter(isExplicitParameter)
                 .forEach(function(param) {
                     param.initialValue = param.value = paramValues[param.name];
                     param.inputType = ConverterService.toInputType(param.type);
                 })
                 .value();
-        };
+        }
 
         /**
          * @ngdoc method
@@ -171,10 +174,10 @@
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @param {object} choices The choices
          * @param {object} paramValues The parameters and choice initial values
-         * @description [PRIVATE] Init choice initial value, including each choice params initial value and type
+         * @description Init choice initial value, including each choice params initial value and type
          * @returns {object} The choices with initialized values
          */
-        var initChoices = function initChoices(choices, paramValues) {
+        function initChoices(choices, paramValues) {
             _.forEach(choices, function(choice) {
                 choice.selectedValue = choice.initialValue = _.find(choice.values, function(choiceItem) {
                     return choiceItem.name === paramValues[choice.name];
@@ -186,7 +189,7 @@
             });
 
             return choices;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -194,10 +197,10 @@
          * @methodOf data-prep.services.recipe.service:RecipeService
          * @param {object} cluster The Cluster parameters
          * @param {object} paramValues The clusters initial values
-         * @description [PRIVATE] Init Clusters initial value
+         * @description Init Clusters initial value
          * @returns {object} The Cluster with initialized values
          */
-        var initCluster = function initCluster(cluster, paramValues) {
+        function initCluster(cluster, paramValues) {
             _.forEach(cluster.clusters, function(clusterItem) {
                 var firstActiveParam = _.chain(clusterItem.parameters)
                     .forEach(function(param) {
@@ -215,7 +218,7 @@
                 initParameters([clusterItem.replace], replaceParamValues);
             });
             return cluster;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -225,7 +228,7 @@
          * @param {object} paramValues The transformation parameters initial values
          * @description Init parameters values and save them as initial values
          */
-        this.initParamsValues = function initParamsValues(transformation, paramValues) {
+        function initParamsValues(transformation, paramValues) {
             if(transformation.parameters) {
                 transformation.parameters = initParameters(transformation.parameters, paramValues);
             }
@@ -235,7 +238,7 @@
             if(transformation.cluster) {
                 transformation.cluster = initCluster(transformation.cluster, paramValues);
             }
-        };
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------Transformation Dynamic parameters----------------------------------------
@@ -244,13 +247,13 @@
          * @ngdoc method
          * @name resetParameters
          * @methodOf data-prep.services.transformation.service:TransformationService
-         * @description [PRIVATE] Reset all the transformation parameters
+         * @description Reset all the transformation parameters
          */
-        var resetParameters = function resetParameters(transformation) {
+        function resetParameters(transformation) {
             transformation.parameters = null;
             transformation.items = null;
             transformation.cluster = null;
-        };
+        }
 
         /**
          * @ngdoc method
@@ -258,7 +261,7 @@
          * @methodOf data-prep.services.transformation.service:TransformationService
          * @description Fetch the dynamic parameter and set them in transformation
          */
-        this.initDynamicParameters = function initDynamicParameters(transformation, infos) {
+        function initDynamicParameters(transformation, infos) {
             resetParameters(transformation);
 
             var action = transformation.name;
@@ -268,7 +271,7 @@
                     transformation[parameters.type] = parameters.details;
                     return transformation;
                 });
-        };
+        }
 
     }
 

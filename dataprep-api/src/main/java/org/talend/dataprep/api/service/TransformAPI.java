@@ -24,9 +24,9 @@ import org.talend.dataprep.api.service.command.preparation.PreparationGetContent
 import org.talend.dataprep.api.service.command.transformation.SuggestActionParams;
 import org.talend.dataprep.api.service.command.transformation.SuggestColumnActions;
 import org.talend.dataprep.api.service.command.transformation.Transform;
-import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
