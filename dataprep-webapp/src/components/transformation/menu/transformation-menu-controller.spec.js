@@ -24,8 +24,6 @@ describe('Transform menu controller', function () {
         'type': 'string'
     };
 
-    var types = {};
-
     beforeEach(module('data-prep.transformation-menu'));
 
     beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, $injector) {

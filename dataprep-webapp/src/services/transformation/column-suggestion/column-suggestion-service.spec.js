@@ -5,7 +5,7 @@ describe('Column suggestion service', function() {
     var secondSelectedColumn = {id: '0002', name: 'col2'};
 
     beforeEach(module('data-prep.services.transformation'));
-    beforeEach(inject(function($q, TransformationCacheService,TransformationRestService) {
+    beforeEach(inject(function($q, TransformationCacheService) {
         spyOn(TransformationCacheService, 'getTransformations').and.returnValue($q.when(
             [
                 {name: 'rename', category: 'columns', label:'z'},
