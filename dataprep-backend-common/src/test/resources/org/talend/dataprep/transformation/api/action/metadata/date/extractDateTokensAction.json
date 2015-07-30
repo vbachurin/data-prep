@@ -8,7 +8,8 @@
         "MONTH": "true",
         "DAY": "false",
         "HOUR_24": "true",
-        "MINUTE": "true"
+        "MINUTE": "true",
+        "scope": "column"
       }
     }
   ]

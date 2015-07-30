@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.talend.dataprep.exception.CommonErrorCodes;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 

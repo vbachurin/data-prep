@@ -3,7 +3,8 @@
     {
       "action": "floor",
       "parameters": {
-        "column_id": "aNumber"
+        "column_id": "aNumber",
+        "scope": "column"
       }
     }
   ]

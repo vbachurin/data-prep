@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.command.error.ErrorList;
-import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.ErrorCode;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
+import org.talend.dataprep.exception.error.ErrorCode;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 

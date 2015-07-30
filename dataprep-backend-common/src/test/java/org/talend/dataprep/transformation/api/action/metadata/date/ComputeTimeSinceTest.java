@@ -85,7 +85,7 @@ public class ComputeTimeSinceTest {
 
         String date = "01/01/2010";
         String result = computeTimeSince(date, "MM/dd/yyyy", ChronoUnit.YEARS);
-        LOGGER.info("{} years since {}", result, date);
+        LOGGER.debug("{} years since {}", result, date);
 
         Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
@@ -105,7 +105,7 @@ public class ComputeTimeSinceTest {
 
         String date = "06/15/2015";
         String result = computeTimeSince(date, "MM/dd/yyyy", ChronoUnit.DAYS);
-        LOGGER.info("{} days since {}", result, date);
+        LOGGER.debug("{} days since {}", result, date);
 
         DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
         row.set("0001", date);
@@ -130,7 +130,7 @@ public class ComputeTimeSinceTest {
 
         String date = "07/16/2015 13:00";
         String result = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
-        LOGGER.info("{} hours since {}", result, date);
+        LOGGER.debug("{} hours since {}", result, date);
 
         DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
@@ -151,7 +151,7 @@ public class ComputeTimeSinceTest {
     public void should_compute_hours_twice() throws IOException {
         String date = "07/16/2015 13:00";
         String result = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
-        LOGGER.info("{} hours since {}", result, date);
+        LOGGER.debug("{} hours since {}", result, date);
 
         DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
@@ -175,9 +175,9 @@ public class ComputeTimeSinceTest {
 
         String date = "07/16/2015 12:00";
         String resultInHours = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
-        LOGGER.info("{} hours since {}", resultInHours, date);
+        LOGGER.debug("{} hours since {}", resultInHours, date);
         String resultInDays = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.DAYS);
-        LOGGER.info("{} days since {}", resultInDays, date);
+        LOGGER.debug("{} days since {}", resultInDays, date);
 
         DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
@@ -263,15 +263,15 @@ public class ComputeTimeSinceTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(action.accept(getColumn(Type.DATE)));
+        assertTrue(action.acceptColumn(getColumn(Type.DATE)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(action.accept(getColumn(Type.NUMERIC)));
-        assertFalse(action.accept(getColumn(Type.FLOAT)));
-        assertFalse(action.accept(getColumn(Type.STRING)));
-        assertFalse(action.accept(getColumn(Type.BOOLEAN)));
+        assertFalse(action.acceptColumn(getColumn(Type.NUMERIC)));
+        assertFalse(action.acceptColumn(getColumn(Type.FLOAT)));
+        assertFalse(action.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 
     /**
@@ -295,7 +295,7 @@ public class ComputeTimeSinceTest {
 
     /**
      * Return a ComputeTimeSince closure with the given unit.
-     * 
+     *
      * @param unit the unit to use.
      * @return a ComputeTimeSince closure with the given unit.
      */

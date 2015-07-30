@@ -395,7 +395,7 @@ public class DataPreparationAPITest {
                 .getList("steps");
         assertThat(steps.size(), is(2));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
-        assertThat(steps.get(1), is("96f62093552b1803eefb6790cf66d12aee0f2211"));
+        assertThat(steps.get(1), is("3c7b40baca3680c22f8bd7142c95697f7424e37f"));
     }
 
     @Test
@@ -576,7 +576,8 @@ public class DataPreparationAPITest {
                 + "       \"action\": \"delete_on_value\",\n"//
                 + "       \"parameters\": {" //
                 + "           \"column_id\": \"0006\"," //
-                + "           \"value\": \"Coast city\""//
+                + "           \"value\": \"Coast city\","//
+                + "           \"scope\": \"column\""//
                 + "       }" //
                 + "   }"//
                 + "}";
@@ -587,7 +588,6 @@ public class DataPreparationAPITest {
         // when
         final String diff = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/update")
                 .asString();
-        System.out.println(diff);
 
         // then
         assertThat(diff, sameJSONAsFile(expectedDiffStream));
@@ -724,6 +724,9 @@ public class DataPreparationAPITest {
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
                 .getList("steps");
 
+        final String expectedClusterParameters = IOUtils.toString(DataPreparationAPITest.class
+                .getResourceAsStream("transformation/expected_cluster_params_with_steps.json"));
+
         // when
         final String actualClusterParameters = given()
                 .formParam("preparationId", preparationId)
@@ -734,8 +737,7 @@ public class DataPreparationAPITest {
                 .asString();
 
         // then (actions have normalized all cluster values, so no more clusters to be returned).
-        final String expected = "{\"type\":\"cluster\",\"details\":{\"titles\":[\"We found these values\",\"And we'll keep this value\"],\"clusters\":[{\"parameters\":[{\"name\":\"MASSACHUSSETTS\",\"type\":\"boolean\",\"description\":\"parameter.MASSACHUSSETTS.desc\",\"label\":\"parameter.MASSACHUSSETTS.label\",\"default\":null},{\"name\":\"MASACHUSSETS\",\"type\":\"boolean\",\"description\":\"parameter.MASACHUSSETS.desc\",\"label\":\"parameter.MASACHUSSETS.label\",\"default\":null},{\"name\":\"MASSACHUSETTS\",\"type\":\"boolean\",\"description\":\"parameter.MASSACHUSETTS.desc\",\"label\":\"parameter.MASSACHUSETTS.label\",\"default\":null},{\"name\":\"MASSACHUSETS\",\"type\":\"boolean\",\"description\":\"parameter.MASSACHUSETS.desc\",\"label\":\"parameter.MASSACHUSETS.label\",\"default\":null},{\"name\":\"MASACHUSETTS\",\"type\":\"boolean\",\"description\":\"parameter.MASACHUSETTS.desc\",\"label\":\"parameter.MASACHUSETTS.label\",\"default\":null}],\"replace\":{\"name\":\"replaceValue\",\"type\":\"string\",\"description\":\"parameter.replaceValue.desc\",\"label\":\"parameter.replaceValue.label\",\"default\":\"MASSACHUSETTS\"}},{\"parameters\":[{\"name\":\"TEXAS\",\"type\":\"boolean\",\"description\":\"parameter.TEXAS.desc\",\"label\":\"parameter.TEXAS.label\",\"default\":null},{\"name\":\"TIXASS\",\"type\":\"boolean\",\"description\":\"parameter.TIXASS.desc\",\"label\":\"parameter.TIXASS.label\",\"default\":null}],\"replace\":{\"name\":\"replaceValue\",\"type\":\"string\",\"description\":\"parameter.replaceValue.desc\",\"label\":\"parameter.replaceValue.label\",\"default\":\"TIXASS\"}}]}}";
-        assertThat(actualClusterParameters, sameJSONAs(expected).allowingAnyArrayOrdering());
+        assertThat(actualClusterParameters, sameJSONAs(expectedClusterParameters).allowingAnyArrayOrdering());
     }
 
     @Test

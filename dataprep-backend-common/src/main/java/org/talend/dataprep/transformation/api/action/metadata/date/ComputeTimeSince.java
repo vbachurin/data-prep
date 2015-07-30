@@ -1,8 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static org.talend.dataprep.api.type.Type.INTEGER;
 
-import java.io.IOException;
 import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,13 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.preparation.Action;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.CommonErrorCodes;
-import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -34,22 +31,42 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
-public class ComputeTimeSince extends SingleColumnAction {
+public class ComputeTimeSince extends AbstractDate implements IColumnAction {
 
-    /** The action name. */
+    /**
+     * The action name.
+     */
     public static final String TIME_SINCE_ACTION_NAME = "compute_time_since"; //$NON-NLS-1$
 
-    /** The column prefix. */
+    /**
+     * The column prefix.
+     */
     public static final String PREFIX = "since_"; //$NON-NLS-1$
 
-    /** The column suffix. */
+    /**
+     * The column suffix.
+     */
     public static final String SUFFIX = "_in_"; //$NON-NLS-1$
 
-    /** The unit in which show the period. */
+    /**
+     * The unit in which show the period.
+     */
     public static final String TIME_UNIT_PARAMETER = "time_unit"; //$NON-NLS-1$
 
-    /** This class' logger. */
+    /**
+     * This class' logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSince.class);
+
+    /**
+     * Temporal unit to use. This must be set before transformation
+     */
+    private TemporalUnit unit;
+
+    /**
+     * Actual time. This must be set before transformation
+     */
+    private Temporal now;
 
     /**
      * @see ActionMetadata#getName()
@@ -60,114 +77,83 @@ public class ComputeTimeSince extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCategory()
-     */
-    @Override
-    public String getCategory() {
-        return ActionCategory.DATE.getDisplayName();
-    }
-
-    /**
      * @see ActionMetadata#getItems()@return
      */
     @Override
     @Nonnull
     public Item[] getItems() {
         Item.Value[] values = new Item.Value[] { //
-        new Item.Value(ChronoUnit.YEARS.name(), true), //
+                new Item.Value(ChronoUnit.YEARS.name(), true), //
                 new Item.Value(ChronoUnit.MONTHS.name()), //
                 new Item.Value(ChronoUnit.DAYS.name()), //
-                new Item.Value(ChronoUnit.HOURS.name()) };
+                new Item.Value(HOURS.name()) };
         return new Item[] { new Item(TIME_UNIT_PARAMETER, "categ", values) };
     }
 
-    /**
-     * @see ActionMetadata#create(Map)
-     */
     @Override
-    public Action create(Map<String, String> parameters) {
-
-        TemporalUnit unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
-
-        return builder().withRow((row, context) -> {
-
-            // get the column to work on
-                String columnId = getColumnIdParameter(parameters);
-                ColumnMetadata column = row.getRowMetadata().getById(columnId);
-
-                /*
-                 * ColumnMetadata
-                 */
-
-                JsonFactory jsonFactory = new JsonFactory();
-                ObjectMapper mapper = new ObjectMapper(jsonFactory);
-
-                // get the current pattern
-                JsonNode rootNode = getStatisticsNode(mapper, column);
-                JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-                String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
-
-                Temporal now = (unit == ChronoUnit.HOURS ? LocalDateTime.now() : LocalDate.now());
-
-                // create the new column
-                ColumnMetadata newColumnMetadata = ColumnMetadata.Builder //
-                        .column() //
-                        .copy(column).name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
-                        .computedId(null) // remove the id
-                        .statistics("{}") // clear the statistics
-                        .type(Type.INTEGER).build();
-
-                // add the new column after the current one
-                row.getRowMetadata().insertAfter(columnId, newColumnMetadata);
-
-                /*
-                 * Row
-                 */
-
-                // deal with the
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern(datePattern);
-
-                String value = row.get(columnId);
-
-                // parse the date
-                TemporalAccessor temporalAccessor = null;
-                try {
-                    temporalAccessor = dtf.parse(value, new ParsePosition(0));
-                } catch (DateTimeParseException e) {
-                    // Nothing to do: in this case, temporalAccessor is left null
-                    LOGGER.debug("Unable to parse date {}.", value, e);
-                    row.set(newColumnMetadata.getId(), "");
-                return row;
-                }
-
-                Temporal valueAsDate = (unit == ChronoUnit.HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate
-                        .from(temporalAccessor));
-                long newValue = unit.between(valueAsDate, now);
-                row.set(newColumnMetadata.getId(), newValue + "");
-                return row;
-            }).build();
+    protected void beforeApply(Map<String, String> parameters) {
+        unit = ChronoUnit.valueOf(parameters.get(TIME_UNIT_PARAMETER).toUpperCase());
+        now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
     }
 
-    /**
-     * Return the json statistics node.
-     *
-     * @param mapper jackson object mapper.
-     * @param column the column metadata to work on.
-     * @return the json statistics node.
-     */
-    private JsonNode getStatisticsNode(ObjectMapper mapper, ColumnMetadata column) {
+    @Override
+    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+        final ColumnMetadata column = row.getRowMetadata().getById(columnId);
+
+        // create the new column and add the new column after the current one
+        final ColumnMetadata newColumnMetadata = createNewColumn(column);
+        row.getRowMetadata().insertAfter(columnId, newColumnMetadata);
+
+        // parse the date
+        final DateTimeFormatter dtf = getCurrentDatePatternFormatter(column);
+        final String value = row.get(columnId);
         try {
-            return mapper.readTree(column.getStatistics());
-        } catch (IOException e) {
-            throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+            final TemporalAccessor temporalAccessor = dtf.parse(value, new ParsePosition(0));
+            final Temporal valueAsDate = (unit == HOURS ? LocalDateTime.from(temporalAccessor)
+                    : LocalDate.from(temporalAccessor));
+            final long newValue = unit.between(valueAsDate, now);
+            row.set(newColumnMetadata.getId(), newValue + "");
+        } catch (DateTimeParseException e) {
+            // Nothing to do: in this case, temporalAccessor is left null
+            LOGGER.debug("Unable to parse date {}.", value, e);
+            row.set(newColumnMetadata.getId(), "");
         }
     }
 
     /**
-     * @see ActionMetadata#accept(ColumnMetadata)
+     * Create a new column to host the computed time
+     *
+     * @param column the original column metadata
+     * @return the new column metadata
      */
-    @Override
-    public boolean accept(ColumnMetadata column) {
-        return Type.DATE.equals(Type.get(column.getType()));
+    private ColumnMetadata createNewColumn(ColumnMetadata column) {
+        return ColumnMetadata.Builder //
+                .column() //
+                .copy(column)//
+                .name(PREFIX + column.getName() + SUFFIX + unit.toString().toLowerCase()) //
+                .computedId(null) // remove the id
+                .statistics("{}") // clear the statistics
+                .type(INTEGER)//
+                .build();
     }
+
+    /**
+     * Get the current date pattern
+     *
+     * @param column the column metadata
+     * @return a new date formatter that fit the current pattern
+     */
+    private DateTimeFormatter getCurrentDatePatternFormatter(final ColumnMetadata column) {
+        // json reader to parse statistics as JSON format
+        final JsonFactory jsonFactory = new JsonFactory();
+        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
+
+        // get date pattern from statistics
+        final JsonNode rootNode = getStatisticsNode(mapper, column);
+        final JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
+        final String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
+
+        return DateTimeFormatter.ofPattern(datePattern);
+    }
+
 }

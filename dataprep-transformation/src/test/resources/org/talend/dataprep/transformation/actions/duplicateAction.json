@@ -3,7 +3,8 @@
     {
       "action": "copy",
       "parameters": {
-        "column_id": "0005"
+        "column_id": "0005",
+        "scope": "column"
       }
     }
   ]

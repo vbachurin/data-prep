@@ -4,7 +4,8 @@
       "action": "uppercase",
       "parameters": {
         "column_id": "0000",
-        "column_name": "name"
+        "column_name": "name",
+        "scope": "column"
       }
     },
     {
@@ -12,7 +13,8 @@
       "parameters": {
         "new_column_name": "blah blah blah",
         "column_id": "0001",
-        "column_name": "count"
+        "column_name": "count",
+        "scope": "column"
       }
     }
   ]

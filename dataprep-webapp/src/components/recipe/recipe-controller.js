@@ -51,6 +51,7 @@
          */
         vm.updateStep = function(step, newParams) {
             PreviewService.cancelPreview();
+            PreparationService.copyImplicitParameters(newParams, step.actionParameters.parameters);
 
             if(! PreparationService.paramsHasChanged(step, newParams)) {
                 return;
@@ -75,10 +76,11 @@
          * @description [PRIVATE] Call the preview service to display the diff between the original steps and the updated steps
          */
         var updatePreview = function(updateStep, params) {
-            PreparationService.insertColumnInfo(params, updateStep.column);
+            var originalParameters = updateStep.actionParameters.parameters;
+            PreparationService.copyImplicitParameters(params, originalParameters);
 
             //Parameters has not changed
-            if(updateStep.inactive || JSON.stringify(params) === JSON.stringify(updateStep.actionParameters.parameters)) {
+            if(updateStep.inactive || ! PreparationService.paramsHasChanged(updateStep, params)) {
                 return;
             }
 

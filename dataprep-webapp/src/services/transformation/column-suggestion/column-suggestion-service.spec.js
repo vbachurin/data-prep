@@ -58,24 +58,10 @@ describe('Column suggestion service', function() {
         var suggestedTransformations = ColumnSuggestionService.transformations;
         expect(suggestedTransformations).toBeDefined();
         expect('columns' in suggestedTransformations).toBe(false);
-        expect('quickfix' in suggestedTransformations).toBe(true);
-        expect('case' in suggestedTransformations).toBe(true);
-        expect('clear' in suggestedTransformations).toBe(true);
-
-        expect(suggestedTransformations.quickfix)
-            .toEqual([{name: 'cluster', category: 'quickfix', label:'f'}, {name: 'removetrailingspaces', category: 'quickfix', label:'m'}]);
-        expect(suggestedTransformations.case)
-            .toEqual([{name: 'totitlecase', category: 'case', label:'t'},
-                {name: 'touppercase', category: 'case', label:'u'},
-                {name: 'tolowercase', category: 'case', label:'v'}
-                ]);
-        expect(suggestedTransformations.clear)
-            .toEqual([{name: 'removeempty', category: 'clear', label:'a'}]);
 
         //Assert sorted result
-        expect(suggestedTransformations.quickfix[0].label).toEqual('f');
-        expect(suggestedTransformations.case[0].label).toEqual('t');
-        expect(suggestedTransformations.clear[0].label).toEqual('a');
+        expect(suggestedTransformations[0].label).toEqual('a');
+        expect(suggestedTransformations[suggestedTransformations.length - 1].label).toEqual('v');
     }));
 
     it('should do nothing when we set the actual selected column', inject(function($rootScope, ColumnSuggestionService, TransformationCacheService) {
