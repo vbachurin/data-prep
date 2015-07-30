@@ -14,7 +14,9 @@
     function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService, ConverterService, DatasetService,TypesService) {
         var vm = this;
         vm.converterService = ConverterService;
-        vm.types = TypesService.types;
+        vm.types = TypesService.types.then(function ( response ) {
+                                                vm.types = response.data;
+                                            });
 
         /**
          * @ngdoc method
