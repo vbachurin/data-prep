@@ -9,7 +9,6 @@
         <talend-tabs-item title="Line">Coming soon ...</talend-tabs-item>
         <talend-tabs-item title="Column" default="true">
             <div ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions">
-                <!--<div class="action-category">{{category}}</div>-->
                 <talend-accordions class="menu">
                     <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)">
                         <!--no static parameters-->
@@ -57,7 +56,7 @@
             <div class="modal-subtitle">{{ actionsSuggestionsCtrl.dynamicTransformation.description }}</div>
 
             <div ng-if="actionsSuggestionsCtrl.dynamicFetchInProgress">
-                <i data-icon="e" class="icon continuous-rotate"></i>
+                <i data-icon="c" class="icon continuous-rotate"></i>
             </div>
             <transform-params transformation="actionsSuggestionsCtrl.dynamicTransformation"
                               on-submit="actionsSuggestionsCtrl.transformClosure(actionsSuggestionsCtrl.dynamicTransformation, actionsSuggestionsCtrl.dynamicScope)(params)"></transform-params>

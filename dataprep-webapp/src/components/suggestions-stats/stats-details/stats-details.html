@@ -1,25 +1,32 @@
-<div class="actions-suggestions">
+<div class="actions-suggestions" ng-switch="!!statsDetailsCtrl.statistics">
     <div class="title">Stats</div>
-    <div class="Description" ng-if="!statsDetailsCtrl.updatedColumn">Select a column to display its statistics</div>
-    
-    <talend-tabs ng-if="statsDetailsCtrl.updatedColumn">
+    <div class="Description" ng-if="!statsDetailsCtrl.statistics">Select a column to display its statistics</div>
+
+    <talend-tabs ng-if="statsDetailsCtrl.statistics">
         <talend-tabs-item title="_"></talend-tabs-item>
         <talend-tabs-item title="Viz" default="true">
             <column-profile></column-profile>
         </talend-tabs-item>
         <talend-tabs-item title="Value">
-            <div ng-repeat="stat in statsDetailsCtrl.statsByColType">
-                <div ng-repeat="(key, val) in stat">
-                    <span class="keys-text">{{key}}: </span><b class="values-text">{{statsDetailsCtrl.isInt(val)}}</b>
-                </div>
-            </div>
+            <table class="stat-table">
+                <tr ng-repeat="(key, val) in statsDetailsCtrl.statistics.common track by $index">
+                    <td class="stat-key">{{key | translate}}: </td>
+                    <td class="stat-value">{{val}}</td>
+                </tr>
+            </table>
+            <table class="stat-table">
+                <tr ng-repeat="(key, val) in statsDetailsCtrl.statistics.specific track by $index">
+                    <td class="stat-key">{{key | translate}}: </td>
+                    <td class="stat-value">{{val}}</td>
+                </tr>
+            </table>
         </talend-tabs-item>
         <talend-tabs-item title="Pattern">
             <horizontal-barchart id="patternBarChart"
                                  width="250"
                                  height="400"
-                                 on-click="statsDetailsCtrl.patternBarchartClickFn"
-                                 visu-data="statsDetailsCtrl.updatedColumn.statistics.patternFrequencyTable"
+                                 on-click="statsDetailsCtrl.addPatternFilter"
+                                 visu-data="statsDetailsCtrl.patternFrequencyTable"
                                  key-field="occurrences"
                                  value-field="pattern">
             </horizontal-barchart>

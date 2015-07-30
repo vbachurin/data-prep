@@ -104,5 +104,25 @@
 
   "NO_CLUSTERS_ACTION_MSG":"No Clusters Were Found !!!",
   "NO_CHOICES_ACTION_MSG":"No Choices Were Found !!!",
-  "NO_PARAMS_ACTION_MSG":"No Simple Parameters Were Found !!!"
+  "NO_PARAMS_ACTION_MSG":"No Simple Parameters Were Found !!!",
+
+  "_comment": "Statistics",
+  "COUNT": "Count",
+  "DISTINCT_COUNT": "Distinct",
+  "DUPLICATE_COUNT": "Duplicate",
+  "VALID": "Valid",
+  "EMPTY": "Empty",
+  "INVALID": "Invalid",
+  "MIN": "Min",
+  "MAX": "Max",
+  "MEAN": "Mean",
+  "VARIANCE": "Variance",
+  "MEDIAN": "Median",
+  "LOWER_QUANTILE": "Lower quantile",
+  "UPPER_QUANTILE": "Upper quantile",
+  "AVG_LENGTH": "Avg length",
+  "AVG_LENGTH_WITH_BLANK": "Avg length with blank",
+  "MAX_LENGTH": "Max length",
+  "MIN_LENGTH": "Min length",
+  "MIN_LENGTH_WITH_BLANK": "Min length with blank"
 }
