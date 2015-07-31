@@ -15,15 +15,13 @@ $button-color-text: $black;
     display: -ms-flexbox;
     display: flex;
     box-align: stretch;
-    -webkit-align-items: stretch;
-    -moz-align-items: stretch;
-    -ms-align-items: stretch;
-    -o-align-items: stretch;
-    align-items: stretch;
-    -ms-flex-align: stretch;
+    align-items: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
+    -o-align-items: center;
     box-orient: vertical;
     justify-content: flex-end;
-    align-items: baseline;
     -webkit-flex-direction: row;
     -moz-flex-direction: row;
     flex-direction: row;
@@ -35,16 +33,16 @@ $button-color-text: $black;
 
     @include button-dropdown-restyle();
 
-    width: 90px;
-    padding: 0 3px 0 5px;
+    width: 95px;
+    padding: 0 5px 0 5px;
   }
 
   .button-dropdown-shorttext .button-dropdown-main{
 
     @include button-dropdown-restyle();
 
-    width: 50px;
-    padding: 0 3px 0 5px;
+    width: 55px;
+    padding: 0 5px 0 5px;
   }
 
   .inventory-sort-item .button-dropdown-side {

@@ -40,8 +40,7 @@
             templateUrl: 'components/widgets/dropdown/dropdown.html',
             scope: {
                 closeOnSelect: '=',
-                onOpen: '&',
-                showOnContainerClick: '='
+                onOpen: '&'
             },
             bindToController: true,
             controller: function() {},
@@ -151,14 +150,6 @@
                             setFocusOn(action);
                         }
                     });
-
-                    //Click : Show/focus or hide menu on container zone click
-                    if(ctrl.showOnContainerClick === true){
-                        container.click(function () {
-                            actionMenu();
-                        });
-                    }
-
 
                     //make action and menu focusable
                     action.attr('tabindex', '1');

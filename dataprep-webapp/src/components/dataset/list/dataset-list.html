@@ -6,8 +6,7 @@
             <div class="button-dropdown-sort button-dropdown-shorttext">
                 <talend-button-dropdown button-icon=""
                                         button-text="{{datasetListCtrl.sortSelected.name | translate }}"
-                                        button-action=""
-                                        button-action-on-container="true">
+                                        button-action="">
                     <ul>
                         <li ng-repeat="sortType in datasetListCtrl.sortList" ng-click="datasetListCtrl.updateSortBy(sortType)">
                             {{sortType.name | translate}}
@@ -19,8 +18,7 @@
             <div class="button-dropdown-order button-dropdown-longtext">
                 <talend-button-dropdown button-icon=""
                                         button-text="{{datasetListCtrl.sortOrderSelected.name | translate }}"
-                                        button-action=""
-                                        button-action-on-container="true">
+                                        button-action="">
                     <ul>
                         <li ng-repeat="orderType in datasetListCtrl.orderList" ng-click="datasetListCtrl.updateSortOrder(orderType)">
                             {{orderType.name | translate}}
