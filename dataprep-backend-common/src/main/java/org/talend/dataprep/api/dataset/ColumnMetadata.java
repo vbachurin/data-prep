@@ -305,6 +305,14 @@ public class ColumnMetadata {
         /** The invalid values. */
         private Set<String> invalidValues = new HashSet<>();
 
+        private String domain;
+
+        private String domainLabel;
+
+        private long domainCount;
+
+        private List<SemanticDomain> semanticDomains;
+
         /**
          * @return A ColumnMetadata builder.
          */
@@ -426,6 +434,46 @@ public class ColumnMetadata {
         }
 
         /**
+         *
+         * @param domain the domain value of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder domain(String domain) {
+            this.domain = domain;
+            return this;
+        }
+
+        /**
+         *
+         * @param domainLabel the domain label value of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder domainLabel(String domainLabel) {
+            this.domainLabel = domainLabel;
+            return this;
+        }
+
+        /**
+         *
+         * @param domainCount the count of value with this domain of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder domainCount(long domainCount) {
+            this.domainCount = domainCount;
+            return this;
+        }
+
+        /**
+         *
+         * @param semanticDomains the semantic domains of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder semanticDomains(List<SemanticDomain> semanticDomains) {
+            this.semanticDomains = semanticDomains;
+            return this;
+        }
+
+        /**
          * Copy the column from the given one.
          * 
          * @param original the column to copy.
@@ -440,9 +488,13 @@ public class ColumnMetadata {
             this.valid = originalQuality.getValid();
             this.invalidValues = originalQuality.getInvalidValues();
             this.headerSize = original.getHeaderSize();
-            this.type = Type.get(original.getType());
+            this.type = Type.get( original.getType() );
             this.diffFlagValue = original.getDiffFlagValue();
             this.statistics = original.getStatistics();
+            this.domain = original.getDomain();
+            this.domainLabel = original.getDomainLabel();
+            this.domainCount = original.getDomainCount();
+            this.semanticDomains = original.getSemanticDomains();
             return this;
         }
 
@@ -462,6 +514,10 @@ public class ColumnMetadata {
             columnMetadata.setHeaderSize(this.headerSize);
             columnMetadata.setDiffFlagValue(this.diffFlagValue);
             columnMetadata.setStatistics(this.statistics);
+            columnMetadata.setDomain( this.domain == null ? StringUtils.EMPTY : this.domain );
+            columnMetadata.setDomainLabel( this.domainLabel == null ? StringUtils.EMPTY : this.domainLabel );
+            columnMetadata.setDomainCount( this.domainCount );
+            columnMetadata.setSemanticDomains( this.semanticDomains == null ? Collections.emptyList() : this.semanticDomains );
             return columnMetadata;
         }
     }
