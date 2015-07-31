@@ -56,7 +56,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * @param parameters the transformation parameters
      * @return the row id
      */
-    protected Long getRowId(final Map<String, String> parameters) {
+    private Long getRowId(final Map<String, String> parameters) {
         final String rowIdAsString = parameters.get(ROW_ID.getKey());
         if (rowIdAsString != null) {
             return Long.parseLong(rowIdAsString);
@@ -71,7 +71,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * @return the scope
      * @throws IllegalArgumentException if the scope parameter is missing
      */
-    protected ScopeCategory getScope(final Map<String, String> parameters) {
+    private ScopeCategory getScope(final Map<String, String> parameters) {
         final ScopeCategory scope = ScopeCategory.from(parameters.get(SCOPE.getKey()));
         if (scope == null) {
             throw new IllegalArgumentException("Parameter '" + SCOPE.getKey() + "' is required for all actions");
@@ -87,7 +87,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * @see ActionMetadata#acceptScope(ScopeCategory)
      */
     @Override
-    public boolean acceptScope(final ScopeCategory scope) {
+    public final boolean acceptScope(final ScopeCategory scope) {
         switch (scope) {
             case CELL:
                 return this instanceof ICellAction;
@@ -110,12 +110,12 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * @param parameters the transformation parameters
      */
     private void checkScopeConsistency(final ScopeCategory scope, final Map<String, String> parameters) {
-        if (!scope.checkMandatoryParameters(parameters)) {
-            throw new TDPException(MISSING_ACTION_SCOPE_PARAMETER);
-        }
-
         if (!this.acceptScope(scope)) {
             throw new IllegalArgumentException("The action " + this.getName() + " does not support the provided scope " + scope);
+        }
+
+        if (!scope.checkMandatoryParameters(parameters)) {
+            throw new TDPException(MISSING_ACTION_SCOPE_PARAMETER);
         }
     }
 
