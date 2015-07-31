@@ -36,7 +36,6 @@
                 buttonAction: '&'
             },
             link: function (scope, iElement, attrs) {
-
                 $timeout(function() {
                     if(!attrs.buttonAction){
                         iElement.find('.button-dropdown-main')

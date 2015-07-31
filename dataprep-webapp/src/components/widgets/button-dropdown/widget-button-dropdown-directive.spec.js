@@ -59,7 +59,13 @@ describe('Button Dropdown directive WITHOUT button-action', function () {
     beforeEach(module('talend.widget'));
     beforeEach(module('htmlTemplates'));
 
+    beforeEach(function () {
+        jasmine.clock().install();
+    });
+
     afterEach(function () {
+        jasmine.clock().uninstall();
+
         scope.$destroy();
         element.remove();
     });
@@ -88,6 +94,7 @@ describe('Button Dropdown directive WITHOUT button-action', function () {
         //when
         $timeout.flush();
         element.find('.button-dropdown-main').eq(0).click();
+        jasmine.clock().tick(200);
 
         //then
         expect(menu.hasClass('show-menu')).toBe(true);
@@ -102,6 +109,7 @@ describe('Button Dropdown directive WITHOUT button-action', function () {
         //when
         $timeout.flush();
         element.find('.button-dropdown-side').eq(0).click();
+        jasmine.clock().tick(200);
 
         //then
         expect(menu.hasClass('show-menu')).toBe(true);
