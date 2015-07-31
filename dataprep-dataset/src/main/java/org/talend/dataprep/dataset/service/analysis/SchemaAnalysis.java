@@ -118,7 +118,7 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                         nextColumn.setType(type.getName());
                         nextColumn.setDomain(semanticType.getSuggestedCategory());
 
-                        Map<CategoryFrequency, Long> altCategoryCounts = extractCategories(semanticType);
+                        Map<CategoryFrequency, Long> altCategoryCounts = semanticType.getCategoryToCount();
                         if (!altCategoryCounts.isEmpty()) {
                             List<SemanticDomain> semanticDomains = new ArrayList<>(altCategoryCounts.size());
                             for (Map.Entry<CategoryFrequency, Long> entry : altCategoryCounts.entrySet()) {
@@ -149,25 +149,6 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
             }
         } finally {
             datasetLock.unlock();
-        }
-    }
-
-
-
-    private Map<CategoryFrequency, Long> extractCategories( SemanticType semanticType ){
-
-        try
-        {
-            Field field = semanticType.getClass().getDeclaredField( "categoryToCount" );
-            field.setAccessible( true );
-            Object fieldValue = field.get( semanticType );
-
-            return fieldValue == null ? Collections.emptyMap() : (Map<CategoryFrequency, Long>) fieldValue;
-        }
-        catch ( Exception e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-
         }
     }
 
