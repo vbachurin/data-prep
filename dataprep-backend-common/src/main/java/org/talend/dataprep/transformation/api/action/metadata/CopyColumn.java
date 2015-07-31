@@ -75,6 +75,7 @@ public class CopyColumn extends SingleColumnAction {
                     .column() //
                     .name(column.getName() + COPY_APPENDIX) //
                     .type(Type.get(column.getType())) //
+                    .statistics(column.getStatistics()) //
                     .headerSize(column.getHeaderSize()) //
                     .build();
             final String copyColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
