@@ -66,26 +66,34 @@ describe('Actions suggestions-stats controller', function() {
         it('should call appendStep function on transform closure execution', inject(function(PlaygroundService) {
             //given
             var transformation = {name: 'tolowercase'};
+            var transfoScope = 'column';
             var params = {param: 'value'};
             var ctrl = createController();
 
             //when
-            var closure = ctrl.transformClosure(transformation);
+            var closure = ctrl.transformClosure(transformation, transfoScope);
             closure(params);
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', column, params);
+            var expectedParams = {
+                param: 'value',
+                scope: transfoScope,
+                column_id: column.id,
+                column_name: column.name
+            };
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
         }));
 
         it('should hide modal after step append', inject(function($rootScope) {
             //given
             var transformation = {name: 'tolowercase'};
+            var transfoScope = 'column';
             var params = {param: 'value'};
             var ctrl = createController();
             ctrl.showDynamicModal = true;
 
             //when
-            var closure = ctrl.transformClosure(transformation);
+            var closure = ctrl.transformClosure(transformation, transfoScope);
             closure(params);
             $rootScope.$digest();
 
@@ -96,13 +104,19 @@ describe('Actions suggestions-stats controller', function() {
         it('should append new step on static transformation selection', inject(function(PlaygroundService) {
             //given
             var transformation = {name: 'tolowercase'};
+            var transfoScope = 'column';
             var ctrl = createController();
 
             //when
-            ctrl.select(transformation, 'column');
+            ctrl.select(transformation, transfoScope);
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', column, {scope: 'column'});
+            var expectedParams = {
+                scope: transfoScope,
+                column_id: column.id,
+                column_name: column.name
+            };
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('tolowercase', expectedParams);
         }));
 
         it('should set current dynamic transformation and scope on dynamic transformation selection', inject(function() {

@@ -67,7 +67,10 @@
             return function(params) {
                 params = params || {};
                 params.scope = scope;
-                vm.transform(menu, params);
+                params.column_id = vm.column.id;
+                params.column_name = vm.column.name;
+
+                transform(menu, params);
             };
         };
 
@@ -78,12 +81,12 @@
          * @param {object} params The transformation params
          * @description Perform a transformation on the column
          */
-        vm.transform = function (menu, params) {
-            PlaygroundService.appendStep(menu.name, vm.column, params)
+        function transform(menu, params) {
+            PlaygroundService.appendStep(menu.name, params)
                 .then(function() {
                     vm.showModal = false;
                 });
-        };
+        }
     }
 
     angular.module('data-prep.transformation-menu')

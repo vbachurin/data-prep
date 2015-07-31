@@ -1,7 +1,7 @@
 describe('Datagrid header controller', function () {
     'use strict';
 
-    var createController, createControllerFromColumn, scope;
+    var createController, scope;
     var column = {
         id: '0001',
         name: 'Original name',
@@ -110,15 +110,11 @@ describe('Datagrid header controller', function () {
         scope = $rootScope.$new();
 
         createController = function () {
-            return createControllerFromColumn(column);
-        };
-
-        createControllerFromColumn = function (col) {
             var ctrlFn = $controller('DatagridHeaderCtrl', {
                 $scope: scope
             }, true);
 
-            ctrlFn.instance.column = col;
+            ctrlFn.instance.column = column;
             return ctrlFn();
         };
     }));
@@ -198,10 +194,12 @@ describe('Datagrid header controller', function () {
             ctrl.updateColumnName();
 
             //then
-            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('rename_column', column, {
+            expect(PlaygroundService.appendStep).toHaveBeenCalledWith('rename_column', {
                 /*jshint camelcase: false */
                 new_column_name: 'new name',
-                scope: 'column'
+                scope: 'column',
+                column_id: '0001',
+                column_name: 'Original name'
             });
         }));
 

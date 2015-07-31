@@ -4,12 +4,19 @@
                             on-open="recipeCtrl.resetParams(step)"
                             default="$index === (recipeCtrl.recipe.length - 1)">
         <div class="trigger step-description"
-             ng-click="recipeCtrl.showModal[$index] = !!step.transformation.cluster">
+             ng-click="recipeCtrl.showModal[$index] = !!step.transformation.cluster"
+             ng-switch="step.actionParameters.parameters.scope">
 
             {{$index + 1}}.
             <span class="recipe-description">{{step.transformation.label}}</span>
-            {{::'RECIPE_ITEM_ON_COL' | translate}}
-            <span class="recipe-description recipe-column-name">{{step.column.name}}</span>
+
+            <span ng-switch-when="column">
+                {{::'RECIPE_ITEM_ON_COL' | translate}}
+                <span class="recipe-description recipe-column-name">{{step.column.name}}</span>
+            </span>
+            <span ng-switch-when="cell">
+                {{::'RECIPE_ITEM_ON_CELL' | translate}}
+            </span>
 
             <recipe-bullet class="step-trigger" step="step" ></recipe-bullet>
         </div>
