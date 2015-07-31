@@ -264,6 +264,7 @@
 
             return append().then(function() {
                 var lastStepId = RecipeService.getLastStep().transformation.stepId;
+                /*jshint camelcase: false */
                 var cancelAppend = executeRemoveStep.bind(service, lastStepId, params.column_id);
                 HistoryService.addAction(cancelAppend, append);
             });
@@ -283,6 +284,7 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.appendStep(metadata, action, params)
                 .then(function() {
+                    /*jshint camelcase: false */
                     return $q.all([updateRecipe(), updateDatagrid(params.column_id)]);
                 })
                 .finally(function () {
@@ -359,6 +361,7 @@
          * @description Perform a cell or a column edition
          */
         function editCell(rowItem, column, newValue, updateAllCellWithValue) {
+            /*jshint camelcase: false */
             var params = {
                 scope : updateAllCellWithValue ? 'column' : 'cell',
                 column_id: column.id,

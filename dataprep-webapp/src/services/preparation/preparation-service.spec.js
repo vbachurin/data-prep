@@ -356,7 +356,6 @@ describe('Preparation Service', function () {
             PreparationService.currentPreparationId = '6cd546546548a745';
             var metadata = {id: '2430e5df845ab6034c85'};
             var action = 'cut';
-            var column = {id: '1', name: 'firstname'};
             var parameters = {
                 value: 'Toto',
                 scope: 'column',

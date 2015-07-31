@@ -138,6 +138,7 @@
          * The closure then take the parameters and append the new step in the current preparation
          */
         vm.transformClosure = function transform(transfo, transfoScope) {
+            /*jshint camelcase: false */
             return function(params) {
                 params = params || {};
                 params.scope = transfoScope;

@@ -64,6 +64,7 @@
         };
 
         vm.transformClosure = function(menu, scope) {
+            /*jshint camelcase: false */
             return function(params) {
                 params = params || {};
                 params.scope = scope;
