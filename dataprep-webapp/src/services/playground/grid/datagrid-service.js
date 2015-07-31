@@ -31,15 +31,6 @@
 
         /**
          * @ngdoc property
-         * @name stepColumn
-         * @propertyOf data-prep.services.playground.service:DatagridService
-         * @description the column of the current step
-         * @type {number}
-         */
-        self.stepColumn = null;
-
-        /**
-         * @ngdoc property
          * @name dataView
          * @propertyOf data-prep.services.playground.service:DatagridService
          * @description the SlickGrid dataView

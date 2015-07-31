@@ -43,7 +43,7 @@
 					var x = d3.scale.linear().range([0, w]),
 						y = d3.scale.ordinal().rangeRoundBands([0, h], 0.18);
 
-					var xAxis = d3.svg.axis().scale(x).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
+					var xAxis = d3.svg.axis().scale(x).tickFormat(d3.format('d')).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
 						yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
 
 					var tip = d3.tip()

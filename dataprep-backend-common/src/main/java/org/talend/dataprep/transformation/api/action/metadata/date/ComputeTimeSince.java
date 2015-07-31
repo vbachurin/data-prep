@@ -1,22 +1,8 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
-import org.talend.dataprep.transformation.api.action.parameters.Item;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static org.talend.dataprep.api.type.Type.INTEGER;
 
-import javax.annotation.Nonnull;
 import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,11 +14,24 @@ import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalUnit;
 import java.util.Map;
 
-import static java.time.temporal.ChronoUnit.HOURS;
-import static org.talend.dataprep.api.type.Type.INTEGER;
+import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.parameters.Item;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
-public class ComputeTimeSince extends AbstractActionMetadata implements IColumnAction {
+public class ComputeTimeSince extends AbstractDate implements IColumnAction {
 
     /**
      * The action name.
@@ -78,25 +77,17 @@ public class ComputeTimeSince extends AbstractActionMetadata implements IColumnA
     }
 
     /**
-     * @see ActionMetadata#getCategory()
-     */
-    @Override
-    public String getCategory() {
-        return ActionCategory.DATE.getDisplayName();
-    }
-
-    /**
      * @see ActionMetadata#getItems()@return
      */
     @Override
     @Nonnull
     public Item[] getItems() {
-        Item.Value[] values = new Item.Value[]{ //
+        Item.Value[] values = new Item.Value[] { //
                 new Item.Value(ChronoUnit.YEARS.name(), true), //
                 new Item.Value(ChronoUnit.MONTHS.name()), //
                 new Item.Value(ChronoUnit.DAYS.name()), //
-                new Item.Value(HOURS.name())};
-        return new Item[]{new Item(TIME_UNIT_PARAMETER, "categ", values)};
+                new Item.Value(HOURS.name()) };
+        return new Item[] { new Item(TIME_UNIT_PARAMETER, "categ", values) };
     }
 
     @Override
@@ -118,7 +109,8 @@ public class ComputeTimeSince extends AbstractActionMetadata implements IColumnA
         final String value = row.get(columnId);
         try {
             final TemporalAccessor temporalAccessor = dtf.parse(value, new ParsePosition(0));
-            final Temporal valueAsDate = (unit == HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor));
+            final Temporal valueAsDate = (unit == HOURS ? LocalDateTime.from(temporalAccessor)
+                    : LocalDate.from(temporalAccessor));
             final long newValue = unit.between(valueAsDate, now);
             row.set(newColumnMetadata.getId(), newValue + "");
         } catch (DateTimeParseException e) {
@@ -152,11 +144,11 @@ public class ComputeTimeSince extends AbstractActionMetadata implements IColumnA
      * @return a new date formatter that fit the current pattern
      */
     private DateTimeFormatter getCurrentDatePatternFormatter(final ColumnMetadata column) {
-        //json reader to parse statistics as JSON format
+        // json reader to parse statistics as JSON format
         final JsonFactory jsonFactory = new JsonFactory();
         final ObjectMapper mapper = new ObjectMapper(jsonFactory);
 
-        //get date pattern from statistics
+        // get date pattern from statistics
         final JsonNode rootNode = getStatisticsNode(mapper, column);
         final JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
         final String datePattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
@@ -164,11 +156,4 @@ public class ComputeTimeSince extends AbstractActionMetadata implements IColumnA
         return DateTimeFormatter.ofPattern(datePattern);
     }
 
-    /**
-     * @see ActionMetadata#acceptColumn(ColumnMetadata)
-     */
-    @Override
-    public boolean acceptColumn(ColumnMetadata column) {
-        return Type.DATE.equals(Type.get(column.getType()));
-    }
 }

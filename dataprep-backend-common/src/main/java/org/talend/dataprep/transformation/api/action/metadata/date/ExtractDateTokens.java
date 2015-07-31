@@ -1,8 +1,18 @@
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.talend.dataprep.api.type.Type.BOOLEAN;
+
+import java.text.ParsePosition;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,29 +23,18 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import javax.annotation.Nonnull;
-import java.text.ParsePosition;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAccessor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.talend.dataprep.api.type.Type.BOOLEAN;
-import static org.talend.dataprep.api.type.Type.DATE;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Change the date pattern on a 'date' column.
  */
 @Component(ExtractDateTokens.ACTION_BEAN_PREFIX + ExtractDateTokens.ACTION_NAME)
-public class ExtractDateTokens extends AbstractActionMetadata implements IColumnAction {
+public class ExtractDateTokens extends AbstractDate implements IColumnAction {
 
     /**
      * Action name.
@@ -106,24 +105,6 @@ public class ExtractDateTokens extends AbstractActionMetadata implements IColumn
     @Override
     public String getName() {
         return ACTION_NAME;
-    }
-
-    /**
-     * @see ActionMetadata#getCategory()
-     */
-    @Override
-    public String getCategory() {
-        return ActionCategory.DATE.getDisplayName();
-    }
-
-    /**
-     * Only works on 'date' columns.
-     *
-     * @see ActionMetadata#acceptColumn(ColumnMetadata)
-     */
-    @Override
-    public boolean acceptColumn(ColumnMetadata column) {
-        return DATE.equals(Type.get(column.getType()));
     }
 
     @Override

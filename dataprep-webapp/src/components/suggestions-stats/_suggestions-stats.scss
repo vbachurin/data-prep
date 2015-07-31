@@ -1,0 +1,26 @@
+.suggestions {
+  $slide-action-background: $white;
+
+  $menu-color: tint($black, 20%);
+  $menu-background: $light-gray;
+
+  .action {
+    background: $slide-action-background;
+
+    &:hover {
+      background: darken($slide-action-background, 5%);
+    }
+  }
+
+  .suggestions-stats-details {
+    .title {
+      font-size: 1.2em;
+      font-weight: 600;
+      padding: 25px 10px 5px 10px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+@import "actions-suggestions/action-suggestions";
+@import "stats-details/stats-details";

@@ -28,6 +28,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
  * Test class for Round action. Creates one consumer, and test it.
@@ -58,6 +59,12 @@ public class RoundTest {
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(roundAction.adapt(column), is(roundAction));
     }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(roundAction.getCategory(), is(ActionCategory.MATH.getDisplayName()));
+    }
+
 
     public void testCommon(String input, String expected) {
         Map<String, String> values = new HashMap<>();
