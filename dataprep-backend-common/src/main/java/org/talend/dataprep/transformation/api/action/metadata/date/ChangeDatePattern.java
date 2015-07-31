@@ -18,9 +18,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -34,7 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * Change the date pattern on a 'date' column.
  */
 @Component(ChangeDatePattern.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
-public class ChangeDatePattern extends SingleColumnAction {
+public class ChangeDatePattern extends AbstractDate {
 
     /** Action name. */
     public static final String ACTION_NAME = "change_date_pattern"; //$NON-NLS-1$
@@ -144,14 +142,6 @@ public class ChangeDatePattern extends SingleColumnAction {
     }
 
     /**
-     * @see ActionMetadata#getCategory()
-     */
-    @Override
-    public String getCategory() {
-        return ActionCategory.DATE.getDisplayName();
-    }
-
-    /**
      * @see ActionMetadata#getItems()@return
      */
     @Override
@@ -173,13 +163,4 @@ public class ChangeDatePattern extends SingleColumnAction {
         return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()])) };
     }
 
-    /**
-     * Only works on 'date' columns.
-     * 
-     * @see ActionMetadata#accept(ColumnMetadata)
-     */
-    @Override
-    public boolean accept(ColumnMetadata column) {
-        return Type.DATE.equals(Type.get(column.getType()));
-    }
 }

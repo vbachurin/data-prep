@@ -25,8 +25,6 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -34,7 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
-public class ComputeTimeSince extends SingleColumnAction {
+public class ComputeTimeSince extends AbstractDate {
 
     /** The action name. */
     public static final String TIME_SINCE_ACTION_NAME = "compute_time_since"; //$NON-NLS-1$
@@ -57,14 +55,6 @@ public class ComputeTimeSince extends SingleColumnAction {
     @Override
     public String getName() {
         return TIME_SINCE_ACTION_NAME;
-    }
-
-    /**
-     * @see ActionMetadata#getCategory()
-     */
-    @Override
-    public String getCategory() {
-        return ActionCategory.DATE.getDisplayName();
     }
 
     /**
@@ -163,11 +153,4 @@ public class ComputeTimeSince extends SingleColumnAction {
         }
     }
 
-    /**
-     * @see ActionMetadata#accept(ColumnMetadata)
-     */
-    @Override
-    public boolean accept(ColumnMetadata column) {
-        return Type.DATE.equals(Type.get(column.getType()));
-    }
 }

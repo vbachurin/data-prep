@@ -23,9 +23,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.SingleColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -36,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Change the date pattern on a 'date' column.
  */
 @Component(ExtractDateTokens.ACTION_BEAN_PREFIX + ExtractDateTokens.ACTION_NAME)
-public class ExtractDateTokens extends SingleColumnAction {
+public class ExtractDateTokens extends AbstractDate {
 
     /** Action name. */
     public static final String ACTION_NAME = "extract_date_tokens"; //$NON-NLS-1$
@@ -184,24 +182,6 @@ public class ExtractDateTokens extends SingleColumnAction {
     @Override
     public String getName() {
         return ACTION_NAME;
-    }
-
-    /**
-     * @see ActionMetadata#getCategory()
-     */
-    @Override
-    public String getCategory() {
-        return ActionCategory.DATE.getDisplayName();
-    }
-
-    /**
-     * Only works on 'date' columns.
-     *
-     * @see ActionMetadata#accept(ColumnMetadata)
-     */
-    @Override
-    public boolean accept(ColumnMetadata column) {
-        return Type.DATE.equals(Type.get(column.getType()));
     }
 
     private static class DateFieldMappingBean {
