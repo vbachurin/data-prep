@@ -90,6 +90,11 @@
           DatasetService.updateColumn(PlaygroundService.currentMetadata.id, vm.column);
         };
 
+        vm.displayPercentage = function(count){
+            var percentage = ((count * 100) / vm.column.statistics.count);
+            return percentage >= 100 ? percentage.toPrecision(3) : percentage.toPrecision(2);
+        };
+
         /**
          * @ngdoc method
          * @name transform
