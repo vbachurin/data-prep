@@ -29,6 +29,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -54,20 +55,6 @@ public class AbsoluteTest {
 
     private DataSetRowAction absIntConsumer;
 
-    @Test
-    public void testAdaptFloat() throws Exception {
-        assertThat(absFloatAction.adapt(null), is(absFloatAction));
-        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
-        assertThat(absFloatAction.adapt(column), is(absFloatAction));
-    }
-
-    @Test
-    public void testAdaptInt() throws Exception {
-        assertThat(absIntAction.adapt(null), is(absIntAction));
-        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
-        assertThat(absIntAction.adapt(column), is(absIntAction));
-    }
-
     /**
      * Default empty constructor.
      */
@@ -92,6 +79,26 @@ public class AbsoluteTest {
 
         Map<String, String> parameters2 = absIntAction.parseParameters(node.get("actions").get(0).get("parameters").fields());//$NON-NLS-1$//$NON-NLS-2$
         absIntConsumer = absIntAction.create(parameters2).getRowAction();
+    }
+
+    @Test
+    public void testAdaptFloat() throws Exception {
+        assertThat(absFloatAction.adapt(null), is(absFloatAction));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(absFloatAction.adapt(column), is(absFloatAction));
+    }
+
+    @Test
+    public void testAdaptInt() throws Exception {
+        assertThat(absIntAction.adapt(null), is(absIntAction));
+        ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
+        assertThat(absIntAction.adapt(column), is(absIntAction));
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(absIntAction.getCategory(), is(ActionCategory.MATH.getDisplayName()));
+        assertThat(absFloatAction.getCategory(), is(ActionCategory.MATH.getDisplayName()));
     }
 
     @Test
