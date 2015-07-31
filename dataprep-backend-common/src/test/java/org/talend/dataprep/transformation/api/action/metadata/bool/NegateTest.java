@@ -16,6 +16,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
  * Test class for Negate action.
@@ -41,6 +42,11 @@ public class NegateTest {
                 NegateTest.class.getResourceAsStream("negateAction.json"));
 
         consumer = action.create(parameters).getRowAction();
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.BOOLEAN.getDisplayName()));
     }
 
     @Test
