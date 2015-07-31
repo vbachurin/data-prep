@@ -587,7 +587,6 @@ public class DataPreparationAPITest {
         // when
         final String diff = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/update")
                 .asString();
-        System.out.println(diff);
 
         // then
         assertThat(diff, sameJSONAsFile(expectedDiffStream));
