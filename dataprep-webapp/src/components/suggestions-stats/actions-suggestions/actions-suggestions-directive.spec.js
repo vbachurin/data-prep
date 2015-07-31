@@ -1,4 +1,4 @@
-describe('Actions suggestions directive', function() {
+describe('Actions suggestions-stats directive', function() {
     'use strict';
 
     var scope, element, createElement;
