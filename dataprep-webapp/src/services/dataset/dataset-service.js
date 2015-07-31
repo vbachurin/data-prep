@@ -119,14 +119,6 @@
          * @returns {promise} The process promise
          */
         self.refreshDatasets = function(sortType, sortOrder) {
-
-            if(typeof sortType === 'undefined' || !sortType) {
-                sortType = null;
-            }
-
-            if(typeof sortOrder === 'undefined' || !sortOrder) {
-                sortOrder = null;
-            }
             return DatasetListService.refreshDatasets(sortType, sortOrder)
                 .then(consolidatePreparationsAndDatasets);
         };

@@ -11,7 +11,7 @@ describe('Dataset Rest Service', function () {
         spyOn($rootScope, '$emit').and.callThrough();
     }));
 
-    it('should call dataset list rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
+    it('should call dataset list rest service WITHOUT sort parameters', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var result = null;
         var datasets = [
@@ -33,6 +33,76 @@ describe('Dataset Rest Service', function () {
         //then
         expect(result).toEqual(datasets);
     }));
+
+    it('should call dataset list rest service WITH sort parameters', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var result = null;
+        var datasets = [
+            {name: 'Customers (50 lines)'},
+            {name: 'Us states'},
+            {name: 'Customers (1K lines)'}
+        ];
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl+ '?sort=name&order=asc')
+            .respond(200, datasets);
+
+        //when
+        DatasetRestService.getDatasets('name', 'asc').then(function (response) {
+            result = response.data;
+        });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(result).toEqual(datasets);
+    }));
+
+    it('should call dataset list rest service WITH sort parameters (only sortType)', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var result = null;
+        var datasets = [
+            {name: 'Customers (50 lines)'},
+            {name: 'Us states'},
+            {name: 'Customers (1K lines)'}
+        ];
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl+ '?sort=name')
+            .respond(200, datasets);
+
+        //when
+        DatasetRestService.getDatasets('name', null).then(function (response) {
+            result = response.data;
+        });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(result).toEqual(datasets);
+    }));
+
+    it('should call dataset list rest service WITH sort parameters (only sortOrder)', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var result = null;
+        var datasets = [
+            {name: 'Customers (50 lines)'},
+            {name: 'Us states'},
+            {name: 'Customers (1K lines)'}
+        ];
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl+ '?order=asc')
+            .respond(200, datasets);
+
+        //when
+        DatasetRestService.getDatasets(undefined, 'asc').then(function (response) {
+            result = response.data;
+        });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(result).toEqual(datasets);
+    }));
+
 
     it('should call dataset creation rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given

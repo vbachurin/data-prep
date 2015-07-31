@@ -25,6 +25,7 @@ describe('Dataset list controller', function () {
             return ctrl;
         };
 
+        spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
         spyOn(DatasetService, 'processCertification').and.returnValue($q.when(true));
         spyOn(DatasetService, 'getDatasets').and.callFake(function () {
             return $q.when(datasetsValues.shift());
@@ -47,6 +48,36 @@ describe('Dataset list controller', function () {
 
         //then
         expect(DatasetService.getDatasets).toHaveBeenCalled();
+    }));
+
+
+    it('should refresh dataset when sort is changed', inject(function (DatasetService) {
+        //given
+        var ctrl = createController();
+
+        var newSort =  {id: 'name', name: 'NAME_SORT'};
+
+        //when
+        ctrl.updateSortBy(newSort);
+        scope.$digest();
+
+        //then
+        expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('name','desc');
+    }));
+
+
+    it('should refresh dataset when order is changed', inject(function (DatasetService) {
+        //given
+        var ctrl = createController();
+
+        var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
+
+        //when
+        ctrl.updateSortOrder(newSortOrder);
+        scope.$digest();
+
+        //then
+        expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('date','asc');
     }));
 
     it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService) {
@@ -84,7 +115,6 @@ describe('Dataset list controller', function () {
             scope.$digest();
 
             spyOn(DatasetService, 'delete').and.returnValue($q.when(true));
-            spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
             spyOn(MessageService, 'success').and.callThrough();
             spyOn(DatasetSheetPreviewService, 'loadPreview').and.returnValue($q.when(true));
             spyOn(DatasetSheetPreviewService, 'display').and.returnValue($q.when(true));

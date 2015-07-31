@@ -192,7 +192,17 @@ describe('Dataset List Service', function () {
         //then
         expect(DatasetListService.datasets).toEqual(datasets);
         expect(DatasetRestService.getDatasets.calls.count()).toBe(1);
+        expect(DatasetRestService.getDatasets).toHaveBeenCalledWith(undefined,undefined);
     }));
+
+    it('should trigger refresh with sort parameters', inject(function (DatasetListService, DatasetRestService) {
+        //when
+        DatasetListService.refreshDatasets('name','asc');
+
+        //then
+        expect(DatasetRestService.getDatasets).toHaveBeenCalledWith('name','asc');
+    }));
+
 
     it('should create dataset', inject(function ($rootScope, DatasetListService, DatasetRestService) {
         //given

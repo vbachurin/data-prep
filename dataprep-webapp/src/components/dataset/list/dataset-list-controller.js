@@ -22,13 +22,10 @@
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
 
-        vm.sortSelected = {};
-        vm.sortSelected.id = 'date';
-        vm.sortSelected.name = 'NAME_SORT';
+        //sort by default
+        vm.sortSelected = {id: 'date', name: 'DATE_SORT'};
+        vm.sortOrderSelected = {id: 'desc', name: 'DESC_ORDER'};
 
-        vm.sortOrderSelected = {};
-        vm.sortOrderSelected.id = 'desc';
-        vm.sortOrderSelected.name = 'DESC_ORDER';
 
         /**
          * @ngdoc property
@@ -62,8 +59,7 @@
          * @param {object} sortType : criteria to sort
          */
         vm.updateSortBy = function(sortType) {
-            vm.sortSelected.id = sortType.id;
-            vm.sortSelected.name = sortType.name;
+            vm.sortSelected = sortType;
 
             DatasetService.refreshDatasets( vm.sortSelected.id, vm.sortOrderSelected.id);
 
@@ -77,8 +73,7 @@
          * @param {object} order : ASC(ascending) or DESC(descending)
          */
         vm.updateSortOrder = function(order) {
-            vm.sortOrderSelected.id = order.id;
-            vm.sortOrderSelected.name = order.name;
+            vm.sortOrderSelected = order;
 
             DatasetService.refreshDatasets( vm.sortSelected.id,  vm.sortOrderSelected.id);
 

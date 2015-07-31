@@ -92,7 +92,18 @@
          * @returns {Promise} - the GET call promise
          */
         self.getDatasets = function(sortType, sortOrder) {
-            return $http.get(RestURLs.datasetUrl + '?sort=' + sortType + '&order=' + sortOrder);
+
+            var datasetUrlEnd = '';
+
+            if((sortType || typeof sortType !== 'undefined') &&  (!sortOrder || typeof sortOrder === 'undefined')){
+                datasetUrlEnd =  '?sort=' + sortType;
+            } else if((!sortType || typeof sortType === 'undefined') &&  (sortOrder || typeof sortOrder !== 'undefined')) {
+                datasetUrlEnd =  '?order=' + sortOrder;
+            } else if((sortType || typeof sortType !== 'undefined') &&  (sortOrder || typeof sortOrder !== 'undefined')) {
+                datasetUrlEnd =  '?sort=' + sortType + '&order=' + sortOrder;
+            }
+
+            return $http.get(RestURLs.datasetUrl + datasetUrlEnd);
         };
 
         /**
