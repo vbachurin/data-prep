@@ -12,6 +12,7 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -159,6 +160,69 @@ public class DataPreparationAPITest {
         // then
         assertTrue(list.contains(dataSetId));
     }
+
+    @Test
+    public void testDataSetListWithDateOrder() throws Exception {
+        final ObjectMapper mapper = new ObjectMapper();
+        // given
+        final String dataSetId1 = createDataset("test1.csv", "aaaa", "text/csv");
+        Thread.sleep(100);
+        final String dataSetId2 = createDataset("test1.csv", "bbbb", "text/csv");
+
+        // when (sort by date, order is desc)
+        String list = when().get("/api/datasets?sort={sort}&order={order}", "date", "desc").asString();
+
+        // then
+        Iterator<JsonNode> elements = mapper.readTree(list).elements();
+        String[] expectedNames = new String[] {dataSetId2, dataSetId1};
+        int i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("id").asText(), is(expectedNames[i++]));
+        }
+
+        // when (sort by date, order is desc)
+        list = when().get("/api/datasets?sort={sort}&order={order}", "date", "asc").asString();
+
+        // then
+        elements = mapper.readTree(list).elements();
+        expectedNames = new String[] {dataSetId1, dataSetId2};
+        i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("id").asText(), is(expectedNames[i++]));
+        }
+    }
+
+    @Test
+    public void testDataSetListWithNameOrder() throws Exception {
+        final ObjectMapper mapper = new ObjectMapper();
+        // given
+        final String dataSetId1 = createDataset("test1.csv", "aaaa", "text/csv");
+        Thread.sleep(100);
+        final String dataSetId2 = createDataset("test1.csv", "bbbb", "text/csv");
+
+        // when (sort by date, order is desc)
+        String list = when().get("/api/datasets?sort={sort}&order={order}", "name", "desc").asString();
+
+        // then
+        Iterator<JsonNode> elements = mapper.readTree(list).elements();
+        String[] expectedNames = new String[] {dataSetId2, dataSetId1};
+        int i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("id").asText(), is(expectedNames[i++]));
+        }
+
+        // when (sort by date, order is desc)
+        list = when().get("/api/datasets?sort={sort}&order={order}", "date", "asc").asString();
+
+        // then
+        elements = mapper.readTree(list).elements();
+        expectedNames = new String[] {dataSetId1, dataSetId2};
+        i = 0;
+        while (elements.hasNext()) {
+            assertThat(elements.next().get("id").asText(), is(expectedNames[i++]));
+        }
+    }
+
 
     /**
      * Simple dataset deletion case.
