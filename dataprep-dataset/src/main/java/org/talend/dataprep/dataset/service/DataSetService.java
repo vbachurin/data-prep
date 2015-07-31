@@ -35,9 +35,9 @@ import org.talend.dataprep.dataset.service.analysis.SynchronousDataSetAnalyzer;
 import org.talend.dataprep.dataset.service.locator.DataSetLocatorService;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.metrics.VolumeMetered;
@@ -141,14 +141,41 @@ public class DataSetService {
     @RequestMapping(value = "/datasets", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all data sets", notes = "Returns the list of data sets the current user is allowed to see. Creation date is a Epoch time value (in UTC time zone).")
     @Timed
-    public Iterable<DataSetMetadata> list() {
+    public Iterable<DataSetMetadata> list(@ApiParam(value = "Sort key (by name or date).") @RequestParam(defaultValue = "DATE", required = false) String sort,
+                                          @ApiParam(value = "Order for sort key (desc or asc).") @RequestParam(defaultValue = "DESC", required = false) String order) {
         final Spliterator<DataSetMetadata> iterator = dataSetMetadataRepository.list().spliterator();
         Stream<DataSetMetadata> stream = StreamSupport.stream(iterator, false);
-        return stream.filter(metadata -> !metadata.getLifecycle().importing())//
+        // Select order (asc or desc)
+        final Comparator<String> comparisonOrder;
+        switch (order.toUpperCase()) {
+            case "ASC":
+                comparisonOrder = Comparator.naturalOrder();
+                break;
+            case "DESC":
+                comparisonOrder = Comparator.reverseOrder();
+                break;
+            default:
+                throw new TDPException(DataSetErrorCodes.ILLEGAL_ORDER_FOR_LIST, TDPExceptionContext.build().put("order", order));
+        }
+        // Select comparator for sort (either by name or date)
+        final Comparator<DataSetMetadata> comparator;
+        switch (sort.toUpperCase()) {
+            case "NAME":
+                comparator = Comparator.comparing(DataSetMetadata::getName, comparisonOrder);
+                break;
+            case "DATE":
+                comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()), comparisonOrder);
+                break;
+            default:
+                throw new TDPException(DataSetErrorCodes.ILLEGAL_SORT_FOR_LIST, TDPExceptionContext.build().put("sort", order));
+        }
+        // Return sorted results
+        return stream.filter(metadata -> !metadata.getLifecycle().importing()) //
                 .map(metadata -> {
                     completeWithUserData(metadata);
                     return metadata;
-                })//
+                }) //
+                .sorted(comparator) //
                 .collect(Collectors.toList());
     }
 
@@ -478,7 +505,7 @@ public class DataSetService {
     /**
      * This gets the current user data related to the dataSetMetadata and updates the dataSetMetadata accordingly. First
      * check for favorites dataset
-     * 
+     *
      * @param dataSetMetadata, the metadata to be updated
      */
     void completeWithUserData(DataSetMetadata dataSetMetadata) {
@@ -555,7 +582,7 @@ public class DataSetService {
 
     /**
      * list all the favorites dataset for the current user
-     * 
+     *
      * @return a list of the dataset Ids of all the favorites dataset for the current user or an empty list if none
      * found
      */
@@ -572,7 +599,7 @@ public class DataSetService {
      * update the current user data dataset favorites list by adding or removing the dataSetId according to the unset
      * flag. The user data for the current will be created if it does not exist. If no data set exists for given id, a
      * {@link TDPException} is thrown.
-     * 
+     *
      * @param unset, if true this will remove the dataSetId from the list of favorites, if false then it adds the
      * dataSetId to the favorite list
      * @param dataSetId, the id of the favorites data set. If the data set does not exists nothing is done.

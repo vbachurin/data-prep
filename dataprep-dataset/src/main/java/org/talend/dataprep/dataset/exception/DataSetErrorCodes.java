@@ -48,7 +48,19 @@ public enum DataSetErrorCodes implements ErrorCode {
      * 
      * @see org.talend.dataprep.dataset.service.DataSetService#create(String, String, InputStream, HttpServletResponse)
      */
-    UNABLE_TO_READ_DATASET_LOCATION(400);
+    UNABLE_TO_READ_DATASET_LOCATION(400),
+    /**
+     * Error returned when the order is not supported.
+     *
+     * @see org.talend.dataprep.dataset.service.DataSetService#list(String, String)
+     */
+    ILLEGAL_ORDER_FOR_LIST(400, "order"),
+    /**
+     * Error returned when the sort is not supported.
+     *
+     * @see org.talend.dataprep.dataset.service.DataSetService#list(String, String)
+     */
+    ILLEGAL_SORT_FOR_LIST(400, "sort");
 
     /** The http status to use. */
     private int httpStatus;
