@@ -207,14 +207,18 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
         dataSetMetadataRepository.add(metadata1);
         String id2 = UUID.randomUUID().toString();
-        final DataSetMetadata metadata2 = metadata().id(id2).name("BBBB").author("anonymous").created(0)
+        final DataSetMetadata metadata2 = metadata().id(id2).name("CCCC").author("anonymous").created(0)
                 .formatGuessId(new CSVFormatGuess().getBeanId()).build();
         dataSetMetadataRepository.add(metadata2);
+        String id3 = UUID.randomUUID().toString();
+        final DataSetMetadata metadata3 = metadata().id(id3).name("bbbb").author("anonymous").created(0)
+                .formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadataRepository.add(metadata3);
         final ObjectMapper mapper = new ObjectMapper();
         // Ensure order by name (last character from alphabet first)
         String actual = when().get("/datasets?sort=name&order=desc").asString();
         Iterator<JsonNode> elements = mapper.readTree(actual).elements();
-        String[] expectedNames = new String[] {"BBBB", "AAAA"};
+        String[] expectedNames = new String[] {"CCCC", "bbbb", "AAAA"};
         int i = 0;
         while (elements.hasNext()) {
             assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
@@ -222,7 +226,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // Ensure order by name (last character from alphabet first when no order value)
         actual = when().get("/datasets?sort=name").asString();
         elements = mapper.readTree(actual).elements();
-        expectedNames = new String[] {"BBBB", "AAAA"};
+        expectedNames = new String[] {"CCCC", "bbbb", "AAAA"};
         i = 0;
         while (elements.hasNext()) {
             assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));
@@ -230,7 +234,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // Ensure order by name (first character from alphabet first)
         actual = when().get("/datasets?sort=name&order=asc").asString();
         elements = mapper.readTree(actual).elements();
-        expectedNames = new String[] {"AAAA", "BBBB"};
+        expectedNames = new String[] {"AAAA", "bbbb", "CCCC"};
         i = 0;
         while (elements.hasNext()) {
             assertThat(elements.next().get("name").asText(), is(expectedNames[i++]));

@@ -161,7 +161,7 @@ public class DataSetService {
         final Comparator<DataSetMetadata> comparator;
         switch (sort.toUpperCase()) {
             case "NAME":
-                comparator = Comparator.comparing(DataSetMetadata::getName, comparisonOrder);
+                comparator = Comparator.comparing(dataSetMetadata -> dataSetMetadata.getName().toUpperCase(), comparisonOrder);
                 break;
             case "DATE":
                 comparator = Comparator.comparing(dataSetMetadata -> String.valueOf(dataSetMetadata.getCreationDate()), comparisonOrder);
