@@ -32,6 +32,7 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -69,6 +70,11 @@ public class ExtractEmailDomainTest {
         assertThat(action.adapt(null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(action.adapt(column), is(action));
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
     }
 
     /**
@@ -113,7 +119,7 @@ public class ExtractEmailDomainTest {
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see ExtractEmailDomain#create(Map)
      */
     @Test
     public void test_metadata() {
@@ -138,7 +144,7 @@ public class ExtractEmailDomainTest {
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see ExtractEmailDomain#create(Map)
      */
     @Test
     public void test_metadata_with_multiple_executions() {

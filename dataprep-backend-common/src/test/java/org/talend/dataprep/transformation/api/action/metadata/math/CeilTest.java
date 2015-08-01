@@ -28,6 +28,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
  * Test class for Ceil action. Creates one consumer, and test it.
@@ -57,6 +58,11 @@ public class CeilTest {
         assertThat(action.adapt(null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(action.adapt(column), is(action));
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.MATH.getDisplayName()));
     }
 
     public void testCommon(String input, String expected) {

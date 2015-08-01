@@ -1,5 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+
+import java.util.*;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -7,14 +14,7 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.text.TextClustering;
-
-import java.util.*;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 public class TextClusteringTest {
 
@@ -45,6 +45,11 @@ public class TextClusteringTest {
         // then
         rows.stream().map(row -> row.get("uglystate"))
                 .forEach(uglyState -> Assertions.assertThat(uglyState).isEqualTo("Tata"));
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(textClustering.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
     }
 
     @Test

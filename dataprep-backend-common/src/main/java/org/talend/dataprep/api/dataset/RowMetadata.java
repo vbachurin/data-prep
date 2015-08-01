@@ -189,6 +189,7 @@ public class RowMetadata {
     /**
      * @see Object#clone()
      */
+    @Override
     public RowMetadata clone() {
         // also copy the columns !
         List<ColumnMetadata> copyColumns = new ArrayList<>(columns.size());

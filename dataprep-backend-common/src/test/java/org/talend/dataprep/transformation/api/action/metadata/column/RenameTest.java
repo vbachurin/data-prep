@@ -27,11 +27,11 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -72,8 +72,13 @@ public class RenameTest {
         assertThat(hasMetExpectedParameter, is(true));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.COLUMNS.getDisplayName()));
+    }
+
     /**
-     * @see Action#getMetadataAction()
+     * @see Rename#create(Map)
      */
     @Test
     public void should_update_metadata() {

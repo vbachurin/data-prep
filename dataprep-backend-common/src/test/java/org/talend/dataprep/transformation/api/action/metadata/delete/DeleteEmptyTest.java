@@ -16,6 +16,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
  * Test class for DeleteEmpty action. Creates one consumer, and test it.
@@ -48,6 +49,11 @@ public class DeleteEmptyTest {
         assertThat(deleteEmpty.adapt(null), is(deleteEmpty));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(deleteEmpty.adapt(column), is(deleteEmpty));
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(deleteEmpty.getCategory(), is(ActionCategory.CLEANSING.getDisplayName()));
     }
 
     @Test
