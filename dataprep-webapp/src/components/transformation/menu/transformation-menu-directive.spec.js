@@ -2,6 +2,17 @@ describe('Transformation menu directive', function () {
     'use strict';
     var scope, createElement, element,$httpBackend;
 
+    var types = [
+        { 'id':'ANY','name':'any','labelKey':'ANY'},
+        {'id':'STRING','name':'string','labelKey':'STRING'},
+        {'id':'NUMERIC','name':'numeric','labelKey':'NUMERIC'},
+        {'id':'INTEGER','name':'integer','labelKey':'INTEGER'},
+        {'id':'DOUBLE','name':'double','labelKey':'DOUBLE'},
+        {'id':'FLOAT','name':'float','labelKey':'FLOAT'},
+        {'id':'BOOLEAN','name':'boolean','labelKey':'BOOLEAN'},
+        {'id':'DATE','name':'date','labelKey':'DATE'}
+    ];
+
     beforeEach(module('data-prep.transformation-menu'));
     beforeEach(module('htmlTemplates'));
 
@@ -25,7 +36,7 @@ describe('Transformation menu directive', function () {
 
         $httpBackend
             .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, {});
+            .respond(200, types);
 
         //given
         scope.menu = [{label: 'uppercase'}];
@@ -41,7 +52,7 @@ describe('Transformation menu directive', function () {
 
         $httpBackend
             .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, {});
+            .respond(200, types);
 
         //given
         scope.menu = [{
@@ -84,7 +95,7 @@ describe('Transformation menu directive', function () {
 
         $httpBackend
             .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, {});
+            .respond(200, types);
 
         //given
         scope.menu = [{
@@ -124,7 +135,7 @@ describe('Transformation menu directive', function () {
 
         $httpBackend
             .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, {});
+            .respond(200, types);
 
         //given
         scope.menu = [
@@ -179,7 +190,7 @@ describe('Transformation menu directive', function () {
 
         $httpBackend
             .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, {});
+            .respond(200, types);
 
         //given
         scope.menu = [

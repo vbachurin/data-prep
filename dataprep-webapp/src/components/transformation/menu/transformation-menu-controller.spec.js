@@ -21,8 +21,49 @@ describe('Transform menu controller', function () {
             'invalid': 10,
             'valid': 72
         },
-        'type': 'string'
+        'type': 'string',
+        'domain': 'FR_POSTAL_CODE',
+        'domainLabel': 'FR POSTAL CODE',
+        'domainCount': 7,
+        'semanticDomains': [
+            {
+                'id': 'CH_POSTAL_CODE',
+                'label': 'CH  POSTAL CODE',
+                'count': 5
+            },
+            {
+                'id': 'FR_POSTAL_CODE',
+                'label': 'FR POSTAL CODE',
+                'count': 7
+            },
+            {
+                'id': 'FR_CODE_COMMUNE_INSEE',
+                'label': 'FR INSEE CODE',
+                'count': 7
+            },
+            {
+                'id': 'DE_POSTAL_CODE',
+                'label': 'DE POSTAL CODE',
+                'count': 7
+            },
+            {
+                'id': 'US_POSTAL_CODE',
+                'label': 'US POSTAL CODE',
+                'count': 7
+            }
+        ]
     };
+    
+    var types = [
+        { 'id':'ANY','name':'any','labelKey':'ANY'},
+        {'id':'STRING','name':'string','labelKey':'STRING'},
+        {'id':'NUMERIC','name':'numeric','labelKey':'NUMERIC'},
+        {'id':'INTEGER','name':'integer','labelKey':'INTEGER'},
+        {'id':'DOUBLE','name':'double','labelKey':'DOUBLE'},
+        {'id':'FLOAT','name':'float','labelKey':'FLOAT'},
+        {'id':'BOOLEAN','name':'boolean','labelKey':'BOOLEAN'},
+        {'id':'DATE','name':'date','labelKey':'DATE'}
+    ];
 
     beforeEach(module('data-prep.transformation-menu'));
 
@@ -96,7 +137,7 @@ describe('Transform menu controller', function () {
 
         $httpBackend
             .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, {});
+            .respond(200, types);
 
         //given
         var ctrl = createController();
@@ -124,7 +165,7 @@ describe('Transform menu controller', function () {
 
         $httpBackend
             .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, {});
+            .respond(200, types);
 
         //given
         var ctrl = createController();
@@ -149,7 +190,7 @@ describe('Transform menu controller', function () {
 
         $httpBackend
             .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, {});
+            .respond(200, types);
 
         //given
         var ctrl = createController();
