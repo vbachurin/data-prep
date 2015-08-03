@@ -6,10 +6,12 @@
      * @name data-prep.stats-details.controller:StatsDetailsCtrl
      * @description Statistics details
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
+     * @requires data-prep.services.statisticsService.service:StatisticsService
      */
-    function StatsDetailsCtrl(ColumnSuggestionService) {
+    function StatsDetailsCtrl($scope, ColumnSuggestionService, StatisticsService) {
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
+        vm.statisticsService = StatisticsService;
 
         /**
          * @ngdoc method
@@ -22,6 +24,15 @@
             alert('The selected pattern is: ' + item.pattern + '. Filtering is coming soon.');
             //return StatisticsService.addFilter(item.data);
         };
+
+        /**
+         * update the boxplot chart data
+         * */
+        $scope.$watch(function(){
+            return vm.statisticsService.boxplotData;
+        }, function(newData){
+            vm.boxplotData = newData;
+        });
     }
 
     Object.defineProperty(StatsDetailsCtrl.prototype,
@@ -29,9 +40,10 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.columnSuggestionService.statistics;
+                return this.statisticsService.statistics;
             }
         });
+
 
     Object.defineProperty(StatsDetailsCtrl.prototype,
         'patternFrequencyTable', {

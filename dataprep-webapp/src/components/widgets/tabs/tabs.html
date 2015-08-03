@@ -1,6 +1,6 @@
 <ul class="tabs">
     <li class="tabs-item" ng-class="{active : tab.active}" ng-repeat="tab in tabsCtrl.tabs track by $index" ng-click="tabsCtrl.select(tab)">
-        {{tab.title}}
+        {{tab.tabTitle}}
     </li>
 </ul>
 <ng-transclude></ng-transclude>

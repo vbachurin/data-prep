@@ -33,11 +33,11 @@ describe('stats details directive', function () {
         expect(element.find('.title').text().trim()).toBe('Stats');
     }));
 
-    it('should set column name in title', inject(function (ColumnSuggestionService) {
+    it('should set column name in title', inject(function (StatisticsService) {
         //given
         createElement();
 
-        ColumnSuggestionService.statistics = {
+        StatisticsService.statistics = {
             common: {
                 COUNT: 4,
                 DISTINCT_COUNT: 5,

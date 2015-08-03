@@ -16,7 +16,7 @@ describe('Stats-details controller', function () {
         };
     }));
 
-    it('should bind statistics getter to ColumnSuggestionService.statistics', inject(function (ColumnSuggestionService) {
+    it('should bind statistics getter to ColumnSuggestionService.statistics', inject(function (StatisticsService) {
         //given
         var ctrl = createController();
         expect(ctrl.statistics).toBeFalsy();
@@ -24,7 +24,7 @@ describe('Stats-details controller', function () {
         var stats = {};
 
         //when
-        ColumnSuggestionService.statistics = stats;
+        StatisticsService.statistics = stats;
 
         //then
         expect(ctrl.statistics).toBe(stats);
