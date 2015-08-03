@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, DatagridService, StatisticsService) {
+    function ColumnProfileCtrl($scope, DatagridService, StatisticsService, $filter) {
         var vm = this;
         vm.datasetGridService = DatagridService;
         vm.chartConfig = {};
@@ -19,6 +19,37 @@
         }, function(newData){
             vm.processedData = newData;
         });
+        //------------------------------------------------------------------------------------------------------
+        //----------------------------------------------AGGREGATION---------------------------------------------
+        //------------------------------------------------------------------------------------------------------
+
+        vm.aggregationSelected = $filter("translate")('LINE_COUNT');
+        vm.columnsList =  [
+            {id: '0001', name: 'Revenue'},
+            {id: '0002', name: 'Age'},
+        ];
+        vm.calculationsList =  [
+            {id: 'sum', name: 'SUM'},
+            {id: 'max', name: 'MAX'},
+            {id: 'min', name: 'MIN'},
+            {id: 'count', name: 'COUNT'},
+            {id: 'average', name: 'AVERAGE'},
+            {id: 'median', name: 'MEDIAN'}
+        ];
+
+        vm.updateCharts = function (column, calculation) {
+
+            if (column && calculation) {
+                vm.aggregationSelected = $filter("translate")(calculation.name)+'('+$filter("translate")(column.name)+')';
+
+            } else { //display "line count"
+                vm.aggregationSelected = $filter("translate")('LINE_COUNT');
+
+            }
+        };
+
+
+
 
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------CHARTS OPTIONS------------------------------------------

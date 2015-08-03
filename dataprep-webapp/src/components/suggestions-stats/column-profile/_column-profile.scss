@@ -1,0 +1,17 @@
+.column-profile-aggregation {
+  @include menu-list;
+  display: inline-block;
+  box-shadow: none;
+  margin: 15px 0 15px 0;
+  border-radius: 3px 3px 3px 3px;
+
+  .button-dropdown .button-dropdown-main {
+    color: #99999A;
+    background-color: $white;
+  }
+
+  .button-dropdown .button-dropdown-side {
+    color: #99999A;
+    background-color: $white;
+  }
+}

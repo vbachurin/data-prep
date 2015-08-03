@@ -1,4 +1,23 @@
 <div class="column-profile">
+    <div class="column-profile-aggregation">
+        <talend-button-dropdown button-text="{{columnProfileCtrl.aggregationSelected}}">
+            <ul>
+                <li ng-click="columnProfileCtrl.updateCharts(null,null)" >
+                    {{ 'LINE_COUNT' | translate }}
+                </li>
+                <li ng-repeat="column in columnProfileCtrl.columnsList"  class="more">
+                    {{column.name}}
+                    <ul class="submenu">
+                        <li ng-repeat="calculation in columnProfileCtrl.calculationsList" ng-click="columnProfileCtrl.updateCharts(column, calculation)" >
+                            {{calculation.name | translate }}
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </talend-button-dropdown>
+    </div>
+
+
     <horizontal-barchart id="barChart"
                 width="250"
                 height="400"
