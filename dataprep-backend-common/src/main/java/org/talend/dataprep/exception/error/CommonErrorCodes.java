@@ -16,6 +16,8 @@ public enum CommonErrorCodes implements ErrorCode {
     UNABLE_TO_PARSE_ACTIONS(500),
     UNABLE_TO_PARSE_REQUEST(400), // e.g IllegalArgumentException
     UNABLE_TO_CONNECT_TO_HDFS(500, "location"),
+    UNSUPPORTED_ACTION_SCOPE(400),
+    MISSING_ACTION_SCOPE(400),
     MISSING_ACTION_SCOPE_PARAMETER(400);
 
     /** The http status to use. */

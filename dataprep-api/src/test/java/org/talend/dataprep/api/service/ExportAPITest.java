@@ -43,7 +43,7 @@ public class ExportAPITest {
     @Test
     public void get_all_export_types() throws Exception {
         String actual = RestAssured.when().get("/api/export/types").asString();
-        final String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("export_type.json"));
+        final String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream("export/export_type.json"));
         JSONAssert.assertEquals(expectedContent, actual, false);
     }
 

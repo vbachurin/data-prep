@@ -1,10 +1,6 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import java.io.InputStream;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
@@ -12,11 +8,17 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.APIService;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.exception.json.JsonErrorCode;
+
+import java.io.InputStream;
+
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.talend.dataprep.api.APIErrorCodes.UNABLE_TO_UPDATE_ACTION_IN_PREPARATION;
 
 @Component
 @Scope("request")
@@ -46,9 +48,14 @@ public class PreparationUpdateAction extends DataPrepCommand<Void> {
             final int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 200) {
                 return null;
+            } else if (statusCode >= 400) {
+                final ObjectMapper build = builder.build();
+                final JsonErrorCode errorCode = build.reader(JsonErrorCode.class).readValue(response.getEntity().getContent());
+                errorCode.setHttpStatus(statusCode);
+                throw new TDPException(errorCode);
             }
-            throw new TDPException(APIErrorCodes.UNABLE_TO_UPDATE_ACTION_IN_PREPARATION, TDPExceptionContext.build()
-                    .put("id", id));
+
+            throw new TDPException(UNABLE_TO_UPDATE_ACTION_IN_PREPARATION, TDPExceptionContext.build().put("id", id));
         } finally {
             actionAppend.releaseConnection();
         }

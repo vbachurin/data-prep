@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -205,7 +206,7 @@ public class PreparationServiceTest {
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
-        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(preparation.getStep().id(), is("a41184275b046d86c8d98d413ed019bc0a7f3c49"));
     }
 
     @Test
@@ -219,14 +220,14 @@ public class PreparationServiceTest {
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(preparation.getStep().id(), is("a41184275b046d86c8d98d413ed019bc0a7f3c49"));
         // Update preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))
                 .contentType(ContentType.JSON).when()
                 .put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
-        assertThat(preparation.getStep().id(), is("b7fad51b715f2f9d42aae663dc85f5b7bb4b9f15"));
+        assertThat(preparation.getStep().id(), is("55ca7e996811cb944bd7053556c698ee77d6d24b"));
     }
 
     @Test
@@ -240,19 +241,19 @@ public class PreparationServiceTest {
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(preparation.getStep().id(), is("a41184275b046d86c8d98d413ed019bc0a7f3c49"));
         // Add step to preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("7d7396ab3bce49bb634d880bdd20800dd418a5d0"));
+        assertThat(preparation.getStep().id(), is("723b0a4e2b1655b9a0b62c07798df506803e6af4"));
         // Update preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))
                 .contentType(ContentType.JSON).when()
                 .put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
-        assertThat(preparation.getStep().id(), is("4115f6d965e146ddbff622633895277c96754541"));
+        assertThat(preparation.getStep().id(), is("4aa662330d7633a872a42999cb43a3d4cb7ef394"));
     }
 
     @Test
@@ -266,19 +267,19 @@ public class PreparationServiceTest {
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(preparation.getStep().id(), is("a41184275b046d86c8d98d413ed019bc0a7f3c49"));
         // Add step to preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("7d7396ab3bce49bb634d880bdd20800dd418a5d0"));
+        assertThat(preparation.getStep().id(), is("723b0a4e2b1655b9a0b62c07798df506803e6af4"));
         // Update preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))
                 .contentType(ContentType.JSON).when()
-                .put("/preparations/{id}/actions/{action}", preparation.id(), "2b6ae58738239819df3d8c4063e7cb56f53c0d59");
+                .put("/preparations/{id}/actions/{action}", preparation.id(), "a41184275b046d86c8d98d413ed019bc0a7f3c49");
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
-        assertThat(preparation.getStep().id(), is("91629cad70f47957bcbcdeac436878cc5f713b8a"));
+        assertThat(preparation.getStep().id(), is("beca40369fdc5531f78e38332f1dced490cba137"));
     }
 
     @Test
@@ -451,6 +452,59 @@ public class PreparationServiceTest {
             assertTrue(currentCode.has("code"));
             assertTrue(currentCode.has("http-status-code"));
         }
+    }
+
+    @Test
+    public void should_return_error_when_scope_is_not_consistent_on_append_transformation() throws Exception {
+        //given
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        preparation = repository.get(preparation.id(), Preparation.class);
+
+        //when
+        final Response request = given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("incomplete_transformation_params.json")))//
+                .contentType(ContentType.JSON)//
+                .when()//
+                .post("/preparations/{id}/actions", preparation.id());
+
+        //then
+        request.then()//
+                .statusCode(400)//
+                .assertThat()//
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE"));
+
+    }
+
+    @Test
+    public void should_return_error_when_scope_is_not_consistent_on_transformation_update() throws Exception {
+        //given
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        preparation = repository.get(preparation.id(), Preparation.class);
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))//
+                .contentType(ContentType.JSON)//
+                .when()//
+                .post("/preparations/{id}/actions", preparation.id())//
+                .then()//
+                .statusCode(200);
+
+        final String preparationId = preparation.id();
+        final String stepId = preparation.getStep().id();
+
+        //when
+        final Response request = given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("incomplete_transformation_params.json")))//
+                .contentType(ContentType.JSON).when()//
+                .put("/preparations/{id}/actions/{action}", preparationId, stepId);
+
+        //then
+        request.then()//
+                .statusCode(400)//
+                .assertThat()//
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE"));
     }
 
     /**
