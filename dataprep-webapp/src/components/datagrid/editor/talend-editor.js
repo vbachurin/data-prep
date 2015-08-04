@@ -18,7 +18,7 @@
 
                 $input.attr('rows', 1);
                 inputLineHeight = inputLineHeight || parseInt($input.css('lineHeight'),10);
-                var lines = $input.prop('scrollHeight') / inputLineHeight;
+                var lines = parseInt($input.prop('scrollHeight') / inputLineHeight, 10);
                 $input.attr('rows', lines);
 
                 previousValue = currentValue;
@@ -101,7 +101,7 @@
                 // deserialize the value(s) saved to 'state' and apply them to the data item
                 // this method may get called after the editor itself has been destroyed
                 // treat it as an equivalent of a Java/C# 'static' method - no instance variables should be accessed
-                validationFn(item, args.column.id, state, $checkbox[0].checked);
+                validationFn(item, args.column.tdpColMetadata, state, $checkbox[0].checked);
             };
 
             this.validate = function() {

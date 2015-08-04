@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -40,17 +41,15 @@ public class FloorTest {
     /** The action ton test. */
     private Floor action;
 
-    /** The consumer out of the consumer. */
-    private DataSetRowAction consumer;
+    private Map<String, String> parameters;
 
-    /**
-     * Constructor.
-     */
-    public FloorTest() throws IOException {
+    @Before
+    public void init() throws IOException {
         action = new Floor();
-        Map<String, String> parameters = ActionMetadataTestUtils //
-                .parseParameters(action, FloorTest.class.getResourceAsStream("floorAction.json"));
-        consumer = action.create(parameters).getRowAction();
+
+        parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                FloorTest.class.getResourceAsStream("floorAction.json"));
     }
 
     @Test
@@ -66,12 +65,16 @@ public class FloorTest {
     }
 
     public void testCommon(String input, String expected) {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("aNumber", input);
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertEquals(expected, dsr.get("aNumber"));
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "aNumber");
+
+        //then
+        assertEquals(expected, row.get("aNumber"));
     }
 
     @Test

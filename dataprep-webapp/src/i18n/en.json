@@ -36,6 +36,7 @@
 
   "_comment": "Datagrid transformations",
   "RECIPE_ITEM_ON_COL": "on column",
+  "RECIPE_ITEM_ON_CELL": "on cell",
   "NO_TRANSFORMATION": "No transformation available",
 
   "_comment": "Datagrid",

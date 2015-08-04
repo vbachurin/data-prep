@@ -356,30 +356,19 @@ describe('Preparation Service', function () {
             PreparationService.currentPreparationId = '6cd546546548a745';
             var metadata = {id: '2430e5df845ab6034c85'};
             var action = 'cut';
-            var column = {id: '1', name: 'firstname'};
-            var parameters = {value: 'Toto'};
+            var parameters = {
+                value: 'Toto',
+                scope: 'column',
+                column_name: 'firstname',
+                column_id: '1'
+            };
 
             //when
-            PreparationService.appendStep(metadata, action, column, parameters);
+            PreparationService.appendStep(metadata, action, parameters);
             $rootScope.$digest();
 
             //then
-            expect(PreparationRestService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'cut', {value: 'Toto', column_name: 'firstname', column_id: '1'});
-        }));
-
-        it('should append step to current preparation without parameters (should create it with column id)', inject(function ($rootScope, PreparationService, PreparationRestService) {
-            //given
-            PreparationService.currentPreparationId = '6cd546546548a745';
-            var metadata = {id: '2430e5df845ab6034c85'};
-            var action = 'uppercase';
-            var column = {id: '1', name: 'firstname'};
-
-            //when
-            PreparationService.appendStep(metadata, action, column);
-            $rootScope.$digest();
-
-            //then
-            expect(PreparationRestService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'uppercase', {column_name: 'firstname', column_id: '1'});
+            expect(PreparationRestService.appendStep).toHaveBeenCalledWith('6cd546546548a745', 'cut', parameters);
         }));
 
         it('should create a new preparation with generic name on append step if no preparation is loaded', inject(function ($rootScope, PreparationService, PreparationListService) {
@@ -387,10 +376,14 @@ describe('Preparation Service', function () {
             PreparationService.currentPreparationId = null;
             var metadata = {id: '2430e5df845ab6034c85'};
             var action = 'uppercase';
-            var column = {id: 'firstname'};
+            var parameters = {
+                scope: 'column',
+                column_name: 'firstname',
+                column_id: '1'
+            };
 
             //when
-            PreparationService.appendStep(metadata, action, column);
+            PreparationService.appendStep(metadata, action, parameters);
             $rootScope.$digest();
 
             //then

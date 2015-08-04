@@ -15,7 +15,8 @@ describe('Transform menu controller', function () {
         'created': '02-16-2015 08:52'
     };
     var column = {
-        'id': 'MostPopulousCity',
+        'id': '0001',
+        'name': 'MostPopulousCity',
         'quality': {
             'empty': 5,
             'invalid': 10,
@@ -85,10 +86,15 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBeFalsy();
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', column, {scope: scope});
+        var expectedParams = {
+            scope: scope,
+            column_id: column.id,
+            column_name: column.name
+        };
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', expectedParams);
     }));
 
-    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService) {
+    it('should fetch dynamic parameters', inject(function (PlaygroundService, PreparationService, TransformationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -98,20 +104,20 @@ describe('Transform menu controller', function () {
 
         //when
         ctrl.select(menu);
-        $rootScope.$digest();
+        scope.$digest();
 
         //then
         expect(TransformationService.initDynamicParameters).toHaveBeenCalledWith(
             {name: 'textclustering', category: 'quickfix', dynamic: true},
             {
-                columnId: 'MostPopulousCity',
+                columnId: '0001',
                 datasetId:  '78bae6345aef9965e22b54',
                 preparationId:  '721cd4455fb69e89543d4'
             }
         );
     }));
 
-    it('should display modal and set flags on dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService) {
+    it('should display modal and set flags on dynamic params fetch', inject(function (PlaygroundService, PreparationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -124,52 +130,48 @@ describe('Transform menu controller', function () {
         ctrl.select(menu);
         expect(ctrl.showModal).toBeTruthy();
         expect(ctrl.dynamicFetchInProgress).toBeTruthy();
-        $rootScope.$digest();
+        scope.$digest();
 
         //then
         expect(ctrl.showModal).toBeTruthy();
         expect(ctrl.dynamicFetchInProgress).toBeFalsy();
     }));
 
-    it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService) {
-        //given
-        var ctrl = createController();
-        ctrl.showModal = true;
-        var menu = {
-            name: 'uppercase',
-            category: 'case',
-            parameters: [
-                {name: 'param1', type: 'text', default: '', value: 'param1Value'},
-                {name: 'param2', type: 'int', default: '5', value: 4}
-            ]
-        };
-
-        //when
-        ctrl.transform(menu, {param1: 'param1Value', param2: 4 });
-        expect(ctrl.showModal).toBeTruthy();
-        $rootScope.$digest();
-
-        //then
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith(
-            'uppercase',
-            column,
-            {param1: 'param1Value', param2: 4});
-        expect(ctrl.showModal).toBeFalsy();
-    }));
-
-    it('should create transform function closure from menu', inject(function ($rootScope, PlaygroundService) {
+    it('should create transform function closure from menu', inject(function (PlaygroundService) {
         //given
         var ctrl = createController();
         var menu = {name: 'transfo_name', category: 'case', parameters: [{name: 'param1', type: 'text', default: '.'}]};
         var params = {param1: 'value'};
-        var scope = 'column';
+        var transfoScope = 'column';
 
         //when
-        var closure = ctrl.transformClosure(menu, scope);
+        var closure = ctrl.transformClosure(menu, transfoScope);
         expect(PlaygroundService.appendStep).not.toHaveBeenCalled();
         closure(params);
 
         //then
-        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('transfo_name', column, {param1: 'value', scope: scope});
+        var expectedParams = {
+            param1: 'value',
+            scope: transfoScope,
+            column_id: column.id,
+            column_name: column.name
+        };
+        expect(PlaygroundService.appendStep).toHaveBeenCalledWith('transfo_name', expectedParams);
     }));
+
+    it('should hide modal after step append', function () {
+        //given
+        var ctrl = createController();
+        var menu = {name: 'transfo_name', category: 'case', parameters: [{name: 'param1', type: 'text', default: '.'}]};
+        var params = {param1: 'value'};
+        var transfoScope = 'column';
+        ctrl.showModal = true;
+
+        //when
+        ctrl.transformClosure(menu, transfoScope)(params);
+        scope.$digest();
+
+        //then
+        expect(ctrl.showModal).toBe(false);
+    });
 });

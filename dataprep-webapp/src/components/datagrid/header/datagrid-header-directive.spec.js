@@ -216,4 +216,17 @@ describe('Dataset column header directive', function () {
         //then
         expect(ctrl.updateColumnName).toHaveBeenCalled();
     });
+
+    it('should stop click propagation in input', function () {
+        //given
+        createElement();
+        var event = angular.element.Event('click');
+
+        //when
+        element.find('input').eq(0).trigger(event);
+
+        //then
+        expect(event.isPropagationStopped()).toBe(true);
+        expect(event.isDefaultPrevented()).toBe(true);
+    });
 });
