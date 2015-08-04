@@ -27,11 +27,10 @@ describe('boxplot chart directive', function () {
 		};
 	}));
 
-	afterEach(inject(function (StatisticsService) {
+	afterEach(function () {
 		scope.$destroy();
 		element.remove();
-		StatisticsService.resetCharts();
-	}));
+	});
 
 	it('should render the different basic components of the boxplot', function () {
 		//given

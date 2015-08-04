@@ -234,6 +234,7 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsService.data).toBe(barChartStrCol.statistics.frequencyTable);
+            expect(StatisticsService.boxplotData).toBe(null);
             expect(StatisticsService.stateDistribution).toBe(null);
         }));
 
@@ -243,6 +244,7 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsService.data).toBe(null);
+            expect(StatisticsService.boxplotData).toBe(null);
             expect(StatisticsService.stateDistribution).toBe(null);
         }));
 
@@ -252,6 +254,7 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsService.data).toBe(barChartBoolCol.statistics.frequencyTable);
+            expect(StatisticsService.boxplotData).toBe(null);
             expect(StatisticsService.stateDistribution).toBe(null);
         }));
 
@@ -261,6 +264,7 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsService.data).toBe(null);
+            expect(StatisticsService.boxplotData).toBe(null);
             expect(StatisticsService.stateDistribution).toBe(mapCol);
         }));
 
@@ -278,6 +282,7 @@ describe('Statistics service', function () {
 
             //then
             expect(StatisticsService.data).toEqual(StatisticsService.extractNumericData(barChartNumCol.statistics.histogram));
+            expect(StatisticsService.boxplotData).toBe(null);
             expect(StatisticsService.stateDistribution).toBe(null);
         }));
 

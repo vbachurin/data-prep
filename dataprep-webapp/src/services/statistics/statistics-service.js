@@ -24,7 +24,7 @@
         return service;
 
     /**
-     * BELOW ARE ALL THE STATISTICS TABS FUNCTIONS (1-VIZ, 2-VALUES, 3-VATTERN, 4-OTHERS)
+     * BELOW ARE ALL THE STATISTICS TABS FUNCTIONS FOR (1-VIZ, 2-VALUES, 3-PATTERN, 4-OTHERS)
      */
     /******************** 1- Visualization ****************************/
         /**
@@ -97,6 +97,55 @@
 
             return result;
         }
+
+        /**
+         * @ngdoc method
+         * @name processNonMapData
+         * @methodOf data-prep.services.statistics:StatisticsService
+         * @param {object} column The selected column
+         * @description shows/hides the visualization according to the clicked column type
+         */
+        function processNonMapData(column) {
+            var data = null;
+            if(ConverterService.simplifyType(column.type) === 'number') {
+                data = extractNumericData(column.statistics.histogram);
+                updateBoxplotData();
+            }
+            else if (column.type === 'string') {
+                data = column.statistics.frequencyTable;
+                service.boxplotData = null;
+            }
+            else if (column.type === 'boolean') {
+                data = column.statistics.frequencyTable;
+                service.boxplotData = null;
+            }
+            else {
+                console.log('nor a number neither a boolean neither a string');
+                service.boxplotData = null;
+            }
+
+            service.stateDistribution = null; //hide the map if the previous column was a state
+            service.selectedColumn = column;
+            service.data = data;
+        }
+
+
+        /**
+         * Calculate geo distribution, and targeted map
+         * @param {object} column The target column
+         * @returns {object} Geo distribution {map: string, data: [{}]}
+         */
+        function getGeoDistribution(column) {
+            var keyPrefix = 'us-';
+            var map = 'countries/us/us-all';
+
+            return {
+                map: map,
+                data: getDistribution(column.id, 'hc-key', 'value', function (key) {
+                    return keyPrefix + key.toLowerCase();
+                })
+            };
+        }
     /******************** 2- Value ************************************/
         /**
          * @ngdoc method
@@ -163,55 +212,6 @@
             };
         }
 
-
-        /**
-         * @ngdoc method
-         * @name processNonMapData
-         * @methodOf data-prep.services.statistics:StatisticsService
-         * @param {object} column The selected column
-         * @description shows/hides the visualization according to the clicked column type
-         */
-        function processNonMapData(column) {
-            var data = null;
-            if(ConverterService.simplifyType(column.type) === 'number') {
-                data = extractNumericData(column.statistics.histogram);
-                updateBoxplotData();
-            }
-            else if (column.type === 'string') {
-                data = column.statistics.frequencyTable;
-                service.boxplotData = null;
-            }
-            else if (column.type === 'boolean') {
-                data = column.statistics.frequencyTable;
-                service.boxplotData = null;
-            }
-            else {
-                console.log('nor a number neither a boolean neither a string');
-                service.boxplotData = null;
-            }
-
-            service.stateDistribution = null; //hide the map if the previous column was a state
-            service.selectedColumn = column;
-            service.data = data;
-        }
-
-
-        /**
-         * Calculate geo distribution, and targeted map
-         * @param {object} column The target column
-         * @returns {object} Geo distribution {map: string, data: [{}]}
-         */
-        function getGeoDistribution(column) {
-            var keyPrefix = 'us-';
-            var map = 'countries/us/us-all';
-
-            return {
-                map: map,
-                data: getDistribution(column.id, 'hc-key', 'value', function (key) {
-                    return keyPrefix + key.toLowerCase();
-                })
-            };
-        }
     /******************** 3- Pattern **********************************/
         //Currently there are no stats to be brought on the pattern data
 
@@ -262,8 +262,6 @@
 
             $timeout(filterFn);
         }
-
-
 
         /**
          * @ngdoc method

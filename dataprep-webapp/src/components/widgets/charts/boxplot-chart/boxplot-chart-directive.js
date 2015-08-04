@@ -23,6 +23,8 @@
 			link: function (scope, element, attrs) {
 				var boxData = scope.boxplotData;
 				var container = attrs.id;
+				var w = +attrs.width;
+				var h = +attrs.height;
 
 				function renderBoxplotchart(boxValues){
 					//To be deleted after boxplot UI discussions (just for proof)
@@ -36,8 +38,8 @@
 					};*/
 
 					var margin = {top: 30, right: 80, bottom: 70, left: 80};
-					var  width = 330 - margin.left - margin.right;
-					var height = 400 - margin.top - margin.bottom;
+					var  width = w - margin.left - margin.right;
+					var height = h - margin.top - margin.bottom;
 
 					var duration = 1000;
 
@@ -315,7 +317,8 @@
 						if(boxData){
 							renderBoxplotchart(boxData);
 						}
-					});
+					}
+				);
 			}
 		};
 	}
