@@ -25,8 +25,8 @@ import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
-import org.talend.datascience.common.inference.quality.ValueQuality;
-import org.talend.datascience.common.inference.quality.ValueQualityAnalyzer;
+import org.talend.dataquality.statistics.inference.quality.ValueQuality;
+import org.talend.dataquality.statistics.inference.quality.ValueQualityAnalyzer;
 import org.talend.datascience.common.inference.type.DataType;
 
 @Component
