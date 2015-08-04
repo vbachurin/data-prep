@@ -365,6 +365,7 @@
             var params = {
                 scope : updateAllCellWithValue ? 'column' : 'cell',
                 column_id: column.id,
+                column_name: column.name,
                 row_id: rowItem.tdpId,
                 cell_value: rowItem[column.id],
                 replace_value: newValue

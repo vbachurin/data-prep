@@ -772,6 +772,7 @@ describe('Playground Service', function () {
                 var expectedParams = {
                     scope : 'cell',
                     column_id: '0001',
+                    column_name: 'firstname',
                     row_id: 58,
                     cell_value: 'Ronald',
                     replace_value: 'Donald'
@@ -797,6 +798,7 @@ describe('Playground Service', function () {
                 var expectedParams = {
                     scope : 'column',
                     column_id: '0001',
+                    column_name: 'firstname',
                     row_id: 58,
                     cell_value: 'Ronald',
                     replace_value: 'Donald'

@@ -101,7 +101,7 @@
                 // deserialize the value(s) saved to 'state' and apply them to the data item
                 // this method may get called after the editor itself has been destroyed
                 // treat it as an equivalent of a Java/C# 'static' method - no instance variables should be accessed
-                validationFn(item, args.column, state, $checkbox[0].checked);
+                validationFn(item, args.column.tdpColMetadata, state, $checkbox[0].checked);
             };
 
             this.validate = function() {
