@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
@@ -36,10 +37,9 @@ public class ActionMetadataTestUtils {
      * @throws IOException if an error occurs.
      */
     public static Map<String, String> parseParameters(ActionMetadata action, InputStream input) throws IOException {
-        String actions = IOUtils.toString(input);
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
+        mapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
+        JsonNode node = mapper.readTree(input);
         return action.parseParameters(node.get("actions").get(0).get("parameters").fields());
     }
 }
