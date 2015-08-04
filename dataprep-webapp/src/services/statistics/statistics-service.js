@@ -16,7 +16,7 @@
             boxplotData:null,
             addFilter: addFilter,
             extractNumericData: extractNumericData,
-            processVisuData: processVisuData,
+            processData: processData,
             resetCharts: resetCharts,
             getGeoDistribution: getGeoDistribution
         };
@@ -265,12 +265,12 @@
 
         /**
          * @ngdoc method
-         * @name processVisuData
+         * @name processData
          * @methodOf data-prep.services.statistics:StatisticsService
          * @param {object} column The selected column
          * @description processes the visualization data according to the clicked column domain
          */
-        function processVisuData(column) {
+        function processData(column) {
             //THE WHOLE CONTENT OF THE 'VALUES' TAB IN THE STATS PART
             initValuesStatistics(column);
 

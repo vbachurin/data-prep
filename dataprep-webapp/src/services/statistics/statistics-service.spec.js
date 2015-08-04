@@ -230,7 +230,7 @@ describe('Statistics service', function () {
     describe('The Visualization Tab: Horizontal barchart and Map', function () {
         it('should set the data to the frequencyTable because column type is string', inject(function (StatisticsService) {
             //when
-            StatisticsService.processVisuData(barChartStrCol);
+            StatisticsService.processData(barChartStrCol);
 
             //then
             expect(StatisticsService.data).toBe(barChartStrCol.statistics.frequencyTable);
@@ -240,7 +240,7 @@ describe('Statistics service', function () {
 
         it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
             //when
-            StatisticsService.processVisuData(localizationCol);
+            StatisticsService.processData(localizationCol);
 
             //then
             expect(StatisticsService.data).toBe(null);
@@ -250,7 +250,7 @@ describe('Statistics service', function () {
 
         it('should set the data to the frequencyTable because column type is boolean', inject(function (StatisticsService) {
             //when
-            StatisticsService.processVisuData(barChartBoolCol);
+            StatisticsService.processData(barChartBoolCol);
 
             //then
             expect(StatisticsService.data).toBe(barChartBoolCol.statistics.frequencyTable);
@@ -260,7 +260,7 @@ describe('Statistics service', function () {
 
         it('should set the data to null and stateDistribution to the column, because the column domain contains STATE_CODE', inject(function (StatisticsService) {
             //when
-            StatisticsService.processVisuData(mapCol);
+            StatisticsService.processData(mapCol);
 
             //then
             expect(StatisticsService.data).toBe(null);
@@ -278,7 +278,7 @@ describe('Statistics service', function () {
 
         it('should set the data to the conversion of the histogram, because the column type is number', inject(function (StatisticsService) {
             //when
-            StatisticsService.processVisuData(barChartNumCol);
+            StatisticsService.processData(barChartNumCol);
 
             //then
             expect(StatisticsService.data).toEqual(StatisticsService.extractNumericData(barChartNumCol.statistics.histogram));
@@ -288,7 +288,7 @@ describe('Statistics service', function () {
 
         it('should reset data when column type is not supported', inject(function (StatisticsService) {
             //when
-            StatisticsService.processVisuData(unknownTypeCol);
+            StatisticsService.processData(unknownTypeCol);
 
             //then
             expect(StatisticsService.data).toBe(null);
@@ -316,7 +316,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processVisuData(col);
+            StatisticsService.processData(col);
 
             //then
             expect(StatisticsService.statistics).toBeTruthy();
@@ -355,7 +355,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processVisuData(col);
+            StatisticsService.processData(col);
 
             //then
             expect(StatisticsService.statistics).toBeTruthy();
@@ -401,7 +401,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processVisuData(col);
+            StatisticsService.processData(col);
 
             //then
             expect(StatisticsService.statistics).toBeTruthy();
@@ -449,7 +449,7 @@ describe('Statistics service', function () {
             expect(StatisticsService.statistics).toBeFalsy();
 
             //when
-            StatisticsService.processVisuData(col);
+            StatisticsService.processData(col);
 
             //then
             expect(StatisticsService.statistics).toBeTruthy();
@@ -496,7 +496,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processVisuData(col);
+            StatisticsService.processData(col);
 
             //then
             expect(StatisticsService.boxplotData).toBe(null);
@@ -528,7 +528,7 @@ describe('Statistics service', function () {
             };
 
             //when
-            StatisticsService.processVisuData(col);
+            StatisticsService.processData(col);
 
             //then
             expect(StatisticsService.boxplotData).toEqual({

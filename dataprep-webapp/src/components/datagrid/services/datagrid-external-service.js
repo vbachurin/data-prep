@@ -29,7 +29,7 @@
          */
         function updateSuggestionPanel(column) {
             var columnMetadata = column.tdpColMetadata;
-            StatisticsService.processVisuData(columnMetadata);
+            StatisticsService.processData(columnMetadata);
             ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
         }
 
