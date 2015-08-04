@@ -1,0 +1,12 @@
+{
+  "actions": [
+    {
+      "action": "delete_invalid",
+      "parameters": {
+        "column_id": "0002",
+        "column_name": "age",
+        "scope": "column"
+      }
+    }
+  ]
+}
