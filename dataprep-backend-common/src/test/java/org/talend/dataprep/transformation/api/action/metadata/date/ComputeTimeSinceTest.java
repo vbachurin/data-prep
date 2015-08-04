@@ -12,10 +12,14 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.date;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.YEARS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+import static org.talend.dataprep.transformation.api.action.metadata.date.ComputeTimeSince.TIME_UNIT_PARAMETER;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +48,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -51,21 +58,19 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
  */
 public class ComputeTimeSinceTest {
 
-    /** This class' logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ComputeTimeSinceTest.class);
-
-    /** The row consumer to test. */
-    private DataSetRowAction rowClosure;
-
     /** The action to test. */
     private ComputeTimeSince action;
 
-    /**
-     * Constructor.
-     */
-    public ComputeTimeSinceTest() throws IOException {
+    private Map<String, String> parameters;
+
+    @Before
+    public void init() throws IOException {
         action = new ComputeTimeSince();
-        rowClosure = getClosure(ChronoUnit.YEARS.name());
+
+        final ComputeTimeSince currentAction = new ComputeTimeSince();
+        final InputStream json = ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json");
+        parameters = ActionMetadataTestUtils.parseParameters(currentAction, json);
+        parameters.put(TIME_UNIT_PARAMETER, YEARS.name());
     }
 
     @Test
@@ -75,26 +80,34 @@ public class ComputeTimeSinceTest {
         assertThat(action.adapt(column), is(action));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.DATE.getDisplayName()));
+    }
+
     /**
      * @see ComputeTimeSince#create(Map)
      */
     @Test
     public void should_compute_years() throws IOException {
+        //given
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
 
-        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        final String date = "01/01/2010";
+        final String result = computeTimeSince(date, "MM/dd/yyyy", YEARS);
 
-        String date = "01/01/2010";
-        String result = computeTimeSince(date, "MM/dd/yyyy", ChronoUnit.YEARS);
-        LOGGER.debug("{} years since {}", result, date);
-
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", date);
         expectedValues.put("0003", result);
         expectedValues.put("0002", "Bacon");
 
-        DataSetRow actual = rowClosure.apply(row, new TransformationContext());
-        assertEquals(expectedValues, actual.values());
+        //when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expectedValues, row.values());
     }
 
     /**
@@ -102,24 +115,27 @@ public class ComputeTimeSinceTest {
      */
     @Test
     public void should_compute_days() throws IOException {
+        //given
+        final String date = "06/15/2015";
+        final String result = computeTimeSince(date, "MM/dd/yyyy", ChronoUnit.DAYS);
 
-        String date = "06/15/2015";
-        String result = computeTimeSince(date, "MM/dd/yyyy", ChronoUnit.DAYS);
-        LOGGER.debug("{} days since {}", result, date);
-
-        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
         row.set("0001", date);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", date);
         expectedValues.put("0003", result);
         expectedValues.put("0002", "Bacon");
 
-        DataSetRowAction closure = getClosure(ChronoUnit.DAYS.name());
+        parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
 
-        DataSetRow actual = closure.apply(row, new TransformationContext());
-        assertEquals(expectedValues, actual.values());
+        //when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expectedValues, row.values());
     }
 
     /**
@@ -127,75 +143,84 @@ public class ComputeTimeSinceTest {
      */
     @Test
     public void should_compute_hours() throws IOException {
+        //given
+        final String date = "07/16/2015 13:00";
+        final String result = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
 
-        String date = "07/16/2015 13:00";
-        String result = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
-        LOGGER.debug("{} hours since {}", result, date);
-
-        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", date);
         expectedValues.put("0003", result);
         expectedValues.put("0002", "Bacon");
 
-        DataSetRowAction closure = getClosure(ChronoUnit.HOURS.name());
+        parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
 
-        DataSetRow actual = closure.apply(row, new TransformationContext());
-        assertEquals(expectedValues, actual.values());
+        //when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expectedValues, row.values());
     }
 
     @Test
     public void should_compute_hours_twice() throws IOException {
-        String date = "07/16/2015 13:00";
-        String result = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
-        LOGGER.debug("{} hours since {}", result, date);
+        //given
+        final String date = "07/16/2015 13:00";
+        final String result = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
 
-        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", date);
         expectedValues.put("0004", result);
         expectedValues.put("0003", result);
         expectedValues.put("0002", "Bacon");
 
-        DataSetRowAction closure = getClosure(ChronoUnit.HOURS.name());
+        parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
 
-        DataSetRow actual = closure.apply(row, new TransformationContext());
-        actual = closure.apply(actual, new TransformationContext());
-        assertEquals(expectedValues, actual.values());
+        //when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expectedValues, row.values());
     }
 
     @Test
     public void should_compute_twice_diff_units() throws IOException {
+        //given
+        final String date = "07/16/2015 12:00";
+        final String resultInHours = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
+        final String resultInDays = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.DAYS);
 
-        String date = "07/16/2015 12:00";
-        String resultInHours = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.HOURS);
-        LOGGER.debug("{} hours since {}", resultInHours, date);
-        String resultInDays = computeTimeSince(date, "MM/dd/yyyy HH:mm", ChronoUnit.DAYS);
-        LOGGER.debug("{} days since {}", resultInDays, date);
-
-        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy_HH_mm.json");
         row.set("0001", date);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", date);
         expectedValues.put("0004", resultInHours);
         expectedValues.put("0003", resultInDays);
         expectedValues.put("0002", "Bacon");
 
-        DataSetRowAction closureInDays = getClosure(ChronoUnit.DAYS.name());
-        DataSetRow actual = closureInDays.apply(row, new TransformationContext());
+        //when
+        parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        DataSetRowAction closureInHours = getClosure(ChronoUnit.HOURS.name());
-        actual = closureInHours.apply(actual, new TransformationContext());
+        parameters.put(TIME_UNIT_PARAMETER, HOURS.name());
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        assertEquals(expectedValues, actual.values());
+        //then
+        assertEquals(expectedValues, row.values());
     }
 
     /**
@@ -203,18 +228,21 @@ public class ComputeTimeSinceTest {
      */
     @Test
     public void should_update_metadata() throws IOException {
-        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        //given
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
 
-        DataSetRowAction closure = getClosure(ChronoUnit.YEARS.name());
-        List<ColumnMetadata> actual = closure.apply(row, new TransformationContext()).getRowMetadata().getColumns();
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "last update", Type.DATE, "statistics_MM_dd_yyyy.json"));
         expected.add(createMetadata("0003", "since_last update_in_years", Type.INTEGER));
         expected.add(createMetadata("0002", "steps"));
 
-        assertEquals(expected, actual);
+        //when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, row.getRowMetadata().getColumns());
     }
 
     /**
@@ -222,20 +250,23 @@ public class ComputeTimeSinceTest {
      */
     @Test
     public void should_update_metadata_twice() throws IOException {
-        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        //given
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
 
-        DataSetRowAction closure = getClosure(ChronoUnit.YEARS.name());
-        DataSetRow actual = closure.apply(row, new TransformationContext());
-        actual = closure.apply(actual, new TransformationContext());
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "last update", Type.DATE, "statistics_MM_dd_yyyy.json"));
         expected.add(createMetadata("0004", "since_last update_in_years", Type.INTEGER));
         expected.add(createMetadata("0003", "since_last update_in_years", Type.INTEGER));
         expected.add(createMetadata("0002", "steps"));
 
-        assertEquals(expected, actual.getRowMetadata().getColumns());
+        //when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, row.getRowMetadata().getColumns());
     }
 
     /**
@@ -243,22 +274,27 @@ public class ComputeTimeSinceTest {
      */
     @Test
     public void should_update_metadata_twice_diff_units() throws IOException {
-        DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        //given
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
 
-        DataSetRowAction closure = getClosure(ChronoUnit.YEARS.name());
-        DataSetRow actual = closure.apply(row, new TransformationContext());
-
-        DataSetRowAction closureInDays = getClosure(ChronoUnit.DAYS.name());
-        actual = closureInDays.apply(actual, new TransformationContext());
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "last update", Type.DATE, "statistics_MM_dd_yyyy.json"));
         expected.add(createMetadata("0004", "since_last update_in_days", Type.INTEGER));
         expected.add(createMetadata("0003", "since_last update_in_years", Type.INTEGER));
         expected.add(createMetadata("0002", "steps"));
 
-        assertEquals(expected, actual.getRowMetadata().getColumns());
+        //when
+        parameters.put(TIME_UNIT_PARAMETER, YEARS.name());
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        parameters.put(TIME_UNIT_PARAMETER, DAYS.name());
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, row.getRowMetadata().getColumns());
     }
 
     @Test
@@ -304,7 +340,7 @@ public class ComputeTimeSinceTest {
         InputStream json = ComputeTimeSince.class.getResourceAsStream("computeTimeSinceAction.json");
         Map<String, String> parameters = ActionMetadataTestUtils.parseParameters(currentAction, json);
 
-        parameters.put(ComputeTimeSince.TIME_UNIT_PARAMETER, unit);
+        parameters.put(TIME_UNIT_PARAMETER, unit);
 
         Action alternativeAction = currentAction.create(parameters);
         return alternativeAction.getRowAction();

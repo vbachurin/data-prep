@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -28,6 +29,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for DeleteOnValue action. Creates one consumer, and test it.
@@ -37,23 +40,17 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
 public class DeleteOnValueTest {
 
     /** The action to test. */
-    DeleteOnValue action;
+    private DeleteOnValue action;
 
-    /** the action out of the consumer. */
-    private DataSetRowAction consumer;
+    private Map<String, String> parameters;
 
-    /**
-     * Constructor.
-     */
-    public DeleteOnValueTest() throws IOException {
-
+    @Before
+    public void init() throws IOException {
         action = new DeleteOnValue();
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 DeleteOnValueTest.class.getResourceAsStream("deleteOnValueAction.json"));
-
-        consumer = action.create(parameters).getRowAction();
     }
 
     @Test
@@ -64,105 +61,125 @@ public class DeleteOnValueTest {
     }
 
     @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.CLEANSING.getDisplayName()));
+    }
+
+    @Test
     public void should_delete() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "Berlin");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertTrue(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("name"));
-        assertEquals("Berlin", dsr.get("city"));
+        //then
+        assertTrue(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals("Berlin", row.get("city"));
     }
 
     @Test
     public void should_delete_even_with_leading_space() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", " Berlin"); // notice the space before ' Berlin'
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertTrue(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        assertEquals("David Bowie", dsr.get("name"));
-        assertEquals(" Berlin", dsr.get("city"));
+        //then
+        assertTrue(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals(" Berlin", row.get("city"));
     }
 
     @Test
     public void should_delete_even_with_trailing_space() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "Berlin "); // notice the space after 'Berlin '
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertTrue(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("name"));
-        assertEquals("Berlin ", dsr.get("city"));
+        //then
+        assertTrue(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals("Berlin ", row.get("city"));
     }
 
     @Test
     public void should_delete_even_with_enclosing_spaces() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", " Berlin "); // notice the spaces enclosing ' Berlin '
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertTrue(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("name"));
-        assertEquals(" Berlin ", dsr.get("city"));
+        //then
+        assertTrue(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals(" Berlin ", row.get("city"));
     }
 
     @Test
     public void should_not_delete_because_value_not_found() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("name"));
+        //then
+        assertFalse(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
     }
 
     @Test
     public void should_not_delete_because_of_case() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "berlin");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("name"));
-        assertEquals("berlin", dsr.get("city"));
+        //then
+        assertFalse(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals("berlin", row.get("city"));
     }
 
     @Test
     public void should_not_delete_because_value_different() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "üBerlin");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("name"));
-        assertEquals("üBerlin", dsr.get("city"));
+        //then
+        assertFalse(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals("üBerlin", row.get("city"));
     }
 
     @Test

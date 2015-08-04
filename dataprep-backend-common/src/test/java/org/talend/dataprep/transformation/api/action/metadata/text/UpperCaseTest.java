@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -28,6 +29,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for LowerCase action. Creates one consumer, and test it.
@@ -40,20 +43,15 @@ public class UpperCaseTest {
     /** The action to test. */
     private UpperCase action;
 
-    /** The row consumer to test. */
-    private DataSetRowAction rowClosure;
+    private Map<String, String> parameters;
 
-    /**
-     * Constructor.
-     */
-    public UpperCaseTest() throws IOException {
+    @Before
+    public void init() throws IOException {
         action = new UpperCase();
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 UpperCaseTest.class.getResourceAsStream("uppercase.json"));
-
-        rowClosure = action.create(parameters).getRowAction();
     }
 
     @Test
@@ -63,21 +61,30 @@ public class UpperCaseTest {
         assertThat(action.adapt(column), is(action));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.CASE.getDisplayName()));
+    }
+
     /**
      * @see UpperCase#create(Map)
      */
     @Test
     public void should_uppercase() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("city", "Vancouver");
         values.put("country", "Canada");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, Object> expectedValues = new HashMap<>();
+        final Map<String, Object> expectedValues = new HashMap<>();
         expectedValues.put("city", "VANCOUVER"); // Vancouver --> VANCOUVER
         expectedValues.put("country", "Canada");
 
-        row = rowClosure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
@@ -86,16 +93,20 @@ public class UpperCaseTest {
      */
     @Test()
     public void should_do_nothing_since_column_does_not_exist() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("country", "Canada");
         values.put("capital", "Ottawa");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, Object> expectedValues = new HashMap<>();
+        final Map<String, Object> expectedValues = new HashMap<>();
         expectedValues.put("country", "Canada");
         expectedValues.put("capital", "Ottawa");
 
-        row = rowClosure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 

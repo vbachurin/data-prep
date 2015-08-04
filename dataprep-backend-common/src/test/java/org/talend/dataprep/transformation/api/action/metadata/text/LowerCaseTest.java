@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -28,6 +29,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for LowerCase action. Creates one consumer, and test it.
@@ -36,24 +39,18 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
  */
 public class LowerCaseTest {
 
-    /** The row consumer to test. */
-    private DataSetRowAction closure;
-
     /** The action to test. */
     private LowerCase action;
 
-    /**
-     * Constructor.
-     */
-    public LowerCaseTest() throws IOException {
+    private Map<String, String> parameters;
 
+    @Before
+    public void init() throws IOException {
         action = new LowerCase();
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 LowerCaseTest.class.getResourceAsStream("lowercase.json"));
-
-        closure = action.create(parameters).getRowAction();
     }
 
     @Test
@@ -63,23 +60,32 @@ public class LowerCaseTest {
         assertThat(action.adapt(column), is(action));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.CASE.getDisplayName()));
+    }
+
     /**
      * @see LowerCase#create(Map)
      */
     @Test
     public void should_lowercase() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "Vincent");
         values.put("entity", "R&D");
         values.put("joined", "May 20th 2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, Object> expectedValues = new HashMap<>();
+        final Map<String, Object> expectedValues = new HashMap<>();
         expectedValues.put("name", "Vincent");
         expectedValues.put("entity", "r&d"); // R&D --> r&d
         expectedValues.put("joined", "May 20th 2015");
 
-        row = closure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "entity");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
@@ -88,16 +94,20 @@ public class LowerCaseTest {
      */
     @Test
     public void should_do_nothing_since_column_does_not_exist() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "Vincent");
         values.put("joined", "May 20th 2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, Object> expectedValues = new HashMap<>();
+        final Map<String, Object> expectedValues = new HashMap<>();
         expectedValues.put("name", "Vincent");
         expectedValues.put("joined", "May 20th 2015");
 
-        row = closure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "entity");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 

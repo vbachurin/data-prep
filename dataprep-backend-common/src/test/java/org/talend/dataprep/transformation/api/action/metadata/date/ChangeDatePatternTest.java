@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -21,6 +22,7 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,24 +35,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ChangeDatePatternTest {
 
-    /** The row consumer to test. */
-    private DataSetRowAction rowClosure;
-
     /** The action to test. */
     private ChangeDatePattern action;
 
-    /**
-     * Constructor.
-     */
-    public ChangeDatePatternTest() throws IOException {
+    private Map<String, String> parameters;
+
+    @Before
+    public void init() throws IOException {
         action = new ChangeDatePattern();
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 ChangeDatePatternTest.class.getResourceAsStream("changeDatePatternAction.json"));
-
-        final Action action = this.action.create(parameters);
-        rowClosure = action.getRowAction();
     }
 
     private static void setStatistics(DataSetRow row, String columnId, InputStream statisticsContent) throws IOException {
@@ -65,17 +61,25 @@ public class ChangeDatePatternTest {
         assertThat(action.adapt(column), is(action));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.DATE.getDisplayName()));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void should_check_column_id_parameter_when_dealing_with_row_metadata() {
-        action.create(new HashMap<>());
+        action.beforeApply(new HashMap<>());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void should_check_new_pattern_parameter_when_dealing_with_row_metadata() {
+        //given
         Map<String, String> missingParameters = new HashMap<>();
         missingParameters.put("column_id", "0000");
         missingParameters.put(ChangeDatePattern.NEW_PATTERN, "toto");
-        action.create(missingParameters);
+
+        //when
+        action.beforeApply(missingParameters);
     }
 
     @Test
@@ -87,8 +91,8 @@ public class ChangeDatePatternTest {
         RowMetadata rowMetadata = new RowMetadata(Collections.singletonList(column));
 
         // when
-        TransformationContext context = new TransformationContext();
-        DataSetRow actual = rowClosure.apply(new DataSetRow(rowMetadata), context);
+        action.beforeApply(parameters);
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
 
         // then
         ObjectMapper mapper = new ObjectMapper(new JsonFactory());
@@ -103,39 +107,35 @@ public class ChangeDatePatternTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void should_check_column_id_when_dealing_with_row() {
-        action.create(new HashMap<>());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void should_check_new_pattern_parameter_when_dealing_with_row() {
-        Map<String, String> insufficientParams = new HashMap<>();
+        //given
+        final Map<String, String> insufficientParams = new HashMap<>();
         insufficientParams.put("column_id", "0000");
-        action.create(insufficientParams);
+
+        //when
+        action.beforeApply(insufficientParams);
     }
 
     @Test
     public void should_process_row() throws Exception {
-
         // given
-        Map<String, String> values = new HashMap<>();
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "toto");
         values.put("0001", "04/25/1999");
         values.put("0002", "tata");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
-        TransformationContext context = new TransformationContext();
-
-        // when
-        row = rowClosure.apply(row, context);
-
-        // then
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
         expectedValues.put("0001", "25 - Apr - 1999");
         expectedValues.put("0002", "tata");
 
+        // when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
         assertEquals(expectedValues, row.values());
     }
 
@@ -149,10 +149,9 @@ public class ChangeDatePatternTest {
         DataSetRow row = new DataSetRow(values);
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
-        TransformationContext context = new TransformationContext();
-
         // when
-        row = rowClosure.apply(row, context);
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then (values should be unchanged)
         assertEquals(values, row.values());
@@ -168,10 +167,9 @@ public class ChangeDatePatternTest {
         DataSetRow row = new DataSetRow(values);
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
 
-        TransformationContext context = new TransformationContext();
-
         // when
-        row = rowClosure.apply(row, context);
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
         // then (values should be unchanged)
         assertEquals(values, row.values());

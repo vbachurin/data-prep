@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -32,10 +33,13 @@ import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for ExtractEmailDomain action. Creates one consumer, and test it.
@@ -44,24 +48,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class ExtractEmailDomainTest {
 
-    /** The row consumer to test. */
-    private DataSetRowAction rowClosure;
-
     /** The action to test. */
     private ExtractEmailDomain action;
 
-    /**
-     * Default empty constructor.
-     */
-    public ExtractEmailDomainTest() throws IOException {
-        String actions = IOUtils.toString(ExtractEmailDomainTest.class.getResourceAsStream("extractDomainAction.json"));
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-        String content = actions.trim();
-        JsonNode node = mapper.readTree(content);
+    private Map<String, String> parameters;
+
+    @Before
+    public void init() throws IOException {
         action = new ExtractEmailDomain();
-        Map<String, String> parameters = action.parseParameters(node.get("actions").get(0).get("parameters").fields());
-        final Action action = this.action.create(parameters);
-        rowClosure = action.getRowAction();
+
+        parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                ExtractEmailDomainTest.class.getResourceAsStream("extractDomainAction.json"));
     }
 
     @Test
@@ -71,88 +69,99 @@ public class ExtractEmailDomainTest {
         assertThat(action.adapt(column), is(action));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
+    }
+
     /**
      * @see Split#create(Map)
      */
     @Test
     public void test_values() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "david.bowie@yopmail.com");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "david.bowie@yopmail.com");
         expectedValues.put("0003", "david.bowie");
         expectedValues.put("0004", "yopmail.com");
         expectedValues.put("0002", "01/01/2015");
 
-        row = rowClosure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
     @Test
     public void test_values_invalid() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "david.bowie");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "david.bowie");
         expectedValues.put("0003", "");
         expectedValues.put("0004", "");
         expectedValues.put("0002", "01/01/2015");
 
-        row = rowClosure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see ExtractEmailDomain#create(Map)
      */
     @Test
     public void test_metadata() {
-        List<ColumnMetadata> input = new ArrayList<>();
+        //given
+        final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "email"));
         input.add(createMetadata("0002", "last update"));
-        RowMetadata rowMetadata = new RowMetadata(input);
+        final DataSetRow row = new DataSetRow(new RowMetadata(input));
 
-        DataSetRow row = new DataSetRow(rowMetadata);
-        row = rowClosure.apply(row, new TransformationContext());
-        List<ColumnMetadata> actual = row.getRowMetadata().getColumns();
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "email"));
         expected.add(createMetadata("0003", "email_local"));
         expected.add(createMetadata("0004", "email_domain"));
         expected.add(createMetadata("0002", "last update"));
 
-        assertEquals(expected, actual);
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, row.getRowMetadata().getColumns());
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see ExtractEmailDomain#create(Map)
      */
     @Test
     public void test_metadata_with_multiple_executions() {
-        List<ColumnMetadata> input = new ArrayList<>();
+        //given
+        final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "email"));
         input.add(createMetadata("0002", "last update"));
-        RowMetadata rowMetadata = new RowMetadata(input);
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
-        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-        List<ColumnMetadata> actual = rowMetadata.getColumns();
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "email"));
         expected.add(createMetadata("0005", "email_local"));
@@ -161,7 +170,12 @@ public class ExtractEmailDomainTest {
         expected.add(createMetadata("0004", "email_domain"));
         expected.add(createMetadata("0002", "last update"));
 
-        assertEquals(expected, actual);
+        //when
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, rowMetadata.getColumns());
     }
 
     /**

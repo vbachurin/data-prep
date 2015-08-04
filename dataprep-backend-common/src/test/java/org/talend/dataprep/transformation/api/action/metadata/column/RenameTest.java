@@ -23,15 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
-import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -41,20 +42,18 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
  */
 public class RenameTest {
 
-    private final DataSetRowAction metadataClosure;
-
     /** The action to test. */
     private Rename action;
 
-    /**
-     * Constructor.
-     */
-    public RenameTest() throws IOException {
+    private Map<String, String> parameters;
+
+    @Before
+    public void init() throws IOException {
         action = new Rename();
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
-                RenameTest.class.getResourceAsStream("renameAction.json"));
-        metadataClosure = action.create(parameters).getRowAction();
+                CopyColumnTest.class.getResourceAsStream("renameAction.json"));
     }
 
     @Test
@@ -72,14 +71,18 @@ public class RenameTest {
         assertThat(hasMetExpectedParameter, is(true));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.COLUMNS.getDisplayName()));
+    }
+
     /**
-     * @see Action#getMetadataAction()
+     * @see Rename#create(Map)
      */
     @Test
     public void should_update_metadata() {
-
-        List<ColumnMetadata> input = new ArrayList<>();
-        ColumnMetadata metadata = //
+        //given
+        final ColumnMetadata metadata = //
                 column() //
                 .id(1) //
                 .name("first name") //
@@ -89,14 +92,11 @@ public class RenameTest {
                 .invalid(2) //
                 .valid(5) //
                 .build();
+        final List<ColumnMetadata> input = new ArrayList<>();
         input.add(metadata);
-        RowMetadata rowMetadata = new RowMetadata(input);
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
-        metadataClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-
-        List<ColumnMetadata> actual = rowMetadata.getColumns();
-
-        ColumnMetadata renamedMetadata = column() //
+        final ColumnMetadata renamedMetadata = column() //
                 .id(1) //
                 .name("NAME_FIRST") //
                 .type(Type.STRING) //
@@ -105,10 +105,14 @@ public class RenameTest {
                 .invalid(2) //
                 .valid(5) //
                 .build();
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(renamedMetadata);
 
-        assertEquals(expected, actual);
+        //when
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, rowMetadata.getColumns());
     }
 
     @Test

@@ -5,9 +5,8 @@ import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.text.TextClustering;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 import java.util.*;
 
@@ -23,28 +22,32 @@ public class TextClusteringTest {
     @Test
     public void create_should_build_textclustering_consumer() {
         // given
+        final String columnId = "0001";
+
         final Map<String, String> parameters = new HashMap<>();
         parameters.put("scope", "column");
-        parameters.put("column_id", "uglystate");
+        parameters.put("column_id", columnId);
         parameters.put("T@T@", "Tata");
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
 
-        final DataSetRowAction consumer = textClustering.create(parameters).getRowAction();
-
         final List<DataSetRow> rows = new ArrayList<>();
-        rows.add(createRow("uglystate", "T@T@"));
-        rows.add(createRow("uglystate", "TaaTa"));
-        rows.add(createRow("uglystate", "Toto"));
-        rows.add(createRow("uglystate", "Tata"));
+        rows.add(createRow(columnId, "T@T@"));
+        rows.add(createRow(columnId, "TaaTa"));
+        rows.add(createRow(columnId, "Toto"));
+        rows.add(createRow(columnId, "Tata"));
 
         // when
-        final TransformationContext context = new TransformationContext();
-        rows.stream().forEach((row) -> consumer.apply(row, context));
+        rows.stream().forEach(row -> textClustering.applyOnColumn(row, new TransformationContext(), parameters, columnId));
 
         // then
-        rows.stream().map(row -> row.get("uglystate"))
+        rows.stream().map(row -> row.get(columnId))
                 .forEach(uglyState -> Assertions.assertThat(uglyState).isEqualTo("Tata"));
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(textClustering.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
     }
 
     @Test
@@ -57,26 +60,26 @@ public class TextClusteringTest {
     @Test
     public void create_result_should_not_change_unmatched_value() {
         // given
+        final String columnId = "0001";
+
         final Map<String, String> parameters = new HashMap<>();
         parameters.put("scope", "column");
-        parameters.put("column_id", "uglystate");
+        parameters.put("column_id", columnId);
         parameters.put("T@T@", "Tata");
         parameters.put("TaaTa", "Tata");
         parameters.put("Toto", "Tata");
 
-        final DataSetRowAction consumer = textClustering.create(parameters).getRowAction();
-
         final List<DataSetRow> rows = new ArrayList<>();
-        rows.add(createRow("uglystate", "T@T@1"));
-        rows.add(createRow("uglystate", "TaaTa1"));
-        rows.add(createRow("uglystate", "Toto1"));
-        rows.add(createRow("uglystate", "Tata1"));
+        rows.add(createRow(columnId, "T@T@1"));
+        rows.add(createRow(columnId, "TaaTa1"));
+        rows.add(createRow(columnId, "Toto1"));
+        rows.add(createRow(columnId, "Tata1"));
 
         // when
-        rows.stream().forEach(row -> consumer.apply(row, new TransformationContext()));
+        rows.stream().forEach(row -> textClustering.applyOnColumn(row, new TransformationContext(), parameters, columnId));
 
         // then
-        rows.stream().map((row) -> row.get("uglystate"))
+        rows.stream().map((row) -> row.get(columnId))
                 .forEach(uglyState -> Assertions.assertThat(uglyState).isNotEqualTo("Tata"));
     }
 

@@ -3,7 +3,9 @@
     {
       "action": "uppercase",
       "parameters": {
-        "column_name": "lastname"
+        "column_id": "0002",
+        "column_name": "lastname",
+        "scope": "column"
       }
     }
   ]

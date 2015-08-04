@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -32,6 +33,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -39,27 +42,20 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
  * @see Split
  */
 public class ComputeLengthTest {
-
-    /**
-     * The row consumer to test.
-     */
-    private DataSetRowAction rowClosure;
-
     /**
      * The action to test.
      */
     private ComputeLength action;
 
-    /**
-     * Constructor.
-     */
-    public ComputeLengthTest() throws IOException {
+    private Map<String, String> parameters;
+
+    @Before
+    public void init() throws IOException {
         action = new ComputeLength();
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 ComputeLengthTest.class.getResourceAsStream("computeLengthAction.json"));
-        final Action action = this.action.create(parameters);
-        rowClosure = action.getRowAction();
     }
 
     @Test
@@ -69,24 +65,33 @@ public class ComputeLengthTest {
         assertThat(action.adapt(column), is(action));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
+    }
+
     /**
      * @see Split#create(Map)
      */
     @Test
     public void should_compute_length() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Bacon");
         expectedValues.put("0003", "5");
         expectedValues.put("0002", "01/01/2015");
 
-        row = rowClosure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
@@ -95,19 +100,23 @@ public class ComputeLengthTest {
      */
     @Test
     public void should_compute_length_empty() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "");
         expectedValues.put("0003", "0");
         expectedValues.put("0002", "01/01/2015");
 
-        row = rowClosure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
@@ -116,72 +125,78 @@ public class ComputeLengthTest {
      */
     @Test
     public void should_compute_length_twice() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Bacon");
         expectedValues.put("0004", "5");
         expectedValues.put("0003", "5");
         expectedValues.put("0002", "01/01/2015");
 
-        row = rowClosure.apply(row, new TransformationContext());
-        row = rowClosure.apply(row, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see ComputeLength#create(Map)
      */
     @Test
     public void should_update_metadata() {
-
-        List<ColumnMetadata> input = new ArrayList<>();
+        //given
+        final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "steps"));
         input.add(createMetadata("0002", "last update"));
-        RowMetadata rowMetadata = new RowMetadata(input);
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
-        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-        List<ColumnMetadata> actual = rowMetadata.getColumns();
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "steps"));
         expected.add(createMetadata("0003", "steps_length", Type.INTEGER));
         expected.add(createMetadata("0002", "last update"));
 
-        assertEquals(expected, actual);
+        //when
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, rowMetadata.getColumns());
     }
 
     /**
-     * @see Action#getMetadataAction()
+     * @see ComputeLength#create(Map)
      */
     @Test
     public void should_update_metadata_twice() {
-
-        List<ColumnMetadata> input = new ArrayList<>();
+        //given
+        final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "steps"));
         input.add(createMetadata("0002", "last update"));
-        RowMetadata rowMetadata = new RowMetadata(input);
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
-        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-        List<ColumnMetadata> actual = rowMetadata.getColumns();
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "steps"));
         expected.add(createMetadata("0004", "steps_length", Type.INTEGER));
         expected.add(createMetadata("0003", "steps_length", Type.INTEGER));
         expected.add(createMetadata("0002", "last update"));
 
-        assertEquals(expected, actual);
+        //when
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, rowMetadata.getColumns());
     }
 
     @Test

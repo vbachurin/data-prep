@@ -71,10 +71,12 @@
             var params = {
                 /*jshint camelcase: false */
                 new_column_name: vm.newName,
-                scope: 'column'
+                scope: 'column',
+                column_id: vm.column.id,
+                column_name: vm.column.name
             };
 
-            PlaygroundService.appendStep(RENAME_ACTION, vm.column, params)
+            PlaygroundService.appendStep(RENAME_ACTION, params)
                 .then(function() {
                     vm.setEditMode(false);
                     originalName = vm.newName;
