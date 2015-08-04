@@ -10,7 +10,7 @@
      */
     function DatagridTooltipService($timeout, DatagridStyleService, DatagridService) {
         var grid;
-        var tooltipPromise, tooltipHidePromise;
+        var tooltipTimeout, tooltipShowPromise;
         var tooltipDelay = 300;
 
         var service = {
@@ -30,8 +30,13 @@
          * @description Cancel the current tooltip promise
          */
         function cancelTooltip() {
-            if(tooltipPromise) {
-                $timeout.cancel(tooltipPromise);
+            if(tooltipTimeout) {
+                clearTimeout(tooltipTimeout);
+                tooltipTimeout = null;
+            }
+            if(tooltipShowPromise) {
+                $timeout.cancel(tooltipShowPromise);
+                tooltipShowPromise = null;
             }
         }
 
@@ -39,21 +44,31 @@
          * @ngdoc method
          * @name createTooltip
          * @methodOf data-prep.datagrid.service:DatagridTooltipService
-         * @param {object} record The current record (only used if tooltip is used as an value editor, may be removed)
-         * @param {string} colId The column id (only used if tooltip is used as an value editor, may be removed)
-         * @param {object} position The position where to display it {x: number, y: number}
-         * @param {String} htmlStr The html string to be displayed in the tooltip box
+         * @param {object} event The Slickgrid cell enter event
          * @description Update the tooltip component and display with a delay
          */
-        function createTooltip(record, colId, position, htmlStr) {
-            tooltipPromise = $timeout(function() {
-                service.tooltip = {
-                    record: record,
-                    position: position,
-                    colId: colId,
-                    htmlStr: htmlStr
-                };
-                service.showTooltip = true;
+        function createTooltip(event) {
+            tooltipTimeout = setTimeout(function() {
+                var cell = grid.getCellFromEvent(event);
+
+                var row = cell.row;
+                var item = DatagridService.dataView.getItem(row);
+
+                var column = grid.getColumns()[cell.cell];
+                var value = item[column.id];
+
+                if (shouldShowTooltip(value, cell)) {
+                    tooltipShowPromise = $timeout(function() {
+                        service.tooltip = {
+                            position: {
+                                x: event.clientX,
+                                y: event.clientY
+                            },
+                            htmlStr: DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value)
+                        };
+                        service.showTooltip = true;
+                    });
+                }
             }, tooltipDelay);
         }
 
@@ -61,15 +76,12 @@
          * @ngdoc method
          * @name updateTooltip
          * @methodOf data-prep.datagrid.service:DatagridTooltipService
-         * @param {object} record The current record (only used if tooltip is used as an value editor, may be removed)
-         * @param {string} colId The column id (only used if tooltip is used as an value editor, may be removed)
-         * @param {object} position The position where to display it {x: number, y: number}
-         * @param {String} htmlStr The HTML string to be displayed in the tooltip.
+         * @param {object} event The Slickgrid cell enter event
          * @description Cancel the old tooltip promise if necessary and create a new one
          */
-        function updateTooltip(record, colId, position, htmlStr) {
+        function updateTooltip(event) {
             cancelTooltip();
-            createTooltip(record, colId, position, htmlStr);
+            createTooltip(event);
         }
 
         /**
@@ -81,13 +93,12 @@
         function hideTooltip() {
             cancelTooltip();
             if(service.showTooltip) {
-                tooltipHidePromise = $timeout(function() {
+                $timeout(function() {
                     service.showTooltip = false;
                 });
             }
         }
 
-        //show tooltips only if not empty and width is bigger than cell
         /**
          * @ngdoc method
          * @name shouldShowTooltip
@@ -97,18 +108,24 @@
          * @param {object} cell The cell containing the text
          */
         function shouldShowTooltip(text, cell) {
+            //do NOT show if content is empty
             if(text === '') {
                 return false;
             }
+            //show if content is multiline (avoid too loud check with div size)
+            else if(text.indexOf('\n') > -1) {
+                return true;
+            }
+            //heavy check based on div size
+            else {
+                var ruler = service.tooltipRuler;
+                ruler.text(text);
+                var box = grid.getCellNodeBox(cell.row, cell.cell);
 
-            var ruler = service.tooltipRuler;
-
-            ruler.text(text);
-            var box = grid.getCellNodeBox(cell.row, cell.cell);
-
-            // return if the content is bigger than the displayed box by computing the diff between the displayed box
-            // and the hidden tooltip ruler size minus the cell padding
-            return (box.right - box.left - 11 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
+                // return if the content is bigger than the displayed box by computing the diff between the displayed box
+                // and the hidden tooltip ruler size minus the cell padding
+                return (box.right - box.left - 11 ) <= ruler.width() || (box.bottom - box.top) < ruler.height();
+            }
         }
 
         /**
@@ -119,28 +136,10 @@
          */
         function attachTooltipListener() {
             //show tooltip on hover
-            grid.onMouseEnter.subscribe(function(e) {
-                var cell = grid.getCellFromEvent(e);
-                var row = cell.row;
-                var column = grid.getColumns()[cell.cell];
-                var item = DatagridService.dataView.getItem(row);
-
-                if (!shouldShowTooltip(item[column.id], cell)) {
-                    return;
-                }
-
-                var position = {
-                    x: e.clientX,
-                    y: e.clientY
-                };
-
-                updateTooltip(item, column.id, position, DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(item[column.id]));
-            });
+            grid.onMouseEnter.subscribe(updateTooltip);
 
             //hide tooltip on leave
-            grid.onMouseLeave.subscribe(function() {
-                hideTooltip();
-            });
+            grid.onMouseLeave.subscribe(hideTooltip);
         }
 
         /**

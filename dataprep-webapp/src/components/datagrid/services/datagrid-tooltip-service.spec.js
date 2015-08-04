@@ -48,6 +48,14 @@ describe('Datagrid tooltip service', function() {
         DatagridTooltipService.tooltipRuler = RulerMock;
     }));
 
+    beforeEach(function () {
+        jasmine.clock().install();
+    });
+
+    afterEach(function () {
+        jasmine.clock().uninstall();
+    });
+
     describe('on creation', function() {
         it('should hide tooltip', inject(function(DatagridTooltipService) {
             //then
@@ -91,11 +99,12 @@ describe('Datagrid tooltip service', function() {
             expect(DatagridTooltipService.showTooltip).toBeFalsy();
 
             //when
+            jasmine.clock().tick(300);
             try {
-                $timeout.flush(300);
+                $timeout.flush();
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
-                //then
+            //then
             catch(error) {
                 expect(DatagridTooltipService.tooltip).toEqual({});
                 expect(DatagridTooltipService.showTooltip).toBeFalsy();
@@ -110,17 +119,15 @@ describe('Datagrid tooltip service', function() {
             var cell = {row: 1, cell: 1}; // contains '  tetetetetetetetetetetetetetetetetetetete '
             gridMock.initCellMock(cell, box);
 
-
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
             var event = {clientX: 500, clientY: 300};
             mouseEnterHandler(event);
-            $timeout.flush(300);
+            jasmine.clock().tick(300);
+            $timeout.flush();
 
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
-                record: item,
-                colId: '0001',
                 position: {x: 500, y: 300},
                 htmlStr: '<span class="hiddenChars">  </span>tetetetetetetetetetetetetetetetetetetete<span class="hiddenChars"> </span>'
             });
@@ -145,12 +152,11 @@ describe('Datagrid tooltip service', function() {
             expect(DatagridTooltipService.showTooltip).toBeFalsy();
 
             //when
-            $timeout.flush(300);
+            jasmine.clock().tick(300);
+            $timeout.flush();
 
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
-                record: item,
-                colId: '0002',
                 position: {x: 500, y: 300},
                 htmlStr: 'titititititititititititititititititi'
             });
@@ -161,9 +167,8 @@ describe('Datagrid tooltip service', function() {
             //given
             DatagridTooltipService.init(gridMock);
 
-            var box = {left: 400, right: 500, top: 10, bottom: 40}; //width: 100
             var cell = {row: 1, cell: 3}; // contains 'toto<span class="hiddenCharsBreakLine">&nbsp;</span>\ntoto'
-            gridMock.initCellMock(cell, box);
+            gridMock.initCellMock(cell);
 
             //when
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
@@ -175,12 +180,11 @@ describe('Datagrid tooltip service', function() {
             expect(DatagridTooltipService.showTooltip).toBeFalsy();
 
             //when
-            $timeout.flush(300);
+            jasmine.clock().tick(300);
+            $timeout.flush();
 
             //then
             expect(DatagridTooltipService.tooltip).toEqual({
-                record: item,
-                colId: '0003',
                 position: {x: 500, y: 300},
                 htmlStr: 'toto↵\ntoto'
             });
@@ -206,11 +210,12 @@ describe('Datagrid tooltip service', function() {
             expect(DatagridTooltipService.showTooltip).toBeFalsy();
 
             //when
+            jasmine.clock().tick(300);
             try {
-                $timeout.flush(300);
+                $timeout.flush();
                 throw Error('Should have thrown exception, because no timeout is waiting');
             }
-                //then
+            //then
             catch(error) {
                 expect(DatagridTooltipService.tooltip).toEqual({});
                 expect(DatagridTooltipService.showTooltip).toBeFalsy();
@@ -250,7 +255,7 @@ describe('Datagrid tooltip service', function() {
             var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
             var event = {clientX: 500, clientY: 300};
             mouseEnterHandler(event);
-            $timeout.flush(299);
+            jasmine.clock().tick(300);
 
             //then
             expect(DatagridTooltipService.showTooltip).toBe(false);
@@ -258,11 +263,16 @@ describe('Datagrid tooltip service', function() {
             //when : tooltip hide
             var mouseLeaveHandler = gridMock.onMouseLeave.subscribe.calls.argsFor(0)[0];
             mouseLeaveHandler();
-            $timeout.flush(1);
+            try{
+                $timeout.flush();
+                throw Error('Should have thrown exception, because no timeout is waiting');
+            }
 
             //then
-            expect(DatagridTooltipService.tooltip).toEqual({});
-            expect(DatagridTooltipService.showTooltip).toBe(false);
+            catch(error) {
+                expect(DatagridTooltipService.tooltip).toEqual({});
+                expect(DatagridTooltipService.showTooltip).toBeFalsy();
+            }
         }));
     });
 
