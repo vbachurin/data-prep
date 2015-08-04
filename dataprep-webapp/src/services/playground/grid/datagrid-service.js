@@ -90,10 +90,11 @@
         };
 
         function getLastNewColumnId(columns){
-            var colIdsSorted = _.sortBy(columns, function(col){
-                return +col.id;
-            });
-            return colIdsSorted[colIdsSorted.length - 1].id;
+            var ancientColumnsIds = _.pluck(self.data.columns, 'id');
+            var newColumnsIds = _.pluck(columns, 'id');
+            var diffIds = _.difference(newColumnsIds, ancientColumnsIds);
+
+            return diffIds[diffIds.length - 1];
         }
 
         /**
