@@ -192,7 +192,7 @@ describe('Dataset List Service', function () {
         //then
         expect(DatasetListService.datasets).toEqual(datasets);
         expect(DatasetRestService.getDatasets.calls.count()).toBe(1);
-        expect(DatasetRestService.getDatasets).toHaveBeenCalledWith(undefined,undefined);
+        expect(DatasetRestService.getDatasets).toHaveBeenCalled();
     }));
 
     it('should trigger refresh with sort parameters', inject(function (DatasetListService, DatasetRestService) {

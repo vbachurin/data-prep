@@ -179,7 +179,7 @@ describe('Dataset Service', function () {
         DatasetService.refreshDatasets();
 
         //then
-        expect(DatasetListService.refreshDatasets).toHaveBeenCalledWith(undefined,undefined);
+        expect(DatasetListService.refreshDatasets).toHaveBeenCalled();
     }));
 
     it('should refresh dataset list with sort parameters', inject(function (DatasetService, DatasetListService) {

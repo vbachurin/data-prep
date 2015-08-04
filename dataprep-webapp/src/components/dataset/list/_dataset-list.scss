@@ -1,61 +1,34 @@
-$button-background-color: $white;
-$button-color-text: $black;
-
 .dataset {
+  $button-background-color: $white;
+  $button-color-text: $black;
 
   @mixin button-dropdown-restyle() {
     background: $button-background-color;
     color: $button-color-text;
-    text-align: right;
+    padding: 0 5px 0 5px;
   }
 
+  .inventory-sort {
+    @include display(flex);
+    @include flex-direction(row);
+    @include align-items(center);
+    @include justify-content(flex-end);
 
-  .inventory-sort-item {
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    box-align: stretch;
-    align-items: center;
-    -webkit-align-items: center;
-    -moz-align-items: center;
-    -ms-align-items: center;
-    -o-align-items: center;
-    box-orient: vertical;
-    justify-content: flex-end;
-    -webkit-flex-direction: row;
-    -moz-flex-direction: row;
-    flex-direction: row;
-    -ms-flex-direction: row;
     font-size: 0.9em;
+
+    .button-dropdown-side {
+      @include button-dropdown-restyle();
+      padding-left: 0;
+    }
   }
 
-  .button-dropdown-longtext .button-dropdown-main{
-
+  .button-dropdown-longtext .button-dropdown-main {
     @include button-dropdown-restyle();
-
     width: 95px;
-    padding: 0 5px 0 5px;
   }
 
-  .button-dropdown-shorttext .button-dropdown-main{
-
+  .button-dropdown-shorttext .button-dropdown-main {
     @include button-dropdown-restyle();
-
     width: 55px;
-    padding: 0 5px 0 5px;
   }
-
-  .inventory-sort-item .button-dropdown-side {
-
-    @include button-dropdown-restyle();
-
-    padding: 0 5px 0 0;
-  }
-
-  .sort-text-spaces {
-    padding: 0 5px 0 5px;
-  }
-
-
-
 }

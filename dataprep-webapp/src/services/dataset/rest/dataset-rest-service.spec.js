@@ -70,7 +70,7 @@ describe('Dataset Rest Service', function () {
             .respond(200, datasets);
 
         //when
-        DatasetRestService.getDatasets('name', null).then(function (response) {
+        DatasetRestService.getDatasets('name').then(function (response) {
             result = response.data;
         });
         $httpBackend.flush();

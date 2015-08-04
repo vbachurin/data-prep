@@ -22,11 +22,6 @@
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
 
-        //sort by default
-        vm.sortSelected = {id: 'date', name: 'DATE_SORT'};
-        vm.sortOrderSelected = {id: 'desc', name: 'DESC_ORDER'};
-
-
         /**
          * @ngdoc property
          * @name sortList
@@ -52,17 +47,33 @@
         ];
 
         /**
+         * @ngdoc property
+         * @name sortSelected
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Selected sort. Default date
+         * @type {object}
+         */
+        vm.sortSelected = vm.sortList[1];
+
+        /**
+         * @ngdoc property
+         * @name sortOrderSelected
+         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+         * @description Selected sort order. Default desc
+         * @type {object}
+         */
+        vm.sortOrderSelected = vm.orderList[1];
+
+        /**
          * @ngdoc method
          * @name sort
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description sort dataset by sortType by calling refreshDatasets from DatasetService
-         * @param {object} sortType : criteria to sort
+         * @param {object} sortType Criteria to sort
          */
         vm.updateSortBy = function(sortType) {
             vm.sortSelected = sortType;
-
-            DatasetService.refreshDatasets( vm.sortSelected.id, vm.sortOrderSelected.id);
-
+            DatasetService.refreshDatasets(vm.sortSelected.id, vm.sortOrderSelected.id);
         };
 
         /**
@@ -70,13 +81,11 @@
          * @name sort
          * @methodOf data-prep.dataset-list.controller:DatasetListCtrl
          * @description sort dataset in order (ASC or DESC) by calling refreshDatasets from DatasetService
-         * @param {object} order : ASC(ascending) or DESC(descending)
+         * @param {object} order Sort order ASC(ascending) or DESC(descending)
          */
         vm.updateSortOrder = function(order) {
             vm.sortOrderSelected = order;
-
-            DatasetService.refreshDatasets( vm.sortSelected.id,  vm.sortOrderSelected.id);
-
+            DatasetService.refreshDatasets(vm.sortSelected.id,  vm.sortOrderSelected.id);
         };
 
         /**

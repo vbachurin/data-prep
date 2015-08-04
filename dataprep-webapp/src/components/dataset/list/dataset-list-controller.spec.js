@@ -54,12 +54,10 @@ describe('Dataset list controller', function () {
     it('should refresh dataset when sort is changed', inject(function (DatasetService) {
         //given
         var ctrl = createController();
-
         var newSort =  {id: 'name', name: 'NAME_SORT'};
 
         //when
         ctrl.updateSortBy(newSort);
-        scope.$digest();
 
         //then
         expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('name','desc');
@@ -69,12 +67,10 @@ describe('Dataset list controller', function () {
     it('should refresh dataset when order is changed', inject(function (DatasetService) {
         //given
         var ctrl = createController();
-
         var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
 
         //when
         ctrl.updateSortOrder(newSortOrder);
-        scope.$digest();
 
         //then
         expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('date','asc');
