@@ -8,7 +8,7 @@
      * <b style="color: red;">WARNING : do NOT use this service directly for FILTERS.
      * {@link data-prep.services.filter.service:FilterService FilterService} must be the only entry point for datagrid filters</b>
      */
-    function DatagridService() {
+    function DatagridService(ConverterService) {
         var self = this;
 
         /**
@@ -127,6 +127,33 @@
                     return col.type !== 'boolean';
                 });
             }
+
+            return _.map(cols, function (col) {
+                return {'id': col.id, 'name': col.name};
+            });
+        };
+
+
+        /**
+         * @ngdoc method
+         * @name getNumberColumns
+         * @methodOf data-prep.services.playground.service:DatagridService
+         * @param {string} id - column to be excluded
+         * @description Filter the column ids
+         * @returns {Object[]} - the number columns list that match the desired filters (id & name)
+         */
+        self.getNumberColumns = function(id) {
+            var cols = self.data.columns;
+
+            cols = _.filter(cols, function (col) {
+
+                if(id){
+                    return (ConverterService.simplifyType(col.type) === 'number') && (col.id !== id);
+                }
+
+                return (ConverterService.simplifyType(col.type) === 'number');
+
+            });
 
             return _.map(cols, function (col) {
                 return {'id': col.id, 'name': col.name};

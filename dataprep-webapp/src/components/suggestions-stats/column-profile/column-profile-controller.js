@@ -1,9 +1,10 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, DatagridService, StatisticsService, $filter) {
+    function ColumnProfileCtrl($scope, DatagridService, StatisticsService, SuggestionsStatsAggregationsService) {
         var vm = this;
         vm.datasetGridService = DatagridService;
+        vm.datasetAggregationsService = SuggestionsStatsAggregationsService;
         vm.chartConfig = {};
         vm.barchartClickFn = function barchartClickFn (item){
             return StatisticsService.addFilter(item.data);
@@ -23,11 +24,6 @@
         //----------------------------------------------AGGREGATION---------------------------------------------
         //------------------------------------------------------------------------------------------------------
 
-        vm.aggregationSelected = $filter("translate")('LINE_COUNT');
-        vm.columnsList =  [
-            {id: '0001', name: 'Revenue'},
-            {id: '0002', name: 'Age'},
-        ];
         vm.calculationsList =  [
             {id: 'sum', name: 'SUM'},
             {id: 'max', name: 'MAX'},
@@ -38,14 +34,7 @@
         ];
 
         vm.updateCharts = function (column, calculation) {
-
-            if (column && calculation) {
-                vm.aggregationSelected = $filter("translate")(calculation.name)+'('+$filter("translate")(column.name)+')';
-
-            } else { //display "line count"
-                vm.aggregationSelected = $filter("translate")('LINE_COUNT');
-
-            }
+            vm.datasetAggregationsService.updateAggregationsChanges(column, calculation);
         };
 
 
@@ -168,16 +157,18 @@
                 }
             }
         );
+
+        Object.defineProperty(ColumnProfileCtrl.prototype,
+            'selectedColumn', {
+                enumerable: true,
+                configurable: false,
+                get: function () {
+                    return this.datasetGridService.selectedColumn;
+                }
+            });
     }
 
-    Object.defineProperty(ColumnProfileCtrl.prototype,
-        'selectedColumn', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.datasetGridService.selectedColumn;
-            }
-        });
+
 
     angular.module('data-prep.column-profile')
         .controller('ColumnProfileCtrl', ColumnProfileCtrl);

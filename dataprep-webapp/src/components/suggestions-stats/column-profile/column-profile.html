@@ -1,11 +1,11 @@
 <div class="column-profile">
     <div class="column-profile-aggregation">
-        <talend-button-dropdown button-text="{{columnProfileCtrl.aggregationSelected}}">
+        <talend-button-dropdown button-text="{{columnProfileCtrl.datasetAggregationsService.aggregationSelected}}">
             <ul>
                 <li ng-click="columnProfileCtrl.updateCharts(null,null)" >
                     {{ 'LINE_COUNT' | translate }}
                 </li>
-                <li ng-repeat="column in columnProfileCtrl.columnsList"  class="more">
+                <li ng-repeat="column in columnProfileCtrl.datasetAggregationsService.numericColumns"  class="more">
                     {{column.name}}
                     <ul class="submenu">
                         <li ng-repeat="calculation in columnProfileCtrl.calculationsList" ng-click="columnProfileCtrl.updateCharts(column, calculation)" >

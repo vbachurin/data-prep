@@ -8,8 +8,9 @@
      * @requires data-prep.services.statistics.service:StatisticsService
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.playground.service:PreviewService
+     * @requires data-prep.suggestions-stats.service:SuggestionsStatsAggregationsService
      */
-    function DatagridExternalService(StatisticsService, ColumnSuggestionService, PreviewService) {
+    function DatagridExternalService(StatisticsService, ColumnSuggestionService, PreviewService, SuggestionsStatsAggregationsService) {
         var grid;
 
         return {
@@ -31,6 +32,7 @@
             var columnMetadata = column.tdpColMetadata;
             StatisticsService.processVisuData(columnMetadata);
             ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
+            SuggestionsStatsAggregationsService.updateAggregations(columnMetadata);
         }
 
         /**
