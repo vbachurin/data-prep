@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -17,6 +18,7 @@ import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for DeleteEmpty action. Creates one consumer, and test it.
@@ -26,160 +28,191 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 public class DeleteEmptyTest {
 
     /** The action to test. */
-    private DeleteEmpty deleteEmpty;
+    private DeleteEmpty action;
 
-    /** The consumer out of the action. */
-    private DataSetRowAction consumer;
+    private Map<String, String> parameters;
 
-    /**
-     * Default constructor.
-     */
-    public DeleteEmptyTest() throws IOException {
-        deleteEmpty = new DeleteEmpty();
+    @Before
+    public void init() throws IOException {
+        action = new DeleteEmpty();
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
-                deleteEmpty, //
+        parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
                 DeleteEmptyTest.class.getResourceAsStream("deleteEmptyAction.json"));
-
-        consumer = deleteEmpty.create(parameters).getRowAction();
     }
 
     @Test
     public void testAdapt() throws Exception {
-        assertThat(deleteEmpty.adapt(null), is(deleteEmpty));
+        assertThat(action.adapt(null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
-        assertThat(deleteEmpty.adapt(column), is(deleteEmpty));
+        assertThat(action.adapt(column), is(action));
     }
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(deleteEmpty.getCategory(), is(ActionCategory.CLEANSING.getDisplayName()));
+        assertThat(action.getCategory(), is(ActionCategory.CLEANSING.getDisplayName()));
     }
 
     @Test
     public void should_delete_because_value_not_set() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertTrue(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("name"));
+        //then
+        assertTrue(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
     }
 
     @Test
     public void should_delete_because_null() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", null);
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertTrue(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
+        assertTrue(row.isDeleted());
     }
 
     @Test
     public void should_delete_because_empty() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertTrue(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
+        assertTrue(row.isDeleted());
     }
 
     @Test
     public void should_delete_because_value_is_made_of_spaces() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", " ");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertTrue(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
+        assertTrue(row.isDeleted());
     }
 
     @Test
     public void should_not_delete_because_value_set() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "-");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("name"));
-        assertEquals("-", dsr.get("city"));
+        //then
+        assertFalse(row.isDeleted());
+        assertEquals("David Bowie", row.get("name"));
+        assertEquals("-", row.get("city"));
     }
 
     @Test
     public void should_not_delete_because_value_set_2() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", " a value ");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
+        assertFalse(row.isDeleted());
     }
 
     @Test
     public void should_not_delete_because_value_set_of_boolean() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "true");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
+        assertFalse(row.isDeleted());
     }
 
     @Test
     public void should_not_delete_because_value_set_of_number() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "45");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
+        assertFalse(row.isDeleted());
     }
 
     @Test
     public void should_not_delete_because_value_set_of_negative_boolean() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "-12");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
+        assertFalse(row.isDeleted());
     }
 
     @Test
     public void should_not_delete_because_value_set_of_float() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("name", "David Bowie");
         values.put("city", "0.001");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertFalse(dsr.isDeleted());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "city");
+
+        //then
+        assertFalse(row.isDeleted());
     }
 
     @Test
     public void should_accept_column() {
-        assertTrue(deleteEmpty.acceptColumn(getColumn(Type.STRING)));
-        assertTrue(deleteEmpty.acceptColumn(getColumn(Type.NUMERIC)));
-        assertTrue(deleteEmpty.acceptColumn(getColumn(Type.FLOAT)));
-        assertTrue(deleteEmpty.acceptColumn(getColumn(Type.DATE)));
-        assertTrue(deleteEmpty.acceptColumn(getColumn(Type.BOOLEAN)));
-        assertTrue(deleteEmpty.acceptColumn(getColumn(Type.ANY)));
+        assertTrue(action.acceptColumn(getColumn(Type.STRING)));
+        assertTrue(action.acceptColumn(getColumn(Type.NUMERIC)));
+        assertTrue(action.acceptColumn(getColumn(Type.FLOAT)));
+        assertTrue(action.acceptColumn(getColumn(Type.DATE)));
+        assertTrue(action.acceptColumn(getColumn(Type.BOOLEAN)));
+        assertTrue(action.acceptColumn(getColumn(Type.ANY)));
     }
 
 }

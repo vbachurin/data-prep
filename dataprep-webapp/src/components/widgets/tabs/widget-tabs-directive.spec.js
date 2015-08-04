@@ -16,13 +16,13 @@ describe('Tabs directive', function () {
 
         createElement = function () {
             var template = '<talend-tabs>' +
-                '   <talend-tabs-item title="tab 1 title">' +
+                '   <talend-tabs-item tab-title="tab 1 title">' +
                 '       <div id="tab1Content">Content tab 1</div>' +
                 '   </talend-tabs-item>' +
-                '   <talend-tabs-item title="tab 2 title" default="true">' +
+                '   <talend-tabs-item tab-title="tab 2 title" default="true">' +
                 '       <div id="tab2Content">Content tab 2</div>' +
                 '   </talend-tabs-item>' +
-                '   <talend-tabs-item title="tab 3 title">' +
+                '   <talend-tabs-item tab-title="tab 3 title">' +
                 '       <div id="tab3Content">Content tab 3</div>' +
                 '   </talend-tabs-item>' +
                 '</talend-tabs>';

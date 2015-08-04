@@ -38,11 +38,10 @@ describe('horizontalBarchart directive', function () {
 		};
 	}));
 
-	afterEach(inject(function (StatisticsService) {
+	afterEach(function () {
 		scope.$destroy();
 		element.remove();
-		StatisticsService.resetCharts();
-	}));
+	});
 
 	it('should render all bars', function () {
 		//given

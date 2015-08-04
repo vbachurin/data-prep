@@ -122,8 +122,6 @@
 						})
 						.on('click',function(d){
 							scope.onClick()(d);
-							//var expressionHandler = ;
-							//expressionHandler(d);
 						});
 				}
 

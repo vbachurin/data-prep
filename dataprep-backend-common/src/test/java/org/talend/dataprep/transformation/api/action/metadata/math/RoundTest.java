@@ -12,23 +12,23 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
-import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+import org.junit.Before;
+import org.junit.Test;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.DataSetRowAction;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
 
 /**
  * Test class for Round action. Creates one consumer, and test it.
@@ -38,41 +38,43 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 public class RoundTest {
 
     /** The action ton test. */
-    private Round roundAction;
+    private Round action;
 
-    /** The consumer out of the consumer. */
-    private DataSetRowAction consumer;
+    private Map<String, String> parameters;
 
-    /**
-     * Constructor.
-     */
-    public RoundTest() throws IOException {
-        roundAction = new Round();
-        Map<String, String> parameters = ActionMetadataTestUtils //
-                .parseParameters(roundAction, RoundTest.class.getResourceAsStream("roundAction.json"));
-        consumer = roundAction.create(parameters).getRowAction();
+    @Before
+    public void init() throws IOException {
+        action = new Round();
+
+        parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                RoundTest.class.getResourceAsStream("roundAction.json"));
     }
 
     @Test
     public void testAdapt() throws Exception {
-        assertThat(roundAction.adapt(null), is(roundAction));
+        assertThat(action.adapt(null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
-        assertThat(roundAction.adapt(column), is(roundAction));
+        assertThat(action.adapt(column), is(action));
     }
 
     @Test
     public void testCategory() throws Exception {
-        assertThat(roundAction.getCategory(), is(ActionCategory.MATH.getDisplayName()));
+        assertThat(action.getCategory(), is(ActionCategory.MATH.getDisplayName()));
     }
 
 
     public void testCommon(String input, String expected) {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("aNumber", input);
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertEquals(expected, dsr.get("aNumber"));
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "aNumber");
+
+        //then
+        assertEquals(expected, row.get("aNumber"));
     }
 
     @Test
@@ -105,16 +107,16 @@ public class RoundTest {
 
     @Test
     public void should_accept_column() {
-        assertTrue(roundAction.acceptColumn(getColumn(Type.NUMERIC)));
-        assertTrue(roundAction.acceptColumn(getColumn(Type.INTEGER)));
-        assertTrue(roundAction.acceptColumn(getColumn(Type.DOUBLE)));
-        assertTrue(roundAction.acceptColumn(getColumn(Type.FLOAT)));
+        assertTrue(action.acceptColumn(getColumn(Type.NUMERIC)));
+        assertTrue(action.acceptColumn(getColumn(Type.INTEGER)));
+        assertTrue(action.acceptColumn(getColumn(Type.DOUBLE)));
+        assertTrue(action.acceptColumn(getColumn(Type.FLOAT)));
     }
 
     @Test
     public void should_not_accept_column() {
-        assertFalse(roundAction.acceptColumn(getColumn(Type.STRING)));
-        assertFalse(roundAction.acceptColumn(getColumn(Type.DATE)));
-        assertFalse(roundAction.acceptColumn(getColumn(Type.BOOLEAN)));
+        assertFalse(action.acceptColumn(getColumn(Type.STRING)));
+        assertFalse(action.acceptColumn(getColumn(Type.DATE)));
+        assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 }
