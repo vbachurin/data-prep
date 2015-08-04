@@ -28,6 +28,8 @@ line .center {
   fill: #fff;
   opacity:.5;
   stroke: grey;
+  shape-rendering: geometricPrecision;
+  stroke-width: .8;
 }
 
 .max-min-labels{
