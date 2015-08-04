@@ -482,7 +482,7 @@ public class TransformationServiceTests {
                 .asString();
 
         //then
-        assertEquals(expectedSuggestions, response, false);
+        assertEquals( expectedSuggestions, response, false );
     }
 
 
