@@ -8,17 +8,17 @@
      * @restrict E
      * @usage
      <talend-tabs>
-        <talend-tabs-item title="tab 1 title">
+        <talend-tabs-item tab-title="tab 1 title">
             Content tab 1
         </talend-tabs-item>
-        <talend-tabs-item title="tab 2 title" default="true">
+        <talend-tabs-item tab-title="tab 2 Title" default="true">
             Content tab 2
         </talend-tabs-item>
-        <talend-tabs-item title="tab 3 title">
+        <talend-tabs-item tab-title="tab 3 Title">
             Content tab 3
         </talend-tabs-item>
      </talend-tabs>
-     * @param {string} title The tab title to display
+     * @param {string} tabTitle The tab Title to display
      * @param {boolean} default The default tab to select
      */
     function TalendTabsItem() {
@@ -29,7 +29,7 @@
             templateUrl: 'components/widgets/tabs/tabs-item.html',
             require: '^^talendTabs',
             scope: {
-                title: '@',
+                tabTitle: '@',
                 'default': '='
             },
             bindToController: true,

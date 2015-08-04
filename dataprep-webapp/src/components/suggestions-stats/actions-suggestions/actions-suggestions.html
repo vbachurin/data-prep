@@ -3,11 +3,11 @@
     <div class="Description" ng-if="! actionsSuggestionsCtrl.columnSuggestions">Select a column to display its actions</div>
     
     <talend-tabs ng-if="actionsSuggestionsCtrl.columnSuggestions">
-        <talend-tabs-item title="_"></talend-tabs-item>
-        <talend-tabs-item title="Text">Coming soon ...</talend-tabs-item>
-        <talend-tabs-item title="Cell">Coming soon ...</talend-tabs-item>
-        <talend-tabs-item title="Line">Coming soon ...</talend-tabs-item>
-        <talend-tabs-item title="Column" default="true">
+        <talend-tabs-item tab-title="_"></talend-tabs-item>
+        <talend-tabs-item tab-title="Text">Coming soon ...</talend-tabs-item>
+        <talend-tabs-item tab-title="Cell">Coming soon ...</talend-tabs-item>
+        <talend-tabs-item tab-title="Line">Coming soon ...</talend-tabs-item>
+        <talend-tabs-item tab-title="Column" default="true">
             <div ng-repeat="transfo in actionsSuggestionsCtrl.columnSuggestions">
                 <talend-accordions class="menu">
                     <talend-accordions-item ng-switch="!!(transfo.parameters || transfo.items)">
@@ -26,7 +26,7 @@
             </div>
         </talend-tabs-item>
 
-        <talend-tabs-item title="Table">
+        <talend-tabs-item tab-title="Table">
             <talend-accordions class="menu">
                 <talend-accordions-item>
                     <a>Remove Empty Lines</a>

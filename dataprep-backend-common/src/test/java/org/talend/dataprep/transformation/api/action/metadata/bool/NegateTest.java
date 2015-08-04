@@ -25,11 +25,10 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
  */
 public class NegateTest {
 
-    /** The row consumer to test. */
-    private DataSetRowAction consumer;
-
     /** The action to test. */
     private Negate action;
+
+    private Map<String, String> parameters;
 
     /**
      * Default empty constructor
@@ -37,11 +36,9 @@ public class NegateTest {
     public NegateTest() throws IOException {
         action = new Negate();
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 NegateTest.class.getResourceAsStream("negateAction.json"));
-
-        consumer = action.create(parameters).getRowAction();
     }
 
     @Test
@@ -58,36 +55,34 @@ public class NegateTest {
 
     @Test
     public void should_negate_true() {
+        //given
         Map<String, String> values = new HashMap<>();
         values.put("name", "Vincent");
         values.put("entity", "R&D");
         values.put("active", "true");
         DataSetRow row = new DataSetRow(values);
 
-        Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("name", "Vincent");
-        expectedValues.put("entity", "R&D");
-        expectedValues.put("active", "False"); // true -> false
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "active");
 
-        row = consumer.apply(row, new TransformationContext());
-        assertEquals(expectedValues, row.values());
+        //then
+        assertThat(row.get("active"), is("False"));
     }
 
     @Test
     public void should_negate_false() {
+        //given
         Map<String, String> values = new HashMap<>();
         values.put("name", "Vincent");
         values.put("entity", "R&D");
         values.put("active", "false");
         DataSetRow row = new DataSetRow(values);
 
-        Map<String, Object> expectedValues = new HashMap<>();
-        expectedValues.put("name", "Vincent");
-        expectedValues.put("entity", "R&D");
-        expectedValues.put("active", "True"); // false -> true
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "active");
 
-        row = consumer.apply(row, new TransformationContext());
-        assertEquals(expectedValues, row.values());
+        //then
+        assertThat(row.get("active"), is("True"));
     }
 
     @Test

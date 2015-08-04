@@ -1,0 +1,47 @@
+.box {
+  font: 10px sans-serif;
+}
+
+.box line,
+.box rect {
+  fill: $green;
+  stroke: #000;
+  cursor:pointer;
+  stroke-width: 1px;
+}
+
+.whiskerPolyg{
+  fill:none;
+  stroke:#000;
+  stroke-width:2;
+}
+
+.box .center {
+  stroke-dasharray: 3,3;
+}
+
+line .center {
+  stroke-dasharray: 3,3;
+}
+
+.mean {
+  fill: #fff;
+  opacity:.5;
+  stroke: grey;
+}
+
+.max-min-labels{
+  fill:blue;
+}
+
+.low-quantile-labels{
+  fill:seagreen;
+}
+
+.up-quantile-labels{
+  fill:red;
+}
+
+.mean-labels{
+  fill: #5a5557;
+}
