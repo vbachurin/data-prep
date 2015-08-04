@@ -30,8 +30,7 @@ public class DeleteInvalidTest {
     /** The action to test. */
     private DeleteInvalid deleteInvalid;
 
-    /** The consumer out of the action. */
-    private DataSetRowAction consumer;
+    private Map<String, String> parameters;
 
     /**
      * Default constructor.
@@ -39,10 +38,9 @@ public class DeleteInvalidTest {
     public DeleteInvalidTest() throws IOException {
         deleteInvalid = new DeleteInvalid();
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters(deleteInvalid, //
+        parameters = ActionMetadataTestUtils.parseParameters(deleteInvalid, //
                 DeleteInvalidTest.class.getResourceAsStream("deleteInvalidAction.json"));
 
-        consumer = deleteInvalid.create(parameters).getRowAction();
     }
 
     @Test
@@ -59,7 +57,8 @@ public class DeleteInvalidTest {
                 .type(Type.INTEGER).computedId("0002") //
                 .invalidValues(Sets.newHashSet("N")).build()));
 
-        dsr = consumer.apply(dsr, new TransformationContext());
+        deleteInvalid.applyOnColumn( dsr, new TransformationContext(), parameters, "0002");
+
         assertTrue(dsr.isDeleted());
 
         // Assert that action did not change the row values
