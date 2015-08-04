@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -30,11 +30,11 @@
          * @description Cancel the current tooltip promise
          */
         function cancelTooltip() {
-            if(tooltipTimeout) {
+            if (tooltipTimeout) {
                 clearTimeout(tooltipTimeout);
                 tooltipTimeout = null;
             }
-            if(tooltipShowPromise) {
+            if (tooltipShowPromise) {
                 $timeout.cancel(tooltipShowPromise);
                 tooltipShowPromise = null;
             }
@@ -48,8 +48,11 @@
          * @description Update the tooltip component and display with a delay
          */
         function createTooltip(event) {
-            tooltipTimeout = setTimeout(function() {
+            tooltipTimeout = setTimeout(function () {
                 var cell = grid.getCellFromEvent(event);
+                if (!cell) {
+                    return;
+                }
 
                 var row = cell.row;
                 var item = DatagridService.dataView.getItem(row);
@@ -58,7 +61,7 @@
                 var value = item[column.id];
 
                 if (shouldShowTooltip(value, cell)) {
-                    tooltipShowPromise = $timeout(function() {
+                    tooltipShowPromise = $timeout(function () {
                         service.tooltip = {
                             position: {
                                 x: event.clientX,
@@ -92,8 +95,8 @@
          */
         function hideTooltip() {
             cancelTooltip();
-            if(service.showTooltip) {
-                $timeout(function() {
+            if (service.showTooltip) {
+                $timeout(function () {
                     service.showTooltip = false;
                 });
             }
@@ -109,11 +112,11 @@
          */
         function shouldShowTooltip(text, cell) {
             //do NOT show if content is empty
-            if(text === '') {
+            if (text === '') {
                 return false;
             }
             //show if content is multiline (avoid too loud check with div size)
-            else if(text.indexOf('\n') > -1) {
+            else if (text.indexOf('\n') > -1) {
                 return true;
             }
             //heavy check based on div size

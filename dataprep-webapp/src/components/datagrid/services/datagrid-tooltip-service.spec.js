@@ -80,6 +80,33 @@ describe('Datagrid tooltip service', function() {
     });
 
     describe('on mouse enter', function() {
+        it('should NOT show tooltip when no cell correspond to the event', inject(function($timeout, DatagridTooltipService) {
+            //given
+            DatagridTooltipService.init(gridMock);
+            gridMock.initCellMock(null); //grid.getCellFromEvent returns falsy param
+
+            //when
+            var mouseEnterHandler = gridMock.onMouseEnter.subscribe.calls.argsFor(0)[0];
+            var event = {clientX: 500, clientY: 300};
+            mouseEnterHandler(event);
+
+            //then
+            expect(DatagridTooltipService.tooltip).toEqual({});
+            expect(DatagridTooltipService.showTooltip).toBeFalsy();
+
+            //when
+            jasmine.clock().tick(300);
+            try {
+                $timeout.flush();
+                throw Error('Should have thrown exception, because no timeout is waiting');
+            }
+            //then
+            catch(error) {
+                expect(DatagridTooltipService.tooltip).toEqual({});
+                expect(DatagridTooltipService.showTooltip).toBeFalsy();
+            }
+        }));
+
         it('should NOT show tooltip with content that fit in the box (column 0)', inject(function($timeout, DatagridTooltipService) {
             //given
             DatagridTooltipService.init(gridMock);
