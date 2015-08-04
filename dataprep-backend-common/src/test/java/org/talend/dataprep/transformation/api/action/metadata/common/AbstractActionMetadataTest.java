@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -26,7 +28,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.verify;
 import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE;
 import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.*;
 
@@ -35,14 +36,15 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Sc
 @Configuration
 @ComponentScan(basePackages = "org.talend.dataprep")
 @EnableAutoConfiguration
+@ActiveProfiles(profiles="test")
 public class AbstractActionMetadataTest {
-    @Autowired
+    @Autowired(required = false)
     private CellTransformation cellTransformation;
-    @Autowired
+    @Autowired(required = false)
     private LineTransformation lineTransformation;
-    @Autowired
+    @Autowired(required = false)
     private ColumnTransformation columnTransformation;
-    @Autowired
+    @Autowired(required = false)
     private TableTransformation tableTransformation;
 
     @Test
@@ -298,6 +300,7 @@ public class AbstractActionMetadataTest {
 //------------------------------------------------------------------------------------------------------------------
 
 @Component
+@Profile("test")
 class CellTransformation extends AbstractActionMetadata implements ICellAction {
     @Override
     protected void beforeApply(Map<String, String> parameters) {
@@ -327,6 +330,7 @@ class CellTransformation extends AbstractActionMetadata implements ICellAction {
 }
 
 @Component
+@Profile("test")
 class LineTransformation extends AbstractActionMetadata implements ILineAction {
 
     @Override
@@ -358,6 +362,7 @@ class LineTransformation extends AbstractActionMetadata implements ILineAction {
 }
 
 @Component
+@Profile("test")
 class ColumnTransformation extends AbstractActionMetadata implements IColumnAction {
     @Override
     protected void beforeApply(Map<String, String> parameters) {
@@ -387,6 +392,7 @@ class ColumnTransformation extends AbstractActionMetadata implements IColumnActi
 }
 
 @Component
+@Profile("test")
 class TableTransformation extends AbstractActionMetadata implements ITableAction {
     @Override
     protected void beforeApply(Map<String, String> parameters) {
