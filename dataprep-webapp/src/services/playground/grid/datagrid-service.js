@@ -89,6 +89,13 @@
             self.focusedColumn = focusedColumn;
         };
 
+        function getLastNewColumnId(columns){
+            var colIdsSorted = _.sortBy(columns, function(col){
+                return +col.id;
+            });
+            return colIdsSorted[colIdsSorted.length - 1].id;
+        }
+
         /**
          * @ngdoc method
          * @name updateData
@@ -97,6 +104,10 @@
          * @description Update the data in the datagrid
          */
         self.updateData = function (data) {
+            if(self.data.columns.length < data.columns.length){
+                var lastNewColId = getLastNewColumnId(data.columns);
+                self.setFocusedColumn(lastNewColId);
+            }
             self.data = data;
             updateDataviewRecords(data.records);
         };

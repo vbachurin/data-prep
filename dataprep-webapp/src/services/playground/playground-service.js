@@ -283,9 +283,10 @@
         function executeAppendStep(metadata, action, params) {
             $rootScope.$emit('talend.loading.start');
             return PreparationService.appendStep(metadata, action, params)
-                .then(function() {
+                .then(updateRecipe)
+                .then(function(){
                     /*jshint camelcase: false */
-                    return $q.all([updateRecipe(), updateDatagrid(params.column_id)]);
+                    updateDatagrid(params.column_id);
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
