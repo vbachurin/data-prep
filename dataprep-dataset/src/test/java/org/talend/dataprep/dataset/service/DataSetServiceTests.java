@@ -681,7 +681,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         ColumnMetadata columnMetadata = dataSet.getColumns().get( 2 );
         columnMetadata.setDomain( "foo" );
         columnMetadata.setDomainLabel( "foo_label" );
-        columnMetadata.setDomainCount( 12 );
+        columnMetadata.setDomainFrequency( 12 );
 
         stringWriter = new StringWriter();
 
@@ -704,7 +704,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
         Assertions.assertThat( columnMetadatas ).isNotNull().isNotEmpty().isNotEmpty().hasSize( 14 );
 
         Assertions.assertThat( columnMetadatas.get( 2 ) ) //
-            .isEqualToComparingOnlyGivenFields( columnMetadata, "domain", "domainLabel", "domainCount" );
+            .isEqualToComparingOnlyGivenFields( columnMetadata, "domain", "domainLabel", "domainFrequency" );
 
     }
 

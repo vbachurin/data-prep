@@ -122,8 +122,8 @@ public class SchemaAnalyzerTest {
             assertThat( column.getType(), is( expectedTypes[i].getName() ) );
             assertThat( column.getDomain(), is( expectedDomains[i++] ) );
             Assertions.assertThat( column.getSemanticDomains() ).isNotNull().isNotEmpty().hasSize( 5 )
-                .contains( new SemanticDomain("FR_POSTAL_CODE","FR POSTAL CODE", 7), //
-                           new SemanticDomain("US_POSTAL_CODE","US POSTAL CODE", 7));
+                .contains( new SemanticDomain("FR_POSTAL_CODE","FR POSTAL CODE", (float)58.33), //
+                           new SemanticDomain("US_POSTAL_CODE","US POSTAL CODE", (float)58.33));
 
         }
     }

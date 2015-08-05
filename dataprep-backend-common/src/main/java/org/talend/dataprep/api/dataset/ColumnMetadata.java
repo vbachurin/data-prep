@@ -69,8 +69,8 @@ public class ColumnMetadata {
     @JsonProperty("domainLabel")
     private String domainLabel = StringUtils.EMPTY;
 
-    @JsonProperty("domainCount")
-    private long domainCount;
+    @JsonProperty("domainFrequency")
+    private float domainFrequency;
 
     @JsonProperty("semanticDomains")
     private List<SemanticDomain> semanticDomains = Collections.emptyList();
@@ -258,12 +258,14 @@ public class ColumnMetadata {
         this.semanticDomains = semanticDomains;
     }
 
-    public long getDomainCount() {
-        return domainCount;
+    public float getDomainFrequency()
+    {
+        return domainFrequency;
     }
 
-    public void setDomainCount(long domainCount) {
-        this.domainCount = domainCount;
+    public void setDomainFrequency( float domainFrequency )
+    {
+        this.domainFrequency = domainFrequency;
     }
 
     public void setId(String id) {
@@ -309,7 +311,7 @@ public class ColumnMetadata {
 
         private String domainLabel;
 
-        private long domainCount;
+        private float domainFrequency;
 
         private List<SemanticDomain> semanticDomains;
 
@@ -455,11 +457,11 @@ public class ColumnMetadata {
 
         /**
          *
-         * @param domainCount the count of value with this domain of the column to set.
+         * @param domainFrequency the frequency of value with this domain of the column to set.
          * @return the builder to carry on building the column.
          */
-        public ColumnMetadata.Builder domainCount(long domainCount) {
-            this.domainCount = domainCount;
+        public ColumnMetadata.Builder domainFrequency( float domainFrequency ) {
+            this.domainFrequency = domainFrequency;
             return this;
         }
 
@@ -493,7 +495,7 @@ public class ColumnMetadata {
             this.statistics = original.getStatistics();
             this.domain = original.getDomain();
             this.domainLabel = original.getDomainLabel();
-            this.domainCount = original.getDomainCount();
+            this.domainFrequency = original.getDomainFrequency();
             this.semanticDomains = original.getSemanticDomains();
             return this;
         }
@@ -516,7 +518,7 @@ public class ColumnMetadata {
             columnMetadata.setStatistics(this.statistics);
             columnMetadata.setDomain( this.domain == null ? StringUtils.EMPTY : this.domain );
             columnMetadata.setDomainLabel( this.domainLabel == null ? StringUtils.EMPTY : this.domainLabel );
-            columnMetadata.setDomainCount( this.domainCount );
+            columnMetadata.setDomainFrequency( this.domainFrequency );
             columnMetadata.setSemanticDomains( this.semanticDomains == null ? Collections.emptyList() : this.semanticDomains );
             return columnMetadata;
         }

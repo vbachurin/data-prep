@@ -5,7 +5,7 @@
             <li ng-repeat="semanticDomain in menuCtrl.column.semanticDomains">
                 <input type="radio" value="{{ ::semanticDomain.id}}" ng-model="menuCtrl.column.domain"/>
                 <a href="#" ng-click="menuCtrl.changeType(semanticDomain.id,semanticDomain.label,semanticDomain.count)">{{ ::semanticDomain.label | translate }}</a>
-                {{ ::menuCtrl.displayPercentage(semanticDomain.count)}} %
+                {{ ::menuCtrl.displayPercentage(semanticDomain)}} %
             </li>
             <li class="divider"></li>
             <li ng-repeat="type in menuCtrl.types">

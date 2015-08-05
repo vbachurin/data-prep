@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <ul>
  * <li>Id ({@link #getId()})</li>
  * <li>Label ({@link #getLabel()})</li>
- * <li>Count how many times this type is matched ({@link #getCount()})</li>
+ * <li>Frequency percentage this type is matched ({@link #getFrequency()} ()})</li>
  * </ul>
  *
  */
@@ -21,17 +21,17 @@ public class SemanticDomain {
     @JsonProperty("label")
     private String label;
 
-    @JsonProperty("count")
-    private long count;
+    @JsonProperty("frequency")
+    private float frequency;
 
     public SemanticDomain() {
         // empty default constructor
     }
 
-    public SemanticDomain(String id, String label, long count) {
+    public SemanticDomain(String id, String label, float frequency) {
         this.id = id;
         this.label = label;
-        this.count = count;
+        this.frequency = frequency;
     }
 
     public String getId() {
@@ -50,17 +50,19 @@ public class SemanticDomain {
         this.label = label;
     }
 
-    public long getCount() {
-        return count;
+    public float getFrequency()
+    {
+        return frequency;
     }
 
-    public void setCount(long count) {
-        this.count = count;
+    public void setFrequency( float frequency )
+    {
+        this.frequency = frequency;
     }
 
     @Override
     public String toString() {
-        return "SemanticDomain{" + "id='" + id + '\'' + ", label='" + label + '\'' + ", count=" + count + '}';
+        return "SemanticDomain{" + "id='" + id + '\'' + ", label='" + label + '\'' + ", frequency=" + frequency + '}';
     }
 
     @Override
@@ -72,13 +74,13 @@ public class SemanticDomain {
             return false;
         }
         SemanticDomain that = (SemanticDomain) o;
-        return Objects.equals(count, that.count) //
+        return Objects.equals(frequency, that.frequency) //
                 && Objects.equals(id, that.id) //
                 && Objects.equals(label, that.label);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, label, count);
+        return Objects.hash(id, label, frequency);
     }
 }

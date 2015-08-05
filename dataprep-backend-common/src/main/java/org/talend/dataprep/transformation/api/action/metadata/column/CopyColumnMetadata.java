@@ -93,7 +93,7 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements IColum
                 .headerSize(column.getHeaderSize()) //
                 .domain( column.getDomain() ) //
                 .domainLabel( column.getDomainLabel() ) //
-                .domainCount( column.getDomainCount() ) //
+                .domainFrequency( column.getDomainFrequency() ) //
                 .semanticDomains( column.getSemanticDomains() ) //
                 .build();
     }

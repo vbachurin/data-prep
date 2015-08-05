@@ -167,7 +167,7 @@ public class CopyColumnTest {
         SemanticDomain semanticDomain = new SemanticDomain( "mountain_goat", "Mountain goat pale pale", 1 );
 
         original.setDomain( "beer" );
-        original.setDomainCount( 1 );
+        original.setDomainFrequency( 1 );
         original.setDomainLabel( "the best beer" );
         original.setSemanticDomains( Arrays.asList( semanticDomain ) );
 
@@ -185,7 +185,7 @@ public class CopyColumnTest {
         assertEquals( expected.get( 1 ).getStatistics(), original.getStatistics() );
 
         Assertions.assertThat(expected.get( 1 )) //
-            .isEqualToComparingOnlyGivenFields( original, "domain", "domainLabel", "domainCount" );
+            .isEqualToComparingOnlyGivenFields( original, "domain", "domainLabel", "domainFrequency" );
 
         Assertions.assertThat( expected.get( 1 ).getSemanticDomains() ).isNotNull() //
             .isNotEmpty().contains( semanticDomain );

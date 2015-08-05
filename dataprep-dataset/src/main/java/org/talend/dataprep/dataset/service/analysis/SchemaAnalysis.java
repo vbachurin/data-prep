@@ -124,11 +124,11 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                             for (Map.Entry<CategoryFrequency, Long> entry : altCategoryCounts.entrySet()) {
                                 semanticDomains.add(new SemanticDomain(entry.getKey().getCategoryId(), //
                                         entry.getKey().getCategoryName(), //
-                                        entry.getValue()));
+                                        entry.getKey().getFrequency()));
 
                                 if (StringUtils.equals( nextColumn.getDomain(), entry.getKey().getCategoryId() )){
                                     nextColumn.setDomainLabel( entry.getKey().getCategoryName() );
-                                    nextColumn.setDomainCount( entry.getValue() );
+                                    nextColumn.setDomainFrequency( entry.getValue() );
                                 }
 
                             }
