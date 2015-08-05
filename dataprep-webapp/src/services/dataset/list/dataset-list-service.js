@@ -11,13 +11,25 @@
      */
     function DatasetListService($q, DatasetRestService) {
 
-        var datasetsPromise;
+        var datasetsPromise = null;
 
         var self = this;
 
-        self.sortType = '';
+        /**
+         * @ngdoc property
+         * @name sortType
+         * @propertyOf data-prep.services.dataset.service:DatasetListService
+         * @description the sort by default
+         */
+        self.sortType = undefined;
 
-        self.sortOrder = '';
+        /**
+         * @ngdoc property
+         * @name sortOrder
+         * @propertyOf data-prep.services.dataset.service:DatasetListService
+         * @description the order by default
+         */
+        self.sortOrder = undefined;
 
         /**
          * @ngdoc property
@@ -92,7 +104,7 @@
         var create = function create(dataset) {
             var promise = DatasetRestService.create(dataset);
             promise.then(function (){
-                 refreshDatasets();
+                  refreshDatasets();
             });
             return promise;
         };
