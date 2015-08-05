@@ -88,10 +88,12 @@
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @param {string} sortType Sort by specified type
          * @param {string} sortOrder Sort in specified order
+         * @param {Promise} deferredAbort abort request when resolved
          * @description Get the dataset list
          * @returns {Promise} The GET call promise
          */
-        self.getDatasets = function(sortType, sortOrder) {
+        self.getDatasets = function(sortType, sortOrder, deferredAbort) {
+
             var datasetUrlEnd = '';
 
             if(sortType) {
@@ -101,7 +103,11 @@
                 datasetUrlEnd += (sortType ? '&' : '?') + 'order=' + sortOrder;
             }
 
-            return $http.get(RestURLs.datasetUrl + datasetUrlEnd);
+            return $http({
+                url: RestURLs.datasetUrl + datasetUrlEnd,
+                method: 'GET',
+                timeout: deferredAbort.promise
+            });
         };
 
         /**

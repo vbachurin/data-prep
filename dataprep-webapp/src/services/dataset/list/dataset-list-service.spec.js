@@ -178,21 +178,44 @@ describe('Dataset List Service', function () {
         expect(DatasetListService.datasets).toEqual(datasets);
     }));
 
-    it('should not trigger another refresh when one is already pending', inject(function ($rootScope, DatasetListService, DatasetRestService) {
+    it('should not trigger another refresh when one is already pending and same sort', inject(function ($rootScope, DatasetListService, DatasetRestService) {
         //given
         DatasetListService.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
 
-        var firstCall = DatasetListService.refreshDatasets();
+        DatasetListService.refreshDatasets('name','asc');
 
         //when
-        var secondCall = DatasetListService.refreshDatasets();
-        expect(secondCall).toBe(firstCall);
+        DatasetListService.refreshDatasets('name','asc');
+
         $rootScope.$apply();
 
         //then
         expect(DatasetListService.datasets).toEqual(datasets);
         expect(DatasetRestService.getDatasets.calls.count()).toBe(1);
-        expect(DatasetRestService.getDatasets).toHaveBeenCalled();
+
+        expect(DatasetListService.sortType).toBe('name');
+        expect(DatasetListService.sortOrder).toBe('asc');
+    }));
+
+
+    it('should trigger another refresh when one is already pending and different sort', inject(function ($rootScope, DatasetListService, DatasetRestService) {
+        //given
+        DatasetListService.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
+
+        DatasetListService.refreshDatasets('name','asc');
+
+        //when
+        DatasetListService.refreshDatasets('name','desc');
+
+        $rootScope.$apply();
+
+        //then
+        expect(DatasetListService.datasets).toEqual(datasets);
+        expect(DatasetRestService.getDatasets.calls.count()).toBe(2);
+
+        expect(DatasetListService.sortType).toBe('name');
+        expect(DatasetListService.sortOrder).toBe('desc');
+
     }));
 
     it('should trigger refresh with sort parameters', inject(function (DatasetListService, DatasetRestService) {
@@ -200,7 +223,9 @@ describe('Dataset List Service', function () {
         DatasetListService.refreshDatasets('name','asc');
 
         //then
-        expect(DatasetRestService.getDatasets).toHaveBeenCalledWith('name','asc');
+
+        expect(DatasetRestService.getDatasets.calls.mostRecent().args[0]).toBe('name');
+        expect(DatasetRestService.getDatasets.calls.mostRecent().args[1]).toBe('asc');
     }));
 
 
