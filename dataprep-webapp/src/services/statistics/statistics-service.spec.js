@@ -238,15 +238,16 @@ describe('Statistics service', function () {
             expect(StatisticsService.stateDistribution).toBe(null);
         }));
 
-        it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processData(localizationCol);
-
-            //then
-            expect(StatisticsService.data).toBe(null);
-            expect(StatisticsService.boxplotData).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
+        //  coming soon with the globe map
+        // it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
+        //    //when
+        //    StatisticsService.processData(localizationCol);
+		//
+        //    //then
+        //    expect(StatisticsService.data).toBe(null);
+        //    expect(StatisticsService.boxplotData).toBe(null);
+        //    expect(StatisticsService.stateDistribution).toBe(null);
+        //}));
 
         it('should set the data to the frequencyTable because column type is boolean', inject(function (StatisticsService) {
             //when
