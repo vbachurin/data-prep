@@ -38,7 +38,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var localizationCol = {
+    /*var localizationCol = {
         'domain': 'LOCALIZATION',
         'type': 'double',
         'statistics': {
@@ -73,7 +73,7 @@ describe('Statistics service', function () {
                 lowerQuantile: 'NaN'
             }
         }
-    };
+    };*/
 
     var barChartStrCol = {
         'domain': 'barchartAndString',
