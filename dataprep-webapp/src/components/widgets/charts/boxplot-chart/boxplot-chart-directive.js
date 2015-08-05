@@ -180,6 +180,7 @@
 						.attr('cx', width / 2)
 						.attr('cy', function() { return vScale(boxValues.mean); })
 						.style('opacity', 1e-6)
+						.style('shape-rendering', 'geometricPrecision')
 						.transition()
 						.duration(duration*2)
 						.style('opacity', 1);

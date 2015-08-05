@@ -17,8 +17,7 @@ import static org.talend.dataprep.transformation.api.action.metadata.category.Ac
  * Delete row when value is invalid.
  */
 @Component(DeleteInvalid.ACTION_BEAN_PREFIX + DeleteInvalid.DELETE_INVALID_ACTION_NAME)
-public class DeleteInvalid extends AbstractActionMetadata
-    implements IColumnAction {
+public class DeleteInvalid extends AbstractDelete {
 
     /**
      * The action name.
@@ -33,43 +32,17 @@ public class DeleteInvalid extends AbstractActionMetadata
         return DELETE_INVALID_ACTION_NAME;
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // no op
-    }
-
-    /**
-     * @see ActionMetadata#getCategory()
-     */
-    @Override
-    public String getCategory() {
-        return CLEANSING.getDisplayName();
-    }
-
-    @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final String value = row.get(columnId);
-        
-        ColumnMetadata columnMetadata = row.getRowMetadata().getById( columnId );
-        if (columnMetadata == null){
-            return;
-        }
-        if (columnMetadata.getQuality()==null){
-            return;
-        }
-
-        Set<String> invalidValues = row.getRowMetadata().getById( columnId ).getQuality().getInvalidValues();
-        if (invalidValues != null && invalidValues.contains( value )){
-            row.setDeleted( true );
-        }
-
-    }
-
     /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)
      */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return true;
+    }
+
+    @Override
+    public boolean toDelete(ColumnMetadata colMetadata, Map<String, String> parsedParameters, String value) {
+        final Set<String> invalidValues = colMetadata.getQuality().getInvalidValues();
+        return invalidValues.contains(value);
     }
 }
