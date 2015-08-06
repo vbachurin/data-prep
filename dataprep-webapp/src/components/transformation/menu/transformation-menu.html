@@ -1,19 +1,6 @@
 <ul>
-    <li class="more">
-        <a>This column is a &nbsp;<span class="info">{{menuCtrl.column.domain ? menuCtrl.column.domain : menuCtrl.converterService.simplifyType(menuCtrl.column.type)}}</span></a>
-        <ul class="submenu">
-            <li ng-repeat="semanticDomain in menuCtrl.column.semanticDomains">
-                <input type="radio" value="{{ ::semanticDomain.id}}" ng-model="menuCtrl.column.domain"/>
-                <a href="#" ng-click="menuCtrl.changeType(semanticDomain.id,semanticDomain.label,semanticDomain.count)">{{ ::semanticDomain.label | translate }}</a>
-                {{ ::menuCtrl.displayPercentage(semanticDomain)}} %
-            </li>
-            <li class="divider"></li>
-            <li ng-repeat="type in menuCtrl.types">
-                <input type="radio" value="{{ ::type.id}}" ng-model="menuCtrl.column.domain"/>
-                {{::'SET_AS' | translate}} <a href="#" ng-click="menuCtrl.changeType(type.id,type.labelKey,0)">{{ ::type.labelKey | translate }}</a>
-            </li>
-        </ul>
-    </li>
+    <type-transform-menu column="menuCtrl.column"></type-transform-menu>
+
     <!-- BEGIN : Hard coded transformations for demo purpose -->
     <li class="divider"></li>
     <li class="more">

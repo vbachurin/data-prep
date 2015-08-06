@@ -2,10 +2,12 @@ package org.talend.dataprep.dataset.service;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
+import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
@@ -19,10 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,9 +34,11 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSet;
 import org.talend.dataprep.api.dataset.DataSetGovernance.Certification;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
+import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
+import org.talend.dataprep.dataset.service.api.UpdateColumnParameters;
 import org.talend.dataprep.schema.CSVFormatGuess;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -216,7 +217,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void updateMetadataContentWithWrongDatasetId() throws Exception {
         assertThat(dataSetMetadataRepository.get("3d72677c-e2c9-4a34-8c58-959a56ec8643"), nullValue());
-        given().contentType(ContentType.JSON) //
+        given().contentType(JSON) //
                 .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(METADATA_JSON))) //
                 .when() //
                 .put("/datasets/{id}", "3d72677c-e2c9-4a34-8c58-959a56ec8643") //
@@ -234,11 +235,11 @@ public class DataSetServiceTests extends DataSetBaseTest {
         dataSetMetadata.setDraft(false); // Ensure it is no draft
         dataSetMetadataRepository.add(dataSetMetadata);
         // Should receive a 301 that redirects to the GET data set content operation
-        given().redirects().follow(false).contentType(ContentType.JSON).get("/datasets/{id}/preview", dataSetId) //
+        given().redirects().follow(false).contentType(JSON).get("/datasets/{id}/preview", dataSetId) //
                 .then() //
                 .statusCode(HttpStatus.MOVED_PERMANENTLY.value());
         // Should receive a 200 if code follows redirection
-        given().redirects().follow(true).contentType(ContentType.JSON).get("/datasets/{id}/preview", dataSetId) //
+        given().redirects().follow(true).contentType(JSON).get("/datasets/{id}/preview", dataSetId) //
                 .then() //
                 .statusCode(HttpStatus.OK.value());
     }
@@ -267,13 +268,13 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        String json = given().contentType(ContentType.JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
+        String json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
 
         DataSet dataSet = objectMapper.reader(DataSet.class).readValue(json);
 
         Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().isNotEmpty().hasSize(14);
 
-        json = given().contentType(ContentType.JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId)
+        json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId)
                 .asString();
 
         dataSet = objectMapper.reader(DataSet.class).readValue(json);
@@ -366,7 +367,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     /**
      * Test the import of a csv file with a really low separator coefficient variation.
-     * 
+     *
      * @see org.talend.dataprep.schema.LineBasedFormatGuesser
      */
     @Test
@@ -527,7 +528,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     /**
      * Check that the error listing service returns a list parsable of error codes. The content is not checked
-     * 
+     *
      * @throws Exception if an error occurs.
      */
     @Test
@@ -625,8 +626,8 @@ public class DataSetServiceTests extends DataSetBaseTest {
         assertThat(favoritesResp, hasItem(dsId1));
         // check wrong datasetId
         String wrongDsId = UUID.randomUUID().toString();
-        assertThat(dataSetMetadataRepository.get( wrongDsId ), nullValue());
-        given().contentType(ContentType.JSON) //
+        assertThat(dataSetMetadataRepository.get(wrongDsId), nullValue());
+        given().contentType(JSON) //
                 .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(METADATA_JSON))) //
                 .when() //
                 .put("/datasets/{id}/favorite", wrongDsId) //
@@ -648,64 +649,112 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
-    public void update_column() throws Exception
-    {
+    public void updateDatasetColumn_should_update_domain() throws Exception {
+        //given
+        final String dataSetId = given() //
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
+                .queryParam("Content-Type", "text/csv") //
+                .when() //
+                .post("/datasets") //
+                .asString();
 
-        String dataSetId = given()
-            //
-            .body( IOUtils.toByteArray(
-                DataSetServiceTests.class.getResourceAsStream( "../Talend_Desk-Tableau_de_Bord-011214.xls" ) ) ) //
-            .when() //
-            .post( "/datasets" ) //
-            .asString();
+        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
+                .stream()
+                .filter(col -> col.getId().equals("0002"))
+                .findFirst()
+                .get();
+        final SemanticDomain jsoDomain = new SemanticDomain("JSO", "JSO label", 1.0F);
+        column.getSemanticDomains().add(jsoDomain);
 
-        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get( dataSetId );
-        dataSetMetadataRepository.add( dataSetMetadata );
+        assertThat(column.getDomain(), is("FIRSTNAME"));
+        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomainFrequency(), is(2.0F));
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        //when
+        final Response res = given() //
+                .body("{\"domain\": \"JSO\"}") //
+                .when() //
+                .contentType(JSON) //
+                .post("/datasets/{dataSetId}/column/{columnId}", dataSetId, "0002");
 
-        String json = given().contentType( ContentType.JSON ).get( "/datasets/{id}/preview?sheetName=Leads", dataSetId ).asString();
+        //then
+        res.then().statusCode(200);
+        assertThat(column.getDomain(), is("JSO"));
+        assertThat(column.getDomainLabel(), is("JSO label"));
+        assertThat(column.getDomainFrequency(), is(1.0F));
+    }
 
-        DataSet dataSet = objectMapper.reader( DataSet.class ).readValue( json );
+    @Test
+    public void updateDatasetColumn_should_update_type() throws Exception {
+        //given
+        final String dataSetId = given() //
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
+                .queryParam("Content-Type", "text/csv") //
+                .when() //
+                .post("/datasets") //
+                .asString();
 
-        dataSet.getMetadata().setDraft( false );
-        dataSet.getMetadata().setSheetName( "Leads" );
+        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
+                .stream()
+                .filter(col -> col.getId().equals("0002"))
+                .findFirst()
+                .get();
 
-        StringWriter stringWriter = new StringWriter();
-        objectMapper.writer().writeValue( stringWriter, dataSet );
+        assertThat(column.getDomain(), is("FIRSTNAME"));
+        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomainFrequency(), is(2.0F));
+        assertThat(column.getType(), is("string"));
 
-        json = given().contentType( ContentType.JSON ).put( "/datasets/{id}", dataSetId ).asString();
+        //when
+        final Response res = given() //
+                .body("{\"type\": \"integer\"}") //
+                .when() //
+                .contentType(JSON) //
+                .post("/datasets/{dataSetId}/column/{columnId}", dataSetId, "0002");
 
-        Assertions.assertThat( dataSet.getColumns() ).isNotNull().isNotEmpty().isNotEmpty().hasSize( 14 );
+        //then
+        res.then().statusCode(200);
+        assertThat(column.getDomain(), is("FIRSTNAME"));
+        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomainFrequency(), is(2.0F));
+        assertThat(column.getType(), is("integer"));
+    }
 
-        ColumnMetadata columnMetadata = dataSet.getColumns().get( 2 );
-        columnMetadata.setDomain( "foo" );
-        columnMetadata.setDomainLabel( "foo_label" );
-        columnMetadata.setDomainFrequency( 12 );
+    @Test
+    public void updateDatasetColumn_should_clear_domain() throws Exception {
+        //given
+        final String dataSetId = given() //
+                .body(IOUtils.toString(DataSetServiceTests.class.getResourceAsStream(TAGADA_CSV))) //
+                .queryParam("Content-Type", "text/csv") //
+                .when() //
+                .post("/datasets") //
+                .asString();
 
-        stringWriter = new StringWriter();
+        final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
+        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
+                .stream()
+                .filter(col -> col.getId().equals("0002"))
+                .findFirst()
+                .get();
 
-        objectMapper.writer().writeValue( stringWriter, columnMetadata );
+        assertThat(column.getDomain(), is("FIRSTNAME"));
+        assertThat(column.getDomainLabel(), is("FIRSTNAME"));
+        assertThat(column.getDomainFrequency(), is(2.0F));
 
-        Response res = given() //
-            .body( stringWriter.toString() ) //
-            .when() //
-            .contentType( ContentType.JSON ) //
-            .post( "/datasets/{dataSetId}/column", dataSetId );
+        //when
+        final Response res = given() //
+                .body("{\"domain\": \"\"}") //
+                .when() //
+                .contentType(JSON) //
+                .post("/datasets/{dataSetId}/column/{columnId}", dataSetId, "0002");
 
-        Assertions.assertThat( res.getStatusCode() ).isEqualTo( 200 );
-
-        json = given().contentType( ContentType.JSON ).get( "/datasets/{id}/content", dataSetId ).asString();
-
-        dataSet = objectMapper.reader( DataSet.class ).readValue( json );
-
-        List<ColumnMetadata> columnMetadatas = dataSet.getColumns();
-
-        Assertions.assertThat( columnMetadatas ).isNotNull().isNotEmpty().isNotEmpty().hasSize( 14 );
-
-        Assertions.assertThat( columnMetadatas.get( 2 ) ) //
-            .isEqualToComparingOnlyGivenFields( columnMetadata, "domain", "domainLabel", "domainFrequency" );
-
+        //then
+        res.then().statusCode(200);
+        assertThat(column.getDomain(), is(""));
+        assertThat(column.getDomainLabel(), is(""));
+        assertThat(column.getDomainFrequency(), is(0.0F));
     }
 
     @Test

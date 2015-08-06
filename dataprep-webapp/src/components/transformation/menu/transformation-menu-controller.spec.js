@@ -3,7 +3,7 @@
 describe('Transform menu controller', function () {
     'use strict';
 
-    var createController, scope, $httpBackend;
+    var createController, scope;
 
     var metadata = {
         'id': '44f5e4ef-96e9-4041-b86a-0bee3d50b18b',
@@ -54,24 +54,10 @@ describe('Transform menu controller', function () {
             }
         ]
     };
-    
-    var types = [
-        { 'id':'ANY','name':'any','labelKey':'ANY'},
-        {'id':'STRING','name':'string','labelKey':'STRING'},
-        {'id':'NUMERIC','name':'numeric','labelKey':'NUMERIC'},
-        {'id':'INTEGER','name':'integer','labelKey':'INTEGER'},
-        {'id':'DOUBLE','name':'double','labelKey':'DOUBLE'},
-        {'id':'FLOAT','name':'float','labelKey':'FLOAT'},
-        {'id':'BOOLEAN','name':'boolean','labelKey':'BOOLEAN'},
-        {'id':'DATE','name':'date','labelKey':'DATE'}
-    ];
 
     beforeEach(module('data-prep.transformation-menu'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, $injector) {
-
-        $httpBackend = $injector.get('$httpBackend');
-
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -140,12 +126,7 @@ describe('Transform menu controller', function () {
     }));
 
 
-    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService, RestURLs) {
-
-        $httpBackend
-            .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, types);
-
+    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -162,19 +143,14 @@ describe('Transform menu controller', function () {
             {name: 'textclustering', category: 'quickfix', dynamic: true},
             {
                 columnId: '0001',
-                datasetId:  '78bae6345aef9965e22b54',
-                preparationId:  '721cd4455fb69e89543d4'
+                datasetId: '78bae6345aef9965e22b54',
+                preparationId: '721cd4455fb69e89543d4'
             }
         );
     }));
 
 
-    it('should display modal and set flags on dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService, RestURLs) {
-
-        $httpBackend
-            .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, types);
-
+    it('should display modal and set flags on dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -195,12 +171,7 @@ describe('Transform menu controller', function () {
     }));
 
 
-    it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService, RestURLs) {
-
-        $httpBackend
-            .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, types);
-
+    it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService) {
         //given
         var ctrl = createController();
         var menu = {name: 'transfo_name', category: 'case', parameters: [{name: 'param1', type: 'text', default: '.'}]};
@@ -222,12 +193,7 @@ describe('Transform menu controller', function () {
         expect(PlaygroundService.appendStep).toHaveBeenCalledWith('transfo_name', expectedParams);
     }));
 
-    it('should hide modal after step append', inject(function (RestURLs) {
-
-        $httpBackend
-            .expectGET(RestURLs.serverUrl + '/api/types')
-            .respond(200, types);
-
+    it('should hide modal after step append', function () {
         //given
         var ctrl = createController();
         var menu = {name: 'transfo_name', category: 'case', parameters: [{name: 'param1', type: 'text', default: '.'}]};
@@ -241,5 +207,5 @@ describe('Transform menu controller', function () {
 
         //then
         expect(ctrl.showModal).toBe(false);
-    }));
+    });
 });
