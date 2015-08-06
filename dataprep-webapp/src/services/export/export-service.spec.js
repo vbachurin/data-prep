@@ -1,7 +1,7 @@
 describe('Export service', function() {
     'use strict';
 
-    var EXPORT_PARAMS_KEY = 'datarep.export.params';
+    var EXPORT_PARAMS_KEY = 'dataprep.export.params';
 
     var exportTypes = [
         {
