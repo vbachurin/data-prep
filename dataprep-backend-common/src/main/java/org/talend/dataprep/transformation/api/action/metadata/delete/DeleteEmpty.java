@@ -27,18 +27,18 @@ public class DeleteEmpty extends AbstractDelete implements IColumnAction {
     }
 
     /**
-     * @see AbstractDelete#toDelete(Map, String)
-     */
-    @Override
-    public boolean toDelete(Map<String, String> parsedParameters, String value) {
-        return value == null || value.trim().length() == 0;
-    }
-
-    /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)
      */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return true;
+    }
+
+    /**
+     * @see AbstractDelete#toDelete(ColumnMetadata, Map, String)
+     */
+    @Override
+    public boolean toDelete(final ColumnMetadata colMetadata, final Map<String, String> parsedParameters, final String value) {
+        return value == null || value.trim().length() == 0;
     }
 }

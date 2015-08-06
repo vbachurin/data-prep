@@ -276,9 +276,14 @@
 
             if (column.domain.indexOf('STATE_CODE_') !== -1) {
                 processMapData(column);
-            } else if (column.domain === 'LOCALIZATION') {
-                resetCharts();
-            } else {
+            }
+            //  Coming soon after the integration of the globe map
+            // else if (column.domain === 'LOCALIZATION') {
+            //    service.data = null;
+            //    service.stateDistribution = null;
+            //    service.boxplotData = null;
+            //}
+            else {
                 processNonMapData(column);
             }
         }
@@ -293,6 +298,7 @@
             service.data = null;
             service.stateDistribution = null;
             service.boxplotData = null;
+            service.statistics = null;
         }
     }
 

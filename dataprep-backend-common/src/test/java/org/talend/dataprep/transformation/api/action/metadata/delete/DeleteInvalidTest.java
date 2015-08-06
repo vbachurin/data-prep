@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
@@ -45,33 +47,35 @@ public class DeleteInvalidTest {
 
     @Test
     public void should_delete_because_non_valid() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0001", "David Bowie");
         values.put("0002", "N");
         values.put("0003", "Something");
-        DataSetRow dsr = new DataSetRow(values);
-        RowMetadata rowMetadata = new RowMetadata();
-        dsr.setRowMetadata(rowMetadata);
 
-        rowMetadata.setColumns(Arrays.asList(ColumnMetadata.Builder.column() //
-                .type(Type.INTEGER).computedId("0002") //
-                .invalidValues(Sets.newHashSet("N")).build()));
+        final RowMetadata rowMetadata = new RowMetadata();
+        rowMetadata.setColumns(asList(ColumnMetadata.Builder.column() //
+                .type(Type.INTEGER) //
+                .computedId("0002") //
+                .invalidValues(newHashSet("N")) //
+                .build()));
 
-        deleteInvalid.applyOnColumn( dsr, new TransformationContext(), parameters, "0002");
+        final DataSetRow row = new DataSetRow(values);
+        row.setRowMetadata(rowMetadata);
 
-        assertTrue(dsr.isDeleted());
+        //when
+        deleteInvalid.applyOnColumn( row, new TransformationContext(), parameters, "0002");
 
-        // Assert that action did not change the row values
-        assertEquals("David Bowie", dsr.get("0001"));
+        //then
+        assertTrue(row.isDeleted());
+        assertEquals("David Bowie", row.get("0001"));
     }
 
     @Test
     public void should_accept_column() {
-
         for (Type type : Type.values()) {
             assertTrue(deleteInvalid.acceptColumn(getColumn(type)));
         }
-
     }
 
 }

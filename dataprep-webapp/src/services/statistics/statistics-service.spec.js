@@ -38,7 +38,7 @@ describe('Statistics service', function () {
         }
     };
 
-    var localizationCol = {
+    /*var localizationCol = {
         'domain': 'LOCALIZATION',
         'type': 'double',
         'statistics': {
@@ -73,7 +73,7 @@ describe('Statistics service', function () {
                 lowerQuantile: 'NaN'
             }
         }
-    };
+    };*/
 
     var barChartStrCol = {
         'domain': 'barchartAndString',
@@ -238,15 +238,16 @@ describe('Statistics service', function () {
             expect(StatisticsService.stateDistribution).toBe(null);
         }));
 
-        it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processData(localizationCol);
-
-            //then
-            expect(StatisticsService.data).toBe(null);
-            expect(StatisticsService.boxplotData).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
+        //  coming soon with the globe map
+        // it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
+        //    //when
+        //    StatisticsService.processData(localizationCol);
+		//
+        //    //then
+        //    expect(StatisticsService.data).toBe(null);
+        //    expect(StatisticsService.boxplotData).toBe(null);
+        //    expect(StatisticsService.stateDistribution).toBe(null);
+        //}));
 
         it('should set the data to the frequencyTable because column type is boolean', inject(function (StatisticsService) {
             //when
