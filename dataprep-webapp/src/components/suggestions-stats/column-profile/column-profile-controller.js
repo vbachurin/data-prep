@@ -35,6 +35,13 @@
 
         vm.updateCharts = function (column, calculation) {
             vm.datasetAggregationsService.updateAggregationsChanges(column, calculation);
+
+            if(column){
+                StatisticsService.processVisuData(column);
+            } else {
+                StatisticsService.processVisuData(vm.datasetAggregationsService.columnSelected);
+            }
+
         };
 
 

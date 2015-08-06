@@ -1,5 +1,5 @@
 <div class="column-profile">
-    <div class="column-profile-aggregation">
+    <div class="column-profile-aggregation" ng-if="columnProfileCtrl.processedData || columnProfileCtrl.stateDistribution">
         <talend-button-dropdown button-text="{{columnProfileCtrl.aggregationSelected}}">
             <ul>
                 <li ng-click="columnProfileCtrl.updateCharts(null,null)" >

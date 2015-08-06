@@ -146,18 +146,13 @@
             var cols = self.data.columns;
 
             cols = _.filter(cols, function (col) {
-
                 if(id){
                     return (ConverterService.simplifyType(col.type) === 'number') && (col.id !== id);
                 }
-
                 return (ConverterService.simplifyType(col.type) === 'number');
-
             });
 
-            return _.map(cols, function (col) {
-                return {'id': col.id, 'name': col.name};
-            });
+            return cols;
         };
 
         /**

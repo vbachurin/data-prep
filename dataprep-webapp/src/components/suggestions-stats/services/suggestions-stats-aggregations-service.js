@@ -10,6 +10,7 @@
 
 
         var service = {
+            columnSelected : null,
             aggregationSelected: null,
             columnAggregationSelected: null,
             calculationAggregationSelected: null,
@@ -25,14 +26,17 @@
          * @ngdoc method
          * @name updateAggregations
          * @methodOf data-prep.suggestions-stats.service:SuggestionsStatsAggregationsService
-         * @param {string} column The selected column
-         * @description update aggregations list (excluding selected column)and charts
+         * @param {object} column The selected column
+         * @description update aggregation (excluding selected column)and charts triggered from Playground
          */
         function updateAggregations(column) {
 
-            service.numericColumns = DatagridService.getNumberColumns(column.id);
+            service.columnSelected = column;
 
-            if(service.columnAggregationSelected) {
+            service.numericColumns = DatagridService.getNumberColumns(service.columnSelected.id);
+
+            //If same column selected, update it
+            if(service.columnAggregationSelected && (service.columnSelected.id === service.columnAggregationSelected.id)) {
                 var cols = DatagridService.getNumberColumns(null);
                 var colToBeUpdated = _.where(cols, {id: service.columnAggregationSelected.id});
 
@@ -41,10 +45,18 @@
                     updateAggregationsChanges(service.columnAggregationSelected, service.calculationAggregationSelected);
                 }
             } else {
-                updateAggregationsChanges(null, null);
+                updateAggregationsChanges(null, null); //If another column selected, reset "aggregation" dropdown
             }
         }
 
+        /**
+         * @ngdoc method
+         * @name updateAggregationsChanges
+         * @methodOf data-prep.suggestions-stats.service:SuggestionsStatsAggregationsService
+         * @param {object} column The selected aggregation column
+         * @param {object} calculation The selected aggregation operation
+         * @description update aggregation triggered from Column-Profile
+         */
         function updateAggregationsChanges(column, calculation) {
 
             service.calculationAggregationSelected = calculation;
