@@ -8,13 +8,13 @@
      * @restrict E
      * @usage
      <talend-tabs>
-        <talend-tabs-item title="tab 1 title">
+        <talend-tabs-item tab-title="tab 1 title">
             Content tab 1
         </talend-tabs-item>
-        <talend-tabs-item title="tab 2 title" default="true">
+        <talend-tabs-item tab-title="tab 2 title" default="true">
             Content tab 2
         </talend-tabs-item>
-        <talend-tabs-item title="tab 3 title">
+        <talend-tabs-item tab-title="tab 3 title">
             Content tab 3
         </talend-tabs-item>
      </talend-tabs>

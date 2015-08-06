@@ -9,6 +9,7 @@ $inactive-color: $shadow-gray;
     stroke: $active-color;
     stroke-width: $stroke-width;
     fill: $active-color;
+    shape-rendering: geometricPrecision;
 
     &.maillon-circle-enabled-hovered {
       stroke: $blue;
@@ -41,6 +42,7 @@ $inactive-color: $shadow-gray;
     stroke: $inactive-color;
     stroke-width: $stroke-width;
     fill: $white;
+    shape-rendering: geometricPrecision;
 
     &.maillon-circle-disabled-hovered {
       stroke: $dark-blue;

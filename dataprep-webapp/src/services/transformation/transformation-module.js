@@ -7,5 +7,7 @@
      * @description This module contains the services to manipulate transformations
      * @requires data-prep.services.utils
      */
-    angular.module('data-prep.services.transformation', ['data-prep.services.utils']);
+    angular.module('data-prep.services.transformation', [
+        'data-prep.services.utils'
+    ]);
 })();

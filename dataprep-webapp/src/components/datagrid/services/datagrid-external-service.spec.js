@@ -22,7 +22,7 @@ describe('Datagrid external service', function () {
         spyOn(gridMock.onHeaderClick, 'subscribe').and.returnValue();
         spyOn(gridMock.onScroll, 'subscribe').and.returnValue();
 
-        spyOn(StatisticsService, 'processVisuData').and.returnValue();
+        spyOn(StatisticsService, 'processData').and.returnValue();
         spyOn(ColumnSuggestionService, 'setColumn').and.returnValue();
     }));
 
@@ -64,7 +64,7 @@ describe('Datagrid external service', function () {
             onActiveCellChanged(null, args);
 
             //then
-            expect(StatisticsService.processVisuData).toHaveBeenCalledWith(columnMetadata);
+            expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
         }));
 
@@ -77,7 +77,7 @@ describe('Datagrid external service', function () {
             onActiveCellChanged(null, {});
 
             //then
-            expect(StatisticsService.processVisuData).not.toHaveBeenCalled();
+            expect(StatisticsService.processData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
         }));
 
@@ -94,7 +94,7 @@ describe('Datagrid external service', function () {
             onHeaderClick(null, args);
 
             //then
-            expect(StatisticsService.processVisuData).toHaveBeenCalledWith(columnMetadata);
+            expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
         }));
 

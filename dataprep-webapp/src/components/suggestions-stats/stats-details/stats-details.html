@@ -3,11 +3,11 @@
     <div class="Description" ng-if="!statsDetailsCtrl.statistics">Select a column to display its statistics</div>
 
     <talend-tabs ng-if="statsDetailsCtrl.statistics">
-        <talend-tabs-item title="_"></talend-tabs-item>
-        <talend-tabs-item title="Viz" default="true">
+        <talend-tabs-item tab-title="_"></talend-tabs-item>
+        <talend-tabs-item tab-title="Viz" default="true">
             <column-profile></column-profile>
         </talend-tabs-item>
-        <talend-tabs-item title="Value">
+        <talend-tabs-item tab-title="Value">
             <table class="stat-table">
                 <tr ng-repeat="(key, val) in statsDetailsCtrl.statistics.common track by $index">
                     <td class="stat-key">{{key | translate}}: </td>
@@ -21,7 +21,7 @@
                 </tr>
             </table>
         </talend-tabs-item>
-        <talend-tabs-item title="Pattern">
+        <talend-tabs-item tab-title="Pattern">
             <horizontal-barchart id="patternBarChart"
                                  width="250"
                                  height="400"
@@ -31,6 +31,13 @@
                                  value-field="pattern">
             </horizontal-barchart>
         </talend-tabs-item>
-        <talend-tabs-item title="Others"></talend-tabs-item>
+        <talend-tabs-item tab-title="Others">
+            <boxplot-chart
+                    id="boxplotId"
+                    width="330"
+                    height="400"
+                    boxplot-data="statsDetailsCtrl.boxplotData"
+            ></boxplot-chart>
+        </talend-tabs-item>
     </talend-tabs>
 </div>

@@ -76,6 +76,42 @@
     "label": "Delete lines that match..."
   },
   {
+    "name": "delete_invalid",
+    "category": "cleansing",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "default": "",
+        "label": "Column",
+        "description": "The column on which apply this action to"
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "default": "",
+        "label": "Row",
+        "description": "The row on which apply this action to"
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "default": "",
+        "label": "Scope",
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)"
+      }
+    ],
+    "items": [
+
+    ],
+    "label": "Delete lines with invalid cell",
+    "description": "Delete rows that have this invalid cell",
+    "dynamic": false
+  },
+  {
     "items": [
       {
         "name": "new_pattern",

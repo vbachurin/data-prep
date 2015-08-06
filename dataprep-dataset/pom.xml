@@ -28,7 +28,11 @@
             <artifactId>org.talend.dataquality.semantic</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.talend</groupId>
+            <groupId>org.talend.dataquality</groupId>
+            <artifactId>org.talend.dataquality.statistics</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.talend.dataquality</groupId>
             <artifactId>org.talend.datascience.spark</artifactId>
         </dependency>
         <dependency>
