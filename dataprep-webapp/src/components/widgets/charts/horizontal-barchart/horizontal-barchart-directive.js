@@ -50,7 +50,9 @@
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
-							return '<strong>Occurences:</strong> <span style="color:yellow">' + d[xField] + '</span>';
+							return 	'<strong>Occurences:</strong> <span style="color:yellow">' + d[xField] + '</span>'+
+									'<br/>'+
+									'<strong>Value:</strong> <span style="color:yellow">' + d[yField] + '</span>';
 						});
 
 					var svg = d3.select('#'+container).append('svg')
@@ -118,7 +120,7 @@
 						})
 						.on('mouseleave',function(d){
 							d3.select(this).style('opacity',0);
-							tip.hide(d);
+							//tip.hide(d);
 						})
 						.on('click',function(d){
 							scope.onClick()(d);
