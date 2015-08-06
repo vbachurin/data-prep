@@ -36,10 +36,25 @@
         vm.updateCharts = function (column, calculation) {
             vm.datasetAggregationsService.updateAggregationsChanges(column, calculation);
 
+            var aggregationCalculation = calculation;
+
+            if (!aggregationCalculation) {
+                //Calculation by default
+                aggregationCalculation = {id: 'count', name: 'COUNT'};
+            }
+
             if(column){
-                StatisticsService.processVisuData(column);
+                StatisticsService.processVisuDataAggregation(
+                    vm.datasetAggregationsService.columnSelected,
+                    column,
+                    aggregationCalculation
+                );
             } else {
-                StatisticsService.processVisuData(vm.datasetAggregationsService.columnSelected);
+                StatisticsService.processVisuDataAggregation(
+                    vm.datasetAggregationsService.columnSelected,
+                    vm.datasetAggregationsService.columnSelected,
+                    aggregationCalculation
+                );
             }
 
         };

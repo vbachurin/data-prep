@@ -8,7 +8,7 @@
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function StatisticsService(DatagridService, FilterService, ConverterService, $timeout) {
+    function StatisticsService(DatagridService, FilterService, ConverterService, StatisticsAggregationRestService, $timeout) {
         var service = {
             selectedColumn: null,
             data: null,
@@ -17,8 +17,10 @@
             addFilter: addFilter,
             extractNumericData: extractNumericData,
             processVisuData: processVisuData,
+            processVisuDataAggregation: processVisuDataAggregation,
             resetCharts: resetCharts,
-            getGeoDistribution: getGeoDistribution
+            getGeoDistribution: getGeoDistribution,
+            getAggregations: getAggregations
         };
 
         return service;
@@ -116,6 +118,47 @@
                 processBarchartData(column);
             }
         }
+
+        /**
+         * @ngdoc method
+         * @name processVisuData
+         * @methodOf data-prep.services.statistics:StatisticsService
+         * @param {object} currentColumn The selected column
+         * @param {object} targetColumn The aggregation target column
+         * @param {object} calculation The selected calculation
+         * @description processes the visualization data according to the clicked column domain
+         */
+        function processVisuDataAggregation(currentColumn, targetColumn, calculation) {
+
+            StatisticsCacheService.getAggregations(currentColumn, targetColumn, calculation)
+                .then(function(column) {
+                    //processes the visualization data
+                    processVisuData(column);
+                })
+                .catch(function() {
+
+                })
+                .finally(function() {
+
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name getAggregations
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} stringifiedColumn The aggregation target column as string
+         * @description Get aggregation from REST call, clean and adapt them
+         */
+        function getAggregations(stringifiedColumn) {
+            return StatisticsAggregationRestService.getAggregations(stringifiedColumn)
+                .then(function(response) {
+                    //var menus = cleanParamsAndItems(response.data);
+                    //return adaptInputTypes(menus);
+                    return response.data;
+                });
+        }
+
 
         /**
          * @ngdoc method
