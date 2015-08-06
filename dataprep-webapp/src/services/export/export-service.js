@@ -8,7 +8,7 @@
      * @requires data-prep.services.export.service:ExportRestService
      */
     function ExportService($window, ExportRestService) {
-        var EXPORT_PARAMS_KEY = 'datarep.export.params';
+        var EXPORT_PARAMS_KEY = 'dataprep.export.params';
         var self = this;
 
         this.exportTypes = [];
