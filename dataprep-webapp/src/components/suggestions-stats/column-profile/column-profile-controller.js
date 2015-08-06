@@ -38,8 +38,6 @@
         };
 
 
-
-
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------CHARTS OPTIONS------------------------------------------
         //------------------------------------------------------------------------------------------------------
@@ -166,8 +164,39 @@
                     return this.datasetGridService.selectedColumn;
                 }
             });
-    }
 
+        /**
+         * @ngdoc property
+         * @name aggregationSelected
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The selected aggregation.
+         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.aggregationSelected
+         */
+        Object.defineProperty(ColumnProfileCtrl.prototype,
+            'aggregationSelected', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return this.datasetAggregationsService.aggregationSelected;
+                }
+            });
+
+        /**
+         * @ngdoc property
+         * @name numericColumns
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The numeric columns list of the dataset.
+         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.numericColumns
+         */
+        Object.defineProperty(ColumnProfileCtrl.prototype,
+            'numericColumns', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return this.datasetAggregationsService.numericColumns;
+                }
+            });
+    }
 
 
     angular.module('data-prep.column-profile')
