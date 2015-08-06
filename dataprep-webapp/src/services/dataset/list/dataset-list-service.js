@@ -10,26 +10,12 @@
      * @requires data-prep.services.dataset.service:DatasetRestService
      */
     function DatasetListService($q, DatasetRestService) {
-
-        var datasetsPromise = null;
+        var deferredCancel;
+        var datasetsPromise;
+        var previousSortType;
+        var previousSortOrder;
 
         var self = this;
-
-        /**
-         * @ngdoc property
-         * @name sortType
-         * @propertyOf data-prep.services.dataset.service:DatasetListService
-         * @description the sort by default
-         */
-        self.sortType = undefined;
-
-        /**
-         * @ngdoc property
-         * @name sortOrder
-         * @propertyOf data-prep.services.dataset.service:DatasetListService
-         * @description the order by default
-         */
-        self.sortOrder = undefined;
 
         /**
          * @ngdoc property
@@ -41,44 +27,40 @@
 
         /**
          * @ngdoc method
+         * @name cancelPendingGetRequest
+         * @methodOf data-prep.services.dataset.service:DatasetListService
+         * @description Cancel the pending datasets list GET request
+         */
+        function cancelPendingGetRequest() {
+            if(datasetsPromise){
+                deferredCancel.resolve('user cancel');
+                datasetsPromise = null;
+            }
+        }
+
+        /**
+         * @ngdoc method
          * @name refreshDatasets
          * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {string} sortType : sort by sortType
-         * @param {string} sortOrder :  sort by sortType in sortOrder order
-         * @description Refresh datasets (when we have a pending request and a new sort and when we do not have any pending resquest)
-         * @returns {promise} - the pending GET promise
+         * @param {string} sortType The sort condition
+         * @param {string} sortOrder The sort order condition
+         * @description Refresh datasets list
+         * @returns {promise} The pending GET promise
          */
         var refreshDatasets = function refreshDatasets(sortType, sortOrder) {
 
-            if(sortType !== self.sortType) {
-                if(self.deferredAbort){
-                    self.deferredAbort.resolve('user cancel');
-                }
-                datasetsPromise = null;
-            }
-
-            if(sortOrder !== self.sortOrder) {
-                if(self.deferredAbort){
-                    self.deferredAbort.resolve('user cancel');
-                }
-                datasetsPromise = null;
-            }
-
-            if(!sortType){
-                sortType = self.sortType;
-            }
-
-            if(!sortOrder){
-                 sortOrder = self.sortOrder;
+            if(sortType !== previousSortType || sortOrder !== previousSortOrder) {
+                cancelPendingGetRequest();
+                sortType = sortType || previousSortType;
+                sortOrder = sortOrder || previousSortOrder;
             }
 
             if(!datasetsPromise) {
+                previousSortType = sortType;
+                previousSortOrder = sortOrder;
 
-                self.sortType = sortType;
-                self.sortOrder = sortOrder;
-
-                self.deferredAbort = $q.defer();
-                datasetsPromise = DatasetRestService.getDatasets(sortType, sortOrder, self.deferredAbort)
+                deferredCancel = $q.defer();
+                datasetsPromise = DatasetRestService.getDatasets(sortType, sortOrder, deferredCancel)
                     .then(function(res) {
                         self.datasets = res.data;
                         datasetsPromise = null;
@@ -96,16 +78,15 @@
          * @description Create a dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
-
-        /*
-         * Workaround : the functions refreshDatasets and DatasetService.consolidatePreparationsAndDatasets are executed in parallel
-         * because of 3-layers structure services.
-         * */
         var create = function create(dataset) {
             var promise = DatasetRestService.create(dataset);
+
+            //The appended promise is not returned because DatasetRestService.create return a $upload object with progress function
+            //which is used by the caller
             promise.then(function (){
                   refreshDatasets();
             });
+
             return promise;
         };
 
@@ -119,9 +100,13 @@
          */
         var importRemoteDataset = function importRemoteDataset(parameters) {
             var promise = DatasetRestService.import(parameters);
+
+            //The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
+            //which is used by the caller
             promise.then(function (){
                 refreshDatasets();
             });
+
             return promise;
         };
 
@@ -135,9 +120,13 @@
          */
         var update = function update(dataset) {
             var promise = DatasetRestService.update(dataset);
+
+            //The appended promise is not returned because DatasetRestService.import return a $upload object with progress function
+            //which is used by the caller
             promise.then(function (){
                 refreshDatasets();
             });
+
             return promise;
         };
 

@@ -94,17 +94,17 @@
          */
         self.getDatasets = function(sortType, sortOrder, deferredAbort) {
 
-            var datasetUrlEnd = '';
+            var url = RestURLs.datasetUrl;
 
             if(sortType) {
-                datasetUrlEnd = '?sort=' + sortType;
+                url += '?sort=' + sortType;
             }
             if(sortOrder) {
-                datasetUrlEnd += (sortType ? '&' : '?') + 'order=' + sortOrder;
+                url += (sortType ? '&' : '?') + 'order=' + sortOrder;
             }
 
             return $http({
-                url: RestURLs.datasetUrl + datasetUrlEnd,
+                url: url,
                 method: 'GET',
                 timeout: deferredAbort.promise
             });
