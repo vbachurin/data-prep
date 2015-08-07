@@ -21,7 +21,7 @@ describe('Dropdown directive', function () {
         jasmine.clock().uninstall();
     });
 
-    it('should add "loading-open" class on body after 150ms when "talend.loading.start" is emitted', inject(function ($rootScope, $timeout) {
+    it('should add "loading-open" class on body after 150ms when "talend.loading.start" is emitted', inject(function ($rootScope) {
         //given
         var body = angular.element('body');
         expect(body.hasClass('loading-open')).toBe(false);
