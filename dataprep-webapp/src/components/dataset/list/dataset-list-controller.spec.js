@@ -51,7 +51,12 @@ describe('Dataset list controller', function () {
     }));
 
 
-    it('should refresh dataset when sort is changed', inject(function (DatasetService) {
+    it('should refresh dataset when sort is changed without localstorage - step 1', inject(function ($window, DatasetService) {
+
+        // Remove LocalStorage.
+        $window.localStorage.removeItem('dataprep.dataset.sortSelected');
+        $window.localStorage.removeItem('dataprep.dataset.sortOrderSelected');
+
         //given
         var ctrl = createController();
         var newSort =  {id: 'name', name: 'NAME_SORT'};
@@ -64,7 +69,12 @@ describe('Dataset list controller', function () {
     }));
 
 
-    it('should refresh dataset when order is changed', inject(function (DatasetService) {
+    it('should refresh dataset when order is changed without localstorage - step 2', inject(function ($window, DatasetService) {
+
+        // Remove LocalStorage.
+        $window.localStorage.removeItem('dataprep.dataset.sortSelected');
+        $window.localStorage.removeItem('dataprep.dataset.sortOrderSelected');
+
         //given
         var ctrl = createController();
         var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
@@ -74,6 +84,34 @@ describe('Dataset list controller', function () {
 
         //then
         expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('date','asc');
+    }));
+
+
+    it('should refresh dataset when sort is changed using localstorage of previous tests - step 3', inject(function (DatasetService) {
+
+        //given
+        var ctrl = createController();
+        var newSort =  {id: 'name', name: 'NAME_SORT'};
+
+        //when
+        ctrl.updateSortBy(newSort);
+
+        //then
+        expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('name','asc');
+    }));
+
+
+    it('should refresh dataset when order is changed using localstorage of previous tests - step 4', inject(function (DatasetService) {
+
+        //given
+        var ctrl = createController();
+        var newSortOrder =  {id: 'desc', name: 'ASC_ORDER'};
+
+        //when
+        ctrl.updateSortOrder(newSortOrder);
+
+        //then
+        expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('name','desc');
     }));
 
     it('should init playground with the provided datasetId from url', inject(function ($stateParams, PlaygroundService) {

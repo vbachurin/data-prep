@@ -17,8 +17,12 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.uploadWorkflowService:UploadWorkflowService
      */
-    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService) {
+    function DatasetListCtrl($window, $stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService) {
         var vm = this;
+
+        var sortSelectedKey = 'dataprep.dataset.sortSelected';
+        var sortOrderSelectedKey = 'dataprep.dataset.sortOrderSelected';
+
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
 
@@ -50,19 +54,29 @@
          * @ngdoc property
          * @name sortSelected
          * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Selected sort. Default date
+         * @description Selected sort. If sort is not in cache, Default sort is used
          * @type {object}
          */
-        vm.sortSelected = vm.sortList[1];
+        var sortSelected = $window.localStorage.getItem(sortSelectedKey);
+        if (sortSelected){
+            vm.sortSelected = JSON.parse(sortSelected);
+        } else {
+            vm.sortSelected = vm.sortList[1];
+        }
 
         /**
          * @ngdoc property
          * @name sortOrderSelected
          * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description Selected sort order. Default desc
+         * @description Selected sort order. If order is not in cache, default order is used
          * @type {object}
          */
-        vm.sortOrderSelected = vm.orderList[1];
+        var sortOrderSelected = $window.localStorage.getItem(sortOrderSelectedKey);
+        if (sortOrderSelected){
+            vm.sortOrderSelected = JSON.parse(sortOrderSelected);
+        } else {
+            vm.sortOrderSelected = vm.orderList[1];
+        }
 
         /**
          * @ngdoc method
@@ -73,6 +87,8 @@
          */
         vm.updateSortBy = function(sortType) {
             vm.sortSelected = sortType;
+            $window.localStorage.setItem(sortSelectedKey, JSON.stringify(vm.sortSelected));
+
             DatasetService.refreshDatasets(vm.sortSelected.id, vm.sortOrderSelected.id);
         };
 
@@ -85,6 +101,8 @@
          */
         vm.updateSortOrder = function(order) {
             vm.sortOrderSelected = order;
+            $window.localStorage.setItem(sortOrderSelectedKey, JSON.stringify(vm.sortOrderSelected));
+
             DatasetService.refreshDatasets(vm.sortSelected.id,  vm.sortOrderSelected.id);
         };
 
