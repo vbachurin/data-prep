@@ -51,14 +51,8 @@
                     aggregationCalculation
                 );
             } else {
-                StatisticsService.processVisuDataAggregation(
-                    PlaygroundService.currentMetadata.id,
-                    vm.datasetAggregationsService.columnSelected,
-                    vm.datasetAggregationsService.columnSelected,
-                    aggregationCalculation
-                );
+                StatisticsService.processBarchartData(vm.datasetAggregationsService.columnSelected);
             }
-
         };
 
 

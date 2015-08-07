@@ -24,7 +24,8 @@
             resetCharts: resetCharts,
             getGeoDistribution: getGeoDistribution,
             getAggregations: getAggregations,
-            invalidateCache: invalidateCache
+            invalidateCache: invalidateCache,
+            processBarchartData: processBarchartData
 
         };
 
