@@ -8,7 +8,7 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.statisticsService.service:StatisticsService
      */
-    function StatsDetailsCtrl($scope, ColumnSuggestionService, StatisticsService) {
+    function StatsDetailsCtrl(ColumnSuggestionService, StatisticsService) {
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
         vm.statisticsService = StatisticsService;
@@ -24,15 +24,6 @@
             alert('The selected pattern is: ' + item.pattern + '. Filtering is coming soon.');
             //return StatisticsService.addFilter(item.data);
         };
-
-        /**
-         * update the boxplot chart data
-         * */
-        $scope.$watch(function(){
-            return vm.statisticsService.boxplotData;
-        }, function(newData){
-            vm.boxplotData = newData;
-        });
     }
 
     Object.defineProperty(StatsDetailsCtrl.prototype,
@@ -44,6 +35,14 @@
             }
         });
 
+    Object.defineProperty(StatsDetailsCtrl.prototype,
+        'boxplotData', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.boxplotData;
+            }
+        });
 
     Object.defineProperty(StatsDetailsCtrl.prototype,
         'patternFrequencyTable', {
