@@ -14,7 +14,14 @@ describe('Dropdown directive', function () {
         scope.$digest();
     }));
 
-    it('should add "loading-open" class on body after 200ms when "talend.loading.start" is emitted', inject(function ($rootScope, $timeout) {
+    beforeEach(function () {
+        jasmine.clock().install();
+    });
+    afterEach(function () {
+        jasmine.clock().uninstall();
+    });
+
+    it('should add "loading-open" class on body after 150ms when "talend.loading.start" is emitted', inject(function ($rootScope, $timeout) {
         //given
         var body = angular.element('body');
         expect(body.hasClass('loading-open')).toBe(false);
@@ -23,7 +30,7 @@ describe('Dropdown directive', function () {
         $rootScope.$emit('talend.loading.start');
         $rootScope.$digest();
         expect(body.hasClass('loading-open')).toBe(false);
-        $timeout.flush(120);
+        jasmine.clock().tick(150);
 
         //then
         expect(body.hasClass('loading-open')).toBe(true);
