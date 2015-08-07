@@ -165,9 +165,9 @@ public class DataPreparationAPITest {
     public void testDataSetListWithDateOrder() throws Exception {
         final ObjectMapper mapper = new ObjectMapper();
         // given
-        final String dataSetId1 = createDataset("test1.csv", "aaaa", "text/csv");
+        final String dataSetId1 = createDataset("dataset/dataset.csv", "aaaa", "text/csv");
         Thread.sleep(100);
-        final String dataSetId2 = createDataset("test1.csv", "bbbb", "text/csv");
+        final String dataSetId2 = createDataset("dataset/dataset.csv", "bbbb", "text/csv");
 
         // when (sort by date, order is desc)
         String list = when().get("/api/datasets?sort={sort}&order={order}", "date", "desc").asString();
@@ -196,9 +196,9 @@ public class DataPreparationAPITest {
     public void testDataSetListWithNameOrder() throws Exception {
         final ObjectMapper mapper = new ObjectMapper();
         // given
-        final String dataSetId1 = createDataset("test1.csv", "aaaa", "text/csv");
+        final String dataSetId1 = createDataset("dataset/dataset.csv", "aaaa", "text/csv");
         Thread.sleep(100);
-        final String dataSetId2 = createDataset("test1.csv", "bbbb", "text/csv");
+        final String dataSetId2 = createDataset("dataset/dataset.csv", "bbbb", "text/csv");
 
         // when (sort by date, order is desc)
         String list = when().get("/api/datasets?sort={sort}&order={order}", "name", "desc").asString();
