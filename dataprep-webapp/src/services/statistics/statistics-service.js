@@ -8,7 +8,10 @@
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function StatisticsService(DatagridService, FilterService, ConverterService, StatisticsAggregationRestService, $timeout) {
+    function StatisticsService($q, DatagridService, FilterService, ConverterService, StatisticsAggregationRestService,$timeout) {
+
+        var suggestionsCache = [];
+
         var service = {
             selectedColumn: null,
             data: null,
@@ -20,7 +23,9 @@
             processVisuDataAggregation: processVisuDataAggregation,
             resetCharts: resetCharts,
             getGeoDistribution: getGeoDistribution,
-            getAggregations: getAggregations
+            getAggregations: getAggregations,
+            invalidateCache: invalidateCache
+
         };
 
         return service;
@@ -128,18 +133,12 @@
          * @param {object} calculation The selected calculation
          * @description processes the visualization data according to the clicked column domain
          */
-        function processVisuDataAggregation(currentColumn, targetColumn, calculation) {
+        function processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation) {
 
-            StatisticsCacheService.getAggregations(currentColumn, targetColumn, calculation)
-                .then(function(column) {
+            getAggregations(datasetId, currentColumn, targetColumn, calculation)
+                .then(function(aggregationStatistics) {
                     //processes the visualization data
-                    processVisuData(column);
-                })
-                .catch(function() {
-
-                })
-                .finally(function() {
-
+                    processAggregationStatistics(currentColumn, aggregationStatistics);
                 });
         }
 
@@ -150,15 +149,92 @@
          * @param {object} stringifiedColumn The aggregation target column as string
          * @description Get aggregation from REST call, clean and adapt them
          */
-        function getAggregations(stringifiedColumn) {
+        function getAggregationsRest(stringifiedColumn) {
             return StatisticsAggregationRestService.getAggregations(stringifiedColumn)
                 .then(function(response) {
-                    //var menus = cleanParamsAndItems(response.data);
-                    //return adaptInputTypes(menus);
                     return response.data;
                 });
         }
 
+        /**
+         * @ngdoc method
+         * @name getAggregations
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} currentColumn The current column
+         * @param {object} aggregationStatistics The aggregation statistcs returned REST service
+         * @description Update charts with aggregation statistcs returned REST service
+         */
+        function processAggregationStatistics(currentColumn, aggregationStatistics) {
+
+            service.stateDistribution = null; //hide the map if the previous column was a state
+
+            if(ConverterService.simplifyType(currentColumn.type) === 'number') {
+                service.data = extractNumericData(aggregationStatistics);
+            }
+            else {
+                var aggregationStatisticsArray = aggregationStatistics;
+                service.data = aggregationStatisticsArray;
+            }
+
+        }
+
+        /**
+         * @ngdoc method
+         * @name getKey
+         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
+         * @param {object} column The column to set as key
+         * @description [PRIVATE] Generate a unique key for the column.
+         */
+        function getKey(datasetId, currentColumn, targetColumn, calculation) {
+            var keyObj = {
+                datasetId: datasetId,
+                currentColumnId: currentColumn.id,
+                targetColumnId: targetColumn.id,
+                calculationId: calculation.id
+            };
+            return JSON.stringify(keyObj);
+        }
+
+        /**
+         * @ngdoc method
+         * @name getAggregations
+         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
+         * @param {object} currentColumn The selected column
+         * @param {object} targetColumn The aggregation target column
+         * @param {object} calculation The selected calculation
+         * @description Get aggregations from cache if present, from REST call otherwise.
+         * It cleans and adapts them.
+         */
+        function getAggregations(datasetId, currentColumn, targetColumn, calculation) {
+            var key = getKey(datasetId, currentColumn, targetColumn, calculation);
+
+            //if cache contains the key, the value is either the values or the fetch promise
+            var aggregation = suggestionsCache[key];
+            if(aggregation) {
+                return $q.when(aggregation);
+            }
+
+            //fetch menus from REST and adapt them. The Promise is put in cache, it is then replaced by the value.
+            var fetchPromise = getAggregationsRest(key)
+                .then(function(aggregation) {
+                    suggestionsCache[key] = aggregation;
+                    return aggregation;
+                });
+
+            suggestionsCache[key] = fetchPromise;
+            return fetchPromise;
+
+        }
+
+        /**
+         * @ngdoc method
+         * @name invalidateCache
+         * @methodOf data-prep.services.transformation.service:StatisticsCacheService
+         * @description Invalidate all cache entries
+         */
+        function invalidateCache () {
+            suggestionsCache = [];
+        }
 
         /**
          * @ngdoc method

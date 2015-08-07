@@ -30,6 +30,7 @@
 				var statData = scope.visuData;
 				var xField = scope.keyField;//occurences
 				var yField = scope.valueField;
+				var tip;
 
 				function renderBarchart(scope){
 					var container = attrs.id;
@@ -46,7 +47,7 @@
 					var xAxis = d3.svg.axis().scale(x).tickFormat(d3.format('d')).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
 						yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
 
-					var tip = d3.tip()
+					tip = d3.tip()
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
@@ -133,6 +134,9 @@
 				scope.$watchCollection('visuData',
 					function(newData){
 					element.empty();
+					if(tip){
+						tip.hide();
+					}
 
 					statData = newData;
 					if(statData){

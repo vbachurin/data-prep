@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, DatagridService, StatisticsService, SuggestionsStatsAggregationsService) {
+    function ColumnProfileCtrl($scope, DatagridService, StatisticsService, SuggestionsStatsAggregationsService, PlaygroundService) {
         var vm = this;
         vm.datasetGridService = DatagridService;
         vm.datasetAggregationsService = SuggestionsStatsAggregationsService;
@@ -45,12 +45,14 @@
 
             if(column){
                 StatisticsService.processVisuDataAggregation(
+                    PlaygroundService.currentMetadata.id,
                     vm.datasetAggregationsService.columnSelected,
                     column,
                     aggregationCalculation
                 );
             } else {
                 StatisticsService.processVisuDataAggregation(
+                    PlaygroundService.currentMetadata.id,
                     vm.datasetAggregationsService.columnSelected,
                     vm.datasetAggregationsService.columnSelected,
                     aggregationCalculation
@@ -181,7 +183,7 @@
         Object.defineProperty(ColumnProfileCtrl.prototype,
             'selectedColumn', {
                 enumerable: true,
-                configurable: false,
+                configurable: true,
                 get: function () {
                     return this.datasetGridService.selectedColumn;
                 }

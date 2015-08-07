@@ -111,6 +111,7 @@
             FilterService.removeAllFilters();
             RecipeService.refresh();
             StatisticsService.resetCharts();
+            StatisticsService.invalidateCache();
             DatagridService.setFocusedColumn(null);
             DatagridService.setDataset(dataset, data);
             TransformationCacheService.invalidateCache();
