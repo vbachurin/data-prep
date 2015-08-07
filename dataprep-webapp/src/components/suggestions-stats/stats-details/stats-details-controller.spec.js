@@ -30,6 +30,20 @@ describe('Stats-details controller', function () {
         expect(ctrl.statistics).toBe(stats);
     }));
 
+    it('should bind boxplotData getter to ColumnSuggestionService.statistics', inject(function (StatisticsService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.statistics).toBeFalsy();
+
+        var data = {};
+
+        //when
+        StatisticsService.boxplotData = data;
+
+        //then
+        expect(ctrl.boxplotData).toBe(data);
+    }));
+
     it('should bind patternFrequencyTable getter to ColumnSuggestionService.currentColumn.patternFrequencyTable', inject(function (ColumnSuggestionService) {
         //given
         var ctrl = createController();

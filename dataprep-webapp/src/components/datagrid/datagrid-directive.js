@@ -128,7 +128,7 @@
                             DatagridExternalService.updateSuggestionPanel(selectedColumn);
                         }
                         grid.invalidate();
-                        DatagridStyleService.navigateToFocusedColumn();
+                        DatagridGridService.navigateToFocusedColumn();
                     }
                 };
 
