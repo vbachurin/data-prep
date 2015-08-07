@@ -73,3 +73,21 @@ svg{
   top: 100%;
   left: 0;
 }
+
+.hiddenChars {
+  background-color: #E9E9E9;
+  border: 1px dotted #BABABA;
+  white-space: pre;
+}
+
+.foreign-object-body{
+  background-color: rgba(255, 255, 255, 0);
+  font-size: .75em;
+  color: $dark-green;
+  padding-top:3px;
+  padding-left:10px;
+  font-family: $inconsolota;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

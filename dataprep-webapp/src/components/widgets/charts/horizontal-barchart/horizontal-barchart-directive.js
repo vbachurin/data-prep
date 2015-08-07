@@ -30,6 +30,47 @@
 				var statData = scope.visuData;
 				var xField = scope.keyField;//occurences
 				var yField = scope.valueField;
+				var tip;
+
+				/**
+				 * @ngdoc method
+				 * @name computeHTMLForLeadingOrTrailingHiddenChars
+				 * @methodOf data-prep.datagrid.service:DatagridStyleService
+				 * @description split the string value into leading chars, text and trailing char and create html element using
+				 * the class hiddenChars to specify the hiddenChars.If the text contains break lines, the class
+				 * hiddenCharsBreakLine is used to notice it.
+				 * @param {string} value The string value to adapt
+				 */
+				function computeHTMLForLeadingOrTrailingHiddenChars(value){
+					if(!value) {
+						return value;
+					}
+
+					var returnStr = '';
+					var hiddenCharsRegExpMatch = value.match(/(^\s*)?([\s\S]*?)(\s*$)/);
+
+					//leading hidden chars found
+					if (hiddenCharsRegExpMatch[1]){
+						returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>';
+					}
+
+					//breaking lines indicator
+					var lines = value.trim().split('\n');
+					if(lines.length < 2) {
+						returnStr += hiddenCharsRegExpMatch[2] ;
+					}
+					else {
+						_.forEach(lines, function(line, index) {
+							returnStr += line + (index === lines.length -1 ? '' : '↵\n');
+						});
+					}
+
+					//trailing hidden chars
+					if (hiddenCharsRegExpMatch[3]){
+						returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
+					}
+					return returnStr;
+				}
 
 				function renderBarchart(scope){
 					var container = attrs.id;
@@ -46,13 +87,14 @@
 					var xAxis = d3.svg.axis().scale(x).tickFormat(d3.format('d')).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
 						yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
 
-					var tip = d3.tip()
+					tip = d3.tip()
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
 							return 	'<strong>Occurences:</strong> <span style="color:yellow">' + d[xField] + '</span>'+
 									'<br/>'+
-									'<strong>Value:</strong> <span style="color:yellow">' + d[yField] + '</span>';
+									'<br/>'+
+									'<strong>Record:</strong> <span style="color:yellow">'+ computeHTMLForLeadingOrTrailingHiddenChars(d[yField])+ '</span>';
 						});
 
 					var svg = d3.select('#'+container).append('svg')
@@ -81,8 +123,7 @@
 						.attr('width', x(0))
 						.attr('height', y.rangeBand())
 						.transition().delay(function (d,i){ return i * 30;})
-						.attr('width', function(d) { return x(d[xField]); })
-						.attr('height', y.rangeBand());
+						.attr('width', function(d) { return x(d[xField]);});
 
 					svg.append('g')
 						.attr('class', 'x axis')
@@ -92,15 +133,44 @@
 						.attr('class', 'y axis')
 						.call(yAxis);
 
-					bar.append('text')
-						.attr('class', 'value')
-						.attr('x', 10)
-						.attr('y', y.rangeBand() / 2)
-						.attr('dx', 0)
-						.attr('dy', '.35em')
-						.attr('text-anchor', 'start')
-						.transition().delay(function (d,i){ return i * 30;})
-						.text(function(d) { return d[yField]?d[yField]:'(EMPTY)';/* + '  ' + d[xField];*/});
+					//bar.append('text')
+					//	.attr('class', 'value')
+					//	.attr('x', 10)
+					//	.attr('y', y.rangeBand() / 2)
+					//	.attr('dx', 0)
+					//	.attr('dy', '.35em')
+					//	.attr('text-anchor', 'start')
+					//	.transition().delay(function (d,i){ return i * 30;})
+					//	.text(function(d) {
+					//		return d[yField] ? d[yField]:'(EMPTY)';/* + '  ' + d[xField];*/
+					//	});
+
+					//bar.append('text')
+					//	.attr('class', 'value')
+					//	.attr('x', 10)
+					//	.attr('y', y.rangeBand() / 2)
+					//	.attr('dx', 0)
+					//	.attr('dy', '.35em')
+					//	.attr('text-anchor', 'start')
+					//	//.transition().delay(function (d,i){ return i * 30;})
+					//	.append('tspan')
+					//		 .text(function(d) {
+					//		 	return d[yField] ? d[yField]:'(EMPTY)';/* + '  ' + d[xField];*/
+					//		 });
+
+
+					bar.append("foreignObject")
+						.attr('width', w)
+						.attr('height', y.rangeBand())
+						.append("xhtml:body")
+						.attr('class', 'foreign-object-body')
+						.html(function(d){
+							return d[yField] ? computeHTMLForLeadingOrTrailingHiddenChars(d[yField]):'(EMPTY)';
+						});
+
+
+
+
 
 					/************btgrect*********/
 					var bgBar = svg.selectAll('g.bg-rect')
@@ -120,7 +190,7 @@
 						})
 						.on('mouseleave',function(d){
 							d3.select(this).style('opacity',0);
-							//tip.hide(d);
+							tip.hide(d);
 						})
 						.on('click',function(d){
 							scope.onClick()(d);
@@ -133,7 +203,9 @@
 				scope.$watchCollection('visuData',
 					function(newData){
 					element.empty();
-
+					if(tip){
+						tip.hide();
+					}
 					statData = newData;
 					if(statData){
 						renderBarchart(scope);
