@@ -14,22 +14,22 @@
      * </ul>
      * @restrict E
      */
-    function TalendLoading($rootScope, $timeout) {
+    function TalendLoading($rootScope) {
         return {
             restrict: 'E',
             templateUrl: 'components/widgets/loading/loading.html',
             link: function() {
-                var loadingPromise;
+                var loadingTimeout;
                 var body = angular.element('body');
 
                 $rootScope.$on('talend.loading.start', function() {
-                    $timeout.cancel(loadingPromise);
-                    loadingPromise = $timeout(function() {
+                    clearTimeout(loadingTimeout);
+                    loadingTimeout = setTimeout(function() {
                         body.addClass('loading-open');
-                    }, 120);
+                    }, 150);
                 });
                 $rootScope.$on('talend.loading.stop', function() {
-                    $timeout.cancel(loadingPromise);
+                    clearTimeout(loadingTimeout);
                     body.removeClass('loading-open');
                 });
             }

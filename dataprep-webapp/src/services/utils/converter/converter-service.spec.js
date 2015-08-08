@@ -57,8 +57,8 @@ describe('Converter service', function() {
         checkSimplifiedTypes(ConverterService, ['date'], 'date');
     }));
 
-    it('should return test when column type is unknown', inject(function(ConverterService) {
-        checkSimplifiedTypes(ConverterService, ['toto', 'titi', 'tata', ''], 'text');
+    it('should return unknown when column type is unknown', inject(function(ConverterService) {
+        checkSimplifiedTypes(ConverterService, ['toto', 'titi', 'tata', ''], 'unknown');
     }));
 
     /**
