@@ -10,10 +10,14 @@
   li {
     border: none;
     line-height: 1.5;
-    padding: 3px 20px;
+    padding: 5px 20px;
     position: relative;
     white-space: nowrap;
     color: #333;
+
+    text-transform: none;
+    font-weight: normal;
+    font-size: 0.8em;
 
     &:hover {
       background-color: $menus-hover;
@@ -32,15 +36,12 @@
 
     a {
       color: #333;
-      font-size: 0.8em;
-      font-weight: normal;
-      text-transform: none;
 
       >.info {
         float: right;
         color: $medium-gray;
         text-transform: lowercase;
-        padding: 3px;
+        padding: 0 3px;
       }
     }
 
@@ -53,6 +54,10 @@
       position: absolute;
       top: 0;
       left: 100%;
+
+      li {
+        font-size: 1em;
+      }
     }
 
     &.divider {
