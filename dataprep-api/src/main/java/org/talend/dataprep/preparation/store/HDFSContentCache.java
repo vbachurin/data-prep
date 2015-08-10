@@ -23,18 +23,24 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 @ConditionalOnProperty(name = "hdfs.location")
 public class HDFSContentCache implements ContentCache {
 
+    /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HDFSContentCache.class);
 
+    /** Hdfs cache location. */
     @Autowired
-    FileSystem fileSystem;
+    private FileSystem fileSystem;
 
+    /**
+     * Default empty constructor.
+     */
     public HDFSContentCache() {
         LOGGER.info("Using content cache: {}", this.getClass().getName());
     }
 
     /**
-     * Return the HDFS {@link Path path} for a preparation at a given step. The <code>includeEvicted</code> boolean
-     * indicates whether {@link #evict(ContentCacheKey) evicted} content should be included in search.
+     * Return the HDFS {@link Path path} for a preparation at a given step and sample size. The
+     * <code>includeEvicted</code> boolean indicates whether {@link #evict(ContentCacheKey) evicted} content should be
+     * included in search.
      * 
      * @param key content cache key.
      * @param includeEvicted <code>true</code> if method should also look into evicted content, <code>false</code>
@@ -47,6 +53,7 @@ public class HDFSContentCache implements ContentCache {
 
             String preparationId = key.getPreparationId();
             String stepId = key.getStepId();
+            String sample = key.getSample();
 
             if (preparationId == null) {
                 throw new IllegalArgumentException("Preparation id cannot be null.");
@@ -55,12 +62,14 @@ public class HDFSContentCache implements ContentCache {
             if (key.getStepId() == null) {
                 throw new IllegalArgumentException("Step id cannot be null.");
             }
-            if ("origin".equalsIgnoreCase(stepId)) {
-                stepId = Step.ROOT_STEP.id();
-            }
-            final Path preparation = new Path("preparations/" + preparationId);
+
+            final Path preparation = new Path("preparations/" + preparationId + '/' + sample);
             if (!fileSystem.exists(preparation)) {
                 return null;
+            }
+
+            if ("origin".equalsIgnoreCase(stepId)) {
+                stepId = Step.ROOT_STEP.id();
             }
             final String filteringStepId = stepId;
             final FileStatus[] statuses = fileSystem.listStatus(preparation, p -> p.getName().startsWith(filteringStepId));
@@ -81,6 +90,7 @@ public class HDFSContentCache implements ContentCache {
         }
     }
 
+
     /**
      * @see ContentCache#has(ContentCacheKey)
      */
@@ -88,6 +98,43 @@ public class HDFSContentCache implements ContentCache {
     public boolean has(ContentCacheKey key) {
         final Path path = getPath(key, false, fileSystem);
         final boolean exists = path != null;
+        if (exists) {
+            LOGGER.debug("[{}] Cache hit.", key);
+        } else {
+            LOGGER.debug("[{}] Cache miss.", key);
+        }
+        return exists;
+    }
+
+    /**
+     * @see ContentCache#hasAny(ContentCacheKey)
+     */
+    @Override
+    public boolean hasAny(ContentCacheKey key) {
+        boolean exists = false;
+        final Path rootFolder = new Path("preparations/" + key.getPreparationId());
+        String stepId = key.getStepId();
+
+        try {
+            // list all child files (recursive)
+            RemoteIterator<LocatedFileStatus> iterator = fileSystem.listFiles(rootFolder, true);
+            while (iterator.hasNext()) {
+                final Path currentPath = iterator.next().getPath();
+                // find the matching step
+                if (StringUtils.startsWith(currentPath.getName(), stepId)) {
+                    final String suffix = StringUtils.substringAfterLast(currentPath.getName(), ".");
+                    // check the TTL validity
+                    if (Long.parseLong(suffix) > 0) {
+                        exists = true;
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.warn("error listing cache entries for preparation {}", key.getPreparationId());
+            return false;
+        }
+
         if (exists) {
             LOGGER.debug("[{}] Cache hit.", key);
         } else {
@@ -122,13 +169,14 @@ public class HDFSContentCache implements ContentCache {
 
             String preparationId = key.getPreparationId();
             String stepId = key.getStepId();
+            String sampleSize = key.getSample();
 
             if ("head".equals(stepId) || "origin".equals(stepId)) {
                 throw new IllegalArgumentException("Illegal shortcut for preparation step '" + stepId + "'.");
             }
             LOGGER.debug("[{}] Cache add.", key);
             // Adds suffix for time to live checks
-            final Path preparation = new Path("preparations/" + preparationId + "/" + stepId);
+            final Path preparation = new Path("preparations/" + preparationId + '/' + sampleSize + '/' + stepId);
             final Path path = preparation.suffix("." + String.valueOf(System.currentTimeMillis() + timeToLive.getTime()));
             final boolean created = fileSystem.createNewFile(path);
             if (!created) {
@@ -154,6 +202,37 @@ public class HDFSContentCache implements ContentCache {
                 return;
             }
             fileSystem.rename(path, path.suffix(".0"));
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
+        }
+    }
+
+    /**
+     * @see ContentCache#evictAllEntries(ContentCacheKey)
+     */
+    @Override
+    public void evictAllEntries(ContentCacheKey key) {
+
+        LOGGER.debug("[{}] Evict for all sample size.", key);
+
+        String preparationId = key.getPreparationId();
+        final String stepId = key.getStepId();
+
+        try {
+            final Path path = new Path("preparations/" + preparationId);
+            if (path == null) {
+                LOGGER.debug("[{}] Evict failed: file already deleted.", key);
+                return;
+            }
+
+            RemoteIterator<LocatedFileStatus> iterator = fileSystem.listFiles(path, true);
+            while (iterator.hasNext()) {
+                final Path currentPath = iterator.next().getPath();
+                if (StringUtils.startsWith(currentPath.getName(), stepId)) {
+                    fileSystem.rename(currentPath, path.suffix(".0"));
+                }
+            }
+
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNEXPECTED_EXCEPTION, e);
         }

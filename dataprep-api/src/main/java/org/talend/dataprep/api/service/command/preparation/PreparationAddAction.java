@@ -46,8 +46,8 @@ public class PreparationAddAction extends DataPrepCommand<Void> {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode >= 200) {
                 // Invalidate cache for preparation's head (if any)
-                if (contentCache.has(new ContentCacheKey(id, "head"))) {
-                    contentCache.evict(new ContentCacheKey(id, "head"));
+                if (contentCache.hasAny(new ContentCacheKey(id, "head"))) {
+                    contentCache.evictAllEntries(new ContentCacheKey(id, "head"));
                 }
                 return null;
             }

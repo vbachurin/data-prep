@@ -11,12 +11,22 @@ import java.util.concurrent.TimeUnit;
 public interface ContentCache {
 
     /**
-     * Check whether a cached content exists for given <code>preparationId</code> at step <code>stepId</code>.
+     * Check whether a cached content exists for given <code>preparationId</code> at step <code>stepId</code> for a
+     * specific sample size.
      * 
      * @param key content cache key.
      * @return <code>true</code> if cache holds content for given parameters, <code>false</code> otherwise.
      */
     boolean has(ContentCacheKey key);
+
+    /**
+     * Check whether a cached content exists for given <code>preparationId</code> at step <code>stepId</code> for any
+     * given sample size.
+     *
+     * @param key content cache key.
+     * @return <code>true</code> if cache holds content for given parameters, <code>false</code> otherwise.
+     */
+    boolean hasAny(ContentCacheKey key);
 
     /**
      * Returns the cached content for given <code>preparationId</code> at step <code>stepId</code>
@@ -46,6 +56,14 @@ public interface ContentCache {
      * @param key content cache key.
      */
     void evict(ContentCacheKey key);
+
+    /**
+     * Mark cache entry as invalid for given <code>preparationId</code> at step <code>stepId</code> for any sample size.
+     * After this method completes, {@link #has(ContentCacheKey)} must immediately return <code>false</code>.
+     *
+     * @param key content cache key.
+     */
+    void evictAllEntries(ContentCacheKey key);
 
     /**
      * Removes all content cached by this {@link ContentCache cache}.

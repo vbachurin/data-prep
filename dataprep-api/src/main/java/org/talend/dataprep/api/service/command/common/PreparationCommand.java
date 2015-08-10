@@ -196,7 +196,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         ctx.preparation = preparation;
         ctx.version = version;
         // Direct try on cache at given version
-        ContentCacheKey key = new ContentCacheKey(preparationId, version);
+        ContentCacheKey key = new ContentCacheKey(preparationId, version, sample);
         if (contentCache.has(key)) {
             ctx.content = contentCache.get(key);
             ctx.actions = Collections.emptyList();
@@ -212,7 +212,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             final List<String> preparationSteps = preparation.getSteps();
             for (String step : preparationSteps) {
                 transformationStartStep = step;
-                key = new ContentCacheKey(preparationId, step);
+                key = new ContentCacheKey(preparationId, step, sample);
                 if (contentCache.has(key)) {
                     ctx.content = contentCache.get(key);
                     break;

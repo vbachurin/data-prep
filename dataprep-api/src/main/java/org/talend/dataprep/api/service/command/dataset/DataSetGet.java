@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Optional;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -49,7 +48,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
     private final boolean columns;
 
     /** Optional sample size (if null or <=0, the full dataset is returned). */
-    private Optional<Long> sample;
+    private Long sample;
 
     /**
      * Constructor.
@@ -64,7 +63,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
         this.dataSetId = dataSetId;
         this.metadata = metadata;
         this.columns = columns;
-        this.sample = Optional.empty();
+        this.sample = null;
     }
 
     /**
@@ -78,7 +77,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
      */
     public DataSetGet(HttpClient client, String dataSetId, boolean metadata, boolean columns, Long sample) {
         this(client, dataSetId, metadata, columns);
-        this.sample = sample == null ? Optional.empty() : Optional.of(sample);
+        this.sample = sample;
     }
 
     /**
@@ -88,14 +87,14 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
     protected InputStream run() throws Exception {
         // Look if initial data set content was previously cached
         final Preparation preparation = Preparation.defaultPreparation(dataSetId);
-        ContentCacheKey key = new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id());
+        ContentCacheKey key = new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id(), sample);
         if (contentCache.has(key)) {
             return contentCache.get(key);
         }
 
         String url = datasetServiceUrl + "/datasets/" + dataSetId + "/content/?metadata=" + metadata + "&columns=" + columns;
-        if (sample.isPresent()) {
-            url += "&sample=" + sample.get();
+        if (sample != null) {
+            url += "&sample=" + sample;
         }
         final HttpGet contentRetrieval = new HttpGet(url);
         final HttpResponse response = client.execute(contentRetrieval);
@@ -119,7 +118,7 @@ public class DataSetGet extends DataPrepCommand<InputStream> {
             contentRetrieval.releaseConnection();
             return new ByteArrayInputStream(new byte[0]);
         } else if (statusCode == HttpStatus.SC_OK) {
-            final OutputStream cacheEntry = contentCache.put(new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id()),
+            final OutputStream cacheEntry = contentCache.put(new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id(), sample),
                     ContentCache.TimeToLive.DEFAULT);
             final InputStream content = response.getEntity().getContent();
             final InputStream dataSetInput = new ReleasableInputStream(content, contentRetrieval::releaseConnection);

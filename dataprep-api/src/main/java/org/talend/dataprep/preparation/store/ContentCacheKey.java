@@ -5,14 +5,15 @@ package org.talend.dataprep.preparation.store;
  */
 public class ContentCacheKey {
 
+    /** Constant value for the full dataset. */
+    private static final String FULL_DATASET = "full";
     /** The preparation id. */
     private String preparationId;
-
     /** The optional step id. */
     private String stepId;
 
-    /** The optional sample size. */
-    private Long sample;
+    /** The optional sample size ('full' if empty). */
+    private String sample;
 
     /**
      * Constructor without sample size.
@@ -23,7 +24,7 @@ public class ContentCacheKey {
     public ContentCacheKey(String preparationId, String stepId) {
         this.preparationId = preparationId;
         this.stepId = stepId;
-        this.sample = null;
+        this.sample = FULL_DATASET;
     }
 
     /**
@@ -35,7 +36,9 @@ public class ContentCacheKey {
      */
     public ContentCacheKey(String preparationId, String stepId, Long sample) {
         this(preparationId, stepId);
-        this.sample = sample;
+        if (sample != null) {
+            this.sample = String.valueOf(sample);
+        }
     }
 
     /**
@@ -55,13 +58,16 @@ public class ContentCacheKey {
     /**
      * @return the Sample
      */
-    public Long getSample() {
+    public String getSample() {
         return sample;
     }
 
+    /**
+     * @see Object#toString()
+     */
     @Override
     public String toString() {
-        return "ContentCacheKey{" + "preparationId='" + preparationId + '\'' + ", sample=" + sample + '\'' + ", stepId='" + stepId
-                + '}';
+        return "ContentCacheKey{" + "preparationId='" + preparationId + '\'' + ", stepId='" + stepId + '\'' + ", sample='"
+                + sample + '\'' + '}';
     }
 }

@@ -35,11 +35,9 @@
       "type": "date",
       "quality": {
         "empty": 0,
-        "invalid": 13,
-        "valid": 87,
-        "invalidValues": [
-          "12/30/1899"
-        ]
+        "invalid": 0,
+        "valid": 100,
+        "invalidValues": []
       },
       "id": "0002",
       "statistics": {},
