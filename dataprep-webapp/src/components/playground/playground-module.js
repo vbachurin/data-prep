@@ -12,7 +12,9 @@
      * @requires data-prep.filter-list
      * @requires data-prep.history-control
      * @requires data-prep.recipe
-     * @requires data-prep.suggestions
+     * @requires data-prep.horizontalBarchart
+     * @requires data-prep.boxplotChart
+     * @requires data-prep.suggestions-stats
      * @requires data-prep.services.preparation
      * @requires data-prep.services.playground
      * @requires data-prep.services.recipe
@@ -28,7 +30,8 @@
         'data-prep.history-control',
         'data-prep.recipe',
         'data-prep.horizontalBarchart',
-        'data-prep.suggestions',
+        'data-prep.boxplotChart',
+        'data-prep.suggestions-stats',
         'data-prep.services.preparation',
         'data-prep.services.playground',
         'data-prep.services.recipe'

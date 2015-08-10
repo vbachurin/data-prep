@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -28,6 +29,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for ProperCase action. Creates one consumer, and test it.
@@ -39,20 +42,15 @@ public class ProperCaseTest {
     /** The action to test. */
     private ProperCase action;
 
-    /** The consumer out of the action. */
-    private DataSetRowAction consumer;
+    private Map<String, String> parameters;
 
-    /**
-     * Constructor.
-     */
-    public ProperCaseTest() throws IOException {
+    @Before
+    public void init() throws IOException {
         action = new ProperCase();
 
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 ProperCaseTest.class.getResourceAsStream("properCaseAction.json"));
-
-        consumer = action.create(parameters).getRowAction();
     }
 
     @Test
@@ -63,36 +61,50 @@ public class ProperCaseTest {
     }
 
     @Test
-    public void test1() {
-        Map<String, String> values = new HashMap<>();
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.CASE.getDisplayName()));
+    }
+
+    @Test
+    public void should_transform_lower_to_proper() {
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("band", "the beatles");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
 
-        assertEquals("The Beatles", dsr.get("band"));
+        //then
+        assertEquals("The Beatles", row.get("band"));
     }
 
     @Test
-    public void test2() {
-        Map<String, String> values = new HashMap<>();
+    public void should_transform_upper_to_proper() {
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("band", "THE BEATLES");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
 
-        assertEquals("The Beatles", dsr.get("band"));
+        //then
+        assertEquals("The Beatles", row.get("band"));
     }
 
     @Test
-    public void test3() {
-        Map<String, String> values = new HashMap<>();
+    public void should_not_change_other_columns() {
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("bando", "the beatles");
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "band");
 
-        assertEquals("the beatles", dsr.get("bando"));
+        //then
+        assertEquals("the beatles", row.get("bando"));
     }
 
     @Test

@@ -22,9 +22,16 @@ describe('Datagrid external service', function () {
         spyOn(gridMock.onHeaderClick, 'subscribe').and.returnValue();
         spyOn(gridMock.onScroll, 'subscribe').and.returnValue();
 
-        spyOn(StatisticsService, 'processVisuData').and.returnValue();
+        spyOn(StatisticsService, 'processData').and.returnValue();
         spyOn(ColumnSuggestionService, 'setColumn').and.returnValue();
     }));
+
+    beforeEach(function () {
+        jasmine.clock().install();
+    });
+    afterEach(function () {
+        jasmine.clock().uninstall();
+    });
 
     describe('on creation', function () {
         it('should add grid active cell change listener', inject(function (DatagridExternalService) {
@@ -53,7 +60,7 @@ describe('Datagrid external service', function () {
     });
 
     describe('on event', function () {
-        it('should update playground right panel on active cell changed', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should update playground right panel on active cell changed after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {cell: 1};
@@ -63,9 +70,41 @@ describe('Datagrid external service', function () {
             var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
             onActiveCellChanged(null, args);
 
+            expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            jasmine.clock().tick(200);
+
             //then
-            expect(StatisticsService.processVisuData).toHaveBeenCalledWith(columnMetadata);
+            expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+        }));
+
+        it('should cancel the pending right panel update and schedule a new one', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+            //given
+            DatagridExternalService.init(gridMock);
+            var firstCallArgs = {cell: 1};
+            var secondCallArgs = {cell: 2};
+            var secondCallColumnMetadata = gridColumns[2].tdpColMetadata;
+
+            var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
+            onActiveCellChanged(null, firstCallArgs);
+
+            jasmine.clock().tick(199);
+
+            expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+
+            //when
+            onActiveCellChanged(null, secondCallArgs);
+
+            jasmine.clock().tick(1);
+            expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            jasmine.clock().tick(200);
+
+            //then
+            expect(StatisticsService.processData).toHaveBeenCalledWith(secondCallColumnMetadata);
+            expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(secondCallColumnMetadata);
         }));
 
         it('should do nothing when no cell is active', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
@@ -77,11 +116,11 @@ describe('Datagrid external service', function () {
             onActiveCellChanged(null, {});
 
             //then
-            expect(StatisticsService.processVisuData).not.toHaveBeenCalled();
+            expect(StatisticsService.processData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
         }));
 
-        it('should update playground right panel on header click', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should update playground right panel on header click after a 200ms delay', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {
@@ -93,8 +132,12 @@ describe('Datagrid external service', function () {
             var onHeaderClick = gridMock.onHeaderClick.subscribe.calls.argsFor(0)[0];
             onHeaderClick(null, args);
 
+            expect(StatisticsService.processData).not.toHaveBeenCalled();
+            expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            jasmine.clock().tick(200);
+
             //then
-            expect(StatisticsService.processVisuData).toHaveBeenCalledWith(columnMetadata);
+            expect(StatisticsService.processData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
         }));
 

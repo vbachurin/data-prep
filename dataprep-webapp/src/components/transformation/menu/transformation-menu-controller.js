@@ -8,24 +8,23 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.transformation.service:TransformationService
-     * @requires data-prep.services.utils.service:ConverterService
      */
-    function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService, ConverterService) {
+    function TransformMenuCtrl(PlaygroundService, PreparationService, TransformationService) {
         var vm = this;
-        vm.converterService = ConverterService;
 
         /**
          * @ngdoc method
          * @name initDynamicParams
          * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
          * @description [PRIVATE] Fetch the transformation dynamic parameters and inject them into transformation menu params
+         * @param {object} menu The dynamic transformation
          * @returns {promise} The GET request promise
          */
-        var initDynamicParams = function(menu) {
+        var initDynamicParams = function (menu) {
             var infos = {
                 columnId: vm.column.id,
-                datasetId:  PlaygroundService.currentMetadata.id,
-                preparationId:  PreparationService.currentPreparationId
+                datasetId: PlaygroundService.currentMetadata.id,
+                preparationId: PreparationService.currentPreparationId
             };
             return TransformationService.initDynamicParameters(menu, infos);
         };
@@ -40,16 +39,18 @@
          *     <li>no parameter and no choice is required : transformation call</li>
          *     <li>parameter or choice required : show modal</li>
          * </ul>
+         * @param {object} menu The transformation to perform
+         * @param {string} scope The transformation scope to perform
          */
         vm.select = function (menu, scope) {
-            if(menu.dynamic) {
+            if (menu.dynamic) {
                 vm.dynamicFetchInProgress = true;
                 vm.showModal = true;
                 vm.selectedMenu = menu;
                 vm.selectedScope = scope;
 
                 //get new parameters
-                initDynamicParams(menu).finally(function() {
+                initDynamicParams(menu).finally(function () {
                     vm.dynamicFetchInProgress = false;
                 });
             }
@@ -63,11 +64,23 @@
             }
         };
 
-        vm.transformClosure = function(menu, scope) {
-            return function(params) {
+        /**
+         * @ngdoc method
+         * @name select
+         * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
+         * @description Create a closure for a specific menu/scope, that only take the parameters to perform the transformation
+         * @param {object} menu The transformation to perform
+         * @param {string} scope The transformation scope to perform
+         */
+        vm.transformClosure = function (menu, scope) {
+            /*jshint camelcase: false */
+            return function (params) {
                 params = params || {};
                 params.scope = scope;
-                vm.transform(menu, params);
+                params.column_id = vm.column.id;
+                params.column_name = vm.column.name;
+
+                transform(menu, params);
             };
         };
 
@@ -75,15 +88,16 @@
          * @ngdoc method
          * @name transform
          * @methodOf data-prep.transformation-menu.controller:TransformMenuCtrl
+         * @param {object} menu The transformation
          * @param {object} params The transformation params
          * @description Perform a transformation on the column
          */
-        vm.transform = function (menu, params) {
-            PlaygroundService.appendStep(menu.name, vm.column, params)
-                .then(function() {
+        function transform(menu, params) {
+            PlaygroundService.appendStep(menu.name, params)
+                .then(function () {
                     vm.showModal = false;
                 });
-        };
+        }
     }
 
     angular.module('data-prep.transformation-menu')

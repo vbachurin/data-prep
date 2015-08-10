@@ -22,6 +22,9 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
@@ -29,14 +32,25 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE_PARAMETER;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
 
 /**
  * Base class for all single column action.
  */
 public abstract class AbstractActionMetadata implements ActionMetadata {
+    @Autowired
+    private ActionMetadataValidation validator;
 
     //------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------PARAMS GETTERS---------------------------------------------------
@@ -58,7 +72,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * @param parameters the transformation parameters
      * @return the row id
      */
-    protected Long getRowId(final Map<String, String> parameters) {
+    private Long getRowId(final Map<String, String> parameters) {
         final String rowIdAsString = parameters.get(ROW_ID.getKey());
         if (rowIdAsString != null) {
             return Long.parseLong(rowIdAsString);
@@ -71,14 +85,9 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      *
      * @param parameters the transformation parameters
      * @return the scope
-     * @throws IllegalArgumentException if the scope parameter is missing
      */
-    protected ScopeCategory getScope(final Map<String, String> parameters) {
-        final ScopeCategory scope = ScopeCategory.from(parameters.get(SCOPE.getKey()));
-        if (scope == null) {
-            throw new IllegalArgumentException("Parameter '" + SCOPE.getKey() + "' is required for all actions");
-        }
-        return scope;
+    private ScopeCategory getScope(final Map<String, String> parameters) {
+        return ScopeCategory.from(parameters.get(SCOPE.getKey()));
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -89,7 +98,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * @see ActionMetadata#acceptScope(ScopeCategory)
      */
     @Override
-    public boolean acceptScope(final ScopeCategory scope) {
+    public final boolean acceptScope(final ScopeCategory scope) {
         switch (scope) {
             case CELL:
                 return this instanceof ICellAction;
@@ -101,24 +110,6 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
                 return this instanceof ITableAction;
         }
         return false;
-    }
-
-    /**
-     * Scope consistency checks
-     * 1. scope has mandatory parameters
-     * 2. scope is available for the current transformation
-     *
-     * @param scope      the transformation scope
-     * @param parameters the transformation parameters
-     */
-    private void checkScopeConsistency(final ScopeCategory scope, final Map<String, String> parameters) {
-        if (!scope.checkMandatoryParameters(parameters)) {
-            throw new TDPException(MISSING_TRANSFORMATION_SCOPE_PARAMETER);
-        }
-
-        if (!this.acceptScope(scope)) {
-            throw new IllegalArgumentException("The action " + this.getName() + " does not support the provided scope " + scope);
-        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -137,12 +128,12 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      */
     @Override
     public final Action create(final Map<String, String> parameters) {
-        final ScopeCategory scope = getScope(parameters);
-        checkScopeConsistency(scope, parameters);
-
+        validator.checkScopeConsistency(this, parameters);
         beforeApply(parameters);
+
         final Long rowId = getRowId(parameters);
         final String columnId = getColumnId(parameters);
+        final ScopeCategory scope = getScope(parameters);
 
         return builder().withRow((row, context) -> {
             switch (scope) {

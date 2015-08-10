@@ -30,6 +30,7 @@
 
   "_comment": "Datagrid transformations",
   "RECIPE_ITEM_ON_COL": "on column",
+  "RECIPE_ITEM_ON_CELL": "on cell",
   "NO_TRANSFORMATION": "No transformation available",
 
   "_comment": "Datagrid",
@@ -102,7 +103,30 @@
   "IMPORT_ERROR_TITLE": "Import error",
   "IMPORT_ERROR": "An error occurred during import",
 
+  "_comment": "Transformation",
   "NO_CLUSTERS_ACTION_MSG":"No Clusters Were Found !!!",
   "NO_CHOICES_ACTION_MSG":"No Choices Were Found !!!",
-  "NO_PARAMS_ACTION_MSG":"No Simple Parameters Were Found !!!"
+  "NO_PARAMS_ACTION_MSG":"No Simple Parameters Were Found !!!",
+  "COLUMN_TYPE_IS": "This column is a",
+  "COLUMN_TYPE_SET": "Set as",
+
+  "_comment": "Statistics",
+  "COUNT": "Count",
+  "DISTINCT_COUNT": "Distinct",
+  "DUPLICATE_COUNT": "Duplicate",
+  "VALID": "Valid",
+  "EMPTY": "Empty",
+  "INVALID": "Invalid",
+  "MIN": "Min",
+  "MAX": "Max",
+  "MEAN": "Mean",
+  "VARIANCE": "Variance",
+  "MEDIAN": "Median",
+  "LOWER_QUANTILE": "Lower quantile",
+  "UPPER_QUANTILE": "Upper quantile",
+  "AVG_LENGTH": "Avg length",
+  "AVG_LENGTH_WITH_BLANK": "Avg length with blank",
+  "MAX_LENGTH": "Max length",
+  "MIN_LENGTH": "Min length",
+  "MIN_LENGTH_WITH_BLANK": "Min length with blank"
 }

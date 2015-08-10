@@ -213,20 +213,6 @@
 
         /**
          * @ngdoc method
-         * @name insertColumnInfo
-         * @methodOf data-prep.services.preparation.service:PreparationService
-         * @param {object} parameters The parameters to update the column from
-         * @param {object} column The update source.
-         * @description Inject the columns implicit values
-         */
-        function insertColumnInfo(parameters, column) {
-            /*jshint camelcase: false */
-            parameters.column_id = column.id;
-            parameters.column_name = column.name;
-        }
-
-        /**
-         * @ngdoc method
          * @name copyImplicitParameters
          * @methodOf data-prep.services.preparation.service:PreparationService
          * @param {object} parameters The parameters to copy into
@@ -261,9 +247,7 @@
          * @description Append a step. If the preparation does not exists, it is created
          * @returns {promise} The PUT promise
          */
-        function appendStep(metadata, action, column, parameters) {
-            parameters = parameters || {};
-            insertColumnInfo(parameters, column);
+        function appendStep(metadata, action, parameters) {
             var promise = service.currentPreparationId ? $q.when(service.currentPreparationId) : create(metadata, 'Preparation draft');
 
             return promise.then(function() {

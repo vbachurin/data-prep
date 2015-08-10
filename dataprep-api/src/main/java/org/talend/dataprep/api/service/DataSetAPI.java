@@ -24,6 +24,11 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
+import static org.springframework.http.MediaType.ALL_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
 public class DataSetAPI extends APIService {
@@ -36,7 +41,7 @@ public class DataSetAPI extends APIService {
      * @param dataSetContent the dataset content from the http request body.
      * @return The dataset id.
      */
-    @RequestMapping(value = "/api/datasets", method = RequestMethod.POST, consumes = ALL_VALUE, produces = TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/datasets", method = POST, consumes = ALL_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Create a data set", consumes = TEXT_PLAIN_VALUE, produces = TEXT_PLAIN_VALUE, notes = "Create a new data set based on content provided in POST body. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too. Returns the id of the newly created data set.")
     public String create(
             @ApiParam(value = "User readable name of the data set (e.g. 'Finance Report 2015', 'Test Data Set').") @RequestParam(defaultValue = "", required = false) String name,
@@ -69,7 +74,7 @@ public class DataSetAPI extends APIService {
         return result;
     }
 
-    @RequestMapping(value = "/api/datasets/{id}", method = RequestMethod.POST, consumes = ALL_VALUE, produces = TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/datasets/{id}", method = POST, consumes = ALL_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Update a dataset.", consumes = TEXT_PLAIN_VALUE, produces = TEXT_PLAIN_VALUE, //
     notes = "Update a data set based on content provided in POST body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
     public String update(@ApiParam(value = "Id of the data set to update / create") @PathVariable(value = "id") String id,
@@ -82,6 +87,23 @@ public class DataSetAPI extends APIService {
         String result = creation.execute();
         LOG.debug("Dataset creation or update for #{} done.", id);
         return result;
+    }
+
+    @RequestMapping(value = "/api/datasets/{datasetId}/column/{columnId}", method = POST, consumes = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Update a dataset.", consumes = APPLICATION_JSON_VALUE, //
+        notes = "Update a data set based on content provided in POST body with given id. For documentation purposes, body is typed as 'text/plain' but operation accepts binary content too.")
+    public void updateColumn(@PathVariable(value = "datasetId") @ApiParam(value = "Id of the dataset to update") final String datasetId,
+                             @PathVariable(value = "columnId") @ApiParam(value = "Id of the column to update") final String columnId,
+                             @ApiParam(value = "content") final InputStream body) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating or updating dataset #{} (pool: {})...", datasetId, getConnectionManager().getTotalStats());
+        }
+
+        final HttpClient client = getClient();
+        final HystrixCommand<Void> creation = getCommand(UpdateColumn.class, client, datasetId, columnId, body);
+        creation.execute();
+
+        LOG.debug("Dataset creation or update for #{} done.", datasetId);
     }
 
     @RequestMapping(value = "/api/datasets/{id}", method = GET, consumes = ALL_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -216,7 +238,7 @@ public class DataSetAPI extends APIService {
         }
     }
 
-    @RequestMapping(value = "/api/datasets/favorite/{id}", method = RequestMethod.POST, consumes = ALL_VALUE, produces = TEXT_PLAIN_VALUE)
+    @RequestMapping(value = "/api/datasets/favorite/{id}", method = POST, consumes = ALL_VALUE, produces = TEXT_PLAIN_VALUE)
     @ApiOperation(value = "Set or Unset the dataset as favorite for the current user.", consumes = TEXT_PLAIN_VALUE, produces = TEXT_PLAIN_VALUE, //
     notes = "Specify if a dataset is or is not a favorite for the current user.")
     public String favorite(

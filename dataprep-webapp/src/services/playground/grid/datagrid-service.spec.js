@@ -40,13 +40,36 @@ describe('Datagrid service', function() {
         DatagridService.metadata = {name: 'my dataset'};
         DatagridService.data = {columns: [], records: []};
 
-        var data = {'records': [{tdpId: 1, col: 'value'}]};
+        var data = {columns:[], 'records': [{tdpId: 1, col: 'value'}]};
 
         //when
         DatagridService.updateData(data);
 
         //then
         expect(DatagridService.data.records).toBe(data.records);
+    }));
+
+    it('should navigate to the column having the highest Id', inject(function(DatagridService) {
+        //given
+        DatagridService.data = {columns: [
+            {id: '0000', name: 'column 1', type: 'string'},
+            {id: '0001', name: 'column 2', type: 'numeric'},
+            {id: '0002', name: 'column 2', type: 'numeric'},
+            {id: '0003', name: 'column 3', type: 'integer'}], records: []};
+
+        //the result of the 2nd column duplication
+        var data = {columns: [
+            {id: '0000', name: 'column 1', type: 'string'},
+            {id: '0001', name: 'column 2', type: 'numeric'},
+            {id: '0004', name: 'column 1', type: 'string'},
+            {id: '0002', name: 'column 2', type: 'numeric'},
+            {id: '0003', name: 'column 3', type: 'integer'}], records: []};
+
+        //when
+        DatagridService.updateData(data);
+
+        //then
+        expect(DatagridService.focusedColumn).toBe('0004');
     }));
 
     it('should return every column id', inject(function(DatagridService) {

@@ -10,6 +10,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 
 /**
  * Unit test for the Cut action.
@@ -33,6 +34,11 @@ public class CutTest {
         assertThat(action.adapt(null), is(action));
         ColumnMetadata column = column().name("myColumn").id(0).type(Type.STRING).build();
         assertThat(action.adapt(column), is(action));
+    }
+
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
     }
 
     @Test

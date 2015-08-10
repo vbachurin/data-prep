@@ -21,14 +21,59 @@ describe('Statistics service', function () {
                         'max': 20
                     }
                 }
-            ]
+            ],
+            count: 4,
+            distinctCount: 5,
+            duplicateCount: 6,
+            empty: 7,
+            invalid: 8,
+            valid: 9,
+            min: 10,
+            max: 11,
+            mean: 12,
+            variance: 13,
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
         }
     };
 
-    var localizationCol = {
+    /*var localizationCol = {
         'domain': 'LOCALIZATION',
-        'type': 'double'
-    };
+        'type': 'double',
+        'statistics': {
+            'frequencyTable': [],
+            'histogram': [
+                {
+                    'occurrences': 5,
+                    'range': {
+                        'min': 0,
+                        'max': 10
+                    }
+                },
+                {
+                    'occurrences': 15,
+                    'range': {
+                        'min': 10,
+                        'max': 20
+                    }
+                }
+            ],
+            count: 4,
+            distinctCount: 5,
+            duplicateCount: 6,
+            empty: 7,
+            invalid: 8,
+            valid: 9,
+            min: 10,
+            max: 11,
+            mean: 12,
+            variance: 13,
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
+        }
+    };*/
 
     var barChartStrCol = {
         'domain': 'barchartAndString',
@@ -51,7 +96,27 @@ describe('Statistics service', function () {
                     'data': 'cici',
                     'occurences': 22
                 }
-            ]
+            ],
+            textLengthSummary: {
+                averageLength: 10.13248646854654,
+                averageLengthWithBlank: 11.783242375675245,
+                minimalLength: 12,
+                minimalLengthWithBlank: 13,
+                maximalLength: 14
+            },
+            count: 4,
+            distinctCount: 5,
+            duplicateCount: 6,
+            empty: 7,
+            invalid: 8,
+            valid: 9,
+            min: 10,
+            max: 11,
+            mean: 12,
+            variance: 13,
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
         }
     };
 
@@ -76,7 +141,27 @@ describe('Statistics service', function () {
                     'data': 'IL',
                     'occurences': 22
                 }
-            ]
+            ],
+            textLengthSummary: {
+                averageLength: 10.13248646854654,
+                averageLengthWithBlank: 11.783242375675245,
+                minimalLength: 12,
+                minimalLengthWithBlank: 13,
+                maximalLength: 14
+            },
+            count: 4,
+            distinctCount: 5,
+            duplicateCount: 6,
+            empty: 7,
+            invalid: 8,
+            valid: 9,
+            min: 10,
+            max: 11,
+            mean: 12,
+            variance: 13,
+            quantiles: {
+                lowerQuantile: 'NaN'
+            }
         }
     };
 
@@ -142,67 +227,392 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('process data', function () {
-        it('should set the data to the frequencyTable because column type is string', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processVisuData(barChartStrCol);
+    describe('The Visualization data for Horizontal barchart and Map', function () {
+        describe('Map data', function() {
+            it('should set stateDistribution for geo chart when the column domain contains STATE_CODE', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.stateDistribution).toBeFalsy();
 
-            //then
-            expect(StatisticsService.data).toBe(barChartStrCol.statistics.frequencyTable);
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
+                //when
+                StatisticsService.processData(mapCol);
 
-        it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processVisuData(localizationCol);
+                //then
+                expect(StatisticsService.stateDistribution).toBe(mapCol);
+            }));
 
-            //then
-            expect(StatisticsService.data).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
+            it('should reset non geo chart data when the column domain contains STATE_CODE', inject(function (StatisticsService) {
+                //given
+                StatisticsService.boxplotData = {};
+                StatisticsService.data = {};
 
-        it('should set the data to the frequencyTable because column type is boolean', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processVisuData(barChartBoolCol);
+                //when
+                StatisticsService.processData(mapCol);
 
-            //then
-            expect(StatisticsService.data).toBe(barChartBoolCol.statistics.frequencyTable);
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
+                //then
+                expect(StatisticsService.boxplotData).toBeFalsy();
+                expect(StatisticsService.data).toBeFalsy();
+            }));
+        });
 
-        it('should set the data to null and stateDistribution to the column, because the column domain contains STATE_CODE', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processVisuData(mapCol);
+        describe('Histogram data', function() {
+            it('should set the frequency data when column type is "string"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.data).toBeFalsy();
 
-            //then
-            expect(StatisticsService.data).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(mapCol);
-        }));
+                //when
+                StatisticsService.processData(barChartStrCol);
 
-        it('should extract Data from the histogram', inject(function (StatisticsService) {
-            //when
-            var convertedData = StatisticsService.extractNumericData(barChartNumCol.statistics.histogram);
+                //then
+                expect(StatisticsService.data).toBe(barChartStrCol.statistics.frequencyTable);
+            }));
 
-            //then
-            expect(convertedData[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
-        }));
+            it('should reset non histogram data when column type is "string"', inject(function (StatisticsService) {
+                //given
+                StatisticsService.boxplotData = {};
+                StatisticsService.stateDistribution = {};
 
-        it('should set the data to the conversion of the histogram, because the column type is number', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processVisuData(barChartNumCol);
+                //when
+                StatisticsService.processData(barChartStrCol);
 
-            //then
-            expect(StatisticsService.data).toEqual(StatisticsService.extractNumericData(barChartNumCol.statistics.histogram));
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
+                //then
+                expect(StatisticsService.boxplotData).toBeFalsy();
+                expect(StatisticsService.stateDistribution).toBeFalsy();
+            }));
+
+            it('should set the frequency data when column type is "boolean"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.data).toBeFalsy();
+
+                //when
+                StatisticsService.processData(barChartBoolCol);
+
+                //then
+                expect(StatisticsService.data).toBe(barChartBoolCol.statistics.frequencyTable);
+            }));
+
+            it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService) {
+                //given
+                StatisticsService.boxplotData = {};
+                StatisticsService.stateDistribution = {};
+
+                //when
+                StatisticsService.processData(barChartBoolCol);
+
+                //then
+                expect(StatisticsService.boxplotData).toBeFalsy();
+                expect(StatisticsService.stateDistribution).toBeFalsy();
+            }));
+
+            it('should set the range data frequency when column type is "number"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.data).toBeFalsy();
+
+                //when
+                StatisticsService.processData(barChartNumCol);
+
+                //then
+                expect(StatisticsService.data[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
+            }));
+
+            it('should reset non histogram data when column type is "number"', inject(function (StatisticsService) {
+                //given
+                StatisticsService.stateDistribution = {};
+
+                //when
+                StatisticsService.processData(barChartNumCol);
+
+                //then
+                expect(StatisticsService.stateDistribution).toBeFalsy();
+            }));
+        });
+
+        //TODO coming soon with the globe map
+        // it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
+        //    //when
+        //    StatisticsService.processData(localizationCol);
+		//
+        //    //then
+        //    expect(StatisticsService.data).toBe(null);
+        //    expect(StatisticsService.boxplotData).toBe(null);
+        //    expect(StatisticsService.stateDistribution).toBe(null);
+        //}));
 
         it('should reset data when column type is not supported', inject(function (StatisticsService) {
+            //given
+            StatisticsService.boxplotData = {};
+            StatisticsService.data = {};
+            StatisticsService.stateDistribution = {};
+
             //when
-            StatisticsService.processVisuData(unknownTypeCol);
+            StatisticsService.processData(unknownTypeCol);
 
             //then
-            expect(StatisticsService.data).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(null);
+            expect(StatisticsService.data).toBeFalsy();
+            expect(StatisticsService.boxplotData).toBeFalsy();
+            expect(StatisticsService.stateDistribution).toBeFalsy();
         }));
     });
+
+    describe('The statistics values', function () {
+        it('should init common statistics when the column type is not "number" or "text"', inject(function (StatisticsService) {
+            //given
+            var col = {
+                id: '0001',
+                type: 'boolean',
+                domain: 'STATE_CODE_US',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9
+                }
+            };
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.statistics).toBeTruthy();
+            expect(StatisticsService.statistics.common).toEqual({
+                COUNT: 4,
+                DISTINCT_COUNT: 5,
+                DUPLICATE_COUNT: 6,
+                VALID: 9,
+                EMPTY: 7,
+                INVALID: 8
+            });
+            expect(StatisticsService.statistics.specific).toEqual({});
+        }));
+
+        it('should init number statistics whithout quantile', inject(function (StatisticsService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'integer',
+                domain: 'city name',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    min: 10,
+                    max: 11,
+                    mean: 12,
+                    variance: 13,
+                    quantiles: {
+                        lowerQuantile: 'NaN'
+                    }
+                }
+            };
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.statistics).toBeTruthy();
+            expect(StatisticsService.statistics.common).toEqual({
+                COUNT: 4,
+                DISTINCT_COUNT: 5,
+                DUPLICATE_COUNT: 6,
+                VALID: 9,
+                EMPTY: 7,
+                INVALID: 8
+            });
+            expect(StatisticsService.statistics.specific).toEqual({
+                MIN: 10,
+                MAX: 11,
+                MEAN: 12,
+                VARIANCE: 13
+            });
+        }));
+
+        it('should init number statistics with quantile', inject(function (StatisticsService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'integer',
+                domain: 'code postal',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    min: 10,
+                    max: 11,
+                    mean: 12,
+                    variance: 13,
+                    quantiles: {
+                        median: 14,
+                        lowerQuantile: 15,
+                        upperQuantile: 16
+                    }
+                }
+            };
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.statistics).toBeTruthy();
+            expect(StatisticsService.statistics.common).toEqual({
+                COUNT: 4,
+                DISTINCT_COUNT: 5,
+                DUPLICATE_COUNT: 6,
+                VALID: 9,
+                EMPTY: 7,
+                INVALID: 8
+            });
+            expect(StatisticsService.statistics.specific).toEqual({
+                MIN: 10,
+                MAX: 11,
+                MEAN: 12,
+                VARIANCE: 13,
+                MEDIAN: 14,
+                LOWER_QUANTILE: 15,
+                UPPER_QUANTILE: 16
+            });
+        }));
+
+        it('should init text statistics', inject(function (StatisticsService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'string',
+                domain: 'text',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    textLengthSummary: {
+                        averageLength: 10.13248646854654,
+                        averageLengthWithBlank: 11.783242375675245,
+                        minimalLength: 12,
+                        minimalLengthWithBlank: 13,
+                        maximalLength: 14
+                    }
+                }
+            };
+            expect(StatisticsService.statistics).toBeFalsy();
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.statistics).toBeTruthy();
+            expect(StatisticsService.statistics.common).toEqual({
+                COUNT: 4,
+                DISTINCT_COUNT: 5,
+                DUPLICATE_COUNT: 6,
+                VALID: 9,
+                EMPTY: 7,
+                INVALID: 8
+            });
+            expect(StatisticsService.statistics.specific).toEqual({
+                AVG_LENGTH: 10.13,
+                AVG_LENGTH_WITH_BLANK: 11.78,
+                MIN_LENGTH: 12,
+                MIN_LENGTH_WITH_BLANK: 13,
+                MAX_LENGTH: 14
+            });
+        }));
+    });
+
+    describe('The boxplot data', function () {
+        it('should reset boxplotData when quantile values are NaN', inject(function (StatisticsService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'integer',
+                domain: 'city name',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    min: 10,
+                    max: 11,
+                    mean: 12,
+                    variance: 13,
+                    quantiles: {
+                        lowerQuantile: 'NaN'
+                    }
+                }
+            };
+            StatisticsService.boxplotData = {};
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.boxplotData).toBeFalsy();
+        }));
+
+        it('should set boxplotData statistics with quantile', inject(function (StatisticsService) {
+            //given
+            var col = {
+                'id': '0001',
+                type: 'integer',
+                domain: 'code postal',
+                statistics: {
+                    count: 4,
+                    distinctCount: 5,
+                    duplicateCount: 6,
+                    empty: 7,
+                    invalid: 8,
+                    valid: 9,
+                    min: 10,
+                    max: 11,
+                    mean: 12,
+                    variance: 13,
+                    quantiles: {
+                        median: 14,
+                        lowerQuantile: 15,
+                        upperQuantile: 16
+                    }
+                }
+            };
+
+            //when
+            StatisticsService.processData(col);
+
+            //then
+            expect(StatisticsService.boxplotData).toEqual({
+                min:10,
+                max:11,
+                q1:15,
+                q2:16,
+                median:14,
+                mean:12,
+                variance:13
+            });
+        }));
+    });
+
+    it('should reset all data', inject(function(StatisticsService) {
+        //given
+        StatisticsService.boxplotData = {};
+        StatisticsService.data = {};
+        StatisticsService.stateDistribution = {};
+        StatisticsService.statistics = {};
+
+        //when
+        StatisticsService.resetCharts();
+
+        //then
+        expect(StatisticsService.boxplotData).toBeFalsy();
+        expect(StatisticsService.data).toBeFalsy();
+        expect(StatisticsService.stateDistribution).toBeFalsy();
+        expect(StatisticsService.statistics).toBeFalsy();
+    }));
 });

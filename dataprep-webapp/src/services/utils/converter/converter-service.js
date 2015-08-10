@@ -53,7 +53,7 @@
                    case 'date':
                         return 'date';
                    default:
-                       return 'text';
+                       return 'unknown';
                }
         };
 

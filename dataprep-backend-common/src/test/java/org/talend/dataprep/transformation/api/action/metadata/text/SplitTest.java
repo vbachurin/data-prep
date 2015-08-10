@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -32,6 +33,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
+import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for Split action. Creates one consumer, and test it.
@@ -40,22 +43,20 @@ import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTest
  */
 public class SplitTest {
 
-    /** The row consumer to test. */
-    private DataSetRowAction rowClosure;
-
-    /** The action to test. */
+    /**
+     * The action to test.
+     */
     private Split action;
 
-    /**
-     * Constructor.
-     */
-    public SplitTest() throws IOException {
+    private Map<String, String> parameters;
+
+    @Before
+    public void init() throws IOException {
         action = new Split();
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+
+        parameters = ActionMetadataTestUtils.parseParameters( //
                 action, //
                 SplitTest.class.getResourceAsStream("splitAction.json"));
-        final Action action = this.action.create(parameters);
-        rowClosure = action.getRowAction();
     }
 
     @Test
@@ -65,26 +66,35 @@ public class SplitTest {
         assertThat(action.adapt(column), is(action));
     }
 
+    @Test
+    public void testCategory() throws Exception {
+        assertThat(action.getCategory(), is(ActionCategory.QUICKFIX.getDisplayName()));
+    }
+
     /**
      * @see Split#create(Map)
      */
     @Test
     public void should_split_row() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
         expectedValues.put("0003", "Bacon");
         expectedValues.put("0004", "ipsum dolor amet swine leberkas pork belly");
         expectedValues.put("0002", "01/01/2015");
 
-        final TransformationContext context = new TransformationContext();
-        assertEquals(expectedValues, rowClosure.apply(row, context).values());
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expectedValues, row.values());
     }
 
     /**
@@ -92,13 +102,14 @@ public class SplitTest {
      */
     @Test
     public void should_split_row_twice() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Bacon ipsum dolor amet swine leberkas pork belly");
         expectedValues.put("0005", "Bacon");
@@ -107,9 +118,11 @@ public class SplitTest {
         expectedValues.put("0004", "ipsum dolor amet swine leberkas pork belly");
         expectedValues.put("0002", "01/01/2015");
 
-        final TransformationContext context = new TransformationContext();
-        row = rowClosure.apply(row, context);
-        row = rowClosure.apply(row, context);
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
@@ -118,21 +131,24 @@ public class SplitTest {
      */
     @Test
     public void should_split_row_with_separator_at_the_end() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon ");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Bacon ");
         expectedValues.put("0003", "Bacon");
         expectedValues.put("0004", "");
         expectedValues.put("0002", "01/01/2015");
 
-        final TransformationContext context = new TransformationContext();
-        row = rowClosure.apply(row, context);
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
@@ -141,21 +157,24 @@ public class SplitTest {
      */
     @Test
     public void should_split_row_no_separator() {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("0000", "lorem bacon");
         values.put("0001", "Bacon");
         values.put("0002", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        Map<String, String> expectedValues = new HashMap<>();
+        final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
         expectedValues.put("0001", "Bacon");
         expectedValues.put("0003", "Bacon");
         expectedValues.put("0004", "");
         expectedValues.put("0002", "01/01/2015");
 
-        final TransformationContext context = new TransformationContext();
-        row = rowClosure.apply(row, context);
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
         assertEquals(expectedValues, row.values());
     }
 
@@ -165,24 +184,25 @@ public class SplitTest {
      */
     @Test
     public void should_update_metadata() {
-
-        List<ColumnMetadata> input = new ArrayList<>();
+        //given
+        final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "steps"));
         input.add(createMetadata("0002", "last update"));
-        RowMetadata rowMetadata = new RowMetadata(input);
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
-        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-        List<ColumnMetadata> actual = rowMetadata.getColumns();
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "steps"));
         expected.add(createMetadata("0003", "steps_split"));
         expected.add(createMetadata("0004", "steps_split"));
         expected.add(createMetadata("0002", "last update"));
 
-        assertEquals(expected, actual);
+        //when
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expected, rowMetadata.getColumns());
     }
 
     /**
@@ -190,19 +210,14 @@ public class SplitTest {
      */
     @Test
     public void should_update_metadata_twice() {
-
-        List<ColumnMetadata> input = new ArrayList<>();
+        //given
+        final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("0000", "recipe"));
         input.add(createMetadata("0001", "steps"));
         input.add(createMetadata("0002", "last update"));
-        RowMetadata rowMetadata = new RowMetadata(input);
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
-        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-        rowClosure.apply(new DataSetRow(rowMetadata), new TransformationContext());
-
-        List<ColumnMetadata> actual = rowMetadata.getColumns();
-
-        List<ColumnMetadata> expected = new ArrayList<>();
+        final List<ColumnMetadata> expected = new ArrayList<>();
         expected.add(createMetadata("0000", "recipe"));
         expected.add(createMetadata("0001", "steps"));
         expected.add(createMetadata("0005", "steps_split"));
@@ -211,29 +226,30 @@ public class SplitTest {
         expected.add(createMetadata("0004", "steps_split"));
         expected.add(createMetadata("0002", "last update"));
 
-        assertEquals(expected, actual);
+        //when
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+        action.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "0001");
+
+        assertEquals(expected, rowMetadata.getColumns());
     }
 
 
     @Test
     public void should_not_split_because_null_separator() throws IOException {
-
         // given
-        Split nullSeparatorAction = new Split();
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+        final Split nullSeparatorAction = new Split();
+        final Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 nullSeparatorAction, //
                 SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
 
-        DataSetRowAction closure = nullSeparatorAction.create(parameters).getRowAction();
-
-        Map<String, String> values = new HashMap<>();
+        final Map<String, String> values = new HashMap<>();
         values.put("recipe", "lorem bacon");
         values.put("steps", "Bacon ipsum dolor amet swine leberkas pork belly");
         values.put("last update", "01/01/2015");
-        DataSetRow row = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        // when
-        row = closure.apply(row, new TransformationContext());
+        //when
+        nullSeparatorAction.applyOnColumn(row, new TransformationContext(), parameters, "steps");
 
         // then
         assertEquals(values, row.values());
@@ -241,26 +257,23 @@ public class SplitTest {
 
     @Test
     public void should_not_update_metadata_because_null_separator() throws IOException {
-
         // given
-        Split nullSeparatorAction = new Split();
-        Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
+        final Split nullSeparatorAction = new Split();
+        final Map<String, String> parameters = ActionMetadataTestUtils.parseParameters( //
                 nullSeparatorAction, //
                 SplitTest.class.getResourceAsStream("splitActionWithNullSeparator.json"));
-        nullSeparatorAction.create(parameters);
-        DataSetRowAction rowAction = nullSeparatorAction.create(parameters).getRowAction();
 
-        List<ColumnMetadata> input = new ArrayList<>();
+        final List<ColumnMetadata> input = new ArrayList<>();
         input.add(createMetadata("recipe", "recipe"));
         input.add(createMetadata("steps", "steps"));
         input.add(createMetadata("last update", "last update"));
-        RowMetadata rowMetadata = new RowMetadata(input);
+        final RowMetadata rowMetadata = new RowMetadata(input);
 
         // when
-        DataSetRow actual = rowAction.apply(new DataSetRow(rowMetadata), new TransformationContext());
+        nullSeparatorAction.applyOnColumn(new DataSetRow(rowMetadata), new TransformationContext(), parameters, "steps");
 
         // then
-        assertEquals(input, actual.getRowMetadata().getColumns());
+        assertEquals(input, rowMetadata.getColumns());
     }
 
     @Test
@@ -276,7 +289,6 @@ public class SplitTest {
         assertFalse(action.acceptColumn(getColumn(Type.BOOLEAN)));
     }
 
-
     /**
      * @param name name of the column metadata to create.
      * @return a new column metadata
@@ -285,5 +297,4 @@ public class SplitTest {
         return ColumnMetadata.Builder.column().computedId(id).name(name).type(Type.STRING).headerSize(12).empty(0).invalid(2)
                 .valid(5).build();
     }
-
 }

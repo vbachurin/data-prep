@@ -15,7 +15,7 @@
     <name>dataprep-backend-common</name>
     <dependencies>
         <dependency>
-            <groupId>org.talend</groupId>
+            <groupId>org.talend.dataquality</groupId>
             <artifactId>org.talend.datascience.spark</artifactId>
         </dependency>
         <dependency>
@@ -93,7 +93,7 @@
             <artifactId>hamcrest-json</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.talend</groupId>
+            <groupId>org.talend.dataquality</groupId>
             <artifactId>org.talend.datascience.common</artifactId>
         </dependency>
         <dependency>

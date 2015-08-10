@@ -12,11 +12,11 @@
 @import "../../components/widgets/tabs/tabs";
 @import "../../components/widgets/tooltip/tooltip";
 @import "../../components/widgets/charts/horizontal-barchart/horizontal-barchart";
+@import "../../components/widgets/charts/boxplot-chart/boxplot-chart";
 
 @import "../../components/datagrid/datagrid";
 @import "../../components/datagrid/header/datagrid-header";
 @import "../../components/datagrid/quality-bar/quality-bar";
-@import "../../components/datagrid/tooltip/datagrid-tooltip";
 @import "../../components/dataset/preview/dataset-xls-preview";
 @import "../../components/filter/list/filter-list";
 @import "../../components/history-control/history";
@@ -26,7 +26,7 @@
 @import "../../components/preparation-list/preparation-list";
 @import "../../components/recipe/bullet/bullet-recipe";
 @import "../../components/recipe/recipe";
-@import "../../components/suggestions/suggestions";
+@import "../../components/suggestions-stats/suggestions-stats";
 @import "../../components/transformation/params/transformation-params";
 
 @import "button";
@@ -35,3 +35,4 @@
 @import "progress_bar";
 @import "toaster";
 @import "intro";
+@import "charts";

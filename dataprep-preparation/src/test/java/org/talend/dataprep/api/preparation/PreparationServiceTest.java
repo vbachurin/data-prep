@@ -1,29 +1,5 @@
 package org.talend.dataprep.api.preparation;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.talend.dataprep.preparation.Application;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static junit.framework.TestCase.assertTrue;
@@ -36,6 +12,33 @@ import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
 import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+
+import com.jayway.restassured.response.Response;
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.talend.dataprep.preparation.Application;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
@@ -47,6 +50,9 @@ public class PreparationServiceTest {
 
     @Autowired
     private PreparationRepository repository;
+
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
     @Before
     public void setUp() {
@@ -151,6 +157,28 @@ public class PreparationServiceTest {
     }
 
     @Test
+    public void updateWithSpecialArguments() throws Exception {
+        Preparation preparation = new Preparation();
+        preparation.setDataSetId("1234");
+        preparation.setName("test_name");
+        String preparationId = given().contentType(ContentType.JSON).body(builder.build().writer().writeValueAsBytes(preparation))
+                .when().put("/preparations").asString();
+        assertThat(preparationId, is("170e086992df1848b8fc9459d87938af6be78720"));
+
+        // Test preparation details update
+        preparationId = given().contentType(ContentType.JSON).body("{\"name\": \"éàçè\", \"dataSetId\": \"1234\"}".getBytes("UTF-8"))
+                .when().put("/preparations/{id}", preparationId).asString();
+
+        // Preparation id should change (new name)
+        assertThat(preparationId, is("f7c4550ce8f9e7071c638b71e2930e3dd65ac3c0"));
+        Collection<Preparation> preparations = repository.listAll(Preparation.class);
+        assertThat(preparations.size(), is(1));
+        preparation = preparations.iterator().next();
+        assertThat(preparation.id(), is("f7c4550ce8f9e7071c638b71e2930e3dd65ac3c0"));
+        assertThat(preparation.getName(), is("éàçè"));
+    }
+
+    @Test
     public void get() throws Exception {
         Preparation preparation = new Preparation("1234", ROOT_STEP);
         preparation.setCreationDate(0);
@@ -178,7 +206,7 @@ public class PreparationServiceTest {
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
-        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(preparation.getStep().id(), is("a41184275b046d86c8d98d413ed019bc0a7f3c49"));
     }
 
     @Test
@@ -192,14 +220,14 @@ public class PreparationServiceTest {
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(preparation.getStep().id(), is("a41184275b046d86c8d98d413ed019bc0a7f3c49"));
         // Update preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))
                 .contentType(ContentType.JSON).when()
                 .put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
-        assertThat(preparation.getStep().id(), is("b7fad51b715f2f9d42aae663dc85f5b7bb4b9f15"));
+        assertThat(preparation.getStep().id(), is("55ca7e996811cb944bd7053556c698ee77d6d24b"));
     }
 
     @Test
@@ -213,19 +241,19 @@ public class PreparationServiceTest {
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(preparation.getStep().id(), is("a41184275b046d86c8d98d413ed019bc0a7f3c49"));
         // Add step to preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("7d7396ab3bce49bb634d880bdd20800dd418a5d0"));
+        assertThat(preparation.getStep().id(), is("723b0a4e2b1655b9a0b62c07798df506803e6af4"));
         // Update preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))
                 .contentType(ContentType.JSON).when()
                 .put("/preparations/{id}/actions/{action}", preparation.id(), preparation.getStep().id());
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
-        assertThat(preparation.getStep().id(), is("4115f6d965e146ddbff622633895277c96754541"));
+        assertThat(preparation.getStep().id(), is("4aa662330d7633a872a42999cb43a3d4cb7ef394"));
     }
 
     @Test
@@ -239,19 +267,19 @@ public class PreparationServiceTest {
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("2b6ae58738239819df3d8c4063e7cb56f53c0d59"));
+        assertThat(preparation.getStep().id(), is("a41184275b046d86c8d98d413ed019bc0a7f3c49"));
         // Add step to preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("lower_case.json")))
                 .contentType(ContentType.JSON).when().post("/preparations/{id}/actions", preparation.id());
         preparation = repository.get(preparation.id(), Preparation.class);
-        assertThat(preparation.getStep().id(), is("7d7396ab3bce49bb634d880bdd20800dd418a5d0"));
+        assertThat(preparation.getStep().id(), is("723b0a4e2b1655b9a0b62c07798df506803e6af4"));
         // Update preparation
         given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case_modified.json")))
                 .contentType(ContentType.JSON).when()
-                .put("/preparations/{id}/actions/{action}", preparation.id(), "2b6ae58738239819df3d8c4063e7cb56f53c0d59");
+                .put("/preparations/{id}/actions/{action}", preparation.id(), "a41184275b046d86c8d98d413ed019bc0a7f3c49");
         preparation = repository.get(preparation.id(), Preparation.class);
         assertThat(preparation.getLastModificationDate(), is(greaterThan(oldModificationDate)));
-        assertThat(preparation.getStep().id(), is("91629cad70f47957bcbcdeac436878cc5f713b8a"));
+        assertThat(preparation.getStep().id(), is("beca40369fdc5531f78e38332f1dced490cba137"));
     }
 
     @Test
@@ -424,6 +452,59 @@ public class PreparationServiceTest {
             assertTrue(currentCode.has("code"));
             assertTrue(currentCode.has("http-status-code"));
         }
+    }
+
+    @Test
+    public void should_return_error_when_scope_is_not_consistent_on_append_transformation() throws Exception {
+        //given
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        preparation = repository.get(preparation.id(), Preparation.class);
+
+        //when
+        final Response request = given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("incomplete_transformation_params.json")))//
+                .contentType(ContentType.JSON)//
+                .when()//
+                .post("/preparations/{id}/actions", preparation.id());
+
+        //then
+        request.then()//
+                .statusCode(400)//
+                .assertThat()//
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE"));
+
+    }
+
+    @Test
+    public void should_return_error_when_scope_is_not_consistent_on_transformation_update() throws Exception {
+        //given
+        Preparation preparation = new Preparation("1234", ROOT_STEP);
+        preparation.setCreationDate(0);
+        repository.add(preparation);
+
+        preparation = repository.get(preparation.id(), Preparation.class);
+        given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("upper_case.json")))//
+                .contentType(ContentType.JSON)//
+                .when()//
+                .post("/preparations/{id}/actions", preparation.id())//
+                .then()//
+                .statusCode(200);
+
+        final String preparationId = preparation.id();
+        final String stepId = preparation.getStep().id();
+
+        //when
+        final Response request = given().body(IOUtils.toString(PreparationServiceTest.class.getResourceAsStream("incomplete_transformation_params.json")))//
+                .contentType(ContentType.JSON).when()//
+                .put("/preparations/{id}/actions/{action}", preparationId, stepId);
+
+        //then
+        request.then()//
+                .statusCode(400)//
+                .assertThat()//
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE"));
     }
 
     /**

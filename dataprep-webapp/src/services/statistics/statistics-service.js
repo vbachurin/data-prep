@@ -2,134 +2,40 @@
     'use strict';
     /**
      * @ngdoc service
-     * @name data-prep.services.statistics:StatisticsService
+     * @name data-prep.services.statistics.service:StatisticsService
      * @description Extracts/structures the data to be visualized in charts
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function StatisticsService(DatagridService, FilterService, ConverterService, $timeout) {
+    function StatisticsService($timeout, DatagridService, FilterService, ConverterService) {
+        var selectedColumn;
+
         var service = {
-            selectedColumn: null,
+            boxplotData: null,
             data: null,
             stateDistribution: null,
+            statistics: null,
 
+            processData: processData,
             addFilter: addFilter,
-            extractNumericData: extractNumericData,
-            processVisuData: processVisuData,
             resetCharts: resetCharts,
+
+            //TODO temporary method to be replaced with new geo chart
             getGeoDistribution: getGeoDistribution
         };
 
         return service;
 
+        //
+        // BELOW ARE ALL THE STATISTICS TABS FUNCTIONS FOR (1-VIZ, 2-VALUES, 3-PATTERN, 4-OTHERS)
+        //
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-----------------------------------------------1- Visualization-----------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         /**
-         * @ngdoc method
-         * @name addFilter
-         * @methodOf data-prep.services.statistics:StatisticsService
-         * @param {string} value The phrase to filter
-         * @description Add a 'contains' filter in the angular context
-         */
-        function addFilter(value) {
-            var column = service.selectedColumn;
-            var filterFn = value ?
-                FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
-                FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
-
-            $timeout(filterFn);
-        }
-
-        /**
-         * @ngdoc method
-         * @name processMapData
-         * @methodOf data-prep.services.statistics:StatisticsService
-         * @param {object} column The clicked column
-         * @description removes the previous barchart and sets the map chart
-         */
-        function processMapData(column) {
-            service.selectedColumn = column;
-            //remove the barchart
-            service.data = null;
-            //show the map
-            service.stateDistribution = column;
-        }
-
-        /**
-         * @ngdoc method
-         * @name extractNumericData
-         * @methodOf data-prep.services.statistics:StatisticsService
-         * @param {Array} histoData Array of data
-         * @description extracts and builds the data for numeric column, from the histogram of the statistics
-         * @returns {Array} Extracted data with the specified format {"data":" 0 ... 10", "occurences":11}, {"data":" 10 ... 20", "occurences":11}
-         */
-        function extractNumericData(histoData) {
-            var concatData = [];
-            _.each(histoData, function (histDatum) {
-                concatData.push({
-                    'data': histDatum.range.min + ' ... ' + histDatum.range.max,
-                    'occurrences': histDatum.occurrences
-                });
-            });
-            return concatData;
-        }
-
-        /**
-         * @ngdoc method
-         * @name processBarchartData
-         * @methodOf data-prep.services.statistics:StatisticsService
-         * @param {object} column The selected column
-         * @description shows/hides the visualization according to the clicked column type
-         */
-        function processBarchartData(column) {
-            var data = null;
-            if(ConverterService.simplifyType(column.type) === 'number') {
-                data = extractNumericData(column.statistics.histogram);
-            }
-            else if (column.type === 'string') {
-                data = column.statistics.frequencyTable;
-            }
-            else if (column.type === 'boolean') {
-                data = column.statistics.frequencyTable;
-            }
-            else {
-                console.log('nor a number neither a boolean neither a string');
-            }
-
-            service.stateDistribution = null; //hide the map if the previous column was a state
-            service.selectedColumn = column;
-            service.data = data;
-        }
-
-        /**
-         * @ngdoc method
-         * @name processVisuData
-         * @methodOf data-prep.services.statistics:StatisticsService
-         * @param {object} column The selected column
-         * @description processes the visualization data according to the clicked column domain
-         */
-        function processVisuData(column) {
-            if (column.domain.indexOf('STATE_CODE_') !== -1) {
-                processMapData(column);
-            } else if (column.domain === 'LOCALIZATION') {
-                resetCharts();
-            } else {
-                processBarchartData(column);
-            }
-        }
-
-        /**
-         * @ngdoc method
-         * @name resetCharts
-         * @methodOf data-prep.services.statistics:StatisticsService
-         * @description removes the map chart/barchart, called on a new opened dataset or preparation
-         */
-        function resetCharts() {
-            service.data = null;
-            service.stateDistribution = null;
-        }
-
-        /**
-         * Calculate column value distribution
+         * TEMPORARY : Calculate column value distribution
          * @param columnId
          * @param keyName - distribution key name (default : 'colValue');
          * @param valueName - distribution value name (default : 'frequency')
@@ -141,30 +47,28 @@
          * </ul>
          */
         function getDistribution(columnId, keyName, valueName, keyTransformer) {
-            keyName   = keyName || 'colValue';
+            keyName = keyName || 'colValue';
             valueName = valueName || 'frequency';
 
             var records = DatagridService.data.records;
 
-            var result = _.chain(records)
+            return _.chain(records)
                 .groupBy(function (item) {
                     return item[columnId];
                 })
                 .map(function (val, index) {
-                    var item        = {};
-                    item[keyName]   = keyTransformer ? keyTransformer(index) : index;
+                    var item = {};
+                    item[keyName] = keyTransformer ? keyTransformer(index) : index;
                     item[valueName] = val.length;
                     return item;
                 })
                 .sortBy(valueName)
                 .reverse()
                 .value();
-
-            return result;
         }
 
         /**
-         * Calculate geo distribution, and targeted map
+         * TEMPORARY : Calculate geo distribution, and targeted map
          * @param {object} column The target column
          * @returns {object} Geo distribution {map: string, data: [{}]}
          */
@@ -178,6 +82,239 @@
                     return keyPrefix + key.toLowerCase();
                 })
             };
+        }
+
+        /**
+         * @ngdoc method
+         * @name initRangeHistogram
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {Array} histoData Array of data
+         * @description Adapt the numeric range data to fit histogram format
+         */
+        function initRangeHistogram(histoData) {
+            var concatData = [];
+            _.each(histoData, function (histDatum) {
+                concatData.push({
+                    'data': histDatum.range.min + ' ... ' + histDatum.range.max,
+                    'occurrences': histDatum.occurrences
+                });
+            });
+
+            service.data = concatData;
+        }
+
+        /**
+         * @ngdoc method
+         * @name initClassicHistogram
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {Array} frequencyTable The frequency table
+         * @description Set the frequency table that fit the historgram format
+         */
+        function initClassicHistogram(frequencyTable) {
+            service.data = frequencyTable;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------2- Values----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name clean
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {number} value Value to clean the float
+         * @description Cleans the value to have 2 decimals (5.2568845842587425588 -> 5.25)
+         * @returns {number} The value in the clean format
+         */
+        function clean(value) {
+            return value === parseInt(value, 10) ? value : +value.toFixed(2);
+        }
+
+        /**
+         * @ngdoc method
+         * @name initStatistics
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} column The target column
+         * @description Initialize the statistics to display in the values TAB of the stats part
+         */
+        function initValuesStatistics(column) {
+            if (!column.statistics) {
+                return;
+            }
+
+            var stats = column.statistics;
+            var colType = ConverterService.simplifyType(column.type);
+            var commonStats = {
+                COUNT: stats.count,
+                DISTINCT_COUNT: stats.distinctCount,
+                DUPLICATE_COUNT: stats.duplicateCount,
+
+                VALID: stats.valid,
+                EMPTY: stats.empty,
+                INVALID: stats.invalid
+            };
+
+            var specificStats = {};
+            switch (colType) {
+                case 'number':
+                    specificStats.MIN = clean(stats.min);
+                    specificStats.MAX = clean(stats.max);
+                    specificStats.MEAN = clean(stats.mean);
+                    specificStats.VARIANCE = clean(stats.variance);
+                    if (stats.quantiles.lowerQuantile !== 'NaN') {
+                        specificStats.MEDIAN = clean(stats.quantiles.median);
+                        specificStats.LOWER_QUANTILE = clean(stats.quantiles.lowerQuantile);
+                        specificStats.UPPER_QUANTILE = clean(stats.quantiles.upperQuantile);
+                    }
+
+                    break;
+                case 'text':
+                    specificStats.AVG_LENGTH = clean(stats.textLengthSummary.averageLength);
+                    specificStats.AVG_LENGTH_WITH_BLANK = clean(stats.textLengthSummary.averageLengthWithBlank);
+                    specificStats.MIN_LENGTH = stats.textLengthSummary.minimalLength;
+                    specificStats.MIN_LENGTH_WITH_BLANK = stats.textLengthSummary.minimalLengthWithBlank;
+                    specificStats.MAX_LENGTH = stats.textLengthSummary.maximalLength;
+                    break;
+            }
+
+            service.statistics = {
+                common: commonStats,
+                specific: specificStats
+            };
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------3- Pattern---------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+
+        //Currently there are no stats to be brought on the pattern data
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------4- Others----------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name updateBoxplotData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Gathers the boxplot data from the specific stats of the columns having a 'number' type
+         */
+        function updateBoxplotData() {
+            var specStats = service.statistics.specific;
+
+            //waiting for DQ to process negative values
+            if (specStats.LOWER_QUANTILE) {
+                service.boxplotData = {
+                    min: specStats.MIN,
+                    max: specStats.MAX,
+                    q1: specStats.LOWER_QUANTILE,
+                    q2: specStats.UPPER_QUANTILE,
+                    median: specStats.MEDIAN,
+                    mean: specStats.MEAN,
+                    variance: specStats.VARIANCE
+                };
+            }
+            else {
+                service.boxplotData = null;
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-------------------------------------------------COMMON-------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name addFilter
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {string} value The phrase to filter
+         * @description Add a filter in the angular context
+         */
+        function addFilter(value) {
+            var column = service.selectedColumn;
+            var filterFn = value ?
+                FilterService.addFilter.bind(null, 'contains', column.id, column.name, {phrase: value}) :
+                FilterService.addFilter.bind(null, 'empty_records', column.id, column.name, {});
+
+            $timeout(filterFn);
+        }
+
+        /**
+         * @ngdoc method
+         * @name processMapData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} column The column to visualize
+         * @description Remove the previous charts data and set the map chart
+         */
+        function processMapData(column) {
+            selectedColumn = column;
+            //remove the boxplot
+            service.boxplotData = null;
+            //remove the barchart
+            service.data = null;
+            //show the map
+            service.stateDistribution = column;
+        }
+
+        /**
+         * @ngdoc method
+         * @name processNonMapData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} column The column to visualize
+         * @description Reset the map chart and calculate the needed data for visualization
+         */
+        function processNonMapData(column) {
+            service.selectedColumn = column;
+            service.boxplotData = null;
+            service.data = null;
+            service.stateDistribution = null;
+
+            switch (ConverterService.simplifyType(column.type)) {
+                case 'number':
+                    initRangeHistogram(column.statistics.histogram);
+                    updateBoxplotData();
+                    break;
+                case 'text':
+                case 'boolean':
+                    initClassicHistogram(column.statistics.frequencyTable);
+                    break;
+                default :
+                    console.log('nor a number neither a boolean neither a string');
+                    service.boxplotData = null;
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name processData
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} column The column to visualize
+         * @description Processes the statistics data for visualization on the provided column
+         */
+        function processData(column) {
+            initValuesStatistics(column);
+
+            //TODO replace with new geo chart
+            if (column.domain.indexOf('STATE_CODE_') !== -1) {
+                processMapData(column);
+            }
+            //TODO Coming soon after the integration of the globe map : reset charts and init localization chart data
+            // else if (column.domain === 'LOCALIZATION') {
+            //    processLocalizationMapData(column);
+            //}
+            else {
+                processNonMapData(column);
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name resetCharts
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @description Removes all the data to disable all visualization
+         */
+        function resetCharts() {
+            service.boxplotData = null;
+            service.data = null;
+            service.stateDistribution = null;
+            service.statistics = null;
         }
     }
 

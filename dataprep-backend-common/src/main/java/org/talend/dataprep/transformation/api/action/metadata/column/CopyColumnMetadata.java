@@ -92,6 +92,10 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements IColum
                 .type(Type.get(column.getType())) //
                 .statistics(column.getStatistics()) //
                 .headerSize(column.getHeaderSize()) //
+                .domain( column.getDomain() ) //
+                .domainLabel( column.getDomainLabel() ) //
+                .domainFrequency( column.getDomainFrequency() ) //
+                .semanticDomains( column.getSemanticDomains() ) //
                 .build();
     }
 

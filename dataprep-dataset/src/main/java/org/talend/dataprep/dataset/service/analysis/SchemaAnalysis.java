@@ -2,7 +2,10 @@ package org.talend.dataprep.dataset.service.analysis;
 
 import static java.util.stream.StreamSupport.stream;
 
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +23,13 @@ import org.talend.dataprep.DistributedLock;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.dataset.exception.DataSetErrorCodes;
 import org.talend.dataprep.dataset.store.content.ContentStoreRouter;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataquality.semantic.recognizer.CategoryFrequency;
 import org.talend.dataquality.semantic.recognizer.CategoryRecognizerBuilder;
 import org.talend.datascience.common.inference.Analyzer;
 import org.talend.datascience.common.inference.Analyzers;
@@ -105,15 +110,35 @@ public class SchemaAnalysis implements SynchronousDataSetAnalyzer {
                         type = Type.get(suggestedType.name());
                     }
                     // Semantic type
-                    final SemanticType semanticType = columnResult.get(SemanticType.class);
+                    final SemanticType semanticType = columnResult.get( SemanticType.class );
+
                     if (columns.hasNext()) {
                         final ColumnMetadata nextColumn = columns.next();
                         LOGGER.debug("Column {} -> {}", nextColumn.getId(), type.getName());
                         nextColumn.setType(type.getName());
                         nextColumn.setDomain(semanticType.getSuggestedCategory());
+
+                        Map<CategoryFrequency, Long> altCategoryCounts = semanticType.getCategoryToCount();
+                        if (!altCategoryCounts.isEmpty()) {
+                            List<SemanticDomain> semanticDomains = new ArrayList<>(altCategoryCounts.size());
+                            for (Map.Entry<CategoryFrequency, Long> entry : altCategoryCounts.entrySet()) {
+                                semanticDomains.add(new SemanticDomain(entry.getKey().getCategoryId(), //
+                                        entry.getKey().getCategoryName(), //
+                                        entry.getKey().getFrequency()));
+
+                                if (StringUtils.equals( nextColumn.getDomain(), entry.getKey().getCategoryId() )){
+                                    nextColumn.setDomainLabel( entry.getKey().getCategoryName() );
+                                    nextColumn.setDomainFrequency( entry.getValue() );
+                                }
+
+                            }
+                            nextColumn.setSemanticDomains( semanticDomains );
+                        }
+
                     } else {
                         LOGGER.error("Unable to set type '" + type.getName() + "' to next column (no more column in dataset).");
                     }
+
                 });
                 LOGGER.info("Analyzed schema in dataset #{}.", dataSetId);
                 metadata.getLifecycle().schemaAnalyzed(true);

@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.SparkContext;
 import org.slf4j.Logger;
@@ -20,42 +21,81 @@ public class DataSetAnalysis {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSetAnalysis.class);
 
-    private DataSetAnalysis() {
+    private DataSetAnalysis() {}
+
+    public static void computeStatistics(final DataSet dataSet, final SparkContext sparkContext, final Jackson2ObjectMapperBuilder builder)
+            throws IOException {
+        // gather infos for statistics service
+        final DataSetMetadata metadata = dataSet.getMetadata();
+
+        final String datasetContent = getContentAsJSONString(dataSet, builder);
+        final int topKfreqTable = 15;
+        final String binsOrBuckets = "8"; //$NON-NLS-1$
+
+        final StatisticsClientJson statisticsClient = new StatisticsClientJson(true, sparkContext);
+        statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
+        statisticsClient.setSchema(getSchemaAsJSONString(metadata));
+
+        // Compute statistics
+        final String jsonResult = statisticsClient.doStatisticsInMemory(datasetContent, topKfreqTable, binsOrBuckets);
+        LOGGER.debug("Quality results: {}", jsonResult);
+
+        // Use result from quality analysis
+        final Iterator<JsonNode> columns = builder.build().readTree(jsonResult).get("column").elements(); //$NON-NLS-1$
+        setStatisticsInMetadata(metadata, columns);
     }
 
-    public static void computeStatistics(DataSet dataSet, SparkContext sparkContext, Jackson2ObjectMapperBuilder builder)
-            throws IOException {
-        final DataSetMetadata metadata = dataSet.getMetadata();
-        StatisticsClientJson statisticsClient = new StatisticsClientJson(true, sparkContext);
-        statisticsClient.setJsonRecordPath("records"); //$NON-NLS-1$
-        final StringWriter content = new StringWriter();
-        builder.build().writer().writeValue(content, dataSet);
+    private static void setStatisticsInMetadata(final DataSetMetadata metadata, final Iterator<JsonNode> columns) {
+        final List<ColumnMetadata> schemaColumns = metadata.getRow().getColumns();
+
+        while (columns.hasNext()) {
+            // Get the column index
+            final JsonNode column = columns.next();
+            final int index = column.get("index").asInt();
+            if (index >= schemaColumns.size()) {
+                LOGGER.error("No column found at index {}, ignoring result", index);
+                continue;
+            }
+
+            // Get the statistics from the returned JSON
+            final JsonNode statistics = column.get("statistics"); //$NON-NLS-1$
+
+            // Keeps the statistics as returned by statistics library.
+            final ColumnMetadata schemaColumn = schemaColumns.get(index);
+            schemaColumn.setStatistics(statistics.toString());
+        }
+    }
+
+    private static String getSchemaAsJSONString(final DataSetMetadata metadata) throws IOException {
         // Build schema for the content (JSON format expected by statistics library).
-        StringWriter schema = new StringWriter();
-        JsonGenerator generator = new JsonFactory().createGenerator(schema);
+        final StringWriter schema = new StringWriter();
+        final JsonGenerator generator = new JsonFactory().createGenerator(schema);
         generator.writeStartObject();
         {
             generator.writeFieldName("column"); //$NON-NLS-1$
             generator.writeStartArray();
             {
-                int i = 0;
-                for (ColumnMetadata column : metadata.getRow().getColumns()) {
+                final List<ColumnMetadata> columns = metadata.getRow().getColumns();
+                for(int i = 0; i < columns.size(); i++) {
+                    final ColumnMetadata column = columns.get(i);
                     generator.writeStartObject();
                     {
                         generator.writeStringField("name", StringUtils.EMPTY); //$NON-NLS-1$
                         generator.writeStringField("id", StringUtils.EMPTY); //$NON-NLS-1$
                         generator.writeStringField("type", column.getType()); //$NON-NLS-1$
                         generator.writeStringField("suggestedType", column.getType()); //$NON-NLS-1$
-                        generator.writeStringField("index", String.valueOf(i++));
+                        generator.writeStringField("index", String.valueOf(i));
+
                         // Types
                         generator.writeArrayFieldStart("types"); //$NON-NLS-1$
                         generator.writeStartObject();
                         {
                             generator.writeStringField("name", column.getType()); //$NON-NLS-1$
-                            generator.writeNumberField("occurrences", metadata.getContent().getNbRecords());
+                            generator.writeNumberField("occurrences", column.getQuality().getValid()); //$NON-NLS-1$
                         }
                         generator.writeEndObject();
                         generator.writeEndArray();
+
                         // Statistics
                         generator.writeFieldName("statistics"); //$NON-NLS-1$
                         generator.writeStartObject();
@@ -74,27 +114,13 @@ public class DataSetAnalysis {
         }
         generator.writeEndObject();
         generator.flush();
-        // Compute statistics
-        int topKfreqTable = 15;
-        String binsOrBuckets = "8"; //$NON-NLS-1$
-        statisticsClient.setSchema(schema.toString());
-        String jsonResult = statisticsClient.doStatisticsInMemory(content.toString(), topKfreqTable, binsOrBuckets);
-        LOGGER.debug("Quality results: {}", jsonResult);
-        // Use result from quality analysis
-        final Iterator<JsonNode> columns = builder.build().readTree(jsonResult).get("column").elements(); //$NON-NLS-1$
-        final List<ColumnMetadata> schemaColumns = metadata.getRow().getColumns();
-        while (columns.hasNext()) {
-            final JsonNode column = columns.next();
-            final int index = column.get("index").asInt();
-            if (index >= schemaColumns.size()) {
-                LOGGER.error("No column found at index {}, ignoring result", index);
-                continue;
-            }
-            final ColumnMetadata schemaColumn = schemaColumns.get(index);
-            // Get the statistics from the returned JSON
-            final JsonNode statistics = column.get("statistics"); //$NON-NLS-1$
-            // Keeps the statistics as returned by statistics library.
-            schemaColumn.setStatistics(statistics.toString());
-        }
+
+        return schema.toString();
+    }
+
+    private static String getContentAsJSONString(final DataSet dataSet, Jackson2ObjectMapperBuilder builder) throws IOException {
+        final StringWriter content = new StringWriter();
+        builder.build().writer().writeValue(content, dataSet);
+        return content.toString();
     }
 }
