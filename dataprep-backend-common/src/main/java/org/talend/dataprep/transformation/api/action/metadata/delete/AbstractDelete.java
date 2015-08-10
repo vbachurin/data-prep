@@ -1,16 +1,15 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.CLEANSING;
 
 import java.util.Map;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.CLEANSING;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 
 /**
  * Abstract class used as base class for delete actions.

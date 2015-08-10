@@ -1,17 +1,17 @@
 package org.talend.dataprep.transformation.api.action.validation;
 
+import static org.talend.dataprep.exception.error.CommonErrorCodes.*;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata.ACTION_BEAN_PREFIX;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.SCOPE;
+
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-
-import java.util.Map;
-
-import static org.talend.dataprep.exception.error.CommonErrorCodes.*;
-import static org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata.ACTION_BEAN_PREFIX;
-import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.SCOPE;
 
 @Component
 public class ActionMetadataValidation {

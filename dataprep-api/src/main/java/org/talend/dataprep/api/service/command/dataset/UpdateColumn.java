@@ -1,6 +1,9 @@
 package org.talend.dataprep.api.service.command.dataset;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -8,7 +11,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.preparation.Preparation;
@@ -19,10 +21,9 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
 import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.ContentCacheKey;
 
-import java.io.InputStream;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("request")
@@ -54,8 +55,9 @@ public class UpdateColumn extends DataPrepCommand<Void> {
             if (statusCode == HttpStatus.SC_OK) {
                 //TODO : evict all preparations at all steps that has the dataset that we just changed
                 final Preparation preparation = Preparation.defaultPreparation(dataSetId);
-                if (contentCache.has(preparation.id(), Step.ROOT_STEP.id())) {
-                    contentCache.evict(preparation.id(), Step.ROOT_STEP.id());
+                final ContentCacheKey key = new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id());
+                if (contentCache.has(key)) {
+                    contentCache.evict(key);
                 }
                 return null;
             }

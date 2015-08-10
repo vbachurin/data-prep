@@ -1,6 +1,9 @@
 package org.talend.dataprep.api.service.command.preparation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.talend.dataprep.api.APIErrorCodes.UNABLE_TO_ACTIONS_TO_PREPARATION;
+
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -18,9 +21,7 @@ import org.talend.dataprep.exception.json.JsonErrorCode;
 import org.talend.dataprep.preparation.store.ContentCache;
 import org.talend.dataprep.preparation.store.ContentCacheKey;
 
-import java.io.InputStream;
-
-import static org.talend.dataprep.api.APIErrorCodes.UNABLE_TO_ACTIONS_TO_PREPARATION;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope("request")

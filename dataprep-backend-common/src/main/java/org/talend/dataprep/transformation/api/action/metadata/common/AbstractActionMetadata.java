@@ -13,7 +13,6 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
 import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-import static org.talend.dataprep.exception.error.TransformationErrorCodes.MISSING_TRANSFORMATION_SCOPE_PARAMETER;
 import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
 
 import java.io.IOException;
@@ -22,8 +21,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
@@ -36,14 +33,6 @@ import org.talend.dataprep.transformation.api.action.validation.ActionMetadataVa
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE_PARAMETER;
-import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
 
 /**
  * Base class for all single column action.

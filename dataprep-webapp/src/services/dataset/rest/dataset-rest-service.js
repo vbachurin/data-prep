@@ -160,7 +160,7 @@
          * @param {int} sample The sample size
          * @returns {Promise} - the GET promise
          */
-        self.getContent = function(datasetId, metadata, sample) {
+        function getContent (datasetId, metadata, sample) {
             var url = RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata;
             if (sample) {
                 url += '&sample='+sample;

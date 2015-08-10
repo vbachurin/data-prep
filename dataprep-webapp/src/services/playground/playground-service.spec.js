@@ -511,7 +511,6 @@ describe('Playground Service', function () {
             it('should refresh datagrid with head content', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService) {
                 //given
                 var action = 'uppercase';
-                var column = {id: 'firstname'};
                 var parameters = {
                     param1: 'param1Value',
                     param2: 4,
@@ -527,7 +526,7 @@ describe('Playground Service', function () {
 
                 //then
                 expect(PreparationService.getContent).toHaveBeenCalledWith('head', 'full');
-                expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
+                expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(parameters.column_id);
                 expect(DatagridService.updateData).toHaveBeenCalledWith(result);
             }));
 
