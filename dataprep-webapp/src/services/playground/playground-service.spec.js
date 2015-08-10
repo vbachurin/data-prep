@@ -6,7 +6,9 @@ describe('Playground Service', function () {
 
     beforeEach(module('data-prep.services.playground'));
 
-    beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatagridService, PreparationService, TransformationCacheService, ColumnSuggestionService, HistoryService) {
+    beforeEach(inject(function ($injector, $q, DatasetService, FilterService, RecipeService, DatagridService,
+                                PreparationService, TransformationCacheService, ColumnSuggestionService,
+                                HistoryService, StatisticsService) {
         spyOn(DatasetService, 'getContent').and.returnValue($q.when(content));
         spyOn(FilterService, 'removeAllFilters').and.returnValue();
         spyOn(RecipeService, 'refresh').and.returnValue($q.when(true));
@@ -17,6 +19,7 @@ describe('Playground Service', function () {
         spyOn(TransformationCacheService, 'invalidateCache').and.returnValue();
         spyOn(ColumnSuggestionService, 'reset').and.returnValue();
         spyOn(HistoryService, 'clear').and.returnValue();
+        spyOn(StatisticsService, 'invalidateCache').and.returnValue();
     }));
 
     it('should init visible flag to false', inject(function(PlaygroundService) {
@@ -96,7 +99,7 @@ describe('Playground Service', function () {
         var dataset = {id: 'e85afAa78556d5425bc2'};
         var assertNewPreparationInitialization, assertNewPreparationNotInitialized;
 
-        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatagridService, TransformationCacheService, ColumnSuggestionService, HistoryService) {
+        beforeEach(inject(function(PlaygroundService, DatasetService, FilterService, RecipeService, DatagridService, TransformationCacheService, ColumnSuggestionService, HistoryService, StatisticsService) {
             assertNewPreparationInitialization = function() {
                 expect(PlaygroundService.currentMetadata).toEqual(dataset);
                 expect(FilterService.removeAllFilters).toHaveBeenCalled();
@@ -106,6 +109,7 @@ describe('Playground Service', function () {
                 expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(null);
                 expect(ColumnSuggestionService.reset).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
+                expect(StatisticsService.invalidateCache).toHaveBeenCalled();
             };
             assertNewPreparationNotInitialized = function() {
                 expect(FilterService.removeAllFilters).not.toHaveBeenCalled();
@@ -115,6 +119,7 @@ describe('Playground Service', function () {
                 expect(DatagridService.setFocusedColumn).not.toHaveBeenCalled();
                 expect(ColumnSuggestionService.reset).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
+                expect(StatisticsService.invalidateCache).not.toHaveBeenCalled();
             };
         }));
 
@@ -205,7 +210,7 @@ describe('Playground Service', function () {
         };
         var assertDatasetLoadInitialized, assertDatasetLoadNotInitialized;
 
-        beforeEach(inject(function($rootScope, $q, PreparationService, RecipeService, PlaygroundService, FilterService, DatagridService, TransformationCacheService, ColumnSuggestionService, HistoryService) {
+        beforeEach(inject(function($rootScope, $q, PreparationService, RecipeService, PlaygroundService, FilterService, DatagridService, TransformationCacheService, ColumnSuggestionService, HistoryService, StatisticsService) {
             spyOn($rootScope, '$emit').and.callThrough();
             spyOn(PreparationService, 'getContent').and.returnValue($q.when({data: data}));
             spyOn(RecipeService, 'disableStepsAfter').and.callFake(function() {});
@@ -218,6 +223,7 @@ describe('Playground Service', function () {
                 expect(TransformationCacheService.invalidateCache).toHaveBeenCalled();
                 expect(ColumnSuggestionService.reset).toHaveBeenCalled();
                 expect(HistoryService.clear).toHaveBeenCalled();
+                expect(StatisticsService.invalidateCache).toHaveBeenCalled();
             };
 
             assertDatasetLoadNotInitialized = function() {
@@ -227,6 +233,7 @@ describe('Playground Service', function () {
                 expect(TransformationCacheService.invalidateCache).not.toHaveBeenCalled();
                 expect(ColumnSuggestionService.reset).not.toHaveBeenCalled();
                 expect(HistoryService.clear).not.toHaveBeenCalled();
+                expect(StatisticsService.invalidateCache).not.toHaveBeenCalled();
             };
         }));
 

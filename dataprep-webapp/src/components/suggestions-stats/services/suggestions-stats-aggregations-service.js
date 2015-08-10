@@ -39,13 +39,12 @@
             if(service.columnAggregationSelected && (service.columnSelected.id === service.columnAggregationSelected.id)) {
                 var cols = DatagridService.getNumberColumns(null);
                 var colToBeUpdated = _.where(cols, {id: service.columnAggregationSelected.id});
-
                 if(colToBeUpdated.length === 1){
                     service.columnAggregationSelected = colToBeUpdated[0];
-                    updateAggregationsChanges(service.columnAggregationSelected, service.calculationAggregationSelected);
+                    service.updateAggregationsChanges(service.columnAggregationSelected, service.calculationAggregationSelected);
                 }
             } else {
-                updateAggregationsChanges(null, null); //If another column selected, reset "aggregation" dropdown
+                service.updateAggregationsChanges(null, null); //If another column selected, reset "aggregation" dropdown
             }
         }
 

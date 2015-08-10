@@ -3,15 +3,15 @@
 
     /**
      * @ngdoc service
-     * @name data-prep.services.statistics.service:StatisticsAggregationRestService
-     * @description Aggregation REST service. This service gets the aggregation
+     * @name data-prep.services.statistics.service:StatisticsRestService
+     * @description Statistics REST service.
      */
-    function StatisticsAggregationRestService($http, RestURLs) {
+    function StatisticsRestService($http, RestURLs) {
 
         /**
          * @ngdoc method
          * @name getAggregations
-         * @methodOf data-prep.services.transformation.service:TransformationRestService
+         * @methodOf data-prep.services.statistics.service:StatisticsRestService
          * @param {string} stringifiedColumn The column metadata
          * @description Fetch the aggregation on a column of the dataset
          * @returns {HttpPromise} The POST promise
@@ -86,49 +86,46 @@
                         }
                     ];
 
-
-
                     var mockResponseNumber ={};
                     mockResponseNumber.data = [
                         {
-                            "range": {
-                                "min": 1,
-                                "max": 13.375
+                            'range': {
+                                'min': 1,
+                                'max': 13.375
                             },
-                            "occurrences": 456
+                            'occurrences': 456
                         },
                         {
-                            "range": {
-                                "min": 13.375,
-                                "max": 25.75
+                            'range': {
+                                'min': 13.375,
+                                'max': 25.75
                             },
-                            "occurrences": 12
+                            'occurrences': 12
                         },
                         {
-                            "range": {
-                                "min": 25.75,
-                                "max": 38.125
+                            'range': {
+                                'min': 25.75,
+                                'max': 38.125
                             },
-                            "occurrences": 10
+                            'occurrences': 10
                         },
                         {
-                            "range": {
-                                "min": 38.125,
-                                "max": 50.5
+                            'range': {
+                                'min': 38.125,
+                                'max': 50.5
                             },
-                            "occurrences": 0
+                            'occurrences': 0
                         },
                         {
-                            "range": {
-                                "min": 50.5,
-                                "max": 62.875
+                            'range': {
+                                'min': 50.5,
+                                'max': 62.875
                             },
-                            "occurrences": 250
+                            'occurrences': 250
                         }];
 
-
-                    //return mockResponseString;
-                    return mockResponseNumber;
+                    return mockResponseString;
+                    //return mockResponseNumber;
             });
 
             return responsePromise;
@@ -137,5 +134,5 @@
     }
 
     angular.module('data-prep.services.statistics')
-        .service('StatisticsAggregationRestService', StatisticsAggregationRestService);
+        .service('StatisticsRestService', StatisticsRestService);
 })();

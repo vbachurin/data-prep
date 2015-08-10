@@ -12,8 +12,9 @@ describe('Datagrid external service', function () {
     ];
 
     beforeEach(module('data-prep.datagrid'));
+    beforeEach(module('data-prep.suggestions-stats'));
 
-    beforeEach(inject(function (StatisticsService, ColumnSuggestionService) {
+    beforeEach(inject(function (StatisticsService, ColumnSuggestionService, SuggestionsStatsAggregationsService) {
         /*global SlickGridMock:false */
         gridMock = new SlickGridMock();
         gridMock.initColumnsMock(gridColumns);
@@ -24,6 +25,8 @@ describe('Datagrid external service', function () {
 
         spyOn(StatisticsService, 'processVisuData').and.returnValue();
         spyOn(ColumnSuggestionService, 'setColumn').and.returnValue();
+        spyOn(SuggestionsStatsAggregationsService, 'updateAggregations').and.returnValue();
+
     }));
 
     describe('on creation', function () {
@@ -53,7 +56,7 @@ describe('Datagrid external service', function () {
     });
 
     describe('on event', function () {
-        it('should update playground right panel on active cell changed', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should update playground right panel on active cell changed', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService, SuggestionsStatsAggregationsService) {
             //given
             DatagridExternalService.init(gridMock);
             var args = {cell: 1};
@@ -66,9 +69,10 @@ describe('Datagrid external service', function () {
             //then
             expect(StatisticsService.processVisuData).toHaveBeenCalledWith(columnMetadata);
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
+            expect(SuggestionsStatsAggregationsService.updateAggregations).toHaveBeenCalledWith(columnMetadata);
         }));
 
-        it('should do nothing when no cell is active', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+        it('should do nothing when no cell is active', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService, SuggestionsStatsAggregationsService) {
             //given
             DatagridExternalService.init(gridMock);
 
@@ -79,6 +83,7 @@ describe('Datagrid external service', function () {
             //then
             expect(StatisticsService.processVisuData).not.toHaveBeenCalled();
             expect(ColumnSuggestionService.setColumn).not.toHaveBeenCalled();
+            expect(SuggestionsStatsAggregationsService.updateAggregations).not.toHaveBeenCalledWith();
         }));
 
         it('should update playground right panel on header click', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {

@@ -5,6 +5,7 @@ describe('Datagrid directive', function() {
 
     beforeEach(module('data-prep.datagrid'));
     beforeEach(module('htmlTemplates'));
+    beforeEach(module('data-prep.suggestions-stats'));
 
     beforeEach(inject(function($rootScope, $compile, DatagridGridService, DatagridColumnService, DatagridSizeService, DatagridStyleService, DatagridExternalService) {
         scope = $rootScope.$new();

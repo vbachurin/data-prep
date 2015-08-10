@@ -139,6 +139,53 @@ describe('Datagrid service', function() {
                                  {id:'col7', name: 'column 7'}]);
     }));
 
+
+    it('should return numeric columns', inject(function(DatagridService) {
+        //given
+        DatagridService.data = {columns: [
+            {id: 'col1', name: 'column 1', type: 'string'},
+            {id: 'col2', name: 'column 2', type: 'numeric'},
+            {id: 'col3', name: 'column 3', type: 'integer'},
+            {id: 'col4', name: 'column 4', type: 'float'},
+            {id: 'col5', name: 'column 5', type: 'double'},
+            {id: 'col6', name: 'column 6', type: 'boolean'},
+            {id: 'col7', name: 'column 7', type: 'string'}
+        ], records: []};
+
+        //when
+        var allCols = DatagridService.getNumberColumns();
+
+        //then
+        expect(allCols).toEqual([
+                {id: 'col2', name: 'column 2', type: 'numeric'},
+                {id: 'col3', name: 'column 3', type: 'integer'},
+                {id: 'col4', name: 'column 4', type: 'float'},
+                {id: 'col5', name: 'column 5', type: 'double'}]);
+    }));
+
+
+    it('should return numeric columns excluding a specific column', inject(function(DatagridService) {
+        //given
+        DatagridService.data = {columns: [
+            {id: 'col1', name: 'column 1', type: 'string'},
+            {id: 'col2', name: 'column 2', type: 'numeric'},
+            {id: 'col3', name: 'column 3', type: 'integer'},
+            {id: 'col4', name: 'column 4', type: 'float'},
+            {id: 'col5', name: 'column 5', type: 'double'},
+            {id: 'col6', name: 'column 6', type: 'boolean'},
+            {id: 'col7', name: 'column 7', type: 'string'}
+        ], records: []};
+
+        //when
+        var allCols = DatagridService.getNumberColumns('col2');
+
+        //then
+        expect(allCols).toEqual([
+            {id: 'col3', name: 'column 3', type: 'integer'},
+            {id: 'col4', name: 'column 4', type: 'float'},
+            {id: 'col5', name: 'column 5', type: 'double'}]);
+    }));
+
     it('should add filter', inject(function(DatagridService) {
         //given
         expect(DatagridService.filters.length).toBe(0);

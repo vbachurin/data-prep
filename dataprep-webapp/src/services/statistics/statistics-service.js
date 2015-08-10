@@ -7,8 +7,9 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.statistics.service:StatisticsRestService
      */
-    function StatisticsService($q, DatagridService, FilterService, ConverterService, StatisticsAggregationRestService,$timeout) {
+    function StatisticsService($q, DatagridService, FilterService, ConverterService, StatisticsRestService,$timeout) {
 
         var suggestionsCache = [];
 
@@ -151,7 +152,7 @@
          * @description Get aggregation from REST call, clean and adapt them
          */
         function getAggregationsRest(stringifiedColumn) {
-            return StatisticsAggregationRestService.getAggregations(stringifiedColumn)
+            return StatisticsRestService.getAggregations(stringifiedColumn)
                 .then(function(response) {
                     return response.data;
                 });
