@@ -20,8 +20,8 @@
     function DatasetListCtrl($window, $stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService) {
         var vm = this;
 
-        var sortSelectedKey = 'dataprep.dataset.sortSelected';
-        var sortOrderSelectedKey = 'dataprep.dataset.sortOrderSelected';
+        var sortSelectedKey = 'dataprep.dataset.sort';
+        var sortOrderSelectedKey = 'dataprep.dataset.sortOrder';
 
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
@@ -57,12 +57,8 @@
          * @description Selected sort. If sort is not in cache, Default sort is used
          * @type {object}
          */
-        var sortSelected = $window.localStorage.getItem(sortSelectedKey);
-        if (sortSelected){
-            vm.sortSelected = JSON.parse(sortSelected);
-        } else {
-            vm.sortSelected = vm.sortList[1];
-        }
+        var savedSort = $window.localStorage.getItem(sortSelectedKey);
+        vm.sortSelected = !savedSort ? vm.sortList[1] : _.find(vm.sortList, {id: savedSort});
 
         /**
          * @ngdoc property
@@ -71,12 +67,8 @@
          * @description Selected sort order. If order is not in cache, default order is used
          * @type {object}
          */
-        var sortOrderSelected = $window.localStorage.getItem(sortOrderSelectedKey);
-        if (sortOrderSelected){
-            vm.sortOrderSelected = JSON.parse(sortOrderSelected);
-        } else {
-            vm.sortOrderSelected = vm.orderList[1];
-        }
+        var savedSortOrder = $window.localStorage.getItem(sortOrderSelectedKey);
+        vm.sortOrderSelected = !savedSortOrder ? vm.orderList[1] : _.find(vm.orderList, {id: savedSortOrder});
 
         /**
          * @ngdoc method
@@ -86,10 +78,20 @@
          * @param {object} sortType Criteria to sort
          */
         vm.updateSortBy = function(sortType) {
-            vm.sortSelected = sortType;
-            $window.localStorage.setItem(sortSelectedKey, JSON.stringify(vm.sortSelected));
+            if(vm.sortSelected === sortType) {
+                return;
+            }
 
-            DatasetService.refreshDatasets(vm.sortSelected.id, vm.sortOrderSelected.id);
+            var oldSort = vm.sortSelected;
+            vm.sortSelected = sortType;
+
+            DatasetService.refreshDatasets(vm.sortSelected.id, vm.sortOrderSelected.id)
+                .then(function() {
+                    $window.localStorage.setItem(sortSelectedKey, vm.sortSelected.id);
+                })
+                .catch(function() {
+                    vm.sortSelected = oldSort;
+                });
         };
 
         /**
@@ -100,10 +102,20 @@
          * @param {object} order Sort order ASC(ascending) or DESC(descending)
          */
         vm.updateSortOrder = function(order) {
-            vm.sortOrderSelected = order;
-            $window.localStorage.setItem(sortOrderSelectedKey, JSON.stringify(vm.sortOrderSelected));
+            if(vm.sortOrderSelected === order) {
+                return;
+            }
 
-            DatasetService.refreshDatasets(vm.sortSelected.id,  vm.sortOrderSelected.id);
+            var oldSortOrder = vm.sortOrderSelected;
+            vm.sortOrderSelected = order;
+
+            DatasetService.refreshDatasets(vm.sortSelected.id,  vm.sortOrderSelected.id)
+                .then(function() {
+                    $window.localStorage.setItem(sortOrderSelectedKey, vm.sortOrderSelected.id);
+                })
+                .catch(function() {
+                    vm.sortOrderSelected = oldSortOrder;
+                });
         };
 
         /**
@@ -181,8 +193,6 @@
         DatasetService
             .getDatasets()
             .then(loadUrlSelectedDataset);
-
-
     }
 
     /**
