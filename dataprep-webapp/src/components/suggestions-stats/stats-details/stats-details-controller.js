@@ -8,11 +8,11 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.statisticsService.service:StatisticsService
      */
-    function StatsDetailsCtrl($scope, ColumnSuggestionService, StatisticsService) {
+    function StatsDetailsCtrl($scope, ColumnSuggestionService, StatisticsService, TextFormatService) {
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
         vm.statisticsService = StatisticsService;
-
+        vm.textFormatFn = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars;
         /**
          * @ngdoc method
          * @name addPatternFilter

@@ -24,53 +24,14 @@
 				onClick:'&',
 				visuData:'=',
 				keyField:'@',
-				valueField:'@'
+				valueField:'@',
+				textFormatting:'&'
 			},
 			link: function (scope, element, attrs) {
 				var statData = scope.visuData;
 				var xField = scope.keyField;//occurences
 				var yField = scope.valueField;
 				var tip;
-
-				/**
-				 * @ngdoc method
-				 * @name computeHTMLForLeadingOrTrailingHiddenChars
-				 * @methodOf data-prep.datagrid.service:DatagridStyleService
-				 * @description split the string value into leading chars, text and trailing char and create html element using
-				 * the class hiddenChars to specify the hiddenChars.If the text contains break lines, the class
-				 * hiddenCharsBreakLine is used to notice it.
-				 * @param {string} value The string value to adapt
-				 */
-				function computeHTMLForLeadingOrTrailingHiddenChars(value){
-					if(!value) {
-						return value;
-					}
-
-					var returnStr = '';
-					var hiddenCharsRegExpMatch = value.match(/(^\s*)?([\s\S]*?)(\s*$)/);
-
-					//leading hidden chars found
-					if (hiddenCharsRegExpMatch[1]){
-						returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>';
-					}
-
-					//breaking lines indicator
-					var lines = value.trim().split('\n');
-					if(lines.length < 2) {
-						returnStr += hiddenCharsRegExpMatch[2] ;
-					}
-					else {
-						_.forEach(lines, function(line, index) {
-							returnStr += line + (index === lines.length -1 ? '' : '↵\n');
-						});
-					}
-
-					//trailing hidden chars
-					if (hiddenCharsRegExpMatch[3]){
-						returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
-					}
-					return returnStr;
-				}
 
 				function renderBarchart(scope){
 					var container = attrs.id;
@@ -91,10 +52,10 @@
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
-							return 	'<strong>Occurences:</strong> <span style="color:yellow">' + d[xField] + '</span>'+
+							return 	'<strong>Occurrences:</strong> <span style="color:yellow">' + d[xField] + '</span>'+
 									'<br/>'+
 									'<br/>'+
-									'<strong>Record:</strong> <span style="color:yellow">'+ computeHTMLForLeadingOrTrailingHiddenChars(d[yField])+ '</span>';
+									'<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
 						});
 
 					var svg = d3.select('#'+container).append('svg')
@@ -133,44 +94,14 @@
 						.attr('class', 'y axis')
 						.call(yAxis);
 
-					//bar.append('text')
-					//	.attr('class', 'value')
-					//	.attr('x', 10)
-					//	.attr('y', y.rangeBand() / 2)
-					//	.attr('dx', 0)
-					//	.attr('dy', '.35em')
-					//	.attr('text-anchor', 'start')
-					//	.transition().delay(function (d,i){ return i * 30;})
-					//	.text(function(d) {
-					//		return d[yField] ? d[yField]:'(EMPTY)';/* + '  ' + d[xField];*/
-					//	});
-
-					//bar.append('text')
-					//	.attr('class', 'value')
-					//	.attr('x', 10)
-					//	.attr('y', y.rangeBand() / 2)
-					//	.attr('dx', 0)
-					//	.attr('dy', '.35em')
-					//	.attr('text-anchor', 'start')
-					//	//.transition().delay(function (d,i){ return i * 30;})
-					//	.append('tspan')
-					//		 .text(function(d) {
-					//		 	return d[yField] ? d[yField]:'(EMPTY)';/* + '  ' + d[xField];*/
-					//		 });
-
-
-					bar.append("foreignObject")
+					bar.append('foreignObject')
 						.attr('width', w)
 						.attr('height', y.rangeBand())
-						.append("xhtml:body")
+						.append('xhtml:body')
 						.attr('class', 'foreign-object-body')
 						.html(function(d){
-							return d[yField] ? computeHTMLForLeadingOrTrailingHiddenChars(d[yField]):'(EMPTY)';
+							return d[yField] ? d[yField]:'(EMPTY)';
 						});
-
-
-
-
 
 					/************btgrect*********/
 					var bgBar = svg.selectAll('g.bg-rect')

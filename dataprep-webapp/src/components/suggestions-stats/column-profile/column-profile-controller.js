@@ -1,13 +1,14 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, DatagridService, StatisticsService) {
+    function ColumnProfileCtrl($scope, DatagridService, StatisticsService, TextFormatService) {
         var vm = this;
         vm.datasetGridService = DatagridService;
         vm.chartConfig = {};
         vm.barchartClickFn = function barchartClickFn (item){
             return StatisticsService.addFilter(item.data);
         };
+        vm.textFormatFn = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars;
 
         vm.processedData = null;
 

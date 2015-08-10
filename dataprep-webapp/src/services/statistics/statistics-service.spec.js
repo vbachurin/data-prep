@@ -233,7 +233,7 @@ describe('Statistics service', function () {
             StatisticsService.processData(barChartStrCol);
 
             //then
-            expect(StatisticsService.data).toBe(barChartStrCol.statistics.frequencyTable);
+            expect(StatisticsService.data).toEqual(barChartStrCol.statistics.frequencyTable);
             expect(StatisticsService.boxplotData).toBe(null);
             expect(StatisticsService.stateDistribution).toBe(null);
         }));
@@ -254,7 +254,7 @@ describe('Statistics service', function () {
             StatisticsService.processData(barChartBoolCol);
 
             //then
-            expect(StatisticsService.data).toBe(barChartBoolCol.statistics.frequencyTable);
+            expect(StatisticsService.data).toEqual(barChartBoolCol.statistics.frequencyTable);
             expect(StatisticsService.boxplotData).toBe(null);
             expect(StatisticsService.stateDistribution).toBe(null);
         }));
@@ -274,7 +274,7 @@ describe('Statistics service', function () {
             var convertedData = StatisticsService.extractNumericData(barChartNumCol.statistics.histogram);
 
             //then
-            expect(convertedData[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
+            expect(convertedData[1].data).toEqual(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
         }));
 
         it('should set the data to the conversion of the histogram, because the column type is number', inject(function (StatisticsService) {

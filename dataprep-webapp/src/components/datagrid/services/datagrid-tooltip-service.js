@@ -8,7 +8,7 @@
      * @requires data-prep.datagrid.service:DatagridStyleService
      * @requires data-prep.services.playground.service:DatagridService
      */
-    function DatagridTooltipService($timeout, DatagridStyleService, DatagridService) {
+    function DatagridTooltipService($timeout, DatagridStyleService, DatagridService, TextFormatService) {
         var grid;
         var tooltipTimeout, tooltipShowPromise;
         var tooltipDelay = 300;
@@ -67,7 +67,7 @@
                                 x: event.clientX,
                                 y: event.clientY
                             },
-                            htmlStr: DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value)
+                            htmlStr: TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value)
                         };
                         service.showTooltip = true;
                     });

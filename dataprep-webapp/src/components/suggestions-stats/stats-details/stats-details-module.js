@@ -11,6 +11,7 @@
     angular.module('data-prep.stats-details', [
         'talend.widget',
         'data-prep.services.transformation',
-        'data-prep.services.statistics'
+        'data-prep.services.statistics',
+        'data-prep.services.utils'
     ]);
 })();

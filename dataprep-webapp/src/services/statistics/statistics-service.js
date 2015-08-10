@@ -8,7 +8,7 @@
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.utils.service:ConverterService
      */
-    function StatisticsService(DatagridService, FilterService, ConverterService, $timeout) {
+    function StatisticsService(DatagridService, FilterService, ConverterService, $timeout, TextFormatService) {
         var service = {
             selectedColumn: null,
             data: null,
@@ -56,7 +56,7 @@
             var concatData = [];
             _.each(histoData, function (histDatum) {
                 concatData.push({
-                    'data': histDatum.range.min + ' ... ' + histDatum.range.max,
+                    'data': TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(histDatum.range.min + ' ... ' + histDatum.range.max),
                     'occurrences': histDatum.occurrences
                 });
             });
@@ -111,12 +111,11 @@
                 data = extractNumericData(column.statistics.histogram);
                 updateBoxplotData();
             }
-            else if (column.type === 'string') {
-                data = column.statistics.frequencyTable;
-                service.boxplotData = null;
-            }
-            else if (column.type === 'boolean') {
-                data = column.statistics.frequencyTable;
+            else if (column.type === 'string' || column.type === 'boolean') {
+                data = _.map(column.statistics.frequencyTable,function(rec){
+                    rec.data = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
+                    return rec;
+                });
                 service.boxplotData = null;
             }
             else {
