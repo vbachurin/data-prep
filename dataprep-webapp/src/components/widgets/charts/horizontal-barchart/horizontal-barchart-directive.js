@@ -29,6 +29,7 @@
             link: function (scope, element, attrs) {
                 var xField = scope.keyField;//occurences
                 var yField = scope.valueField;
+                var renderTimeout;
 
                 function renderBarchart(statData) {
                     var container = attrs.id;
@@ -146,7 +147,8 @@
                         element.empty();
 
                         if (statData) {
-                            renderBarchart(statData);
+                            clearTimeout(renderTimeout);
+                            renderTimeout = setTimeout(renderBarchart.bind(this, statData), 100);
                         }
                     });
             }

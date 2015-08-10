@@ -1,9 +1,11 @@
-<div id="datagrid" class="datagrid"></div>
+<div class="datagrid">
+    <section id="datagrid" style="width: 100%; height: 100%"></section>
+</div>
 <span id="tooltip-ruler" class="tooltip-ruler"></span>
 
 <talend-tooltip
         position="datagridCtrl.tooltip.position"
         requested-state="datagridCtrl.showTooltip"
         class="datagrid-tooltip">
-        <div ng-bind-html="datagridCtrl.tooltip.htmlStr" class="datagrid-tooltip-content"></div>
+    <div ng-bind-html="datagridCtrl.tooltip.htmlStr" class="datagrid-tooltip-content"></div>
 </talend-tooltip>
