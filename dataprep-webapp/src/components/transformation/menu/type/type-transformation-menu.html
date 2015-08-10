@@ -1,0 +1,16 @@
+<li class="more">
+    <a>{{ ::'COLUMN_TYPE_IS' | translate }}&nbsp;<span class="info">{{ typeMenuCtrl.currentSimplifiedDomain }}</span></a>
+    <ul class="submenu">
+        <li ng-repeat="semanticDomain in typeMenuCtrl.domains track by semanticDomain.id"
+            ng-click="typeMenuCtrl.changeDomain(semanticDomain)">
+            <input type="radio" value="{{ ::semanticDomain.id}}" ng-model="typeMenuCtrl.currentDomain"/>
+            {{ ::semanticDomain.label | translate }} {{ semanticDomain.frequency }} %
+        </li>
+        <li class="divider"></li>
+        <li ng-repeat="type in typeMenuCtrl.types track by type.id"
+            ng-click="typeMenuCtrl.changeType(type)">
+            <input type="radio" value="{{ ::type.id}}" ng-model="typeMenuCtrl.currentDomain"/>
+            {{ ::'COLUMN_TYPE_SET' | translate }}&nbsp;{{::type.labelKey | translate }}
+        </li>
+    </ul>
+</li>

@@ -3,10 +3,18 @@ package org.talend.dataprep.api.dataset;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.*;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
+import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
@@ -57,12 +65,21 @@ public class ColumnMetadata {
 
     @JsonProperty("domain")
     private String domain = StringUtils.EMPTY;
+    
+    @JsonProperty("domainLabel")
+    private String domainLabel = StringUtils.EMPTY;
+
+    @JsonProperty("domainFrequency")
+    private float domainFrequency;
+
+    @JsonProperty("semanticDomains")
+    private List<SemanticDomain> semanticDomains = Collections.emptyList();
 
     /**
      * Default empty constructor.
      */
     public ColumnMetadata() {
-
+        // no op
     }
 
     /**
@@ -167,16 +184,20 @@ public class ColumnMetadata {
     }
 
     @Override
-    public String toString() {
-        return "ColumnMetadata{" + //
-                "id='" + id + '\'' + //
-                ", name='" + name + '\'' + //
-                ", typeName='" + typeName + '\'' + //
-                ", headerSize=" + headerSize + //
-                ", diffFlagValue='" + diffFlagValue + '\'' + //
-                ", quality=" + quality + '\'' + //
-                ", statistics='" + statistics + '\'' + //
-                '}';
+    public String toString()
+    {
+        return "ColumnMetadata{" +
+            "quality=" + quality +
+            ", id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", typeName='" + typeName + '\'' +
+            ", headerSize=" + headerSize +
+            ", diffFlagValue='" + diffFlagValue + '\'' +
+            ", statistics='" + statistics + '\'' +
+            ", domain='" + domain + '\'' +
+            ", domainLabel='" + domainLabel + '\'' +
+            ", semanticDomains=" + semanticDomains +
+            '}';
     }
 
     /**
@@ -221,6 +242,32 @@ public class ColumnMetadata {
         return domain;
     }
 
+    public String getDomainLabel() {
+        return domainLabel;
+    }
+
+    public void setDomainLabel(String domainLabel) {
+        this.domainLabel = domainLabel;
+    }
+
+    public List<SemanticDomain> getSemanticDomains() {
+        return semanticDomains;
+    }
+
+    public void setSemanticDomains( List<SemanticDomain> semanticDomains ) {
+        this.semanticDomains = semanticDomains;
+    }
+
+    public float getDomainFrequency()
+    {
+        return domainFrequency;
+    }
+
+    public void setDomainFrequency( float domainFrequency )
+    {
+        this.domainFrequency = domainFrequency;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -259,6 +306,14 @@ public class ColumnMetadata {
 
         /** The invalid values. */
         private Set<String> invalidValues = new HashSet<>();
+
+        private String domain;
+
+        private String domainLabel;
+
+        private float domainFrequency;
+
+        private List<SemanticDomain> semanticDomains;
 
         /**
          * @return A ColumnMetadata builder.
@@ -381,6 +436,46 @@ public class ColumnMetadata {
         }
 
         /**
+         *
+         * @param domain the domain value of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder domain(String domain) {
+            this.domain = domain;
+            return this;
+        }
+
+        /**
+         *
+         * @param domainLabel the domain label value of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder domainLabel(String domainLabel) {
+            this.domainLabel = domainLabel;
+            return this;
+        }
+
+        /**
+         *
+         * @param domainFrequency the frequency of value with this domain of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder domainFrequency( float domainFrequency ) {
+            this.domainFrequency = domainFrequency;
+            return this;
+        }
+
+        /**
+         *
+         * @param semanticDomains the semantic domains of the column to set.
+         * @return the builder to carry on building the column.
+         */
+        public ColumnMetadata.Builder semanticDomains(List<SemanticDomain> semanticDomains) {
+            this.semanticDomains = semanticDomains;
+            return this;
+        }
+
+        /**
          * Copy the column from the given one.
          * 
          * @param original the column to copy.
@@ -395,9 +490,13 @@ public class ColumnMetadata {
             this.valid = originalQuality.getValid();
             this.invalidValues = originalQuality.getInvalidValues();
             this.headerSize = original.getHeaderSize();
-            this.type = Type.get(original.getType());
+            this.type = Type.get( original.getType() );
             this.diffFlagValue = original.getDiffFlagValue();
             this.statistics = original.getStatistics();
+            this.domain = original.getDomain();
+            this.domainLabel = original.getDomainLabel();
+            this.domainFrequency = original.getDomainFrequency();
+            this.semanticDomains = original.getSemanticDomains();
             return this;
         }
 
@@ -417,6 +516,10 @@ public class ColumnMetadata {
             columnMetadata.setHeaderSize(this.headerSize);
             columnMetadata.setDiffFlagValue(this.diffFlagValue);
             columnMetadata.setStatistics(this.statistics);
+            columnMetadata.setDomain( this.domain == null ? StringUtils.EMPTY : this.domain );
+            columnMetadata.setDomainLabel( this.domainLabel == null ? StringUtils.EMPTY : this.domainLabel );
+            columnMetadata.setDomainFrequency( this.domainFrequency );
+            columnMetadata.setSemanticDomains( this.semanticDomains == null ? Collections.emptyList() : this.semanticDomains );
             return columnMetadata;
         }
     }

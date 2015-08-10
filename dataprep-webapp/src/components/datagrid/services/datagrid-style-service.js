@@ -51,12 +51,13 @@
          * @ngdoc method
          * @name selectedColumn
          * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description returns the selected column object
+         * @description returns the selected column object (the one from provided array with the selected id)
+         * @param {array} columns The grid columns
          * @return {object}
          */
-        function selectedColumn() {
+        function selectedColumn(columns) {
             if(lastSelectedColumnId) {
-                return _.find(grid.getColumns(), function(column) {
+                return _.find(columns, function(column) {
                     return column.id === lastSelectedColumnId;
                 });
             }
@@ -107,10 +108,11 @@
          * @name updateColumnClass
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description Set style classes on columns depending on its state (type, selection, ...)
+         * @param {object} columns The columns array
          * @param {object} selectedCol The grid selected column
          */
-        function updateColumnClass(selectedCol) {
-            _.forEach(grid.getColumns(), function(column) {
+        function updateColumnClass(columns, selectedCol) {
+            _.forEach(columns, function(column) {
                 column.cssClass = null;
                 updateSelectionClass(column, selectedCol);
                 updateNumbersClass(column);
@@ -125,26 +127,27 @@
          * @ngdoc method
          * @name manageColumnStyle
          * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * * @param {object} columns The columns array
          * @param {boolean} isPreview Flag that indicate if the data IS in preview mode
          * @description Update column style classes accordingly to the active cell.
          * This is usefull when data changes, the column style is reset but the active cell does not change.
          */
-        function manageColumnStyle(isPreview) {
-            var column;
+        function manageColumnStyle(columns, isPreview) {
+            var selectedColumn;
 
             if(!isPreview) {
                 var activeCell = grid.getActiveCell();
                 if(activeCell) {
-                    column = grid.getColumns()[activeCell.cell];
+                    selectedColumn = columns[activeCell.cell];
                 }
                 else if(lastSelectedColumnId) {
-                    column = _.find(grid.getColumns(), function(col) {
+                    selectedColumn = _.find(columns, function(col) {
                         return col.id === lastSelectedColumnId;
                     });
                 }
             }
 
-            updateColumnClass(column);
+            updateColumnClass(columns, selectedColumn);
         }
 
         /**
@@ -249,7 +252,7 @@
         function attachColumnHeaderListeners() {
             grid.onHeaderClick.subscribe(function(e, args) {
                 resetCellStyles();
-                updateColumnClass(args.column);
+                updateColumnClass(grid.getColumns(), args.column);
                 grid.invalidate();
             });
         }
@@ -279,8 +282,9 @@
             //change selected cell column background
             grid.onActiveCellChanged.subscribe(function(e,args) {
                 if(angular.isDefined(args.cell)) {
-                    var column = grid.getColumns()[args.cell];
-                    updateColumnClass(column);
+                    var columns = grid.getColumns();
+                    var column = columns[args.cell];
+                    updateColumnClass(columns, column);
                     grid.invalidate();
                 }
             });

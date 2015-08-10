@@ -12,11 +12,28 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.assertj.core.api.Assertions;
+
 import org.junit.Before;
+
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.dataset.RowMetadata;
+import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.DataSetRowAction;
@@ -139,6 +156,39 @@ public class CopyColumnTest {
 
         //then
         assertEquals(expected.get(1).getStatistics(), original.getStatistics());
+    }
+
+    @Test
+    public void should_copy_semantic() throws Exception {
+        List<ColumnMetadata> input = new ArrayList<>();
+        final ColumnMetadata original = createMetadata("0001", "column");
+        original.setStatistics( "{}" );
+
+        SemanticDomain semanticDomain = new SemanticDomain( "mountain_goat", "Mountain goat pale pale", 1 );
+
+        original.setDomain( "beer" );
+        original.setDomainFrequency( 1 );
+        original.setDomainLabel( "the best beer" );
+        original.setSemanticDomains( Arrays.asList( semanticDomain ) );
+
+        input.add( original );
+        RowMetadata rowMetadata = new RowMetadata(input);
+
+        Assertions.assertThat( rowMetadata.getColumns() ).isNotNull().isNotEmpty().hasSize( 1 );
+
+        action.applyOnColumn( new DataSetRow( rowMetadata ),new TransformationContext(), parameters, "0001"  );
+
+        List<ColumnMetadata> expected = rowMetadata.getColumns();
+
+        Assertions.assertThat( expected ).isNotNull().isNotEmpty().hasSize( 2 );
+
+        assertEquals( expected.get( 1 ).getStatistics(), original.getStatistics() );
+
+        Assertions.assertThat(expected.get( 1 )) //
+            .isEqualToComparingOnlyGivenFields( original, "domain", "domainLabel", "domainFrequency" );
+
+        Assertions.assertThat( expected.get( 1 ).getSemanticDomains() ).isNotNull() //
+            .isNotEmpty().contains( semanticDomain );
     }
 
     @Test

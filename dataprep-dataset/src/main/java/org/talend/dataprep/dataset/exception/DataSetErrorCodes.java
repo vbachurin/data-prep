@@ -49,6 +49,12 @@ public enum DataSetErrorCodes implements ErrorCode {
      * @see org.talend.dataprep.dataset.service.DataSetService#create(String, String, InputStream, HttpServletResponse)
      */
     UNABLE_TO_READ_DATASET_LOCATION(400),
+
+    /**
+     * Error returned in case user tries to access to a column that does not exist (or no longer exists) for a data set .
+     * @see org.talend.dataprep.dataset.service.DataSetService#updateDataSet(String, DataSetMetadata)
+     */
+    COLUMN_DOES_NOT_EXIST(400, "id"),
     /**
      * Error returned when the order is not supported.
      *

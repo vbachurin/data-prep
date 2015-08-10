@@ -21,6 +21,7 @@
                 boxplotData: '='
             },
             link: function (scope, element, attrs) {
+                var renderTimeout;
                 var container = attrs.id;
                 var w = +attrs.width;
                 var h = +attrs.height;
@@ -332,7 +333,8 @@
                     function (boxData) {
                         element.empty();
                         if (boxData) {
-                            renderBoxplotchart(boxData);
+                            clearTimeout(renderTimeout);
+                            renderTimeout = setTimeout(renderBoxplotchart.bind(this, boxData), 100);
                         }
                     }
                 );
