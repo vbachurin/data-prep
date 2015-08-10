@@ -147,6 +147,7 @@
                                 <resource>
                                     <targetPath>/lib/tde/lib64</targetPath>
                                     <directory>${project.basedir}/lib/tde/lib64</directory>
+                                    <include>*</include>
                                 </resource>
                             </resources>
                         </configuration>
