@@ -44,7 +44,7 @@
                     aggregationCalculation
                 );
             } else {
-                StatisticsService.processBarchartData(vm.datasetAggregationsService.columnSelected);
+                StatisticsService.processNonMapData(vm.datasetAggregationsService.columnSelected);
             }
         };
 

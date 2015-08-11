@@ -31,7 +31,7 @@
             processVisuDataAggregation: processVisuDataAggregation,
             getAggregations: getAggregations,
             invalidateCache: invalidateCache,
-            processBarchartData: processBarchartData
+            processNonMapData: processNonMapData
         };
 
         return service;
@@ -283,8 +283,10 @@
 
                     //processes the visualization data
                     var aggregationStatisticsArray = aggregationStatistics;
+                    console.log(aggregationStatisticsArray);
                     service.stateDistribution = null; //hide the map if the previous column was a state
-                    service.data = aggregationStatisticsArray; // update charts data
+
+                    initClassicHistogram(aggregationStatisticsArray);// update charts data
                 });
         }
 

@@ -46,7 +46,7 @@ describe('ColumnProfile controller', function () {
         //given
         spyOn(SuggestionsStatsAggregationsService,'updateAggregationsChanges').and.returnValue();
         spyOn(StatisticsService,'processVisuDataAggregation').and.returnValue();
-        spyOn(StatisticsService,'processBarchartData').and.returnValue();
+        spyOn(StatisticsService,'processNonMapData').and.returnValue();
 
         var ctrl = createController();
 
@@ -57,14 +57,14 @@ describe('ColumnProfile controller', function () {
         //then
         expect(SuggestionsStatsAggregationsService.updateAggregationsChanges).toHaveBeenCalledWith(null,null);
         expect(StatisticsService.processVisuDataAggregation).not.toHaveBeenCalled();
-        expect(StatisticsService.processBarchartData).toHaveBeenCalledWith(ctrl.datasetAggregationsService.columnSelected);
+        expect(StatisticsService.processNonMapData).toHaveBeenCalledWith(ctrl.datasetAggregationsService.columnSelected);
     }));
 
     it('should update charts using aggregation selected', inject(function (StatisticsService, SuggestionsStatsAggregationsService, PlaygroundService) {
         //given
         spyOn(SuggestionsStatsAggregationsService,'updateAggregationsChanges').and.returnValue();
         spyOn(StatisticsService,'processVisuDataAggregation').and.returnValue();
-        spyOn(StatisticsService,'processBarchartData').and.returnValue();
+        spyOn(StatisticsService,'processNonMapData').and.returnValue();
 
         var ctrl = createController();
 
@@ -82,6 +82,6 @@ describe('ColumnProfile controller', function () {
             ctrl.datasetAggregationsService.columnSelected,
             aggregationColumn,
             aggregationCalculation);
-        expect(StatisticsService.processBarchartData).not.toHaveBeenCalled();
+        expect(StatisticsService.processNonMapData).not.toHaveBeenCalled();
     }));
 });
