@@ -22,9 +22,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -45,19 +45,24 @@ public class XlsFormatTest {
 
     private final static Logger logger = LoggerFactory.getLogger(XlsFormatTest.class);
 
+    @Qualifier("formatGuesser#xls")
     @Autowired
-    ApplicationContext applicationContext;
-
-    String beanId = "formatGuesser#xls";
+    private FormatGuesser formatGuesser;
 
     @Test
     public void read_bad_xls_file() throws Exception {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("fake.xls")) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             FormatGuess formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof NoOpFormatGuess);
         }
+    }
+
+    @Test
+    public void read_null_xls_file() throws Exception {
+        FormatGuess formatGuess = formatGuesser.guess(null).getFormatGuess();
+        Assert.assertNotNull(formatGuess);
+        Assert.assertTrue(formatGuess instanceof NoOpFormatGuess);
     }
 
     @Test
@@ -68,7 +73,6 @@ public class XlsFormatTest {
         FormatGuess formatGuess;
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
@@ -109,7 +113,6 @@ public class XlsFormatTest {
         FormatGuess formatGuess;
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
@@ -135,8 +138,6 @@ public class XlsFormatTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
-
             formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
         }
 
@@ -210,7 +211,6 @@ public class XlsFormatTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
@@ -267,7 +267,6 @@ public class XlsFormatTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id("beer").build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
@@ -322,7 +321,6 @@ public class XlsFormatTest {
         DataSetMetadata dataSetMetadata = DataSetMetadata.Builder.metadata().id( "beer" ).sheetName( "sheet-1" ).build();
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
@@ -404,7 +402,6 @@ public class XlsFormatTest {
                 .row(column().name("id").id(0).type(Type.INTEGER), column().name("value1").id(1).type(Type.INTEGER)).build();
         FormatGuess formatGuess;
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("excel_numbers.xls")) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);
@@ -426,7 +423,6 @@ public class XlsFormatTest {
         FormatGuess formatGuess;
 
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            FormatGuesser formatGuesser = applicationContext.getBean(beanId, FormatGuesser.class);
             formatGuess = formatGuesser.guess(inputStream).getFormatGuess();
             Assert.assertNotNull(formatGuess);
             Assert.assertTrue(formatGuess instanceof XlsFormatGuess);

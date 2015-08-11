@@ -91,13 +91,8 @@ public class Rename extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see AbstractActionMetadata#beforeApply(Map)
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
-
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String newColumnName = parameters.get(NEW_COLUMN_NAME_PARAMETER_NAME);

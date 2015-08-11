@@ -47,18 +47,13 @@ public class LowerCase extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see AbstractActionMetadata#beforeApply(Map)
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
-
-    @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final String value = row.get(columnId);
-        if (value != null) {
-            row.set(columnId, value.toLowerCase());
+        final String toLowerCase = row.get(columnId);
+        if (toLowerCase != null) {
+            row.set(columnId, toLowerCase.toLowerCase());
         }
     }
 }

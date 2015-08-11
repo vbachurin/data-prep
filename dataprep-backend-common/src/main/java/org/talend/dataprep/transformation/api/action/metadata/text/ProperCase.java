@@ -23,28 +23,23 @@ public class ProperCase extends AbstractActionMetadata implements ColumnAction {
     }
 
     @Override
-    public String getCategory() {
-        return ActionCategory.CASE.getDisplayName();
-    }
-
-    @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
-    /**
-     * @see AbstractActionMetadata#beforeApply(Map)
-     */
     @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
+    public String getCategory() {
+        return ActionCategory.CASE.getDisplayName();
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final String value = row.get(columnId);
-        if (value != null) {
-            row.set(columnId, WordUtils.capitalizeFully(value));
+        final String toProperCase = row.get(columnId);
+        if (toProperCase != null) {
+            row.set(columnId, WordUtils.capitalizeFully(toProperCase));
         }
     }
 }

@@ -71,14 +71,6 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
         return STRING.equals(Type.get(column.getType()));
     }
 
-    /**
-     * @see AbstractActionMetadata#beforeApply(Map)
-     */
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
-
     private void apply(DataSetRow row, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);
         final String toMatch = parameters.get(CELL_VALUE_PARAMETER);
@@ -89,11 +81,17 @@ public class ReplaceOnValue extends AbstractActionMetadata implements ColumnActi
         }
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         apply(row, parameters, columnId);
     }
 
+    /**
+     * @see CellAction#applyOnCell(DataSetRow, TransformationContext, Map, Long, String)
+     */
     @Override
     public void applyOnCell(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId, String columnId) {
         apply(row, parameters, columnId);

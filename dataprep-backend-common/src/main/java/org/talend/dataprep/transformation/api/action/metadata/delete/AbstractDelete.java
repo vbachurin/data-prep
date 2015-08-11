@@ -34,10 +34,9 @@ public abstract class AbstractDelete extends AbstractActionMetadata implements C
      */
     public abstract boolean toDelete(final ColumnMetadata colMetadata, final Map<String, String> parsedParameters, final String value);
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);

@@ -63,7 +63,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                 String s;
                 while (totalChars < 64 * 1024 && lineCount < 100 && (s = lineNumberReader.readLine()) != null) {
                     totalChars += s.length() + 1; // count the new line character
-                    if (s.length() == 0) {
+                    if (s.isEmpty()) {
                         continue;
                     }
                     if (!inQuote) {

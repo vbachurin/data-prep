@@ -27,13 +27,23 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("userdata")
 public class UserData {
 
+    /** Favorites datasets. */
     @JsonProperty(value = "favoritedDS", required = false)
-    // set storing the favorites dateset Ids for a user
     Set<String> favoritesDatasets = new HashSet<>();
 
+    /** User id. */
     @JsonProperty(value = "userId", required = true)
     @Id
     String userId;
+
+    /**
+     * Constructor.
+     * 
+     * @param userId the used id.
+     */
+    public UserData(String userId) {
+        this.userId = userId;
+    }
 
     /**
      * Getter for favoritesDatasets.
@@ -69,9 +79,5 @@ public class UserData {
      */
     public String getUserId() {
         return this.userId;
-    }
-
-    public UserData(String userId) {
-        this.userId = userId;
     }
 }

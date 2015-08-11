@@ -96,6 +96,9 @@ public class ComputeTimeSince extends AbstractDate implements ColumnAction {
         now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
