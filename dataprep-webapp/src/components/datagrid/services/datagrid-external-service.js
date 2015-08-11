@@ -30,12 +30,12 @@
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
         function updateSuggestionPanel(column) {
-            if(column === lastSelectedColumn) {
+            if(column.tdpColMetadata === lastSelectedColumn) {
                 return;
             }
 
             clearTimeout(suggestionTimeout);
-            lastSelectedColumn = column;
+            lastSelectedColumn = column.tdpColMetadata;
 
             suggestionTimeout = setTimeout(function() {
                 var columnMetadata = column.tdpColMetadata;

@@ -109,6 +109,19 @@ describe('Datagrid directive', function() {
             //then
             expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(selectedColumn);
         }));
+
+        it('should NOT update suggestion panel when data is preview data', inject(function(DatagridService, DatagridStyleService, DatagridExternalService) {
+            //given
+            var selectedColumn = {id: '0001'};
+            spyOn(DatagridStyleService, 'selectedColumn').and.returnValue(selectedColumn);
+
+            //when
+            DatagridService.data = {preview: true};
+            scope.$digest();
+
+            //then
+            expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
+        }));
     });
 
     describe('on metadata change', function() {

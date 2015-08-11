@@ -127,7 +127,7 @@
 
                         //manage column selection (external)
                         var selectedColumn = DatagridStyleService.selectedColumn(columns);
-                        if (selectedColumn) {
+                        if (!data.preview && selectedColumn) {
                             DatagridExternalService.updateSuggestionPanel(selectedColumn);
                         }
 
