@@ -24,7 +24,8 @@
         ];
 
         return {
-            initGrid : initGrid
+            initGrid : initGrid,
+            navigateToFocusedColumn: navigateToFocusedColumn
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -44,6 +45,26 @@
                 grid.invalidateRows(args.rows);
                 grid.render();
             });
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name navigateToFocusedColumn
+         * @methodOf data-prep.datagrid.service:DatagridGridService
+         * @description navigates between columns
+         */
+        function navigateToFocusedColumn(){
+            if(DatagridService.focusedColumn) {
+                setTimeout(function(){
+                    var columnIndex = _.findIndex(grid.getColumns(), function (column) {
+                        return column.id === DatagridService.focusedColumn;
+                    });
+                    var viewPort    = grid.getRenderedRange();
+                    var centerRow   = +((viewPort.bottom - viewPort.top) / 2).toFixed(0);
+                    grid.scrollCellIntoView(viewPort.top + centerRow, columnIndex, false);
+                },300);
+            }
         }
 
         /**

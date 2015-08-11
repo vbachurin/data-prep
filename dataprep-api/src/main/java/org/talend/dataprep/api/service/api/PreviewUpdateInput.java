@@ -1,8 +1,8 @@
 package org.talend.dataprep.api.service.api;
 
-import org.talend.dataprep.api.preparation.Action;
-
 import java.util.List;
+
+import org.talend.dataprep.api.preparation.Action;
 
 public class PreviewUpdateInput {
     private Action action;

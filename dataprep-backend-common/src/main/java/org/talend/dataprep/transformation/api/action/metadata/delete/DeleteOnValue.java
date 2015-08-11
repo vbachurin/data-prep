@@ -1,18 +1,19 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
+import static org.talend.dataprep.api.type.Type.NUMERIC;
+import static org.talend.dataprep.api.type.Type.STRING;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.Map;
-
-import static org.talend.dataprep.api.type.Type.NUMERIC;
-import static org.talend.dataprep.api.type.Type.STRING;
 
 /**
  * Delete row on a given value.

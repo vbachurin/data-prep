@@ -22,7 +22,37 @@ describe('Transform menu controller', function () {
             'invalid': 10,
             'valid': 72
         },
-        'type': 'string'
+        'type': 'string',
+        'domain': 'FR_POSTAL_CODE',
+        'domainLabel': 'FR POSTAL CODE',
+        'domainCount': 7,
+        'semanticDomains': [
+            {
+                'id': 'CH_POSTAL_CODE',
+                'label': 'CH  POSTAL CODE',
+                'count': 5
+            },
+            {
+                'id': 'FR_POSTAL_CODE',
+                'label': 'FR POSTAL CODE',
+                'count': 7
+            },
+            {
+                'id': 'FR_CODE_COMMUNE_INSEE',
+                'label': 'FR INSEE CODE',
+                'count': 7
+            },
+            {
+                'id': 'DE_POSTAL_CODE',
+                'label': 'DE POSTAL CODE',
+                'count': 7
+            },
+            {
+                'id': 'US_POSTAL_CODE',
+                'label': 'US POSTAL CODE',
+                'count': 7
+            }
+        ]
     };
 
     beforeEach(module('data-prep.transformation-menu'));
@@ -41,6 +71,7 @@ describe('Transform menu controller', function () {
 
         spyOn(PlaygroundService, 'appendStep').and.returnValue($q.when(true));
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when(true));
+
     }));
 
     it('should open modal on select if item has parameters', inject(function (PlaygroundService) {
@@ -94,7 +125,8 @@ describe('Transform menu controller', function () {
         expect(PlaygroundService.appendStep).toHaveBeenCalledWith('uppercase', expectedParams);
     }));
 
-    it('should fetch dynamic parameters', inject(function (PlaygroundService, PreparationService, TransformationService) {
+
+    it('should fetch dynamic parameters', inject(function ($rootScope, PlaygroundService, PreparationService, TransformationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -111,13 +143,14 @@ describe('Transform menu controller', function () {
             {name: 'textclustering', category: 'quickfix', dynamic: true},
             {
                 columnId: '0001',
-                datasetId:  '78bae6345aef9965e22b54',
-                preparationId:  '721cd4455fb69e89543d4'
+                datasetId: '78bae6345aef9965e22b54',
+                preparationId: '721cd4455fb69e89543d4'
             }
         );
     }));
 
-    it('should display modal and set flags on dynamic params fetch', inject(function (PlaygroundService, PreparationService) {
+
+    it('should display modal and set flags on dynamic params fetch', inject(function ($rootScope, PlaygroundService, PreparationService) {
         //given
         var ctrl = createController();
         var menu = {name: 'textclustering', category: 'quickfix', dynamic: true};
@@ -137,7 +170,8 @@ describe('Transform menu controller', function () {
         expect(ctrl.dynamicFetchInProgress).toBeFalsy();
     }));
 
-    it('should create transform function closure from menu', inject(function (PlaygroundService) {
+
+    it('should call playground service to append step and hide modal', inject(function ($rootScope, PlaygroundService) {
         //given
         var ctrl = createController();
         var menu = {name: 'transfo_name', category: 'case', parameters: [{name: 'param1', type: 'text', default: '.'}]};

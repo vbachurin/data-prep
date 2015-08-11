@@ -27,18 +27,24 @@ describe('boxplot chart directive', function () {
 		};
 	}));
 
+	beforeEach(function () {
+		jasmine.clock().install();
+	});
 	afterEach(function () {
+		jasmine.clock().uninstall();
+
 		scope.$destroy();
 		element.remove();
 	});
 
-	it('should render the different basic components of the boxplot', function () {
+	it('should render the different basic components of the boxplot after a 100ms delay', function () {
 		//given
 		createElement();
 
 		//when
 		scope.boxValues = boxValues;
 		scope.$digest();
+		jasmine.clock().tick(100);
 
 		//then
 		expect(element.find('rect').length).toBe(2);

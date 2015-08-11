@@ -1,5 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -11,9 +15,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.AbstractAct
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
-
-import javax.annotation.Nonnull;
-import java.util.Map;
 
 /**
  * duplicate a column
@@ -91,6 +92,10 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements IColum
                 .type(Type.get(column.getType())) //
                 .statistics(column.getStatistics()) //
                 .headerSize(column.getHeaderSize()) //
+                .domain( column.getDomain() ) //
+                .domainLabel( column.getDomainLabel() ) //
+                .domainFrequency( column.getDomainFrequency() ) //
+                .semanticDomains( column.getSemanticDomains() ) //
                 .build();
     }
 

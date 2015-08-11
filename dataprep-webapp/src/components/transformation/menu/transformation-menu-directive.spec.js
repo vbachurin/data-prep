@@ -2,12 +2,21 @@ describe('Transformation menu directive', function () {
     'use strict';
     var scope, createElement, element;
 
+    var column = {
+        semanticDomains: [],
+        type: 'text'
+    };
+
     beforeEach(module('data-prep.transformation-menu'));
     beforeEach(module('htmlTemplates'));
 
-    beforeEach(inject(function($rootScope, $compile) {
+    beforeEach(inject(function ($q, $rootScope, $compile, ColumnTypesService) {
+        spyOn(ColumnTypesService, 'getTypes').and.returnValue($q.when([]));
+
         scope = $rootScope.$new();
-        createElement = function() {
+        scope.column = column;
+
+        createElement = function () {
             element = angular.element('<transform-menu column="column" menu-items="menu"></transform-menu>');
             $compile(element)(scope);
             scope.$digest();
@@ -15,12 +24,12 @@ describe('Transformation menu directive', function () {
         };
     }));
 
-    afterEach(function() {
+    afterEach(function () {
         scope.$destroy();
         element.remove();
     });
 
-    it('should render a simple action', function() {
+    it('should render a simple action', function () {
         //given
         scope.menu = [{label: 'uppercase'}];
 
@@ -31,7 +40,7 @@ describe('Transformation menu directive', function () {
         expect(element.find('li[ng-click="menuCtrl.select(menu, \'column\')"]').text().trim()).toBe('uppercase');
     });
 
-    it('should render an action with parameters', function() {
+    it('should render an action with parameters', function () {
         //given
         scope.menu = [{
             name: 'menuWithParam',
@@ -69,7 +78,7 @@ describe('Transformation menu directive', function () {
         expect(paramsElements.is(':visible')).toBe(true);
     });
 
-    it('should render an action with simple choice', function() {
+    it('should render an action with simple choice', function () {
         //given
         scope.menu = [{
             name: 'menuWithParam',
@@ -104,7 +113,7 @@ describe('Transformation menu directive', function () {
         expect(paramsElements.is(':visible')).toBe(true);
     });
 
-    it('should render multiple menu items', function() {
+    it('should render multiple menu items', function () {
         //given
         scope.menu = [
             {label: 'uppercase'},
@@ -154,7 +163,7 @@ describe('Transformation menu directive', function () {
         expect(menuItems.eq(2).text().trim()).toBe('menu with param');
     });
 
-    it('should display selected item parameters', function() {
+    it('should display selected item parameters', function () {
         //given
         scope.menu = [
             {label: 'uppercase'},

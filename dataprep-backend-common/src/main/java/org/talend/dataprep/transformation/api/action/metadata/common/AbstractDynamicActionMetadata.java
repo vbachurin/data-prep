@@ -1,11 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public abstract class AbstractDynamicActionMetadata extends AbstractActionMetadata {
 

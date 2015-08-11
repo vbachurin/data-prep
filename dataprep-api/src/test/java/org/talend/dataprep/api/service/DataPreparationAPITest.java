@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,7 +81,7 @@ public class DataPreparationAPITest {
         environment.getPropertySources().addFirst(connectionInformation);
     }
 
-    @org.junit.After
+    @After
     public void tearDown() {
         dataSetMetadataRepository.clear();
         contentStore.clear();
@@ -221,13 +223,80 @@ public class DataPreparationAPITest {
 
         // then
         final Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
-        assertThat(cache.has(preparation.id(), ROOT_STEP.id()), is(false));
+        ContentCacheKey key = new ContentCacheKey(preparation.id(), ROOT_STEP.id());
+        assertThat(cache.has(key), is(false));
         when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
-        assertThat(cache.has(preparation.id(), ROOT_STEP.id()), is(true));
+        assertThat(cache.has(key), is(true));
 
         // then (check if cached content is the expected one).
         final String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
         assertThat(contentAsString, sameJSONAsFile(expected));
+    }
+
+
+    @Test
+    public void testDataSetGetWithSample() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when
+        final String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=16", dataSetId)
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(16));
+    }
+
+
+    @Test
+    public void testDataSetGetWithSampleZeroOrFull() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when 0
+        String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=0", dataSetId)
+                .asString();
+
+        // then full content
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+
+        // when full
+        contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=full", dataSetId).asString();
+
+        // then full content
+        rootNode = mapper.readTree(contentAsString);
+        records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+    }
+
+    @Test
+    public void testDataSetGetWithSampleWhenSampleIsInvalid() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when (decimal number)
+        String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=10.6", dataSetId).asString();
+
+        // then (full content)
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+
+        // when (
+        contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=ghqmskjh", dataSetId).asString();
+
+        // then (full content)
+        rootNode = mapper.readTree(contentAsString);
+        records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+
     }
 
     @Test
@@ -453,9 +522,10 @@ public class DataPreparationAPITest {
         final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json");
 
         // when
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
+        ContentCacheKey key = new ContentCacheKey(preparationId, ROOT_STEP.id());
+        assertThat(cache.has(key), is(false));
         final String content = when().get("/api/preparations/{id}/content", preparationId).asString();
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
+        assertThat(cache.has(key), is(true));
 
         // then
         assertThat(content, sameJSONAsFile(expected));
@@ -479,9 +549,12 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
 
         // Cache is lazily populated
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
-        assertThat(cache.has(preparationId, steps.get(0)), is(false));
-        assertThat(cache.has(preparationId, steps.get(1)), is(false));
+        ContentCacheKey rootKey = new ContentCacheKey(preparationId, ROOT_STEP.id());
+        assertThat(cache.has(rootKey), is(false));
+        ContentCacheKey step0Key = new ContentCacheKey(preparationId, steps.get(0));
+        assertThat(cache.has(step0Key), is(false));
+        ContentCacheKey step1Key = new ContentCacheKey(preparationId, steps.get(1));
+        assertThat(cache.has(step1Key), is(false));
 
         // Request preparation content at different versions (preparation has 2 steps -> Root + Upper Case).
         assertThat(when().get("/api/preparations/{id}/content", preparationId).asString(),
@@ -498,9 +571,53 @@ public class DataPreparationAPITest {
                 sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json")));
 
         // After all these preparation get content, cache should be populated with content
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
-        assertThat(cache.has(preparationId, steps.get(0)), is(true));
-        assertThat(cache.has(preparationId, steps.get(1)), is(true));
+        assertThat(cache.has(rootKey), is(true));
+        assertThat(cache.has(step0Key), is(true));
+        assertThat(cache.has(step1Key), is(true));
+    }
+
+    @Test
+    public void shouldGetPreparationContent() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content", preparationId).asString();
+
+        // then
+        assertThat(preparationContent,
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("t-shirt_100.csv.expected.json")));
+    }
+
+    @Test
+    public void shouldGetPreparationContentSample() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content?sample=53", preparationId).asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(preparationContent);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(53));
+    }
+
+    @Test
+    public void shouldGetPreparationContentWhenInvalidSample() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content?sample=mdljshf", preparationId)
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(preparationContent);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
     }
 
     /**

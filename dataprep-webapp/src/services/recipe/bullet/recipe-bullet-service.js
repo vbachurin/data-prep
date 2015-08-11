@@ -63,9 +63,20 @@
 
         /**
          * @ngdoc method
+         * @name cancelPendingPreview
+         * @methodOf data-prep.services.recipe.service:RecipeBulletService
+         * @description Cancel the pending preview. If the REST call is pending, this call is canceled too.
+         */
+        function cancelPendingPreview() {
+            clearTimeout(previewTimeout);
+            PreviewService.stopPendingPreview();
+        }
+
+        /**
+         * @ngdoc method
          * @name stepHoverStart
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
-         * @param {number} index The position of the hovered button
+         * @param {number} step The hovered step
          * @description On step button hover in order to inform actions on steps :
          * <ul>
          *     <li>highlight inactive buttons above the one (including the one)</li>
@@ -79,12 +90,12 @@
                 element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
             });
 
-            $timeout.cancel(previewTimeout);
+            cancelPendingPreview();
             if (RecipeService.getRecipe()[index].inactive) {
-                previewTimeout = $timeout(previewAppend.bind(self, index, stepColumnId), 100);
+                previewTimeout = setTimeout(previewAppend.bind(self, index, stepColumnId), 100);
             }
             else {
-                previewTimeout = $timeout(previewDisable.bind(self, index, stepColumnId), 100);
+                previewTimeout = setTimeout(previewDisable.bind(self, index, stepColumnId), 100);
             }
         };
 
@@ -92,6 +103,7 @@
          * @ngdoc method
          * @name stepHoverEnd
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
+         * * @param {number} step The hovered end step
          * @description On step button leave : reset steps button highlight
          */
         this.stepHoverEnd = function (step) {
@@ -99,8 +111,10 @@
                 element.highlight = false;
             });
 
-            $timeout.cancel(previewTimeout);
-            previewTimeout = $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id), 100);
+            cancelPendingPreview();
+            previewTimeout = setTimeout(function() {
+                $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id));
+            }, 30);
         };
 
         //---------------------------------------------------------------------------------------------
@@ -111,6 +125,7 @@
          * @name previewAppend
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
          * @param {string} stepPosition The step position index to preview
+         * @param {string} stepColumnId The step target column id
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the disabled targeted step
          */
         var previewAppend = function (stepPosition, stepColumnId) {
@@ -125,6 +140,7 @@
          * @name previewDisable
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
          * @param {string} stepPosition The step position index to disable for the preview
+         * @param {string} stepColumnId The step target column id
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the step before the active targeted step
          */
         var previewDisable = function (stepPosition, stepColumnId) {

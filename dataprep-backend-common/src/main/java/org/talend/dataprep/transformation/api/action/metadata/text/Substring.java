@@ -1,5 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
+
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -12,11 +18,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.IColumnActi
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import javax.annotation.Nonnull;
-import java.util.Map;
-
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
 
 @Component(Substring.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
 public class Substring extends AbstractActionMetadata implements IColumnAction {

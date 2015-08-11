@@ -17,6 +17,7 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.command.dataset.DataSetGet;
 import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -92,13 +93,28 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
     }
 
     /**
-     * Get dataset records
+     * Get the full dataset records.
      *
-     * @param dataSetId - the dataset id
+     * @param dataSetId the dataset id.
+     * @param metadata true to return metadata.
+     * @param columns true to return columns info.
      * @return the resulting input stream records
      */
-    protected InputStream getDatasetContent(final String dataSetId) {
-        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
+    protected InputStream getDatasetContent(final String dataSetId, boolean metadata, boolean columns) {
+        return getDatasetContent(dataSetId, metadata, columns, null);
+    }
+
+    /**
+     * Get dataset records
+     *
+     * @param dataSetId the dataset id.
+     * @param metadata true to return metadata.
+     * @param columns true to return columns info.
+     * @param sample the wanted sample size (if null or <=0, the full dataset content is returned).
+     * @return the resulting input stream records
+     */
+    protected InputStream getDatasetContent(final String dataSetId, boolean metadata, boolean columns, Long sample) {
+        final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true, sample);
         return retrieveDataSet.execute();
     }
 
@@ -151,7 +167,17 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         }
     }
 
-    public PreparationContext getContext(String preparationId, String stepId) throws IOException {
+    /**
+     * Return the preparation context from the given arguments.
+     *
+     * @param preparationId the preparation id.
+     * @param stepId the step id.
+     * @param sample the optional sample size.
+     * @return the preparation context from the given arguments.
+     * @throws IOException if an error occurs.
+     */
+    protected PreparationContext getContext(String preparationId, String stepId, Long sample) throws IOException {
+
         PreparationContext ctx = new PreparationContext();
         if (preparationId == null) {
             ctx.actions = Collections.emptyList();
@@ -170,8 +196,9 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         ctx.preparation = preparation;
         ctx.version = version;
         // Direct try on cache at given version
-        if (contentCache.has(preparationId, version)) {
-            ctx.content = contentCache.get(preparationId, version);
+        ContentCacheKey key = new ContentCacheKey(preparationId, version, sample);
+        if (contentCache.has(key)) {
+            ctx.content = contentCache.get(key);
             ctx.actions = Collections.emptyList();
             ctx.fromCache = true;
             return ctx;
@@ -185,22 +212,20 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             final List<String> preparationSteps = preparation.getSteps();
             for (String step : preparationSteps) {
                 transformationStartStep = step;
-                if (contentCache.has(preparationId, step)) {
-                    ctx.content = contentCache.get(preparationId, step);
+                key = new ContentCacheKey(preparationId, step, sample);
+                if (contentCache.has(key)) {
+                    ctx.content = contentCache.get(key);
                     break;
                 }
             }
             // Did not find any cache for retrieve preparation details, starts over from original dataset
             if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
-                final String dataSetId = preparation.getDataSetId();
-                final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
-                ctx.content = retrieveDataSet.execute();
+
+                ctx.content = getDatasetContent(preparation.getDataSetId(), false, true, sample);
             }
         } else {
             // Don't allow to work from intermediate cached steps, so start over from root (data set content).
-            final String dataSetId = preparation.getDataSetId();
-            final DataSetGet retrieveDataSet = context.getBean(DataSetGet.class, client, dataSetId, false, true);
-            ctx.content = retrieveDataSet.execute();
+            ctx.content = getDatasetContent(preparation.getDataSetId(), false, true, sample);
             transformationStartStep = stepId;
         }
         // Build the actions to execute

@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -9,7 +9,22 @@
      * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      */
     function DatasetRestService($rootScope, $upload, $http, RestURLs) {
-        var self = this;
+        return {
+            import: importRemoteDataset,
+            create: create,
+            update: update,
+            delete: deleteDataset,
+
+            updateColumn: updateColumn,
+
+            getDatasets: getDatasets,
+            updateMetadata: updateMetadata,
+            getContent: getContent,
+            getSheetPreview: getSheetPreview,
+
+            processCertification: processCertification,
+            toggleFavorite: toggleFavorite
+        };
 
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Dataset----------------------------------------------------
@@ -20,35 +35,35 @@
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Create the dataset
          * @param {dataset} dataset - the dataset infos to create
-         * @returns {Promise} - the $upload promise
+         * @returns {Promise} the $upload promise
          */
-        self.create = function(dataset) {
+        function create(dataset) {
             return $upload.http({
                 url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(dataset.name),
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
             });
-        };
+        }
 
         /**
          * @ngdoc method
-         * @name import
+         * @name importRemoteDataset
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Import the remote dataset
-         * @param {parameters} - the import parameters
-         * @returns {Promise} - the $post promise
+         * @param {parameters} the import parameters
+         * @returns {Promise} the $post promise
          */
-        self.import = function(parameters) {
+        function importRemoteDataset(parameters) {
             var req = {
                 method: 'POST',
                 url: RestURLs.datasetUrl + '?name=' + encodeURIComponent(parameters.name),
                 headers: {
-                    'Content-Type': 'application/vnd.remote-ds.'+ parameters.type
+                    'Content-Type': 'application/vnd.remote-ds.' + parameters.type
                 },
                 data: parameters
             };
             return $http(req);
-        };
+        }
 
         /**
          * @ngdoc method
@@ -56,28 +71,28 @@
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Update the dataset
          * @param {dataset} dataset - the dataset infos to update
-         * @returns {Promise} - the $upload promise
+         * @returns {Promise} the $upload promise
          */
-        self.update = function(dataset) {
+        function update(dataset) {
             return $upload.http({
                 url: RestURLs.datasetUrl + '/' + dataset.id + '?name=' + encodeURIComponent(dataset.name),
                 method: 'PUT',
                 headers: {'Content-Type': 'text/plain'},
                 data: dataset.file
             });
-        };
+        }
 
         /**
          * @ngdoc method
          * @name delete
          * @methodOf data-prep.services.dataset.service:DatasetRestService
          * @description Delete the dataset
-         * @param {dataset} dataset - the dataset infos to delete
+         * @param {dataset} dataset the dataset infos to delete
          * @returns {Promise} The DELETE promise
          */
-        self.delete = function(dataset) {
+        function deleteDataset(dataset) {
             return $http.delete(RestURLs.datasetUrl + '/' + dataset.id);
-        };
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Metadata---------------------------------------------------
@@ -89,9 +104,9 @@
          * @description Get the dataset list
          * @returns {Promise} - the GET call promise
          */
-        self.getDatasets = function() {
+        function getDatasets() {
             return $http.get(RestURLs.datasetUrl);
-        };
+        }
 
         /**
          * @ngdoc method
@@ -101,9 +116,9 @@
          * @param {dataset} metadata The dataset infos to update
          * @returns {Promise} The POST promise
          */
-        self.updateMetadata = function(metadata){
+        function updateMetadata(metadata) {
             return $http.post(RestURLs.datasetUrl + '/' + metadata.id, metadata);
-        };
+        }
 
         /**
          * @ngdoc method
@@ -112,9 +127,25 @@
          * @description Ask certification for a dataset
          * @param {string} datasetId The dataset id
          */
-        self.processCertification = function(datasetId) {
+        function processCertification(datasetId) {
             return $http.put(RestURLs.datasetUrl + '/' + datasetId + '/processcertification');
-        };
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name updateColumn
+         * @methodOf data-prep.services.dataset.service:DatasetRestService
+         * @description Update the dataset column
+         * @param {string} datasetId The dataset id
+         * @param {string} columnId The column id
+         * @param {object} params The parameters containing typeId and/or domainId
+         * @returns {Promise} The POST promise
+         */
+        function updateColumn(datasetId, columnId, params) {
+            var url = RestURLs.datasetUrl + '/' + datasetId + '/column/' + columnId;
+            return $http.post(url, params);
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------Content----------------------------------------------------
@@ -126,18 +157,23 @@
          * @description Get the dataset content
          * @param {string} datasetId The dataset id
          * @param {boolean} metadata If false, the metadata will not be returned
+         * @param {int} sample The sample size
          * @returns {Promise} - the GET promise
          */
-        self.getContent = function(datasetId, metadata) {
+        function getContent (datasetId, metadata, sample) {
+            var url = RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata;
+            if (sample) {
+                url += '&sample='+sample;
+            }
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata )
+            return $http.get(url)
                 .then(function(res) {
                     return res.data;
                 })
-                .finally(function() {
+                .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });
-        };
+        }
 
         //--------------------------------------------------------------------------------------------------------------
         //------------------------------------------------Sheet Preview-------------------------------------------------
@@ -151,16 +187,16 @@
          * @param {string} sheetName The sheet to preview
          * @returns {Promise} The GET promise
          */
-        self.getSheetPreview = function(datasetId, sheetName) {
+        function getSheetPreview(datasetId, sheetName) {
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true' + (sheetName ? '&sheetName=' + encodeURIComponent(sheetName): ''))
-                .then(function(res) {
+            return $http.get(RestURLs.datasetUrl + '/preview/' + datasetId + '?metadata=true' + (sheetName ? '&sheetName=' + encodeURIComponent(sheetName) : ''))
+                .then(function (res) {
                     return res.data;
                 })
-                .finally(function() {
+                .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
                 });
-        };
+        }
 
 
         //--------------------------------------------------------------------------------------------------------------
@@ -174,9 +210,9 @@
          * @param {dataset} dataset The dataset to be toggled
          * @returns {Promise} The PUT promise
          */
-        self.toggleFavorite = function(dataset) {
-            return $http.post(RestURLs.datasetUrl + '/favorite/' + dataset.id + '?unset='+dataset.favorite);
-        };
+        function toggleFavorite(dataset) {
+            return $http.post(RestURLs.datasetUrl + '/favorite/' + dataset.id + '?unset=' + dataset.favorite);
+        }
 
     }
 

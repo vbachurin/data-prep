@@ -7,8 +7,9 @@
      * @description Datagrid private service that manage the grid style
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.utils.service:TextFormatService
      */
-    function DatagridStyleService(DatagridService, ConverterService) {
+    function DatagridStyleService(DatagridService, ConverterService, TextFormatService) {
         var grid;
         var lastSelectedColumnId;
 
@@ -17,9 +18,7 @@
             resetCellStyles : resetCellStyles,
             resetColumnStyles : resetColumnStyles,
             selectedColumn : selectedColumn,
-            navigateToFocusedColumn: navigateToFocusedColumn,
             manageColumnStyle: manageColumnStyle,
-            computeHTMLForLeadingOrTrailingHiddenChars: computeHTMLForLeadingOrTrailingHiddenChars,
             columnFormatter: columnFormatter,
             getColumnPreviewStyle: getColumnPreviewStyle
         };
@@ -52,31 +51,15 @@
          * @ngdoc method
          * @name selectedColumn
          * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description returns the selected column object
+         * @description returns the selected column object (the one from provided array with the selected id)
+         * @param {array} columns The grid columns
          * @return {object}
          */
-        function selectedColumn() {
+        function selectedColumn(columns) {
             if(lastSelectedColumnId) {
-                return _.find(grid.getColumns(), function(column) {
+                return _.find(columns, function(column) {
                     return column.id === lastSelectedColumnId;
                 });
-            }
-        }
-
-        /**
-         * @ngdoc method
-         * @name navigateToFocusedColumn
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description navigates between columns
-         */
-        function navigateToFocusedColumn(){
-            if(DatagridService.focusedColumn) {
-                var columnIndex = _.findIndex(grid.getColumns(), function (column) {
-                    return column.id === DatagridService.focusedColumn;
-                });
-                var viewPort    = grid.getRenderedRange();
-                var centerRow   = +((viewPort.bottom - viewPort.top) / 2).toFixed(0);
-                grid.scrollCellIntoView(viewPort.top + centerRow, columnIndex, false);
             }
         }
 
@@ -125,10 +108,11 @@
          * @name updateColumnClass
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description Set style classes on columns depending on its state (type, selection, ...)
+         * @param {object} columns The columns array
          * @param {object} selectedCol The grid selected column
          */
-        function updateColumnClass(selectedCol) {
-            _.forEach(grid.getColumns(), function(column) {
+        function updateColumnClass(columns, selectedCol) {
+            _.forEach(columns, function(column) {
                 column.cssClass = null;
                 updateSelectionClass(column, selectedCol);
                 updateNumbersClass(column);
@@ -143,66 +127,27 @@
          * @ngdoc method
          * @name manageColumnStyle
          * @methodOf data-prep.datagrid.service:DatagridStyleService
+         * * @param {object} columns The columns array
          * @param {boolean} isPreview Flag that indicate if the data IS in preview mode
          * @description Update column style classes accordingly to the active cell.
          * This is usefull when data changes, the column style is reset but the active cell does not change.
          */
-        function manageColumnStyle(isPreview) {
-            var column;
+        function manageColumnStyle(columns, isPreview) {
+            var selectedColumn;
 
             if(!isPreview) {
                 var activeCell = grid.getActiveCell();
                 if(activeCell) {
-                    column = grid.getColumns()[activeCell.cell];
+                    selectedColumn = columns[activeCell.cell];
                 }
                 else if(lastSelectedColumnId) {
-                    column = _.find(grid.getColumns(), function(col) {
+                    selectedColumn = _.find(columns, function(col) {
                         return col.id === lastSelectedColumnId;
                     });
                 }
             }
 
-            updateColumnClass(column);
-        }
-
-        /**
-         * @ngdoc method
-         * @name computeHTMLForLeadingOrTrailingHiddenChars
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description split the string value into leading chars, text and trailing char and create html element using
-         * the class hiddenChars to specify the hiddenChars.If the text contains break lines, the class
-         * hiddenCharsBreakLine is used to notice it.
-         * @param {string} value The string value to adapt
-         */
-        function computeHTMLForLeadingOrTrailingHiddenChars(value){
-            if(!value) {
-                return value;
-            }
-
-            var returnStr = '';
-            var hiddenCharsRegExpMatch = value.match(/(^\s*)?([\s\S]*?)(\s*$)/);
-
-            //leading hidden chars found
-            if (hiddenCharsRegExpMatch[1]){
-                returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>';
-            }
-
-            //breaking lines indicator
-            var lines = value.trim().split('\n');
-            if(lines.length < 2) {
-                returnStr += hiddenCharsRegExpMatch[2] ;
-            }
-            else {
-                _.forEach(lines, function(line, index) {
-                    returnStr += line + (index === lines.length -1 ? '' : '↵\n');
-                });
-            }
-
-            //trailing hidden chars
-            if (hiddenCharsRegExpMatch[3]){
-                returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
-            }
-            return returnStr;
+            updateColumnClass(columns, selectedColumn);
         }
 
         /**
@@ -221,7 +166,7 @@
 
             return function formatter(row, cell, value, columnDef, dataContext) {
                 //hidden characters need to be shown
-                var returnStr = computeHTMLForLeadingOrTrailingHiddenChars(value);
+                var returnStr = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
 
                 //entire row modification preview
                 switch(dataContext.__tdpRowDiff) {
@@ -267,7 +212,7 @@
         function attachColumnHeaderListeners() {
             grid.onHeaderClick.subscribe(function(e, args) {
                 resetCellStyles();
-                updateColumnClass(args.column);
+                updateColumnClass(grid.getColumns(), args.column);
                 grid.invalidate();
             });
         }
@@ -297,8 +242,9 @@
             //change selected cell column background
             grid.onActiveCellChanged.subscribe(function(e,args) {
                 if(angular.isDefined(args.cell)) {
-                    var column = grid.getColumns()[args.cell];
-                    updateColumnClass(column);
+                    var columns = grid.getColumns();
+                    var column = columns[args.cell];
+                    updateColumnClass(columns, column);
                     grid.invalidate();
                 }
             });

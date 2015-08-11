@@ -29,8 +29,16 @@ describe('Recipe Bullet service', function () {
         spyOn(PreviewService, 'getPreviewDiffRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'getPreviewUpdateRecords').and.returnValue($q.when(true));
         spyOn(PreviewService, 'cancelPreview').and.returnValue(null);
+        spyOn(PreviewService, 'stopPendingPreview').and.returnValue(null);
         spyOn($timeout, 'cancel').and.callThrough();
     }));
+
+    beforeEach(function () {
+        jasmine.clock().install();
+    });
+    afterEach(function () {
+        jasmine.clock().uninstall();
+    });
 
     it('should highlight active steps after the targeted one (included)', inject(function (RecipeService, RecipeBulletService) {
         //given
@@ -85,15 +93,15 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverStart(recipe[2]);
-        $timeout.flush(99);
+        jasmine.clock().tick(99);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
-        $timeout.flush(1);
+        jasmine.clock().tick(1);
 
         //then
         expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[0], recipe[2], '0004');
     }));
 
-    it('should cancel pending preview action on step hover', inject(function ($timeout, RecipeService, RecipeBulletService) {
+    it('should cancel pending preview action on step hover', inject(function ($timeout, RecipeService, RecipeBulletService, PreviewService) {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
@@ -107,7 +115,7 @@ describe('Recipe Bullet service', function () {
         RecipeBulletService.stepHoverStart(recipe[2]);
 
         //then
-        expect($timeout.cancel).toHaveBeenCalled();
+        expect(PreviewService.stopPendingPreview).toHaveBeenCalled();
     }));
 
     it('should deactivate all the recipe', inject(function (RecipeService, PlaygroundService, RecipeBulletService) {
@@ -169,9 +177,9 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverStart(recipe[2]);
-        $timeout.flush(99);
+        jasmine.clock().tick(99);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
-        $timeout.flush(1);
+        jasmine.clock().tick(1);
 
         //then
         expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], recipe[1], '0000');
@@ -198,29 +206,32 @@ describe('Recipe Bullet service', function () {
         expect(recipe[3].highlight).toBeFalsy();
     }));
 
-    it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function ($timeout, PreviewService, RecipeBulletService) {
+    it('should cancel current preview on mouse hover end after a delay of 30ms', inject(function ($timeout, PreviewService, RecipeBulletService) {
         //given
         var step = {column: {id: '0001'}};
 
         //when
         RecipeBulletService.stepHoverEnd(step);
-        $timeout.flush(99);
         expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
-        $timeout.flush(1);
+        jasmine.clock().tick(30);
+        $timeout.flush();
 
         //then
         expect(PreviewService.cancelPreview).toHaveBeenCalled();
     }));
 
-    it('should cancel pending preview action on mouse hover end', inject(function ($timeout, RecipeBulletService) {
+    it('should cancel pending preview action on mouse hover end', inject(function ($timeout, PreviewService, RecipeBulletService) {
         //given
         var step = {column: {id: '0001'}};
 
         //when
         RecipeBulletService.stepHoverEnd(step);
+        jasmine.clock().tick(30);
+        $timeout.flush();
 
         //then
-        expect($timeout.cancel).toHaveBeenCalled();
+        expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
+        expect(PreviewService.stopPendingPreview).toHaveBeenCalled();
     }));
 
     it('should load current step content if the step is first inactive', inject(function (PlaygroundService, RecipeBulletService) {

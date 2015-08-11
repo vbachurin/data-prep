@@ -1,5 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.STRING;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -11,12 +17,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetad
 import org.talend.dataprep.transformation.api.action.metadata.common.ICellAction;
 import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
 
 @Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
 public class ReplaceOnValue extends AbstractActionMetadata implements IColumnAction, ICellAction {

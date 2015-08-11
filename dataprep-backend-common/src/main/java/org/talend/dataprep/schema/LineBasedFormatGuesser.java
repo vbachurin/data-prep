@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {

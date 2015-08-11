@@ -1,4 +1,4 @@
-describe('Dropdown directive', function () {
+describe('Loading directive', function () {
     'use strict';
 
     var scope, element;
@@ -14,31 +14,49 @@ describe('Dropdown directive', function () {
         scope.$digest();
     }));
 
-    it('should add "loading-open" class on body after 200ms when "talend.loading.start" is emitted', inject(function ($rootScope, $timeout) {
+    beforeEach(function () {
+        jasmine.clock().install();
+    });
+    afterEach(function () {
+        jasmine.clock().uninstall();
+    });
+
+    it('should immediatly add "is-loading" class when "talend.loading.start" is emitted', inject(function ($rootScope) {
         //given
-        var body = angular.element('body');
-        expect(body.hasClass('loading-open')).toBe(false);
+        expect(element.hasClass('is-loading')).toBe(false);
 
         //when
         $rootScope.$emit('talend.loading.start');
         $rootScope.$digest();
-        expect(body.hasClass('loading-open')).toBe(false);
-        $timeout.flush(120);
 
         //then
-        expect(body.hasClass('loading-open')).toBe(true);
+        expect(element.hasClass('is-loading')).toBe(true);
     }));
 
-    it('should remove "loading-open" class on body when "talend.loading.start" is emitted', inject(function ($rootScope) {
+    it('should add "show-loading" class after 150ms when "talend.loading.start" is emitted', inject(function ($rootScope) {
         //given
-        var body = angular.element('body');
-        body.addClass('loading-open');
+        expect(element.hasClass('show-loading')).toBe(false);
+
+        //when
+        $rootScope.$emit('talend.loading.start');
+        $rootScope.$digest();
+        expect(element.hasClass('show-loading')).toBe(false);
+        jasmine.clock().tick(150);
+
+        //then
+        expect(element.hasClass('show-loading')).toBe(true);
+    }));
+
+    it('should remove "show-loading" class when "talend.loading.start" is emitted', inject(function ($rootScope) {
+        //given
+        element.addClass('is-loading show-loading');
 
         //when
         $rootScope.$emit('talend.loading.stop');
         $rootScope.$digest();
 
         //then
-        expect(body.hasClass('loading-open')).toBe(false);
+        expect(element.hasClass('show-loading')).toBe(false);
+        expect(element.hasClass('is-loading')).toBe(false);
     }));
 });

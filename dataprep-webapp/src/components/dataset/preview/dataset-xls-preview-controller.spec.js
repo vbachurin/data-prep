@@ -143,7 +143,7 @@ describe('Dataset xls preview controller', function () {
 
         //then
         expect(DatasetService.refreshDatasets).toHaveBeenCalled();
-        expect(DatasetService.getContent).toHaveBeenCalledWith('mqfdg684qfg6q84g8q', false);
+        expect(DatasetService.getContent).toHaveBeenCalledWith('mqfdg684qfg6q84g8q', false, undefined);
     }));
 
     it('should open dataset on selected sheet set', inject(function ($rootScope, $timeout, DatasetSheetPreviewService, PlaygroundService) {
@@ -176,6 +176,6 @@ describe('Dataset xls preview controller', function () {
 
         //then
         expect(ctrl.state).toBe(false);
-        expect(DatasetService.getContent).toHaveBeenCalledWith('mqfdg684qfg6q84g8q', false);
+        expect(DatasetService.getContent).toHaveBeenCalledWith('mqfdg684qfg6q84g8q', false, undefined);
     }));
 });
