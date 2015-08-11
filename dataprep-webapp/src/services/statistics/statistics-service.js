@@ -139,62 +139,12 @@
 
             getAggregations(datasetId, currentColumn, targetColumn, calculation)
                 .then(function(aggregationStatistics) {
+
                     //processes the visualization data
-                    processAggregationStatistics(currentColumn, aggregationStatistics);
+                    var aggregationStatisticsArray = aggregationStatistics;
+                    service.stateDistribution = null; //hide the map if the previous column was a state
+                    service.data = aggregationStatisticsArray; // update charts data
                 });
-        }
-
-        /**
-         * @ngdoc method
-         * @name getAggregations
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {object} stringifiedColumn The aggregation target column as string
-         * @description Get aggregation from REST call, clean and adapt them
-         */
-        function getAggregationsRest(stringifiedColumn) {
-            return StatisticsRestService.getAggregations(stringifiedColumn)
-                .then(function(response) {
-                    return response.data;
-                });
-        }
-
-        /**
-         * @ngdoc method
-         * @name getAggregations
-         * @methodOf data-prep.services.statistics.service:StatisticsService
-         * @param {object} currentColumn The current column
-         * @param {object} aggregationStatistics The aggregation statistcs returned REST service
-         * @description Update charts with aggregation statistcs returned REST service
-         */
-        function processAggregationStatistics(currentColumn, aggregationStatistics) {
-
-            service.stateDistribution = null; //hide the map if the previous column was a state
-
-            if(ConverterService.simplifyType(currentColumn.type) === 'number') {
-                service.data = extractNumericData(aggregationStatistics);
-            }
-            else {
-                var aggregationStatisticsArray = aggregationStatistics;
-                service.data = aggregationStatisticsArray;
-            }
-
-        }
-
-        /**
-         * @ngdoc method
-         * @name getKey
-         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
-         * @param {object} column The column to set as key
-         * @description [PRIVATE] Generate a unique key for the column.
-         */
-        function getKey(datasetId, currentColumn, targetColumn, calculation) {
-            var keyObj = {
-                datasetId: datasetId,
-                currentColumnId: currentColumn.id,
-                targetColumnId: targetColumn.id,
-                calculationId: calculation.id
-            };
-            return JSON.stringify(keyObj);
         }
 
         /**
@@ -226,6 +176,38 @@
             suggestionsCache[key] = fetchPromise;
             return fetchPromise;
 
+        }
+
+        /**
+         * @ngdoc method
+         * @name getAggregations
+         * @methodOf data-prep.services.statistics.service:StatisticsService
+         * @param {object} stringifiedColumn The aggregation target column as string
+         * @description Get aggregation from REST call, clean and adapt them
+         */
+        function getAggregationsRest(stringifiedColumn) {
+            return StatisticsRestService.getAggregations(stringifiedColumn)
+                .then(function(response) {
+                    return response.data;
+                });
+        }
+
+
+        /**
+         * @ngdoc method
+         * @name getKey
+         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
+         * @param {object} column The column to set as key
+         * @description [PRIVATE] Generate a unique key for the column.
+         */
+        function getKey(datasetId, currentColumn, targetColumn, calculation) {
+            var keyObj = {
+                datasetId: datasetId,
+                currentColumnId: currentColumn.id,
+                targetColumnId: targetColumn.id,
+                calculationId: calculation.id
+            };
+            return JSON.stringify(keyObj);
         }
 
         /**

@@ -22,8 +22,8 @@
                 .then(function(response) {
                     return response;
             }, function() {
-                    var mockResponseString ={};
-                    mockResponseString.data = [
+                    var mockResponse ={};
+                    mockResponse.data = [
                         {
                             'data': 'Lansing',
                             'occurrences': 15
@@ -86,46 +86,7 @@
                         }
                     ];
 
-                    var mockResponseNumber ={};
-                    mockResponseNumber.data = [
-                        {
-                            'range': {
-                                'min': 1,
-                                'max': 13.375
-                            },
-                            'occurrences': 456
-                        },
-                        {
-                            'range': {
-                                'min': 13.375,
-                                'max': 25.75
-                            },
-                            'occurrences': 12
-                        },
-                        {
-                            'range': {
-                                'min': 25.75,
-                                'max': 38.125
-                            },
-                            'occurrences': 10
-                        },
-                        {
-                            'range': {
-                                'min': 38.125,
-                                'max': 50.5
-                            },
-                            'occurrences': 0
-                        },
-                        {
-                            'range': {
-                                'min': 50.5,
-                                'max': 62.875
-                            },
-                            'occurrences': 250
-                        }];
-
-                    return mockResponseString;
-                    //return mockResponseNumber;
+                    return mockResponse;
             });
 
             return responsePromise;
