@@ -1,5 +1,17 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +30,6 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.collection.IsArrayWithSize.emptyArray;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.talend.dataprep.exception.error.CommonErrorCodes.MISSING_ACTION_SCOPE;
-import static org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = AbstractActionMetadataTest.class)
@@ -301,7 +301,7 @@ public class AbstractActionMetadataTest {
 
 @Component
 @Profile("test")
-class CellTransformation extends AbstractActionMetadata implements ICellAction {
+class CellTransformation extends AbstractActionMetadata implements CellAction {
     @Override
     protected void beforeApply(Map<String, String> parameters) {
 
@@ -331,7 +331,7 @@ class CellTransformation extends AbstractActionMetadata implements ICellAction {
 
 @Component
 @Profile("test")
-class LineTransformation extends AbstractActionMetadata implements ILineAction {
+class LineTransformation extends AbstractActionMetadata implements RowAction {
 
     @Override
     protected void beforeApply(Map<String, String> parameters) {
@@ -354,7 +354,7 @@ class LineTransformation extends AbstractActionMetadata implements ILineAction {
     }
 
     @Override
-    public void applyOnLine(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId) {
+    public void applyOnRow(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId) {
         for(final Map.Entry<String, Object> entry : row.values().entrySet()) {
             row.set(entry.getKey(), entry.getValue().toString().toUpperCase());
         }
@@ -363,7 +363,7 @@ class LineTransformation extends AbstractActionMetadata implements ILineAction {
 
 @Component
 @Profile("test")
-class ColumnTransformation extends AbstractActionMetadata implements IColumnAction {
+class ColumnTransformation extends AbstractActionMetadata implements ColumnAction {
     @Override
     protected void beforeApply(Map<String, String> parameters) {
 
@@ -393,7 +393,7 @@ class ColumnTransformation extends AbstractActionMetadata implements IColumnActi
 
 @Component
 @Profile("test")
-class TableTransformation extends AbstractActionMetadata implements ITableAction {
+class TableTransformation extends AbstractActionMetadata implements DataSetAction {
     @Override
     protected void beforeApply(Map<String, String> parameters) {
 
@@ -415,7 +415,7 @@ class TableTransformation extends AbstractActionMetadata implements ITableAction
     }
 
     @Override
-    public void applyOnTable(DataSetRow row, TransformationContext context, Map<String, String> parameters) {
+    public void applyOnDataSet(DataSetRow row, TransformationContext context, Map<String, String> parameters) {
         for(final Map.Entry<String, Object> entry : row.values().entrySet()) {
             row.set(entry.getKey(), entry.getValue().toString().toUpperCase());
         }

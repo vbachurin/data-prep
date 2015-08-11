@@ -20,14 +20,14 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * This will compute the absolute value for numerical columns.
  * This action is faster than the AbsoluteInt one on columns with more float values
  */
 @Component(AbsoluteFloat.ACTION_BEAN_PREFIX + AbsoluteFloat.ABSOLUTE_FLOAT_ACTION_NAME)
-public class AbsoluteFloat extends AbstractAbsolute implements IColumnAction {
+public class AbsoluteFloat extends AbstractAbsolute implements ColumnAction {
 
     public static final String ABSOLUTE_FLOAT_ACTION_NAME = "absolute_float"; //$NON-NLS-1$
 
@@ -48,6 +48,7 @@ public class AbsoluteFloat extends AbstractAbsolute implements IColumnAction {
 
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
     @Override

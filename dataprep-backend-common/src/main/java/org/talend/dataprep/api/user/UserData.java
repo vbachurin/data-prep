@@ -31,6 +31,10 @@ public class UserData {
     // set storing the favorites dateset Ids for a user
     Set<String> favoritesDatasets = new HashSet<>();
 
+    @JsonProperty(value = "userId", required = true)
+    @Id
+    String userId;
+
     /**
      * Getter for favoritesDatasets.
      * 
@@ -52,15 +56,11 @@ public class UserData {
     /**
      * add a DataSet into the favorites list
      * 
-     * @param dataSet, the favorite to be dataset.
+     * @param dataSetId, the favorite to be dataset.
      */
     public void addFavoriteDataset(String dataSetId) {
         this.favoritesDatasets.add(dataSetId);
     }
-
-    @JsonProperty(value = "userId", required = true)
-    @Id
-    String userId;
 
     /**
      * Getter for userId.

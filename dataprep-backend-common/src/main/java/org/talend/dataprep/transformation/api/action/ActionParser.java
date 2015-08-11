@@ -52,7 +52,6 @@ public class ActionParser {
             final Actions parsedActions = builder.build().reader(Actions.class).readValue(actions);
             // Create closures from parsed actions
             List<DataSetRowAction> rowActions = new ArrayList<>();
-            List<DataSetMetadataAction> metadataActions = new ArrayList<>();
             final List<Action> allActions = parsedActions.getActions();
             for (Action parsedAction : allActions) {
                 final String name = ActionMetadata.ACTION_BEAN_PREFIX + parsedAction.getAction().toLowerCase();

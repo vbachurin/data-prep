@@ -151,7 +151,7 @@ public class DataSetRow implements Cloneable, Serializable {
         });
 
         // compute the deleted values (column is deleted)
-        originalValues.entrySet().stream().forEach((entry) -> {
+        originalValues.entrySet().stream().forEach(entry -> {
             if (!values.containsKey(entry.getKey())) {
                 diff.put(entry.getKey(), DELETE.getValue());
                 // put back the original entry so that the value can be displayed
@@ -160,7 +160,7 @@ public class DataSetRow implements Cloneable, Serializable {
         });
 
         // compute the update values (column is still here but value is different)
-        values.entrySet().stream().forEach((entry) -> {
+        values.entrySet().stream().forEach(entry -> {
             if (originalValues.containsKey(entry.getKey())) {
                 final Object originalValue = originalValues.get(entry.getKey());
                 if (!StringUtils.equals(entry.getValue(), (String) originalValue)) {
@@ -178,11 +178,11 @@ public class DataSetRow implements Cloneable, Serializable {
     }
 
     public Map<String, Object> valuesWithId() {
-        final Map<String, Object> values = values();
+        final Map<String, Object> temp = values();
         if(getTdpId() != null) {
-            values.put(TDP_ID, getTdpId());
+            temp.put(TDP_ID, getTdpId());
         }
-        return values;
+        return temp;
     }
 
     /**

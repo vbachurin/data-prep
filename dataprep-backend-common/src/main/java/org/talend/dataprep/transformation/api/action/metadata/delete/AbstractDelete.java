@@ -9,12 +9,12 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * Abstract class used as base class for delete actions.
  */
-public abstract class AbstractDelete extends AbstractActionMetadata implements IColumnAction {
+public abstract class AbstractDelete extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * @see ActionMetadata#getCategory()
