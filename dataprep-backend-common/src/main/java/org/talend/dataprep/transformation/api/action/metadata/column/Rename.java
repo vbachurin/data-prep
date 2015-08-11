@@ -16,7 +16,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 /**
@@ -25,7 +25,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
  * If the column to rename does not exist or the new name is already used, nothing happen.
  */
 @Component(Rename.ACTION_BEAN_PREFIX + Rename.RENAME_ACTION_NAME)
-public class Rename extends AbstractActionMetadata implements IColumnAction {
+public class Rename extends AbstractActionMetadata implements ColumnAction {
 
     /** Action name. */
     public static final String RENAME_ACTION_NAME = "rename_column"; //$NON-NLS-1$
@@ -90,8 +90,12 @@ public class Rename extends AbstractActionMetadata implements IColumnAction {
         return new Rename(column.getName());
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
     @Override

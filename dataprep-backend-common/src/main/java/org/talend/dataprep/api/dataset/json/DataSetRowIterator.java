@@ -105,12 +105,7 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
                     currentFieldName = parser.getText();
                     break;
                 case VALUE_STRING:
-                    if(TDP_ID.equals(currentFieldName)) {
-                        row.setTdpId(Long.parseLong(parser.getText()));
-                    }
-                    else {
-                        row.set(currentFieldName, parser.getText());
-                    }
+                    setStringValue(currentFieldName, parser.getText());
                     break;
                 case VALUE_NULL:
                     row.set(currentFieldName, "");
@@ -124,6 +119,20 @@ public class DataSetRowIterator implements Iterator<DataSetRow> {
             return row;
         } catch (IOException e) {
             throw new TDPException(CommonErrorCodes.UNABLE_TO_PARSE_JSON, e);
+        }
+    }
+
+    /**
+     * Set the string value and deal with the TDP-ID case.
+     *
+     * @param fieldName the name of the field.
+     * @param value the value.
+     */
+    private void setStringValue(String fieldName, String value) {
+        if (TDP_ID.equals(fieldName)) {
+            row.setTdpId(Long.parseLong(value));
+        } else {
+            row.set(fieldName, value);
         }
     }
 }

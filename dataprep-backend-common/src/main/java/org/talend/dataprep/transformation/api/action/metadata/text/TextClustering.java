@@ -8,12 +8,13 @@ import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractDynamicActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 @Component(TextClustering.ACTION_BEAN_PREFIX + TextClustering.TEXT_CLUSTERING)
-public class TextClustering extends AbstractDynamicActionMetadata implements IColumnAction {
+public class TextClustering extends AbstractDynamicActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -44,8 +45,12 @@ public class TextClustering extends AbstractDynamicActionMetadata implements ICo
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
     @Override

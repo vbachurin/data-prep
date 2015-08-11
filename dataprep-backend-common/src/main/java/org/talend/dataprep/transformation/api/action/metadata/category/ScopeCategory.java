@@ -17,7 +17,7 @@ public enum ScopeCategory {
     private final Predicate<Map<String, String>> mandatoryParametersChecker;
 
     ScopeCategory(final ImplicitParameters... mandatoryParameters) {
-        mandatoryParametersChecker = (map) -> {
+        mandatoryParametersChecker = map -> {
             for(final ImplicitParameters param : mandatoryParameters) {
                 if(! map.containsKey(param.getKey())) {
                     return false;

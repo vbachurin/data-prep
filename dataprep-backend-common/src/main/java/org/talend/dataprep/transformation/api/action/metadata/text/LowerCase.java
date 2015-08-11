@@ -9,13 +9,13 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * Lower case a column in a dataset row.
  */
 @Component(LowerCase.ACTION_BEAN_PREFIX + LowerCase.LOWER_CASE_ACTION_NAME)
-public class LowerCase extends AbstractActionMetadata implements IColumnAction {
+public class LowerCase extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * Action name.
@@ -46,8 +46,12 @@ public class LowerCase extends AbstractActionMetadata implements IColumnAction {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
     @Override

@@ -10,10 +10,10 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 @Component(ProperCase.ACTION_BEAN_PREFIX + ProperCase.PROPER_CASE_ACTION_NAME)
-public class ProperCase extends AbstractActionMetadata implements IColumnAction {
+public class ProperCase extends AbstractActionMetadata implements ColumnAction {
 
     public static final String PROPER_CASE_ACTION_NAME = "propercase"; //$NON-NLS-1$
 
@@ -32,8 +32,12 @@ public class ProperCase extends AbstractActionMetadata implements IColumnAction 
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
     @Override

@@ -14,12 +14,12 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.ICellAction;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 @Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
-public class ReplaceOnValue extends AbstractActionMetadata implements IColumnAction, ICellAction {
+public class ReplaceOnValue extends AbstractActionMetadata implements ColumnAction, CellAction {
 
     /**
      * The action name.
@@ -71,8 +71,12 @@ public class ReplaceOnValue extends AbstractActionMetadata implements IColumnAct
         return STRING.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
     private void apply(DataSetRow row, Map<String, String> parameters, String columnId) {
