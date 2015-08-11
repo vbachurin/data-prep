@@ -52,7 +52,7 @@
                     var willBeSecondClick = false;
                     var timer = null;
 
-                    var body = angular.element('body');
+                    var body = angular.element('body').eq(0);
                     var windowElement = angular.element($window);
                     var container = iElement.find('.dropdown-container');
                     var action = iElement.find('.dropdown-action');

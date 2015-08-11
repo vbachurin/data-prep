@@ -126,7 +126,7 @@
             },
             link: {
                 post: function (scope, iElement, iAttrs, ctrl) {
-                    var body = angular.element('body');
+                    var body = angular.element('body').eq(0);
                     var innerElement = iElement.find('.modal-inner').eq(0);
                     var primaryButton = iElement.find('.modal-primary-button').eq(0);
                     var hasBeforeEachFn = iAttrs.beforeClose !== undefined;

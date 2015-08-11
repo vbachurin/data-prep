@@ -143,9 +143,7 @@
                         }, 0);
 
                         //focus specific column
-                        setTimeout(function() {
-                            DatagridGridService.navigateToFocusedColumn();
-                        }, 0);
+                        setTimeout(DatagridGridService.navigateToFocusedColumn, 0);
                     }
                 };
 
