@@ -1,5 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import static java.math.BigDecimal.ZERO;
+
+import java.math.BigDecimal;
+
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 
 public abstract class AbstractAbsolute  extends AbstractActionMetadata {
@@ -27,7 +31,9 @@ public abstract class AbstractAbsolute  extends AbstractActionMetadata {
         try {
             double doubleValue = Double.parseDouble(value);
             double absValue = Math.abs(doubleValue);
-            if (absValue == (long) absValue) {// this will prevent having .0 for longs.
+
+            final BigDecimal decimalValue = BigDecimal.valueOf(absValue % 1);
+            if (decimalValue.compareTo(ZERO) == 0) {// this will prevent having .0 for longs.
                 return String.format("%d", (long) absValue); //$NON-NLS-1$
             } else {
                 return String.format("%s", absValue); //$NON-NLS-1$

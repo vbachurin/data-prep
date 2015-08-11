@@ -22,6 +22,7 @@
             return $http.post(RestURLs.transformUrl + '/suggest/column', stringifiedColumn);
         };
 
+
         /**
          * @ngdoc method
          * @name getDynamicParameters

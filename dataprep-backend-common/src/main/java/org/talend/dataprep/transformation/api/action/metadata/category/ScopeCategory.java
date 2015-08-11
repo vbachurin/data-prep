@@ -1,12 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata.category;
 
-import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.COLUMN_ID;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.ROW_ID;
 
 import java.util.Map;
 import java.util.function.Predicate;
 
-import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.COLUMN_ID;
-import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.ROW_ID;
+import org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters;
 
 /**
  * List all scope category.
@@ -17,7 +17,7 @@ public enum ScopeCategory {
     private final Predicate<Map<String, String>> mandatoryParametersChecker;
 
     ScopeCategory(final ImplicitParameters... mandatoryParameters) {
-        mandatoryParametersChecker = (map) -> {
+        mandatoryParametersChecker = map -> {
             for(final ImplicitParameters param : mandatoryParameters) {
                 if(! map.containsKey(param.getKey())) {
                     return false;

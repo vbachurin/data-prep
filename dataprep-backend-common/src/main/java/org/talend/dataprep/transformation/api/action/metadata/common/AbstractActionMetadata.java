@@ -12,8 +12,18 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.talend.dataprep.api.preparation.Action.Builder.builder;
+import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.exception.TDPException;
@@ -21,20 +31,22 @@ import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCategory;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
-import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.talend.dataprep.api.preparation.Action.Builder.builder;
-import static org.talend.dataprep.exception.error.TransformationErrorCodes.MISSING_TRANSFORMATION_SCOPE_PARAMETER;
-import static org.talend.dataprep.transformation.api.action.metadata.common.ImplicitParameters.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Base class for all single column action.
  */
 public abstract class AbstractActionMetadata implements ActionMetadata {
+
+    /** This class' logger. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractActionMetadata.class);
+
+    /** The validator. */
+    @Autowired
+    private ActionMetadataValidation validator;
 
     //------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------PARAMS GETTERS---------------------------------------------------
@@ -56,7 +68,7 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * @param parameters the transformation parameters
      * @return the row id
      */
-    protected Long getRowId(final Map<String, String> parameters) {
+    private Long getRowId(final Map<String, String> parameters) {
         final String rowIdAsString = parameters.get(ROW_ID.getKey());
         if (rowIdAsString != null) {
             return Long.parseLong(rowIdAsString);
@@ -69,14 +81,9 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      *
      * @param parameters the transformation parameters
      * @return the scope
-     * @throws IllegalArgumentException if the scope parameter is missing
      */
-    protected ScopeCategory getScope(final Map<String, String> parameters) {
-        final ScopeCategory scope = ScopeCategory.from(parameters.get(SCOPE.getKey()));
-        if (scope == null) {
-            throw new IllegalArgumentException("Parameter '" + SCOPE.getKey() + "' is required for all actions");
-        }
-        return scope;
+    private ScopeCategory getScope(final Map<String, String> parameters) {
+        return ScopeCategory.from(parameters.get(SCOPE.getKey()));
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -87,35 +94,18 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      * @see ActionMetadata#acceptScope(ScopeCategory)
      */
     @Override
-    public boolean acceptScope(final ScopeCategory scope) {
+    public final boolean acceptScope(final ScopeCategory scope) {
         switch (scope) {
             case CELL:
-                return this instanceof ICellAction;
+            return this instanceof CellAction;
             case LINE:
-                return this instanceof ILineAction;
+            return this instanceof RowAction;
             case COLUMN:
-                return this instanceof IColumnAction;
+            return this instanceof ColumnAction;
             case TABLE:
-                return this instanceof ITableAction;
-        }
-        return false;
-    }
-
-    /**
-     * Scope consistency checks
-     * 1. scope has mandatory parameters
-     * 2. scope is available for the current transformation
-     *
-     * @param scope      the transformation scope
-     * @param parameters the transformation parameters
-     */
-    private void checkScopeConsistency(final ScopeCategory scope, final Map<String, String> parameters) {
-        if (!scope.checkMandatoryParameters(parameters)) {
-            throw new TDPException(MISSING_TRANSFORMATION_SCOPE_PARAMETER);
-        }
-
-        if (!this.acceptScope(scope)) {
-            throw new IllegalArgumentException("The action " + this.getName() + " does not support the provided scope " + scope);
+            return this instanceof DataSetAction;
+        default:
+            return false;
         }
     }
 
@@ -135,30 +125,33 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      */
     @Override
     public final Action create(final Map<String, String> parameters) {
-        final ScopeCategory scope = getScope(parameters);
-        checkScopeConsistency(scope, parameters);
-
+        validator.checkScopeConsistency(this, parameters);
         beforeApply(parameters);
+
         final Long rowId = getRowId(parameters);
         final String columnId = getColumnId(parameters);
+        final ScopeCategory scope = getScope(parameters);
 
         return builder().withRow((row, context) -> {
             switch (scope) {
                 case CELL:
                     if (rowId != null && rowId.equals(row.getTdpId())) {
-                        ((ICellAction) this).applyOnCell(row, context, parameters, rowId, columnId);
+                    ((CellAction) this).applyOnCell(row, context, parameters, rowId, columnId);
                     }
                     break;
                 case COLUMN:
-                    ((IColumnAction) this).applyOnColumn(row, context, parameters, columnId);
+                ((ColumnAction) this).applyOnColumn(row, context, parameters, columnId);
                     break;
                 case LINE:
                     if (rowId != null && rowId.equals(row.getTdpId())) {
-                        ((ILineAction) this).applyOnLine(row, context, parameters, rowId);
+                    ((RowAction) this).applyOnRow(row, context, parameters, rowId);
                     }
                     break;
                 case TABLE:
-                    ((ITableAction) this).applyOnTable(row, context, parameters);
+                ((DataSetAction) this).applyOnDataSet(row, context, parameters);
+                break;
+            default:
+                LOGGER.warn("Is there a new action scope ??? {}", scope);
                     break;
             }
             return row;

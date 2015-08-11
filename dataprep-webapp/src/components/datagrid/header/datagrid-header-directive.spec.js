@@ -32,7 +32,13 @@ describe('Dataset column header directive', function () {
         };
     }));
 
+    beforeEach(function() {
+        jasmine.clock().install();
+    });
+
     afterEach(function () {
+        jasmine.clock().uninstall();
+
         scope.$destroy();
         element.remove();
     });
@@ -68,7 +74,7 @@ describe('Dataset column header directive', function () {
         expect(element.find('.grid-header-type').text()).toBe('text');
     });
 
-    it('should close dropdown on get transform list error', function (done) {
+    it('should close dropdown on get transform list error', function () {
         //given
         createElement();
         var menu = element.find('.grid-header-menu').eq(0);
@@ -77,16 +83,13 @@ describe('Dataset column header directive', function () {
         //when
         element.controller('datagridHeader').transformationsRetrieveError = true;
         scope.$apply();
+        jasmine.clock().tick(250);
 
         //then
-        setTimeout(function () {
-            expect(menu.hasClass('show-menu')).toBe(false);
-            done();
-        }, 250);
-
+        expect(menu.hasClass('show-menu')).toBe(false);
     });
 
-    it('should show input to rename column name when double click', inject(function ($rootScope, $timeout) {
+    it('should show input to rename column name when double click', function () {
         //given
         createElement();
 
@@ -95,13 +98,12 @@ describe('Dataset column header directive', function () {
 
         //when
         headerTitle.dblclick();
-        $timeout.flush();
 
         //then
         expect(ctrl.isEditMode).toBeTruthy();
-    }));
+    });
 
-    it('should select input text when edition mode is tuned on', inject(function ($rootScope, $timeout) {
+    it('should select input text when edition mode is tuned on', function () {
         //given
         createElement();
 
@@ -109,15 +111,14 @@ describe('Dataset column header directive', function () {
 
         //when
         headerTitle.dblclick();
-        $timeout.flush();
+        jasmine.clock().tick(100);
 
         //then
         expect(document.activeElement).toBe(element.find('.grid-header-title-input').eq(0)[0]);
         expect(window.getSelection().toString()).toBe('MostPopulousCity');
+    });
 
-    }));
-
-    it('should switch from input to text on ESC keydown', inject(function ($timeout) {
+    it('should switch from input to text on ESC keydown', function () {
         //given
         createElement();
 
@@ -128,11 +129,10 @@ describe('Dataset column header directive', function () {
 
         //when
         element.find('.grid-header-title-input').eq(0).trigger(event);
-        $timeout.flush();
 
         //then
         expect(ctrl.isEditMode).toBe(false);
-    }));
+    });
 
     it('should reset column name on ESC keydown', function () {
         //given
@@ -151,7 +151,7 @@ describe('Dataset column header directive', function () {
         expect(ctrl.newName).toBe('MostPopulousCity');
     });
 
-    it('should switch from input to text on ENTER event without changes', inject(function ($timeout) {
+    it('should switch from input to text on ENTER event without changes', function () {
         //given
         createElement();
 
@@ -162,11 +162,10 @@ describe('Dataset column header directive', function () {
 
         //when
         element.find('.grid-header-title-input').eq(0).trigger(event);
-        $timeout.flush();
 
         //then
         expect(ctrl.isEditMode).toBe(false);
-    }));
+    });
 
     it('should submit update on ENTER with changes', function () {
         //given
@@ -185,7 +184,7 @@ describe('Dataset column header directive', function () {
         expect(ctrl.updateColumnName).toHaveBeenCalled();
     });
 
-    it('should switch from input to text on BLUR event without changes', inject(function ($timeout) {
+    it('should switch from input to text on BLUR event without changes', function () {
         //given
         createElement();
 
@@ -195,11 +194,10 @@ describe('Dataset column header directive', function () {
 
         //when
         element.find('.grid-header-title-input').eq(0).trigger(event);
-        $timeout.flush();
 
         //then
         expect(ctrl.isEditMode).toBe(false);
-    }));
+    });
 
     it('should submit update on BLUR event with changes', function () {
         //given
@@ -215,5 +213,18 @@ describe('Dataset column header directive', function () {
 
         //then
         expect(ctrl.updateColumnName).toHaveBeenCalled();
+    });
+
+    it('should stop click propagation in input', function () {
+        //given
+        createElement();
+        var event = angular.element.Event('click');
+
+        //when
+        element.find('input').eq(0).trigger(event);
+
+        //then
+        expect(event.isPropagationStopped()).toBe(true);
+        expect(event.isDefaultPrevented()).toBe(true);
     });
 });

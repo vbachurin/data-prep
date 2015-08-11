@@ -1,14 +1,14 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.transformation.api.action.parameters.Parameter;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.talend.dataprep.api.type.Type.STRING;
+import org.talend.dataprep.api.type.Type;
+import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 public enum ImplicitParameters {
     COLUMN_ID("column_id", STRING, EMPTY),

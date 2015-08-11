@@ -7,11 +7,20 @@
       "empty": 0,
       "invalid": 0,
       "valid": 0,
-      "invalidValues": []
+      "invalidValues": [
+
+      ]
     },
     "id": "0001",
-    "statistics": {},
-    "domain": ""
+    "statistics": {
+
+    },
+    "domain": "",
+    "domainLabel": "",
+    "domainFrequency": 0,
+    "semanticDomains": [
+
+    ]
   },
   {
     "name": "firstname",
@@ -21,10 +30,19 @@
       "empty": 0,
       "invalid": 0,
       "valid": 0,
-      "invalidValues": []
+      "invalidValues": [
+
+      ]
     },
     "id": "0002",
-    "statistics": {},
-    "domain": ""
+    "statistics": {
+
+    },
+    "domain": "",
+    "domainLabel": "",
+    "domainFrequency": 0,
+    "semanticDomains": [
+
+    ]
   }
 ]

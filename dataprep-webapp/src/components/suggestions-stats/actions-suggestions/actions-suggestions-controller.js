@@ -138,10 +138,14 @@
          * The closure then take the parameters and append the new step in the current preparation
          */
         vm.transformClosure = function transform(transfo, transfoScope) {
+            /*jshint camelcase: false */
             return function(params) {
                 params = params || {};
                 params.scope = transfoScope;
-                PlaygroundService.appendStep(transfo.name, vm.column, params)
+                params.column_id = vm.column.id;
+                params.column_name = vm.column.name;
+
+                PlaygroundService.appendStep(transfo.name, params)
                     .then(function() {
                         vm.showDynamicModal = false;
                     });

@@ -17,6 +17,10 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.talend.dataquality</groupId>
+            <artifactId>org.talend.dataquality.statistics</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jetty</artifactId>
             <scope>runtime</scope>
@@ -143,6 +147,7 @@
                                 <resource>
                                     <targetPath>/lib/tde/lib64</targetPath>
                                     <directory>${project.basedir}/lib/tde/lib64</directory>
+                                    <include>*</include>
                                 </resource>
                             </resources>
                         </configuration>

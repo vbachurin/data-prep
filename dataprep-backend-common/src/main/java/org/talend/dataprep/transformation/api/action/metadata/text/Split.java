@@ -1,5 +1,14 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -10,24 +19,16 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
  * Split a cell value on a separator.
  */
 @Component(Split.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
-public class Split extends AbstractActionMetadata implements IColumnAction {
+public class Split extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -110,8 +111,12 @@ public class Split extends AbstractActionMetadata implements IColumnAction {
                 .get(SEPARATOR_PARAMETER);
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
     @Override

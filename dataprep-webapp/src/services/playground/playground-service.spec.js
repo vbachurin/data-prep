@@ -204,7 +204,7 @@ describe('Playground Service', function () {
         }));
     });
 
-    describe('load existing dataset', function() {
+    describe('load existing preparation', function() {
         var data = {
             records: [{id: '0', firstname: 'toto'}, {id: '1', firstname: 'tata'}, {id: '2', firstname: 'titi'}]
         };
@@ -376,6 +376,38 @@ describe('Playground Service', function () {
             expect($rootScope.$emit).not.toHaveBeenCalledWith('talend.loading.start');
             expect(PreparationService.getContent).not.toHaveBeenCalled();
         }));
+
+        it('should load preparation sample when sample size is changed', inject(function(PlaygroundService, PreparationService, RecipeService) {
+            //given
+            PreparationService.currentPreparationId = '5746518486846';
+
+            var lastActiveStep = {transformation: {stepId: '53df45d3s8425'}};
+            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(2);
+            spyOn(RecipeService, 'getStep').and.returnValue(lastActiveStep);
+
+            //when
+            PlaygroundService.selectedSampleSize={name: '50', value:50};
+            PlaygroundService.changeSampleSize();
+
+            //then
+            expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, 50);
+        }));
+
+        it('should load the full preparation sample when sample size is changed to full dataset', inject(function(PlaygroundService, PreparationService, RecipeService) {
+            //given
+            PreparationService.currentPreparationId = '5746518486846';
+
+            var lastActiveStep = {transformation: {stepId: '53df45d3s8425'}};
+            spyOn(RecipeService, 'getActiveThresholdStepIndex').and.returnValue(2);
+            spyOn(RecipeService, 'getStep').and.returnValue(lastActiveStep);
+
+            //when
+            PlaygroundService.selectedSampleSize={name: 'full dataset', value:'full'};
+            PlaygroundService.changeSampleSize();
+
+            //then
+            expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, 'full');
+        }));
     });
 
     describe('transformation', function() {
@@ -425,18 +457,21 @@ describe('Playground Service', function () {
             it('should append preparation step', inject(function ($rootScope, PlaygroundService, PreparationService) {
                 //given
                 var action = 'uppercase';
-                var column = {id: 'firstname'};
-                var parameters = {param1: 'param1Value', param2: 4};
+                var parameters = {
+                    param1: 'param1Value',
+                    param2: 4,
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname'
+                };
 
                 //when
-                PlaygroundService.appendStep(action, column, parameters);
-                $rootScope.$digest();
+                PlaygroundService.appendStep(action, parameters);
 
                 //then
                 expect(PreparationService.appendStep).toHaveBeenCalledWith(
                     metadata,
                     action,
-                    column,
                     parameters
                 );
             }));
@@ -444,11 +479,16 @@ describe('Playground Service', function () {
             it('should show/hide loading', inject(function ($rootScope, PlaygroundService) {
                 //given
                 var action = 'uppercase';
-                var column = {id: 'firstname'};
-                var parameters = {param1: 'param1Value', param2: 4};
+                var parameters = {
+                    param1: 'param1Value',
+                    param2: 4,
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname'
+                };
 
                 //when
-                PlaygroundService.appendStep(action, column, parameters);
+                PlaygroundService.appendStep(action, parameters);
                 expect($rootScope.$emit).toHaveBeenCalledWith('talend.loading.start');
                 $rootScope.$digest();
 
@@ -459,11 +499,16 @@ describe('Playground Service', function () {
             it('should refresh recipe', inject(function ($rootScope, PlaygroundService, RecipeService) {
                 //given
                 var action = 'uppercase';
-                var column = {id: 'firstname'};
-                var parameters = {param1: 'param1Value', param2: 4};
+                var parameters = {
+                    param1: 'param1Value',
+                    param2: 4,
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname'
+                };
 
                 //when
-                PlaygroundService.appendStep(action, column, parameters);
+                PlaygroundService.appendStep(action, parameters);
                 $rootScope.$digest();
 
                 //then
@@ -473,16 +518,22 @@ describe('Playground Service', function () {
             it('should refresh datagrid with head content', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService) {
                 //given
                 var action = 'uppercase';
-                var column = {id: 'firstname'};
-                var parameters = {param1: 'param1Value', param2: 4};
+                var parameters = {
+                    param1: 'param1Value',
+                    param2: 4,
+                    scope: 'column',
+                    column_id: '0001',
+                    column_name: 'firstname'
+                };
+                PlaygroundService.selectedSampleSize = {value: 'full'};
 
                 //when
-                PlaygroundService.appendStep(action, column, parameters);
+                PlaygroundService.appendStep(action, parameters);
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationService.getContent).toHaveBeenCalledWith('head');
-                expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
+                expect(PreparationService.getContent).toHaveBeenCalledWith('head', 'full');
+                expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(parameters.column_id);
                 expect(DatagridService.updateData).toHaveBeenCalledWith(result);
             }));
 
@@ -490,11 +541,16 @@ describe('Playground Service', function () {
                 it('should add undo/redo actions after append transformation', inject(function($rootScope, PlaygroundService, HistoryService) {
                     //given
                     var action = 'uppercase';
-                    var column = {id: 'firstname'};
-                    var parameters = {param1: 'param1Value', param2: 4};
+                    var parameters = {
+                        param1: 'param1Value',
+                        param2: 4,
+                        scope: 'column',
+                        column_id: '0001',
+                        column_name: 'firstname'
+                    };
 
                     //when
-                    PlaygroundService.appendStep(action, column, parameters);
+                    PlaygroundService.appendStep(action, parameters);
                     $rootScope.$digest();
 
                     //then
@@ -504,10 +560,15 @@ describe('Playground Service', function () {
                 it('should remove the transformation on UNDO', inject(function(DatagridService, $rootScope, PlaygroundService, HistoryService, PreparationService) {
                     //given
                     var action = 'uppercase';
-                    var column = {id: 'firstname'};
-                    var parameters = {param1: 'param1Value', param2: 4};
+                    var parameters = {
+                        param1: 'param1Value',
+                        param2: 4,
+                        scope: 'column',
+                        column_id: '0001',
+                        column_name: 'firstname'
+                    };
 
-                    PlaygroundService.appendStep(action, column, parameters);
+                    PlaygroundService.appendStep(action, parameters);
                     $rootScope.$digest();
                     var undo = HistoryService.addAction.calls.argsFor(0)[0];
 
@@ -518,16 +579,21 @@ describe('Playground Service', function () {
 
                     //then
                     expect(PreparationService.removeStep).toHaveBeenCalledWith('a151e543456413ef51');
-                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
+                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith('0001');
                 }));
 
                 it('should refresh recipe on UNDO', inject(function($rootScope, DatagridService, PlaygroundService, HistoryService, RecipeService) {
                     //given
                     var action = 'uppercase';
-                    var column = {id: 'firstname'};
-                    var parameters = {param1: 'param1Value', param2: 4};
+                    var parameters = {
+                        param1: 'param1Value',
+                        param2: 4,
+                        scope: 'column',
+                        column_id: '0001',
+                        column_name: 'firstname'
+                    };
 
-                    PlaygroundService.appendStep(action, column, parameters);
+                    PlaygroundService.appendStep(action, parameters);
                     $rootScope.$digest();
                     var undo = HistoryService.addAction.calls.argsFor(0)[0];
 
@@ -539,16 +605,21 @@ describe('Playground Service', function () {
 
                     //then
                     expect(RecipeService.refresh.calls.count()).toBe(2);
-                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
+                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith('0001');
                 }));
 
                 it('should refresh datagrid content on UNDO', inject(function($rootScope, PlaygroundService, HistoryService, PreparationService, DatagridService) {
                     //given
                     var action = 'uppercase';
-                    var column = {id: 'firstname'};
-                    var parameters = {param1: 'param1Value', param2: 4};
+                    var parameters = {
+                        param1: 'param1Value',
+                        param2: 4,
+                        scope: 'column',
+                        column_id: '0001',
+                        column_name: 'firstname'
+                    };
 
-                    PlaygroundService.appendStep(action, column, parameters);
+                    PlaygroundService.appendStep(action, parameters);
                     $rootScope.$digest();
                     var undo = HistoryService.addAction.calls.argsFor(0)[0];
 
@@ -562,7 +633,7 @@ describe('Playground Service', function () {
                     //then
                     expect(PreparationService.getContent.calls.count()).toBe(2);
                     expect(PreparationService.getContent.calls.argsFor(1)[0]).toBe('head');
-                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(column.id);
+                    expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith('0001');
                     expect(DatagridService.updateData.calls.count()).toBe(2);
                     expect(DatagridService.updateData.calls.argsFor(1)[0]).toBe(result);
                 }));
@@ -637,13 +708,14 @@ describe('Playground Service', function () {
             it('should load previous last active step', inject(function ($rootScope, PlaygroundService, PreparationService, DatagridService) {
                 //given
                 var parameters = {value: 'toto', column_id: '0001'};
+                PlaygroundService.selectedSampleSize = {value: 'full'};
 
                 //when
                 PlaygroundService.updateStep(stepToUpdate, parameters);
                 $rootScope.$digest();
 
                 //then
-                expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId);
+                expect(PreparationService.getContent).toHaveBeenCalledWith(lastActiveStep.transformation.stepId, 'full');
                 expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(lastActiveStep.column.id);
                 expect(DatagridService.setDataset).toHaveBeenCalledWith(metadata, result);
             }));
@@ -722,6 +794,77 @@ describe('Playground Service', function () {
                     expect(DatagridService.setFocusedColumn).toHaveBeenCalledWith(lastActiveStep.column.id);
                     expect(DatagridService.setDataset.calls.argsFor(1)[0]).toBe(metadata);
                     expect(DatagridService.setDataset.calls.argsFor(1)[1]).toBe(result);
+                }));
+            });
+        });
+
+        describe('edit cell', function() {
+            it('should append cell edition step', inject(function ($rootScope, PlaygroundService, PreparationService) {
+                //given
+                var rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
+                var column = {id: '0001', name: 'firstname'};
+                var newValue = 'Donald';
+                var updateAllCellWithValue = false;
+
+                //when
+                PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
+
+                //then
+                var expectedParams = {
+                    scope : 'cell',
+                    column_id: '0001',
+                    column_name: 'firstname',
+                    row_id: 58,
+                    cell_value: 'Ronald',
+                    replace_value: 'Donald'
+                };
+                expect(PreparationService.appendStep).toHaveBeenCalledWith(
+                    metadata,
+                    'replace_on_value',
+                    expectedParams
+                );
+            }));
+
+            it('should append column replace value step', inject(function ($rootScope, PlaygroundService, PreparationService) {
+                //given
+                var rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
+                var column = {id: '0001', name: 'firstname'};
+                var newValue = 'Donald';
+                var updateAllCellWithValue = true;
+
+                //when
+                PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
+
+                //then
+                var expectedParams = {
+                    scope : 'column',
+                    column_id: '0001',
+                    column_name: 'firstname',
+                    row_id: 58,
+                    cell_value: 'Ronald',
+                    replace_value: 'Donald'
+                };
+                expect(PreparationService.appendStep).toHaveBeenCalledWith(
+                    metadata,
+                    'replace_on_value',
+                    expectedParams
+                );
+            }));
+
+            describe('append history', function() {
+                it('should add undo/redo actions after append transformation', inject(function($rootScope, PlaygroundService, HistoryService) {
+                    //given
+                    var rowItem = {tdpId: 58, '0000': 'McDonald', '0001': 'Ronald'};
+                    var column = {id: '0001', name: 'firstname'};
+                    var newValue = 'Donald';
+                    var updateAllCellWithValue = true;
+
+                    //when
+                    PlaygroundService.editCell(rowItem, column, newValue, updateAllCellWithValue);
+                    $rootScope.$digest();
+
+                    //then
+                    expect(HistoryService.addAction).toHaveBeenCalled();
                 }));
             });
         });
@@ -842,6 +985,35 @@ describe('Playground Service', function () {
 
             //then
             expect(PlaygroundService.preparationNameEditionMode).toBe(false);
+        }));
+    });
+
+    describe('dataset management when no preparation is done yet', function() {
+
+        it('should load dataset sample when sample size is changed', inject(function(PlaygroundService, PreparationService, DatasetService) {
+            //given
+            PreparationService.currentPreparationId = null;
+            PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
+
+            //when
+            PlaygroundService.selectedSampleSize = {value:50};
+            PlaygroundService.changeSampleSize();
+
+            //then
+            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, 50);
+        }));
+
+        it('should load dataset sample when sample size is changed', inject(function(PlaygroundService, PreparationService, DatasetService) {
+            //given
+            PreparationService.currentPreparationId = null;
+            PlaygroundService.currentMetadata = {id: '123d120394ab0c53'};
+
+            //when
+            PlaygroundService.selectedSampleSize = {value:'full'};
+            PlaygroundService.changeSampleSize();
+
+            //then
+            expect(DatasetService.getContent).toHaveBeenCalledWith(PlaygroundService.currentMetadata.id, true, 'full');
         }));
     });
 });

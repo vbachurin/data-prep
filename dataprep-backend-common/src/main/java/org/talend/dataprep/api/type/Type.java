@@ -1,34 +1,47 @@
 package org.talend.dataprep.api.type;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+@JsonSerialize(using = Type.TypeSerializer.class)
 public enum Type implements Serializable {
 
-    ANY("any"), //$NON-NLS-1$
-    STRING("string", ANY), //$NON-NLS-1$
-    NUMERIC("numeric", ANY), //$NON-NLS-1$
-    INTEGER("integer", NUMERIC), //$NON-NLS-1$
-    DOUBLE("double", NUMERIC), //$NON-NLS-1$
-    FLOAT("float", NUMERIC), //$NON-NLS-1$
-    BOOLEAN("boolean", ANY), //$NON-NLS-1$
-    DATE("date", ANY); //$NON-NLS-1$
+    ANY("any", "ANY"), //$NON-NLS-1$
+    STRING("string", ANY, "STRING"), //$NON-NLS-1$
+    NUMERIC("numeric", ANY, "NUMERIC"), //$NON-NLS-1$
+    INTEGER("integer", NUMERIC,"INTEGER"), //$NON-NLS-1$
+    DOUBLE("double", NUMERIC, "DOUBLE"), //$NON-NLS-1$
+    FLOAT("float", NUMERIC, "FLOAT"), //$NON-NLS-1$
+    BOOLEAN("boolean", ANY, "BOOLEAN"), //$NON-NLS-1$
+    DATE("date", ANY, "DATE"); //$NON-NLS-1$
 
     private final String name;
+
+    /**
+     * can be used as a label key in the ui
+     */
+    private final String labelKey;
 
     private final Type superType;
 
     private final List<Type> subTypes = new LinkedList<>();
 
-    Type(String name) {
-        this(name, null);
+    Type(String name, String labelKey) {
+        this(name, null, labelKey);
     }
 
-    Type(String name, Type superType) {
+    Type(String name, Type superType, String labelKey) {
         this.name = name;
         this.superType = superType;
+        this.labelKey = labelKey;
         if (superType != null) {
             superType.declareSubType(this);
         }
@@ -52,6 +65,11 @@ public enum Type implements Serializable {
      */
     public Type getSuperType() {
         return superType;
+    }
+
+    public String getLabelKey()
+    {
+        return labelKey;
     }
 
     /**
@@ -120,5 +138,19 @@ public enum Type implements Serializable {
         Optional<Type> type = types.stream().filter(type1 -> type1.getName().equalsIgnoreCase(name)).findFirst();
 
         return type.isPresent();
+    }
+
+    public static class TypeSerializer extends JsonSerializer<Type> {
+
+        @Override
+        public void serialize(Type value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeStartObject();
+
+            jgen.writeStringField("id", value.name());
+            jgen.writeStringField("name", value.getName());
+            jgen.writeStringField("labelKey", value.getLabelKey());
+
+            jgen.writeEndObject();
+        }
     }
 }

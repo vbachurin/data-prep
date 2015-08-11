@@ -6,11 +6,13 @@
      * @name data-prep.stats-details.controller:StatsDetailsCtrl
      * @description Statistics details
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
+     * @requires data-prep.services.statisticsService.service:StatisticsService
      */
-    function StatsDetailsCtrl(ColumnSuggestionService) {
+    function StatsDetailsCtrl(ColumnSuggestionService, StatisticsService) {
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
-
+        vm.statisticsService = StatisticsService;
+        
         /**
          * @ngdoc method
          * @name addPatternFilter
@@ -29,7 +31,16 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.columnSuggestionService.statistics;
+                return this.statisticsService.statistics;
+            }
+        });
+
+    Object.defineProperty(StatsDetailsCtrl.prototype,
+        'boxplotData', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.boxplotData;
             }
         });
 

@@ -1,6 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import java.util.*;
+import static java.util.stream.Collectors.toList;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +13,6 @@ import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Utility class for the ActionsMetadata

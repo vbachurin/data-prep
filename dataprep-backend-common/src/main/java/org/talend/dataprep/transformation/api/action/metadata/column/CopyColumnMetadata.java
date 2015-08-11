@@ -1,5 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata.column;
 
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -9,17 +13,14 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
-
-import javax.annotation.Nonnull;
-import java.util.Map;
 
 /**
  * duplicate a column
  */
 @Component(CopyColumnMetadata.ACTION_BEAN_PREFIX + CopyColumnMetadata.COPY_ACTION_NAME)
-public class CopyColumnMetadata extends AbstractActionMetadata implements IColumnAction {
+public class CopyColumnMetadata extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -64,8 +65,12 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements IColum
         return true;
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // no pre-processing needed here
     }
 
     @Override
@@ -91,6 +96,10 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements IColum
                 .type(Type.get(column.getType())) //
                 .statistics(column.getStatistics()) //
                 .headerSize(column.getHeaderSize()) //
+                .domain( column.getDomain() ) //
+                .domainLabel( column.getDomainLabel() ) //
+                .domainFrequency( column.getDomainFrequency() ) //
+                .semanticDomains( column.getSemanticDomains() ) //
                 .build();
     }
 

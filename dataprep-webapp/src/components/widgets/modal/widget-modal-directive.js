@@ -17,7 +17,7 @@
      * @param {object} innerElement - the modal to register
      * @description [PRIVATE] Add an element to the list of visible modals
      */
-    var registerShownElement = function(innerElement) {
+    var registerShownElement = function (innerElement) {
         shownModalsInnerElements.push(innerElement);
     };
 
@@ -28,9 +28,9 @@
      * @param {object} innerElement - the modal to deregister
      * @description [PRIVATE] Remove an element from list of visible modals
      */
-    var deregisterShownElement = function(innerElement) {
+    var deregisterShownElement = function (innerElement) {
         var index = shownModalsInnerElements.indexOf(innerElement);
-        if(index > -1) {
+        if (index > -1) {
             shownModalsInnerElements = shownModalsInnerElements.slice(0, index);
         }
     };
@@ -42,8 +42,8 @@
      * @description [PRIVATE] Return last visible modal (the one the most in front on the screen)
      * @returns {object} The last visible modal
      */
-    var getLastRegisteredInnerElement = function() {
-        if(shownModalsInnerElements.length) {
+    var getLastRegisteredInnerElement = function () {
+        if (shownModalsInnerElements.length) {
             return shownModalsInnerElements[shownModalsInnerElements.length - 1];
         }
     };
@@ -67,30 +67,31 @@
      * </ul>
      * @restrict E
      * @usage
-      <talend-modal fullscreen="false"
-                   state="homeCtrl.dataModalSmall"
-                   disable-enter="true"
-                   on-close="homeCtrl.closeHandler()"
-                   close-button="true">
-           Modal content
-      </talend-modal>
+     <talend-modal   fullscreen="false"
+                     state="homeCtrl.dataModalSmall"
+                     disable-enter="true"
+                     on-close="homeCtrl.closeHandler()"
+                     close-button="true">
+                     Modal content
+     </talend-modal>
 
-      <talend-modal fullscreen="true"
-                   state="homeCtrl.dataModal"
-                   disable-enter="false"
-                   on-close="homeCtrl.closeHandler()"
-                   close-button="true">
-           <div class="modal-header">
-               <ul>
-                   <li>header 1</li>
-                   <li>header 2</li>
-               </ul>
-           </div>
+     <talend-modal   fullscreen="true"
+                     state="homeCtrl.dataModal"
+                     disable-enter="false"
+                     on-close="homeCtrl.closeHandler()"
+                     close-button="true">
+         <div class="modal-header">
+             <ul>
+                 <li>header 1</li>
+                 <li>header 2</li>
+             </ul>
+         </div>
 
-           <div class="modal-body">
-               Body content
-           </div>
-      </talend-modal>
+         <div class="modal-body">
+            Body content
+         </div>
+     </talend-modal>
+
      * @param {boolean} fullscreen Determine the modal mode. Default `false`
      * @param {boolean} state Flag that represents the modal display state
      * @param {boolean} close-button Display a close button on the top right corner
@@ -136,9 +137,9 @@
                      * @methodOf talend.widget.directive:TalendModal
                      * @description [PRIVATE] Hide modal action
                      */
-                    var hideModal = function() {
-                        $timeout(function() {
-                            if(hasBeforeEachFn && !ctrl.beforeClose()) {
+                    var hideModal = function () {
+                        $timeout(function () {
+                            if (hasBeforeEachFn && !ctrl.beforeClose()) {
                                 return;
                             }
                             ctrl.hide();
@@ -151,10 +152,10 @@
                      * @methodOf talend.widget.directive:TalendModal
                      * @description [PRIVATE] Deregister modal from list of shown modal and focus on the last shown modal
                      */
-                    var deregisterAndFocusOnLastModal = function(innerElement) {
+                    var deregisterAndFocusOnLastModal = function (innerElement) {
                         deregisterShownElement(innerElement);
                         var mostAdvancedModal = getLastRegisteredInnerElement();
-                        if(mostAdvancedModal) {
+                        if (mostAdvancedModal) {
                             mostAdvancedModal.focus();
                         }
                         else {
@@ -169,7 +170,7 @@
                      * @description [PRIVATE] Attach click listeners to elements that has `talend-modal-close` class
                      * and stop click propagation in inner modal to avoid a click on the dismiss screen
                      */
-                    var attachListeners = function() {
+                    var attachListeners = function () {
                         // Close action on all 'talend-modal-close' elements
                         iElement.find('.talend-modal-close').on('click', hideModal);
 
@@ -189,16 +190,16 @@
                      *     <li>ENTER : click on the primary button (with `modal-primary-button` class)</li>
                      * </ul>
                      */
-                    var attachKeyMap = function() {
+                    var attachKeyMap = function () {
                         innerElement.bind('keydown', function (e) {
 
                             // hide modal on 'ESC' keydown
-                            if(e.keyCode === 27) {
+                            if (e.keyCode === 27) {
                                 hideModal();
                             }
 
                             // click on primary button on 'ENTER' keydown
-                            else if(e.keyCode === 13 && ! ctrl.disableEnter && primaryButton.length) {
+                            else if (e.keyCode === 13 && !ctrl.disableEnter && primaryButton.length) {
                                 primaryButton.click();
                             }
                         });
@@ -210,7 +211,7 @@
                      * @methodOf talend.widget.directive:TalendModal
                      * @description [PRIVATE] Attach element to body directly to avoid parent styling
                      */
-                    var attachModalToBody = function() {
+                    var attachModalToBody = function () {
                         iElement.detach();
                         body.append(iElement);
                     };
@@ -220,7 +221,7 @@
                     attachModalToBody();
 
                     // remove element on destroy
-                    scope.$on('$destroy', function() {
+                    scope.$on('$destroy', function () {
                         deregisterAndFocusOnLastModal(innerElement);
                         iElement.remove();
                     });
@@ -228,7 +229,9 @@
                     //enable/disable scroll on main body depending on modal display
                     //on show : modal focus
                     //on close : close callback and focus on last opened modal
-                    scope.$watch(function() {return ctrl.state;}, function(newValue, oldValue) {
+                    scope.$watch(function () {
+                        return ctrl.state;
+                    }, function (newValue, oldValue) {
                         if (newValue) {
                             //register modal in shown modal list and focus on inner element
                             body.addClass('modal-open');
@@ -236,14 +239,14 @@
                             innerElement.focus();
 
                             //focus on first input (ignore first because it's the state checkbox)
-                            $timeout(function() {
+                            $timeout(function () {
                                 var inputs = iElement.find('input:not(".no-focus")');
-                                if(inputs.length > 1) {
+                                if (inputs.length > 1) {
                                     inputs.eq(1).focus();
                                     inputs.eq(1).select();
                                 }
                             });
-                        } else if(oldValue) {
+                        } else if (oldValue) {
                             ctrl.onClose();
                             deregisterAndFocusOnLastModal(innerElement);
                         }

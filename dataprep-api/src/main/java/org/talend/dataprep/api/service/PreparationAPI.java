@@ -1,5 +1,8 @@
 package org.talend.dataprep.api.service;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,19 +19,14 @@ import org.talend.dataprep.api.preparation.Preparation;
 import org.talend.dataprep.api.service.api.PreviewDiffInput;
 import org.talend.dataprep.api.service.api.PreviewUpdateInput;
 import org.talend.dataprep.api.service.command.preparation.*;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -40,8 +38,8 @@ public class PreparationAPI extends APIService {
     public void listPreparations(
             @RequestParam(value = "format", defaultValue = "long") @ApiParam(name = "format", value = "Format of the returned document (can be 'long' or 'short'). Defaults to 'long'.") String format,
             HttpServletResponse response) {
-        if (LOG.isDebugEnabled()){
-            LOG.debug( "Listing preparations (pool: {} )...", getConnectionManager().getTotalStats() );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Listing preparations (pool: {} )...", getConnectionManager().getTotalStats());
         }
         PreparationList.Format listFormat = PreparationList.Format.valueOf(format.toUpperCase());
         HttpClient client = getClient();
@@ -61,10 +59,9 @@ public class PreparationAPI extends APIService {
     @ApiOperation(value = "Create a new preparation for preparation content in body.", notes = "Returns the created preparation id.")
     @Timed
     public String createPreparation(
-            @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation)
-    {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Creating preparation (pool: {} )...", getConnectionManager().getTotalStats() );
+            @ApiParam(name = "body", value = "The original preparation. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Creating preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         PreparationCreate preparationCreate = getCommand(PreparationCreate.class, client, preparation);
@@ -79,8 +76,8 @@ public class PreparationAPI extends APIService {
     public String updatePreparation(
             @ApiParam(name = "id", value = "The id of the preparation to update.") @PathVariable("id") String id,
             @ApiParam(name = "body", value = "The updated preparation. Null values are ignored during update. You may set all values, service will override values you can't write to.") @RequestBody Preparation preparation) {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Updating preparation (pool: {} )...", getConnectionManager().getTotalStats() );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Updating preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         PreparationUpdate preparationUpdate = getCommand(PreparationUpdate.class, client, id, preparation);
@@ -94,8 +91,8 @@ public class PreparationAPI extends APIService {
     @Timed
     public String deletePreparation(
             @ApiParam(name = "id", value = "The id of the preparation to delete.") @PathVariable("id") String id) {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Deleting preparation (pool: {} )...", getConnectionManager().getTotalStats() );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Deleting preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         PreparationDelete preparationDelete = getCommand(PreparationDelete.class, client, id);
@@ -110,8 +107,8 @@ public class PreparationAPI extends APIService {
     public void getPreparation(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             HttpServletResponse response) {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Retrieving preparation details (pool: {} )...", getConnectionManager().getTotalStats() );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Retrieving preparation details (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         HystrixCommand<InputStream> command = getCommand(PreparationGet.class, client, preparationId);
@@ -134,12 +131,20 @@ public class PreparationAPI extends APIService {
     public void getPreparation(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @RequestParam(value = "version", defaultValue = "head") @ApiParam(name = "version", value = "Version of the preparation (can be 'origin', 'head' or the version id). Defaults to 'head'.") String version,
+            @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full preparation content is returned") String sample, //
             HttpServletResponse response) {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats() );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Retrieving preparation content (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
-        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version);
+        Long sampleValue;
+        try {
+            sampleValue = Long.parseLong(sample);
+        } catch (NumberFormatException e) {
+            sampleValue = null;
+        }
+        HystrixCommand<InputStream> command = getCommand(PreparationGetContent.class, client, preparationId, version,
+                sampleValue);
         try (InputStream preparationContent = command.execute()){
             OutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(preparationContent, outputStream);
@@ -156,8 +161,8 @@ public class PreparationAPI extends APIService {
     public void addPreparationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @ApiParam("Action to add at end of the preparation.") InputStream body) {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Adding action to preparation (pool: {} )...", getConnectionManager().getTotalStats() );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Adding action to preparation (pool: {} )...", getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(PreparationAddAction.class, client, preparationId, body);
@@ -172,9 +177,9 @@ public class PreparationAPI extends APIService {
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId,
             @ApiParam("New content for the action.") InputStream body) {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Updating preparation action at step #{} (pool: {} )...", stepId,
-                       getConnectionManager().getTotalStats() );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Updating preparation action at step #{} (pool: {} )...", stepId,
+                    getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(PreparationUpdateAction.class, client, preparationId, stepId, body);
@@ -188,9 +193,9 @@ public class PreparationAPI extends APIService {
     public void deletePreparationAction(
             @PathVariable(value = "id") @ApiParam(name = "id", value = "Preparation id.") String preparationId,
             @PathVariable(value = "action") @ApiParam(name = "action", value = "Step id in the preparation.") String stepId) {
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Deleting preparation action at step #{} (pool: {} )...", stepId,
-                       getConnectionManager().getTotalStats() );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Deleting preparation action at step #{} (pool: {} )...", stepId,
+                    getConnectionManager().getTotalStats());
         }
         HttpClient client = getClient();
         HystrixCommand<Void> command = getCommand(PreparationDeleteAction.class, client, preparationId, stepId);

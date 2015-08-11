@@ -1,17 +1,17 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
-
-import java.util.Map;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * Delete row when value is empty.
  */
 @Component(DeleteEmpty.ACTION_BEAN_PREFIX + DeleteEmpty.DELETE_EMPTY_ACTION_NAME)
-public class DeleteEmpty extends AbstractDelete implements IColumnAction {
+public class DeleteEmpty extends AbstractDelete implements ColumnAction {
 
     /**
      * The action name.
@@ -27,18 +27,18 @@ public class DeleteEmpty extends AbstractDelete implements IColumnAction {
     }
 
     /**
-     * @see AbstractDelete#toDelete(Map, String)
-     */
-    @Override
-    public boolean toDelete(Map<String, String> parsedParameters, String value) {
-        return value == null || value.trim().length() == 0;
-    }
-
-    /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)
      */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
         return true;
+    }
+
+    /**
+     * @see AbstractDelete#toDelete(ColumnMetadata, Map, String)
+     */
+    @Override
+    public boolean toDelete(final ColumnMetadata colMetadata, final Map<String, String> parsedParameters, final String value) {
+        return value == null || value.trim().length() == 0;
     }
 }

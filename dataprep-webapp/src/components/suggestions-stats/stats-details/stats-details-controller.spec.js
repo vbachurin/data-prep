@@ -16,7 +16,7 @@ describe('Stats-details controller', function () {
         };
     }));
 
-    it('should bind statistics getter to ColumnSuggestionService.statistics', inject(function (ColumnSuggestionService) {
+    it('should bind statistics getter to ColumnSuggestionService.statistics', inject(function (StatisticsService) {
         //given
         var ctrl = createController();
         expect(ctrl.statistics).toBeFalsy();
@@ -24,10 +24,24 @@ describe('Stats-details controller', function () {
         var stats = {};
 
         //when
-        ColumnSuggestionService.statistics = stats;
+        StatisticsService.statistics = stats;
 
         //then
         expect(ctrl.statistics).toBe(stats);
+    }));
+
+    it('should bind boxplotData getter to ColumnSuggestionService.statistics', inject(function (StatisticsService) {
+        //given
+        var ctrl = createController();
+        expect(ctrl.statistics).toBeFalsy();
+
+        var data = {};
+
+        //when
+        StatisticsService.boxplotData = data;
+
+        //then
+        expect(ctrl.boxplotData).toBe(data);
     }));
 
     it('should bind patternFrequencyTable getter to ColumnSuggestionService.currentColumn.patternFrequencyTable', inject(function (ColumnSuggestionService) {

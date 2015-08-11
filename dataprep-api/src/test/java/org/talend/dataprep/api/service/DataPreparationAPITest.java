@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ import org.talend.dataprep.api.preparation.PreparationRepository;
 import org.talend.dataprep.dataset.store.content.DataSetContentStore;
 import org.talend.dataprep.dataset.store.metadata.DataSetMetadataRepository;
 import org.talend.dataprep.preparation.store.ContentCache;
+import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,7 +81,7 @@ public class DataPreparationAPITest {
         environment.getPropertySources().addFirst(connectionInformation);
     }
 
-    @org.junit.After
+    @After
     public void tearDown() {
         dataSetMetadataRepository.clear();
         contentStore.clear();
@@ -97,7 +99,7 @@ public class DataPreparationAPITest {
 
     @Test
     public void testDataSetUpdate() throws Exception {
-        given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1.csv")))
+        given().body(IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("dataset/dataset.csv")))
                 .queryParam("Content-Type", "text/csv").when().put("/api/datasets/123456789").asString();
         String dataSetContent = when().get("/api/datasets/123456789?metadata=false&columns=false").asString();
         assertNotNull(dataSetContent);
@@ -106,8 +108,8 @@ public class DataPreparationAPITest {
     @Test
     public void testTransformNoOp() throws Exception {
         // given
-        final String dataSetId = createDataset("test1.csv", "testDataset", "text/csv");
-        final String expectedContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("test1_expected.json"));
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
+        final String expectedContent = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json"));
 
         // when
         final String transformed = given().contentType(ContentType.JSON).body("").when().post("/api/transform/" + dataSetId)
@@ -120,10 +122,10 @@ public class DataPreparationAPITest {
     @Test
     public void testTransformOneAction() throws Exception {
         // given
-        final String dataSetId = createDataset("test2.csv", "testDataset", "text/csv");
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
 
-        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test2_expected.json");
-        final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action1.json"));
+        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_firstname_uppercase.json");
+        final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname.json"));
 
         // when
         final String transformed = given().contentType(ContentType.JSON).body(actions).when().log().ifValidationFails()
@@ -136,9 +138,9 @@ public class DataPreparationAPITest {
     @Test
     public void testTransformTwoActions() throws Exception {
         // given
-        final String dataSetId = createDataset("test3.csv", "testDataset", "text/csv");
-        final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("action2.json"));
-        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("test3_expected.json");
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
+        final String actions = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/upper_case_lastname_firstname.json"));
+        final InputStream expectedContent = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_lastname_firstname_uppercase.json");
 
         // when
         final String transformed = given().contentType(ContentType.JSON).body(actions).when().post("/api/transform/" + dataSetId)
@@ -151,7 +153,7 @@ public class DataPreparationAPITest {
     @Test
     public void testDataSetList() throws Exception {
         // given
-        final String dataSetId = createDataset("test1.csv", "testDataset", "text/csv");
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
 
         // when
         final String list = when().get("/api/datasets").asString();
@@ -166,7 +168,7 @@ public class DataPreparationAPITest {
     @Test
     public void testDataSetDelete() throws Exception {
         // given
-        final String dataSetId = createDataset("test1.csv", "testDataset", "text/csv");
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
 
         final String list = when().get("/api/datasets").asString();
         assertTrue(list.contains(dataSetId));
@@ -185,7 +187,7 @@ public class DataPreparationAPITest {
     @Test
     public void testDataSetDeleteWhenUsedByPreparation() throws Exception {
         // given
-        final String dataSetId = createDataset("test1.csv", "testDataset", "text/csv");
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
         createPreparationFromDataset(dataSetId, "testPreparation");
 
         // when/then
@@ -203,8 +205,8 @@ public class DataPreparationAPITest {
     @Test
     public void testDataSetCreate() throws Exception {
         // given
-        final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
-        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_expected.json");
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
 
         // when
         final String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
@@ -216,24 +218,91 @@ public class DataPreparationAPITest {
     @Test
     public void testDataSetCreate_cache_status() throws Exception {
         // given
-        final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
-        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_expected.json");
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
+        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
 
         // then
         final Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
-        assertThat(cache.has(preparation.id(), ROOT_STEP.id()), is(false));
+        ContentCacheKey key = new ContentCacheKey(preparation.id(), ROOT_STEP.id());
+        assertThat(cache.has(key), is(false));
         when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
-        assertThat(cache.has(preparation.id(), ROOT_STEP.id()), is(true));
+        assertThat(cache.has(key), is(true));
 
         // then (check if cached content is the expected one).
         final String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
         assertThat(contentAsString, sameJSONAsFile(expected));
     }
 
+
+    @Test
+    public void testDataSetGetWithSample() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when
+        final String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=16", dataSetId)
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(16));
+    }
+
+
+    @Test
+    public void testDataSetGetWithSampleZeroOrFull() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when 0
+        String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=0", dataSetId)
+                .asString();
+
+        // then full content
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+
+        // when full
+        contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=full", dataSetId).asString();
+
+        // then full content
+        rootNode = mapper.readTree(contentAsString);
+        records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+    }
+
+    @Test
+    public void testDataSetGetWithSampleWhenSampleIsInvalid() throws Exception {
+        // given
+        final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
+
+        // when (decimal number)
+        String contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=10.6", dataSetId).asString();
+
+        // then (full content)
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(contentAsString);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+
+        // when (
+        contentAsString = when().get("/api/datasets/{id}?metadata=false&columns=false&sample=ghqmskjh", dataSetId).asString();
+
+        // then (full content)
+        rootNode = mapper.readTree(contentAsString);
+        records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
+
+    }
+
     @Test
     public void testDataSetCreateWithSpace() throws Exception {
         // given
-        String dataSetId = createDataset("testCreate.csv", "Test with spaces", "text/csv");
+        String dataSetId = createDataset("dataset/dataset.csv", "Test with spaces", "text/csv");
 
         // when
         final DataSetMetadata metadata = dataSetMetadataRepository.get(dataSetId);
@@ -244,22 +313,22 @@ public class DataPreparationAPITest {
     }
 
     @Test
-    public void testDataSetColumnActions() throws Exception {
+    public void testDataSetColumnsuggestions() throws Exception {
         // given
-        String columnDescription = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("first_name_metadata.json"));
+        final String columnDescription = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("suggestions/firstname_column_metadata.json"));
 
         // when
-        String content = given().body(columnDescription).when().post("/api/transform/suggest/column").asString();
+        final String content = given().body(columnDescription).when().post("/api/transform/suggest/column").asString();
 
         // then
-        InputStream expected = DataPreparationAPITest.class.getResourceAsStream("suggest1.json");
+        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("suggestions/firstname_column_suggestions.json");
         assertThat(content, sameJSONAsFile(expected));
     }
 
     @Test
     public void testDataSetActions() throws Exception {
         // given
-        final String dataSetId = createDataset("testCreate.csv", "testDataset", "text/csv");
+        final String dataSetId = createDataset("dataset/dataset.csv", "testDataset", "text/csv");
 
         // when
         final String contentAsString = when().get("/api/datasets/{id}/actions", dataSetId).asString();
@@ -271,7 +340,7 @@ public class DataPreparationAPITest {
     @Test
     public void testAskCertification() throws Exception {
         // given
-        final String dataSetId = createDataset("testCreate.csv", "tagada", "text/csv");
+        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
 
         DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertNotNull(dataSetMetadata);
@@ -388,7 +457,7 @@ public class DataPreparationAPITest {
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
 
         // when
-        applyActionFromFile(preparationId, "action1.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         // then
         final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath()
@@ -402,13 +471,13 @@ public class DataPreparationAPITest {
     public void testPreparationUpdateAction() throws Exception {
         // given
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-        applyActionFromFile(preparationId, "upper_case_1.json");
-        applyActionFromFile(preparationId, "upper_case_2.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         final String firstStep = steps.get(1);
 
-        // when : delete (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_2
+        // when : delete (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") cascading upper_case_firstname
         given().delete("/api/preparations/{preparation}/actions/{action}", preparationId, firstStep)
                .then()
                .statusCode(is(200));
@@ -423,39 +492,40 @@ public class DataPreparationAPITest {
     public void testPreparationDeleteAction() throws Exception {
         // given
         final String preparationId = createPreparationFromDataset("1234", "testPreparation");
-        applyActionFromFile(preparationId, "upper_case_1.json");
-        applyActionFromFile(preparationId, "upper_case_2.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
-        assertThat(steps.get(1), is("4e3b0c1e2f2ee1e399f3f8bd8092fe0f2f74e690")); // <- upper_case_1
-        assertThat(steps.get(2), is("3dbbab224c7ef6352c6ab2e48f6af29322dee932")); // <- upper_case_2
+        assertThat(steps.get(1), is("c713d4988879e2aaab916853b45e4ddf9debe303")); // <- transformation/upper_case_lastname
+        assertThat(steps.get(2), is("a16245b478e70fdcc17621b892241ed1284f55ed")); // <- upper_case_firstname
 
-        // when : Update first action (upper_case_1 / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
-        final String actionContent3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("lower_case_1.json"));
+        // when : Update first action (transformation/upper_case_lastname / "2b6ae58738239819df3d8c4063e7cb56f53c0d59") with another action
+        final String actionContent3 = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/lower_case_lastname.json"));
         given().body(actionContent3)
                 .put("/api/preparations/{preparation}/actions/{action}", preparationId,
-                        "4e3b0c1e2f2ee1e399f3f8bd8092fe0f2f74e690").then().statusCode(is(200));
+                        "c713d4988879e2aaab916853b45e4ddf9debe303").then().statusCode(is(200));
 
         // then : Steps id should have changed due to update
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(3));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
-        assertThat(steps.get(1), is("b85406721e33024bcadecd98b9b7d87465113a5a"));
-        assertThat(steps.get(2), is("0047ac44eb97d99115bd6c45c5efe9def7104ac7"));
+        assertThat(steps.get(1), is("cd3cefd02aa2eec8755bd6fdd77934a6ae958414"));
+        assertThat(steps.get(2), is("1e76900b00817d10f81084b71dc97d023085a49b"));
     }
 
     @Test
     public void testPreparationInitialContent() throws Exception {
         // given
-        final String preparationId = createPreparationFromFile("testCreate.csv", "testPreparationContentGet", "text/csv");
-        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json");
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
+        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json");
 
         // when
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
+        ContentCacheKey key = new ContentCacheKey(preparationId, ROOT_STEP.id());
+        assertThat(cache.has(key), is(false));
         final String content = when().get("/api/preparations/{id}/content", preparationId).asString();
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
+        assertThat(cache.has(key), is(true));
 
         // then
         assertThat(content, sameJSONAsFile(expected));
@@ -464,14 +534,14 @@ public class DataPreparationAPITest {
     @Test
     public void testPreparationContentWithActions() throws Exception {
         // given
-        final String preparationId = createPreparationFromFile("testCreate.csv", "testPreparationContentGet", "text/csv");
+        final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
 
         List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
         assertThat(steps.size(), is(1));
         assertThat(steps.get(0), is(ROOT_STEP.id()));
 
         // when
-        applyActionFromFile(preparationId, "action1.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
 
         // then
         steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
@@ -479,28 +549,75 @@ public class DataPreparationAPITest {
         assertThat(steps.get(0), is(ROOT_STEP.id()));
 
         // Cache is lazily populated
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(false));
-        assertThat(cache.has(preparationId, steps.get(0)), is(false));
-        assertThat(cache.has(preparationId, steps.get(1)), is(false));
+        ContentCacheKey rootKey = new ContentCacheKey(preparationId, ROOT_STEP.id());
+        assertThat(cache.has(rootKey), is(false));
+        ContentCacheKey step0Key = new ContentCacheKey(preparationId, steps.get(0));
+        assertThat(cache.has(step0Key), is(false));
+        ContentCacheKey step1Key = new ContentCacheKey(preparationId, steps.get(1));
+        assertThat(cache.has(step1Key), is(false));
 
         // Request preparation content at different versions (preparation has 2 steps -> Root + Upper Case).
         assertThat(when().get("/api/preparations/{id}/content", preparationId).asString(),
-                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_firstname_uppercase_with_column.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=head", preparationId).asString(),
-                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_firstname_uppercase_with_column.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=" + steps.get(0), preparationId).asString(),
-                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=" + steps.get(1), preparationId).asString(),
-                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_upper.json")));
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_firstname_uppercase_with_column.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=origin", preparationId).asString(),
-                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json")));
         assertThat(when().get("/api/preparations/{id}/content?version=" + ROOT_STEP.id(), preparationId).asString(),
-                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("testCreate_initial.json")));
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json")));
 
         // After all these preparation get content, cache should be populated with content
-        assertThat(cache.has(preparationId, ROOT_STEP.id()), is(true));
-        assertThat(cache.has(preparationId, steps.get(0)), is(true));
-        assertThat(cache.has(preparationId, steps.get(1)), is(true));
+        assertThat(cache.has(rootKey), is(true));
+        assertThat(cache.has(step0Key), is(true));
+        assertThat(cache.has(step1Key), is(true));
+    }
+
+    @Test
+    public void shouldGetPreparationContent() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content", preparationId).asString();
+
+        // then
+        assertThat(preparationContent,
+                sameJSONAsFile(DataPreparationAPITest.class.getResourceAsStream("t-shirt_100.csv.expected.json")));
+    }
+
+    @Test
+    public void shouldGetPreparationContentSample() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content?sample=53", preparationId).asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(preparationContent);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(53));
+    }
+
+    @Test
+    public void shouldGetPreparationContentWhenInvalidSample() throws IOException {
+        // given
+        final String preparationId = createPreparationFromFile("t-shirt_100.csv", "testPreparationContentGet", "text/csv");
+
+        // when
+        String preparationContent = given().get("/api/preparations/{preparation}/content?sample=mdljshf", preparationId)
+                .asString();
+
+        // then
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(preparationContent);
+        JsonNode records = rootNode.findPath("records");
+        assertThat(records.size(), is(100));
     }
 
     /**
@@ -748,6 +865,47 @@ public class DataPreparationAPITest {
 
         // then
         response.then().statusCode(400);
+    }
+
+    @Test
+    public void preparation_append_step_should_fail_properly() throws Exception {
+        // given
+        final String missingScopeAction = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname_without_scope.json"));
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+
+        // when
+        final Response request = given().contentType(ContentType.JSON)//
+                .body(missingScopeAction)//
+                .when()//
+                .post("/api/preparations/{id}/actions", preparationId);
+
+        //then
+        request.then()//
+                .statusCode(400)//
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
+    }
+
+    @Test
+    public void preparation_update_step_should_fail_properly() throws Exception {
+        // given
+        final String missingScopeAction = IOUtils.toString(DataPreparationAPITest.class.getResourceAsStream("transformation/upper_case_firstname_without_scope.json"));
+        final String preparationId = createPreparationFromDataset("1234", "testPreparation");
+        applyActionFromFile(preparationId, "transformation/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "transformation/upper_case_firstname.json");
+
+        final List<String> steps = given().get("/api/preparations/{preparation}/details", preparationId).jsonPath().getList("steps");
+        final String firstStep = steps.get(1);
+
+        // when
+        final Response request = given().contentType(ContentType.JSON)//
+                .body(missingScopeAction)//
+                .when()//
+                .put("/api/preparations/{id}/actions/{step}", preparationId, firstStep);
+
+        // then
+        request.then()//
+                .statusCode(400)//
+                .body("code", is("TDP_ALL_MISSING_ACTION_SCOPE")) ;
     }
 
     private String createDataset(final String file, final String name, final String type) throws IOException {

@@ -44,21 +44,31 @@ public class XlsUtils {
         case Cell.CELL_TYPE_FORMULA:
             return cell.getCellFormula();
         case Cell.CELL_TYPE_NUMERIC:
-            // Date is typed as numeric
-            if (HSSFDateUtil.isCellDateFormatted(cell)) { // TODO configurable??
-                DateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-                return sdf.format(cell.getDateCellValue());
-            }
-            // Numeric type (use data formatter to get number format right)
-            DataFormatter formatter = new HSSFDataFormatter(Locale.ENGLISH);
-            return formatter.formatCellValue(cell);
+            return getNumericValue(cell);
         case Cell.CELL_TYPE_STRING:
             return StringUtils.trim(cell.getStringCellValue());
         default:
             return "Unknown Cell Type: " + cell.getCellType();
         }
-
     }
+
+    /**
+     * Return the numeric value.
+     *
+     * @param cell the cell to extract the value from.
+     * @return the numeric value from the cell.
+     */
+    private static String getNumericValue(Cell cell) {
+        // Date is typed as numeric
+        if (HSSFDateUtil.isCellDateFormatted(cell)) { // TODO configurable??
+            DateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+            return sdf.format(cell.getDateCellValue());
+        }
+        // Numeric type (use data formatter to get number format right)
+        DataFormatter formatter = new HSSFDataFormatter(Locale.ENGLISH);
+        return formatter.formatCellValue(cell);
+    }
+
 
     public static Workbook getWorkbook(InputStream stream) throws IOException {
 

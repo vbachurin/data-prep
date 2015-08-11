@@ -15,14 +15,14 @@ $datagrid-cell-font-size: .80em;
   padding: 1px 4px 2px;
 }
 
-.tooltip-ruler{
+.tooltip-ruler {
   font-size: $datagrid-cell-font-size;
   font-family: $monospace;
-  display:none;
-  white-space:pre;
+  display: none;
+  white-space: pre;
 }
 
-.red-rect{
+.red-rect {
   background-color: $nok-color;
   width: 5px;
   position: absolute;
@@ -31,13 +31,43 @@ $datagrid-cell-font-size: .80em;
   height: 100%;
 }
 
-.invisible-rect{
+.invisible-rect {
   background-color: inherit;
   width: 5px;
   position: absolute;
   right: 0;
   top: 0;
   height: 100%;
+}
+
+.datagrid-tooltip {
+
+  .datagrid-tooltip-content {
+    white-space: pre-wrap;
+    cursor: pointer;
+    font-family: $monospace;
+    font-size: .80em;
+
+    .hiddenChars {
+      background-color: #E9E9E9;
+      border: 1px dotted #BABABA;
+    }
+
+    .hiddenCharsBreakLine {
+      background-color: #e9e9e9;
+      border: 1px dotted #BABABA;
+    }
+  }
+
+  .hiddenChars {
+    background-color: #E9E9E9;
+    border: 1px dotted #BABABA;
+  }
+
+  .hiddenCharsBreakLine {
+    background-color: #e9e9e9;
+    border: 1px dotted #BABABA;
+  }
 }
 
 .datagrid {
@@ -151,7 +181,7 @@ $datagrid-cell-font-size: .80em;
 
     .cellNewValue {
       @include cellImitation();
-      background-color: rgba(193, 217, 6, 0.5 );
+      background-color: rgba(193, 217, 6, 0.5);
     }
 
     .cellUpdateValue {
@@ -167,8 +197,8 @@ $datagrid-cell-font-size: .80em;
     }
 
     .hiddenChars {
-      background-color: #e9e9e9 ;
-      border: 1px dotted #BABABA ;
+      background-color: #e9e9e9;
+      border: 1px dotted #BABABA;
     }
   }
 }

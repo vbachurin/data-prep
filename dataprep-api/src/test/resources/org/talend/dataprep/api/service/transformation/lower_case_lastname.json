@@ -1,0 +1,12 @@
+{
+  "actions": [
+    {
+      "action": "lowercase",
+      "parameters": {
+        "column_id": "0002",
+        "column_name": "lastname",
+        "scope": "column"
+      }
+    }
+  ]
+}

@@ -12,6 +12,8 @@
      */
     function DatagridExternalService(StatisticsService, ColumnSuggestionService, PreviewService, SuggestionsStatsAggregationsService) {
         var grid;
+        var suggestionTimeout;
+        var lastSelectedColumn;
 
         return {
             init: init,
@@ -29,10 +31,19 @@
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
         function updateSuggestionPanel(column) {
-            var columnMetadata = column.tdpColMetadata;
-            StatisticsService.processVisuData(columnMetadata);
-            ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
-            SuggestionsStatsAggregationsService.updateAggregations(columnMetadata);
+            if(column === lastSelectedColumn) {
+                return;
+            }
+
+            clearTimeout(suggestionTimeout);
+            lastSelectedColumn = column;
+
+            suggestionTimeout = setTimeout(function() {
+                var columnMetadata = column.tdpColMetadata;
+                StatisticsService.processData(columnMetadata);
+                ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
+                SuggestionsStatsAggregationsService.updateAggregations(columnMetadata);
+            }, 200);
         }
 
         /**
@@ -48,6 +59,9 @@
                     var column = grid.getColumns()[args.cell];
                     updateSuggestionPanel(column);
                 }
+                else {
+                    lastSelectedColumn = null;
+                }
             });
         }
 
@@ -60,9 +74,7 @@
         function attachColumnListeners() {
             grid.onHeaderClick.subscribe(function(e, args) {
                 var columnId = args.column.id;
-                var column = _.find(grid.getColumns(), function(column) {
-                    return column.id === columnId;
-                });
+                var column = _.find(grid.getColumns(), {id: columnId});
                 updateSuggestionPanel(column);
             });
         }

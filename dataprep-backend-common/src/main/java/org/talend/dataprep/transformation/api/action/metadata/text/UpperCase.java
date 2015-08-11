@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -8,15 +10,13 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
-
-import java.util.Map;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * Uppercase a column in a row.
  */
 @Component(UpperCase.ACTION_BEAN_PREFIX + UpperCase.UPPER_CASE_ACTION_NAME)
-public class UpperCase extends AbstractActionMetadata implements IColumnAction {
+public class UpperCase extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action code name.
@@ -47,10 +47,17 @@ public class UpperCase extends AbstractActionMetadata implements IColumnAction {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);

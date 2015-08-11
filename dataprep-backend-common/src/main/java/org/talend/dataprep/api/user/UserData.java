@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -29,6 +30,10 @@ public class UserData {
     @JsonProperty(value = "favoritedDS", required = false)
     // set storing the favorites dateset Ids for a user
     Set<String> favoritesDatasets = new HashSet<>();
+
+    @JsonProperty(value = "userId", required = true)
+    @Id
+    String userId;
 
     /**
      * Getter for favoritesDatasets.
@@ -51,15 +56,11 @@ public class UserData {
     /**
      * add a DataSet into the favorites list
      * 
-     * @param dataSet, the favorite to be dataset.
+     * @param dataSetId, the favorite to be dataset.
      */
     public void addFavoriteDataset(String dataSetId) {
         this.favoritesDatasets.add(dataSetId);
     }
-
-    @JsonProperty(value = "userId", required = true)
-    @Id
-    String userId;
 
     /**
      * Getter for userId.

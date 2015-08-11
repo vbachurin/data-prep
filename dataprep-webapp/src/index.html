@@ -92,6 +92,7 @@
         <!-- build:js({.tmp,src}) scripts/app.js -->
         <!-- inject:js -->
         <script src="services/utils/utils-module.js"></script>
+        <script src="services/utils/text-format/text-format-service.js"></script>
         <script src="services/utils/moment/moment-filter.js"></script>
         <script src="services/utils/message/message-service.js"></script>
         <script src="services/utils/converter/converter-service.js"></script>
@@ -136,6 +137,7 @@
         <script src="services/dataset/preview/dataset-sheet-preview-service.js"></script>
         <script src="services/dataset/list/dataset-list-service.js"></script>
         <script src="services/dataset/dataset-service.js"></script>
+        <script src="services/dataset/column-types/column-types-service.js"></script>
         <script src="components/widgets/widget-module.js"></script>
         <script src="components/widgets/tooltip/widget-tooltip-directive.js"></script>
         <script src="components/widgets/tooltip/widget-tooltip-controller.js"></script>
@@ -153,6 +155,8 @@
         <script src="components/widgets/confirm/widget-confirm-controller.js"></script>
         <script src="components/widgets/charts/horizontal-barchart/horizontal-barchart-module.js"></script>
         <script src="components/widgets/charts/horizontal-barchart/horizontal-barchart-directive.js"></script>
+        <script src="components/widgets/charts/boxplot-chart/boxplot-chart-module.js"></script>
+        <script src="components/widgets/charts/boxplot-chart/boxplot-chart-directive.js"></script>
         <script src="components/widgets/button-dropdown/widget-button-dropdown-directive.js"></script>
         <script src="components/widgets/badge/widget-badge-directive.js"></script>
         <script src="components/widgets/badge/widget-badge-controller.js"></script>
@@ -171,6 +175,9 @@
         <script src="components/transformation/params/cluster/transformation-cluster-params-controller.js"></script>
         <script src="components/transformation/params/choice/transformation-choice-params-directive.js"></script>
         <script src="components/transformation/params/choice/transformation-choice-params-controller.js"></script>
+        <script src="components/transformation/menu/type/type-transformation-menu-module.js"></script>
+        <script src="components/transformation/menu/type/type-transformation-menu-directive.js"></script>
+        <script src="components/transformation/menu/type/type-transformation-menu-controller.js"></script>
         <script src="components/transformation/menu/transformation-menu-module.js"></script>
         <script src="components/transformation/menu/transformation-menu-directive.js"></script>
         <script src="components/transformation/menu/transformation-menu-controller.js"></script>
@@ -222,9 +229,6 @@
         <script src="components/dataset/list/dataset-list-module.js"></script>
         <script src="components/dataset/list/dataset-list-directive.js"></script>
         <script src="components/dataset/list/dataset-list-controller.js"></script>
-        <script src="components/datagrid/tooltip/datagrid-tooltip-module.js"></script>
-        <script src="components/datagrid/tooltip/datagrid-tooltip-directive.js"></script>
-        <script src="components/datagrid/tooltip/datagrid-tooltip-controller.js"></script>
         <script src="components/datagrid/datagrid-module.js"></script>
         <script src="components/datagrid/services/datagrid-tooltip-service.js"></script>
         <script src="components/datagrid/services/datagrid-style-service.js"></script>

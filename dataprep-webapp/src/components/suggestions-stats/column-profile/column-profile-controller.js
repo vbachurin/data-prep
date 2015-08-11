@@ -4,22 +4,15 @@
     function ColumnProfileCtrl($scope, DatagridService, StatisticsService, SuggestionsStatsAggregationsService, PlaygroundService) {
         var vm = this;
         vm.datasetGridService = DatagridService;
+        vm.statisticsService = StatisticsService;
+
         vm.datasetAggregationsService = SuggestionsStatsAggregationsService;
         vm.chartConfig = {};
+
         vm.barchartClickFn = function barchartClickFn (item){
             return StatisticsService.addFilter(item.data);
         };
-
-        vm.processedData = null;
-
-        /*
-        * Update the Barchart data
-        * */
-        $scope.$watch(function(){
-            return StatisticsService.data;
-        }, function(newData){
-            vm.processedData = newData;
-        });
+        
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------AGGREGATION---------------------------------------------
         //------------------------------------------------------------------------------------------------------
@@ -215,7 +208,15 @@
                 }
             });
     }
-
+    
+        Object.defineProperty(ColumnProfileCtrl.prototype,
+            'processedData', {
+                enumerable: true,
+                configurable: false,
+                get: function () {
+                    return this.statisticsService.data;
+                }
+            });
 
     angular.module('data-prep.column-profile')
         .controller('ColumnProfileCtrl', ColumnProfileCtrl);

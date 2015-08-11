@@ -1,16 +1,15 @@
 package org.talend.dataprep.transformation.api.action.metadata.fillempty;
 
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
 
 import java.util.Map;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
-public abstract class AbstractFillIfEmpty extends AbstractActionMetadata implements IColumnAction {
+public abstract class AbstractFillIfEmpty extends AbstractActionMetadata implements ColumnAction {
 
     public static final String DEFAULT_VALUE_PARAMETER = "default_value"; //$NON-NLS-1$
 

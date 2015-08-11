@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.bool;
 
+import java.util.Map;
+
 import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -9,9 +11,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
-
-import java.util.Map;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * Negate a boolean.
@@ -19,7 +19,7 @@ import java.util.Map;
  * @see Negate
  */
 @Component(Negate.ACTION_BEAN_PREFIX + Negate.NEGATE_ACTION_NAME)
-public class Negate extends AbstractActionMetadata implements IColumnAction {
+public class Negate extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * Action name.
@@ -50,8 +50,12 @@ public class Negate extends AbstractActionMetadata implements IColumnAction {
         return Type.BOOLEAN.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
     @Override

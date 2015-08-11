@@ -1,13 +1,14 @@
 package org.talend.dataprep.preparation.service;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
-import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_DOES_NOT_EXIST;
-import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED;
-import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.PREPARATION_STEP_DOES_NOT_EXIST;
+import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,17 +25,27 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.preparation.*;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.json.JsonErrorCodeDescription;
 import org.talend.dataprep.metrics.Timed;
 import org.talend.dataprep.preparation.api.AppendStep;
 import org.talend.dataprep.preparation.exception.PreparationErrorCodes;
+import org.talend.dataprep.transformation.api.action.validation.ActionMetadataValidation;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.talend.dataprep.api.preparation.Step.ROOT_STEP;
+import static org.talend.dataprep.preparation.exception.PreparationErrorCodes.*;
 
 @RestController
 @Api(value = "preparations", basePath = "/preparations", description = "Operations on preparations")
@@ -47,6 +58,9 @@ public class PreparationService {
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
+
+    @Autowired
+    private ActionMetadataValidation validator;
 
     @RequestMapping(value = "/preparations", method = GET, produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List all preparations", notes = "Returns the list of preparations ids the current user is allowed to see. Creation date is always displayed in UTC time zone. See 'preparations/all' to get all details at once.")
@@ -135,6 +149,8 @@ public class PreparationService {
     @Timed
     public void append(@PathVariable("id") final String id, //
                        @RequestBody final AppendStep step) {
+        checkActionStepConsistency(step);
+
         LOGGER.debug("Adding actions to preparation #{}", id);
         final Preparation preparation = getPreparation(id);
 
@@ -161,6 +177,8 @@ public class PreparationService {
     public void updateAction(@PathVariable("id") final String id, //
                              @PathVariable("action") final String action, //
                              @RequestBody final AppendStep step) {
+        checkActionStepConsistency(step);
+
         LOGGER.debug("Modifying actions in preparation #{}", id);
         final Preparation preparation = getPreparation(id);
 
@@ -199,7 +217,7 @@ public class PreparationService {
     @Timed
     public void deleteAction(@PathVariable("id") final String id, //
                              @PathVariable("action") final String action) throws TDPException {
-        if(ROOT_STEP.getId().equals(action)) {
+        if (ROOT_STEP.getId().equals(action)) {
             throw new TDPException(PREPARATION_ROOT_STEP_CANNOT_BE_CHANGED);
         }
 
@@ -275,15 +293,15 @@ public class PreparationService {
 
     /**
      * Get the actual step id by converting "head" and "origin" to the hash
-     * @param version The version to convert to step id
+     *
+     * @param version     The version to convert to step id
      * @param preparation The preparation
      * @return The converted step Id
      */
     private static String getStepId(final String version, final Preparation preparation) {
         if ("head".equalsIgnoreCase(version)) { //$NON-NLS-1$
             return preparation.getStep().id();
-        }
-        else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
+        } else if ("origin".equalsIgnoreCase(version)) { //$NON-NLS-1$
             return ROOT_STEP.id();
         }
         return version;
@@ -291,6 +309,7 @@ public class PreparationService {
 
     /**
      * Get actions list from root to the provided step
+     *
      * @param stepId The limit step id
      * @return The list of actions
      */
@@ -325,5 +344,16 @@ public class PreparationService {
         preparation.setStep(head);
         preparation.updateLastModificationDate();
         preparationRepository.add(preparation);
+    }
+
+    /**
+     * Check the action parameters consistency
+     *
+     * @param step the step to check
+     */
+    private void checkActionStepConsistency(final AppendStep step) {
+        for (final Action stepAction : step.getActions()) {
+            validator.checkScopeConsistency(stepAction.getAction(), stepAction.getParameters());
+        }
     }
 }

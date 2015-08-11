@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -29,6 +30,7 @@ import org.talend.dataprep.transformation.api.action.DataSetRowAction;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
+import org.talend.dataprep.transformation.api.action.metadata.column.CopyColumnMetadata;
 
 /**
  * Test class for Ceil action. Creates one consumer, and test it.
@@ -40,17 +42,15 @@ public class CeilTest {
     /** The action ton test. */
     private Ceil action;
 
-    /** The consumer out of the consumer. */
-    private DataSetRowAction consumer;
+    private Map<String, String> parameters;
 
-    /**
-     * Constructor.
-     */
-    public CeilTest() throws IOException {
+    @Before
+    public void init() throws IOException {
         action = new Ceil();
-        Map<String, String> parameters = ActionMetadataTestUtils //
-                .parseParameters(action, CeilTest.class.getResourceAsStream("ceilAction.json"));
-        consumer = action.create(parameters).getRowAction();
+
+        parameters = ActionMetadataTestUtils.parseParameters( //
+                action, //
+                CeilTest.class.getResourceAsStream("ceilAction.json"));
     }
 
     @Test
@@ -66,12 +66,16 @@ public class CeilTest {
     }
 
     public void testCommon(String input, String expected) {
-        Map<String, String> values = new HashMap<>();
+        //given
+        final Map<String, String> values = new HashMap<>();
         values.put("aNumber", input);
-        DataSetRow dsr = new DataSetRow(values);
+        final DataSetRow row = new DataSetRow(values);
 
-        dsr = consumer.apply(dsr, new TransformationContext());
-        assertEquals(expected, dsr.get("aNumber"));
+        //when
+        action.applyOnColumn(row, new TransformationContext(), parameters, "aNumber");
+
+        //then
+        assertEquals(expected, row.get("aNumber"));
     }
 
     @Test

@@ -1,11 +1,11 @@
 package org.talend.dataprep.api.service.api;
 
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
 import org.talend.dataprep.api.service.validation.OneNotBlank;
 import org.talend.dataprep.api.type.ExportType;
-
-import java.util.Map;
 
 /**
  * Parameter for dataset/preparation export

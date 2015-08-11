@@ -219,7 +219,7 @@ describe('Datagrid style service', function () {
             gridMock.initActiveCellMock(activeCell);
 
             //when
-            DatagridStyleService.manageColumnStyle(isPreview);
+            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -239,7 +239,7 @@ describe('Datagrid style service', function () {
             gridMock.initActiveCellMock(activeCell);
 
             //when
-            DatagridStyleService.manageColumnStyle(isPreview);
+            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -259,7 +259,7 @@ describe('Datagrid style service', function () {
             gridMock.initActiveCellMock();
 
             //when
-            DatagridStyleService.manageColumnStyle(isPreview);
+            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -277,7 +277,7 @@ describe('Datagrid style service', function () {
             var isPreview = true;
 
             //when
-            DatagridStyleService.manageColumnStyle(isPreview);
+            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -297,7 +297,7 @@ describe('Datagrid style service', function () {
             gridMock.initActiveCellMock(activeCell);
 
             //when
-            DatagridStyleService.manageColumnStyle(isPreview);
+            DatagridStyleService.manageColumnStyle(gridColumns, isPreview);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -312,16 +312,16 @@ describe('Datagrid style service', function () {
             DatagridStyleService.init(gridMock);
 
             gridMock.initActiveCellMock({cell: 1}); // a cell from column 1
-            DatagridStyleService.manageColumnStyle(false); // will select column 1
+            DatagridStyleService.manageColumnStyle(gridColumns, false); // will select column 1
             expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(true);
 
-            DatagridStyleService.manageColumnStyle(true); // will unselect column 1
+            DatagridStyleService.manageColumnStyle(gridColumns, true); // will unselect column 1
             expect(gridColumns[1].cssClass.indexOf('selected') > -1).toBe(false);
 
             gridMock.initActiveCellMock(); // no active cell anymore, it should take last selected column id
 
             //when
-            DatagridStyleService.manageColumnStyle(false);
+            DatagridStyleService.manageColumnStyle(gridColumns, false);
 
             //then
             expect(gridColumns[0].cssClass).toBeFalsy();
@@ -329,80 +329,6 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
-        }));
-    });
-
-    describe('text to html adaptation', function() {
-        it('should return value when it is falsy', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = '';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe(value);
-        }));
-
-        it('should add a span on leading spaces', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = '  my value';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('<span class="hiddenChars">  </span>my value');
-        }));
-
-        it('should add a span on trailing spaces', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = 'my value  ';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('my value<span class="hiddenChars">  </span>');
-        }));
-
-        it('should add a span on leading and trailing spaces', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = '     my value  ';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('<span class="hiddenChars">     </span>my value<span class="hiddenChars">  </span>');
-        }));
-
-        it('should add a line breaking arrow at the end of each line', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = 'my \nnew\nvalue';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('my ↵\nnew↵\nvalue');
-        }));
-
-        it('should adapt input with line breaking arrow and leading/trailing spaces spans', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = '     my \nnew\nvalue  ';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('<span class="hiddenChars">     </span>my ↵\nnew↵\nvalue<span class="hiddenChars">  </span>');
         }));
     });
 
@@ -642,10 +568,10 @@ describe('Datagrid style service', function () {
             //given : set selected column
             var activeCell = {cell: 1};
             gridMock.initActiveCellMock(activeCell);
-            DatagridStyleService.manageColumnStyle(false);
+            DatagridStyleService.manageColumnStyle(gridColumns, false);
 
             //when
-            var selectedColumn = DatagridStyleService.selectedColumn();
+            var selectedColumn = DatagridStyleService.selectedColumn(gridColumns);
 
             //then
             expect(selectedColumn).toBe(gridColumns[1]);
@@ -656,27 +582,10 @@ describe('Datagrid style service', function () {
             DatagridStyleService.init(gridMock);
 
             //when
-            var selectedColumn = DatagridStyleService.selectedColumn();
+            var selectedColumn = DatagridStyleService.selectedColumn(gridColumns);
 
             //then
             expect(selectedColumn).not.toBeDefined();
-        }));
-    });
-
-    describe('column navigation for focus purposes', function() {
-        it('should go to the cell (0,col)', inject(function (DatagridStyleService, DatagridService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            DatagridService.focusedColumn = '0002';
-
-            spyOn(gridMock, 'scrollCellIntoView').and.returnValue();
-            spyOn(gridMock, 'getRenderedRange').and.returnValue({top:100, bottom:150});
-
-            //when
-            DatagridStyleService.navigateToFocusedColumn();
-
-            //then
-            expect(gridMock.scrollCellIntoView).toHaveBeenCalledWith(125, 2, false);
         }));
     });
 });

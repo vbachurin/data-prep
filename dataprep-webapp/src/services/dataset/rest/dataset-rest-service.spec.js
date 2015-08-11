@@ -135,6 +135,27 @@ describe('Dataset Rest Service', function () {
         expect(result).toEqual(data);
     }));
 
+    it('should call dataset get content rest service with the given sample size', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var result = null;
+        var datasetId = 'e85afAa78556d5425bc2';
+        var data = [{column: [], records: []}];
+
+        $httpBackend
+            .expectGET(RestURLs.datasetUrl + '/e85afAa78556d5425bc2?metadata=false&sample=123')
+            .respond(200, data);
+
+        //when
+        DatasetRestService.getContent(datasetId, false, 123).then(function (data) {
+            result = data;
+        });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(result).toEqual(data);
+    }));
+
     it('should call dataset certification rest service', inject(function ($rootScope, DatasetRestService, RestURLs) {
         //given
         var datasetId = 'e85afAa78556d5425bc2';
@@ -249,7 +270,28 @@ describe('Dataset Rest Service', function () {
         $rootScope.$digest();
 
         //then
-        //expect POST no to throw any exception;
+        //expect POST not to throw any exception;
+    }));
+
+    it('should call update column service', inject(function ($rootScope, DatasetRestService, RestURLs) {
+        //given
+        var datasetId = '75b1547dc4145e218';
+        var columnId = '24a5416584cf63b26';
+        var params = {
+            domain: 'CITY'
+        };
+
+        $httpBackend
+            .expectPOST(RestURLs.datasetUrl + '/' + datasetId + '/column/' + columnId, params)
+            .respond(200);
+
+        //when
+        DatasetRestService.updateColumn(datasetId, columnId, params);
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        //expect POST not to throw any exception;
     }));
 
 });

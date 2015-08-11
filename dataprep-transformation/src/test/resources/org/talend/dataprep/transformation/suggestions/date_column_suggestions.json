@@ -35,6 +35,41 @@
     "label": "Delete lines with empty cell"
   },
   {
+    "name": "delete_invalid",
+    "category": "cleansing",
+    "items": [
+    ],
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Delete rows that have this invalid cell",
+    "label": "Delete lines with invalid cell"
+  },
+  {
     "parameters": [
       {
         "name": "column_id",

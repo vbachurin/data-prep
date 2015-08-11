@@ -89,4 +89,65 @@ describe('Datagrid grid service', function () {
             expect(grid.render).toHaveBeenCalled();
         }));
     });
+
+
+    describe('column navigation for focus purposes', function() {
+        beforeEach(function () {
+            jasmine.clock().install();
+        });
+
+        afterEach(function () {
+            jasmine.clock().uninstall();
+        });
+
+        it('should go to the selected column after a 300ms delay', inject(function (DatagridStyleService, DatagridService, DatagridGridService) {
+            //given
+            var gridColumns = [
+                {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
+                {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
+                {id: '0002', field: 'col2', tdpColMetadata: {id: '0002', name: 'col2', type: 'string'}},
+                {id: '0003', field: 'col3', tdpColMetadata: {id: '0003', name: 'col3', type: 'string'}},
+                {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}}
+            ];
+            var grid = DatagridGridService.initGrid();
+
+            grid.setColumns(gridColumns);
+            DatagridService.focusedColumn = '0002';
+
+            spyOn(grid, 'scrollCellIntoView').and.returnValue();
+            spyOn(grid, 'getRenderedRange').and.returnValue({top:100, bottom:150});
+
+            //when
+            DatagridGridService.navigateToFocusedColumn();
+            jasmine.clock().tick(300);
+
+            //then
+            expect(grid.scrollCellIntoView).toHaveBeenCalledWith(125, 2, false);
+        }));
+
+        it('should do nothing when no column should be focused', inject(function (DatagridStyleService, DatagridService, DatagridGridService) {
+            //given
+            var gridColumns = [
+                {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
+                {id: '0001', field: 'col1', tdpColMetadata: {id: '0001', name: 'col1', type: 'integer'}},
+                {id: '0002', field: 'col2', tdpColMetadata: {id: '0002', name: 'col2', type: 'string'}},
+                {id: '0003', field: 'col3', tdpColMetadata: {id: '0003', name: 'col3', type: 'string'}},
+                {id: '0004', field: 'col4', tdpColMetadata: {id: '0004', name: 'col4', type: 'string'}}
+            ];
+            var grid = DatagridGridService.initGrid();
+
+            grid.setColumns(gridColumns);
+            DatagridService.focusedColumn = null;
+
+            spyOn(grid, 'scrollCellIntoView').and.returnValue();
+            spyOn(grid, 'getRenderedRange').and.returnValue({top:100, bottom:150});
+
+            //when
+            DatagridGridService.navigateToFocusedColumn();
+            jasmine.clock().tick(300);
+
+            //then
+            expect(grid.scrollCellIntoView).not.toHaveBeenCalled();
+        }));
+    });
 });

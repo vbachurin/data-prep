@@ -216,6 +216,26 @@ describe('Preparation Service', function () {
         expect(content).toEqual(records);
     }));
 
+    it('should get the requested version of preparation content with the given sample size', inject(function($rootScope, RestURLs, PreparationRestService) {
+        //given
+        var content = null;
+        var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        $httpBackend
+            .expectGET(RestURLs.preparationUrl + '/' + preparationId + '/content?version=head&sample=50')
+            .respond(200, records);
+
+        //when
+        PreparationRestService.getContent(preparationId, 'head', 50)
+            .then(function(response) {
+                content = response.data;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(content).toEqual(records);
+    }));
+
     it('should get the current preparation details', inject(function($rootScope, RestURLs, PreparationRestService) {
         //given
         var details = null;

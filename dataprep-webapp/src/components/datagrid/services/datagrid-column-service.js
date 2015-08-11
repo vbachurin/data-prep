@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -30,7 +30,7 @@
         var service = {
             colHeaderElements: [],
             init: init,
-            updateColumns: updateColumns
+            createColumns: createColumns
         };
         return service;
 
@@ -54,15 +54,15 @@
          */
         function createColumnItem(col, index, preview) {
             var template;
-            if(preview) {
-                template =  _.template(gridHeaderPreviewTemplate)({
+            if (preview) {
+                template = _.template(gridHeaderPreviewTemplate)({
                     name: col.name,
                     diffClass: DatagridStyleService.getColumnPreviewStyle(col),
                     simpleType: col.domain ? col.domain : ConverterService.simplifyType(col.type)
                 });
             }
             else {
-                template =  _.template(gridHeaderTemplate)({index: index});
+                template = _.template(gridHeaderTemplate)({index: index});
             }
 
             return {
@@ -78,58 +78,70 @@
 
         /**
          * @ngdoc method
-         * @name updateColumns
+         * @name updateColumnHeaderElements
+         * @methodOf data-prep.datagrid.service:DatagridColumnService
+         * @param {object[]} columnsMetadata Columns details
+         * @param {boolean} renewAllColumns Force recreation of every column
+         * @description for each column, we try to reused an old saved column header if the column match. Otherwise,
+         * a new column header is created.
+         * The headers are stored internally and exposed as service.colHeaderElements.
+         */
+        function updateColumnHeaderElements(columnsMetadata, renewAllColumns) {
+            //map every column to a header
+            var finalColHeaderElements = _.map(columnsMetadata, function (col) {
+                //find saved header corresponding to column
+                var header = renewAllColumns ? null : _.find(service.colHeaderElements, function (colHeader) {
+                    return colHeader.column.id === col.id;
+                });
+                if (header) {
+                    header.scope.column = col;
+                }
+                //or create a new one if no corresponding one
+                else {
+                    header = createHeader(col);
+                }
+
+                return header;
+            });
+
+            //destroy the unused headers
+            var diff = _.difference(service.colHeaderElements, finalColHeaderElements);
+            _.forEach(diff, function (header) {
+                header.scope.$destroy();
+                header.element.remove();
+            });
+
+            service.colHeaderElements = finalColHeaderElements;
+        }
+
+        /**
+         * @ngdoc method
+         * @name createColumns
          * @methodOf data-prep.datagrid.service:DatagridColumnService
          * @param {object[]} columnsMetadata Columns details
          * @param {boolean} preview Flag that indicates if we are in preview mode
          * @param {boolean} renewAllColumns Force recreation of every column
-         * @description [PRIVATE] Two modes :
+         * @description Two modes :
          * <ul>
          *     <li>Preview : we save actual headers and simulate fake headers with the new preview columns</li>
          *     <li>Classic : we map each column to a header. This header can be a reused header if the column was
          * the same as before, or a new created one otherwise.</li>
          * </ul>
          */
-        function updateColumns(columnsMetadata, preview, renewAllColumns) {
+        function createColumns(columnsMetadata, preview, renewAllColumns) {
             //detach current headers elements but they still exists internally
-            _.forEach(service.colHeaderElements, function(header) {
+            _.forEach(service.colHeaderElements, function (header) {
                 header.element.detach();
             });
 
-            //create and set new SlickGrid columns
-            var columns = _.map(columnsMetadata, function (col, index) {
+            if (!preview) {
+                updateColumnHeaderElements(columnsMetadata, renewAllColumns);
+            }
+
+            //create new SlickGrid columns
+            return _.map(columnsMetadata, function (col, index) {
                 return createColumnItem(col, index, preview);
             });
-            grid.setColumns(columns);
-
-            //insert reused or created datagrid headers
-            if(!preview) {
-                //map every column to a header
-                var finalColHeaderElements = _.map(columnsMetadata, function (col) {
-                    //find saved header corresponding to column
-                    var header = renewAllColumns ? null : _.find(service.colHeaderElements, function (colHeader) {
-                        return colHeader.column.id === col.id;
-                    });
-                    if (header) {
-                        header.scope.column = col;
-                    }
-                    //or create a new one if no corresponding one
-                    else {
-                        header = createHeader(col);
-                    }
-
-                    return header;
-                });
-
-                //destroy the unused headers
-                var diff = _.difference(service.colHeaderElements, finalColHeaderElements);
-                _.forEach(diff, function (header) {
-                    header.scope.$destroy();
-                    header.element.remove();
-                });
-
-                service.colHeaderElements = finalColHeaderElements;
-            }
         }
 
         //------------------------------------------------------------------------------------------------------
@@ -153,8 +165,8 @@
             $compile(headerElement)(headerScope);
 
             return {
-                element : headerElement,
-                scope : headerScope,
+                element: headerElement,
+                scope: headerScope,
                 column: col
             };
         }

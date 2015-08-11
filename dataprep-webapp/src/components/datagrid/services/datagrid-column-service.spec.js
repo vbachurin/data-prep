@@ -9,7 +9,7 @@ describe('Datagrid column service', function () {
         columnsMetadata = [
             {id: '0000', name: 'col0', type: 'string'},
             {id: '0001', name: 'col1', type: 'integer'},
-            {id: '0002', name: 'col2', type: 'string'}
+            {id: '0002', name: 'col2', type: 'string', domain: 'salary'}
         ];
 
         /*global SlickGridMock:false */
@@ -29,7 +29,7 @@ describe('Datagrid column service', function () {
         }));
     });
 
-    describe('update columns', function() {
+    describe('create columns', function() {
         var headers = [
             {element: {detach: function() {}}},
             {element: {detach: function() {}}},
@@ -51,7 +51,7 @@ describe('Datagrid column service', function () {
             DatagridColumnService.colHeaderElements = headers;
 
             //when
-            DatagridColumnService.updateColumns([], true, false);
+            DatagridColumnService.createColumns([], true, false);
 
             //then
             headers.forEach(function(header) {
@@ -59,60 +59,58 @@ describe('Datagrid column service', function () {
             });
         }));
 
-        it('should create and set new preview grid columns', inject(function(DatagridColumnService) {
+        it('should create new preview grid columns', inject(function(DatagridColumnService) {
             //when
-            DatagridColumnService.updateColumns(columnsMetadata, true, false);
+            var createdColumns = DatagridColumnService.createColumns(columnsMetadata, true, false);
 
             //then
-            var gridColumns = gridMock.getColumns();
-            expect(gridColumns[0].id).toEqual('0000');
-            expect(gridColumns[0].field).toEqual('0000');
-            expect(gridColumns[0].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col0</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
-            expect(gridColumns[0].formatter).toEqual(formatter);
-            expect(gridColumns[0].minWidth).toEqual(80);
-            expect(gridColumns[0].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' } );
+            expect(createdColumns[0].id).toEqual('0000');
+            expect(createdColumns[0].field).toEqual('0000');
+            expect(createdColumns[0].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col0</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(createdColumns[0].formatter).toEqual(formatter);
+            expect(createdColumns[0].minWidth).toEqual(80);
+            expect(createdColumns[0].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' } );
 
-            expect(gridColumns[1].id).toEqual('0001');
-            expect(gridColumns[1].field).toEqual('0001');
-            expect(gridColumns[1].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>       <div class="grid-header-type ng-binding">number</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
-            expect(gridColumns[1].formatter).toEqual(formatter);
-            expect(gridColumns[1].minWidth).toEqual(80);
-            expect(gridColumns[1].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );
+            expect(createdColumns[1].id).toEqual('0001');
+            expect(createdColumns[1].field).toEqual('0001');
+            expect(createdColumns[1].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col1</div>       <div class="grid-header-type ng-binding">number</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(createdColumns[1].formatter).toEqual(formatter);
+            expect(createdColumns[1].minWidth).toEqual(80);
+            expect(createdColumns[1].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );
 
-            expect(gridColumns[2].id).toEqual('0002');
-            expect(gridColumns[2].field).toEqual('0002');
-            expect(gridColumns[2].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col2</div>       <div class="grid-header-type ng-binding">text</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
-            expect(gridColumns[2].formatter).toEqual(formatter);
-            expect(gridColumns[2].minWidth).toEqual(80);
-            expect(gridColumns[2].tdpColMetadata).toEqual({ id: '0002', name: 'col2', type: 'string' } );
+            expect(createdColumns[2].id).toEqual('0002');
+            expect(createdColumns[2].field).toEqual('0002');
+            expect(createdColumns[2].name).toEqual('<div class="grid-header ">   <div class="grid-header-title dropdown-button ng-binding">col2</div>       <div class="grid-header-type ng-binding">salary</div>   </div><div class="quality-bar"><div class="record-unknown"></div></div>');
+            expect(createdColumns[2].formatter).toEqual(formatter);
+            expect(createdColumns[2].minWidth).toEqual(80);
+            expect(createdColumns[2].tdpColMetadata).toEqual({ id: '0002', name: 'col2', type: 'string', domain: 'salary' } );
         }));
 
-        it('should create and set new grid columns', inject(function(DatagridColumnService) {
+        it('should create new grid columns', inject(function(DatagridColumnService) {
             //when
-            DatagridColumnService.updateColumns(columnsMetadata, false, false);
+            var createdColumns = DatagridColumnService.createColumns(columnsMetadata, false, false);
 
             //then
-            var gridColumns = gridMock.getColumns();
-            expect(gridColumns[0].id).toEqual('0000');
-            expect(gridColumns[0].field).toEqual('0000');
-            expect(gridColumns[0].name).toEqual('<div id="datagrid-header-0"></div>');
-            expect(gridColumns[0].formatter).toEqual(formatter);
-            expect(gridColumns[0].minWidth).toEqual(80);
-            expect(gridColumns[0].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' } );
+            expect(createdColumns[0].id).toEqual('0000');
+            expect(createdColumns[0].field).toEqual('0000');
+            expect(createdColumns[0].name).toEqual('<div id="datagrid-header-0"></div>');
+            expect(createdColumns[0].formatter).toEqual(formatter);
+            expect(createdColumns[0].minWidth).toEqual(80);
+            expect(createdColumns[0].tdpColMetadata).toEqual({ id: '0000', name: 'col0', type: 'string' } );
 
-            expect(gridColumns[1].id).toEqual('0001');
-            expect(gridColumns[1].field).toEqual('0001');
-            expect(gridColumns[1].name).toEqual('<div id="datagrid-header-1"></div>');
-            expect(gridColumns[1].formatter).toEqual(formatter);
-            expect(gridColumns[1].minWidth).toEqual(80);
-            expect(gridColumns[1].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );
+            expect(createdColumns[1].id).toEqual('0001');
+            expect(createdColumns[1].field).toEqual('0001');
+            expect(createdColumns[1].name).toEqual('<div id="datagrid-header-1"></div>');
+            expect(createdColumns[1].formatter).toEqual(formatter);
+            expect(createdColumns[1].minWidth).toEqual(80);
+            expect(createdColumns[1].tdpColMetadata).toEqual({ id: '0001', name: 'col1', type: 'integer' } );
 
-            expect(gridColumns[2].id).toEqual('0002');
-            expect(gridColumns[2].field).toEqual('0002');
-            expect(gridColumns[2].name).toEqual('<div id="datagrid-header-2"></div>');
-            expect(gridColumns[2].formatter).toEqual(formatter);
-            expect(gridColumns[2].minWidth).toEqual(80);
-            expect(gridColumns[2].tdpColMetadata).toEqual({ id: '0002', name: 'col2', type: 'string' } );
+            expect(createdColumns[2].id).toEqual('0002');
+            expect(createdColumns[2].field).toEqual('0002');
+            expect(createdColumns[2].name).toEqual('<div id="datagrid-header-2"></div>');
+            expect(createdColumns[2].formatter).toEqual(formatter);
+            expect(createdColumns[2].minWidth).toEqual(80);
+            expect(createdColumns[2].tdpColMetadata).toEqual({ id: '0002', name: 'col2', type: 'string', domain: 'salary' });
         }));
 
         it('should fill colHeaderElements with datagrid headers', inject(function(DatagridColumnService) {
@@ -120,7 +118,7 @@ describe('Datagrid column service', function () {
             expect(DatagridColumnService.colHeaderElements).toEqual([]);
 
             //when
-            DatagridColumnService.updateColumns(columnsMetadata, false, false);
+            DatagridColumnService.createColumns(columnsMetadata, false, false);
 
             //then
             expect(DatagridColumnService.colHeaderElements.length).toBe(3);
@@ -141,18 +139,12 @@ describe('Datagrid column service', function () {
                 {id: '0002Bis', name: 'NewColName2', type: 'integer'}
             ];
 
-            DatagridColumnService.updateColumns(columnsMetadata, false, false);
+            DatagridColumnService.createColumns(columnsMetadata, false, false);
             var oldColHeaderElements = DatagridColumnService.colHeaderElements;
             expect(oldColHeaderElements.length).toBe(3);
 
-            oldColHeaderElements.forEach(function(header) {
-                spyOn(header.scope, '$destroy').and.returnValue();
-                spyOn(header.element, 'remove').and.returnValue();
-                spyOn(header.element, 'detach').and.returnValue();
-            });
-
             //when
-            DatagridColumnService.updateColumns(newColumnsMetadata, false, false);
+            DatagridColumnService.createColumns(newColumnsMetadata, false, false);
 
             //then
             expect(DatagridColumnService.colHeaderElements.length).toBe(3);
@@ -171,7 +163,7 @@ describe('Datagrid column service', function () {
                 {id: '0002Bis', name: 'NewColName2', type: 'integer'} //Test case : delete it and create a new one
             ];
 
-            DatagridColumnService.updateColumns(columnsMetadata, false, false);
+            DatagridColumnService.createColumns(columnsMetadata, false, false);
             var oldColHeaderElements = DatagridColumnService.colHeaderElements;
             expect(oldColHeaderElements.length).toBe(3);
 
@@ -182,7 +174,7 @@ describe('Datagrid column service', function () {
             });
 
             //when
-            DatagridColumnService.updateColumns(newColumnsMetadata, false, false);
+            DatagridColumnService.createColumns(newColumnsMetadata, false, false);
 
             //then
             expect(oldColHeaderElements[0].scope.$destroy).not.toHaveBeenCalled();
@@ -202,7 +194,7 @@ describe('Datagrid column service', function () {
             ];
             var forceCreation = true;
 
-            DatagridColumnService.updateColumns(columnsMetadata, false, false);
+            DatagridColumnService.createColumns(columnsMetadata, false, false);
             var oldColHeaderElements = DatagridColumnService.colHeaderElements;
             expect(oldColHeaderElements.length).toBe(3);
 
@@ -213,7 +205,7 @@ describe('Datagrid column service', function () {
             });
 
             //when
-            DatagridColumnService.updateColumns(newColumnsMetadata, false, forceCreation);
+            DatagridColumnService.createColumns(newColumnsMetadata, false, forceCreation);
 
             //then
             expect(oldColHeaderElements[0].scope.$destroy).toHaveBeenCalled();

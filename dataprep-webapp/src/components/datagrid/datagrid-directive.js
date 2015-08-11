@@ -118,17 +118,21 @@
                 var onDataChange = function onDataChange(data) {
                     if (data) {
                         initGridIfNeeded();
-                        DatagridColumnService.updateColumns(data.columns, data.preview, renewAllColumns);
-                        DatagridSizeService.autosizeColumns();
+
+                        //create columns and manage size
+                        var columns = DatagridColumnService.createColumns(data.columns, data.preview, renewAllColumns);
+                        DatagridStyleService.manageColumnStyle(columns, data.preview);
+                        DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
                         renewAllColumns = false;
 
-                        DatagridStyleService.manageColumnStyle(data.preview);
-                        var selectedColumn = DatagridStyleService.selectedColumn();
+                        //manage column selection (external)
+                        var selectedColumn = DatagridStyleService.selectedColumn(columns);
                         if (selectedColumn) {
                             DatagridExternalService.updateSuggestionPanel(selectedColumn);
                         }
-                        grid.invalidate();
-                        DatagridStyleService.navigateToFocusedColumn();
+
+                        //focus specific column
+                        DatagridGridService.navigateToFocusedColumn();
                     }
                 };
 
@@ -169,11 +173,6 @@
                 //------------------------------------------------------------------------------------------------------
 
                 /**
-                 * Insert the grid headers
-                 */
-                scope.$watch(getHeaders, insertHeaders);
-
-                /**
                  * Scroll to top when loaded dataset change
                  */
                 scope.$watch(getMetadata, onMetadataChange);
@@ -187,6 +186,12 @@
                  * When filter change, displayed values change, so we reset active cell and cell styles
                  */
                 scope.$watchCollection(getFilters, onFiltersChange);
+
+                /**
+                 * Insert the grid headers
+                 */
+                scope.$watch(getHeaders, insertHeaders);
+
             }
         };
     }

@@ -1,6 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.talend.dataprep.api.type.Type.STRING;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -9,14 +14,12 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.CellAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import java.util.List;
-import java.util.Map;
-
 @Component(ReplaceOnValue.ACTION_BEAN_PREFIX + ReplaceOnValue.REPLACE_ON_VALUE_ACTION_NAME)
-public class ReplaceOnValue extends AbstractActionMetadata implements IColumnAction {
+public class ReplaceOnValue extends AbstractActionMetadata implements ColumnAction, CellAction {
 
     /**
      * The action name.
@@ -55,8 +58,8 @@ public class ReplaceOnValue extends AbstractActionMetadata implements IColumnAct
     @Override
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(CELL_VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY));
-        parameters.add(new Parameter(REPLACE_VALUE_PARAMETER, Type.STRING.getName(), StringUtils.EMPTY));
+        parameters.add(new Parameter(CELL_VALUE_PARAMETER, STRING.getName(), EMPTY));
+        parameters.add(new Parameter(REPLACE_VALUE_PARAMETER, STRING.getName(), EMPTY));
         return parameters;
     }
 
@@ -65,15 +68,18 @@ public class ReplaceOnValue extends AbstractActionMetadata implements IColumnAct
      */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
-        return Type.STRING.equals(Type.get(column.getType()));
+        return STRING.equals(Type.get(column.getType()));
     }
 
+    /**
+     * @see AbstractActionMetadata#beforeApply(Map)
+     */
     @Override
     protected void beforeApply(Map<String, String> parameters) {
+        // nothing to do here
     }
 
-    @Override
-    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+    private void apply(DataSetRow row, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);
         final String toMatch = parameters.get(CELL_VALUE_PARAMETER);
 
@@ -81,5 +87,15 @@ public class ReplaceOnValue extends AbstractActionMetadata implements IColumnAct
             final String toReplace = parameters.get(REPLACE_VALUE_PARAMETER);
             row.set(columnId, toReplace);
         }
+    }
+
+    @Override
+    public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
+        apply(row, parameters, columnId);
+    }
+
+    @Override
+    public void applyOnCell(DataSetRow row, TransformationContext context, Map<String, String> parameters, Long rowId, String columnId) {
+        apply(row, parameters, columnId);
     }
 }
