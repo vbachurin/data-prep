@@ -18,19 +18,20 @@
         return {
             restrict: 'E',
             templateUrl: 'components/widgets/loading/loading.html',
-            link: function() {
+            link: function(scope, iElement) {
                 var loadingTimeout;
-                var body = angular.element('body');
 
                 $rootScope.$on('talend.loading.start', function() {
                     clearTimeout(loadingTimeout);
+                    iElement[0].className = 'is-loading';
+
                     loadingTimeout = setTimeout(function() {
-                        body.addClass('loading-open');
+                        iElement[0].className = 'is-loading show-loading';
                     }, 150);
                 });
                 $rootScope.$on('talend.loading.stop', function() {
                     clearTimeout(loadingTimeout);
-                    body.removeClass('loading-open');
+                    iElement[0].className = '';
                 });
             }
         };
