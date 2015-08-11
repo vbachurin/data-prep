@@ -11,6 +11,7 @@
      */
     function DatagridExternalService(StatisticsService, ColumnSuggestionService, PreviewService) {
         var grid;
+        var suggestionTimeout;
 
         return {
             init: init,
@@ -28,9 +29,12 @@
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
         function updateSuggestionPanel(column) {
-            var columnMetadata = column.tdpColMetadata;
-            StatisticsService.processData(columnMetadata);
-            ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
+            clearTimeout(suggestionTimeout);
+            suggestionTimeout = setTimeout(function() {
+                var columnMetadata = column.tdpColMetadata;
+                StatisticsService.processData(columnMetadata);
+                ColumnSuggestionService.setColumn(columnMetadata); // this will trigger a digest after REST call
+            }, 200);
         }
 
         /**

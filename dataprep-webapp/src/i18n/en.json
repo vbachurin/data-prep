@@ -103,9 +103,12 @@
   "IMPORT_ERROR_TITLE": "Import error",
   "IMPORT_ERROR": "An error occurred during import",
 
+  "_comment": "Transformation",
   "NO_CLUSTERS_ACTION_MSG":"No Clusters Were Found !!!",
   "NO_CHOICES_ACTION_MSG":"No Choices Were Found !!!",
   "NO_PARAMS_ACTION_MSG":"No Simple Parameters Were Found !!!",
+  "COLUMN_TYPE_IS": "This column is a",
+  "COLUMN_TYPE_SET": "Set as",
 
   "_comment": "Statistics",
   "COUNT": "Count",

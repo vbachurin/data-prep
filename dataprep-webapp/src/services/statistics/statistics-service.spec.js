@@ -227,18 +227,106 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('The Visualization Tab: Horizontal barchart and Map', function () {
-        it('should set the data to the frequencyTable because column type is string', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processData(barChartStrCol);
+    describe('The Visualization data for Horizontal barchart and Map', function () {
+        describe('Map data', function() {
+            it('should set stateDistribution for geo chart when the column domain contains STATE_CODE', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.stateDistribution).toBeFalsy();
 
-            //then
-            expect(StatisticsService.data).toEqual(barChartStrCol.statistics.frequencyTable);
-            expect(StatisticsService.boxplotData).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
+                //when
+                StatisticsService.processData(mapCol);
 
-        //  coming soon with the globe map
+                //then
+                expect(StatisticsService.stateDistribution).toBe(mapCol);
+            }));
+
+            it('should reset non geo chart data when the column domain contains STATE_CODE', inject(function (StatisticsService) {
+                //given
+                StatisticsService.boxplotData = {};
+                StatisticsService.data = {};
+
+                //when
+                StatisticsService.processData(mapCol);
+
+                //then
+                expect(StatisticsService.boxplotData).toBeFalsy();
+                expect(StatisticsService.data).toBeFalsy();
+            }));
+        });
+
+        describe('Histogram data', function() {
+            it('should set the frequency data when column type is "string"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.data).toBeFalsy();
+
+                //when
+                StatisticsService.processData(barChartStrCol);
+
+                //then
+                expect(StatisticsService.data).toEqual(barChartStrCol.statistics.frequencyTable);
+            }));
+
+            it('should reset non histogram data when column type is "string"', inject(function (StatisticsService) {
+                //given
+                StatisticsService.boxplotData = {};
+                StatisticsService.stateDistribution = {};
+
+                //when
+                StatisticsService.processData(barChartStrCol);
+
+                //then
+                expect(StatisticsService.boxplotData).toBeFalsy();
+                expect(StatisticsService.stateDistribution).toBeFalsy();
+            }));
+
+            it('should set the frequency data when column type is "boolean"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.data).toBeFalsy();
+
+                //when
+                StatisticsService.processData(barChartBoolCol);
+
+                //then
+                expect(StatisticsService.data).toEqual(barChartBoolCol.statistics.frequencyTable);
+            }));
+
+            it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService) {
+                //given
+                StatisticsService.boxplotData = {};
+                StatisticsService.stateDistribution = {};
+
+                //when
+                StatisticsService.processData(barChartBoolCol);
+
+                //then
+                expect(StatisticsService.boxplotData).toBeFalsy();
+                expect(StatisticsService.stateDistribution).toBeFalsy();
+            }));
+
+            it('should set the range data frequency when column type is "number"', inject(function (StatisticsService) {
+                //given
+                expect(StatisticsService.data).toBeFalsy();
+
+                //when
+                StatisticsService.processData(barChartNumCol);
+
+                //then
+                expect(StatisticsService.data[1].data).toBe(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
+            }));
+
+            it('should reset non histogram data when column type is "number"', inject(function (StatisticsService) {
+                //given
+                StatisticsService.stateDistribution = {};
+
+                //when
+                StatisticsService.processData(barChartNumCol);
+
+                //then
+                expect(StatisticsService.stateDistribution).toBeFalsy();
+            }));
+        });
+
+        //TODO coming soon with the globe map
         // it('should set both the data and the stateDistribution to null because column domain is LOCALIZATION', inject(function (StatisticsService) {
         //    //when
         //    StatisticsService.processData(localizationCol);
@@ -249,58 +337,24 @@ describe('Statistics service', function () {
         //    expect(StatisticsService.stateDistribution).toBe(null);
         //}));
 
-        it('should set the data to the frequencyTable because column type is boolean', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processData(barChartBoolCol);
-
-            //then
-            expect(StatisticsService.data).toEqual(barChartBoolCol.statistics.frequencyTable);
-            expect(StatisticsService.boxplotData).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
-
-        it('should set the data to null and stateDistribution to the column, because the column domain contains STATE_CODE', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processData(mapCol);
-
-            //then
-            expect(StatisticsService.data).toBe(null);
-            expect(StatisticsService.boxplotData).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(mapCol);
-        }));
-
-        it('should extract Data from the histogram', inject(function (StatisticsService) {
-            //when
-            var convertedData = StatisticsService.extractNumericData(barChartNumCol.statistics.histogram);
-
-            //then
-            expect(convertedData[1].data).toEqual(barChartNumCol.statistics.histogram[1].range.min + ' ... ' + barChartNumCol.statistics.histogram[1].range.max);
-        }));
-
-        it('should set the data to the conversion of the histogram, because the column type is number', inject(function (StatisticsService) {
-            //when
-            StatisticsService.processData(barChartNumCol);
-
-            //then
-            expect(StatisticsService.data).toEqual(StatisticsService.extractNumericData(barChartNumCol.statistics.histogram));
-            expect(StatisticsService.boxplotData).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(null);
-        }));
-
         it('should reset data when column type is not supported', inject(function (StatisticsService) {
+            //given
+            StatisticsService.boxplotData = {};
+            StatisticsService.data = {};
+            StatisticsService.stateDistribution = {};
+
             //when
             StatisticsService.processData(unknownTypeCol);
 
             //then
-            expect(StatisticsService.data).toBe(null);
-            expect(StatisticsService.boxplotData).toBe(null);
-            expect(StatisticsService.stateDistribution).toBe(null);
+            expect(StatisticsService.data).toBeFalsy();
+            expect(StatisticsService.boxplotData).toBeFalsy();
+            expect(StatisticsService.stateDistribution).toBeFalsy();
         }));
     });
 
-
-    describe('The Value Tab: values texts', function () {
-        it('should init common statistics when the column type is a boolean', inject(function (StatisticsService) {
+    describe('The statistics values', function () {
+        it('should init common statistics when the column type is not "number" or "text"', inject(function (StatisticsService) {
             //given
             var col = {
                 id: '0001',
@@ -472,8 +526,8 @@ describe('Statistics service', function () {
         }));
     });
 
-    describe('The OTHER Tab: boxplot data', function () {
-        it('should set boxplotData to null because quantile values are Nan', inject(function (StatisticsService) {
+    describe('The boxplot data', function () {
+        it('should reset boxplotData when quantile values are NaN', inject(function (StatisticsService) {
             //given
             var col = {
                 'id': '0001',
@@ -500,7 +554,7 @@ describe('Statistics service', function () {
             StatisticsService.processData(col);
 
             //then
-            expect(StatisticsService.boxplotData).toBe(null);
+            expect(StatisticsService.boxplotData).toBeFalsy();
         }));
 
         it('should set boxplotData statistics with quantile', inject(function (StatisticsService) {
@@ -543,4 +597,21 @@ describe('Statistics service', function () {
             });
         }));
     });
+
+    it('should reset all data', inject(function(StatisticsService) {
+        //given
+        StatisticsService.boxplotData = {};
+        StatisticsService.data = {};
+        StatisticsService.stateDistribution = {};
+        StatisticsService.statistics = {};
+
+        //when
+        StatisticsService.resetCharts();
+
+        //then
+        expect(StatisticsService.boxplotData).toBeFalsy();
+        expect(StatisticsService.data).toBeFalsy();
+        expect(StatisticsService.stateDistribution).toBeFalsy();
+        expect(StatisticsService.statistics).toBeFalsy();
+    }));
 });

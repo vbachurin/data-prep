@@ -20,7 +20,7 @@
      * @param {object} position {x: number, y: number} The position where to display the tooltip
      * @param {boolean} showTooltip Show/hide tooltip if not blocked
      */
-    function TalendTooltip($window, $document, $timeout) {
+    function TalendTooltip($window, $document) {
         return {
             restrict: 'E',
             templateUrl: 'components/widgets/tooltip/tooltip.html',
@@ -46,7 +46,8 @@
                         ctrl.blockState();
                     }
                     else {
-                        $timeout(ctrl.unblockState);
+                        ctrl.unblockState();
+                        scope.$digest();
                     }
                 };
 

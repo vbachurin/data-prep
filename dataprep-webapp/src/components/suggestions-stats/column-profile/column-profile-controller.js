@@ -4,22 +4,14 @@
     function ColumnProfileCtrl($scope, DatagridService, StatisticsService, TextFormatService) {
         var vm = this;
         vm.datasetGridService = DatagridService;
+        vm.statisticsService = StatisticsService;
+
         vm.chartConfig = {};
+
         vm.barchartClickFn = function barchartClickFn (item){
             return StatisticsService.addFilter(item.data);
         };
         vm.textFormatFn = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars;
-
-        vm.processedData = null;
-
-        /*
-        * Update the Barchart data
-        * */
-        $scope.$watch(function(){
-            return StatisticsService.data;
-        }, function(newData){
-            vm.processedData = newData;
-        });
 
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------CHARTS OPTIONS------------------------------------------
@@ -146,6 +138,24 @@
             configurable: false,
             get: function () {
                 return this.datasetGridService.selectedColumn;
+            }
+        });
+
+    Object.defineProperty(ColumnProfileCtrl.prototype,
+        'processedData', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.data;
+            }
+        });
+
+    Object.defineProperty(ColumnProfileCtrl.prototype,
+        'rawData', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.rawData;
             }
         });
 

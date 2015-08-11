@@ -33,20 +33,21 @@
          * @methodOf data-prep.datagrid.service:DatagridSizeService
          * @description Compute columns sizes and update them in the grid. The sizes are saved in
          * localstorage if not already saved. They are then used to set the last saved sized.
+         * WARNING : this set columns in the grid, which trigger a repaint
          */
-        function autosizeColumns() {
+        function autosizeColumns(gridColumns) {
             var localKey = getLocalStorageKey();
             var sizesStr = $window.localStorage.getItem(localKey);
 
             if(sizesStr) {
                 var sizes = JSON.parse(sizesStr);
-                var gridColumns = grid.getColumns();
                 _.forEach(gridColumns, function(col) {
                     col.width = sizes[col.id] || col.minWidth;
                 });
                 grid.setColumns(gridColumns);
             }
             else {
+                grid.setColumns(gridColumns);
                 grid.autosizeColumns();
                 saveColumnSizes();
             }
