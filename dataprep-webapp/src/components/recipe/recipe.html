@@ -1,6 +1,5 @@
 <talend-accordions>
     <talend-accordions-item ng-repeat="step in recipeCtrl.recipe track by step.transformation.stepId"
-                            ng-class="{'inactive': step.inactive}"
                             on-open="recipeCtrl.resetParams(step)"
                             default="$index === (recipeCtrl.recipe.length - 1)">
         <div class="trigger step-description"

@@ -110,11 +110,19 @@ describe('Datagrid style service', function () {
     describe('on header click event', function () {
         beforeEach(inject(function(DatagridService) {
             spyOn(DatagridService.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
-            spyOn(DatagridService, 'getRowsContaining').and.returnValue([5, 18, 28, 42, 43]);
+            spyOn(DatagridService, 'getSameContentConfig').and.returnValue({
+                5: { '0001': 'highlight' },
+                18: { '0001': 'highlight' },
+                28: { '0001': 'highlight' },
+                42: { '0001': 'highlight' },
+                43: { '0001': 'highlight' }
+            });
         }));
 
         it('should configure cells highlight class on cell click', inject(function (DatagridStyleService) {
             //given
+            jasmine.clock().install();
+
             DatagridStyleService.init(gridMock);
             var cell = 1;
             var row = 28;
@@ -123,6 +131,7 @@ describe('Datagrid style service', function () {
             //when
             var onClick = gridMock.onClick.subscribe.calls.argsFor(0)[0];
             onClick(null, args);
+            jasmine.clock().tick(1);
 
             //then
             expect(gridMock.cssStyleConfig.highlight).toEqual({
@@ -132,6 +141,7 @@ describe('Datagrid style service', function () {
                 42: { '0001': 'highlight' },
                 43: { '0001': 'highlight' }
             });
+            jasmine.clock().uninstall();
         }));
     });
 

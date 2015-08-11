@@ -37,7 +37,13 @@ describe('Datagrid directive', function() {
         spyOn(DatagridGridService, 'navigateToFocusedColumn').and.returnValue();
     }));
 
+    beforeEach(function() {
+        jasmine.clock().install();
+    });
+
     afterEach(function() {
+        jasmine.clock().uninstall();
+
         scope.$destroy();
         element.remove();
     });
@@ -53,6 +59,7 @@ describe('Datagrid directive', function() {
             //when
             DatagridService.data = data;
             scope.$digest();
+            jasmine.clock().tick(1);
         }));
 
         it('should init grid', inject(function(DatagridGridService) {
@@ -105,6 +112,7 @@ describe('Datagrid directive', function() {
             //when
             DatagridService.data = {};
             scope.$digest();
+            jasmine.clock().tick(1);
 
             //then
             expect(DatagridExternalService.updateSuggestionPanel).toHaveBeenCalledWith(selectedColumn);
@@ -226,6 +234,7 @@ describe('Datagrid directive', function() {
                 {element: createDummyElementWithId('header2')}
             ];
             scope.$digest();
+            jasmine.clock().tick(1);
         }));
 
         it('should insert headers elements in grid columns headers', function() {

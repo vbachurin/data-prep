@@ -265,14 +265,15 @@ describe('Datagrid service', function() {
             {tdpId: 3, text: 'la tata est ici'},
             {tdpId: 4, text: 'mon toto est la'},
             {tdpId: 5, text: 'mi titi est ici'},
-            {tdpId: 6, text: 'mi titi est la'}
+            {tdpId: 6, text: 'mi titi est la'},
+            {tdpId: 7, text: 'mi titi est ici'}
         ]});
 
         //when
-        var rowsId = DatagridService.getRowsContaining('text', 'la');
+        var rowsId = DatagridService.getSameContentConfig('text', 'mi titi est ici', 'myClass');
 
         //then
-        expect(rowsId).toEqual([1, 2, 3, 5]);
+        expect(rowsId).toEqual({ 4: { text: 'myClass' }, 6: { text: 'myClass' } });
     }));
 
     it('should return the rows with empty value', inject(function(DatagridService) {
@@ -287,10 +288,10 @@ describe('Datagrid service', function() {
         ]});
 
         //when
-        var rowsId = DatagridService.getRowsContaining('text', '');
+        var rowsId = DatagridService.getSameContentConfig('text', '', 'myClass');
 
         //then
-        expect(rowsId).toEqual([1, 4]);
+        expect(rowsId).toEqual({ 1: { text: 'myClass' }, 4: { text: 'myClass' } });
     }));
 
     it('should update filter', inject(function(DatagridService) {

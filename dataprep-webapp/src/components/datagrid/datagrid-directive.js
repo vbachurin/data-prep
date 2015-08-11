@@ -88,8 +88,8 @@
                  * @description [PRIVATE] Insert the column headers directives in the SlickGrid headers.
                  * The expected order is based on the grid headers order.
                  */
-                var insertHeaders = function insertHeaders(headers) {
-                    _.forEach(headers, function (header, index) {
+                var insertHeaders = function insertHeaders() {
+                    _.forEach(DatagridColumnService.colHeaderElements, function (header, index) {
                         iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
                     });
                 };
@@ -119,20 +119,33 @@
                     if (data) {
                         initGridIfNeeded();
 
-                        //create columns and manage size
-                        var columns = DatagridColumnService.createColumns(data.columns, data.preview, renewAllColumns);
-                        DatagridStyleService.manageColumnStyle(columns, data.preview);
-                        DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
-                        renewAllColumns = false;
+                        //create columns
+                        var columns;
+
+                        //manage style and size, set columns in grid, and insert headers
+                        setTimeout(function() {
+                            columns = DatagridColumnService.createColumns(data.columns, data.preview, renewAllColumns);
+                            DatagridStyleService.manageColumnStyle(columns, data.preview);
+                            DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
+                            renewAllColumns = false;
+
+                            if(!data.preview) {
+                                insertHeaders();
+                            }
+                        }, 0);
 
                         //manage column selection (external)
-                        var selectedColumn = DatagridStyleService.selectedColumn(columns);
-                        if (!data.preview && selectedColumn) {
-                            DatagridExternalService.updateSuggestionPanel(selectedColumn);
-                        }
+                        setTimeout(function() {
+                            var selectedColumn = DatagridStyleService.selectedColumn(columns);
+                            if (!data.preview && selectedColumn) {
+                                DatagridExternalService.updateSuggestionPanel(selectedColumn);
+                            }
+                        }, 0);
 
                         //focus specific column
-                        DatagridGridService.navigateToFocusedColumn();
+                        setTimeout(function() {
+                            DatagridGridService.navigateToFocusedColumn();
+                        }, 0);
                     }
                 };
 
