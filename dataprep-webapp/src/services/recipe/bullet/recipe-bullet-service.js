@@ -9,7 +9,7 @@
      * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.playground.service:PlaygroundService
      */
-    function RecipeBulletService(RecipeService, PreviewService, PlaygroundService) {
+    function RecipeBulletService($timeout, RecipeService, PreviewService, PlaygroundService) {
         var self = this;
         var previewTimeout;
 
@@ -112,7 +112,9 @@
             });
 
             cancelPendingPreview();
-            previewTimeout = setTimeout(PreviewService.cancelPreview.bind(null, false, step.column.id), 100);
+            previewTimeout = setTimeout(function() {
+                $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id));
+            }, 30);
         };
 
         //---------------------------------------------------------------------------------------------

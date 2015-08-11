@@ -157,12 +157,17 @@
          * @description Get the dataset content
          * @param {string} datasetId The dataset id
          * @param {boolean} metadata If false, the metadata will not be returned
+         * @param {int} sample The sample size
          * @returns {Promise} - the GET promise
          */
-        function getContent(datasetId, metadata) {
+        function getContent (datasetId, metadata, sample) {
+            var url = RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata;
+            if (sample) {
+                url += '&sample='+sample;
+            }
             $rootScope.$emit('talend.loading.start');
-            return $http.get(RestURLs.datasetUrl + '/' + datasetId + '?metadata=' + metadata)
-                .then(function (res) {
+            return $http.get(url)
+                .then(function(res) {
                     return res.data;
                 })
                 .finally(function () {

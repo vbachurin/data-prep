@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.SparkContext;
 import org.slf4j.Logger;

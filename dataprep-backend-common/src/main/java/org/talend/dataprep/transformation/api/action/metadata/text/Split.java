@@ -1,5 +1,14 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -14,14 +23,6 @@ import org.talend.dataprep.transformation.api.action.metadata.common.IColumnActi
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
  * Split a cell value on a separator.

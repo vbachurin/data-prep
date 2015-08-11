@@ -1,5 +1,8 @@
 package org.talend.dataprep.api.service;
 
+import static org.springframework.http.MediaType.*;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -12,19 +15,14 @@ import org.springframework.web.bind.annotation.*;
 import org.talend.dataprep.api.dataset.DataSetMetadata;
 import org.talend.dataprep.api.service.command.dataset.*;
 import org.talend.dataprep.api.service.command.transformation.SuggestDataSetActions;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.metrics.Timed;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @Api(value = "api", basePath = "/api", description = "Data Preparation API")
@@ -109,6 +107,7 @@ public class DataSetAPI extends APIService {
             @ApiParam(value = "Id of the data set to get") @PathVariable(value = "id") String id,
             @RequestParam(defaultValue = "true") @ApiParam(name = "metadata", value = "Include metadata information in the response") boolean metadata,
             @RequestParam(defaultValue = "true") @ApiParam(name = "columns", value = "Include columns metadata information in the response") boolean columns,
+            @RequestParam(required = false, defaultValue = "full") @ApiParam(name = "sample", value = "Size of the wanted sample, if missing or 'full', the full dataset is returned") String sample, //
             HttpServletResponse response) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Requesting dataset #{} (pool: {})...", id, getConnectionManager().getTotalStats());
@@ -116,7 +115,14 @@ public class DataSetAPI extends APIService {
         response.setHeader("Content-Type", APPLICATION_JSON_VALUE); //$NON-NLS-1$
         HttpClient client = getClient();
 
-        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns);
+        Long sampleValue;
+        try {
+            sampleValue = Long.parseLong(sample);
+        } catch (NumberFormatException e) {
+            sampleValue = null;
+        }
+        
+        HystrixCommand<InputStream> retrievalCommand = getCommand(DataSetGet.class, client, id, metadata, columns, sampleValue);
         try (InputStream content = retrievalCommand.execute()){
             ServletOutputStream outputStream = response.getOutputStream();
             IOUtils.copyLarge(content, outputStream);

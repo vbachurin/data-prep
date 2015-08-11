@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -10,8 +12,6 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
-
-import java.util.Map;
 
 @Component(ComputeLength.ACTION_BEAN_PREFIX + ComputeLength.LENGTH_ACTION_NAME)
 public class ComputeLength extends AbstractActionMetadata implements IColumnAction {

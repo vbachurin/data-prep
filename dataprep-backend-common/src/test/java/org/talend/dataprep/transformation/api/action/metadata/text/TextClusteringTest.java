@@ -1,5 +1,12 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.talend.dataprep.api.dataset.ColumnMetadata.Builder.column;
+import static org.talend.dataprep.transformation.api.action.metadata.ActionMetadataTestUtils.getColumn;
+
+import java.util.*;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.talend.dataprep.api.dataset.ColumnMetadata;

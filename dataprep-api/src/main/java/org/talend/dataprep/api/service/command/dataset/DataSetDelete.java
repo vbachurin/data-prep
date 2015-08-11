@@ -1,5 +1,7 @@
 package org.talend.dataprep.api.service.command.dataset;
 
+import static org.talend.dataprep.api.APIErrorCodes.DATASET_STILL_IN_USE;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -22,8 +24,6 @@ import org.talend.dataprep.exception.TDPExceptionContext;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
-
-import static org.talend.dataprep.api.APIErrorCodes.DATASET_STILL_IN_USE;
 
 /**
  * Delete the dataset if it's not used by any preparation.

@@ -10,8 +10,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Actions;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**

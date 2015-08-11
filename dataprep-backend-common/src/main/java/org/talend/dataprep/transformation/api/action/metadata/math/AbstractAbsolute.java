@@ -1,10 +1,10 @@
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
+import static java.math.BigDecimal.ZERO;
 
 import java.math.BigDecimal;
 
-import static java.math.BigDecimal.ZERO;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 
 public abstract class AbstractAbsolute  extends AbstractActionMetadata {
 

@@ -42,12 +42,26 @@
         //--------------------------------------------------RECIPE HEADER-----------------------------------------------
         //--------------------------------------------------------------------------------------------------------------
         /**
+         * @ngdoc property
+         * @name sampleSizes
+         * @methodOf data-prep.playground.controller:PlaygroundCtrl
+         * @description List all the available sample size.
+         */
+        vm.sampleSizes = [
+            {display:'50', value: 50},
+            {display:'100', value: 100},
+            {display:'500', value: 500},
+            {display:'full dataset', value: 'full'}
+        ];
+        vm.playgroundService.selectedSampleSize=vm.sampleSizes[1];
+
+        /**
          * @ngdoc method
          * @name toggleEditionMode
          * @methodOf data-prep.playground.controller:PlaygroundCtrl
          * @description Toggle the edition mode flag
          */
-        vm.toggleEditionMode = function toggleEditionMode(){
+        vm.toggleEditionMode = function toggleEditionMode() {
             vm.editionMode = !vm.editionMode;
         };
 
@@ -225,6 +239,25 @@
             },
             set: function(value) {
                 this.playgroundService.preparationName = value;
+            }
+        });
+
+    /**
+     * @ngdoc property
+     * @name selectedSampleSize
+     * @propertyOf data-prep.playground.controller:PlaygroundCtrl
+     * @description The selected sample size
+     * It is bound to {@link data-prep.services.playground.service:PlaygroundService PlaygroundService} property
+     */
+    Object.defineProperty(PlaygroundCtrl.prototype,
+        'selectedSampleSize', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.playgroundService.selectedSampleSize;
+            },
+            set: function(value) {
+                this.playgroundService.selectedSampleSize = value;
             }
         });
 

@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.bool;
 
+import java.util.Map;
+
 import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -10,8 +12,6 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ActionCat
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
-
-import java.util.Map;
 
 /**
  * Negate a boolean.

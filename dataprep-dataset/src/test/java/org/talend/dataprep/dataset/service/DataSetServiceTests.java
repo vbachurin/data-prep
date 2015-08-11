@@ -4,6 +4,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.path.json.JsonPath.from;
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.empty;
@@ -148,11 +149,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     @Test
     public void get() throws Exception {
-        String expectedId = UUID.randomUUID().toString();
-        DataSetMetadata dataSetMetadata = metadata().id(expectedId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
-        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
-        dataSetMetadataRepository.add(dataSetMetadata);
-        contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
+
+        String expectedId = insertEmptyDataSet();
+
         List<String> ids = from(when().get("/datasets").asString()).get("");
         assertThat(ids.size(), is(1));
         int statusCode = when().get("/datasets/{id}/content", expectedId).getStatusCode();
@@ -184,6 +183,54 @@ public class DataSetServiceTests extends DataSetBaseTest {
         // then
         isFavorite = from(when().get("/datasets/{id}/content", datasetId).asString()).get("metadata.favorite");
         assertTrue(isFavorite);
+    }
+
+    @Test
+    public void sample() throws Exception {
+        // given
+        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        // when
+        String sample = requestDataSetSample(dataSetId, "17");
+        // then
+        assertEquals(17, getNumberOfRecords(sample));
+    }
+
+    @Test
+    public void sampleWithNegativeSize() throws Exception {
+        // given
+        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        // when
+        String sample = requestDataSetSample(dataSetId, "-1");
+        // then
+        assertEquals(100, getNumberOfRecords(sample));
+    }
+
+    @Test
+    public void sampleWithSizeIsZero() throws Exception {
+        // given
+        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        // when
+        String sample = requestDataSetSample(dataSetId, "0");
+        // then
+        assertEquals(100, getNumberOfRecords(sample));
+    }
+
+    @Test(expected = java.lang.AssertionError.class)
+    public void sampleWithDecimalSize() throws Exception {
+        // given
+        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        // when
+        String sample = requestDataSetSample(dataSetId, "10.5");
+        // then expect error (400 bad request)
+    }
+
+    @Test(expected = java.lang.AssertionError.class)
+    public void sampleWithBadContent() throws Exception {
+        // given
+        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        // when
+        String sample = requestDataSetSample(dataSetId, "ghqmkdhjsgf");
+        // then expect error (400 bad request)
     }
 
     @Test
@@ -775,4 +822,37 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
     }
 
+    private String insertEmptyDataSet() {
+        String datasetId = UUID.randomUUID().toString();
+        DataSetMetadata dataSetMetadata = metadata().id(datasetId).formatGuessId(new CSVFormatGuess().getBeanId()).build();
+        dataSetMetadata.getContent().addParameter(CSVFormatGuess.SEPARATOR_PARAMETER, ";");
+        dataSetMetadataRepository.add(dataSetMetadata);
+        contentStore.storeAsRaw(dataSetMetadata, new ByteArrayInputStream(new byte[0]));
+        return datasetId;
+    }
+
+    private String createCSVDataSet(InputStream content) throws Exception {
+        String dataSetId = given().body(IOUtils.toString(content)).queryParam("Content-Type", "text/csv").when().post("/datasets")
+                .asString();
+        assertQueueMessages(dataSetId);
+        return dataSetId;
+    }
+
+    private String requestDataSetSample(String dataSetId, String sampleSize) {
+        return given() //
+                .expect() //
+                .statusCode(200) //
+                // .log().ifValidationFails() //
+                .when() //
+                .get("/datasets/{id}/content?metadata=false&columns=false&sample={sampleSize}", dataSetId, sampleSize) //
+                .asString();
+
+    }
+
+    private long getNumberOfRecords(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(json);
+        JsonNode records = rootNode.findPath("records");
+        return records.size();
+    }
 }
