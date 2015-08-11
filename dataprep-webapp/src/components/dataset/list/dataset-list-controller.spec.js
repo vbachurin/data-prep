@@ -84,7 +84,7 @@ describe('Dataset list controller', function () {
     describe('sort parameters', function() {
 
         it('should init default sort parameters', inject(function ($window) {
-            // Remove LocalStorage.
+            //given
             $window.localStorage.removeItem('dataprep.dataset.sort');
             $window.localStorage.removeItem('dataprep.dataset.sortOrder');
 
@@ -97,7 +97,7 @@ describe('Dataset list controller', function () {
         }));
 
         it('should init sort parameters from localStorage', inject(function ($window) {
-            // Remove LocalStorage.
+            //given
             $window.localStorage.setItem('dataprep.dataset.sort', 'name');
             $window.localStorage.setItem('dataprep.dataset.sortOrder', 'asc');
 
@@ -115,7 +115,7 @@ describe('Dataset list controller', function () {
             }));
 
             it('should refresh dataset when sort is changed without localstorage', inject(function ($window, DatasetService) {
-                // Remove LocalStorage.
+                //given
                 $window.localStorage.removeItem('dataprep.dataset.sort');
                 $window.localStorage.removeItem('dataprep.dataset.sortOrder');
 
