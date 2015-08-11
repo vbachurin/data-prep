@@ -227,9 +227,11 @@ public class HDFSContentCache implements ContentCache {
 
             RemoteIterator<LocatedFileStatus> iterator = fileSystem.listFiles(path, true);
             while (iterator.hasNext()) {
-                final Path currentPath = iterator.next().getPath();
-                if (StringUtils.startsWith(currentPath.getName(), stepId)) {
-                    fileSystem.rename(currentPath, path.suffix(".0"));
+                final Path currentFile = iterator.next().getPath();
+                final String suffix = StringUtils.substringAfterLast(currentFile.getName(), ".");
+                // ignore .nfs files
+                if (!suffix.startsWith("nfs") && StringUtils.startsWith(currentFile.getName(), stepId)) {
+                    fileSystem.rename(currentFile, path.suffix(".0"));
                 }
             }
 
