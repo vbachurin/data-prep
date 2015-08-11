@@ -206,15 +206,15 @@ describe('Recipe Bullet service', function () {
         expect(recipe[3].highlight).toBeFalsy();
     }));
 
-    it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function ($timeout, PreviewService, RecipeBulletService) {
+    it('should cancel current preview on mouse hover end after a delay of 30ms', inject(function ($timeout, PreviewService, RecipeBulletService) {
         //given
         var step = {column: {id: '0001'}};
 
         //when
         RecipeBulletService.stepHoverEnd(step);
-        jasmine.clock().tick(99);
         expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
-        jasmine.clock().tick(1);
+        jasmine.clock().tick(30);
+        $timeout.flush();
 
         //then
         expect(PreviewService.cancelPreview).toHaveBeenCalled();
@@ -226,7 +226,8 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverEnd(step);
-        jasmine.clock().tick(100);
+        jasmine.clock().tick(30);
+        $timeout.flush();
 
         //then
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
