@@ -2,16 +2,26 @@
   @include menu-list;
   display: inline-block;
   box-shadow: none;
-  margin: 15px 0 15px 45px;
+  margin: 15px 0 15px 10px;
   border-radius: 3px 3px 3px 3px;
 
   .button-dropdown .button-dropdown-main {
     color: #99999A;
     background-color: $white;
+    max-width: 200px;
+    min-width: 90px;
   }
 
   .button-dropdown .button-dropdown-side {
     color: #99999A;
     background-color: $white;
+  }
+
+  .moreText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    width: 95%;
   }
 }

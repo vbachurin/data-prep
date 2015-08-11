@@ -1,7 +1,8 @@
 <talend-dropdown class="button-dropdown" close-on-select="true">
     <div class="dropdown-container">
         <button class="button-dropdown-main" ng-click="buttonDropdownCtrl.buttonAction()">
-            <i data-icon="{{buttonDropdownCtrl.buttonIcon}}" class="iconfont"></i>{{buttonDropdownCtrl.buttonText}}
+            <i data-icon="{{buttonDropdownCtrl.buttonIcon}}" class="iconfont"></i>
+            <div class="button-dropdown-main-text" title="{{buttonDropdownCtrl.buttonText}}">{{buttonDropdownCtrl.buttonText}}</div>
         </button>
         <div class="line-separator"></div>
         <button class="button-dropdown-side dropdown-action"></button>
