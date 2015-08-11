@@ -7,8 +7,9 @@
      * @description Datagrid private service that manage the grid tooltip
      * @requires data-prep.datagrid.service:DatagridStyleService
      * @requires data-prep.services.playground.service:DatagridService
+     * @requires data-prep.services.utils.service:TextFormatService
      */
-    function DatagridTooltipService($timeout, DatagridStyleService, DatagridService, TextFormatService) {
+    function DatagridTooltipService($timeout, DatagridService, TextFormatService) {
         var grid;
         var tooltipTimeout, tooltipShowPromise;
         var tooltipDelay = 300;

@@ -14,7 +14,6 @@
      *             visu-data="columnProfileCtrl.processedData"
      *             key-field="occurrences"
      *             value-field="data"
-     *             raw-data="columnProfileCtrl.notFormattedData"
      *         ></horizontal-barchart>
      * */
 
@@ -25,8 +24,7 @@
                 onClick: '&',
                 visuData: '=',
                 keyField: '@',
-                valueField: '@',
-                rawData:'='
+                valueField: '@'
             },
             link: function (scope, element, attrs) {
                 var xField = scope.keyField;//occurences
@@ -133,8 +131,8 @@
                             d3.select(this).style('opacity', 0);
                             tip.hide(d);
                         })
-                        .on('click', function (d,i) {
-                            scope.onClick()(scope.rawData[i]);
+                        .on('click', function (d) {
+                            scope.onClick()(d);
                         });
                 }
 

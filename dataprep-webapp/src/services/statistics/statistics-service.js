@@ -7,6 +7,7 @@
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.filter.service:FilterService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.utils.service:TextFormatService
      */
     function StatisticsService($timeout, DatagridService, FilterService, ConverterService, TextFormatService) {
         var selectedColumn;
@@ -95,7 +96,8 @@
             var concatData = [];
             _.each(histoData, function (histDatum) {
                 concatData.push({
-                    'data': TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(histDatum.range.min + ' ... ' + histDatum.range.max),
+                    'data': histDatum.range.min + ' ... ' + histDatum.range.max,
+                    'formattedValue': TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(histDatum.range.min + ' ... ' + histDatum.range.max),
                     'occurrences': histDatum.occurrences
                 });
             });
@@ -111,11 +113,9 @@
          * @description Set the frequency table that fit the historgram format
          */
         function initClassicHistogram(frequencyTable) {
-            //Raw Data, without text formatting (for filter use)
-            service.rawData = frequencyTable;
-            //The formatted Data which will be shown and not filtered
             service.data = _.map(frequencyTable,function(rec){
-                rec.data = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
+                //The formatted Data which will be shown and not filtered
+                rec.formattedValue = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(rec.data);
                 return rec;
             });
         }

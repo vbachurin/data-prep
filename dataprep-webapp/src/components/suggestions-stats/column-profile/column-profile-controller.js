@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    function ColumnProfileCtrl($scope, DatagridService, StatisticsService, TextFormatService) {
+    function ColumnProfileCtrl($scope, DatagridService, StatisticsService) {
         var vm = this;
         vm.datasetGridService = DatagridService;
         vm.statisticsService = StatisticsService;
@@ -11,7 +11,6 @@
         vm.barchartClickFn = function barchartClickFn (item){
             return StatisticsService.addFilter(item.data);
         };
-        vm.textFormatFn = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars;
 
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------CHARTS OPTIONS------------------------------------------
@@ -147,15 +146,6 @@
             configurable: false,
             get: function () {
                 return this.statisticsService.data;
-            }
-        });
-
-    Object.defineProperty(ColumnProfileCtrl.prototype,
-        'rawData', {
-            enumerable: true,
-            configurable: false,
-            get: function () {
-                return this.statisticsService.rawData;
             }
         });
 

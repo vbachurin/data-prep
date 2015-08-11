@@ -7,6 +7,7 @@
      * @description Datagrid private service that manage the grid style
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.utils.service:TextFormatService
      */
     function DatagridStyleService(DatagridService, ConverterService, TextFormatService) {
         var grid;
