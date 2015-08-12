@@ -33,7 +33,7 @@ public class CSVFormatGuess implements FormatGuess {
 
     @Override
     public float getConfidence() {
-        return 1;
+        return 0.9f;
     }
 
     @Override
