@@ -1,0 +1,18 @@
+{
+  "actions": [
+    {
+      "action": "fillinvalidwithdefaultinteger",
+      "parameters": {
+          "name": "invalid_default_value",
+          "type": "integer",
+          "implicit": false,
+          "description": "The value to set in invalid cells",
+          "label": "Value",
+          "default": "0",
+          "column_id": "0002",
+          "column_name": "age",
+          "scope": "column"
+      }
+    }
+  ]
+}
