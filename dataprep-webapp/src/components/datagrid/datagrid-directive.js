@@ -34,6 +34,7 @@
             link: function (scope, iElement) {
                 var grid;
                 var renewAllColumns = false;
+                var columnTimeout, externalTimeout, focusTimeout;
 
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------GETTERS---------------------------------------------
@@ -118,12 +119,11 @@
                 var onDataChange = function onDataChange(data) {
                     if (data) {
                         initGridIfNeeded();
-
-                        //create columns
                         var columns;
 
-                        //manage style and size, set columns in grid, and insert headers
-                        setTimeout(function() {
+                        //create columns, manage style and size, set columns in grid, and insert headers
+                        clearTimeout(columnTimeout);
+                        columnTimeout = setTimeout(function() {
                             columns = DatagridColumnService.createColumns(data.columns, data.preview, renewAllColumns);
                             DatagridStyleService.manageColumnStyle(columns, data.preview);
                             DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
@@ -135,15 +135,19 @@
                         }, 0);
 
                         //manage column selection (external)
-                        setTimeout(function() {
-                            var selectedColumn = DatagridStyleService.selectedColumn(columns);
-                            if (!data.preview && selectedColumn) {
-                                DatagridExternalService.updateSuggestionPanel(selectedColumn);
-                            }
-                        }, 0);
+                        clearTimeout(externalTimeout);
+                        if(!data.preview) {
+                            externalTimeout = setTimeout(function() {
+                                var selectedColumn = DatagridStyleService.selectedColumn(columns);
+                                if (selectedColumn) {
+                                    DatagridExternalService.updateSuggestionPanel(selectedColumn);
+                                }
+                            }, 0);
+                        }
 
                         //focus specific column
-                        setTimeout(DatagridGridService.navigateToFocusedColumn, 0);
+                        clearTimeout(focusTimeout);
+                        focusTimeout = setTimeout(DatagridGridService.navigateToFocusedColumn, 300);
                     }
                 };
 

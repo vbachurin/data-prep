@@ -99,7 +99,13 @@ describe('Datagrid directive', function() {
             expect(DatagridSizeService.autosizeColumns).toHaveBeenCalledWith(createdColumns);
         }));
 
-        it('should navigate in the grid to show the interesting column', inject(function(DatagridGridService) {
+        it('should navigate in the grid to show the interesting column after a 300ms delay', inject(function(DatagridGridService) {
+            //given
+            expect(DatagridGridService.navigateToFocusedColumn).not.toHaveBeenCalled();
+
+            //when
+            jasmine.clock().tick(300);
+
             //then
             expect(DatagridGridService.navigateToFocusedColumn).toHaveBeenCalled();
         }));
@@ -129,6 +135,32 @@ describe('Datagrid directive', function() {
 
             //then
             expect(DatagridExternalService.updateSuggestionPanel).not.toHaveBeenCalled();
+        }));
+
+        it('should execute the grid update only once when the second call is triggered before the first timeout', inject(function(DatagridService, DatagridGridService, DatagridColumnService, DatagridExternalService, DatagridStyleService) {
+            //given
+            expect(DatagridColumnService.createColumns.calls.count()).toBe(1);
+            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(0);
+            expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
+
+            spyOn(DatagridStyleService, 'selectedColumn').and.returnValue({id: '0001'});
+
+            //when
+            DatagridService.data = {};
+            scope.$digest();
+
+            expect(DatagridColumnService.createColumns.calls.count()).toBe(1);
+            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(0);
+            expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(0);
+
+            DatagridService.data = {};
+            scope.$digest();
+            jasmine.clock().tick(300);
+
+            //then
+            expect(DatagridColumnService.createColumns.calls.count()).toBe(2);
+            expect(DatagridExternalService.updateSuggestionPanel.calls.count()).toBe(1);
+            expect(DatagridGridService.navigateToFocusedColumn.calls.count()).toBe(1);
         }));
     });
 
