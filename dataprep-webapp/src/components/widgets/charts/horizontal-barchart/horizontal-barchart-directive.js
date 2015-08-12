@@ -24,7 +24,8 @@
                 onClick: '&',
                 visuData: '=',
                 keyField: '@',
-                valueField: '@'
+                valueField: '@',
+                keyLabel:'@'
             },
             link: function (scope, element, attrs) {
                 var xField = scope.keyField;//occurences
@@ -47,11 +48,22 @@
                     var xAxis = d3.svg.axis().scale(x).tickFormat(d3.format('d')).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
                         yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
 
+
+                    if(!scope.keyField) {
+                        scope.keyField = 'occurrences'; //Value by default
+                    }
+
+                    if(!scope.keyLabel) {
+                        scope.keyLabel = 'Occurrences'; //Value by default
+                    }
+
+                    xField = scope.keyField;
+
 					tip = d3.tip()
 						.attr('class', 'd3-tip')
 						.offset([-10, 0])
 						.html(function(d) {
-							return 	'<strong>Occurrences:</strong> <span style="color:yellow">' + d[xField] + '</span>'+
+							return 	'<strong>'+ scope.keyLabel +':</strong> <span style="color:yellow">' + d[xField] + '</span>'+
 									'<br/>'+
 									'<br/>'+
 									'<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';

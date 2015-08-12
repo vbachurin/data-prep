@@ -16,7 +16,9 @@
         //------------------------------------------------------------------------------------------------------
         //----------------------------------------------AGGREGATION---------------------------------------------
         //------------------------------------------------------------------------------------------------------
-
+        /**
+         * List of all possible calculations
+         */
         vm.calculationsList =  [
             {id: 'sum', name: 'SUM'},
             {id: 'max', name: 'MAX'},
@@ -26,6 +28,12 @@
             {id: 'median', name: 'MEDIAN'}
         ];
 
+
+        /**
+         * Update Chart for aggregation
+         * @param column - the aggregation target column selected
+         * @param calculation - the aggregation operation selected
+         */
         vm.updateCharts = function (column, calculation) {
             vm.datasetAggregationsService.updateAggregationsChanges(column, calculation);
 
@@ -36,14 +44,17 @@
                 aggregationCalculation = {id: 'count', name: 'COUNT'};
             }
 
-            if(column){
+            if(column){ // Aggregation
+
                 StatisticsService.processVisuDataAggregation(
                     PlaygroundService.currentMetadata.id,
                     vm.datasetAggregationsService.columnSelected,
                     column,
                     aggregationCalculation
                 );
-            } else {
+
+            } else { //Count Line
+
                 StatisticsService.processNonMapData(vm.datasetAggregationsService.columnSelected);
             }
         };
@@ -207,16 +218,49 @@
                     return this.datasetAggregationsService.numericColumns;
                 }
             });
-    }
-    
+
+        /**
+         * @ngdoc property
+         * @name barChartValueKey
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description barChartValueKey is used to display value in the tooltip of horizontal-barchart
+         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.barChartValueKey
+         */
         Object.defineProperty(ColumnProfileCtrl.prototype,
-            'processedData', {
+            'barChartValueKey', {
                 enumerable: true,
-                configurable: false,
+                configurable: true,
                 get: function () {
-                    return this.statisticsService.data;
+                    return this.datasetAggregationsService.barChartValueKey;
                 }
             });
+
+
+        /**
+         * @ngdoc property
+         * @name barChartValueKeyLabel
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description barChartValueKeyLabel is used to display value label in the tooltip of horizontal-barchart
+         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.barChartValueKeyLabel
+         */
+        Object.defineProperty(ColumnProfileCtrl.prototype,
+            'barChartValueKeyLabel', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return this.datasetAggregationsService.barChartValueKeyLabel;
+                }
+            });
+    }
+
+    Object.defineProperty(ColumnProfileCtrl.prototype,
+        'processedData', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.statisticsService.data;
+            }
+        });
 
     angular.module('data-prep.column-profile')
         .controller('ColumnProfileCtrl', ColumnProfileCtrl);

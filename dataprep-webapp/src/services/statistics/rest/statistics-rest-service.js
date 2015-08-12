@@ -25,11 +25,11 @@
                     return [];
                     /*
                     return [
-                        { 'data': 'Lansing', 'occurrences': 15 },
-                        { 'data': 'Helena', 'occurrences': 5 },
-                        { 'data': 'Baton Rouge', 'occurrences': 64 },
-                        { 'data': 'Annapolis', 'occurrences': 4 },
-                        { 'data': 'Pierre', 'occurrences': 104 }
+                        { 'data': 'Lansing', 'max': 15 },
+                        { 'data': 'Helena', 'max': 5 },
+                        { 'data': 'Baton Rouge', 'max': 64 },
+                        { 'data': 'Annapolis', 'max': 4 },
+                        { 'data': 'Pierre', 'max': 104 }
                     ];
                     */
             });

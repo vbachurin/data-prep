@@ -1,6 +1,6 @@
 <div class="column-profile">
     <div class="column-profile-aggregation" ng-if="columnProfileCtrl.processedData || columnProfileCtrl.stateDistribution">
-        <talend-button-dropdown button-text="{{columnProfileCtrl.aggregationSelected}}" title="{{columnProfileCtrl.aggregationSelected}}">
+        <talend-button-dropdown button-text="{{columnProfileCtrl.aggregationSelected}}">
             <ul>
                 <li ng-click="columnProfileCtrl.updateCharts(null,null)" title="{{ 'LINE_COUNT' | translate }}">
                     {{ 'LINE_COUNT' | translate }}
@@ -23,8 +23,9 @@
                 height="400"
                 on-click="columnProfileCtrl.barchartClickFn"
                 visu-data="columnProfileCtrl.processedData"
-                key-field="occurrences"
                 value-field="formattedValue"
+                key-field="{{columnProfileCtrl.barChartValueKey}}"
+                key-label="{{columnProfileCtrl.barChartValueKeyLabel}}"
                ></horizontal-barchart>
 
     <highchart id="geochart"

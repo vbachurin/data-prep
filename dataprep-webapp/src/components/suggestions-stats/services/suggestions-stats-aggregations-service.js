@@ -15,6 +15,8 @@
             columnAggregationSelected: null,
             calculationAggregationSelected: null,
             numericColumns: null,
+            barChartValueKey: '',
+            barChartValueKeyLabel: '',
             updateAggregations: updateAggregations,
             updateAggregationsChanges: updateAggregationsChanges
         };
@@ -33,19 +35,9 @@
 
             service.columnSelected = column;
 
-            service.numericColumns = DatagridService.getNumberColumns(service.columnSelected.id);
+            service.numericColumns = DatagridService.getNumberColumns(service.columnSelected.id); //get updated list
 
-            //If same column selected, update it
-            if(service.columnAggregationSelected && (service.columnSelected.id === service.columnAggregationSelected.id)) {
-                var cols = DatagridService.getNumberColumns(null);
-                var colToBeUpdated = _.where(cols, {id: service.columnAggregationSelected.id});
-                if(colToBeUpdated.length === 1){
-                    service.columnAggregationSelected = colToBeUpdated[0];
-                    service.updateAggregationsChanges(service.columnAggregationSelected, service.calculationAggregationSelected);
-                }
-            } else {
-                service.updateAggregationsChanges(null, null); //If another column selected, reset "aggregation" dropdown
-            }
+            service.updateAggregationsChanges(null, null); //reset "aggregation" dropdown
         }
 
         /**
@@ -62,8 +54,14 @@
             service.columnAggregationSelected = column;
 
             if (column && calculation) {
+
+                service.barChartValueKey = service.calculationAggregationSelected.id;
+                service.barChartValueKeyLabel = $filter('translate')(service.calculationAggregationSelected.name);
                 service.aggregationSelected = $filter('translate')(service.calculationAggregationSelected.name)+' ('+$filter('translate')(service.columnAggregationSelected.name)+') ';
             } else {
+
+                service.barChartValueKey = '';
+                service.barChartValueKeyLabel = '';
                 service.aggregationSelected = $filter('translate')('LINE_COUNT');
             }
         }
