@@ -71,7 +71,7 @@
       },
       {
         "name": "invalid_default_value",
-        "type": "string",
+        "type": "integer",
         "implicit": false,
         "description": "The value to set in invalid cells",
         "label": "Value",
