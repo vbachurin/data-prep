@@ -12,6 +12,7 @@
     function DatagridExternalService(StatisticsService, ColumnSuggestionService, PreviewService) {
         var grid;
         var suggestionTimeout;
+        var scrollTimeout;
         var lastSelectedColumn;
 
         return {
@@ -85,7 +86,10 @@
          */
         function attachGridScrollListener() {
             grid.onScroll.subscribe(function() {
-                PreviewService.gridRangeIndex = grid.getRenderedRange();
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    PreviewService.gridRangeIndex = grid.getRenderedRange();
+                }, 200);
             });
         }
 
