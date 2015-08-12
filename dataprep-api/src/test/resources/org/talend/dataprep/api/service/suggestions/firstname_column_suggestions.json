@@ -27,7 +27,7 @@
         "default": ""
       },
       {
-        "name": "default_value",
+        "name": "empty_default_value",
         "type": "string",
         "implicit": false,
         "description": "The value to set in empty cells",

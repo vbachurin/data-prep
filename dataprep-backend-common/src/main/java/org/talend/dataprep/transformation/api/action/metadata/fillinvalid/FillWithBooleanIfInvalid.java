@@ -6,12 +6,11 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.AbstractFillIfEmpty;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 
 @Component(FillWithBooleanIfInvalid.ACTION_BEAN_PREFIX + FillWithBooleanIfInvalid.FILL_EMPTY_ACTION_NAME)
-public class FillWithBooleanIfInvalid extends AbstractFillIfEmpty {
+public class FillWithBooleanIfInvalid extends AbstractFillIfInvalid {
 
     public static final String FILL_EMPTY_ACTION_NAME = "fillinvalidwithdefaultboolean"; //$NON-NLS-1$
 
