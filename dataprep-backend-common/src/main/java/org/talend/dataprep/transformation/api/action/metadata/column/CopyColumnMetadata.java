@@ -66,13 +66,8 @@ public class CopyColumnMetadata extends AbstractActionMetadata implements Column
     }
 
     /**
-     * @see AbstractActionMetadata#beforeApply(Map)
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // no pre-processing needed here
-    }
-
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final RowMetadata rowMetadata = row.getRowMetadata();

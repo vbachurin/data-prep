@@ -96,6 +96,9 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         newDateFormat = getDateFormat(getNewPattern(parameters));
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         // checks for fail fast

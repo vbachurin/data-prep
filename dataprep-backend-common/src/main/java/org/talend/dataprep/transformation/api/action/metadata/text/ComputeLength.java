@@ -35,14 +35,6 @@ public class ComputeLength extends AbstractActionMetadata implements ColumnActio
     }
 
     /**
-     * @see ActionMetadata#getCategory()
-     */
-    @Override
-    public String getCategory() {
-        return ActionCategory.QUICKFIX.getDisplayName();
-    }
-
-    /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)
      */
     @Override
@@ -51,20 +43,23 @@ public class ComputeLength extends AbstractActionMetadata implements ColumnActio
     }
 
     /**
-     * @see AbstractActionMetadata#beforeApply(Map)
+     * @see ActionMetadata#getCategory()
      */
     @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here.
+    public String getCategory() {
+        return ActionCategory.QUICKFIX.getDisplayName();
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         // create new column and append it after current column
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        final ColumnMetadata newColumnMetadata = createNewColumn(column);
-        final String lengthColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
+        final ColumnMetadata newCol = createNewColumn(column);
+        final String lengthColumn = rowMetadata.insertAfter(columnId, newCol);
 
         // Set length value
         final String value = row.get(columnId);

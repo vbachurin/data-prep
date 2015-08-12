@@ -1,6 +1,7 @@
 package org.talend.dataprep.api.dataset;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @see ColumnMetadata.Builder
  */
-public class ColumnMetadata {
+public class ColumnMetadata implements Serializable {
 
     /** Quality of the column. */
     @JsonProperty("quality")

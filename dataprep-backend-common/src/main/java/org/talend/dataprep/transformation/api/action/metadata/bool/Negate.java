@@ -50,14 +50,10 @@ public class Negate extends AbstractActionMetadata implements ColumnAction {
         return Type.BOOLEAN.equals(Type.get(column.getType()));
     }
 
-    /**
-     * @see AbstractActionMetadata#beforeApply(Map)
-     */
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);

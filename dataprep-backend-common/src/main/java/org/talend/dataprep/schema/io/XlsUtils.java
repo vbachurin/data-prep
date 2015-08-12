@@ -78,11 +78,10 @@ public class XlsUtils {
         // TODO that's a pain as we have to keep this :-(
         // TODO use ByteBuffer
         // but for some reasons new HSSFWorkbook consume part of the stream
-        byte[] bytes = IOUtils.toByteArray(stream);
-
+        byte[] bytes = new byte[0];
         try {
+            bytes = IOUtils.toByteArray(stream);
             return new XSSFWorkbook(new ByteArrayInputStream(bytes));
-
         } catch (Exception e) {
             LOGGER.debug("{} so try XSSFWorkbook", e);
             return new HSSFWorkbook(new ByteArrayInputStream(bytes));

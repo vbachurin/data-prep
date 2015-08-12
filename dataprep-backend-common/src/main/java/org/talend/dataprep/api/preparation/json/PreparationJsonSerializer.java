@@ -15,17 +15,26 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+/**
+ * Serialize preparations in json.
+ */
 @Component
 public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
 
+    /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(PreparationJsonSerializer.class);
 
+    /** Where to find the preparations. */
     @Autowired(required = false)
     PreparationRepository versionRepository;
 
+    /** The list of actions to apply in preparations. */
     @Autowired(required = false)
     ActionMetadata[] actionMetadata;
 
+    /**
+     * @see JsonSerializer#serialize(Object, JsonGenerator, SerializerProvider)
+     */
     @Override
     public void serialize(Preparation preparation, JsonGenerator generator, SerializerProvider serializerProvider)
             throws IOException {
@@ -49,27 +58,42 @@ public class PreparationJsonSerializer extends JsonSerializer<Preparation> {
                 generator.writeObjectField("actions", actions); //$NON-NLS-1$
 
                 // Actions metadata
-                if (actionMetadata != null) {
-                    List<ActionMetadata> metadataList = new ArrayList<>(actions.size());
-                    for (Action action : actions) {
-                        String actionName = action.getAction();
-                        for (ActionMetadata metadata : actionMetadata) {
-                            if (metadata.getName().equals(actionName)) {
-                                metadataList.add(metadata);
-                                break;
-                            }
-                        }
-                    }
-                    generator.writeObjectField("metadata", metadataList); //$NON-NLS-1$
-                } else {
-                    LOGGER.debug("No action metadata available, unable to serialize action metadata for preparation {}.",
-                            preparation.id());
-                }
+                writeActionMetadata(generator, actions, preparation);
+
             } else {
                 LOGGER.debug("No version repository available, unable to serialize steps for preparation {}.", preparation.id());
             }
         }
         generator.writeEndObject();
         generator.flush();
+    }
+
+    /**
+     * Write the action metadata using the generator for the given preparation.
+     *
+     * @param generator the json generator.
+     * @param actions the actions to write.
+     * @param preparation the preparation.
+     * @throws IOException if an error occurs.
+     */
+    private void writeActionMetadata(JsonGenerator generator, List<Action> actions, Preparation preparation) throws IOException {
+
+        if (actionMetadata == null) {
+            LOGGER.debug("No action metadata available, unable to serialize action metadata for preparation {}.",
+                    preparation.id());
+            return;
+        }
+
+        List<ActionMetadata> metadataList = new ArrayList<>(actions.size());
+        for (Action action : actions) {
+            String actionName = action.getAction();
+            for (ActionMetadata metadata : actionMetadata) {
+                if (metadata.getName().equals(actionName)) {
+                    metadataList.add(metadata);
+                    break;
+                }
+            }
+        }
+        generator.writeObjectField("metadata", metadataList); //$NON-NLS-1$
     }
 }

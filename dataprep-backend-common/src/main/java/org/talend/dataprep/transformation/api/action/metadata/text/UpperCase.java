@@ -48,21 +48,13 @@ public class UpperCase extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see AbstractActionMetadata#beforeApply(Map)
-     */
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
-
-    /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final String value = row.get(columnId);
-        if (value != null) {
-            row.set(columnId, value.toUpperCase());
+        final String toUpperCase = row.get(columnId);
+        if (toUpperCase != null) {
+            row.set(columnId, toUpperCase.toUpperCase());
         }
     }
 }

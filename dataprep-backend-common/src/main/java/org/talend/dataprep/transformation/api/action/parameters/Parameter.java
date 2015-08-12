@@ -1,8 +1,10 @@
 package org.talend.dataprep.transformation.api.action.parameters;
 
+import java.io.Serializable;
+
 import org.talend.dataprep.i18n.MessagesBundle;
 
-public class Parameter {
+public class Parameter implements Serializable {
 
     private final String name;
 
