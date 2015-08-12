@@ -19,74 +19,19 @@
         this.getAggregations = function(stringifiedColumn) {
 
             var responsePromise =  $http.post(RestURLs.datasetUrl + '/aggregation/column', stringifiedColumn)
-                .then(function(response) {
-                    return response;
-            }, function() {
-                    var mockResponse ={};
-                    mockResponse.data = [
-                        {
-                            'data': 'Lansing',
-                            'occurrences': 15
-                        },
-                        {
-                            'data': 'Helena',
-                            'occurrences': 5
-                        },
-                        {
-                            'data': 'Baton Rouge',
-                            'occurrences': 64
-                        },
-                        {
-                            'data': 'Annapolis',
-                            'occurrences': 4
-                        },
-                        {
-                            'data': 'Pierre',
-                            'occurrences': 104
-                        },
-                        {
-                            'data': 'Nashville',
-                            'occurrences': 4
-                        },
-                        {
-                            'data': 'Salt Lake City',
-                            'occurrences': 3
-                        },
-                        {
-                            'data': '',
-                            'occurrences': 3
-                        },
-                        {
-                            'data': 'Concord',
-                            'occurrences': 0
-                        },
-                        {
-                            'data': 'Hartford',
-                            'occurrences': 3
-                        },
-                        {
-                            'data': 'Boston',
-                            'occurrences': 3
-                        },
-                        {
-                            'data': 'Carson City',
-                            'occurrences': 5
-                        },
-                        {
-                            'data': 'Topeka',
-                            'occurrences': 75
-                        },
-                        {
-                            'data': 'Montgomery',
-                            'occurrences': 68
-                        },
-                        {
-                            'data': 'Richmond',
-                            'occurrences': 2
-                        }
+                .then(function(response) { //Success
+                    return response.data;
+            }, function() { // Failure
+                    return [];
+                    /*
+                    return [
+                        { 'data': 'Lansing', 'occurrences': 15 },
+                        { 'data': 'Helena', 'occurrences': 5 },
+                        { 'data': 'Baton Rouge', 'occurrences': 64 },
+                        { 'data': 'Annapolis', 'occurrences': 4 },
+                        { 'data': 'Pierre', 'occurrences': 104 }
                     ];
-
-                    return mockResponse;
+                    */
             });
 
             return responsePromise;

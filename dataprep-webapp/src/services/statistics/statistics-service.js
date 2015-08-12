@@ -29,7 +29,6 @@
             getGeoDistribution: getGeoDistribution,
 
             processVisuDataAggregation: processVisuDataAggregation,
-            getAggregations: getAggregations,
             invalidateCache: invalidateCache,
             processNonMapData: processNonMapData
         };
@@ -280,10 +279,8 @@
 
             getAggregations(datasetId, currentColumn, targetColumn, calculation)
                 .then(function(aggregationStatistics) {
-
                     //processes the visualization data
                     var aggregationStatisticsArray = aggregationStatistics;
-                    console.log(aggregationStatisticsArray);
                     service.stateDistribution = null; //hide the map if the previous column was a state
 
                     initClassicHistogram(aggregationStatisticsArray);// update charts data
@@ -331,7 +328,7 @@
         function getAggregationsRest(stringifiedColumn) {
             return StatisticsRestService.getAggregations(stringifiedColumn)
                 .then(function(response) {
-                    return response.data;
+                    return response;
                 });
         }
 

@@ -599,6 +599,98 @@ describe('Statistics service', function () {
         }));
     });
 
+
+
+    describe('Aggregation Management', function () {
+
+        it('should update datas with REST WS call', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+            //given
+            var datasetId = 'abcd';
+            var currentColumn = {'id': '0001', 'name': 'city'};
+            var targetColumn ={'id': '0002', 'name': 'state'};
+            var calculation = {'id': 'max', 'name': 'MAX'};
+
+            var getAggregationsResponse =[
+                { 'data': 'Lansing', 'occurrences': 15 },
+                { 'data': 'Helena', 'occurrences': 5 },
+                { 'data': 'Baton Rouge', 'occurrences': 64 },
+                { 'data': 'Annapolis', 'occurrences': 4 },
+                { 'data': 'Pierre', 'occurrences': 104 }
+            ];
+
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+
+            var result = [
+                { 'data': 'Lansing', 'occurrences': 15, 'formattedValue' : 'Lansing'},
+                { 'data': 'Helena','occurrences': 5, 'formattedValue' : 'Helena' },
+                { 'data': 'Baton Rouge','occurrences': 64, 'formattedValue' : 'Baton Rouge'},
+                { 'data': 'Annapolis','occurrences': 4, 'formattedValue' : 'Annapolis'},
+                { 'data': 'Pierre','occurrences': 104, 'formattedValue' : 'Pierre'}
+            ];
+
+            //when
+            StatisticsService.processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation);
+            $rootScope.$digest();
+
+            //then
+            expect(StatisticsRestService.getAggregations).toHaveBeenCalledWith('{"datasetId":"abcd","currentColumnId":"0001","targetColumnId":"0002","calculationId":"max"}');
+            expect(StatisticsService.stateDistribution).toBeFalsy();
+            expect(StatisticsService.data).toEqual(result);
+
+        }));
+
+
+        it('should update datas without REST WS call', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+            //given
+            var datasetId = 'abcd';
+            var currentColumn = {'id': '0001', 'name': 'city'};
+            var targetColumn ={'id': '0002', 'name': 'state'};
+            var calculation = {'id': 'max', 'name': 'MAX'};
+
+            var getAggregationsResponse =[
+                { 'data': 'Lansing', 'occurrences': 15 },
+                { 'data': 'Helena', 'occurrences': 5 },
+                { 'data': 'Baton Rouge', 'occurrences': 64 },
+                { 'data': 'Annapolis', 'occurrences': 4 },
+                { 'data': 'Pierre', 'occurrences': 104 }
+            ];
+
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when(getAggregationsResponse));
+
+
+            //when
+            StatisticsService.processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation);
+            $rootScope.$digest();
+
+            StatisticsService.processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation);
+            $rootScope.$digest();
+
+            //then
+            expect(StatisticsRestService.getAggregations.calls.count()).toBe(1);
+
+        }));
+
+
+        it('should reset datas when REST WS call fails', inject(function ($q, $rootScope, StatisticsService, StatisticsRestService) {
+            //given
+            var datasetId = 'abcd';
+            var currentColumn = {'id': '0001', 'name': 'city'};
+            var targetColumn ={'id': '0002', 'name': 'state'};
+            var calculation = {'id': 'max', 'name': 'MAX'};
+
+            spyOn(StatisticsRestService, 'getAggregations').and.returnValue($q.when([]));
+
+            //when
+            StatisticsService.processVisuDataAggregation(datasetId, currentColumn, targetColumn, calculation);
+            $rootScope.$digest();
+
+            //then
+            expect(StatisticsService.data.length).toBe(0);
+
+        }));
+
+    });
+
     it('should reset all data', inject(function(StatisticsService) {
         //given
         StatisticsService.boxplotData = {};
