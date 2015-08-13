@@ -181,18 +181,18 @@ $datagrid-cell-font-size: .80em;
 
     .cellNewValue {
       @include cellImitation();
-      background-color: rgba(193, 217, 6, 0.5);
+      background-color: $new-color;
     }
 
     .cellUpdateValue {
       @include cellImitation();
-      background-color: rgba(79, 193, 222, 0.5);
+      background-color: $update-color;
     }
 
     .cellDeletedValue {
       color: $medium-gray;
       @include cellImitation();
-      background-color: $light-gray;
+      background-color: $delete-color;
       text-decoration: line-through;
     }
 
