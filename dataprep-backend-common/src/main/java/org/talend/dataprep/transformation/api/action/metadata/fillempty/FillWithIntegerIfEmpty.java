@@ -10,8 +10,8 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-@Component(value = FillWithFillIfEmptyInteger.ACTION_BEAN_PREFIX + FillWithFillIfEmptyInteger.FILL_EMPTY_ACTION_NAME)
-public class FillWithFillIfEmptyInteger extends AbstractFillIfEmpty {
+@Component(value = FillWithIntegerIfEmpty.ACTION_BEAN_PREFIX + FillWithIntegerIfEmpty.FILL_EMPTY_ACTION_NAME)
+public class FillWithIntegerIfEmpty extends AbstractFillIfEmpty {
 
     public static final String FILL_EMPTY_ACTION_NAME = "fillemptywithdefaultinteger"; //$NON-NLS-1$
 
