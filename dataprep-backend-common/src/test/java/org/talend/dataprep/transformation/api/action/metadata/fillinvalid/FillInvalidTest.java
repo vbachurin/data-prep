@@ -35,12 +35,12 @@ public class FillInvalidTest
         fillWithIntegerIfInvalid = new FillWithIntegerIfInvalid();
 
         parameters = ActionMetadataTestUtils.parseParameters( fillWithIntegerIfInvalid, //
-                FillInvalidTest.class.getResourceAsStream("fillInvalidAction.json"));
+                FillInvalidTest.class.getResourceAsStream("fillInvalidIntegerAction.json"));
 
     }
 
     @Test
-    public void should_fill_non_valid() {
+    public void should_fill_non_valid_integer() {
         //given
         final Map<String, String> values = new HashMap<>();
         values.put("0001", "David Bowie");
@@ -61,7 +61,7 @@ public class FillInvalidTest
         fillWithIntegerIfInvalid.applyOnColumn( row, new TransformationContext(), parameters, "0002" );
 
         //then
-        assertEquals("0", row.get( "0002" ));
+        assertEquals("25", row.get( "0002" ));
         assertEquals("David Bowie", row.get("0001"));
     }
 
