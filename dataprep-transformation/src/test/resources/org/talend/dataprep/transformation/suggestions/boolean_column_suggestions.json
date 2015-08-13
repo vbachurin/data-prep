@@ -2,7 +2,7 @@
   {
     "items": [
       {
-        "name": "default_value",
+        "name": "empty_default_value",
         "category": "categ",
         "values": [
           {
@@ -53,6 +53,61 @@
     "dynamic": false,
     "description": "Fill empty cells of this column with given value",
     "label": "Fill empty cells with value..."
+  },
+  {
+    "items": [
+      {
+        "name": "invalid_default_value",
+        "category": "categ",
+        "values": [
+          {
+            "name": "True",
+            "parameters": [
+            ],
+            "default": true
+          },
+          {
+            "name": "False",
+            "parameters": [
+            ],
+            "default": false
+          }
+        ],
+        "description": "The value to set in invalid cells",
+        "label": "Value"
+      }
+    ],
+    "name": "fillinvalidwithdefaultboolean",
+    "category": "quickfix",
+    "parameters": [
+      {
+        "name": "column_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The column on which apply this action to",
+        "label": "Column",
+        "default": ""
+      },
+      {
+        "name": "row_id",
+        "type": "string",
+        "implicit": true,
+        "description": "The row on which apply this action to",
+        "label": "Row",
+        "default": ""
+      },
+      {
+        "name": "scope",
+        "type": "string",
+        "implicit": true,
+        "description": "The transformation scope (CELL | LINE | COLUMN | TABLE)",
+        "label": "Scope",
+        "default": ""
+      }
+    ],
+    "dynamic": false,
+    "description": "Fill invalid cells of this column with given value",
+    "label": "Fill invalid cells with value..."
   },
   {
     "name": "delete_empty",
