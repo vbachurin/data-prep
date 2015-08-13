@@ -122,6 +122,26 @@ describe('Recipe directive', function() {
                 }
             },
             inactive: true
+        },
+        {
+            column: {id: '0', name: 'col1'},
+            transformation: {
+                stepId: 'preview step',
+                name: 'split',
+                label: 'Split',
+                category: 'split',
+                parameters: [{name: 'pattern', type: 'string'}],
+                items: []
+            },
+            actionParameters: {
+                action: 'split',
+                parameters: {
+                    scope: 'column',
+                    column_id: '0',
+                    pattern: '/'
+                }
+            },
+            preview: true
         }
     ];
 
@@ -160,6 +180,20 @@ describe('Recipe directive', function() {
         expect(element.find('>ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column col1');
         expect(element.find('>ul .accordion .trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column col2');
         expect(element.find('>ul .accordion .trigger').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('3. Replace value on cell');
+    }));
+
+    it('should render early preview step', inject(function(RecipeService) {
+        //when
+        RecipeService.getRecipe().push(recipe[0]);
+        RecipeService.getRecipe().push(recipe[1]);
+        RecipeService.getRecipe().push(recipe[4]); // preview step
+        scope.$digest();
+
+        //then
+        expect(element.find('>ul .accordion').length).toBe(3);
+        expect(element.find('>ul .accordion').eq(0).hasClass('preview')).toBe(false);
+        expect(element.find('>ul .accordion').eq(1).hasClass('preview')).toBe(false);
+        expect(element.find('>ul .accordion').eq(2).hasClass('preview')).toBe(true);
     }));
 
     it('should render recipe params', inject(function(RecipeService) {
