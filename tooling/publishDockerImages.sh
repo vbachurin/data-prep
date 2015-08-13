@@ -13,10 +13,12 @@ registry=talend-registry:5000
 
 # folder (on local machine) where to put bins at the end (where builds can be downloaded)
 path_for_bins=/home/build-admin/Products/data-prep/
-path_for_bins=/tmp/tagada/
 
 # the fig file, that will be publish with the docker images
 original_fig_file='../dataprep-platform/src/main/resources/fig_backend_data_web.yml'
+
+# external images pattern:
+external_images_pattern='mongo|data:'
 
 # use to name produced files in code bellow
 timestamp=`date +%Y%m%d%H%M%S`
@@ -34,19 +36,27 @@ docker_tag() {
     completeName=$image:$version
     docker tag --force $completeName $registry/$completeName
   done
+
   echo ' '
 }
 
 # based on the modified docker-compose file, computes 3 lists:
 computes_docker_images_lists() {
-  # list of images that are not build on this server, and then should be pulled before added to tar:
-  external_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -E 'mongo|data:'`
+  verbose=$1
 
-  # list of images that are build on this server:
-  internal_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E 'mongo|data:'`
+  # list of images that are not built on this server, and then should be pulled before added to tar:
+  external_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -E $external_images_pattern`
+
+  # list of images that are built on this server:
+  internal_list=`more $final_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
 
   # all images:
   list=$internal_list' '$external_list
+
+  if [[ "$verbose" = "true" ]]; then
+    echo 'external images: '$external_list
+    echo 'internal images: '$internal_list
+  fi
 }
 
 # explicitely pulls images produced externally, to be sure to put the last version in the archive:
@@ -74,7 +84,7 @@ build_archive_images() {
 produce_compose_file() {
   # Add talend-registry to images
   from='image: talend/'
-  to='image: talend-registry:5000/talend/'
+  to='image: '$registry'/talend/'
   sed "s|$from|$to|g" $original_fig_file > $final_fig_file
 }
 
@@ -100,7 +110,7 @@ push_docker_images() {
 
 docker_tag
 produce_compose_file
-computes_docker_images_lists
+computes_docker_images_lists false
 pull_external
 build_archive_images
 publish_files
