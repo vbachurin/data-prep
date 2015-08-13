@@ -9,9 +9,9 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
-public abstract class AbstractFillIfInvalid extends AbstractActionMetadata implements IColumnAction {
+public abstract class AbstractFillIfInvalid extends AbstractActionMetadata implements ColumnAction {
 
     public static final String DEFAULT_VALUE_PARAMETER = "invalid_default_value"; //$NON-NLS-1$
 
