@@ -12,6 +12,8 @@
         var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
 
+        var recipeStateBeforePreview;
+
         /**
          * @ngdoc property
          * @name recipe
@@ -56,7 +58,11 @@
             //recipe and steps manipulation
             disableStepsAfter: disableStepsAfter,
             resetParams: resetParams,
-            refresh: refresh
+            refresh: refresh,
+
+            //append step preview
+            earlyPreview: earlyPreview,
+            cancelEarlyPreview: cancelEarlyPreview
         };
 
         //--------------------------------------------------------------------------------------------------------------
@@ -357,7 +363,7 @@
          * @ngdoc method
          * @name disableStepsAfter
          * @methodOf data-prep.services.recipe.service:RecipeService
-         * @param {object} step - the limit between active and inactive
+         * @param {object} step The limit between active and inactive
          * @description Disable all steps after the given one
          */
         function disableStepsAfter(step) {
@@ -374,6 +380,70 @@
                 }
             });
             activeThresholdStep = step;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------
+        //-----------------------------------------------------PREVIEW--------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
+        /**
+         * @ngdoc method
+         * @name earlyPreview
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @param {object} column The target step column
+         * @param {object} transformation The transformation
+         * @param {object} params The transformation params
+         * @description Add a preview step in the recipe. The state before preview is saved to be able to revert.
+         */
+        function earlyPreview(column, transformation, params) {
+            //save state if not already in preview mode
+            recipeStateBeforePreview = recipeStateBeforePreview || {
+                recipe: recipe,
+                lastActiveStep: activeThresholdStep
+            };
+
+            //create the preview step
+            var previewStep = {
+                column: {
+                    id: column.id,
+                    name: column.name
+                },
+                transformation: {
+                    stepId: 'early preview',
+                    name: transformation.name,
+                    label: transformation.label,
+                    description: transformation.description,
+                    parameters: _.cloneDeep(transformation.parameters),
+                    items: _.cloneDeep(transformation.items),
+                    dynamic: transformation.dynamic
+                },
+                actionParameters: {
+                    action: transformation.name,
+                    parameters: params
+                },
+                preview: true
+            };
+            TransformationService.initParamsValues(previewStep.transformation, params);
+
+            //set the new state : add the step and enable all steps
+            recipe = recipeStateBeforePreview.recipe.slice(0);
+            recipe.push(previewStep);
+            disableStepsAfter(previewStep);
+        }
+
+        /**
+         * @ngdoc method
+         * @name cancelEarlyPreview
+         * @methodOf data-prep.services.recipe.service:RecipeService
+         * @description Set back the state before preview
+         */
+        function cancelEarlyPreview() {
+            if(!recipeStateBeforePreview) {
+                return;
+            }
+
+            recipe = recipeStateBeforePreview.recipe;
+            disableStepsAfter(recipeStateBeforePreview.lastActiveStep);
+            recipeStateBeforePreview = null;
         }
     }
 
