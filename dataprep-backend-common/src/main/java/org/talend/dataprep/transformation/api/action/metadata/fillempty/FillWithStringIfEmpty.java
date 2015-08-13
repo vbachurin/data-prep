@@ -11,8 +11,9 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-@Component(FillWithStringFillIfEmpty.ACTION_BEAN_PREFIX + FillWithStringFillIfEmpty.FILL_EMPTY_ACTION_NAME)
-public class FillWithStringFillIfEmpty extends AbstractFillIfEmpty {
+@Component( FillWithStringIfEmpty.ACTION_BEAN_PREFIX + FillWithStringIfEmpty.FILL_EMPTY_ACTION_NAME)
+public class FillWithStringIfEmpty
+    extends AbstractFillIfEmpty {
 
     public static final String FILL_EMPTY_ACTION_NAME = "fillemptywithdefault"; //$NON-NLS-1$
 
