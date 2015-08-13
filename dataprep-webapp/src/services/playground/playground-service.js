@@ -288,8 +288,8 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
-                    DatagridService.focusedColumn = focusColumnId;
                     DatagridService.setDataset(service.currentMetadata, response.data);
+                    DatagridService.focusedColumn = focusColumnId;
                     RecipeService.disableStepsAfter(step);
                 })
                 .finally(function() {
@@ -397,6 +397,8 @@
             var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
             return PreparationService.updateStep(step, newParams)
                 .then(updateRecipe)
+                // The grid update cannot be done in parallel because the update change the steps ids
+                // We have to wait for the recipe update to complete
                 .then(function() {
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
                     return loadStep(activeStep, step.column.id);
@@ -448,6 +450,7 @@
         //------------------------------------------------------------------------------------------------------
         //---------------------------------------------------UTILS----------------------------------------------
         //------------------------------------------------------------------------------------------------------
+
         /**
          * @ngdoc method
          * @name updateDatagrid
