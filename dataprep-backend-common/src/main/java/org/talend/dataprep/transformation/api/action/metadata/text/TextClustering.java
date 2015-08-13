@@ -10,10 +10,10 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractDynamicActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 @Component(TextClustering.ACTION_BEAN_PREFIX + TextClustering.TEXT_CLUSTERING)
-public class TextClustering extends AbstractDynamicActionMetadata implements IColumnAction {
+public class TextClustering extends AbstractDynamicActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -44,10 +44,9 @@ public class TextClustering extends AbstractDynamicActionMetadata implements ICo
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);

@@ -7,9 +7,9 @@ import java.util.Map;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
-public abstract class AbstractFillIfEmpty extends AbstractActionMetadata implements IColumnAction {
+public abstract class AbstractFillIfEmpty extends AbstractActionMetadata implements ColumnAction {
 
     public static final String DEFAULT_VALUE_PARAMETER = "empty_default_value"; //$NON-NLS-1$
 
@@ -18,10 +18,10 @@ public abstract class AbstractFillIfEmpty extends AbstractActionMetadata impleme
         return QUICKFIX.getDisplayName();
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);

@@ -61,10 +61,7 @@ public class ServiceCORSFilter implements Filter, ApplicationContextAware {
             for (Method method : methods) {
                 RequestMapping annotation = method.getAnnotation(RequestMapping.class);
                 if (annotation != null) {
-                    String[] urlMappings = annotation.value();
-                    for (String urlMapping : urlMappings) {
-                        serviceRootPaths.add("/" + StringUtils.substringBefore(urlMapping.substring(1), "/")); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
+                    updateRootPath(annotation.value());
                 }
             }
         }
@@ -73,4 +70,11 @@ public class ServiceCORSFilter implements Filter, ApplicationContextAware {
             LOGGER.info("Enable Cross Origin settings for paths: {}", Arrays.toString(serviceRootPaths.toArray()));
         }
     }
+
+    private void updateRootPath(String[] urlMappings) {
+        for (String urlMapping : urlMappings) {
+            serviceRootPaths.add("/" + StringUtils.substringBefore(urlMapping.substring(1), "/")); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+
 }

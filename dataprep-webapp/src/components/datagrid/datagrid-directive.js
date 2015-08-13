@@ -34,6 +34,7 @@
             link: function (scope, iElement) {
                 var grid;
                 var renewAllColumns = false;
+                var columnTimeout, externalTimeout, focusTimeout;
 
                 //------------------------------------------------------------------------------------------------------
                 //--------------------------------------------------GETTERS---------------------------------------------
@@ -88,8 +89,8 @@
                  * @description [PRIVATE] Insert the column headers directives in the SlickGrid headers.
                  * The expected order is based on the grid headers order.
                  */
-                var insertHeaders = function insertHeaders(headers) {
-                    _.forEach(headers, function (header, index) {
+                var insertHeaders = function insertHeaders() {
+                    _.forEach(DatagridColumnService.colHeaderElements, function (header, index) {
                         iElement.find('#datagrid-header-' + index).eq(0).append(header.element);
                     });
                 };
@@ -118,21 +119,35 @@
                 var onDataChange = function onDataChange(data) {
                     if (data) {
                         initGridIfNeeded();
+                        var columns;
 
-                        //create columns and manage size
-                        var columns = DatagridColumnService.createColumns(data.columns, data.preview, renewAllColumns);
-                        DatagridStyleService.manageColumnStyle(columns, data.preview);
-                        DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
-                        renewAllColumns = false;
+                        //create columns, manage style and size, set columns in grid, and insert headers
+                        clearTimeout(columnTimeout);
+                        columnTimeout = setTimeout(function() {
+                            columns = DatagridColumnService.createColumns(data.columns, data.preview, renewAllColumns);
+                            DatagridStyleService.manageColumnStyle(columns, data.preview);
+                            DatagridSizeService.autosizeColumns(columns); // IMPORTANT : this set columns in the grid
+                            renewAllColumns = false;
+
+                            if(!data.preview) {
+                                insertHeaders();
+                            }
+                        }, 0);
 
                         //manage column selection (external)
-                        var selectedColumn = DatagridStyleService.selectedColumn(columns);
-                        if (selectedColumn) {
-                            DatagridExternalService.updateSuggestionPanel(selectedColumn);
+                        clearTimeout(externalTimeout);
+                        if(!data.preview) {
+                            externalTimeout = setTimeout(function() {
+                                var selectedColumn = DatagridStyleService.selectedColumn(columns);
+                                if (selectedColumn) {
+                                    DatagridExternalService.updateSuggestionPanel(selectedColumn);
+                                }
+                            }, 0);
                         }
 
                         //focus specific column
-                        DatagridGridService.navigateToFocusedColumn();
+                        clearTimeout(focusTimeout);
+                        focusTimeout = setTimeout(DatagridGridService.navigateToFocusedColumn, 300);
                     }
                 };
 

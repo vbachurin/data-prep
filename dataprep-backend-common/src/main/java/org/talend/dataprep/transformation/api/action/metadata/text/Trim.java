@@ -12,14 +12,14 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 /**
  * Trim leading and trailing spaces.
  */
 @Component(Trim.ACTION_BEAN_PREFIX + Trim.TRIM_ACTION_NAME)
-public class Trim extends AbstractActionMetadata implements IColumnAction {
+public class Trim extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -59,15 +59,14 @@ public class Trim extends AbstractActionMetadata implements IColumnAction {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final String value = row.get(columnId);
-        if (value != null) {
-            row.set(columnId, value.trim());
+        final String toTrim = row.get(columnId);
+        if (toTrim != null) {
+            row.set(columnId, toTrim.trim());
         }
     }
 }

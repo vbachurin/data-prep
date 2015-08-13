@@ -56,14 +56,10 @@
          */
         function navigateToFocusedColumn(){
             if(DatagridService.focusedColumn) {
-                setTimeout(function(){
-                    var columnIndex = _.findIndex(grid.getColumns(), function (column) {
-                        return column.id === DatagridService.focusedColumn;
-                    });
-                    var viewPort    = grid.getRenderedRange();
-                    var centerRow   = +((viewPort.bottom - viewPort.top) / 2).toFixed(0);
-                    grid.scrollCellIntoView(viewPort.top + centerRow, columnIndex, false);
-                },300);
+                var columnIndex = _.findIndex(grid.getColumns(), {id: DatagridService.focusedColumn});
+                var renderedRows = grid.getRenderedRange();
+                var centerRow   = +((renderedRows.bottom - renderedRows.top) / 2).toFixed(0);
+                grid.scrollCellIntoView(renderedRows.top + centerRow, columnIndex, false);
             }
         }
 

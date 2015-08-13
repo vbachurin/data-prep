@@ -91,15 +91,7 @@ describe('Datagrid grid service', function () {
 
 
     describe('column navigation for focus purposes', function() {
-        beforeEach(function () {
-            jasmine.clock().install();
-        });
-
-        afterEach(function () {
-            jasmine.clock().uninstall();
-        });
-
-        it('should go to the selected column after a 300ms delay', inject(function (DatagridStyleService, DatagridService, DatagridGridService) {
+        it('should go to the selected column after', inject(function (DatagridStyleService, DatagridService, DatagridGridService) {
             //given
             var gridColumns = [
                 {id: '0000', field: 'col0', tdpColMetadata: {id: '0000', name: 'col0', type: 'string'}},
@@ -118,7 +110,6 @@ describe('Datagrid grid service', function () {
 
             //when
             DatagridGridService.navigateToFocusedColumn();
-            jasmine.clock().tick(300);
 
             //then
             expect(grid.scrollCellIntoView).toHaveBeenCalledWith(125, 2, false);
@@ -143,7 +134,6 @@ describe('Datagrid grid service', function () {
 
             //when
             DatagridGridService.navigateToFocusedColumn();
-            jasmine.clock().tick(300);
 
             //then
             expect(grid.scrollCellIntoView).not.toHaveBeenCalled();

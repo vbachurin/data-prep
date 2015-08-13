@@ -23,7 +23,7 @@ import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component(ComputeTimeSince.ACTION_BEAN_PREFIX + ComputeTimeSince.TIME_SINCE_ACTION_NAME)
-public class ComputeTimeSince extends AbstractDate implements IColumnAction {
+public class ComputeTimeSince extends AbstractDate implements ColumnAction {
 
     /**
      * The action name.
@@ -96,6 +96,9 @@ public class ComputeTimeSince extends AbstractDate implements IColumnAction {
         now = (unit == HOURS ? LocalDateTime.now() : LocalDate.now());
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final ColumnMetadata column = row.getRowMetadata().getById(columnId);
@@ -109,8 +112,7 @@ public class ComputeTimeSince extends AbstractDate implements IColumnAction {
         final String value = row.get(columnId);
         try {
             final TemporalAccessor temporalAccessor = dtf.parse(value, new ParsePosition(0));
-            final Temporal valueAsDate = (unit == HOURS ? LocalDateTime.from(temporalAccessor)
-                    : LocalDate.from(temporalAccessor));
+            final Temporal valueAsDate = unit == HOURS ? LocalDateTime.from(temporalAccessor) : LocalDate.from(temporalAccessor);
             final long newValue = unit.between(valueAsDate, now);
             row.set(newColumnMetadata.getId(), newValue + "");
         } catch (DateTimeParseException e) {

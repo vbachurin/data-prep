@@ -42,7 +42,7 @@ public class TDPExceptionContext implements Serializable {
      * @return wrapper for the Map.entrySet method so that one can iterate over this context entries.
      * @see Map#entrySet()
      */
-    Iterable<? extends Map.Entry<String, Object>> entries() {
+    Iterable<Map.Entry<String, Object>> entries() {
         return context.entrySet();
     }
 

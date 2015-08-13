@@ -12,6 +12,8 @@
     function DatagridExternalService(StatisticsService, ColumnSuggestionService, PreviewService) {
         var grid;
         var suggestionTimeout;
+        var scrollTimeout;
+        var lastSelectedColumn;
 
         return {
             init: init,
@@ -29,7 +31,13 @@
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
         function updateSuggestionPanel(column) {
+            if(column.tdpColMetadata === lastSelectedColumn) {
+                return;
+            }
+
             clearTimeout(suggestionTimeout);
+            lastSelectedColumn = column.tdpColMetadata;
+
             suggestionTimeout = setTimeout(function() {
                 var columnMetadata = column.tdpColMetadata;
                 StatisticsService.processData(columnMetadata);
@@ -50,6 +58,9 @@
                     var column = grid.getColumns()[args.cell];
                     updateSuggestionPanel(column);
                 }
+                else {
+                    lastSelectedColumn = null;
+                }
             });
         }
 
@@ -62,9 +73,7 @@
         function attachColumnListeners() {
             grid.onHeaderClick.subscribe(function(e, args) {
                 var columnId = args.column.id;
-                var column = _.find(grid.getColumns(), function(column) {
-                    return column.id === columnId;
-                });
+                var column = _.find(grid.getColumns(), {id: columnId});
                 updateSuggestionPanel(column);
             });
         }
@@ -77,7 +86,10 @@
          */
         function attachGridScrollListener() {
             grid.onScroll.subscribe(function() {
-                PreviewService.gridRangeIndex = grid.getRenderedRange();
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    PreviewService.gridRangeIndex = grid.getRenderedRange();
+                }, 200);
             });
         }
 

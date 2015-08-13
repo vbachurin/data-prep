@@ -11,10 +11,10 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 @Component(ComputeLength.ACTION_BEAN_PREFIX + ComputeLength.LENGTH_ACTION_NAME)
-public class ComputeLength extends AbstractActionMetadata implements IColumnAction {
+public class ComputeLength extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -35,6 +35,14 @@ public class ComputeLength extends AbstractActionMetadata implements IColumnActi
     }
 
     /**
+     * @see ActionMetadata#acceptColumn(ColumnMetadata)
+     */
+    @Override
+    public boolean acceptColumn(ColumnMetadata column) {
+        return Type.STRING.equals(Type.get(column.getType()));
+    }
+
+    /**
      * @see ActionMetadata#getCategory()
      */
     @Override
@@ -43,24 +51,15 @@ public class ComputeLength extends AbstractActionMetadata implements IColumnActi
     }
 
     /**
-     * @see ActionMetadata#acceptColumn(ColumnMetadata)
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
-    @Override
-    public boolean acceptColumn(ColumnMetadata column) {
-        return Type.STRING.equals(Type.get(column.getType()));
-    }
-
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         // create new column and append it after current column
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
-        final ColumnMetadata newColumnMetadata = createNewColumn(column);
-        final String lengthColumn = rowMetadata.insertAfter(columnId, newColumnMetadata);
+        final ColumnMetadata newCol = createNewColumn(column);
+        final String lengthColumn = rowMetadata.insertAfter(columnId, newCol);
 
         // Set length value
         final String value = row.get(columnId);

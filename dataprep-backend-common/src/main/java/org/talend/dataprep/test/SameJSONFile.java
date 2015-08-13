@@ -20,7 +20,8 @@ public class SameJSONFile {
      * @param stream A stream that contains the expected json.
      * @return a SameJSONAs to use like in assertThat(contentAsString, sameJSONAsFile("t-shirt_100.csv.expected.json"));
      */
-    public static SameJSONAs<? super String> sameJSONAsFile(InputStream stream) throws IOException {
-        return sameJSONAs(IOUtils.toString(stream)).allowingExtraUnexpectedFields().allowingAnyArrayOrdering();
+    public static SameJSONAs<String> sameJSONAsFile(InputStream stream) throws IOException {
+        return (SameJSONAs<String>) sameJSONAs(IOUtils.toString(stream)).allowingExtraUnexpectedFields()
+                .allowingAnyArrayOrdering();
     }
 }

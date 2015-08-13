@@ -14,13 +14,13 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * Split a cell value on a separator.
  */
 @Component(ExtractEmailDomain.ACTION_BEAN_PREFIX + ExtractEmailDomain.EXTRACT_DOMAIN_ACTION_NAME)
-public class ExtractEmailDomain extends AbstractActionMetadata implements IColumnAction {
+public class ExtractEmailDomain extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -30,12 +30,12 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements IColum
     /**
      * The local suffix.
      */
-    private static final String _LOCAL = "_local"; //$NON-NLS-1$
+    private static final String LOCAL = "_local"; //$NON-NLS-1$
 
     /**
      * The domain suffix.
      */
-    private static final String _DOMAIN = "_domain"; //$NON-NLS-1$
+    private static final String DOMAIN = "_domain"; //$NON-NLS-1$
 
     /**
      * Private constructor to ensure IoC use.
@@ -67,10 +67,9 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements IColum
         return STRING.equals(Type.get(column.getType())) && StringUtils.equalsIgnoreCase("email", column.getDomain());
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String originalValue = row.get(columnId);
@@ -88,10 +87,10 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements IColum
             return;
         }
         final String[] split = originalValue.split("@", 2);
-        final String local_part = split.length >= 2 ? split[0] : StringUtils.EMPTY;
-        row.set(local, local_part);
-        final String domain_part = split.length >= 2 ? split[1] : StringUtils.EMPTY;
-        row.set(domain, domain_part);
+        final String localPart = split.length >= 2 ? split[0] : StringUtils.EMPTY;
+        row.set(local, localPart);
+        final String domainPart = split.length >= 2 ? split[1] : StringUtils.EMPTY;
+        row.set(domain, domainPart);
     }
 
     /**
@@ -103,7 +102,7 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements IColum
     private ColumnMetadata createDomainNewColumn(final ColumnMetadata column) {
         return ColumnMetadata.Builder //
                 .column() //
-                .name(column.getName() + _DOMAIN) //
+                .name(column.getName() + DOMAIN) //
                 .type(Type.get(column.getType())) //
                 .empty(column.getQuality().getEmpty()) //
                 .invalid(column.getQuality().getInvalid()) //
@@ -121,7 +120,7 @@ public class ExtractEmailDomain extends AbstractActionMetadata implements IColum
     private ColumnMetadata createLocalNewColumn(final ColumnMetadata column) {
         return ColumnMetadata.Builder //
                 .column() //
-                .name(column.getName() + _LOCAL) //
+                .name(column.getName() + LOCAL) //
                 .type(Type.get(column.getType())) //
                 .headerSize(column.getHeaderSize()) //
                 .build();

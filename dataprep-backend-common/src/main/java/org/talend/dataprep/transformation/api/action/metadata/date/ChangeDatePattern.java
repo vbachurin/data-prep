@@ -20,7 +20,7 @@ import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * Change the date pattern on a 'date' column.
  */
 @Component(ChangeDatePattern.ACTION_BEAN_PREFIX + ChangeDatePattern.ACTION_NAME)
-public class ChangeDatePattern extends AbstractDate implements IColumnAction {
+public class ChangeDatePattern extends AbstractDate implements ColumnAction {
 
     /**
      * Action name.
@@ -96,6 +96,9 @@ public class ChangeDatePattern extends AbstractDate implements IColumnAction {
         newDateFormat = getDateFormat(getNewPattern(parameters));
     }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         // checks for fail fast

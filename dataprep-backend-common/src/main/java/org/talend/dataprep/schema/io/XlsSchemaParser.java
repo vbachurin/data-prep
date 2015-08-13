@@ -224,11 +224,7 @@ public class XlsSchemaParser implements SchemaParser {
                     currentType = Type.BOOLEAN;
                     break;
                 case Cell.CELL_TYPE_NUMERIC:
-                    if (HSSFDateUtil.isCellDateFormatted( cell )){
-                        currentType = Type.DATE;
-                    } else {
-                        currentType = Type.NUMERIC;
-                    }
+                    currentType = HSSFDateUtil.isCellDateFormatted(cell) ? Type.DATE : Type.NUMERIC;
                     break;
                 case Cell.CELL_TYPE_BLANK:
                     continue;

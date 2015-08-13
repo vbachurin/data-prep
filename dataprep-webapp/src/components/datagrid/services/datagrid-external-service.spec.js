@@ -79,6 +79,27 @@ describe('Datagrid external service', function () {
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
         }));
 
+        it('should NOT update playground right panel on active cell changed if column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+            //given
+            DatagridExternalService.init(gridMock);
+            var args = {cell: 1};
+
+            var onActiveCellChanged = gridMock.onActiveCellChanged.subscribe.calls.argsFor(0)[0];
+            onActiveCellChanged(null, args);
+            jasmine.clock().tick(200);
+
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+
+            //when
+            onActiveCellChanged(null, args);
+            jasmine.clock().tick(200);
+
+            //then
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+        }));
+
         it('should cancel the pending right panel update and schedule a new one', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
             //given
             DatagridExternalService.init(gridMock);
@@ -141,7 +162,30 @@ describe('Datagrid external service', function () {
             expect(ColumnSuggestionService.setColumn).toHaveBeenCalledWith(columnMetadata);
         }));
 
-        it('should update preview range on scroll', inject(function (DatagridExternalService, PreviewService) {
+        it('should NOT update playground right panel on header click when column is the same', inject(function (DatagridExternalService, StatisticsService, ColumnSuggestionService) {
+            //given
+            DatagridExternalService.init(gridMock);
+            var args = {
+                column: {id: '0001'}
+            };
+
+            var onHeaderClick = gridMock.onHeaderClick.subscribe.calls.argsFor(0)[0];
+            onHeaderClick(null, args);
+            jasmine.clock().tick(200);
+
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+
+            //when
+            onHeaderClick(null, args);
+            jasmine.clock().tick(200);
+
+            //then
+            expect(StatisticsService.processData.calls.count()).toBe(1);
+            expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
+        }));
+
+        it('should update preview range on scroll after a 200ms delay', inject(function (DatagridExternalService, PreviewService) {
             //given
             DatagridExternalService.init(gridMock);
 
@@ -153,6 +197,7 @@ describe('Datagrid external service', function () {
             //when
             var onScroll = gridMock.onScroll.subscribe.calls.argsFor(0)[0];
             onScroll();
+            jasmine.clock().tick(200);
 
             //then
             expect(PreviewService.gridRangeIndex).toBe(range);

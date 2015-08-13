@@ -19,7 +19,7 @@ import org.talend.dataprep.transformation.api.action.context.TransformationConte
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
@@ -28,7 +28,7 @@ import org.talend.dataprep.transformation.api.action.parameters.Parameter;
  * Split a cell value on a separator.
  */
 @Component(Split.ACTION_BEAN_PREFIX + Split.SPLIT_ACTION_NAME)
-public class Split extends AbstractActionMetadata implements IColumnAction {
+public class Split extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -111,10 +111,9 @@ public class Split extends AbstractActionMetadata implements IColumnAction {
                 .get(SEPARATOR_PARAMETER);
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         // Retrieve the separator to use
