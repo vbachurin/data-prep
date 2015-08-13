@@ -1,0 +1,13 @@
+{
+  "actions": [
+    {
+      "action": "fillemptywithdefaultboolean",
+      "parameters": {
+        "empty_default_value": "True",
+        "scope": "column",
+        "column_id": "0002",
+        "column_name": "age"
+      }
+    }
+  ]
+}
