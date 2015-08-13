@@ -120,7 +120,6 @@
             FilterService.removeAllFilters();
             RecipeService.refresh();
             StatisticsService.resetCharts();
-            DatagridService.setFocusedColumn(null);
             DatagridService.setDataset(dataset, data);
             TransformationCacheService.invalidateCache();
             ColumnSuggestionService.reset();
@@ -275,17 +274,12 @@
          * @ngdoc method
          * @name loadStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
-         * @param {object} step - the preparation step to load
+         * @param {object} step The preparation step to load
+         * @param {string} focusColumnId The column id to focus on
          * @description Load a specific step content in the current preparation, and update the recipe
-         * @returns {Promise} - the process promise
+         * @returns {Promise} The process promise
          */
-        function loadStep(step, justDeactivatedStep) {
-            var colIdFromStep;
-            if(justDeactivatedStep){
-                colIdFromStep = justDeactivatedStep.column.id;
-            }else{
-                colIdFromStep = step.column.id;
-            }
+        function loadStep(step, focusColumnId) {
             //step already loaded
             if(RecipeService.getActiveThresholdStep() === step) {
                 return;
@@ -294,8 +288,8 @@
             $rootScope.$emit('talend.loading.start');
             return PreparationService.getContent(step.transformation.stepId, service.selectedSampleSize.value)
                 .then(function(response) {
-                    DatagridService.setFocusedColumn(colIdFromStep);
                     DatagridService.setDataset(service.currentMetadata, response.data);
+                    DatagridService.focusedColumn = focusColumnId;
                     RecipeService.disableStepsAfter(step);
                 })
                 .finally(function() {
@@ -403,9 +397,11 @@
             var lastActiveStepIndex = RecipeService.getActiveThresholdStepIndex();
             return PreparationService.updateStep(step, newParams)
                 .then(updateRecipe)
+                // The grid update cannot be done in parallel because the update change the steps ids
+                // We have to wait for the recipe update to complete
                 .then(function() {
                     var activeStep = RecipeService.getStep(lastActiveStepIndex, true);
-                    return loadStep(activeStep);
+                    return loadStep(activeStep, step.column.id);
                 })
                 .finally(function () {
                     $rootScope.$emit('talend.loading.stop');
@@ -417,13 +413,13 @@
          * @name executeRemoveStep
          * @methodOf data-prep.services.playground.service:PlaygroundService
          * @param {string} stepId The step id to remove
-         * @param {string} columnId The column id to focus on
+         * @param {string} focusColumnId The column id to focus on
          * @description Perform a transformation removal identified by the step id
          */
-        function executeRemoveStep(stepId, columnId) {
+        function executeRemoveStep(stepId, focusColumnId) {
             return PreparationService.removeStep(stepId)
                 .then(function() {
-                    return $q.all([updateRecipe(), updateDatagrid(columnId)]);
+                    return $q.all([updateRecipe(), updateDatagrid(focusColumnId)]);
                 });
         }
 
@@ -454,14 +450,28 @@
         //------------------------------------------------------------------------------------------------------
         //---------------------------------------------------UTILS----------------------------------------------
         //------------------------------------------------------------------------------------------------------
-        function updateDatagrid(columnId) {
+
+        /**
+         * @ngdoc method
+         * @name updateDatagrid
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @param {string} focusColumnId The column id to focus on
+         * @description Perform an datagrid refresh with the preparation head
+         */
+        function updateDatagrid(focusColumnId) {
             return PreparationService.getContent('head', service.selectedSampleSize.value)
                 .then(function(response) {
-                    DatagridService.setFocusedColumn(columnId);
+                    DatagridService.focusedColumn = focusColumnId;
                     DatagridService.updateData(response.data);
                 });
         }
 
+        /**
+         * @ngdoc method
+         * @name updateRecipe
+         * @methodOf data-prep.services.playground.service:PlaygroundService
+         * @description Update the recipe
+         */
         function updateRecipe() {
             return RecipeService.refresh()
                 .then(function() {

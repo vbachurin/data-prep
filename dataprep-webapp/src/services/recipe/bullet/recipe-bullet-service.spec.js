@@ -90,7 +90,7 @@ describe('Recipe Bullet service', function () {
         RecipeBulletService.toggleRecipe();
 
         //then
-        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep, step1);
+        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
     }));
 
     it('should reactivate all the recipe', inject(function (RecipeService, PlaygroundService, RecipeBulletService) {
@@ -129,10 +129,10 @@ describe('Recipe Bullet service', function () {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
-            {id: '1', column:{id:'0005'}},
-            {id: '2', column:{id:'0004'}},
-            {id: '3', column:{id:'0000'}},
-            {id: '4', column:{id:'0001'}}
+            {id: '0', column:{id:'0005'}},
+            {id: '1', column:{id:'0004'}},
+            {id: '2', column:{id:'0000'}},
+            {id: '3', column:{id:'0001'}}
         );
 
         //when
@@ -142,7 +142,7 @@ describe('Recipe Bullet service', function () {
         jasmine.clock().tick(1);
 
         //then
-        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], recipe[1], '0000');
+        expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], previousStep, '0000');
     }));
 
     it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function ($timeout, PreviewService, RecipeBulletService) {
@@ -192,17 +192,6 @@ describe('Recipe Bullet service', function () {
         RecipeBulletService.toggleStep(step);
 
         //then
-        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep, step);
-    }));
-
-    it('should cancel current preview on toggle', inject(function (PreviewService, RecipeBulletService) {
-        //given
-        var step = {inactive: true, column:{id:'0001'}};
-
-        //when
-        RecipeBulletService.toggleStep(step);
-
-        //then
-        expect(PreviewService.cancelPreview).toHaveBeenCalled();
+        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
     }));
 });

@@ -35,6 +35,19 @@ describe('Datagrid service', function() {
         expect(DatagridService.data).toBe(data);
     }));
 
+    it('should reset focused column', inject(function(DatagridService) {
+        //given
+        var metadata = {name: 'my dataset'};
+        var data = {columns: [], records: []};
+        DatagridService.focusedColumn = '0001';
+
+        //when
+        DatagridService.setDataset(metadata, data);
+
+        //then
+        expect(DatagridService.focusedColumn).toBe(null);
+    }));
+
     it('should update data records', inject(function(DatagridService) {
         //given
         DatagridService.metadata = {name: 'my dataset'};
@@ -202,6 +215,35 @@ describe('Datagrid service', function() {
             col1: 'mon tutu', col2: 'toto tata titi'
         })).toBe(false);
         expect(dataViewMock.filter({
+            col1: 'mon toto', col2: 'tutu tata titi'
+        })).toBe(false);
+    }));
+
+    it('should return filter that executes all filters', inject(function(DatagridService) {
+        //given
+        var dataViewMock = new DataViewMock();
+        DatagridService.dataView = dataViewMock;
+        var filterFnCol1 = function(item) {
+            return item.col1.indexOf('toto') > -1;
+        };
+        var filterFnCol2 = function(item) {
+            return item.col2.indexOf('toto') > -1;
+        };
+
+        DatagridService.addFilter(filterFnCol1);
+        DatagridService.addFilter(filterFnCol2);
+
+        //when
+        var superFilter = DatagridService.getAllFiltersFn();
+
+        //then
+        expect(superFilter({
+            col1: 'mon toto', col2: 'toto tata titi'
+        })).toBe(true);
+        expect(superFilter({
+            col1: 'mon tutu', col2: 'toto tata titi'
+        })).toBe(false);
+        expect(superFilter({
             col1: 'mon toto', col2: 'tutu tata titi'
         })).toBe(false);
     }));

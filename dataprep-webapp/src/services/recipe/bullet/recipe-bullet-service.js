@@ -10,8 +10,16 @@
      * @requires data-prep.services.playground.service:PlaygroundService
      */
     function RecipeBulletService($timeout, RecipeService, PreviewService, PlaygroundService) {
-        var self = this;
         var previewTimeout;
+        
+        var service = {
+            toggleStep: toggleStep,
+            toggleRecipe: toggleRecipe,
+
+            stepHoverStart: stepHoverStart,
+            stepHoverEnd: stepHoverEnd
+        };
+        return service;
 
         //---------------------------------------------------------------------------------------------
         //------------------------------------------Mouse Actions--------------------------------------
@@ -27,17 +35,13 @@
          *     <li>step is active : deactivate it with all the following steps</li>
          * </ul>
          */
-        this.toggleStep = function (step) {
-            PreviewService.cancelPreview();
-
-            if (step.inactive) {
-                PlaygroundService.loadStep(step);
-            }
-            else {
-                var previousStep = RecipeService.getPreviousStep(step);
-                PlaygroundService.loadStep(previousStep, step);
-            }
-        };
+        function toggleStep(step) {
+            var stepToLoad = step.inactive ? step : RecipeService.getPreviousStep(step);
+            PlaygroundService.loadStep(stepToLoad)
+                .then(function() {
+                    PreviewService.reset(false);
+                });
+        }
 
         /**
          * @ngdoc method
@@ -46,20 +50,20 @@
          * @description Enable/disable the recipe.
          * When it is enabled, the last active step before disabling action is loaded
          */
-        this.toggleRecipe = function toggleRecipe() {
+        function toggleRecipe() {
             var recipe = RecipeService.getRecipe();
             var firstStep = recipe[0];
             var stepToLoad;
 
             if (!firstStep.inactive) {
-                self.lastToggled = RecipeService.getLastActiveStep();
+                service.lastToggled = RecipeService.getLastActiveStep();
                 stepToLoad = firstStep;
             }
             else {
-                stepToLoad = self.lastToggled || recipe[recipe.length - 1];
+                stepToLoad = service.lastToggled || recipe[recipe.length - 1];
             }
-            self.toggleStep(stepToLoad);
-        };
+            toggleStep(stepToLoad);
+        }
 
         /**
          * @ngdoc method
@@ -76,41 +80,30 @@
          * @ngdoc method
          * @name stepHoverStart
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
-         * @param {number} step The hovered step
-         * @description On step button hover in order to inform actions on steps :
-         * <ul>
-         *     <li>highlight inactive buttons above the one (including the one)</li>
-         *     <li>highlight active buttons under the one (including the one)</li>
-         * </ul>
+         * @param {object} step The hovered step
+         * @description Cancel pending preview and trigger a new one with a 200ms delay
          */
-        this.stepHoverStart = function (step) {
+        function stepHoverStart(step) {
             cancelPendingPreview();
             previewTimeout = setTimeout(function() {
-                var index = RecipeService.getStepIndex(step);
-                var stepColumnId = step.column.id;
-
-                if (RecipeService.getRecipe()[index].inactive) {
-                    previewAppend(index, stepColumnId);
-                }
-                else {
-                    previewDisable(index, stepColumnId);
-                }
+                var previewFn = step.inactive ? previewAppend : previewDisable;
+                previewFn(step);
             }, 200);
-        };
+        }
 
         /**
          * @ngdoc method
          * @name stepHoverEnd
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
-         * * @param {number} step The hovered end step
-         * @description On step button leave : reset steps button highlight
+         * @param {object} step The hovered end step
+         * @description Cancel any pending preview and cancel the current preview with a 100ms delay
          */
-        this.stepHoverEnd = function (step) {
+        function stepHoverEnd(step) {
             cancelPendingPreview();
             previewTimeout = setTimeout(function() {
                 $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id));
             }, 100);
-        };
+        }
 
         //---------------------------------------------------------------------------------------------
         //---------------------------------------------Preview-----------------------------------------
@@ -119,31 +112,27 @@
          * @ngdoc method
          * @name previewAppend
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
-         * @param {number} stepPosition The step position index to preview
-         * @param {string} stepColumnId The step target column id
-         * @description [PRIVATE] Call the preview service to display the diff between the current step and the disabled targeted step
+         * @param {object} previewStep The step to preview
+         * @description Call the preview service to display the diff between the current active step and the preview step to activate
          */
-        var previewAppend = function (stepPosition, stepColumnId) {
-            var previewStep = RecipeService.getStep(stepPosition);
+        function previewAppend(previewStep) {
             var currentStep = RecipeService.getLastActiveStep();
-
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep, stepColumnId);
-        };
+            PreviewService.getPreviewDiffRecords(currentStep, previewStep, previewStep.column.id);
+        }
 
         /**
          * @ngdoc method
          * @name previewDisable
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
-         * @param {number} stepPosition The step position index to disable for the preview
-         * @param {string} stepColumnId The step target column id
-         * @description [PRIVATE] Call the preview service to display the diff between the current step and the step before the active targeted step
+         * @param {object} disabledStep The step to disable for the preview
+         * @description Call the preview service to display the diff between the current active step and the step before the one to deactivate
          */
-        var previewDisable = function (stepPosition, stepColumnId) {
-            var previewStep = RecipeService.getStepBefore(stepPosition);
+        function previewDisable(disabledStep) {
+            var previewStep = RecipeService.getPreviousStep(disabledStep);
             var currentStep = RecipeService.getLastActiveStep();
 
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep, stepColumnId);
-        };
+            PreviewService.getPreviewDiffRecords(currentStep, previewStep, disabledStep.column.id);
+        }
     }
 
     angular.module('data-prep.services.recipe')

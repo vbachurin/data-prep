@@ -72,20 +72,27 @@ public class XlsUtils {
 
     public static Workbook getWorkbook(InputStream stream) throws IOException {
 
+
         // Depending on the excel file used the poi object to use is different
         // so we try one (catch exception then try the other one)
 
         // TODO that's a pain as we have to keep this :-(
-        // TODO use ByteBuffer
+        // TODO use ByteBuffer or mark/reset the input if supported ?
         // but for some reasons new HSSFWorkbook consume part of the stream
-        byte[] bytes = new byte[0];
+
+        if (stream == null) {
+            throw new IOException("cannot read null stream");
+        }
+
+        byte[] bytes = IOUtils.toByteArray(stream);
+
         try {
-            bytes = IOUtils.toByteArray(stream);
             return new XSSFWorkbook(new ByteArrayInputStream(bytes));
         } catch (Exception e) {
             LOGGER.debug("{} so try XSSFWorkbook", e);
             return new HSSFWorkbook(new ByteArrayInputStream(bytes));
         }
+
     }
 
 }

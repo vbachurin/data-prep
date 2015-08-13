@@ -48,9 +48,11 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
 
     @Override
     public void analyze(String dataSetId) {
+
         if (StringUtils.isEmpty(dataSetId)) {
             throw new IllegalArgumentException("Data set id cannot be null or empty.");
         }
+
         DistributedLock datasetLock = repository.createDatasetMetadataLock(dataSetId);
         datasetLock.lock();
         try {
@@ -61,8 +63,8 @@ public class FormatAnalysis implements SynchronousDataSetAnalyzer {
 
                 // Select best format guess
                 List<FormatGuesser.Result> orderedGuess = new LinkedList<>(mediaTypes);
-                Collections.sort(orderedGuess, (g1, g2) -> (int) (g2.getFormatGuess().getConfidence() - g1.getFormatGuess()
-                        .getConfidence()));
+                Collections.sort(orderedGuess, (g1, g2) -> //
+                Float.compare(g2.getFormatGuess().getConfidence(), g1.getFormatGuess().getConfidence()));
 
                 FormatGuesser.Result bestGuessResult = orderedGuess.get(0);
                 FormatGuess bestGuess = bestGuessResult.getFormatGuess();
