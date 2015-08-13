@@ -178,12 +178,20 @@
             }
         );
 
+
+        /**
+         * @ngdoc property
+         * @name selectedColumn
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The selected aggregation.
+         * This is bound to {@link data-prep.statistics:StatisticsService StatisticsService}.selectedColumn
+         */
         Object.defineProperty(ColumnProfileCtrl.prototype,
             'selectedColumn', {
                 enumerable: true,
                 configurable: true,
                 get: function () {
-                    return this.datasetGridService.selectedColumn;
+                    return this.statisticsService.selectedColumn;
                 }
             });
 
@@ -200,6 +208,38 @@
                 configurable: true,
                 get: function () {
                     return this.datasetAggregationsService.aggregationSelected;
+                }
+            });
+
+        /**
+         * @ngdoc property
+         * @name columnAggregationSelected
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The selected aggregation target column.
+         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.columnAggregationSelected
+         */
+        Object.defineProperty(ColumnProfileCtrl.prototype,
+            'columnAggregationSelected', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return this.datasetAggregationsService.columnAggregationSelected;
+                }
+            });
+
+        /**
+         * @ngdoc property
+         * @name calculationAggregationSelected
+         * @propertyOf data-prep.actions-suggestions-stats.controller:ColumnProfileCtrl
+         * @description The selected aggregation calculation.
+         * This is bound to {@link data-prep.suggestions-stats:SuggestionsStatsAggregationsService SuggestionsStatsAggregationsService}.calculationAggregationSelected
+         */
+        Object.defineProperty(ColumnProfileCtrl.prototype,
+            'calculationAggregationSelected', {
+                enumerable: true,
+                configurable: true,
+                get: function () {
+                    return this.datasetAggregationsService.calculationAggregationSelected;
                 }
             });
 

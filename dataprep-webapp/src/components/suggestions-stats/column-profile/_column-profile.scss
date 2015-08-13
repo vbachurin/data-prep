@@ -25,3 +25,21 @@
     width: 95%;
   }
 }
+
+.column-profile-aggregation-text {
+  padding: 0 0 5px 10px;
+  max-width: 300px;
+
+  .fontWeightColumn {
+    font-weight: bold;
+  }
+  .moreText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 100px;
+    vertical-align: bottom;
+  }
+
+}

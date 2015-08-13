@@ -1,15 +1,16 @@
 <div class="column-profile">
+
     <div class="column-profile-aggregation" ng-if="columnProfileCtrl.processedData || columnProfileCtrl.stateDistribution">
         <talend-button-dropdown button-text="{{columnProfileCtrl.aggregationSelected}}">
             <ul>
                 <li ng-click="columnProfileCtrl.updateCharts(null,null)" title="{{ 'LINE_COUNT' | translate }}">
-                    {{ 'LINE_COUNT' | translate }}
+                    <div class="moreText">{{ 'LINE_COUNT' | translate }}</div>
                 </li>
                 <li ng-repeat="column in columnProfileCtrl.numericColumns"  class="more">
                     <div class="moreText" title="{{column.name}}">{{column.name}}</div>
                     <ul class="submenu">
                         <li ng-repeat="calculation in columnProfileCtrl.calculationsList" ng-click="columnProfileCtrl.updateCharts(column, calculation)" title="{{calculation.name | translate }}">
-                            {{calculation.name | translate }}
+                            <div class="moreText">{{calculation.name | translate }}</div>
                         </li>
                     </ul>
                 </li>
@@ -17,6 +18,12 @@
         </talend-button-dropdown>
     </div>
 
+    <div ng-if="columnProfileCtrl.calculationAggregationSelected && columnProfileCtrl.columnAggregationSelected" class="column-profile-aggregation-text">
+        <span>{{columnProfileCtrl.calculationAggregationSelected.name | translate}}</span>
+        <span class="fontWeightColumn moreText" title="{{columnProfileCtrl.columnAggregationSelected.name}}">{{columnProfileCtrl.columnAggregationSelected.name}}</span>
+        <span>{{ 'GROUP_BY' | translate }} </span>
+        <span class="fontWeightColumn moreText" title="{{columnProfileCtrl.selectedColumn.name}}">{{columnProfileCtrl.selectedColumn.name}}</span>
+    </div>
 
     <horizontal-barchart id="barChart"
                 width="250"
