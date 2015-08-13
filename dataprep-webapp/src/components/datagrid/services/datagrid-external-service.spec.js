@@ -190,7 +190,7 @@ describe('Datagrid external service', function () {
             expect(ColumnSuggestionService.setColumn.calls.count()).toBe(1);
         }));
 
-        it('should update preview range on scroll', inject(function (DatagridExternalService, PreviewService) {
+        it('should update preview range on scroll after a 200ms delay', inject(function (DatagridExternalService, PreviewService) {
             //given
             DatagridExternalService.init(gridMock);
 
@@ -202,6 +202,7 @@ describe('Datagrid external service', function () {
             //when
             var onScroll = gridMock.onScroll.subscribe.calls.argsFor(0)[0];
             onScroll();
+            jasmine.clock().tick(200);
 
             //then
             expect(PreviewService.gridRangeIndex).toBe(range);

@@ -1,7 +1,5 @@
 .recipe {
   $color: $black;
-  $color-not-active: $shadow-gray;
-  $color-not-active-hover: $medium-gray;
   $background: $white;
 
   background: $background;
@@ -39,7 +37,7 @@
     }
   }
 
-  /*******************************Active/inactive trigger******************************/
+  /*******************************Step preview trigger******************************/
   .step-trigger {
     cursor: pointer;
     position: absolute;
@@ -51,26 +49,6 @@
     &::after {
       display: inline-block;
       vertical-align: middle;
-    }
-  }
-
-  .inactive {
-    color: $color-not-active;
-
-    .step-trigger {
-      &::after {
-        background-color: $white;
-        border: 3px solid $color-not-active;
-      }
-
-      &.highlight::after {
-        background-color: $dark-blue;
-        border: none;
-      }
-    }
-
-    &:hover{
-      color: $color-not-active-hover;
     }
   }
 

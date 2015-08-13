@@ -60,21 +60,13 @@ public class Trim extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see AbstractActionMetadata#beforeApply(Map)
-     */
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
-
-    /**
      * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final String value = row.get(columnId);
-        if (value != null) {
-            row.set(columnId, value.trim());
+        final String toTrim = row.get(columnId);
+        if (toTrim != null) {
+            row.set(columnId, toTrim.trim());
         }
     }
 }

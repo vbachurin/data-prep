@@ -302,10 +302,6 @@ public class AbstractActionMetadataTest {
 @Component
 @Profile("test")
 class CellTransformation extends AbstractActionMetadata implements CellAction {
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-
-    }
 
     @Override
     public String getName() {
@@ -334,11 +330,6 @@ class CellTransformation extends AbstractActionMetadata implements CellAction {
 class LineTransformation extends AbstractActionMetadata implements RowAction {
 
     @Override
-    protected void beforeApply(Map<String, String> parameters) {
-
-    }
-
-    @Override
     public String getName() {
         return null;
     }
@@ -364,10 +355,6 @@ class LineTransformation extends AbstractActionMetadata implements RowAction {
 @Component
 @Profile("test")
 class ColumnTransformation extends AbstractActionMetadata implements ColumnAction {
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-
-    }
 
     @Override
     public String getName() {
@@ -394,10 +381,6 @@ class ColumnTransformation extends AbstractActionMetadata implements ColumnActio
 @Component
 @Profile("test")
 class TableTransformation extends AbstractActionMetadata implements DataSetAction {
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-
-    }
 
     @Override
     public String getName() {

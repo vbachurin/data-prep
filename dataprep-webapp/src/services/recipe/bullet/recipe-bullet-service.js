@@ -84,19 +84,18 @@
          * </ul>
          */
         this.stepHoverStart = function (step) {
-            var index = RecipeService.getStepIndex(step);
-            var stepColumnId = step.column.id;
-            _.forEach(RecipeService.getRecipe(), function (element, elementIndex) {
-                element.highlight = (element.inactive && index >= elementIndex) || (!element.inactive && index <= elementIndex);
-            });
-
             cancelPendingPreview();
-            if (RecipeService.getRecipe()[index].inactive) {
-                previewTimeout = setTimeout(previewAppend.bind(self, index, stepColumnId), 100);
-            }
-            else {
-                previewTimeout = setTimeout(previewDisable.bind(self, index, stepColumnId), 100);
-            }
+            previewTimeout = setTimeout(function() {
+                var index = RecipeService.getStepIndex(step);
+                var stepColumnId = step.column.id;
+
+                if (RecipeService.getRecipe()[index].inactive) {
+                    previewAppend(index, stepColumnId);
+                }
+                else {
+                    previewDisable(index, stepColumnId);
+                }
+            }, 200);
         };
 
         /**
@@ -107,14 +106,10 @@
          * @description On step button leave : reset steps button highlight
          */
         this.stepHoverEnd = function (step) {
-            _.forEach(RecipeService.getRecipe(), function (element) {
-                element.highlight = false;
-            });
-
             cancelPendingPreview();
             previewTimeout = setTimeout(function() {
                 $timeout(PreviewService.cancelPreview.bind(null, false, step.column.id));
-            }, 30);
+            }, 100);
         };
 
         //---------------------------------------------------------------------------------------------
@@ -124,7 +119,7 @@
          * @ngdoc method
          * @name previewAppend
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
-         * @param {string} stepPosition The step position index to preview
+         * @param {number} stepPosition The step position index to preview
          * @param {string} stepColumnId The step target column id
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the disabled targeted step
          */
@@ -139,7 +134,7 @@
          * @ngdoc method
          * @name previewDisable
          * @methodOf data-prep.services.recipe.service:RecipeBulletService
-         * @param {string} stepPosition The step position index to disable for the preview
+         * @param {number} stepPosition The step position index to disable for the preview
          * @param {string} stepColumnId The step target column id
          * @description [PRIVATE] Call the preview service to display the diff between the current step and the step before the active targeted step
          */

@@ -217,6 +217,14 @@
             });
         }
 
+        function highlightCellsContaining(rowIndex, colIndex) {
+            var column = grid.getColumns()[colIndex];
+            var content = DatagridService.dataView.getItem(rowIndex)[column.id];
+
+            var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
+            grid.setCellCssStyles('highlight', sameContentConfig);
+        }
+
         /**
          * @ngdoc method
          * @name attachCellListeners
@@ -226,17 +234,7 @@
         function attachCellListeners() {
             //get clicked content and highlight cells in clicked column containing the content
             grid.onClick.subscribe(function (e,args) {
-                var config = {};
-                var column = grid.getColumns()[args.cell];
-                var content = DatagridService.dataView.getItem(args.row)[column.id];
-
-                var rowsContainingWord = DatagridService.getRowsContaining(column.id, content);
-                _.forEach(rowsContainingWord, function(rowId) {
-                    config[rowId] = {};
-                    config[rowId][column.id] = 'highlight';
-                });
-
-                grid.setCellCssStyles('highlight', config);
+                setTimeout(highlightCellsContaining.bind(null, args.row, args.cell), 0);
             });
 
             //change selected cell column background

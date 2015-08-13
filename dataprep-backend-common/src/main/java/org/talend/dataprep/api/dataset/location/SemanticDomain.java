@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset.location;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * </ul>
  *
  */
-public class SemanticDomain {
+public class SemanticDomain implements Serializable {
 
     @JsonProperty("id")
     private String id;

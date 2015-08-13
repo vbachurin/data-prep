@@ -63,18 +63,13 @@ public class Cut extends AbstractActionMetadata implements ColumnAction {
     }
 
     /**
-     * @see AbstractActionMetadata#beforeApply(Map)
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
      */
     @Override
-    protected void beforeApply(Map<String, String> parameters) {
-        // nothing to do here
-    }
-
-    @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final String value = row.get(columnId);
-        if (value != null) {
-            row.set(columnId, value.replace(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
+        final String toCut = row.get(columnId);
+        if (toCut != null) {
+            row.set(columnId, toCut.replace(parameters.get(PATTERN_PARAMETER), "")); //$NON-NLS-1$
         }
     }
 }

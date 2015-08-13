@@ -118,7 +118,9 @@ public abstract class AbstractActionMetadata implements ActionMetadata {
      *
      * @param parameters The transformation parameters
      */
-    protected abstract void beforeApply(final Map<String, String> parameters);
+    protected void beforeApply(final Map<String, String> parameters) {
+        // default empty implementation
+    }
 
     /**
      * @see ActionMetadata#create(Map)

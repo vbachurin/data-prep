@@ -1,5 +1,6 @@
 package org.talend.dataprep.schema;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,6 +30,18 @@ public class LineBasedFormatGuesserTest {
     /** The format guesser to test. */
     @Autowired
     LineBasedFormatGuesser guesser;
+
+    /**
+     * Text file
+     */
+    @Test
+    public void should_not_guess() throws IOException {
+        FormatGuesser.Result actual = guesser.guess(new ByteArrayInputStream(new byte[0]));
+
+        Assert.assertNotNull(actual);
+        Assert.assertTrue(actual.getFormatGuess() instanceof NoOpFormatGuess);
+
+    }
 
     /**
      * Standard csv file.

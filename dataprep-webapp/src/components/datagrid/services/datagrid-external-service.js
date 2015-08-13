@@ -13,6 +13,7 @@
     function DatagridExternalService(StatisticsService, ColumnSuggestionService, PreviewService, SuggestionsStatsAggregationsService) {
         var grid;
         var suggestionTimeout;
+        var scrollTimeout;
         var lastSelectedColumn;
 
         return {
@@ -31,12 +32,12 @@
          * Ex : StatisticsService for dataviz, ColumnSuggestionService for transformation list
          */
         function updateSuggestionPanel(column) {
-            if(column === lastSelectedColumn) {
+            if(column.tdpColMetadata === lastSelectedColumn) {
                 return;
             }
 
             clearTimeout(suggestionTimeout);
-            lastSelectedColumn = column;
+            lastSelectedColumn = column.tdpColMetadata;
 
             suggestionTimeout = setTimeout(function() {
                 var columnMetadata = column.tdpColMetadata;
@@ -87,7 +88,10 @@
          */
         function attachGridScrollListener() {
             grid.onScroll.subscribe(function() {
-                PreviewService.gridRangeIndex = grid.getRenderedRange();
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    PreviewService.gridRangeIndex = grid.getRenderedRange();
+                }, 200);
             });
         }
 

@@ -18,10 +18,10 @@ public abstract class AbstractFillIfEmpty extends AbstractActionMetadata impleme
         return QUICKFIX.getDisplayName();
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);

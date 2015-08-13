@@ -1,53 +1,62 @@
 package org.talend.dataprep.api.type;
 
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import org.talend.dataprep.api.type.json.ExportTypeSerializer;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(using = ExportType.ExportTypeSerializer.class)
+@JsonSerialize(using = ExportTypeSerializer.class)
 public enum ExportType {
+
+    //@formatter:off
     // take care when declaring new export type as only one can be default :-)
-    CSV("text/csv", ".csv",
-            true, //
-            false, //
-            Collections.singletonList( //
-                    new Parameter("csvSeparator", "CHOOSE_SEPARATOR", "radio", //
-                        new ParameterValue(";", "SEPARATOR_SEMI_COLON"), //
-                        Arrays.asList(new ParameterValue("\u0009", "SEPARATOR_TAB"), // &#09;
-                        new ParameterValue(" ", "SEPARATOR_SPACE"), //
-                        new ParameterValue(",", "SEPARATOR_COMMA"))
-                    ) //
-            ) //
-    ), //
+    CSV("text/csv", ".csv", true, false,
+        Collections.singletonList(
+                new Parameter("csvSeparator",
+                              "CHOOSE_SEPARATOR",
+                              "radio",
+                              new ParameterValue(";", "SEPARATOR_SEMI_COLON"),
+                              Arrays.asList(
+                                  new ParameterValue("\u0009", "SEPARATOR_TAB"), // &#09;
+                                  new ParameterValue(" ", "SEPARATOR_SPACE"),
+                                  new ParameterValue(",", "SEPARATOR_COMMA")
+                              )
+                )
+        )
+    ),
     XLS("application/vnd.ms-excel", ".xls", false, true, Collections.<Parameter> emptyList()),
     TABLEAU("application/tde", ".tde", false, false, Collections.<Parameter> emptyList()),
     JSON("application/json", ".json", false, false, Collections.<Parameter> emptyList());
+    //@formatter:on
 
+    /** The mime type. */
     private final String mimeType;
 
+    /** The file extension. */
     private final String extension;
 
-    /**
-     * does this export type need more parameters? (ui will open a new form in this case)
-     */
+    /** Does this export type need more parameters? (ui will open a new form in this case). */
     private final boolean needParameters;
 
-    /**
-     * is it the default export
-     */
+    /** Is it the default export. */
     private final boolean defaultExport;
 
-    /**
-     * list of extra parameters needed for this export (i.e separator for csv files etc...)
-     */
+    /** List of extra parameters needed for this export (i.e separator for csv files etc...). */
     private final List<Parameter> parameters;
 
+    /**
+     * Default constructor.
+     *
+     * @param mimeType the export mime type.
+     * @param extension the file extension.
+     * @param needParameters if the type needs parameters.
+     * @param defaultExport if it's the default export.
+     * @param parameters the list of parameters.
+     */
     ExportType(final String mimeType, final String extension, final boolean needParameters, final boolean defaultExport,
             final List<Parameter> parameters) {
         this.mimeType = mimeType;
@@ -57,53 +66,72 @@ public enum ExportType {
         this.parameters = parameters;
     }
 
+    /**
+     * @return the mime type.
+     */
     public String getMimeType() {
         return mimeType;
     }
 
+    /**
+     * @return the file extension.
+     */
     public String getExtension() {
         return extension;
     }
 
+    /**
+     * @return true if parameters are needed.
+     */
     public boolean isNeedParameters() {
         return needParameters;
     }
 
+    /**
+     * @return true if it's the default export.
+     */
     public boolean isDefaultExport() {
         return defaultExport;
     }
 
+    /**
+     * @return the list of needed parameters.
+     */
     public List<Parameter> getParameters() {
         return parameters;
     }
 
-    public static class Parameter {
 
-        /**
-         * parameter name
-         */
+    /**
+     * Inner Parameter class.
+     */
+    public static class Parameter implements Serializable {
+
+        /** Parameter name. */
         private final String name;
 
-        /**
-         * can be used as a label key in the ui
-         */
+        /** Can be used as a label key in the ui. */
         private final String labelKey;
 
-        /**
-         * the default value for the parameter must not be in values
-         */
+        /** The default value for the parameter must not be in values. */
         private final ParameterValue defaultValue;
 
-        /**
-         * all possible values for the parameter
-         */
+        /** All possible values for the parameter. */
         private final List<ParameterValue> values;
 
-        /**
-         * html type (input type: radio, text)
-         */
+        /** Html type (input type: radio, text). */
         private final String type;
 
+        /**
+         * Constructor.
+         *
+         * param name the parameter name.
+         * 
+         * @param labelKey the label key that may be used by the ui.
+         * @param type the parameter html type.
+         * @param defaultValue the parameter default value.
+         * @param values the parameters values.
+         */
         public Parameter(String name, String labelKey, String type, ParameterValue defaultValue, List<ParameterValue> values) {
             this.name = name;
             this.labelKey = labelKey;
@@ -112,95 +140,77 @@ public enum ExportType {
             this.type = type;
         }
 
+        /**
+         * @return the parameter name.
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * @return the label to use by the UI.
+         */
         public String getLabelKey() {
             return labelKey;
         }
 
+        /**
+         * @return the default value.
+         */
         public ParameterValue getDefaultValue() {
             return defaultValue;
         }
 
+        /**
+         * @return the list of parameters value.
+         */
         public List<ParameterValue> getValues() {
             return values;
         }
 
+        /**
+         * @return the type.
+         */
         public String getType() {
             return type;
         }
     }
 
-    private static class ParameterValue {
+    /**
+     * Inner class for parameter value.
+     */
+    public static class ParameterValue {
 
+        /** The parameter value. */
         private final String value;
 
+        /** The label to use by the UI. */
         private final String labelKey;
 
+        /**
+         * Constructor.
+         *
+         * @param value the parameter value.
+         * @param labelKey the label to use by the UI.
+         */
         public ParameterValue(String value, String labelKey) {
             this.value = value;
             this.labelKey = labelKey;
         }
 
+        /**
+         * @return the parameter value.
+         */
         public String getValue() {
             return value;
         }
 
+        /**
+         * @return the label to use by the UI.
+         */
         public String getLabelKey() {
             return labelKey;
         }
     }
 
-    public static class ExportTypeSerializer extends JsonSerializer<ExportType> {
-
-        @Override
-        public void serialize(ExportType value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeStartObject();
-
-            jgen.writeStringField("mimeType", value.getMimeType());
-            jgen.writeStringField("extension", value.getExtension());
-            jgen.writeStringField("id", value.name());
-            jgen.writeStringField("needParameters", Boolean.toString(value.isNeedParameters()));
-            jgen.writeStringField("defaultExport", Boolean.toString(value.isDefaultExport()));
-
-            if (!value.getParameters().isEmpty()) {
-                jgen.writeFieldName("parameters");
-                jgen.writeStartArray(value.getParameters().size());
-                for (Parameter parameter : value.getParameters()) {
-                    jgen.writeStartObject();
-                    jgen.writeStringField("name", parameter.getName());
-                    jgen.writeStringField("labelKey", parameter.getLabelKey());
-                    jgen.writeStringField( "type", parameter.getType() );
-                    jgen.writeFieldName("defaultValue");
-                    jgen.writeStartObject();
-                    jgen.writeStringField("value", parameter.getDefaultValue().getValue());
-                    jgen.writeStringField("labelKey", parameter.getDefaultValue().getLabelKey());
-
-                    jgen.writeEndObject();
-
-                    if (!parameter.getValues().isEmpty()) {
-                        jgen.writeFieldName("values");
-                        jgen.writeStartArray(parameter.getValues().size());
-                        for (ParameterValue parameterValue : parameter.getValues()) {
-                            jgen.writeStartObject();
-                            jgen.writeStringField("value", parameterValue.getValue());
-                            jgen.writeStringField("labelKey", parameterValue.getLabelKey());
-
-                            jgen.writeEndObject();
-                        }
-
-                        jgen.writeEndArray();
-
-                    }
-
-                    jgen.writeEndObject();
-                }
-                jgen.writeEndArray();
-            }
-
-            jgen.writeEndObject();
-        }
-    }
 }

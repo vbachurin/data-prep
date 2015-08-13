@@ -115,7 +115,7 @@
 					bar.append('foreignObject')
 						.attr('width', w)
 						.attr('height', y.rangeBand())
-						.append('xhtml:body')
+						.append('xhtml:div')
 						.attr('class', 'foreign-object-body')
 						.html(function(d){
 							return d[yField] ? d[yField]:'(EMPTY)';

@@ -205,23 +205,25 @@
 
         /**
          * @ngdoc method
-         * @name getRowsContaining
+         * @name getSameContentConfig
          * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {string} colId - the column id
-         * @param {string} term - the term the cell must contain
+         * @param {string} colId The column index
+         * @param {string} term The cell content to search
+         * @param {string} cssClass The css class to apply
          * @description Return displayed rows index where data[rowId][colId] contains the searched term
-         * @returns {Object[]} - the rows that has the value
+         * @returns {Object} The SlickGrid css config for each column with the provided content
          */
-        self.getRowsContaining = function(colId, term) {
-            var result = [];
+        self.getSameContentConfig = function(colId, term, cssClass) {
+            var config = {};
             for(var i = 0; i < self.dataView.getLength(); ++i) {
                 var item = self.dataView.getItem(i);
-                if((term === '' && item[colId] === '') || (term !== '' && item[colId].indexOf(term) > -1)) {
-                    result.push(i);
+                if(term === item[colId]) {
+                    config[i] = {};
+                    config[i][colId] = cssClass;
                 }
             }
 
-            return result;
+            return config;
         };
 
         //------------------------------------------------------------------------------------------------------
