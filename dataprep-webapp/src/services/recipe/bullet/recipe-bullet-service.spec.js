@@ -173,25 +173,40 @@ describe('Recipe Bullet service', function () {
         expect(PreviewService.stopPendingPreview).toHaveBeenCalled();
     }));
 
-    it('should load current step content if the step is first inactive', inject(function (PlaygroundService, RecipeBulletService) {
-        //given
-        var step = {inactive: true, column:{id:'0001'}};
+    describe('load specific step', function() {
+        it('should load current step content if the step is first inactive', inject(function (PlaygroundService, RecipeBulletService) {
+            //given
+            var step = {inactive: true, column:{id:'0001'}};
 
-        //when
-        RecipeBulletService.toggleStep(step);
+            //when
+            RecipeBulletService.toggleStep(step);
 
-        //then
-        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step);
-    }));
+            //then
+            expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step);
+        }));
 
-    it('should load previous step content if the step is first active', inject(function (PlaygroundService, RecipeBulletService) {
-        //given
-        var step = {inactive: false, column:{id:'0001'}};
+        it('should load previous step content if the step is first active', inject(function (PlaygroundService, RecipeBulletService) {
+            //given
+            var step = {inactive: false, column:{id:'0001'}};
 
-        //when
-        RecipeBulletService.toggleStep(step);
+            //when
+            RecipeBulletService.toggleStep(step);
 
-        //then
-        expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
-    }));
+            //then
+            expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
+        }));
+
+        it('should reset preview service', inject(function ($rootScope, PreviewService, RecipeBulletService) {
+            //given
+            var step = {inactive: false, column:{id:'0001'}};
+            spyOn(PreviewService, 'reset').and.returnValue();
+
+            //when
+            RecipeBulletService.toggleStep(step);
+            $rootScope.$digest();
+
+            //then
+            expect(PreviewService.reset).toHaveBeenCalledWith(false);
+        }));
+    });
 });
