@@ -12,8 +12,7 @@
         "invalidValues": []
       },
       "id": "0000",
-      "statistics": {},
-      "domain": ""
+      "statistics": {}
     },
     {
       "name": "departement",
@@ -26,8 +25,7 @@
         "invalidValues": []
       },
       "id": "0001",
-      "statistics": {},
-      "domain": ""
+      "statistics": {}
     },
     {
       "name": "birth",
@@ -40,8 +38,7 @@
         "invalidValues": []
       },
       "id": "0002",
-      "statistics": {},
-      "domain": "DATE"
+      "statistics": {}
     },
     {
       "name": "order_id",
@@ -54,8 +51,7 @@
         "invalidValues": []
       },
       "id": "0003",
-      "statistics": {},
-      "domain": ""
+      "statistics": {}
     },
     {
       "name": "order_date",
@@ -68,8 +64,7 @@
         "invalidValues": []
       },
       "id": "0004",
-      "statistics": {},
-      "domain": "DATE"
+      "statistics": {}
     },
     {
       "name": "total",
@@ -82,8 +77,7 @@
         "invalidValues": []
       },
       "id": "0005",
-      "statistics": {},
-      "domain": ""
+      "statistics": {}
     },
     {
       "name": "nb_tshirts",
@@ -96,8 +90,7 @@
         "invalidValues": []
       },
       "id": "0006",
-      "statistics": {},
-      "domain": "DATE"
+      "statistics": {}
     },
     {
       "name": "tshirt_price",
@@ -110,8 +103,7 @@
         "invalidValues": []
       },
       "id": "0007",
-      "statistics": {},
-      "domain": ""
+      "statistics": {}
     },
     {
       "name": "category",
@@ -124,8 +116,7 @@
         "invalidValues": []
       },
       "id": "0008",
-      "statistics": {},
-      "domain": ""
+      "statistics": {}
     }
   ],
   "records": [

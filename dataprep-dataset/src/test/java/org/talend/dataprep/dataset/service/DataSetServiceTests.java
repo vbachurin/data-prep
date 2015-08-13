@@ -6,8 +6,11 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static com.jayway.restassured.path.json.JsonPath.from;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -17,12 +20,12 @@ import static org.talend.dataprep.test.SameJSONFile.sameJSONAsFile;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,12 +42,10 @@ import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.api.user.UserData;
 import org.talend.dataprep.dataset.DataSetBaseTest;
-import org.talend.dataprep.dataset.service.api.UpdateColumnParameters;
 import org.talend.dataprep.schema.CSVFormatGuess;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
 public class DataSetServiceTests extends DataSetBaseTest {
@@ -429,6 +430,33 @@ public class DataSetServiceTests extends DataSetBaseTest {
         String datasetContent = given().when().get("/datasets/{id}/content?metadata=false&columns=true", dataSetId).asString();
 
         assertThat(datasetContent, sameJSONAsFile(expected));
+    }
+
+    /**
+     * Test the import of an excel file that is also detected as csv file. See
+     * https://jira.talendforge.org/browse/TDP-258
+     *
+     * @see org.talend.dataprep.schema.LineBasedFormatGuesser
+     */
+    @Test
+    public void testXlsFileThatIsAlsoParsedAsCSV() throws Exception {
+
+        String dataSetId = given()
+                .body(IOUtils.toByteArray(this.getClass().getResourceAsStream("../TDP-375_xsl_read_as_csv.xls")))
+                // .queryParam("Content-Type", "application/vnd.ms-excel")
+                .when().post("/datasets").asString();
+
+        assertQueueMessages(dataSetId);
+
+        String json = given().when().get("/datasets/{id}/metadata", dataSetId).asString();
+        ObjectMapper mapper = new ObjectMapper();
+        final JsonNode rootNode = mapper.reader().readTree(json);
+        final JsonNode metadata = rootNode.get("metadata");
+
+        // only interested in the parser --> excel parser must be used !
+        assertEquals(metadata.get("type").asText(), "application/vnd.ms-excel");
+        assertEquals(metadata.get("formatGuess").asText(), "formatGuess#xls");
+        assertEquals(metadata.get("records").asText(), "500");
     }
 
     @Test

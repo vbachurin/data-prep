@@ -76,22 +76,19 @@
             updateDataviewRecords(data.records);
             self.metadata = metadata;
             self.data = data;
+            self.focusedColumn = null;
         };
 
         /**
          * @ngdoc method
-         * @name setFocusedColumn
+         * @name getLastNewColumnId
          * @methodOf data-prep.services.playground.service:DatagridService
-         * @param {string} focusedColumn - the id of the recently focused column
-         * @description updates the focusedColumn id
+         * @param {object} columns The new columns
+         * @description Get the last new created column
          */
-        self.setFocusedColumn = function (focusedColumn){
-            self.focusedColumn = focusedColumn;
-        };
-
         function getLastNewColumnId(columns){
-            var ancientColumnsIds = _.pluck(self.data.columns, 'id');
-            var newColumnsIds = _.pluck(columns, 'id');
+            var ancientColumnsIds = _.map(self.data.columns, 'id');
+            var newColumnsIds = _.map(columns, 'id');
             var diffIds = _.difference(newColumnsIds, ancientColumnsIds);
 
             return diffIds[diffIds.length - 1];
@@ -106,8 +103,7 @@
          */
         self.updateData = function (data) {
             if(self.data.columns.length < data.columns.length){
-                var lastNewColId = getLastNewColumnId(data.columns);
-                self.setFocusedColumn(lastNewColId);
+                self.focusedColumn = getLastNewColumnId(data.columns);
             }
             self.data = data;
             updateDataviewRecords(data.records);

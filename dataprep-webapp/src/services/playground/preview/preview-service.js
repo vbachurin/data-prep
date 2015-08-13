@@ -9,7 +9,6 @@
      * @requires data-prep.services.preparation.service:PreparationService
      */
     function PreviewService($q, DatagridService, PreparationService) {
-
         /**
          * @ngdoc property
          * @name originalData
@@ -25,6 +24,22 @@
          * @description [PRIVATE] The list of records TDP indexes that is displayed in the viewport
          */
         var displayedTdpIds;
+
+        /**
+         * @ngdoc property
+         * @name startIndex
+         * @propertyOf data-prep.services.playground.service:PreviewService
+         * @description [PRIVATE] The first row index that is previewed. It is the index in the records array
+         */
+        var startIndex;
+
+        /**
+         * @ngdoc property
+         * @name endIndex
+         * @propertyOf data-prep.services.playground.service:PreviewService
+         * @description [PRIVATE] The last row index that is previewed. It is the index in the records array
+         */
+        var endIndex;
 
         /**
          * @ngdoc property
@@ -49,139 +64,97 @@
              * @description The grid displayed rows id. It take filters into account.
              * This is updated by the {@link data-prep.datagrid.directive:Datagrid Datagrid} directive on scroll
              */
-            gridRangeIndex: [],
+            gridRangeIndex: null,
 
             getPreviewDiffRecords: getPreviewDiffRecords,
             getPreviewUpdateRecords: getPreviewUpdateRecords,
-            cancelPreview: cancelPreview,
+
+            previewInProgress: previewInProgress,
             stopPendingPreview: stopPendingPreview,
-            previewInProgress: previewInProgress
+            reset: reset,
+            cancelPreview: cancelPreview
         };
         return service;
 
         /**
          * @ngdoc method
-         * @name getDisplayedRows
+         * @name getDisplayedTdpIds
          * @methodOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] Get the actual displayed rows
-         * @returns {object[]} The displayed rows
+         * @description [PRIVATE] Get the rows TDP ids in the range
+         * @returns {object[]} The rows TDP ids in the range
          */
-        function getDisplayedRows() {
+        function getDisplayedTdpIds() {
             var indexes = _.range(service.gridRangeIndex.top, service.gridRangeIndex.bottom + 1);
             return  _.chain(indexes)
                 .map(DatagridService.dataView.getItem)
+                .map('tdpId')
+                .sortBy('tdpId')
                 .value();
-        }
-
-        /**
-         * @ngdoc method
-         * @name getDisplayedTdpIds
-         * @methodOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] Get the rows TDP ids
-         * @params {Array} records The records where to extract the TDP ids
-         * @returns {object[]} The rows TDP ids
-         */
-        function getDisplayedTdpIds(records) {
-           return _.map(records, function(element) {
-               return element.tdpId;
-           });
-        }
-
-        /**
-         * @ngdoc method
-         * @name getRecordsIndexes
-         * @methodOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] Get the rows indexes in the data array
-         * @params {Array} records The records where to extract the indexes
-         * @returns {object[]} The rows indexes
-         */
-        function getRecordsIndexes(records) {
-           return _.map(records, function(record) {
-               return DatagridService.dataView.getIdxById(record.tdpId);
-           });
-        }
-
-        /**
-         * @ngdoc method
-         * @name passfilters
-         * @methodOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] Apply the current active filters from datagrid and return the result
-         * @returns {boolean} The filter result
-         */
-        function passfilters(row) {
-            return ! DatagridService.filters.length || DatagridService.getAllFiltersFn()(row);
-        }
-
-        /**
-         * @ngdoc method
-         * @name filterViableRecord
-         * @methodOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] A viable row is a row that pass the active filters or that is flaged as NEW
-         * @returns {object[]} The filtered rows
-         */
-        function filterViableRecord(records) {
-            return _.filter(records, function(row) {
-                return row.__tdpRowDiff !== 'new' || passfilters(row);
-            });
         }
 
         /**
          * @ngdoc method
          * @name replaceRecords
          * @methodOf data-prep.services.playground.service:PreviewService
-         * @description [PRIVATE] Create a closure that take an http response and execute :
+         * @description
          * <ul>
-         *     <li>Save the original records</li>
          *     <li>Copy the row list</li>
          *     <li>Insert the viable preview rows into the new list</li>
          *     <li>Display the new records</li>
          * </ul>
-         * @returns {function} The request callback closure
          */
-        function replaceRecords(displayedRows, colIdFromStep) {
-            return function(response) {
-                //save the original data
-                originalData = originalData || DatagridService.data;
-                modifiedRecords = originalData.records.slice(0);
+        function replaceRecords(response) {
+            //copy the original data to avoid modification persistence
+            modifiedRecords = originalData.records.slice(0);
 
-                //filter if necessary
-                var viableRecords = filterViableRecord(response.data.records);
+            //insert diff records
+            var previewRecords = response.data.records;
+            var nbRecordsToRemove = endIndex - startIndex + 1;
+            var spliceArgs = [startIndex, nbRecordsToRemove].concat(previewRecords);
+            Array.prototype.splice.apply(modifiedRecords, spliceArgs);
 
-                //insert records at the tdp ids insertion points
-                var recordsIndexes = getRecordsIndexes(displayedRows);
-                _.forEach(recordsIndexes, function(tdpId) {
-                    modifiedRecords[tdpId] = viableRecords.shift();
-                });
+            //update grid
+            var data = {columns: response.data.columns, records: modifiedRecords, preview: true};
+            DatagridService.updateData(data);
+        }
 
-                //if all viable records are not already inserted, we insert them after the last targeted tdp id
-                var insertionIndex = _.max(recordsIndexes) + 1;
-                while(viableRecords.length) {
-                    modifiedRecords[insertionIndex++] = viableRecords.shift();
-                }
+        /**
+         * @ngdoc method
+         * @name initPreviewIdNeeded
+         * @methodOf data-prep.services.playground.service:PreviewService
+         * @description Init the TDP ids, the start/end ids if no preview is currently displayed and create a new preview canceler promise
+         */
+        function initPreviewIdNeeded() {
+            if(!originalData) {
+                originalData = DatagridService.data;
+                displayedTdpIds = getDisplayedTdpIds();
+                startIndex = DatagridService.dataView.getIdxById(displayedTdpIds[0]);
+                endIndex = DatagridService.dataView.getIdxById(displayedTdpIds[displayedTdpIds.length - 1]);
+            }
 
-                //update grid
-                var data = {columns: response.data.columns, records: modifiedRecords, preview: true};
-                DatagridService.setFocusedColumn(colIdFromStep);
-                DatagridService.updateData(data);
-            };
+            previewCanceler = $q.defer();
         }
 
         /**
          * @ngdoc method
          * @name getPreviewDiffRecords
          * @methodOf data-prep.services.playground.service:PreviewService
+         * @param {object} currentStep The current active step
+         * @param {object} previewStep The step to preview
+         * @param {string} targetColumnId The column id to focus on
          * @description Call the diff preview service and replace records in the grid.
          * It cancel the previous preview first
          */
-        function getPreviewDiffRecords(currentStep, previewStep, focusedColId) {
-            cancelPreview(true, focusedColId);
-
-            previewCanceler = $q.defer();
-            var displayedRows = getDisplayedRows();
-            displayedTdpIds = getDisplayedTdpIds(displayedRows);
+        function getPreviewDiffRecords(currentStep, previewStep, targetColumnId) {
+            cancelPreview(true, null);
+            initPreviewIdNeeded();
 
             PreparationService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
-                .then(replaceRecords(displayedRows, focusedColId))
+                .then(function(response) {
+                    DatagridService.focusedColumn = targetColumnId;
+                    return response;
+                })
+                .then(replaceRecords)
                 .finally(function() {
                     previewCanceler = null;
                 });
@@ -191,44 +164,25 @@
          * @ngdoc method
          * @name getPreviewUpdateRecords
          * @methodOf data-prep.services.playground.service:PreviewService
+         * @param {object} currentStep The current active step
+         * @param {object} updateStep The step to update for the preview preview
+         * @param {object} newParams The new parameters to apply on the step to update
          * @description Call the update step preview service and replace records in the grid.
          * It cancel the previous preview first
          */
         function getPreviewUpdateRecords(currentStep, updateStep, newParams) {
-            var focusedColId = currentStep.column.id;
-            cancelPreview(true, focusedColId);
-
-            previewCanceler = $q.defer();
-            var displayedRows = getDisplayedRows();
-            displayedTdpIds = getDisplayedTdpIds(displayedRows);
+            cancelPreview(true, null);
+            initPreviewIdNeeded();
 
             PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
-                .then(replaceRecords(displayedRows, focusedColId))
+                .then(function(response) {
+                    DatagridService.focusedColumn = updateStep.column.id;
+                    return response;
+                })
+                .then(replaceRecords)
                 .finally(function() {
                     previewCanceler = null;
                 });
-        }
-
-        /**
-         * @ngdoc method
-         * @name cancelPreview
-         * @param {boolean} partial If true, we cancel pending preview but we do NOT restore the original data
-         * @param {string} focusedColId The column id where to set the grid focus
-         * @methodOf data-prep.services.playground.service:PreviewService
-         * @description Cancel the current preview or the pending preview (resolving the cancel promise).
-         * The original records is set back into the datagrid
-         */
-        function cancelPreview(partial, focusedColId) {
-
-            stopPendingPreview();
-
-            if(!partial && originalData) {
-                DatagridService.setFocusedColumn(focusedColId);
-                DatagridService.updateData(originalData);
-                originalData = null;
-                modifiedRecords = null;
-                displayedTdpIds = null;
-            }
         }
 
         /**
@@ -241,6 +195,42 @@
             if(previewCanceler) {
                 previewCanceler.resolve('user cancel');
                 previewCanceler = null;
+            }
+        }
+
+        /**
+         * @ngdoc method
+         * @name reset
+         * @methodOf data-prep.services.playground.service:PreviewService
+         * @param {boolean} restoreOriginalData If true, restore the original data before the reset
+         * @description Reset the variables (original data, ids, ...), and optionally restore the original records
+         */
+        function reset(restoreOriginalData) {
+            if(restoreOriginalData && previewInProgress()) {
+                DatagridService.updateData(originalData);
+            }
+            originalData = null;
+            modifiedRecords = null;
+            displayedTdpIds = null;
+            startIndex = null;
+            endIndex = null;
+        }
+
+        /**
+         * @ngdoc method
+         * @name cancelPreview
+         * @param {boolean} partial If true, we cancel pending preview but we do NOT reset/restore the original data
+         * @param {string} focusedColId The column id where to set the grid focus
+         * @methodOf data-prep.services.playground.service:PreviewService
+         * @description Cancel the current preview or the pending preview (resolving the cancel promise).
+         * The original records is set back into the datagrid
+         */
+        function cancelPreview(partial, focusedColId) {
+            stopPendingPreview();
+
+            if(!partial && originalData) {
+                DatagridService.focusedColumn = focusedColId;
+                reset(true);
             }
         }
 
