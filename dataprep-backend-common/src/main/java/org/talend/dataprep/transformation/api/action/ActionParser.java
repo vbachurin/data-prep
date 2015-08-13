@@ -10,8 +10,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.api.preparation.Actions;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 
 /**
@@ -52,7 +52,6 @@ public class ActionParser {
             final Actions parsedActions = builder.build().reader(Actions.class).readValue(actions);
             // Create closures from parsed actions
             List<DataSetRowAction> rowActions = new ArrayList<>();
-            List<DataSetMetadataAction> metadataActions = new ArrayList<>();
             final List<Action> allActions = parsedActions.getActions();
             for (Action parsedAction : allActions) {
                 final String name = ActionMetadata.ACTION_BEAN_PREFIX + parsedAction.getAction().toLowerCase();

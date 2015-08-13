@@ -23,7 +23,7 @@ import org.talend.dataprep.api.dataset.RowMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -34,36 +34,53 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Change the date pattern on a 'date' column.
  */
 @Component(ExtractDateTokens.ACTION_BEAN_PREFIX + ExtractDateTokens.ACTION_NAME)
-public class ExtractDateTokens extends AbstractDate implements IColumnAction {
+public class ExtractDateTokens extends AbstractDate implements ColumnAction {
 
-    /**
-     * Action name.
-     */
+    /** Action name. */
     public static final String ACTION_NAME = "extract_date_tokens"; //$NON-NLS-1$
 
+    /** Separator. */
     private static final String SEPARATOR = "_";
 
+    /** Year constant value. */
     private static final String YEAR = "YEAR";
 
+    /** Month constant value. */
     private static final String MONTH = "MONTH";
 
+    /** Day constant value. */
     private static final String DAY = "DAY";
 
+    /** Hour 12 constant value. */
     private static final String HOUR_12 = "HOUR_12";
 
+    /** Hour 24 constant value. */
     private static final String HOUR_24 = "HOUR_24";
 
+    /** Minute constant value. */
     private static final String MINUTE = "MINUTE";
 
+    /** AM_PM constant value. */
     private static final String AM_PM = "AM_PM";
 
+    /** Second constant value. */
     private static final String SECOND = "SECOND";
 
+    /** Day of week constant value. */
     private static final String DAY_OF_WEEK = "DAY_OF_WEEK";
 
+    /** Day of year constant value. */
     private static final String DAY_OF_YEAR = "DAY_OF_YEAR";
 
+    /** Week of year constant value. */
     private static final String WEEK_OF_YEAR = "WEEK_OF_YEAR";
+
+    /** True constant value. */
+    private static final String TRUE = "true";
+
+    /** False constant value. */
+    private static final String FALSE = "false";
+
 
     private static final DateFieldMappingBean[] DATE_FIELDS = new DateFieldMappingBean[]{//
             new DateFieldMappingBean(YEAR, ChronoField.YEAR),//
@@ -85,17 +102,17 @@ public class ExtractDateTokens extends AbstractDate implements IColumnAction {
     @Nonnull
     public List<Parameter> getParameters() {
         final List<Parameter> parameters = super.getParameters();
-        parameters.add(new Parameter(YEAR, BOOLEAN.getName(), "true"));
-        parameters.add(new Parameter(MONTH, BOOLEAN.getName(), "true"));
-        parameters.add(new Parameter(DAY, BOOLEAN.getName(), "true"));
-        parameters.add(new Parameter(HOUR_12, BOOLEAN.getName(), "false"));
-        parameters.add(new Parameter(AM_PM, BOOLEAN.getName(), "false"));
-        parameters.add(new Parameter(HOUR_24, BOOLEAN.getName(), "true"));
-        parameters.add(new Parameter(MINUTE, BOOLEAN.getName(), "true"));
-        parameters.add(new Parameter(SECOND, BOOLEAN.getName(), "false"));
-        parameters.add(new Parameter(DAY_OF_WEEK, BOOLEAN.getName(), "false"));
-        parameters.add(new Parameter(DAY_OF_YEAR, BOOLEAN.getName(), "false"));
-        parameters.add(new Parameter(WEEK_OF_YEAR, BOOLEAN.getName(), "false"));
+        parameters.add(new Parameter(YEAR, BOOLEAN.getName(), TRUE));
+        parameters.add(new Parameter(MONTH, BOOLEAN.getName(), TRUE));
+        parameters.add(new Parameter(DAY, BOOLEAN.getName(), TRUE));
+        parameters.add(new Parameter(HOUR_12, BOOLEAN.getName(), FALSE));
+        parameters.add(new Parameter(AM_PM, BOOLEAN.getName(), FALSE));
+        parameters.add(new Parameter(HOUR_24, BOOLEAN.getName(), TRUE));
+        parameters.add(new Parameter(MINUTE, BOOLEAN.getName(), TRUE));
+        parameters.add(new Parameter(SECOND, BOOLEAN.getName(), FALSE));
+        parameters.add(new Parameter(DAY_OF_WEEK, BOOLEAN.getName(), FALSE));
+        parameters.add(new Parameter(DAY_OF_YEAR, BOOLEAN.getName(), FALSE));
+        parameters.add(new Parameter(WEEK_OF_YEAR, BOOLEAN.getName(), FALSE));
         return parameters;
     }
 
@@ -107,10 +124,10 @@ public class ExtractDateTokens extends AbstractDate implements IColumnAction {
         return ACTION_NAME;
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
 
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final RowMetadata rowMetadata = row.getRowMetadata();

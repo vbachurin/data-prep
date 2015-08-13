@@ -81,7 +81,7 @@ describe('Statistics service', function () {
         'statistics': {
             'frequencyTable': [
                 {
-                    'data': 'toto',
+                    'data': '   toto',
                     'occurences': 202
                 },
                 {
@@ -255,7 +255,7 @@ describe('Statistics service', function () {
         });
 
         describe('Histogram data', function() {
-            it('should set the frequency data when column type is "string"', inject(function (StatisticsService) {
+            it('should set the frequency data when column type is "string"', inject(function (StatisticsService, TextFormatService) {
                 //given
                 expect(StatisticsService.data).toBeFalsy();
 
@@ -263,7 +263,8 @@ describe('Statistics service', function () {
                 StatisticsService.processData(barChartStrCol);
 
                 //then
-                expect(StatisticsService.data).toBe(barChartStrCol.statistics.frequencyTable);
+                expect(StatisticsService.data).toEqual(barChartStrCol.statistics.frequencyTable);
+                expect(StatisticsService.data[0].formattedValue).toEqual(TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(StatisticsService.data[0].data));
             }));
 
             it('should reset non histogram data when column type is "string"', inject(function (StatisticsService) {
@@ -287,7 +288,7 @@ describe('Statistics service', function () {
                 StatisticsService.processData(barChartBoolCol);
 
                 //then
-                expect(StatisticsService.data).toBe(barChartBoolCol.statistics.frequencyTable);
+                expect(StatisticsService.data).toEqual(barChartBoolCol.statistics.frequencyTable);
             }));
 
             it('should reset non histogram data when column type is "boolean"', inject(function (StatisticsService) {
@@ -549,7 +550,6 @@ describe('Statistics service', function () {
                     }
                 }
             };
-            StatisticsService.boxplotData = {};
 
             //when
             StatisticsService.processData(col);

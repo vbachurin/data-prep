@@ -30,6 +30,7 @@
                 var xField = scope.keyField;//occurences
                 var yField = scope.valueField;
                 var renderTimeout;
+				var tip;
 
                 function renderBarchart(statData) {
                     var container = attrs.id;
@@ -46,12 +47,15 @@
                     var xAxis = d3.svg.axis().scale(x).tickFormat(d3.format('d')).orient('top').tickSize(-h).ticks(Math.abs(x.range()[1] - x.range()[0]) / 50),
                         yAxis = d3.svg.axis().scale(y).orient('left').tickSize(0);
 
-                    var tip = d3.tip()
-                        .attr('class', 'd3-tip')
-                        .offset([-10, 0])
-                        .html(function (d) {
-                            return '<strong>Occurences:</strong> <span style="color:yellow">' + d[xField] + '</span>';
-                        });
+					tip = d3.tip()
+						.attr('class', 'd3-tip')
+						.offset([-10, 0])
+						.html(function(d) {
+							return 	'<strong>Occurrences:</strong> <span style="color:yellow">' + d[xField] + '</span>'+
+									'<br/>'+
+									'<br/>'+
+									'<strong>Record:</strong> <span style="color:yellow">'+ d[yField] + '</span>';
+						});
 
                     var svg = d3.select('#' + container).append('svg')
                         .attr('width', w + m[1] + m[3])
@@ -82,16 +86,11 @@
                             return 'translate(0,' + y(d[yField]) + ')';
                         });
 
-                    bar.append('rect')
-                        .attr('width', x(0))
-                        .attr('height', y.rangeBand())
-                        .transition().delay(function (d, i) {
-                            return i * 30;
-                        })
-                        .attr('width', function (d) {
-                            return x(d[xField]);
-                        })
-                        .attr('height', y.rangeBand());
+					bar.append('rect')
+						.attr('width', x(0))
+						.attr('height', y.rangeBand())
+						.transition().delay(function (d,i){ return i * 30;})
+						.attr('width', function(d) { return x(d[xField]);});
 
                     svg.append('g')
                         .attr('class', 'x axis')
@@ -101,19 +100,14 @@
                         .attr('class', 'y axis')
                         .call(yAxis);
 
-                    bar.append('text')
-                        .attr('class', 'value')
-                        .attr('x', 10)
-                        .attr('y', y.rangeBand() / 2)
-                        .attr('dx', 0)
-                        .attr('dy', '.35em')
-                        .attr('text-anchor', 'start')
-                        .transition().delay(function (d, i) {
-                            return i * 30;
-                        })
-                        .text(function (d) {
-                            return d[yField] ? d[yField] : '(EMPTY)';
-                        });
+					bar.append('foreignObject')
+						.attr('width', w)
+						.attr('height', y.rangeBand())
+						.append('xhtml:div')
+						.attr('class', 'foreign-object-body')
+						.html(function(d){
+							return d[yField] ? d[yField]:'(EMPTY)';
+						});
 
                     /************btgrect*********/
                     var bgBar = svg.selectAll('g.bg-rect')
@@ -145,7 +139,9 @@
                 scope.$watch('visuData',
                     function (statData) {
                         element.empty();
-
+						if(tip){
+							tip.hide();
+						}
                         if (statData) {
                             clearTimeout(renderTimeout);
                             renderTimeout = setTimeout(renderBarchart.bind(this, statData), 100);

@@ -1,6 +1,9 @@
 package org.talend.dataprep.transformation.api.action.metadata.common;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.preparation.Action;
 import org.talend.dataprep.i18n.MessagesBundle;
@@ -10,9 +13,7 @@ import org.talend.dataprep.transformation.api.action.metadata.category.ScopeCate
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Model an action to perform on a dataset.

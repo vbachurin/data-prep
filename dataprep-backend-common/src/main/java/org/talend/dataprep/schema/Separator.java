@@ -1,12 +1,12 @@
 package org.talend.dataprep.schema;
 
 /**
- * Javabean that models a CSV separator
+ * Javabean that models a CSV value
  */
 public class Separator {
 
-    /** The separator char. */
-    private char separator;
+    /** The value char. */
+    private char value;
 
     /** Total count of separators. */
     private int totalCount;
@@ -17,18 +17,18 @@ public class Separator {
     /**
      * Constructor.
      * 
-     * @param separator the separator to use.
+     * @param separator the value to use.
      */
     public Separator(char separator) {
-        this.separator = separator;
+        this.value = separator;
         totalCount = 0;
     }
 
     /**
-     * @return the separator.
+     * @return the value.
      */
     public char getSeparator() {
-        return separator;
+        return value;
     }
 
     /**

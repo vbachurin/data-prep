@@ -12,7 +12,7 @@
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
         vm.statisticsService = StatisticsService;
-
+        
         /**
          * @ngdoc method
          * @name addPatternFilter

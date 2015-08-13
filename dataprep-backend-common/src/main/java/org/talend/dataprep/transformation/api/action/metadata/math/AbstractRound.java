@@ -12,16 +12,16 @@
 // ============================================================================
 package org.talend.dataprep.transformation.api.action.metadata.math;
 
+import java.util.Map;
+
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
-
-import java.util.Map;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * This will compute the largest (closest to positive infinity) value that is less than or equal to the cell value and
@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @see Math#floor(double)
  */
-public abstract class AbstractRound extends AbstractActionMetadata implements IColumnAction {
+public abstract class AbstractRound extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * @see ActionMetadata#getCategory()
@@ -58,7 +58,7 @@ public abstract class AbstractRound extends AbstractActionMetadata implements IC
         }
     }
 
-    abstract protected int compute(double from);
+    protected abstract int compute(double from);
 
     /**
      * @see ActionMetadata#acceptColumn(ColumnMetadata)

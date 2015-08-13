@@ -1,0 +1,7 @@
+{
+  "mimeType": "application/json",
+  "extension": ".json",
+  "id": "JSON",
+  "needParameters": "false",
+  "defaultExport": "false"
+}

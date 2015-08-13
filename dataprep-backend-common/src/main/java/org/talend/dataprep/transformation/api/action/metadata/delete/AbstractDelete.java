@@ -1,20 +1,20 @@
 package org.talend.dataprep.transformation.api.action.metadata.delete;
 
-import org.talend.dataprep.api.dataset.ColumnMetadata;
-import org.talend.dataprep.api.dataset.DataSetRow;
-import org.talend.dataprep.transformation.api.action.context.TransformationContext;
-import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.CLEANSING;
 
 import java.util.Map;
 
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.CLEANSING;
+import org.talend.dataprep.api.dataset.ColumnMetadata;
+import org.talend.dataprep.api.dataset.DataSetRow;
+import org.talend.dataprep.transformation.api.action.context.TransformationContext;
+import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * Abstract class used as base class for delete actions.
  */
-public abstract class AbstractDelete extends AbstractActionMetadata implements IColumnAction {
+public abstract class AbstractDelete extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * @see ActionMetadata#getCategory()
@@ -34,10 +34,9 @@ public abstract class AbstractDelete extends AbstractActionMetadata implements I
      */
     public abstract boolean toDelete(final ColumnMetadata colMetadata, final Map<String, String> parsedParameters, final String value);
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         final String value = row.get(columnId);

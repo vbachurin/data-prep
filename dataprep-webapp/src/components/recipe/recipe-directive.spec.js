@@ -160,7 +160,6 @@ describe('Recipe directive', function() {
         expect(element.find('>ul .accordion .trigger').eq(0).text().trim().replace(/\s+/g, ' ')).toBe('1. Split on column col1');
         expect(element.find('>ul .accordion .trigger').eq(1).text().trim().replace(/\s+/g, ' ')).toBe('2. To uppercase on column col2');
         expect(element.find('>ul .accordion .trigger').eq(2).text().trim().replace(/\s+/g, ' ')).toBe('3. Replace value on cell');
-        expect(element.find('>ul .accordion').eq(1).hasClass('inactive')).toBe(true);
     }));
 
     it('should render recipe params', inject(function(RecipeService) {

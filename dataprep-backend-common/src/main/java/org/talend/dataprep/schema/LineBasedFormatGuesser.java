@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 @Component
 public class LineBasedFormatGuesser implements FormatGuesser {
@@ -63,7 +63,7 @@ public class LineBasedFormatGuesser implements FormatGuesser {
                 String s;
                 while (totalChars < 64 * 1024 && lineCount < 100 && (s = lineNumberReader.readLine()) != null) {
                     totalChars += s.length() + 1; // count the new line character
-                    if (s.length() == 0) {
+                    if (s.isEmpty()) {
                         continue;
                     }
                     if (!inQuote) {
@@ -133,12 +133,11 @@ public class LineBasedFormatGuesser implements FormatGuesser {
         }
 
         // remove irrelevant separators (0 as average per line that can happen when you read binary files)
-        final Separator dominantSeparator = separators.stream()
+        return separators.stream()
                 .filter(separator -> separator.getAveragePerLine() > 0) //
                 .sorted((sep0, sep1) -> Double.compare(sep1.getAveragePerLine(), sep0.getAveragePerLine())) //
                 .findFirst() //
                 .get();
-        return dominantSeparator;
     }
 
 

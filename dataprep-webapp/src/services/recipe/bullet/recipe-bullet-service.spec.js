@@ -40,47 +40,7 @@ describe('Recipe Bullet service', function () {
         jasmine.clock().uninstall();
     });
 
-    it('should highlight active steps after the targeted one (included)', inject(function (RecipeService, RecipeBulletService) {
-        //given
-        var recipe = RecipeService.getRecipe();
-        recipe.push(
-            {column:{id:'0001'}},
-            {column:{id:'0001'}},
-            {column:{id:'0005'}},
-            {column:{id:'0006'}}
-        );
-
-        //when
-        RecipeBulletService.stepHoverStart(recipe[1]);
-
-        //then
-        expect(recipe[0].highlight).toBeFalsy();
-        expect(recipe[1].highlight).toBeTruthy();
-        expect(recipe[2].highlight).toBeTruthy();
-        expect(recipe[3].highlight).toBeTruthy();
-    }));
-
-    it('should highlight inactive steps before the targeted one (included)', inject(function (RecipeService, RecipeBulletService) {
-        //given
-        var recipe = RecipeService.getRecipe();
-        recipe.push(
-            {},
-            {inactive: true, column:{id:'0001'}},
-            {inactive: true, column:{id:'0004'}},
-            {inactive: true, column:{id:'0005'}}
-        );
-
-        //when
-        RecipeBulletService.stepHoverStart(recipe[2]);
-
-        //then
-        expect(recipe[0].highlight).toBeFalsy();
-        expect(recipe[1].highlight).toBeTruthy();
-        expect(recipe[2].highlight).toBeTruthy();
-        expect(recipe[3].highlight).toBeFalsy();
-    }));
-
-    it('should trigger append preview on inactive step hover after a delay of 100ms', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
+    it('should trigger append preview on inactive step hover after a delay of 200ms', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
@@ -93,7 +53,7 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverStart(recipe[2]);
-        jasmine.clock().tick(99);
+        jasmine.clock().tick(199);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
         jasmine.clock().tick(1);
 
@@ -165,7 +125,7 @@ describe('Recipe Bullet service', function () {
         expect(PlaygroundService.loadStep).toHaveBeenCalledWith(step1);
     }));
 
-    it('should trigger disable preview on active step hover', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
+    it('should trigger diff preview after a 200ms', inject(function ($timeout, RecipeService, PreviewService, RecipeBulletService) {
         //given
         var recipe = RecipeService.getRecipe();
         recipe.push(
@@ -177,33 +137,12 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverStart(recipe[2]);
-        jasmine.clock().tick(99);
+        jasmine.clock().tick(199);
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();
         jasmine.clock().tick(1);
 
         //then
         expect(PreviewService.getPreviewDiffRecords).toHaveBeenCalledWith(recipe[3], recipe[1], '0000');
-    }));
-
-    it('should remove highlight on mouse hover end', inject(function (RecipeService, RecipeBulletService) {
-        //given
-        var recipe = RecipeService.getRecipe();
-        recipe.push(
-            {},
-            {highlight: true, column:{id:'0002'}},
-            {highlight: true, column:{id:'0005'}},
-            {highlight: true, column:{id:'0001'}}
-        );
-        var step = {column: {id: '0001'}};
-
-        //when
-        RecipeBulletService.stepHoverEnd(step);
-
-        //then
-        expect(recipe[0].highlight).toBeFalsy();
-        expect(recipe[1].highlight).toBeFalsy();
-        expect(recipe[2].highlight).toBeFalsy();
-        expect(recipe[3].highlight).toBeFalsy();
     }));
 
     it('should cancel current preview on mouse hover end after a delay of 100ms', inject(function ($timeout, PreviewService, RecipeBulletService) {
@@ -212,9 +151,9 @@ describe('Recipe Bullet service', function () {
 
         //when
         RecipeBulletService.stepHoverEnd(step);
-        jasmine.clock().tick(99);
         expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
-        jasmine.clock().tick(1);
+        jasmine.clock().tick(100);
+        $timeout.flush();
 
         //then
         expect(PreviewService.cancelPreview).toHaveBeenCalled();
@@ -227,6 +166,7 @@ describe('Recipe Bullet service', function () {
         //when
         RecipeBulletService.stepHoverEnd(step);
         jasmine.clock().tick(100);
+        $timeout.flush();
 
         //then
         expect(PreviewService.getPreviewDiffRecords).not.toHaveBeenCalled();

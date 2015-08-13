@@ -37,6 +37,10 @@
   }
 
   .loading-img {
+    position: absolute;
+    left: 0;
+    right: 0;
+
     @include animation-name(rotate);
     @include animation-duration(1s);
     @include animation-timing-function(linear);
@@ -44,7 +48,7 @@
   }
 }
 
-.loading-open {
+.show-loading {
   overflow: hidden;
 
   .loading {

@@ -1,5 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Models metadata information for a row of a data set.
  */
-public class RowMetadata {
+public class RowMetadata implements Serializable {
 
     /** List of row metadata. */
     @JsonProperty("ColumnMetadata")

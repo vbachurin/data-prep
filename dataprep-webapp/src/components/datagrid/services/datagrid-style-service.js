@@ -7,8 +7,9 @@
      * @description Datagrid private service that manage the grid style
      * @requires data-prep.services.playground.service:DatagridService
      * @requires data-prep.services.utils.service:ConverterService
+     * @requires data-prep.services.utils.service:TextFormatService
      */
-    function DatagridStyleService(DatagridService, ConverterService) {
+    function DatagridStyleService(DatagridService, ConverterService, TextFormatService) {
         var grid;
         var lastSelectedColumnId;
 
@@ -18,7 +19,6 @@
             resetColumnStyles : resetColumnStyles,
             selectedColumn : selectedColumn,
             manageColumnStyle: manageColumnStyle,
-            computeHTMLForLeadingOrTrailingHiddenChars: computeHTMLForLeadingOrTrailingHiddenChars,
             columnFormatter: columnFormatter,
             getColumnPreviewStyle: getColumnPreviewStyle
         };
@@ -152,46 +152,6 @@
 
         /**
          * @ngdoc method
-         * @name computeHTMLForLeadingOrTrailingHiddenChars
-         * @methodOf data-prep.datagrid.service:DatagridStyleService
-         * @description split the string value into leading chars, text and trailing char and create html element using
-         * the class hiddenChars to specify the hiddenChars.If the text contains break lines, the class
-         * hiddenCharsBreakLine is used to notice it.
-         * @param {string} value The string value to adapt
-         */
-        function computeHTMLForLeadingOrTrailingHiddenChars(value){
-            if(!value) {
-                return value;
-            }
-
-            var returnStr = '';
-            var hiddenCharsRegExpMatch = value.match(/(^\s*)?([\s\S]*?)(\s*$)/);
-
-            //leading hidden chars found
-            if (hiddenCharsRegExpMatch[1]){
-                returnStr = '<span class="hiddenChars">' + hiddenCharsRegExpMatch[1] + '</span>';
-            }
-
-            //breaking lines indicator
-            var lines = value.trim().split('\n');
-            if(lines.length < 2) {
-                returnStr += hiddenCharsRegExpMatch[2] ;
-            }
-            else {
-                _.forEach(lines, function(line, index) {
-                    returnStr += line + (index === lines.length -1 ? '' : '↵\n');
-                });
-            }
-
-            //trailing hidden chars
-            if (hiddenCharsRegExpMatch[3]){
-                returnStr += '<span class="hiddenChars">' + hiddenCharsRegExpMatch[3] + '</span>';
-            }
-            return returnStr;
-        }
-
-        /**
-         * @ngdoc method
          * @name columnFormatter
          * @methodOf data-prep.datagrid.service:DatagridStyleService
          * @description Value formatter used in SlickGrid column definition. This is called to get a cell formatted value
@@ -206,7 +166,7 @@
 
             return function formatter(row, cell, value, columnDef, dataContext) {
                 //hidden characters need to be shown
-                var returnStr = computeHTMLForLeadingOrTrailingHiddenChars(value);
+                var returnStr = TextFormatService.computeHTMLForLeadingOrTrailingHiddenChars(value);
 
                 //entire row modification preview
                 switch(dataContext.__tdpRowDiff) {
@@ -257,6 +217,14 @@
             });
         }
 
+        function highlightCellsContaining(rowIndex, colIndex) {
+            var column = grid.getColumns()[colIndex];
+            var content = DatagridService.dataView.getItem(rowIndex)[column.id];
+
+            var sameContentConfig = DatagridService.getSameContentConfig(column.id, content, 'highlight');
+            grid.setCellCssStyles('highlight', sameContentConfig);
+        }
+
         /**
          * @ngdoc method
          * @name attachCellListeners
@@ -266,17 +234,7 @@
         function attachCellListeners() {
             //get clicked content and highlight cells in clicked column containing the content
             grid.onClick.subscribe(function (e,args) {
-                var config = {};
-                var column = grid.getColumns()[args.cell];
-                var content = DatagridService.dataView.getItem(args.row)[column.id];
-
-                var rowsContainingWord = DatagridService.getRowsContaining(column.id, content);
-                _.forEach(rowsContainingWord, function(rowId) {
-                    config[rowId] = {};
-                    config[rowId][column.id] = 'highlight';
-                });
-
-                grid.setCellCssStyles('highlight', config);
+                setTimeout(highlightCellsContaining.bind(null, args.row, args.cell), 0);
             });
 
             //change selected cell column background

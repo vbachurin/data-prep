@@ -1,5 +1,11 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
+
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -8,18 +14,13 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 import org.talend.dataprep.transformation.api.action.parameters.Item;
 import org.talend.dataprep.transformation.api.action.parameters.Item.Value;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-import javax.annotation.Nonnull;
-import java.util.Map;
-
-import static org.talend.dataprep.transformation.api.action.metadata.category.ActionCategory.QUICKFIX;
-
 @Component(Substring.ACTION_BEAN_PREFIX + Substring.SUBSTRING_ACTION_NAME)
-public class Substring extends AbstractActionMetadata implements IColumnAction {
+public class Substring extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * The action name.
@@ -81,10 +82,9 @@ public class Substring extends AbstractActionMetadata implements IColumnAction {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
         // create the new column
@@ -100,7 +100,7 @@ public class Substring extends AbstractActionMetadata implements IColumnAction {
         }
         final int realFromIndex = getStartIndex(parameters, value);
         final int realToIndex = getEndIndex(parameters, value);
-        final String newValue = (realFromIndex < realToIndex ? value.substring(realFromIndex, realToIndex) : "");
+        final String newValue = realFromIndex < realToIndex ? value.substring(realFromIndex, realToIndex) : "";
         row.set(substringColumn, newValue);
     }
 
@@ -128,7 +128,7 @@ public class Substring extends AbstractActionMetadata implements IColumnAction {
      */
     private int getStartIndex(final Map<String, String> parameters, String value) {
         final String fromMode = parameters.get(FROM_MODE_PARAMETER);
-        final int fromIndex = (fromMode.equals(FROM_BEGINNING) ? 0 : Integer.parseInt(parameters.get(FROM_INDEX_PARAMETER)));
+        final int fromIndex = fromMode.equals(FROM_BEGINNING) ? 0 : Integer.parseInt(parameters.get(FROM_INDEX_PARAMETER));
         return Math.min(fromIndex, value.length());
     }
 

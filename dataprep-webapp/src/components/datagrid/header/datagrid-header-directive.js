@@ -43,9 +43,8 @@
                      * @description Set edition mode to the provided value. This trigger a $digest.
                      */
                     function setEditionMode(value) {
-                        $timeout(function () {
-                            ctrl.setEditMode(value);
-                        });
+                        ctrl.setEditMode(value);
+                        scope.$digest();
                     }
 
                     /**
@@ -121,7 +120,7 @@
                         gridHeaderTitle.on('dblclick', function () {
                             setEditionMode(true);
 
-                            $timeout(function () {
+                            setTimeout(function () {
                                 gridHeaderTitleInput.focus();
                                 gridHeaderTitleInput.select();
                             }, 100);

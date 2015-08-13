@@ -17,35 +17,70 @@ import org.springframework.stereotype.Component;
  * @see HDFSContentCache
  */
 @Component
-@ConditionalOnMissingBean(ContentCache.class)
+@ConditionalOnMissingBean(HDFSContentCache.class)
 public class NoOpContentCache implements ContentCache {
 
+    /** This class' logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(NoOpContentCache.class);
 
+    /**
+     * Default empty constructor.
+     */
     public NoOpContentCache() {
         LOGGER.info("Using content cache: {}", this.getClass().getName());
     }
 
+    /**
+     * @see ContentCache#has(ContentCacheKey)
+     */
     @Override
-    public boolean has(String preparationId, String stepId) {
+    public boolean has(ContentCacheKey key) {
         return false;
     }
 
+    /**
+     * @see ContentCache#hasAny(ContentCacheKey)
+     */
     @Override
-    public InputStream get(String preparationId, String stepId) {
+    public boolean hasAny(ContentCacheKey key) {
+        return false;
+    }
+
+    /**
+     * @see ContentCache#get(ContentCacheKey)
+     */
+    @Override
+    public InputStream get(ContentCacheKey key) {
         return new ByteArrayInputStream(new byte[0]);
     }
 
+    /**
+     * @see ContentCache#put(ContentCacheKey, TimeToLive)
+     */
     @Override
-    public OutputStream put(String preparationId, String stepId, HDFSContentCache.TimeToLive timeToLive) {
+    public OutputStream put(ContentCacheKey key, HDFSContentCache.TimeToLive timeToLive) {
         return new NullOutputStream();
     }
 
+    /**
+     * @see ContentCache#evict(ContentCacheKey)
+     */
     @Override
-    public void evict(String preparationId, String stepId) {
+    public void evict(ContentCacheKey key) {
         // Nothing to do.
     }
 
+    /**
+     * @see ContentCache#evictAllEntries(ContentCacheKey)
+     */
+    @Override
+    public void evictAllEntries(ContentCacheKey key) {
+        // Nothing to do.
+    }
+
+    /**
+     * @see ContentCache#clear()
+     */
     @Override
     public void clear() {
         // Nothing to do.

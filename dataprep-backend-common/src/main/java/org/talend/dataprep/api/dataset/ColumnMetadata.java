@@ -1,23 +1,17 @@
 package org.talend.dataprep.api.dataset;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.dataprep.api.dataset.diff.FlagNames;
 import org.talend.dataprep.api.dataset.location.SemanticDomain;
 import org.talend.dataprep.api.type.Type;
-import org.talend.dataprep.exception.error.CommonErrorCodes;
 import org.talend.dataprep.exception.TDPException;
+import org.talend.dataprep.exception.error.CommonErrorCodes;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @see ColumnMetadata.Builder
  */
-public class ColumnMetadata {
+public class ColumnMetadata implements Serializable {
 
     /** Quality of the column. */
     @JsonProperty("quality")

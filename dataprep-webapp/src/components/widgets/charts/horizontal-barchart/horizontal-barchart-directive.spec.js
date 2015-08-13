@@ -59,7 +59,7 @@ describe('horizontalBarchart directive', function () {
 
         //then
         expect(element.find('rect').length).toBe(statsData.length * 2);
-        expect(element.find('.value').length).toBe(statsData.length);
+        expect(element.find('.foreign-object-body').length).toBe(statsData.length);
         expect(element.find('.bg-rect').length).toBe(statsData.length);
         expect(element.find('.bar').length).toBe(statsData.length);
     });

@@ -55,6 +55,9 @@
                             updateRowsNb();
                         }
                     })
+                    .mouseenter(function(e) {
+                        e.stopImmediatePropagation();
+                    })
                     .focus()
                     .select();
 

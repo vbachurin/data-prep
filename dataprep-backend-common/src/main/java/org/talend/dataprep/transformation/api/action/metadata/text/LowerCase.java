@@ -1,5 +1,7 @@
 package org.talend.dataprep.transformation.api.action.metadata.text;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
@@ -7,15 +9,13 @@ import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.context.TransformationContext;
 import org.talend.dataprep.transformation.api.action.metadata.common.AbstractActionMetadata;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.common.IColumnAction;
-
-import java.util.Map;
+import org.talend.dataprep.transformation.api.action.metadata.common.ColumnAction;
 
 /**
  * Lower case a column in a dataset row.
  */
 @Component(LowerCase.ACTION_BEAN_PREFIX + LowerCase.LOWER_CASE_ACTION_NAME)
-public class LowerCase extends AbstractActionMetadata implements IColumnAction {
+public class LowerCase extends AbstractActionMetadata implements ColumnAction {
 
     /**
      * Action name.
@@ -46,15 +46,14 @@ public class LowerCase extends AbstractActionMetadata implements IColumnAction {
         return Type.STRING.equals(Type.get(column.getType()));
     }
 
-    @Override
-    protected void beforeApply(Map<String, String> parameters) {
-    }
-
+    /**
+     * @see ColumnAction#applyOnColumn(DataSetRow, TransformationContext, Map, String)
+     */
     @Override
     public void applyOnColumn(DataSetRow row, TransformationContext context, Map<String, String> parameters, String columnId) {
-        final String value = row.get(columnId);
-        if (value != null) {
-            row.set(columnId, value.toLowerCase());
+        final String toLowerCase = row.get(columnId);
+        if (toLowerCase != null) {
+            row.set(columnId, toLowerCase.toLowerCase());
         }
     }
 }

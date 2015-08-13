@@ -110,11 +110,19 @@ describe('Datagrid style service', function () {
     describe('on header click event', function () {
         beforeEach(inject(function(DatagridService) {
             spyOn(DatagridService.dataView, 'getItem').and.returnValue({'0001': 'cell 1 content'});
-            spyOn(DatagridService, 'getRowsContaining').and.returnValue([5, 18, 28, 42, 43]);
+            spyOn(DatagridService, 'getSameContentConfig').and.returnValue({
+                5: { '0001': 'highlight' },
+                18: { '0001': 'highlight' },
+                28: { '0001': 'highlight' },
+                42: { '0001': 'highlight' },
+                43: { '0001': 'highlight' }
+            });
         }));
 
         it('should configure cells highlight class on cell click', inject(function (DatagridStyleService) {
             //given
+            jasmine.clock().install();
+
             DatagridStyleService.init(gridMock);
             var cell = 1;
             var row = 28;
@@ -123,6 +131,7 @@ describe('Datagrid style service', function () {
             //when
             var onClick = gridMock.onClick.subscribe.calls.argsFor(0)[0];
             onClick(null, args);
+            jasmine.clock().tick(1);
 
             //then
             expect(gridMock.cssStyleConfig.highlight).toEqual({
@@ -132,6 +141,7 @@ describe('Datagrid style service', function () {
                 42: { '0001': 'highlight' },
                 43: { '0001': 'highlight' }
             });
+            jasmine.clock().uninstall();
         }));
     });
 
@@ -329,80 +339,6 @@ describe('Datagrid style service', function () {
             expect(gridColumns[2].cssClass).toBeFalsy();
             expect(gridColumns[3].cssClass).toBeFalsy();
             expect(gridColumns[4].cssClass).toBeFalsy();
-        }));
-    });
-
-    describe('text to html adaptation', function() {
-        it('should return value when it is falsy', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = '';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe(value);
-        }));
-
-        it('should add a span on leading spaces', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = '  my value';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('<span class="hiddenChars">  </span>my value');
-        }));
-
-        it('should add a span on trailing spaces', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = 'my value  ';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('my value<span class="hiddenChars">  </span>');
-        }));
-
-        it('should add a span on leading and trailing spaces', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = '     my value  ';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('<span class="hiddenChars">     </span>my value<span class="hiddenChars">  </span>');
-        }));
-
-        it('should add a line breaking arrow at the end of each line', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = 'my \nnew\nvalue';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('my ↵\nnew↵\nvalue');
-        }));
-
-        it('should adapt input with line breaking arrow and leading/trailing spaces spans', inject(function (DatagridStyleService) {
-            //given
-            DatagridStyleService.init(gridMock);
-            var value = '     my \nnew\nvalue  ';
-
-            //when
-            var result = DatagridStyleService.computeHTMLForLeadingOrTrailingHiddenChars(value);
-
-            //then
-            expect(result).toBe('<span class="hiddenChars">     </span>my ↵\nnew↵\nvalue<span class="hiddenChars">  </span>');
         }));
     });
 
