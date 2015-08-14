@@ -9,7 +9,7 @@ if [ -z "$version"  ]; then
   exit 1
 fi
 
-registry=talend-registry:5000
+registry='talend-registry:5000'
 
 # folder (on local machine) where to put bins at the end (where builds can be downloaded)
 path_for_bins=/home/build-admin/Products/data-prep/
@@ -31,10 +31,12 @@ docker_tag() {
   echo '==========================================='
   echo 'docker tag'
   echo '==========================================='
-  for image in $images;
+  images_to_tag=`more $original_fig_file | grep image | cut --delimiter=':' --fields=2- | grep -v -E $external_images_pattern`
+
+  for image in $images_to_tag;
   do
-    completeName=$image:$version
-    docker tag --force $completeName $registry/$completeName
+    echo 'docker tag --force '$image' '$registry/$image
+    docker tag --force $image $registry/$image
   done
 
   echo ' '
@@ -56,6 +58,7 @@ computes_docker_images_lists() {
   if [[ "$verbose" = "true" ]]; then
     echo 'external images: '$external_list
     echo 'internal images: '$internal_list
+    echo 'all images: '$list
   fi
 }
 
@@ -108,9 +111,9 @@ push_docker_images() {
   echo '==========================================='
 }
 
-docker_tag
 produce_compose_file
-computes_docker_images_lists false
+computes_docker_images_lists true
+docker_tag
 pull_external
 build_archive_images
 publish_files
