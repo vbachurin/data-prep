@@ -4,7 +4,7 @@ data:
         - /data/db
         - /store
 mongodb:
-    image: mongo
+    image: mongo:3.0.4
     volumes_from:
         - data
     expose:

@@ -3,9 +3,10 @@
     {
       "action": "fillemptywithdefaultboolean",
       "parameters": {
-        "column_id": "tagada",
         "empty_default_value": "True",
-        "scope": "column"
+        "scope": "column",
+        "column_id": "0002",
+        "column_name": "age"
       }
     }
   ]
