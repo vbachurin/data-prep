@@ -159,8 +159,7 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             InputStream content = client.execute(actionsRetrieval).getEntity().getContent();
             return builder
                     .build()
-                    .reader(new TypeReference<List<Action>>() {
-                    })
+                    .reader(new TypeReference<List<Action>>() {})
                     .readValue(content);
         } finally {
             actionsRetrieval.releaseConnection();

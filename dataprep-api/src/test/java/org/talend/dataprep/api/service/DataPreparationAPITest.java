@@ -711,6 +711,65 @@ public class DataPreparationAPITest {
     }
 
     @Test
+    public void testPreparationAddPreviewOnPreparation() throws Exception {
+        // given
+        final String preparationId = createPreparationFromFile("preview/preview_dataset.csv", "testPreview", "text/csv");
+        applyActionFromFile(preparationId, "preview/upper_case_lastname.json");
+        applyActionFromFile(preparationId, "preview/upper_case_firstname.json");
+        applyActionFromFile(preparationId, "preview/delete_city.json");
+
+        final String input = "{" //
+                + "   \"preparationId\": \"" + preparationId + "\",\n" //
+                + "   \"tdpIds\": [1, 3, 5],\n" //
+                + "   \"action\": {\n"
+                + "         \"action\": \"uppercase\",\n"
+                + "         \"parameters\": {\n"
+                + "             \"column_id\": \"0005\",\n"
+                + "             \"column_name\": \"alive\"\n,"
+                + "             \"scope\": \"column\"\n"
+                + "         }\n" //
+                + "    }\n" //
+                + "}";
+        final InputStream expectedPreviewStream = DataPreparationAPITest.class
+                .getResourceAsStream("preview/expected_add_preview.json");
+
+        // when
+        final String preview = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/add")
+                .asString();
+
+        // then
+        assertThat(preview, sameJSONAsFile(expectedPreviewStream));
+    }
+
+    @Test
+    public void testPreparationAddPreviewOnDataset() throws Exception {
+        // given
+        final String datasetId = createDataset("preview/preview_dataset.csv", "testPreview", "text/csv");
+
+        final String input = "{" //
+                + "   \"datasetId\": \"" + datasetId + "\",\n" //
+                + "   \"tdpIds\": [1, 3, 5],\n" //
+                + "   \"action\": {\n"
+                + "         \"action\": \"uppercase\",\n"
+                + "         \"parameters\": {\n"
+                + "             \"column_id\": \"0005\",\n"
+                + "             \"column_name\": \"alive\"\n,"
+                + "             \"scope\": \"column\"\n"
+                + "         }\n" //
+                + "    }\n" //
+                + "}";
+        final InputStream expectedPreviewStream = DataPreparationAPITest.class
+                .getResourceAsStream("preview/expected_add_preview_on_dataset.json");
+
+        // when
+        final String preview = given().contentType(ContentType.JSON).body(input).when().post("/api/preparations/preview/add")
+                .asString();
+
+        // then
+        assertThat(preview, sameJSONAsFile(expectedPreviewStream));
+    }
+
+    @Test
     public void testExportCsvFromDataset() throws Exception {
         // given
         final String datasetId = createDataset("export/export_dataset.csv", "testExport", "text/csv");
