@@ -9,13 +9,10 @@
      * {@link data-prep.services.dataset.service:DatasetService DatasetService} must be the only entry point for datasets</b>
      * @requires data-prep.services.dataset.service:DatasetRestService
      */
-    function DatasetListService($q, DatasetRestService) {
+    function DatasetListService($q, DatasetRestService, DatasetListSortService) {
 
         var deferredCancel;
         var datasetsPromise;
-        var previousSortType;
-        var previousSortOrder;
-        var sortsCache = [];
 
         var self = this;
 
@@ -26,22 +23,6 @@
          * @description the dataset list
          */
         this.datasets = null;
-
-        /**
-         * @ngdoc property
-         * @name datasetsSort
-         * @propertyOf data-prep.services.dataset.service:DatasetListService
-         * @description the dataset list sort
-         */
-        this.datasetsSort = null;
-
-        /**
-         * @ngdoc property
-         * @name datasetsOrder
-         * @propertyOf data-prep.services.dataset.service:DatasetListService
-         * @description the dataset list order
-         */
-        this.datasetsOrder = null;
 
 
         /**
@@ -61,79 +42,22 @@
          * @ngdoc method
          * @name refreshDatasets
          * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {string} sortType The sort condition
-         * @param {string} sortOrder The sort order condition
          * @description Refresh datasets list
          * @returns {promise} The pending GET promise
          */
-        var refreshDatasets = function refreshDatasets(sortType, sortOrder) {
+        var refreshDatasets = function refreshDatasets() {
 
-                if(sortType !== previousSortType || sortOrder !== previousSortOrder) {
-                    cancelPendingGetRequest();
-                    sortType = sortType || previousSortType;
-                    sortOrder = sortOrder || previousSortOrder;
-                }
+            cancelPendingGetRequest();
 
-                if(!datasetsPromise) {
-                    previousSortType = sortType;
-                    previousSortOrder = sortOrder;
-
-                    deferredCancel = $q.defer();
-                    datasetsPromise = DatasetRestService.getDatasets(sortType, sortOrder, deferredCancel)
-                        .then(function(res) {
-                            self.datasets = res.data;
-                            saveSortedDatasetsInCache(previousSortType, previousSortOrder);
-                            datasetsPromise = null;
-                            return self.datasets;
-                        });
-                }
-                return datasetsPromise;
+            deferredCancel = $q.defer();
+            datasetsPromise = DatasetRestService.getDatasets(DatasetListSortService.datasetsSort, DatasetListSortService.datasetsOrder, deferredCancel)
+                .then(function(res) {
+                    self.datasets = res.data;
+                    datasetsPromise = null;
+                    return self.datasets;
+                });
+            return datasetsPromise;
         };
-
-
-        /**
-         * @ngdoc method
-         * @name getDatasets
-         * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {string} sortType The sort condition
-         * @param {string} sortOrder The sort order condition
-         * @description return datasets list in Cache
-         */
-        var getDatasets = function getDatasets(sortType, sortOrder) {
-            self.datasets = sortsCache[getKey(sortType, sortOrder)];
-            return self.datasets;
-        };
-
-        /**
-         * @ngdoc method
-         * @name getKey
-         * @methodOf data-prep.services.statistics.service:StatisticsCacheService
-         * @param {string} sortType The sort condition
-         * @param {string} sortOrder The sort order condition
-         * @description [PRIVATE] Generate a unique key for the column.
-         */
-        function getKey(sortType, sortOrder) {
-            var keyObj = {
-                sortId: sortType,
-                orderId: sortOrder
-            };
-            return JSON.stringify(keyObj);
-        }
-
-        /**
-         * @ngdoc method
-         * @name saveDatasetsInCache
-         * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {string} sortType The sort condition
-         * @param {string} sortOrder The sort order condition
-         * @description save sorted datasets list in Cache
-         */
-        function saveSortedDatasetsInCache(sortType, sortOrder) {
-            self.datasetsSort = sortType;
-            self.datasetsOrder = sortOrder;
-
-            sortsCache[getKey(self.datasetsSort, self.datasetsOrder)] = self.datasets;
-        }
 
         /**
          * @ngdoc method
@@ -179,8 +103,7 @@
          * @ngdoc method
          * @name update
          * @methodOf data-prep.services.dataset.service:DatasetListService
-         * @param {object} dataset The dataset to delete
-         * @description Update a dataset from backend and refresh its internal list
+         * @param {object} dataset The dataset to delete         * @description Update a dataset from backend and refresh its internal list
          * @returns {promise} The pending POST promise
          */
         var update = function update(dataset) {
@@ -271,8 +194,6 @@
         this.delete = deleteDataset;
         this.refreshDefaultPreparation = refreshDefaultPreparation;
         this.getDatasetsPromise = getDatasetsPromise;
-        this.getDatasets = getDatasets;
-
     }
 
     angular.module('data-prep.services.dataset')

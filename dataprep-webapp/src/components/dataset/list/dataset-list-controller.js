@@ -16,40 +16,15 @@
      * @requires talend.widget.service:TalendConfirmService
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.uploadWorkflowService:UploadWorkflowService
+     * @requires data-prep.services.dataset.service:DatasetListSortService
      */
-    function DatasetListCtrl($window, $stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService, DatasetListService) {
+    function DatasetListCtrl($stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService, DatasetListService, DatasetListSortService) {
         var vm = this;
 
-        var sortSelectedKey = 'dataprep.dataset.sort';
-        var sortOrderSelectedKey = 'dataprep.dataset.sortOrder';
-
+        vm.datasetListSortService = DatasetListSortService;
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
         vm.datasetListService = DatasetListService;
-
-        /**
-         * @ngdoc property
-         * @name sortList
-         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description List of supported sort.
-         * @type {object[]}
-         */
-        vm.sortList = [
-            {id: 'name', name: 'NAME_SORT'},
-            {id: 'date', name: 'DATE_SORT'}
-        ];
-
-        /**
-         * @ngdoc property
-         * @name orderList
-         * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
-         * @description List of sorting order.
-         * @type {object[]}
-         */
-        vm.orderList = [
-            {id: 'asc', name: 'ASC_ORDER'},
-            {id: 'desc', name: 'DESC_ORDER'}
-        ];
 
         /**
          * @ngdoc property
@@ -58,8 +33,8 @@
          * @description Selected sort. If sort is not in cache, Default sort is used
          * @type {object}
          */
-        var savedSort = $window.localStorage.getItem(sortSelectedKey);
-        vm.sortSelected = !savedSort ? vm.sortList[1] : _.find(vm.sortList, {id: savedSort});
+        vm.sortSelected = vm.datasetListSortService.getDefaultSort();
+        vm.datasetListSortService.setDatasetsSort(vm.sortSelected.id);
 
         /**
          * @ngdoc property
@@ -68,8 +43,8 @@
          * @description Selected sort order. If order is not in cache, default order is used
          * @type {object}
          */
-        var savedSortOrder = $window.localStorage.getItem(sortOrderSelectedKey);
-        vm.sortOrderSelected = !savedSortOrder ? vm.orderList[1] : _.find(vm.orderList, {id: savedSortOrder});
+        vm.sortOrderSelected = vm.datasetListSortService.getDefaultOrder();
+        vm.datasetListSortService.setDatasetsOrder(vm.sortOrderSelected.id);
 
         /**
          * @ngdoc method
@@ -86,12 +61,15 @@
             var oldSort = vm.sortSelected;
             vm.sortSelected = sortType;
 
-            DatasetService.refreshDatasets(vm.sortSelected.id, vm.sortOrderSelected.id)
+            vm.datasetListSortService.setDatasetsSort(vm.sortSelected.id);
+
+            DatasetService.refreshDatasets()
                 .then(function() {
-                    $window.localStorage.setItem(sortSelectedKey, vm.sortSelected.id);
+
                 })
                 .catch(function() {
                     vm.sortSelected = oldSort;
+                    vm.datasetListSortService.setDatasetsSort(vm.sortSelected.id);
                 });
         };
 
@@ -110,12 +88,15 @@
             var oldSortOrder = vm.sortOrderSelected;
             vm.sortOrderSelected = order;
 
-            DatasetService.refreshDatasets(vm.sortSelected.id,  vm.sortOrderSelected.id)
+            vm.datasetListSortService.setDatasetsOrder(vm.sortOrderSelected.id);
+
+            DatasetService.refreshDatasets()
                 .then(function() {
-                    $window.localStorage.setItem(sortOrderSelectedKey, vm.sortOrderSelected.id);
+
                 })
                 .catch(function() {
                     vm.sortOrderSelected = oldSortOrder;
+                    vm.datasetListSortService.setDatasetsOrder(vm.sortOrderSelected.id);
                 });
         };
 
@@ -192,7 +173,7 @@
 
         // load the datasets
         DatasetService
-            .getDatasets(vm.sortSelected.id, vm.sortOrderSelected.id)
+            .getDatasets()
             .then(loadUrlSelectedDataset);
     }
 
@@ -201,7 +182,7 @@
      * @name datasets
      * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
      * @description The dataset list.
-     * This list is bound to {@link data-prep.services.dataset.service:DatasetService DatasetService}.datasetsList()
+     * This list is bound to {@link data-prep.services.dataset.service:DatasetListService DatasetListService}.datasets
      */
     Object.defineProperty(DatasetListCtrl.prototype,
         'datasets', {
@@ -209,6 +190,40 @@
             configurable: false,
             get: function () {
                 return this.datasetListService.datasets;
+            }
+        });
+
+
+    /**
+     * @ngdoc property
+     * @name sortList
+     * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+     * @description The dataset list sort.
+     * This list is bound to {@link data-prep.services.dataset.service:DatasetListSortService DatasetListSortService}.sortList
+     */
+    Object.defineProperty(DatasetListCtrl.prototype,
+        'sortList', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetListSortService.sortList;
+            }
+        });
+
+
+    /**
+     * @ngdoc property
+     * @name orderList
+     * @propertyOf data-prep.dataset-list.controller:DatasetListCtrl
+     * @description The dataset list sort order.
+     * This list is bound to {@link data-prep.services.dataset.service:DatasetListSortService DatasetListSortService}.orderList
+     */
+    Object.defineProperty(DatasetListCtrl.prototype,
+        'orderList', {
+            enumerable: true,
+            configurable: false,
+            get: function () {
+                return this.datasetListSortService.orderList;
             }
         });
 

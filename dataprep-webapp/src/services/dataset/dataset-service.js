@@ -99,16 +99,11 @@
          * @ngdoc method
          * @name datasetsList
          * @methodOf data-prep.services.dataset.service:DatasetService
-         * @param {string} sort : sort by "sort"
-         * @param {string} order :  sort by sortType in "order" order
          * @description Return the datasets list. See {@link data-prep.services.dataset.service:DatasetListService DatasetListService}.datasets
          * @returns {object[]} The datasets list
          */
-        function datasetsList(sort, order) {
-            if( sort !== DatasetListService.datasetsSort || order !== DatasetListService.datasetsOrder) {
-                return null;
-            }
-            return DatasetListService.getDatasets(sort, order);
+        function datasetsList() {
+            return DatasetListService.datasets;
         }
 
 
@@ -128,15 +123,13 @@
          * @ngdoc method
          * @name getDatasets
          * @methodOf data-prep.services.dataset.service:DatasetService
-         * @param {string} sort : sort by "sort"
-         * @param {string} order :  sort by sortType in "order" order
          * @description Return a promise that resolves the datasets list.
          * @returns {promise} The pending GET or resolved promise
          */
-        function getDatasets(sort, order) {
-            return datasetsList(sort, order) ?
-                $q.when(datasetsList(sort, order)) :
-                DatasetListService.refreshDatasets(sort, order).then(consolidatePreparationsAndDatasets);
+        function getDatasets() {
+            return datasetsList() ?
+                $q.when(datasetsList()) :
+                DatasetListService.refreshDatasets().then(consolidatePreparationsAndDatasets);
         }
 
         /**

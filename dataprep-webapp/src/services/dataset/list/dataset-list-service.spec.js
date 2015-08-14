@@ -179,40 +179,13 @@ describe('Dataset List Service', function () {
     }));
 
 
-    it('should fetch dataset list in cache', inject(function ($rootScope, DatasetListService) {
-        //given
-        DatasetListService.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
-
-        //when
-        DatasetListService.refreshDatasets('name', 'asc');
-        $rootScope.$apply();
-
-        //then
-        expect(DatasetListService.getDatasets('name', 'asc')).toEqual(datasets);
-    }));
-
-
-    it('should not trigger another refresh when one is already pending with the same sort condition', inject(function ($rootScope, DatasetListService, DatasetRestService) {
-        //given
-        DatasetListService.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
-        DatasetListService.refreshDatasets('name', 'asc');
-
-        //when
-        DatasetListService.refreshDatasets('name', 'asc');
-        $rootScope.$apply();
-
-        //then
-        expect(DatasetListService.datasets).toEqual(datasets);
-        expect(DatasetRestService.getDatasets.calls.count()).toBe(1);
-    }));
-
     it('should trigger another refresh when one is already pending with different sort condition', inject(function ($rootScope, DatasetListService, DatasetRestService) {
         //given
         DatasetListService.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
-        DatasetListService.refreshDatasets('name', 'asc');
+        DatasetListService.refreshDatasets();
 
         //when
-        DatasetListService.refreshDatasets('name', 'desc');
+        DatasetListService.refreshDatasets();
         $rootScope.$apply();
 
         //then
@@ -220,19 +193,10 @@ describe('Dataset List Service', function () {
         expect(DatasetRestService.getDatasets.calls.count()).toBe(2);
     }));
 
-    it('should trigger refresh with sort parameters', inject(function (DatasetListService, DatasetRestService) {
-        //when
-        DatasetListService.refreshDatasets('name', 'asc');
+    it('should trigger refresh with sort parameters', inject(function (DatasetListService, DatasetRestService, DatasetListSortService) {
 
-        //then
-        expect(DatasetRestService.getDatasets.calls.mostRecent().args[0]).toBe('name');
-        expect(DatasetRestService.getDatasets.calls.mostRecent().args[1]).toBe('asc');
-    }));
-
-    it('should trigger refresh with previous sort parameters when no sort parameters provided', inject(function ($rootScope, DatasetListService, DatasetRestService) {
-        //given
-        DatasetListService.refreshDatasets('name', 'asc');
-        $rootScope.$digest();
+        DatasetListSortService.datasetsSort = 'name';
+        DatasetListSortService.datasetsOrder = 'asc';
 
         //when
         DatasetListService.refreshDatasets();
@@ -241,6 +205,7 @@ describe('Dataset List Service', function () {
         expect(DatasetRestService.getDatasets.calls.mostRecent().args[0]).toBe('name');
         expect(DatasetRestService.getDatasets.calls.mostRecent().args[1]).toBe('asc');
     }));
+
 
 
     it('should create dataset', inject(function ($rootScope, DatasetListService, DatasetRestService) {

@@ -36,11 +36,8 @@ describe('Dataset list controller', function () {
         spyOn($state, 'go').and.returnValue(null);
     }));
 
-    afterEach(inject(function($stateParams, $window) {
+    afterEach(inject(function($stateParams) {
         $stateParams.datasetid = null;
-
-        $window.localStorage.removeItem('dataprep.dataset.sort');
-        $window.localStorage.removeItem('dataprep.dataset.sortOrder');
     }));
 
     it('should get dataset on creation', inject(function (DatasetService) {
@@ -83,81 +80,45 @@ describe('Dataset list controller', function () {
 
     describe('sort parameters', function() {
 
-        it('should init default sort parameters', inject(function ($window) {
-            //given
-            $window.localStorage.removeItem('dataprep.dataset.sort');
-            $window.localStorage.removeItem('dataprep.dataset.sortOrder');
-
-            //when
-            var ctrl = createController();
-
-            //then
-            expect(ctrl.sortSelected).toEqual({id: 'date', name: 'DATE_SORT'});
-            expect(ctrl.sortOrderSelected).toEqual({id: 'desc', name: 'DESC_ORDER'});
-        }));
-
-        it('should init sort parameters from localStorage', inject(function ($window) {
-            //given
-            $window.localStorage.setItem('dataprep.dataset.sort', 'name');
-            $window.localStorage.setItem('dataprep.dataset.sortOrder', 'asc');
-
-            //when
-            var ctrl = createController();
-
-            //then
-            expect(ctrl.sortSelected).toEqual({id: 'name', name: 'NAME_SORT'});
-            expect(ctrl.sortOrderSelected).toEqual({id: 'asc', name: 'ASC_ORDER'});
-        }));
-
         describe('with dataset refresh success', function() {
             beforeEach(inject(function ($q, DatasetService) {
                 spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.when(true));
             }));
 
-            it('should refresh dataset when sort is changed without localstorage', inject(function ($window, DatasetService) {
-                //given
-                $window.localStorage.removeItem('dataprep.dataset.sort');
-                $window.localStorage.removeItem('dataprep.dataset.sortOrder');
+
+            it('should refresh dataset when order is changed', inject(function ($q, DatasetService, DatasetListSortService) {
 
                 //given
+                spyOn(DatasetListSortService, 'getDefaultOrder').and.returnValue($q.when({id: 'desc', name: 'DESC_ORDER'}));
+
                 var ctrl = createController();
-                var newSort =  {id: 'name', name: 'NAME_SORT'};
-
-                //when
-                ctrl.updateSortBy(newSort);
-
-                //then
-                expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('name','desc');
-            }));
-
-            it('should refresh dataset when order is changed', inject(function ($window, DatasetService) {
-                //given
-                var ctrl = createController();
-                var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
+                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
 
                 //when
                 ctrl.updateSortOrder(newSortOrder);
 
                 //then
-                expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('date','asc');
+                expect(DatasetService.refreshDatasets).toHaveBeenCalledWith();
             }));
 
-            it('should refresh dataset when sort is changed', inject(function (DatasetService) {
+            it('should refresh dataset when sort is changed', inject(function ($q, DatasetService, DatasetListSortService) {
                 //given
+                spyOn(DatasetListSortService, 'getDefaultSort').and.returnValue($q.when({id: 'date', name: 'DATE_SORT'}));
+
                 var ctrl = createController();
-                var newSort =  {id: 'name', name: 'NAME_SORT'};
+                var newSort = {id: 'name', name: 'NAME_SORT'};
 
                 //when
                 ctrl.updateSortBy(newSort);
 
                 //then
-                expect(DatasetService.refreshDatasets).toHaveBeenCalledWith('name','desc');
+                expect(DatasetService.refreshDatasets).toHaveBeenCalledWith();
             }));
 
             it('should not refresh dataset when requested sort is already the selected one', inject(function (DatasetService) {
                 //given
                 var ctrl = createController();
-                var newSort =  {id: 'name', name: 'NAME_SORT'};
+                var newSort = {id: 'name', name: 'NAME_SORT'};
 
                 //when
                 ctrl.updateSortBy(newSort);
@@ -167,10 +128,10 @@ describe('Dataset list controller', function () {
                 expect(DatasetService.refreshDatasets.calls.count()).toBe(1);
             }));
 
-            it('should not refresh dataset when requested sort is already the selected one', inject(function (DatasetService) {
+            it('should not refresh dataset when requested order is already the selected one', inject(function (DatasetService) {
                 //given
                 var ctrl = createController();
-                var newSortOrder =  {id: 'desc', name: 'ASC_ORDER'};
+                var newSortOrder = {id: 'desc', name: 'ASC_ORDER'};
 
                 //when
                 ctrl.updateSortOrder(newSortOrder);
@@ -180,33 +141,37 @@ describe('Dataset list controller', function () {
                 expect(DatasetService.refreshDatasets.calls.count()).toBe(1);
             }));
 
-            it('should save sort order parameter in localStorage', inject(function ($window) {
-                //given
-                var ctrl = createController();
-                var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
 
-                expect($window.localStorage.getItem('dataprep.dataset.sortOrder')).toBeFalsy();
+            it('should call setDatasetsOrder with new order when done', inject(function (DatasetService, DatasetListSortService) {
+                //given
+                spyOn(DatasetListSortService, 'getDefaultOrder').and.returnValue({id: 'desc', name: 'DESC_ORDER'});
+                spyOn(DatasetListSortService, 'setDatasetsOrder');
+
+                var ctrl = createController();
+                var newSortOrder = {id: 'asc', name: 'ASC_ORDER'};
 
                 //when
                 ctrl.updateSortOrder(newSortOrder);
-                scope.$digest();
 
                 //then
-                expect($window.localStorage.getItem('dataprep.dataset.sortOrder')).toBe('asc');
+                expect(DatasetListSortService.setDatasetsOrder).toHaveBeenCalledWith('asc');
             }));
 
-            it('should save sort parameter in localStorage', inject(function ($window) {
+            it('should call setDatasetsSort with new sort when done', inject(function (DatasetService, DatasetListSortService) {
                 //given
+                spyOn(DatasetListSortService, 'getDefaultSort').and.returnValue({id: 'date', name: 'DATE'});
+                spyOn(DatasetListSortService, 'setDatasetsSort');
+
                 var ctrl = createController();
-                var newSort =  {id: 'name', name: 'NAME_SORT'};
+                var newSort = {id: 'name', name: 'NAME'};
 
                 //when
                 ctrl.updateSortBy(newSort);
-                scope.$digest();
 
                 //then
-                expect($window.localStorage.getItem('dataprep.dataset.sort')).toBe('name');
+                expect(DatasetListSortService.setDatasetsSort).toHaveBeenCalledWith('name');
             }));
+
         });
 
         describe('with dataset refresh failure', function() {
@@ -214,36 +179,10 @@ describe('Dataset list controller', function () {
                 spyOn(DatasetService, 'refreshDatasets').and.returnValue($q.reject(false));
             }));
 
-            it('should NOT save sort order parameter in localStorage', inject(function ($window) {
+            it('should set the old order parameter', inject(function (DatasetListSortService) {
                 //given
-                var ctrl = createController();
-                var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
+                spyOn(DatasetListSortService, 'getDefaultOrder').and.returnValue({id: 'desc', name: 'DESC'});
 
-                expect($window.localStorage.getItem('dataprep.dataset.sortOrder')).toBeFalsy();
-
-                //when
-                ctrl.updateSortOrder(newSortOrder);
-                scope.$digest();
-
-                //then
-                expect($window.localStorage.getItem('dataprep.dataset.sortOrder')).toBeFalsy();
-            }));
-
-            it('should NOT save sort parameter in localStorage', inject(function ($window) {
-                //given
-                var ctrl = createController();
-                var newSort =  {id: 'name', name: 'NAME_SORT'};
-
-                //when
-                ctrl.updateSortBy(newSort);
-                scope.$digest();
-
-                //then
-                expect($window.localStorage.getItem('dataprep.dataset.sort')).toBeFalsy();
-            }));
-
-            it('should set the old order parameter', function () {
-                //given
                 var ctrl = createController();
                 var newSortOrder =  {id: 'asc', name: 'ASC_ORDER'};
 
@@ -256,10 +195,12 @@ describe('Dataset list controller', function () {
 
                 //then
                 expect(ctrl.sortOrderSelected.id).toBe('desc');
-            });
+            }));
 
-            it('should NOT set the old sort parameter', function () {
+            it('should NOT set the old sort parameter', inject(function (DatasetListSortService) {
                 //given
+                spyOn(DatasetListSortService, 'getDefaultSort').and.returnValue({id: 'date', name: 'DATE'});
+
                 var ctrl = createController();
                 var newSort =  {id: 'name', name: 'NAME_SORT'};
 
@@ -272,7 +213,7 @@ describe('Dataset list controller', function () {
 
                 //then
                 expect(ctrl.sortSelected.id).toBe('date');
-            });
+            }));
         });
     });
 
@@ -291,7 +232,11 @@ describe('Dataset list controller', function () {
             spyOn(DatasetService, 'toggleFavorite').and.returnValue($q.when(true));
         }));
 
-        it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService) {
+        it('should delete dataset and show toast', inject(function ($q, MessageService, DatasetService, TalendConfirmService, DatasetListSortService) {
+
+            spyOn(DatasetListSortService, 'getDefaultSort').and.returnValue({id: 'name', name: 'NAME'});
+            spyOn(DatasetListSortService, 'getDefaultOrder').and.returnValue({id: 'desc', name: 'DESC'});
+
             //given
             var dataset = datasets[0];
             spyOn(TalendConfirmService, 'confirm').and.returnValue($q.when(true));
