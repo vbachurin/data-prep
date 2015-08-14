@@ -78,7 +78,8 @@ public class PreparationGetContent extends PreparationCommand<InputStream> {
         if (preparationContext.fromCache()) {
             return content;
         } else {
-            ContentCacheKey key = new ContentCacheKey(id, preparationContext.getVersion(), sample);
+            ContentCacheKey key = new ContentCacheKey(preparationContext.getPreparation(), preparationContext.getVersion(),
+                    sample);
             final OutputStream newCacheEntry = contentCache.put(key, ContentCache.TimeToLive.DEFAULT);
             return new CloneInputStream(content, newCacheEntry);
         }
