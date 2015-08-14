@@ -6,7 +6,7 @@ describe('Actions suggestions-stats controller', function () {
 
     beforeEach(module('data-prep.actions-suggestions'));
 
-    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, RecipeService) {
+    beforeEach(inject(function ($rootScope, $controller, $q, PlaygroundService, TransformationService, RecipeService, PreviewService) {
         scope = $rootScope.$new();
 
         createController = function () {
@@ -20,6 +20,8 @@ describe('Actions suggestions-stats controller', function () {
         spyOn(TransformationService, 'initDynamicParameters').and.returnValue($q.when());
         spyOn(RecipeService, 'earlyPreview').and.returnValue();
         spyOn(RecipeService, 'cancelEarlyPreview').and.returnValue();
+        spyOn(PreviewService, 'getPreviewAddRecords').and.returnValue();
+        spyOn(PreviewService, 'cancelPreview').and.returnValue();
     }));
 
     it('should init vars and flags', inject(function () {
@@ -102,6 +104,25 @@ describe('Actions suggestions-stats controller', function () {
 
             //then
             expect(ctrl.showDynamicModal).toBe(false);
+        }));
+
+        it('should cancel early preview on step append', inject(function (RecipeService, PreviewService) {
+            //given
+            var transformation = {name: 'tolowercase'};
+            var transfoScope = 'column';
+            var params = {param: 'value'};
+            var ctrl = createController();
+
+            expect(RecipeService.cancelEarlyPreview).not.toHaveBeenCalled();
+            expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
+
+            //when
+            var closure = ctrl.transformClosure(transformation, transfoScope);
+            closure(params);
+
+            //then
+            expect(RecipeService.cancelEarlyPreview).toHaveBeenCalled();
+            expect(PreviewService.cancelPreview).toHaveBeenCalled();
         }));
 
         it('should append new step on static transformation selection', inject(function (PlaygroundService) {
@@ -249,10 +270,12 @@ describe('Actions suggestions-stats controller', function () {
     });
 
     describe('early preview', function () {
+        var currentMetadata = {id: '123456'};
         var column = {id: '0001', name: 'firstname'};
 
-        beforeEach(inject(function(ColumnSuggestionService) {
+        beforeEach(inject(function(ColumnSuggestionService, PlaygroundService) {
             ColumnSuggestionService.currentColumn = column;
+            PlaygroundService.currentMetadata = currentMetadata;
         }));
 
         it('should add the new preview step in recipe after a 200ms delay', inject(function ($timeout, RecipeService) {
@@ -287,7 +310,7 @@ describe('Actions suggestions-stats controller', function () {
             );
         }));
 
-        it('should cancel pending early preview', inject(function ($timeout, RecipeService) {
+        it('should trigger grid preview after a 200ms delay', inject(function ($timeout, PreviewService) {
             //given
             var ctrl = createController();
 
@@ -300,18 +323,26 @@ describe('Actions suggestions-stats controller', function () {
                 replace: 'Jimmy'
             };
 
-            ctrl.earlyPreview(transformation, transfoScope)(params);
-            expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
-
             //when
-            ctrl.cancelEarlyPreview();
-            $timeout.flush();
+            ctrl.earlyPreview(transformation, transfoScope)(params);
+            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
+            $timeout.flush(200);
 
             //then
-            expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
+            expect(PreviewService.getPreviewAddRecords).toHaveBeenCalledWith(
+                currentMetadata.id,
+                'replace_on_value',
+                {
+                    value: 'James',
+                    replace: 'Jimmy',
+                    scope: transfoScope,
+                    column_id: column.id,
+                    column_name: column.name
+                }
+            );
         }));
 
-        it('should cancel current early preview', inject(function ($timeout, RecipeService) {
+        it('should cancel pending early preview', inject(function ($timeout, RecipeService, PreviewService) {
             //given
             var ctrl = createController();
 
@@ -326,6 +357,7 @@ describe('Actions suggestions-stats controller', function () {
 
             ctrl.earlyPreview(transformation, transfoScope)(params);
             expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
+            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
 
             //when
             ctrl.cancelEarlyPreview();
@@ -333,6 +365,20 @@ describe('Actions suggestions-stats controller', function () {
 
             //then
             expect(RecipeService.earlyPreview).not.toHaveBeenCalled();
+            expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
+        }));
+
+        it('should cancel current early preview', inject(function ($timeout, RecipeService, PreviewService) {
+            //given
+            var ctrl = createController();
+
+            //when
+            ctrl.cancelEarlyPreview();
+            $timeout.flush();
+
+            //then
+            expect(RecipeService.cancelEarlyPreview).toHaveBeenCalled();
+            expect(PreviewService.cancelPreview).toHaveBeenCalled();
         }));
     });
 });

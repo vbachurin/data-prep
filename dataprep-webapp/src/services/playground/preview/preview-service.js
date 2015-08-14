@@ -68,6 +68,7 @@
 
             getPreviewDiffRecords: getPreviewDiffRecords,
             getPreviewUpdateRecords: getPreviewUpdateRecords,
+            getPreviewAddRecords: getPreviewAddRecords,
 
             previewInProgress: previewInProgress,
             stopPendingPreview: stopPendingPreview,
@@ -177,6 +178,32 @@
             PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
                 .then(function(response) {
                     DatagridService.focusedColumn = updateStep.column.id;
+                    return response;
+                })
+                .then(replaceRecords)
+                .finally(function() {
+                    previewCanceler = null;
+                });
+        }
+
+        /**
+         * @ngdoc method
+         * @name getPreviewUpdateRecords
+         * @methodOf data-prep.services.playground.service:PreviewService
+         * @param {object} datasetId The dataset id
+         * @param {object} action The action to append
+         * @param {object} params The action parameters
+         * @description Call the update step preview service and replace records in the grid.
+         * It cancel the previous preview first
+         */
+        function getPreviewAddRecords(datasetId, action, params) {
+            cancelPreview(true, null);
+            initPreviewIdNeeded();
+
+            PreparationService.getPreviewAdd(datasetId, action, params, displayedTdpIds, previewCanceler)
+                .then(function(response) {
+                    /*jshint camelcase: false */
+                    DatagridService.focusedColumn = params.column_id;
                     return response;
                 })
                 .then(replaceRecords)

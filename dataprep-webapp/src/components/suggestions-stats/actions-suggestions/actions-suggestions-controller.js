@@ -8,10 +8,11 @@
      * @requires data-prep.services.transformation.service:ColumnSuggestionService
      * @requires data-prep.services.transformation.service:TransformationService
      * @requires data-prep.services.playground.service:PlaygroundService
+     * @requires data-prep.services.playground.service:PreviewService
      * @requires data-prep.services.preparation.service:PreparationService
      * @requires data-prep.services.recipe.service:RecipeService
      */
-    function ActionsSuggestionsCtrl($timeout, ColumnSuggestionService, TransformationService, PlaygroundService, PreparationService, RecipeService) {
+    function ActionsSuggestionsCtrl($timeout, ColumnSuggestionService, TransformationService, PlaygroundService, PreviewService, PreparationService, RecipeService) {
         var previewTimeout;
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
@@ -144,6 +145,9 @@
         vm.transformClosure = function transform(transfo, transfoScope) {
             /*jshint camelcase: false */
             return function(params) {
+                PreviewService.cancelPreview();
+                RecipeService.cancelEarlyPreview();
+
                 params = params || {};
                 params.scope = transfoScope;
                 params.column_id = vm.column.id;
@@ -172,7 +176,11 @@
                     params.scope = transfoScope;
                     params.column_id = vm.column.id;
                     params.column_name = vm.column.name;
+
+                    var datasetId = PlaygroundService.currentMetadata.id;
+
                     RecipeService.earlyPreview(vm.column, transformation, params);
+                    PreviewService.getPreviewAddRecords(datasetId, transformation.name, params);
                 }, 200);
             };
         };
@@ -186,6 +194,7 @@
         vm.cancelEarlyPreview = function cancelEarlyPreview() {
             $timeout.cancel(previewTimeout);
             RecipeService.cancelEarlyPreview();
+            PreviewService.cancelPreview();
         };
     }
 

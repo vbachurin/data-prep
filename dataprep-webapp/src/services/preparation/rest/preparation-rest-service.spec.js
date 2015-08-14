@@ -476,6 +476,90 @@ describe('Preparation Service', function () {
         expect(canceled).toBe(true);
     }));
 
+    it('should call add preview POST request', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
+        //given
+        var done = false;
+        var canceled = false;
+        var action = 'cut';
+        var params = {value: 'toto'};
+        var recordsTdpId = [1,2,3,4,5];
+        var canceler = $q.defer();
+
+        var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        var datasetId = '856980bacf0890c89bc318856980bacf0890c89b';
+
+        var expectedParams = {
+            action : {
+                action: action,
+                parameters: params
+            },
+            tdpIds: [1,2,3,4,5],
+            preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+            datasetId: '856980bacf0890c89bc318856980bacf0890c89b'
+        };
+
+        $httpBackend
+            .expectPOST(RestURLs.previewUrl + '/add', expectedParams)
+            .respond(200);
+
+        //when
+        PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler)
+            .then(function() {
+                done = true;
+            })
+            .catch(function() {
+                canceled = true;
+            });
+        $httpBackend.flush();
+        $rootScope.$digest();
+
+        //then
+        expect(done).toBe(true);
+        expect(canceled).toBe(false);
+    }));
+
+    it('should cancel POST add preview by resolving the given promise', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
+        //given
+        var done = false;
+        var canceled = false;
+        var action = 'cut';
+        var params = {value: 'toto'};
+        var recordsTdpId = [1,2,3,4,5];
+        var canceler = $q.defer();
+
+        var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';
+        var datasetId = '856980bacf0890c89bc318856980bacf0890c89b';
+
+        var expectedParams = {
+            action : {
+                action: action,
+                parameters: params
+            },
+            tdpIds: [1,2,3,4,5],
+            preparationId: 'fbaa18e82e913e97e5f0e9d40f04413412be1126',
+            datasetId: '856980bacf0890c89bc318856980bacf0890c89b'
+        };
+
+        $httpBackend
+            .expectPOST(RestURLs.previewUrl + '/add', expectedParams)
+            .respond(200);
+
+        //when
+        PreparationRestService.getPreviewAdd(preparationId, datasetId, action, params, recordsTdpId, canceler)
+            .then(function() {
+                done = true;
+            })
+            .catch(function() {
+                canceled = true;
+            });
+        canceler.resolve(true);
+        $rootScope.$digest();
+
+        //then
+        expect(done).toBe(false);
+        expect(canceled).toBe(true);
+    }));
+
     it('should call DELETE request', inject(function($rootScope, $q, RestURLs, PreparationRestService) {
         //given
         var preparationId = 'fbaa18e82e913e97e5f0e9d40f04413412be1126';

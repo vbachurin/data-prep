@@ -1,3 +1,4 @@
+/*jshint camelcase: false */
 describe('Preview Service', function () {
     'use strict';
 
@@ -91,6 +92,7 @@ describe('Preview Service', function () {
         spyOn(DatagridService, 'updateData').and.returnValue();
         spyOn(PreparationService, 'getPreviewDiff').and.returnValue($q.when(diff));
         spyOn(PreparationService, 'getPreviewUpdate').and.returnValue($q.when(diff));
+        spyOn(PreparationService, 'getPreviewAdd').and.returnValue($q.when(diff));
     }));
 
     describe('diff preview', function() {
@@ -277,6 +279,95 @@ describe('Preview Service', function () {
 
             //when
             PreviewService.getPreviewUpdateRecords(currentStep, updateStep, newParams);
+
+            //then
+            expect(DatagridService.updateData).not.toHaveBeenCalled();
+        }));
+    });
+
+    describe('add preview', function() {
+        it('should call and display preview', inject(function($rootScope, PreviewService, PreparationService, DatagridService) {
+            //given
+            var datasetId = '46c541b683ef5151';
+            var action = 'fillEmptyWithValue';
+            var params = {
+                scope: 'column',
+                column_id: '0001',
+                value: '--'
+            };
+
+            //when
+            PreviewService.getPreviewAddRecords(datasetId, action, params);
+            $rootScope.$digest();
+
+            //then
+            expect(PreparationService.getPreviewAdd).toHaveBeenCalled();
+
+            var previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
+            expect(previewArgs[0]).toBe(datasetId);
+            expect(previewArgs[1]).toBe(action);
+            expect(previewArgs[2]).toBe(params);
+            expect(previewArgs[3]).toEqual(displayedTdpIds);
+
+            expect(DatagridService.updateData).toHaveBeenCalledWith(modifiedData);
+        }));
+
+        it('should focus on add step column', inject(function($rootScope, PreviewService, DatagridService) {
+            //given
+            var datasetId = '46c541b683ef5151';
+            var action = 'fillEmptyWithValue';
+            var params = {
+                scope: 'column',
+                column_id: '0001',
+                value: '--'
+            };
+
+            //when
+            PreviewService.getPreviewAddRecords(datasetId, action, params);
+            $rootScope.$digest();
+
+            //then
+            expect(DatagridService.focusedColumn).toBe('0001');
+        }));
+
+        it('should cancel current pending preview', inject(function($rootScope, PreviewService, PreparationService) {
+            //given
+            var datasetId = '46c541b683ef5151';
+            var action = 'fillEmptyWithValue';
+            var params = {
+                scope: 'column',
+                column_id: '0001',
+                value: '--'
+            };
+
+            PreviewService.getPreviewAddRecords(datasetId, action, params);
+            var previewArgs = PreparationService.getPreviewAdd.calls.mostRecent().args;
+            var previewCanceler = previewArgs[4];
+
+            expect(previewCanceler.promise.$$state.status).toBe(0);
+
+            //when
+            PreviewService.getPreviewAddRecords(datasetId, action, params);
+
+            //then
+            expect(previewCanceler.promise.$$state.status).toBe(1);
+        }));
+
+        it('should NOT restore original data to avoid unnecessary refresh', inject(function($rootScope, PreviewService, DatagridService) {
+            //given
+            var datasetId = '46c541b683ef5151';
+            var action = 'fillEmptyWithValue';
+            var params = {
+                scope: 'column',
+                column_id: '0001',
+                value: '--'
+            };
+
+            PreviewService.getPreviewAddRecords(datasetId, action, params);
+            expect(DatagridService.updateData).not.toHaveBeenCalled();
+
+            //when
+            PreviewService.getPreviewAddRecords(datasetId, action, params);
 
             //then
             expect(DatagridService.updateData).not.toHaveBeenCalled();

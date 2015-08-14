@@ -12,6 +12,13 @@
         var choiceType = 'CHOICE';
         var clusterType = 'CLUSTER';
 
+        /**
+         * @ngdoc property
+         * @name recipeStateBeforePreview
+         * @propertyOf data-prep.services.recipe.service:RecipeService
+         * @description [PRIVATE] The recipe state before early preview
+         * @type {object}
+         */
         var recipeStateBeforePreview;
 
         /**
@@ -136,6 +143,7 @@
             initialState = null;
             recipe = [];
             activeThresholdStep = null;
+            recipeStateBeforePreview = null;
         }
 
         /**
@@ -347,6 +355,7 @@
                         .map(createItem)
                         .value();
                     activeThresholdStep = null;
+                    recipeStateBeforePreview = null;
                     recipe = newRecipe;
 
                     return {
@@ -434,7 +443,7 @@
          * @ngdoc method
          * @name cancelEarlyPreview
          * @methodOf data-prep.services.recipe.service:RecipeService
-         * @description Set back the state before preview
+         * @description Set back the state before preview and reset preview state
          */
         function cancelEarlyPreview() {
             if(!recipeStateBeforePreview) {
