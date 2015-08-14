@@ -13,6 +13,7 @@
      * @requires data-prep.history-control
      * @requires data-prep.recipe
      * @requires data-prep.horizontalBarchart
+     * @requires data-prep.rangeSlider
      * @requires data-prep.boxplotChart
      * @requires data-prep.suggestions-stats
      * @requires data-prep.services.preparation
@@ -34,6 +35,7 @@
         'data-prep.suggestions-stats',
         'data-prep.services.preparation',
         'data-prep.services.playground',
-        'data-prep.services.recipe'
+        'data-prep.services.recipe',
+        'data-prep.rangeSlider'
     ]);
 })();

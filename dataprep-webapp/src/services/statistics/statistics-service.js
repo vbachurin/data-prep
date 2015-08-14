@@ -255,6 +255,8 @@
             service.boxplotData = null;
             //remove the barchart
             service.data = null;
+            //remove range slider
+            service.rangeLimits = null;
             //show the map
             service.stateDistribution = column;
         }
@@ -271,11 +273,17 @@
             service.boxplotData = null;
             service.data = null;
             service.stateDistribution = null;
+            service.rangeLimits = null;
 
             switch (ConverterService.simplifyType(column.type)) {
                 case 'number':
                     initRangeHistogram(column.statistics.histogram);
                     updateBoxplotData();
+
+                    service.rangeLimits = {
+                        min : column.statistics.min,
+                        max : column.statistics.max
+                    };
                     break;
                 case 'text':
                 case 'boolean':
@@ -321,6 +329,7 @@
             service.data = null;
             service.stateDistribution = null;
             service.statistics = null;
+            service.rangeLimits = null;
         }
     }
 

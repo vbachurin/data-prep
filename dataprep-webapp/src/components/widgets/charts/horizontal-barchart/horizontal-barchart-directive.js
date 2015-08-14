@@ -58,6 +58,7 @@
 						});
 
                     var svg = d3.select('#' + container).append('svg')
+                        .attr('class', 'horizontal-barchart-cls')
                         .attr('width', w + m[1] + m[3])
                         .attr('height', h + m[0] + m[2])
                         .append('g')
