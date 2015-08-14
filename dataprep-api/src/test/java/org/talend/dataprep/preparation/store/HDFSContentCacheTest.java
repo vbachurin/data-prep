@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
@@ -263,7 +264,10 @@ public class HDFSContentCacheTest {
         final RemoteIterator<LocatedFileStatus> files = fileSystem.listFiles(new Path("cache/datasets/"), true);
         while (files.hasNext()) {
             final Path file = files.next().getPath();
-            fail("file " + file.getName() + " was not cleaned by the janitor");
+            final String suffix = StringUtils.substringAfterLast(file.getName(), ".");
+            if (!StringUtils.startsWith(suffix, "nfs")) {
+                fail("file " + file.getName() + " was not cleaned by the janitor");
+            }
         }
     }
 
