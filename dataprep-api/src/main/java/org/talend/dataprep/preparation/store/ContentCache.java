@@ -20,15 +20,6 @@ public interface ContentCache {
     boolean has(ContentCacheKey key);
 
     /**
-     * Check whether a cached content exists for given <code>preparationId</code> at step <code>stepId</code> for any
-     * given sample size.
-     *
-     * @param key content cache key.
-     * @return <code>true</code> if cache holds content for given parameters, <code>false</code> otherwise.
-     */
-    boolean hasAny(ContentCacheKey key);
-
-    /**
      * Returns the cached content for given <code>preparationId</code> at step <code>stepId</code>
      *
      * @param key content cache key.
@@ -53,17 +44,16 @@ public interface ContentCache {
      * Mark cache entry as invalid for given <code>preparationId</code> at step <code>stepId</code>. After this method
      * completes, {@link #has(ContentCacheKey)} must immediately return <code>false</code>.
      *
-     * @param key content cache key.
-     */
-    void evict(ContentCacheKey key);
-
-    /**
-     * Mark cache entry as invalid for given <code>preparationId</code> at step <code>stepId</code> for any sample size.
-     * After this method completes, {@link #has(ContentCacheKey)} must immediately return <code>false</code>.
+     * The eviction is performed gradually according to the given key : the more precise the key is, the finer the
+     * eviction.
+     *
+     * Here is the order : dataset.id / preparation.id / step.id / sample size
+     *
+     * For instance, if the step id is null in the key, all cache entries down to the preparation are evicted.
      *
      * @param key content cache key.
      */
-    void evictAllEntries(ContentCacheKey key);
+    void evict(ContentCacheKey key);
 
     /**
      * Removes all content cached by this {@link ContentCache cache}.

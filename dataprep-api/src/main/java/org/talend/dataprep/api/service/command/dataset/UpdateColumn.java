@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
-import org.talend.dataprep.api.preparation.Preparation;
-import org.talend.dataprep.api.preparation.Step;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
 import org.talend.dataprep.exception.TDPException;
@@ -53,12 +51,7 @@ public class UpdateColumn extends DataPrepCommand<Void> {
             HttpResponse response = client.execute(contentUpdate);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_OK) {
-                //TODO : evict all preparations at all steps that has the dataset that we just changed
-                final Preparation preparation = Preparation.defaultPreparation(dataSetId);
-                final ContentCacheKey key = new ContentCacheKey(preparation.id(), Step.ROOT_STEP.id());
-                if (contentCache.has(key)) {
-                    contentCache.evict(key);
-                }
+                contentCache.evict(new ContentCacheKey(dataSetId));
                 return null;
             }
             else if (statusCode >= 400) {
