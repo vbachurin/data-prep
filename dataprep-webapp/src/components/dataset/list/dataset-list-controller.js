@@ -17,7 +17,7 @@
      * @requires data-prep.services.utils.service:MessageService
      * @requires data-prep.services.uploadWorkflowService:UploadWorkflowService
      */
-    function DatasetListCtrl($window, $stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService) {
+    function DatasetListCtrl($window, $stateParams, DatasetService, PlaygroundService, TalendConfirmService, MessageService, UploadWorkflowService, DatasetListService) {
         var vm = this;
 
         var sortSelectedKey = 'dataprep.dataset.sort';
@@ -25,6 +25,7 @@
 
         vm.datasetService = DatasetService;
         vm.uploadWorkflowService = UploadWorkflowService;
+        vm.datasetListService = DatasetListService;
 
         /**
          * @ngdoc property
@@ -191,7 +192,7 @@
 
         // load the datasets
         DatasetService
-            .getDatasets()
+            .getDatasets(vm.sortSelected.id, vm.sortOrderSelected.id)
             .then(loadUrlSelectedDataset);
     }
 
@@ -207,7 +208,7 @@
             enumerable: true,
             configurable: false,
             get: function () {
-                return this.datasetService.datasetsList();
+                return this.datasetListService.datasets;
             }
         });
 

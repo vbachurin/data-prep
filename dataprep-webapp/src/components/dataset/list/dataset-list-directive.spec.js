@@ -5,7 +5,7 @@ describe('Dataset list directive', function () {
         return str.match(suffix + '$')[0] === suffix;
     }
 
-    var scope, createElement, element;
+    var scope,  createElement, element;
     var datasets = [
         {
             'id': '12ce6c32-bf80-41c8-92e5-66d70f22ec1f',
@@ -41,7 +41,7 @@ describe('Dataset list directive', function () {
         $translateProvider.preferredLanguage('en');
     }));
 
-    beforeEach(inject(function ($rootScope, $compile, $q, DatasetService) {
+    beforeEach(inject(function ($rootScope, $compile, $q, DatasetService, DatasetListService) {
         scope = $rootScope.$new();
         createElement = function () {
             element = angular.element('<dataset-list></dataset-list>');
@@ -50,7 +50,8 @@ describe('Dataset list directive', function () {
             return element;
         };
 
-        spyOn(DatasetService, 'datasetsList').and.returnValue(datasets);
+        //datasetListCtrl.datasets is bound to DatasetListService.datasets
+        DatasetListService.datasets = datasets;
         spyOn(DatasetService, 'getDatasets').and.callFake(function () {
             return $q.when(datasets);
         });

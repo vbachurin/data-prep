@@ -306,9 +306,9 @@ describe('Dataset list controller', function () {
             expect(MessageService.success).toHaveBeenCalledWith('REMOVE_SUCCESS_TITLE', 'REMOVE_SUCCESS', {type: 'dataset', name: 'Customers (50 lines)'});
         }));
 
-        it('should bind datasets getter to DatasetService.datasetsList()', inject(function (DatasetService) {
+        it('should bind datasets getter to datasetListService.datasets', inject(function (DatasetService, DatasetListService) {
             //given
-            spyOn(DatasetService, 'datasetsList').and.returnValue(refreshedDatasets);
+            DatasetListService.datasets = refreshedDatasets;
 
             //then
             expect(ctrl.datasets).toBe(refreshedDatasets);

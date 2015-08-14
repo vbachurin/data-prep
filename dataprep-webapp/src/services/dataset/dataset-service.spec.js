@@ -39,12 +39,26 @@ describe('Dataset Service', function () {
         DatasetListService.datasets = null;
     }));
 
-    it('should return dataset list from ListService', inject(function (DatasetService, DatasetListService) {
+    it('should return dataset list from ListService when new sort are performed', inject(function (DatasetService, DatasetListService) {
         //given
-        DatasetListService.datasets = datasets;
+        DatasetListService.datasetsSort = 'name';
+        DatasetListService.datasetsOrder = 'asc';
 
         //when
-        var result = DatasetService.datasetsList();
+        var result = DatasetService.datasetsList('name', 'desc');
+
+        //then
+        expect(result).toBeFalsy();
+    }));
+
+    it('should return dataset list from ListService when same sort are performed', inject(function (DatasetService, DatasetListService) {
+        //given
+        DatasetListService.datasetsSort = 'name';
+        DatasetListService.datasetsOrder = 'asc';
+        spyOn(DatasetListService, 'getDatasets').and.returnValue(datasets);
+
+        //when
+        var result = DatasetService.datasetsList('name', 'asc');
 
         //then
         expect(result).toBe(datasets);
@@ -112,12 +126,14 @@ describe('Dataset Service', function () {
         expect(uniqueName).toBe('my second dataset (3)');
     }));
 
-    it('should get a promise that resolve the existing datasets if already fetched', inject(function ($rootScope, DatasetService) {
+    it('should get a promise that resolve the existing datasets if already fetched', inject(function ($rootScope, DatasetService, DatasetListService) {
         //given
         var results = null;
+        DatasetListService.datasetsSort = 'date';
+        DatasetListService.datasetsOrder = 'desc';
 
         //when
-        DatasetService.getDatasets()
+        DatasetService.getDatasets('date','desc')
             .then(function(response) {
                 results = response;
             });
@@ -130,9 +146,12 @@ describe('Dataset Service', function () {
     it('should not consolidate preparations and datasets if datasets are already fetched', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
         //given
         var results = null;
+        DatasetListService.datasetsSort = 'date';
+        DatasetListService.datasetsOrder = 'desc';
+        spyOn(DatasetListService, 'getDatasets').and.returnValue(datasets);
 
         //when
-        DatasetService.getDatasets()
+        DatasetService.getDatasets('date','desc')
             .then(function(response) {
                 results = response;
             });
@@ -147,9 +166,10 @@ describe('Dataset Service', function () {
         //given
         var results = null;
         DatasetListService.datasets = null;
-
+        DatasetListService.datasetsSort = null;
+        DatasetListService.datasetsOrder = null;
         //when
-        DatasetService.getDatasets()
+        DatasetService.getDatasets('date','desc')
             .then(function(response) {
                 results = response;
             });
@@ -163,9 +183,11 @@ describe('Dataset Service', function () {
     it('should consolidate preparations and datasets on new dataset fetch', inject(function ($rootScope, DatasetService, DatasetListService, PreparationListService) {
         //given
         DatasetListService.datasets = null;
+        DatasetListService.datasetsSort = null;
+        DatasetListService.datasetsOrder = null;
 
         //when
-        DatasetService.getDatasets();
+        DatasetService.getDatasets('date','desc');
         DatasetListService.datasets = datasets; // simulate dataset list initialisation
         $rootScope.$digest();
 

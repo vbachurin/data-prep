@@ -178,6 +178,20 @@ describe('Dataset List Service', function () {
         expect(DatasetListService.datasets).toEqual(datasets);
     }));
 
+
+    it('should fetch dataset list in cache', inject(function ($rootScope, DatasetListService) {
+        //given
+        DatasetListService.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
+
+        //when
+        DatasetListService.refreshDatasets('name', 'asc');
+        $rootScope.$apply();
+
+        //then
+        expect(DatasetListService.getDatasets('name', 'asc')).toEqual(datasets);
+    }));
+
+
     it('should not trigger another refresh when one is already pending with the same sort condition', inject(function ($rootScope, DatasetListService, DatasetRestService) {
         //given
         DatasetListService.datasets = [{name: 'my dataset'}, {name: 'my second dataset'}];
