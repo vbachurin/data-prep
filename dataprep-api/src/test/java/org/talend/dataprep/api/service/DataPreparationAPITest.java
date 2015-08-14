@@ -530,7 +530,7 @@ public class DataPreparationAPITest {
     public void testPreparationInitialContent() throws Exception {
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
-        String json = given().get("/api/preparations/{preparation}/details", preparationId).toString();
+        String json = given().get("/api/preparations/{preparation}/details", preparationId).asString();
         Preparation preparation = builder.build().reader(Preparation.class).readValue(json);
 
         final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_columns.json");
@@ -549,7 +549,7 @@ public class DataPreparationAPITest {
     public void testPreparationContentWithActions() throws Exception {
         // given
         final String preparationId = createPreparationFromFile("dataset/dataset.csv", "testPreparationContentGet", "text/csv");
-        String json = given().get("/api/preparations/{preparation}/details", preparationId).toString();
+        String json = given().get("/api/preparations/{preparation}/details", preparationId).asString();
         Preparation preparation = builder.build().reader(Preparation.class).readValue(json);
         List<String> steps = preparation.getSteps();
 
