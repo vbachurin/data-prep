@@ -8,13 +8,12 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.type.Type;
 import org.talend.dataprep.transformation.api.action.metadata.common.ActionMetadata;
-import org.talend.dataprep.transformation.api.action.metadata.fillempty.AbstractFillIfEmpty;
 import org.talend.dataprep.transformation.api.action.parameters.Parameter;
 
-@Component(value = FillWithIntegerIfInvalid.ACTION_BEAN_PREFIX + FillWithIntegerIfInvalid.FILL_INVALID_ACTION_NAME)
-public class FillWithIntegerIfInvalid extends AbstractFillIfInvalid {
+@Component(value = FillWithNumericIfInvalid.ACTION_BEAN_PREFIX + FillWithNumericIfInvalid.FILL_INVALID_ACTION_NAME)
+public class FillWithNumericIfInvalid extends AbstractFillIfInvalid {
 
-    public static final String FILL_INVALID_ACTION_NAME = "fillinvalidwithdefaultinteger"; //$NON-NLS-1$
+    public static final String FILL_INVALID_ACTION_NAME = "fillinvalidwithdefaultnumeric"; //$NON-NLS-1$
 
     @Override
     public String getName() {
@@ -34,7 +33,22 @@ public class FillWithIntegerIfInvalid extends AbstractFillIfInvalid {
      */
     @Override
     public boolean acceptColumn(ColumnMetadata column) {
-        return Type.INTEGER.equals(Type.get(column.getType()));
+        Type type = Type.get(column.getType());
+
+        return isNumericType( type );
     }
+
+
+    private boolean isNumericType(Type type){
+        if ( Type.NUMERIC.equals( type ) ){
+            return true;
+        }
+        Type parent = type.getSuperType();
+        if (parent == null){
+            return false;
+        }
+        return isNumericType( parent );
+    }
+
 
 }

@@ -43,7 +43,7 @@
     "label": "Fill empty cells with value..."
   },
   {
-    "name": "fillinvalidwithdefaultinteger",
+    "name": "fillinvalidwithdefaultnumeric",
     "parameters": [
       {
         "name": "column_id",
