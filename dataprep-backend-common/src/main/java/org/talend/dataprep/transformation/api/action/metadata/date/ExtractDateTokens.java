@@ -3,6 +3,7 @@ package org.talend.dataprep.transformation.api.action.metadata.date;
 import static org.talend.dataprep.api.type.Type.BOOLEAN;
 
 import java.text.ParsePosition;
+import java.time.DateTimeException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
@@ -133,6 +134,9 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
         final RowMetadata rowMetadata = row.getRowMetadata();
         final ColumnMetadata column = rowMetadata.getById(columnId);
 
+        // read the list of patterns from columns metadata:
+        List<DateTimeFormatter> patterns = readPatternFromJson(row, columnId);
+
         // Create new columns for date tokens
         final Map<String, String> dateFieldColumns = new HashMap<>();
         for (DateFieldMappingBean date_field : DATE_FIELDS) {
@@ -147,11 +151,10 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
         if (value == null) {
             return;
         }
-        final DateTimeFormatter dtf = getMostUsedPatternFormatter(column);
         TemporalAccessor temporalAccessor = null;
         try {
-            temporalAccessor = dtf.parse(value, new ParsePosition(0));
-        } catch (DateTimeParseException e) {
+            temporalAccessor = superParse(value, patterns);
+        } catch (DateTimeException e) {
             // temporalAccessor is left null, this will be used bellow to set empty new value for all fields
             LOGGER.debug("Unable to parse date {}.", value, e);
         }
@@ -186,24 +189,6 @@ public class ExtractDateTokens extends AbstractDate implements ColumnAction {
                 .headerSize(column.getHeaderSize()) //
                 .build();
     }
-
-    /**
-     * Get the current date pattern
-     *
-     * @param column the column metadata
-     * @return a new date formatter that fit the current pattern
-     */
-    private DateTimeFormatter getMostUsedPatternFormatter(final ColumnMetadata column) {
-        final JsonFactory jsonFactory = new JsonFactory();
-        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
-        final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final String datePattern = rootNode.get("patternFrequencyTable") //$NON-NLS-1$
-                .get(0) //
-                .get("pattern") //$NON-NLS-1$
-                .asText();
-        return DateTimeFormatter.ofPattern(datePattern);
-    }
-
 
     private static class DateFieldMappingBean {
         private final String key;

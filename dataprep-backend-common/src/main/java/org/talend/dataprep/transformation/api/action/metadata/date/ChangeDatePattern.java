@@ -123,7 +123,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         final JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
 
         // read the list of patterns from columns metadata:
-        List<DateTimeFormatter> patterns = readPatternFromJson(rootNode);
+        List<DateTimeFormatter> patterns = readPatternFromJson(row, columnId);
 
         // update the pattern in the column
         try {
@@ -148,31 +148,6 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is
         }
-    }
-    
-    private List<DateTimeFormatter> readPatternFromJson(JsonNode rootNode) {
-        List<DateTimeFormatter> toReturn = new ArrayList<>();
-        for (int i = 0; i < rootNode.get("patternFrequencyTable").size(); i++) {
-            String pattern = rootNode.get("patternFrequencyTable").get(i).get("pattern").asText();
-            toReturn.add(DateTimeFormatter.ofPattern(pattern));
-        }
-        return toReturn;
-    }
-
-    protected TemporalAccessor superParse(String value, List<DateTimeFormatter> formats) throws DateTimeException {
-         for (DateTimeFormatter formatToTest : formats) {
-            try {
-                System.out.print("testing [" + value + "] against " + formatToTest.toString());
-                TemporalAccessor toReturn = formatToTest.parse(value);
-                System.out.println(": OK");
-                return toReturn;
-            } catch (DateTimeException e) {
-                System.out.println(": NOK");
-                // Nothing to do, just try value against next pattern
-            }
-        }
-
-        throw new DateTimeException("Test [" + value + "] does not match any known pattern");
     }
 
     /**

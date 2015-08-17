@@ -143,7 +143,7 @@ public class ChangeDatePatternTest {
     }
 
     @Test
-    public void should_process_row_when_value_does_not_match_pattern() throws Exception {
+    public void should_process_row_when_value_does_not_match_most_frequent_pattern() throws Exception {
         // given
         Map<String, String> values = new HashMap<>();
         values.put("0000", "toto");
@@ -155,6 +155,29 @@ public class ChangeDatePatternTest {
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "toto");
         expectedValues.put("0001", "25 - Apr - 2009");
+        expectedValues.put("0002", "tata");
+
+        // when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        // then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_process_row_when_value_does_not_match_any_pattern() throws Exception {
+        // given
+        Map<String, String> values = new HashMap<>();
+        values.put("0000", "toto");
+        values.put("0001", "NA");
+        values.put("0002", "tata");
+        DataSetRow row = new DataSetRow(values);
+        setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "toto");
+        expectedValues.put("0001", "NA");
         expectedValues.put("0002", "tata");
 
         // when
