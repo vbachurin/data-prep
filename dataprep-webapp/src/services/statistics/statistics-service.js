@@ -20,6 +20,7 @@
 
             processData: processData,
             addFilter: addFilter,
+            addRangeFilter: addRangeFilter,
             resetCharts: resetCharts,
 
             //TODO temporary method to be replaced with new geo chart
@@ -242,6 +243,15 @@
             $timeout(filterFn);
         }
 
+        function addRangeFilter(interval) {
+            var column = service.selectedColumn;
+            var filterFn = FilterService.addFilter.bind(null, 'between_range', column.id, column.name, {phrase: interval});
+
+            $timeout(filterFn);
+        }
+
+
+
         /**
          * @ngdoc method
          * @name processMapData
@@ -279,10 +289,14 @@
                 case 'number':
                     initRangeHistogram(column.statistics.histogram);
                     updateBoxplotData();
-
+                    var currentRangeFilter = _.find(FilterService.filters, function(filter){
+                        return filter.colId === column.id && filter.type === 'between_range';
+                    });
                     service.rangeLimits = {
                         min : column.statistics.min,
-                        max : column.statistics.max
+                        max : column.statistics.max,
+                        minBrush : currentRangeFilter ? currentRangeFilter.args.phrase[0] : undefined,
+                        maxBrush : currentRangeFilter ? currentRangeFilter.args.phrase[1] : undefined
                     };
                     break;
                 case 'text':

@@ -6,7 +6,7 @@
      * @name data-prep.filter-list.controller:FilterListCtrl
      * @description Filter list controller.
      */
-    function FilterListCtrl(FilterService) {
+    function FilterListCtrl(FilterService, StatisticsService) {
         var vm = this;
         vm.filterService = FilterService;
 
@@ -17,7 +17,16 @@
          * @param {object} filter - the filter to delete
          * @description Delete a filter by calling {@link data-prep.services.filter.service:FilterService FilterService}
          */
-        vm.delete = FilterService.removeFilter;
+        vm.delete = function(obj){
+            FilterService.removeFilter(obj);
+            if(obj.colId === StatisticsService.selectedColumn.id){
+                StatisticsService.rangeLimits = {
+                    min : StatisticsService.selectedColumn.statistics.min,
+                    max : StatisticsService.selectedColumn.statistics.max
+                };
+            }
+        };
+
 
         /**
          * @ngdoc method

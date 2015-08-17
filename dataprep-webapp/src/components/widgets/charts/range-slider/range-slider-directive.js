@@ -19,7 +19,8 @@
 		return {
 			restrict: 'E',
 			scope: {
-				rangeLimits: '='
+				rangeLimits: '=',
+				onBrushEnd: '&'
 			},
 			link: function (scope, element, attrs) {
 				var h = attrs.height;
@@ -29,9 +30,9 @@
 				function renderRangerSlider(rangeLimits){
 					var minimum = rangeLimits.min;
 					var maximum = rangeLimits.max;
-					//minimum = .000012515468;
-					//maximum = .001299;
-					//var nbDecimals = 12;
+					var minBrush = rangeLimits.minBrush || minimum;
+					var maxBrush = rangeLimits.maxBrush || maximum;
+
 					var filterFloat = function (value) {
 						if(/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/
 								.test(value)){
@@ -52,7 +53,7 @@
 
 					var brush = d3.svg.brush()
 						.x(x)
-						.extent([minimum, maximum])
+						.extent([minBrush, maxBrush])
 						.on('brushstart', brushstart)
 						.on('brush', brushmove)
 						.on('brushend', brushend);
@@ -125,11 +126,8 @@
 
 						d3.select(this).transition().duration(400)
 							.call(brush.extent(extent1));
-					}
 
-					function resetBrush(){
-						svg.select('.brush').transition().call(brush.clear().extent([minimum, maximum]));
-						fillInputs();
+						scope.onBrushEnd()(brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
 					}
 
 					fillInputs();
@@ -182,7 +180,7 @@
 							.call(brush.extent(finalExtent));
 						//should be after brush update
 						fillInputs();
-
+						scope.onBrushEnd()(brush.extent().map(function(n){return +n.toFixed(nbDecimals);}));
 					}
 
 					function decimalPlaces(num) {

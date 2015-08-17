@@ -24,6 +24,10 @@
             alert('The selected pattern is: ' + item.pattern + '. Filtering is coming soon.');
             //return StatisticsService.addFilter(item.data);
         };
+
+        vm.onBrushEndFn = function onBrushEndFn (interval){
+            return StatisticsService.addRangeFilter(interval);
+        };
     }
 
     Object.defineProperty(StatsDetailsCtrl.prototype,

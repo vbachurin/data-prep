@@ -39,6 +39,8 @@
                     return 'empty records';
                 case 'valid_records':
                     return 'valid records';
+                case 'between_range':
+                    return 'in ['+ args.phrase[0]+ ', ' + args.phrase[1]+']';
             }
         });
     }
@@ -159,6 +161,20 @@
 
         /**
          * @ngdoc method
+         * @name createRangeFilterFn
+         * @methodOf data-prep.services.filter.service:FilterService
+         * @param {string} colId - the column id??????????????????
+         * @description [PRIVATE] Create a 'range' filter function
+         * @returns {function} - the predicated function
+         */
+        var createRangeFilterFn = function(colId, values) {
+            return function(item) {
+                return +item[colId] >= values[0] && +item[colId] <= values[1];
+            };
+        };
+
+        /**
+         * @ngdoc method
          * @name addFilter
          * @methodOf data-prep.services.filter.service:FilterService
          * @param {string} type - the filter type (ex : contains)
@@ -186,6 +202,19 @@
                 case 'valid_records':
                     filterFn = createValidFilterFn(colId, args.values);
                     filterInfo = new Filter(type, colId, colName, false, args, filterFn);
+                    break;
+                case 'between_range':
+                    var existantNumColFilter = _.find(self.filters, function(filter){
+                        return filter.colId === colId && filter.type === 'between_range';
+                    });
+
+                    if(existantNumColFilter){
+                        self.updateFilter(existantNumColFilter, args.phrase);
+                        return;
+                    }else{
+                        filterFn = createRangeFilterFn(colId, args.phrase);
+                        filterInfo = new Filter(type, colId, colName, false, args, filterFn);
+                    }
                     break;
             }
             DatagridService.addFilter(filterFn);
@@ -226,6 +255,11 @@
                 case 'contains':
                     newArgs = { phrase: newValue};
                     newFilterFn = createContainFilterFn(oldFilter.colId, newValue);
+                    newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, true, newArgs, newFilterFn);
+                    break;
+                case 'between_range':
+                    newArgs = { phrase: newValue};
+                    newFilterFn = createRangeFilterFn(oldFilter.colId, newValue);
                     newFilter = new Filter(oldFilter.type, oldFilter.colId, oldFilter.colName, true, newArgs, newFilterFn);
                     break;
             }

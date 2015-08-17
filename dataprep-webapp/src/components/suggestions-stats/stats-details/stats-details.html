@@ -9,7 +9,8 @@
             <range-slider       id="rangeSliderId"
                                 width="310"
                                 height="100"
-                                range-limits="statsDetailsCtrl.rangeLimits">
+                                range-limits="statsDetailsCtrl.rangeLimits"
+                                on-brush-end="statsDetailsCtrl.onBrushEndFn" >
             </range-slider>
         </talend-tabs-item>
         <talend-tabs-item tab-title="Value">

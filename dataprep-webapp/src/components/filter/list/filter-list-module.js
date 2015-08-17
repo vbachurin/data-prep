@@ -8,10 +8,12 @@
      * @requires talend.widget
      * @requires data-prep.filter-search
      * @requires data-prep.services.filter
+     * @requires data-prep.services.statistics
      */
     angular.module('data-prep.filter-list', [
         'talend.widget',
         'data-prep.filter-search',
-        'data-prep.services.filter'
+        'data-prep.services.filter',
+        'data-prep.services.statistics'
     ]);
 })();
