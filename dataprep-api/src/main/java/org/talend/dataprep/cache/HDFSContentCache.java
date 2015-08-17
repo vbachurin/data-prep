@@ -1,4 +1,4 @@
-package org.talend.dataprep.preparation.store;
+package org.talend.dataprep.cache;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package org.talend.dataprep.preparation.store;
+package org.talend.dataprep.cache;
 
 import org.talend.dataprep.api.preparation.Preparation;
 

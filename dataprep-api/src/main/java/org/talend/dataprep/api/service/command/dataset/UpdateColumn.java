@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.APIErrorCodes;
 import org.talend.dataprep.api.service.PreparationAPI;
 import org.talend.dataprep.api.service.command.common.DataPrepCommand;
+import org.talend.dataprep.cache.ContentCache;
+import org.talend.dataprep.cache.ContentCacheKey;
 import org.talend.dataprep.exception.TDPException;
 import org.talend.dataprep.exception.TDPExceptionContext;
 import org.talend.dataprep.exception.json.JsonErrorCode;
-import org.talend.dataprep.preparation.store.ContentCache;
-import org.talend.dataprep.preparation.store.ContentCacheKey;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
