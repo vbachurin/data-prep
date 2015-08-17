@@ -11,6 +11,14 @@
     function PreviewService($q, DatagridService, PreparationService) {
         /**
          * @ngdoc property
+         * @name reverter
+         * @propertyOf data-prep.services.playground.service:PreviewService
+         * @description [PRIVATE] The revert executor to apply on datagrid to go from current preview to original data
+         */
+        var reverter;
+
+        /**
+         * @ngdoc property
          * @name originalData
          * @propertyOf data-prep.services.playground.service:PreviewService
          * @description [PRIVATE] The original data (columns and records) before switching to preview
@@ -105,18 +113,9 @@
          * </ul>
          */
         function replaceRecords(response) {
-            //copy the original data to avoid modification persistence
-            modifiedRecords = originalData.records.slice(0);
-
-            //insert diff records
-            var previewRecords = response.data.records;
-            var nbRecordsToRemove = endIndex - startIndex + 1;
-            var spliceArgs = [startIndex, nbRecordsToRemove].concat(previewRecords);
-            Array.prototype.splice.apply(modifiedRecords, spliceArgs);
-
-            //update grid
-            var data = {columns: response.data.columns, records: modifiedRecords, preview: true};
-            DatagridService.updateData(data);
+            DatagridService.execute(reverter);
+            var executor = DatagridService.previewDataExecutor(response.data);
+            reverter = DatagridService.execute(executor);
         }
 
         /**
@@ -127,7 +126,10 @@
          */
         function initPreviewIdNeeded() {
             if(!originalData) {
-                originalData = DatagridService.data;
+                originalData = {
+                    columns: DatagridService.data.columns.slice(0),
+                    records: DatagridService.data.records.slice(0)
+                };
                 displayedTdpIds = getDisplayedTdpIds();
                 startIndex = DatagridService.dataView.getIdxById(displayedTdpIds[0]);
                 endIndex = DatagridService.dataView.getIdxById(displayedTdpIds[displayedTdpIds.length - 1]);
@@ -147,7 +149,7 @@
          * It cancel the previous preview first
          */
         function getPreviewDiffRecords(currentStep, previewStep, targetColumnId) {
-            cancelPreview(true, null);
+            stopPendingPreview();
             initPreviewIdNeeded();
 
             PreparationService.getPreviewDiff(currentStep, previewStep, displayedTdpIds, previewCanceler)
@@ -172,7 +174,7 @@
          * It cancel the previous preview first
          */
         function getPreviewUpdateRecords(currentStep, updateStep, newParams) {
-            cancelPreview(true, null);
+            stopPendingPreview();
             initPreviewIdNeeded();
 
             PreparationService.getPreviewUpdate(currentStep, updateStep, newParams, displayedTdpIds, previewCanceler)
@@ -197,7 +199,7 @@
          * It cancel the previous preview first
          */
         function getPreviewAddRecords(datasetId, action, params) {
-            cancelPreview(true, null);
+            stopPendingPreview();
             initPreviewIdNeeded();
 
             PreparationService.getPreviewAdd(datasetId, action, params, displayedTdpIds, previewCanceler)
@@ -234,13 +236,14 @@
          */
         function reset(restoreOriginalData) {
             if(restoreOriginalData && previewInProgress()) {
-                DatagridService.updateData(originalData);
+                DatagridService.execute(reverter);
             }
             originalData = null;
             modifiedRecords = null;
             displayedTdpIds = null;
             startIndex = null;
             endIndex = null;
+            reverter = null;
         }
 
         /**

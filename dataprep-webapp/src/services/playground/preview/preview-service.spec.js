@@ -55,6 +55,9 @@ describe('Preview Service', function () {
         preview: true
     };
 
+    var previewExecutor = {};
+    var reverterExecutor = {};
+
     beforeEach(module('data-prep.services.playground'));
 
     beforeEach(inject(function ($q, PreviewService, DatagridService, PreparationService) {
@@ -89,7 +92,9 @@ describe('Preview Service', function () {
             return null;
         });
 
-        spyOn(DatagridService, 'updateData').and.returnValue();
+        spyOn(DatagridService, "previewDataExecutor").and.returnValue(previewExecutor);
+        spyOn(DatagridService, "execute").and.returnValue(reverterExecutor);
+
         spyOn(PreparationService, 'getPreviewDiff').and.returnValue($q.when(diff));
         spyOn(PreparationService, 'getPreviewUpdate').and.returnValue($q.when(diff));
         spyOn(PreparationService, 'getPreviewAdd').and.returnValue($q.when(diff));
@@ -119,7 +124,8 @@ describe('Preview Service', function () {
             expect(previewArgs[1]).toBe(previewStep);
             expect(previewArgs[2]).toEqual(displayedTdpIds);
 
-            expect(DatagridService.updateData).toHaveBeenCalledWith(modifiedData);
+            expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
+            expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
         }));
 
         it('should focus on provided column', inject(function($rootScope, PreviewService, DatagridService) {
@@ -165,27 +171,6 @@ describe('Preview Service', function () {
             //then
             expect(previewCanceler.promise.$$state.status).toBe(1);
         }));
-
-        it('should NOT restore original data to avoid unnecessary refresh', inject(function($rootScope, PreviewService, DatagridService) {
-            //given
-            var currentStep = {
-                column:{id:'0001'},
-                transformation: { stepId: '1'}
-            };
-            var previewStep = {
-                column:{id:'0000'},
-                transformation: { stepId: '2'}
-            };
-
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep, null);
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
-
-            //when
-            PreviewService.getPreviewDiffRecords(currentStep, previewStep, null);
-
-            //then
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
-        }));
     });
 
     describe('update preview', function() {
@@ -214,7 +199,8 @@ describe('Preview Service', function () {
             expect(previewArgs[2]).toBe(newParams);
             expect(previewArgs[3]).toEqual(displayedTdpIds);
 
-            expect(DatagridService.updateData).toHaveBeenCalledWith(modifiedData);
+            expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
+            expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
         }));
 
         it('should focus on update step column', inject(function($rootScope, PreviewService, DatagridService) {
@@ -262,27 +248,6 @@ describe('Preview Service', function () {
             expect(previewCanceler.promise.$$state.status).toBe(1);
         }));
 
-        it('should NOT restore original data to avoid unnecessary refresh', inject(function($rootScope, PreviewService, DatagridService) {
-            //given
-            var currentStep = {
-                column:{id:'0001'},
-                transformation: { stepId: '1'}
-            };
-            var updateStep = {
-                column:{id:'0000'},
-                transformation: { stepId: '2'}
-            };
-            var newParams = {value: '--'};
-
-            PreviewService.getPreviewUpdateRecords(currentStep, updateStep, newParams);
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
-
-            //when
-            PreviewService.getPreviewUpdateRecords(currentStep, updateStep, newParams);
-
-            //then
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
-        }));
     });
 
     describe('add preview', function() {
@@ -309,7 +274,8 @@ describe('Preview Service', function () {
             expect(previewArgs[2]).toBe(params);
             expect(previewArgs[3]).toEqual(displayedTdpIds);
 
-            expect(DatagridService.updateData).toHaveBeenCalledWith(modifiedData);
+            expect(DatagridService.execute).toHaveBeenCalledWith(undefined); //reverter but no preview to revert
+            expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor); //preview diff
         }));
 
         it('should focus on add step column', inject(function($rootScope, PreviewService, DatagridService) {
@@ -352,30 +318,10 @@ describe('Preview Service', function () {
             //then
             expect(previewCanceler.promise.$$state.status).toBe(1);
         }));
-
-        it('should NOT restore original data to avoid unnecessary refresh', inject(function($rootScope, PreviewService, DatagridService) {
-            //given
-            var datasetId = '46c541b683ef5151';
-            var action = 'fillEmptyWithValue';
-            var params = {
-                scope: 'column',
-                column_id: '0001',
-                value: '--'
-            };
-
-            PreviewService.getPreviewAddRecords(datasetId, action, params);
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
-
-            //when
-            PreviewService.getPreviewAddRecords(datasetId, action, params);
-
-            //then
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
-        }));
     });
 
     describe('reset/cancel/stop preview', function() {
-        beforeEach(inject(function(PreviewService) {
+        beforeEach(inject(function($rootScope, PreviewService, DatagridService) {
             var currentStep = {
                 column:{id:'0001'},
                 transformation: { stepId: '1'}
@@ -402,26 +348,30 @@ describe('Preview Service', function () {
             expect(previewCanceler.promise.$$state.status).toBe(1);
         }));
 
-        it('should restore original data on reset', inject(function(PreviewService, DatagridService) {
+        it('should restore original data on reset', inject(function($rootScope, PreviewService, DatagridService) {
             //given
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
+            $rootScope.$digest();
+            expect(DatagridService.execute.calls.count()).toBe(2);
+            expect(DatagridService.execute).toHaveBeenCalledWith(undefined);
+            expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor);
 
             //when
             PreviewService.reset(true);
 
             //then
-            expect(DatagridService.updateData).toHaveBeenCalledWith(originalData);
+            expect(DatagridService.execute.calls.count()).toBe(3);
+            expect(DatagridService.execute).toHaveBeenCalledWith(reverterExecutor);
         }));
 
         it('should NOT restore original data on reset', inject(function(PreviewService, DatagridService) {
             //given
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
+            expect(DatagridService.execute).not.toHaveBeenCalled();
 
             //when
             PreviewService.reset(false);
 
             //then
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
+            expect(DatagridService.execute).not.toHaveBeenCalled();
         }));
 
         it('should stop pending preview on cancel call', inject(function(PreviewService, PreparationService) {
@@ -440,7 +390,7 @@ describe('Preview Service', function () {
 
         it('should NOT set focused column nor restore original data on cancel call', inject(function(PreviewService, DatagridService) {
             //given
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
+            expect(DatagridService.execute).not.toHaveBeenCalled();
             expect(DatagridService.focusedColumn).toBeFalsy();
 
             var partial = true; // do NOT restore original data
@@ -450,13 +400,16 @@ describe('Preview Service', function () {
             PreviewService.cancelPreview(partial, focusedColId);
 
             //then
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
+            expect(DatagridService.execute).not.toHaveBeenCalled();
             expect(DatagridService.focusedColumn).toBeFalsy();
         }));
 
-        it('should set focused column and restore original data on cancel call', inject(function(PreviewService, DatagridService) {
+        it('should set focused column and restore original data on cancel call', inject(function($rootScope, PreviewService, DatagridService) {
             //given
-            expect(DatagridService.updateData).not.toHaveBeenCalled();
+            $rootScope.$digest();
+            expect(DatagridService.execute.calls.count()).toBe(2);
+            expect(DatagridService.execute).toHaveBeenCalledWith(undefined);
+            expect(DatagridService.execute).toHaveBeenCalledWith(previewExecutor);
             expect(DatagridService.focusedColumn).toBeFalsy();
 
             var partial = false; // do restore original data
@@ -466,7 +419,8 @@ describe('Preview Service', function () {
             PreviewService.cancelPreview(partial, focusedColId);
 
             //then
-            expect(DatagridService.updateData).toHaveBeenCalledWith(originalData);
+            expect(DatagridService.execute.calls.count()).toBe(3);
+            expect(DatagridService.execute).toHaveBeenCalledWith(reverterExecutor);
             expect(DatagridService.focusedColumn).toBe(focusedColId);
         }));
     });
