@@ -195,18 +195,5 @@ describe('Recipe Bullet service', function () {
             //then
             expect(PlaygroundService.loadStep).toHaveBeenCalledWith(previousStep);
         }));
-
-        it('should reset preview service', inject(function ($rootScope, PreviewService, RecipeBulletService) {
-            //given
-            var step = {inactive: false, column:{id:'0001'}};
-            spyOn(PreviewService, 'reset').and.returnValue();
-
-            //when
-            RecipeBulletService.toggleStep(step);
-            $rootScope.$digest();
-
-            //then
-            expect(PreviewService.reset).toHaveBeenCalledWith(false);
-        }));
     });
 });

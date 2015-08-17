@@ -37,10 +37,7 @@
          */
         function toggleStep(step) {
             var stepToLoad = step.inactive ? step : RecipeService.getPreviousStep(step);
-            PlaygroundService.loadStep(stepToLoad)
-                .then(function() {
-                    PreviewService.reset(false);
-                });
+            PlaygroundService.loadStep(stepToLoad);
         }
 
         /**
