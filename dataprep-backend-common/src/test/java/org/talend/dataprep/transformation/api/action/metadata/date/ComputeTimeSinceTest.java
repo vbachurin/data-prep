@@ -91,10 +91,57 @@ public class ComputeTimeSinceTest {
     @Test
     public void should_compute_years() throws IOException {
         //given
-        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
-
         final String date = "01/01/2010";
         final String result = computeTimeSince(date, "MM/dd/yyyy", YEARS);
+
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        row.set("0001", date);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", date);
+        expectedValues.put("0003", result);
+        expectedValues.put("0002", "Bacon");
+
+        //when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_compute_years_alternative_pattern() throws IOException {
+        //given
+        final String date = "01-01-10";
+        final String result = computeTimeSince(date, "MM-dd-yy", YEARS);
+
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        row.set("0001", date);
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "lorem bacon");
+        expectedValues.put("0001", date);
+        expectedValues.put("0003", result);
+        expectedValues.put("0002", "Bacon");
+
+        //when
+        action.beforeApply(parameters);
+        action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
+
+        //then
+        assertEquals(expectedValues, row.values());
+    }
+
+    @Test
+    public void should_compute_years_wrong_pattern() throws IOException {
+        //given
+        final String date = "NA";
+        final String result = "";
+
+        final DataSetRow row = getDefaultRow("statistics_MM_dd_yyyy.json");
+        row.set("0001", date);
 
         final Map<String, String> expectedValues = new HashMap<>();
         expectedValues.put("0000", "lorem bacon");
