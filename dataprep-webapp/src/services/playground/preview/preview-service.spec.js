@@ -37,24 +37,6 @@ describe('Preview Service', function () {
         }
     };
 
-    //result of the diff insertion in the original data
-    var modifiedData = {
-        records: [
-            {tdpId: 0, firstname: 'Tata'},
-            {tdpId: 1, firstname: 'Tete'},
-            {tdpId: 2, firstname: 'Titi Bis', __tdpRowDiff: 'new'}, //insert new row
-            {tdpId: 3, firstname: 'Toto', __tdpRowDiff: 'delete'}, //row is deleted in preview
-            {tdpId: 6, firstname: 'Papa'},
-            {tdpId: 7, firstname: 'Pepe 2', __tdpDiff: {firstname: 'update'}}, //firstname is updated in preview
-            {tdpId: 8, firstname: 'Pipi'},
-            {tdpId: 9, firstname: 'Popo'},
-            {tdpId: 10, firstname: 'Pupu'},
-            {tdpId: 11, firstname: 'Pypy'}
-        ],
-        columns: [{id: '0000', name: 'lastname'}, {id: '0001', name: 'firstname'}],
-        preview: true
-    };
-
     var previewExecutor = {};
     var reverterExecutor = {};
 
@@ -92,8 +74,8 @@ describe('Preview Service', function () {
             return null;
         });
 
-        spyOn(DatagridService, "previewDataExecutor").and.returnValue(previewExecutor);
-        spyOn(DatagridService, "execute").and.returnValue(reverterExecutor);
+        spyOn(DatagridService, 'previewDataExecutor').and.returnValue(previewExecutor);
+        spyOn(DatagridService, 'execute').and.returnValue(reverterExecutor);
 
         spyOn(PreparationService, 'getPreviewDiff').and.returnValue($q.when(diff));
         spyOn(PreparationService, 'getPreviewUpdate').and.returnValue($q.when(diff));
@@ -321,7 +303,7 @@ describe('Preview Service', function () {
     });
 
     describe('reset/cancel/stop preview', function() {
-        beforeEach(inject(function($rootScope, PreviewService, DatagridService) {
+        beforeEach(inject(function($rootScope, PreviewService) {
             var currentStep = {
                 column:{id:'0001'},
                 transformation: { stepId: '1'}
