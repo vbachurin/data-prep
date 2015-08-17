@@ -12,10 +12,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -150,17 +147,22 @@ public class ChangeDatePatternTest {
         // given
         Map<String, String> values = new HashMap<>();
         values.put("0000", "toto");
-        values.put("0001", "05.28.99");
+        values.put("0001", "04-25-09");
         values.put("0002", "tata");
         DataSetRow row = new DataSetRow(values);
         setStatistics(row, "0001", ChangeDatePatternTest.class.getResourceAsStream("statistics_MM_dd_yyyy.json"));
+
+        final Map<String, String> expectedValues = new HashMap<>();
+        expectedValues.put("0000", "toto");
+        expectedValues.put("0001", "25 - Apr - 2009");
+        expectedValues.put("0002", "tata");
 
         // when
         action.beforeApply(parameters);
         action.applyOnColumn(row, new TransformationContext(), parameters, "0001");
 
-        // then (values should be unchanged)
-        assertEquals(values, row.values());
+        // then
+        assertEquals(expectedValues, row.values());
     }
 
     @Test
@@ -182,25 +184,19 @@ public class ChangeDatePatternTest {
     }
 
     @Test
-    public void testSuperParseGoodPattern() throws ParseException {
+    public void testSuperParse() throws ParseException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         TemporalAccessor date = LocalDate.of(2015, 8, 17);
         String expected = dtf.format(date);
 
-        assertEquals(expected, dtf.format(action.superParse("2015/08/17", DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
-        assertEquals(expected, dtf.format(action.superParse("08-17-15", DateTimeFormatter.ofPattern("MM-dd-yy"))));
-        assertEquals(expected, dtf.format(action.superParse("15/17/08", DateTimeFormatter.ofPattern("yy/dd/MM"))));
-    }
+        List<DateTimeFormatter> patterns = new ArrayList<>();
+        patterns.add(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        patterns.add(DateTimeFormatter.ofPattern("MM-dd-yy"));
+        patterns.add(DateTimeFormatter.ofPattern("yy/dd/MM"));
 
-    @Test
-    public void testSuperParseWrongPattern() throws ParseException {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        TemporalAccessor date = LocalDate.of(2015, 8, 17);
-        String expected = dtf.format(date);
-
-        assertEquals(expected, dtf.format(action.superParse("2015/08/17", DateTimeFormatter.ofPattern("yy/dd/MM"))));
-        assertEquals(expected, dtf.format(action.superParse("08-17-15", DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
-        assertEquals(expected, dtf.format(action.superParse("15/17/08", DateTimeFormatter.ofPattern("MM-dd-yy"))));
+        assertEquals(expected, dtf.format(action.superParse("2015/08/17", patterns)));
+        assertEquals(expected, dtf.format(action.superParse("08-17-15", patterns)));
+        assertEquals(expected, dtf.format(action.superParse("15/17/08", patterns)));
     }
 
     @Test

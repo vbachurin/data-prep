@@ -5,8 +5,6 @@ import static org.talend.dataprep.api.type.Type.STRING;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -62,8 +60,12 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
     /**
      * The date formatter to use. It must be init before the transformation
      */
-    private SimpleDateFormat newDateFormat;
+    private DateTimeFormatter newDateFormat;
 
+    /**
+     * The new pattern to use. It must be init before the transformation
+     */
+    private String newPattern;
     /**
      * @see ActionMetadata#getName()
      */
@@ -96,7 +98,8 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
 
     @Override
     protected void beforeApply(Map<String, String> parameters) {
-        newDateFormat = getDateFormat(getNewPattern(parameters));
+        newPattern = getNewPattern(parameters);
+        newDateFormat = getDateFormat(newPattern);
     }
 
     /**
@@ -112,14 +115,15 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         }
 
         // parse and checks the new date pattern
-        final String newPattern = newDateFormat.toPattern();
         final JsonFactory jsonFactory = new JsonFactory();
         final ObjectMapper mapper = new ObjectMapper(jsonFactory);
 
         // store the current pattern in the context
         final JsonNode rootNode = getStatisticsNode(mapper, column);
         final JsonNode mostUsedPatternNode = rootNode.get("patternFrequencyTable").get(0); //$NON-NLS-1$
-        final String futureExPattern = mostUsedPatternNode.get("pattern").asText(); //$NON-NLS-1$
+
+        // read the list of patterns from columns metadata:
+        List<DateTimeFormatter> patterns = readPatternFromJson(rootNode);
 
         // update the pattern in the column
         try {
@@ -138,22 +142,27 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         if (value == null) {
             return;
         }
-        final SimpleDateFormat currentDateFormat = getDateFormat(futureExPattern);
         try {
-            final Date date = currentDateFormat.parse(value);
+            final TemporalAccessor date = superParse(value, patterns);
             row.set(columnId, newDateFormat.format(date));
-        } catch (ParseException e) {
+        } catch (DateTimeException e) {
             // cannot parse the date, let's leave it as is
         }
     }
+    
+    private List<DateTimeFormatter> readPatternFromJson(JsonNode rootNode) {
+        List<DateTimeFormatter> toReturn = new ArrayList<>();
+        for (int i = 0; i < rootNode.get("patternFrequencyTable").size(); i++) {
+            String pattern = rootNode.get("patternFrequencyTable").get(i).get("pattern").asText();
+            toReturn.add(DateTimeFormatter.ofPattern(pattern));
+        }
+        return toReturn;
+    }
 
-    protected TemporalAccessor superParse(String value, DateTimeFormatter probableFormat) throws DateTimeException {
-        DateTimeFormatter[] formats = new DateTimeFormatter[] { probableFormat, DateTimeFormatter.ofPattern("yy/dd/MM"),
-                DateTimeFormatter.ofPattern("yyyy/MM/dd"), DateTimeFormatter.ofPattern("MM-dd-yy") };
-
-        for (DateTimeFormatter formatToTest : formats) {
+    protected TemporalAccessor superParse(String value, List<DateTimeFormatter> formats) throws DateTimeException {
+         for (DateTimeFormatter formatToTest : formats) {
             try {
-                System.out.print("testing [" + value + "] with " + formatToTest.toString());
+                System.out.print("testing [" + value + "] against " + formatToTest.toString());
                 TemporalAccessor toReturn = formatToTest.parse(value);
                 System.out.println(": OK");
                 return toReturn;
@@ -170,12 +179,12 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
      * @param pattern the date pattern.
      * @return the simple date format out of the parameters.
      */
-    private SimpleDateFormat getDateFormat(String pattern) {
+    private DateTimeFormatter getDateFormat(String pattern) {
         try {
             if (StringUtils.isEmpty(pattern)) {
                 throw new IllegalArgumentException();
             }
-            return new SimpleDateFormat(pattern, Locale.ENGLISH);
+            return DateTimeFormatter.ofPattern (pattern, Locale.ENGLISH);
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
         }
