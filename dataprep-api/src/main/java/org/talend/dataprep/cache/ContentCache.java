@@ -1,4 +1,4 @@
-package org.talend.dataprep.preparation.store;
+package org.talend.dataprep.cache;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,8 +34,7 @@ public interface ContentCache {
      * Please note content is not passed in parameters but return of this method also callers to write in entry.
      *
      * @param key content cache key.
-     * @param timeToLive The {@link org.talend.dataprep.preparation.store.HDFSContentCache.TimeToLive TTL} for the new
-     * cache entry.
+     * @param timeToLive The {@link HDFSContentCache.TimeToLive TTL} for the new cache entry.
      * @return A {@link OutputStream output stream} to be used to write content in cache entry
      */
     OutputStream put(ContentCacheKey key, TimeToLive timeToLive);
