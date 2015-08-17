@@ -27,7 +27,7 @@
 
                     loadingTimeout = setTimeout(function() {
                         iElement[0].className = 'is-loading show-loading';
-                    }, 150);
+                    }, 200);
                 });
                 $rootScope.$on('talend.loading.stop', function() {
                     clearTimeout(loadingTimeout);

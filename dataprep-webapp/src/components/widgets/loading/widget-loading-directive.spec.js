@@ -33,7 +33,7 @@ describe('Loading directive', function () {
         expect(element.hasClass('is-loading')).toBe(true);
     }));
 
-    it('should add "show-loading" class after 150ms when "talend.loading.start" is emitted', inject(function ($rootScope) {
+    it('should add "show-loading" class after 200ms when "talend.loading.start" is emitted', inject(function ($rootScope) {
         //given
         expect(element.hasClass('show-loading')).toBe(false);
 
@@ -41,7 +41,7 @@ describe('Loading directive', function () {
         $rootScope.$emit('talend.loading.start');
         $rootScope.$digest();
         expect(element.hasClass('show-loading')).toBe(false);
-        jasmine.clock().tick(150);
+        jasmine.clock().tick(200);
 
         //then
         expect(element.hasClass('show-loading')).toBe(true);
