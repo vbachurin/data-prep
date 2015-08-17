@@ -338,6 +338,8 @@
          * @description Refresh recipe items with current preparation steps
          */
         function refresh() {
+            recipeStateBeforePreview = null;
+
             if(!PreparationService.currentPreparationId) {
                 return reset();
             }
