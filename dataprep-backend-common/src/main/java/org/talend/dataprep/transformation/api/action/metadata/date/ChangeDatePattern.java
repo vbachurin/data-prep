@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 import javax.annotation.Nonnull;
@@ -142,6 +145,25 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         } catch (ParseException e) {
             // cannot parse the date, let's leave it as is
         }
+    }
+
+    protected TemporalAccessor superParse(String value, DateTimeFormatter probableFormat) throws DateTimeException {
+        DateTimeFormatter[] formats = new DateTimeFormatter[] { probableFormat, DateTimeFormatter.ofPattern("yy/dd/MM"),
+                DateTimeFormatter.ofPattern("yyyy/MM/dd"), DateTimeFormatter.ofPattern("MM-dd-yy") };
+
+        for (DateTimeFormatter formatToTest : formats) {
+            try {
+                System.out.print("testing [" + value + "] with " + formatToTest.toString());
+                TemporalAccessor toReturn = formatToTest.parse(value);
+                System.out.println(": OK");
+                return toReturn;
+            } catch (DateTimeException e) {
+                System.out.println(": NOK");
+                // Nothing to do, just try value against next pattern
+            }
+        }
+
+        throw new DateTimeException("Test [" + value + "] does not match any known pattern");
     }
 
     /**

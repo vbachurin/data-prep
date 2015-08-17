@@ -7,7 +7,13 @@ import static org.talend.dataprep.transformation.api.action.metadata.ActionMetad
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -173,6 +179,28 @@ public class ChangeDatePatternTest {
 
         // then (values should be unchanged)
         assertEquals(values, row.values());
+    }
+
+    @Test
+    public void testSuperParseGoodPattern() throws ParseException {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        TemporalAccessor date = LocalDate.of(2015, 8, 17);
+        String expected = dtf.format(date);
+
+        assertEquals(expected, dtf.format(action.superParse("2015/08/17", DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
+        assertEquals(expected, dtf.format(action.superParse("08-17-15", DateTimeFormatter.ofPattern("MM-dd-yy"))));
+        assertEquals(expected, dtf.format(action.superParse("15/17/08", DateTimeFormatter.ofPattern("yy/dd/MM"))));
+    }
+
+    @Test
+    public void testSuperParseWrongPattern() throws ParseException {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        TemporalAccessor date = LocalDate.of(2015, 8, 17);
+        String expected = dtf.format(date);
+
+        assertEquals(expected, dtf.format(action.superParse("2015/08/17", DateTimeFormatter.ofPattern("yy/dd/MM"))));
+        assertEquals(expected, dtf.format(action.superParse("08-17-15", DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
+        assertEquals(expected, dtf.format(action.superParse("15/17/08", DateTimeFormatter.ofPattern("MM-dd-yy"))));
     }
 
     @Test
