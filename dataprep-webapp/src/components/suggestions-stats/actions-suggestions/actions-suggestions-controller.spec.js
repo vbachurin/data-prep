@@ -368,13 +368,15 @@ describe('Actions suggestions-stats controller', function () {
             expect(PreviewService.getPreviewAddRecords).not.toHaveBeenCalled();
         }));
 
-        it('should cancel current early preview', inject(function ($timeout, RecipeService, PreviewService) {
+        it('should cancel current early preview after a 100ms delay', inject(function ($timeout, RecipeService, PreviewService) {
             //given
             var ctrl = createController();
 
             //when
             ctrl.cancelEarlyPreview();
-            $timeout.flush();
+            expect(RecipeService.cancelEarlyPreview).not.toHaveBeenCalled();
+            expect(PreviewService.cancelPreview).not.toHaveBeenCalled();
+            $timeout.flush(100);
 
             //then
             expect(RecipeService.cancelEarlyPreview).toHaveBeenCalled();

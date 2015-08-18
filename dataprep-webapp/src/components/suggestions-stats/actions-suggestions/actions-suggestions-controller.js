@@ -14,6 +14,8 @@
      */
     function ActionsSuggestionsCtrl($timeout, ColumnSuggestionService, TransformationService, PlaygroundService, PreviewService, PreparationService, RecipeService) {
         var previewTimeout;
+        var previewCancelerTimeout;
+
         var vm = this;
         vm.columnSuggestionService = ColumnSuggestionService;
 
@@ -172,6 +174,8 @@
             /*jshint camelcase: false */
             return function(params) {
                 $timeout.cancel(previewTimeout);
+                $timeout.cancel(previewCancelerTimeout);
+
                 previewTimeout = $timeout(function() {
                     params.scope = transfoScope;
                     params.column_id = vm.column.id;
@@ -193,8 +197,11 @@
          */
         vm.cancelEarlyPreview = function cancelEarlyPreview() {
             $timeout.cancel(previewTimeout);
-            RecipeService.cancelEarlyPreview();
-            PreviewService.cancelPreview();
+
+            previewCancelerTimeout = $timeout(function() {
+                RecipeService.cancelEarlyPreview();
+                PreviewService.cancelPreview();
+            }, 100);
         };
     }
 
