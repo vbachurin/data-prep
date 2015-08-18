@@ -12,6 +12,7 @@ import java.util.*;
 
 import javax.annotation.Nonnull;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
@@ -94,7 +95,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         values.add(new Item.Value("custom", CUSTOM_PATTERN_PARAMETER));
         values.get(0).setDefault(true);
 
-        return new Item[]{new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()]))};
+        return new Item[] { new Item(NEW_PATTERN, "patterns", values.toArray(new Item.Value[values.size()])) };
     }
 
     @Override
@@ -113,6 +114,42 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
         final ColumnMetadata column = rowMetadata.getById(columnId);
         if (column == null) {
             return;
+        }
+
+        // parse and checks the new date pattern
+        final JsonFactory jsonFactory = new JsonFactory();
+        final ObjectMapper mapper = new ObjectMapper(jsonFactory);
+
+        // register the new pattern in column stats, to be able to process date action later
+        final JsonNode rootNode = getStatisticsNode(mapper, column);
+        final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
+        try {
+            boolean isNewPatternRegistered = false;
+            // loop on the existing pattern to see if thenew one is already present or not:
+            for (int i = 0; i < patternFrequencyTable.size(); i++) {
+                String pattern = patternFrequencyTable.get(i).get("pattern").asText(); //$NON-NLS-1$
+                if (pattern.equals(newPattern)) {
+                    isNewPatternRegistered = true;
+                }
+            }
+
+            // if the new pattern is not yet present (ie: we're probably working on the first line)
+            if (!isNewPatternRegistered) {
+                JsonNode newPatternNode = mapper.createObjectNode();
+                // creates a new json node with the new pattern to register, no need of occurence here
+                ((ObjectNode) newPatternNode).put("pattern", newPattern);
+                // add a new node, with our new pattern
+                ((ArrayNode) patternFrequencyTable).add(newPatternNode);
+
+                // save all the json tree in the stats column
+                final StringWriter temp = new StringWriter(1000);
+                final JsonGenerator generator = jsonFactory.createGenerator(temp);
+                mapper.writeTree(generator, rootNode);
+                column.setStatistics(temp.toString());
+            }
+
+        } catch (IOException e) {
+            throw new TDPException(CommonErrorCodes.UNABLE_TO_WRITE_JSON, e);
         }
 
         // Change the date pattern
@@ -137,7 +174,7 @@ public class ChangeDatePattern extends AbstractDate implements ColumnAction {
             if (StringUtils.isEmpty(pattern)) {
                 throw new IllegalArgumentException();
             }
-            return DateTimeFormatter.ofPattern (pattern, Locale.ENGLISH);
+            return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH);
         } catch (IllegalArgumentException iae) {
             throw new IllegalArgumentException("pattern '" + pattern + "' is not a valid date pattern", iae);
         }

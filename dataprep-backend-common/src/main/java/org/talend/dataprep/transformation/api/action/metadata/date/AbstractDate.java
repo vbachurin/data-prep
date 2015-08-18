@@ -5,6 +5,8 @@ import static org.talend.dataprep.api.type.Type.DATE;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.dataprep.api.dataset.ColumnMetadata;
 import org.talend.dataprep.api.dataset.DataSetRow;
 import org.talend.dataprep.api.type.Type;
@@ -23,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class AbstractDate extends AbstractActionMetadata {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractDate.class);
 
     /**
      * @see ActionMetadata#getCategory()
@@ -59,7 +63,6 @@ public abstract class AbstractDate extends AbstractActionMetadata {
                 // Nothing to do, just try value against next pattern
             }
         }
-
         throw new DateTimeException("Test [" + value + "] does not match any known pattern");
     }
 
@@ -79,12 +82,12 @@ public abstract class AbstractDate extends AbstractActionMetadata {
 
         // store the current pattern in the context
         final JsonNode rootNode = getStatisticsNode(mapper, column);
-        final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable");
+        final JsonNode patternFrequencyTable = rootNode.get("patternFrequencyTable"); //$NON-NLS-1$
 
         List<String> toReturn = new ArrayList<>();
 
         for (int i = 0; i < patternFrequencyTable.size(); i++) {
-            String pattern = patternFrequencyTable.get(i).get("pattern").asText();
+            String pattern = patternFrequencyTable.get(i).get("pattern").asText(); //$NON-NLS-1$
 
             toReturn.add(pattern);
         }
