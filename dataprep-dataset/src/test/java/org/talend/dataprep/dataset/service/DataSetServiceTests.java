@@ -197,6 +197,17 @@ public class DataSetServiceTests extends DataSetBaseTest {
     }
 
     @Test
+    public void sampleShouldUpdateStatistics() throws Exception {
+        // given
+        String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
+        // when
+        String sample = requestDataSetSample(dataSetId, "16");
+        // then
+        InputStream expected = this.getClass().getResourceAsStream("../t-shirt_100.csv_sample_16.expected.json");
+        assertThat(sample, sameJSONAsFile(expected));
+    }
+
+    @Test
     public void sampleWithNegativeSize() throws Exception {
         // given
         String dataSetId = createCSVDataSet(DataSetServiceTests.class.getResourceAsStream(T_SHIRT_100_CSV));
@@ -303,8 +314,6 @@ public class DataSetServiceTests extends DataSetBaseTest {
     @Test
     public void preview_multi_sheet_with_a_sheet_name() throws Exception {
 
-        // Talend_Desk-Tableau_de_Bord-011214.xls
-
         String dataSetId = given()
                 .body(IOUtils
                         .toByteArray(DataSetServiceTests.class.getResourceAsStream("../Talend_Desk-Tableau_de_Bord-011214.xls")))
@@ -312,15 +321,13 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
 
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        dataSetMetadataRepository.add(dataSetMetadata);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         String json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Leads", dataSetId).asString();
-
         DataSet dataSet = objectMapper.reader(DataSet.class).readValue(json);
 
-        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().isNotEmpty().hasSize(14);
+        Assertions.assertThat(dataSet.getColumns()).isNotNull().isNotEmpty().hasSize(14);
 
         json = given().contentType(JSON).get("/datasets/{id}/preview?sheetName=Tableau de bord", dataSetId)
                 .asString();
@@ -655,7 +662,9 @@ public class DataSetServiceTests extends DataSetBaseTest {
         int originalNbLines = dataSetMetadata.getContent().getNbRecords(); // to check later if no modified
         assertEquals(Certification.NONE, dataSetMetadata.getGovernance().getCertificationStep());
 
+        // NONE -> PENDING
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
+        // PENDING -> CERTIFIED
         when().put("/datasets/{id}/processcertification", dataSetId).then().statusCode(HttpStatus.OK.value());
         dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
         assertThat(dataSetMetadata, CoreMatchers.notNullValue());
@@ -734,11 +743,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .asString();
 
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
-                .stream()
-                .filter(col -> col.getId().equals("0002"))
-                .findFirst()
-                .get();
+        final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
         final SemanticDomain jsoDomain = new SemanticDomain("JSO", "JSO label", 1.0F);
         column.getSemanticDomains().add(jsoDomain);
 
@@ -755,9 +760,10 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //then
         res.then().statusCode(200);
-        assertThat(column.getDomain(), is("JSO"));
-        assertThat(column.getDomainLabel(), is("JSO label"));
-        assertThat(column.getDomainFrequency(), is(1.0F));
+        final ColumnMetadata actual = dataSetMetadataRepository.get(dataSetId).getRow().getById("0002");
+        assertThat(actual.getDomain(), is("JSO"));
+        assertThat(actual.getDomainLabel(), is("JSO label"));
+        assertThat(actual.getDomainFrequency(), is(1.0F));
     }
 
     @Test
@@ -771,11 +777,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .asString();
 
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
-                .stream()
-                .filter(col -> col.getId().equals("0002"))
-                .findFirst()
-                .get();
+        final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
 
         assertThat(column.getDomain(), is("First Name"));
         assertThat(column.getDomainLabel(), is("First Name"));
@@ -791,10 +793,11 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //then
         res.then().statusCode(200);
-        assertThat(column.getDomain(), is("First Name"));
-        assertThat(column.getDomainLabel(), is("First Name"));
-        assertThat(column.getDomainFrequency(), is(2.0F));
-        assertThat(column.getType(), is("integer"));
+        final ColumnMetadata actual = dataSetMetadataRepository.get(dataSetId).getRow().getById("0002");
+        assertThat(actual.getDomain(), is("First Name"));
+        assertThat(actual.getDomainLabel(), is("First Name"));
+        assertThat(actual.getDomainFrequency(), is(2.0F));
+        assertThat(actual.getType(), is("integer"));
     }
 
     @Test
@@ -808,11 +811,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .asString();
 
         final DataSetMetadata dataSetMetadata = dataSetMetadataRepository.get(dataSetId);
-        final ColumnMetadata column = dataSetMetadata.getRow().getColumns()
-                .stream()
-                .filter(col -> col.getId().equals("0002"))
-                .findFirst()
-                .get();
+        final ColumnMetadata column = dataSetMetadata.getRow().getById("0002");
 
         assertThat(column.getDomain(), is("First Name"));
         assertThat(column.getDomainLabel(), is("First Name"));
@@ -827,9 +826,10 @@ public class DataSetServiceTests extends DataSetBaseTest {
 
         //then
         res.then().statusCode(200);
-        assertThat(column.getDomain(), is(""));
-        assertThat(column.getDomainLabel(), is(""));
-        assertThat(column.getDomainFrequency(), is(0.0F));
+        final ColumnMetadata actual = dataSetMetadataRepository.get(dataSetId).getRow().getById("0002");
+        assertThat(actual.getDomain(), is(""));
+        assertThat(actual.getDomainLabel(), is(""));
+        assertThat(actual.getDomainFrequency(), is(0.0F));
     }
 
     @Test
@@ -872,7 +872,7 @@ public class DataSetServiceTests extends DataSetBaseTest {
                 .statusCode(200) //
                 // .log().ifValidationFails() //
                 .when() //
-                .get("/datasets/{id}/content?metadata=false&columns=false&sample={sampleSize}", dataSetId, sampleSize) //
+                .get("/datasets/{id}/content?metadata=false&columns=true&sample={sampleSize}", dataSetId, sampleSize) //
                 .asString();
 
     }

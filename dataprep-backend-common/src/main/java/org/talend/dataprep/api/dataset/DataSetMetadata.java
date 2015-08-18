@@ -1,8 +1,6 @@
 package org.talend.dataprep.api.dataset;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.data.annotation.Id;
 import org.talend.dataprep.api.dataset.location.LocalStoreLocation;
@@ -269,6 +267,43 @@ public class DataSetMetadata {
             '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        DataSetMetadata that = (DataSetMetadata) o;
+        return Objects.equals(creationDate, that.creationDate) && //
+                Objects.equals(draft, that.draft) && //
+                Objects.equals(favorite, that.favorite) && //
+                Objects.equals(id, that.id) && //
+                Objects.equals(rowMetadata, that.rowMetadata) && //
+                Objects.equals(lifecycle, that.lifecycle) && //
+                Objects.equals(content, that.content) && //
+                Objects.equals(governance, that.governance) && //
+                Objects.equals(location, that.location) && //
+                Objects.equals(name, that.name) && //
+                Objects.equals(author, that.author) && //
+                Objects.equals(sheetName, that.sheetName) && //
+                Objects.equals(schemaParserResult, that.schemaParserResult);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, rowMetadata, lifecycle, content, governance, location, name, author, creationDate, sheetName,
+                draft, schemaParserResult, favorite);
+    }
+
+    /**
+     * @see Object#clone()
+     */
+    public DataSetMetadata clone() {
+        return Builder.metadata().copy(this).build();
+    }
+
     /**
      * Dataset builder.
      */
@@ -300,27 +335,41 @@ public class DataSetMetadata {
 
         /** @see org.talend.dataprep.api.dataset.DataSetContent#nbRecords */
         private int size;
-
         /** @see org.talend.dataprep.api.dataset.DataSetContent#nbLinesInHeader */
         private int headerSize;
-
         /** @see org.talend.dataprep.api.dataset.DataSetContent#nbLinesInFooter */
         private int footerSize;
-
         /** @see org.talend.dataprep.api.dataset.DataSetContent#formatGuessId */
         private String formatGuessId;
-
         /** @see org.talend.dataprep.api.dataset.DataSetContent#mediaType */
         private String mediaType;
 
+        /**
+         * @see org.talend.dataprep.api.dataset.DataSetContent#parameters
+         */
+        private Map<String, String> parameters = new HashMap<>();
+
         /** @see org.talend.dataprep.api.dataset.DataSetLifecycle#contentAnalyzed */
         private boolean contentAnalyzed;
-
         /** @see org.talend.dataprep.api.dataset.DataSetLifecycle#schemaAnalyzed */
         private boolean schemaAnalyzed;
 
+        /**
+         * @see org.talend.dataprep.api.dataset.DataSetLifecycle#importing
+         */
+        private boolean importing;
         /** @see org.talend.dataprep.api.dataset.DataSetLifecycle#qualityAnalyzed */
         private boolean qualityAnalyzed;
+
+        /**
+         * @see org.talend.dataprep.api.dataset.DataSetGovernance#certificationStep
+         */
+        private DataSetGovernance.Certification certificationStep;
+
+        /**
+         * @see DataSetMetadata#schemaParserResult
+         */
+        private SchemaParserResult schemaParserResult;
 
         /** Dataset builder. */
         private ColumnMetadata.Builder[] columnBuilders;
@@ -384,6 +433,11 @@ public class DataSetMetadata {
             return this;
         }
 
+        public Builder importing(boolean importing) {
+            this.importing = importing;
+            return this;
+        }
+
         public Builder sheetName(String sheetName) {
             this.sheetName = sheetName;
             return this;
@@ -414,6 +468,47 @@ public class DataSetMetadata {
             return this;
         }
 
+        public DataSetMetadata.Builder certificationStep(DataSetGovernance.Certification certificationStep) {
+            this.certificationStep = certificationStep;
+            return this;
+        }
+
+        public DataSetMetadata.Builder schemaParserResult(SchemaParserResult schemaParserResult) {
+            this.schemaParserResult = schemaParserResult;
+            return this;
+        }
+
+        public DataSetMetadata.Builder copy(DataSetMetadata original) {
+            this.id = original.getId();
+            this.author = original.getAuthor();
+            this.name = original.getName();
+            this.createdDate = original.getCreationDate();
+            this.sheetName = original.getSheetName();
+            this.draft = original.isDraft();
+            this.isFavorite = original.isFavorite();
+            this.location = original.getLocation();
+            this.size = original.getContent().getNbRecords();
+            this.headerSize = original.getContent().getNbLinesInHeader();
+            this.footerSize = original.getContent().getNbLinesInFooter();
+            this.formatGuessId = original.getContent().getFormatGuessId();
+            this.mediaType = original.getContent().getMediaType();
+            this.contentAnalyzed = original.getLifecycle().contentIndexed();
+            this.qualityAnalyzed = original.getLifecycle().qualityAnalyzed();
+            this.schemaAnalyzed = original.getLifecycle().schemaAnalyzed();
+            this.importing = original.getLifecycle().importing();
+            this.parameters = original.getContent().getParameters();
+            ArrayList<ColumnMetadata.Builder> builders = new ArrayList<>();
+            if (original.getRow() != null) {
+                for (ColumnMetadata col : original.getRow().getColumns()) {
+                    builders.add(ColumnMetadata.Builder.column().copy(col));
+                }
+            }
+            this.columnBuilders = builders.toArray(new ColumnMetadata.Builder[0]);
+            this.certificationStep = original.getGovernance().getCertificationStep();
+            this.schemaParserResult = original.getSchemaParserResult();
+            return this;
+        }
+
         public DataSetMetadata build() {
             if (id == null) {
                 throw new IllegalStateException("No id set for dataset.");
@@ -432,22 +527,30 @@ public class DataSetMetadata {
             metadata.sheetName = this.sheetName;
             metadata.draft = this.draft;
             metadata.setFavorite(this.isFavorite);
-            metadata.setLocation(location);
+            metadata.setLocation(this.location);
+            if (this.certificationStep != null) {
+                metadata.getGovernance().setCertificationStep(this.certificationStep);
+            }
+            metadata.setSchemaParserResult(this.schemaParserResult);
+
             // Content information
             DataSetContent currentContent = metadata.getContent();
             currentContent.setNbRecords(size);
             currentContent.setNbLinesInHeader(headerSize);
             currentContent.setNbLinesInFooter(footerSize);
+            currentContent.setParameters(parameters);
 
             if (formatGuessId != null) {
                 currentContent.setFormatGuessId(formatGuessId);
             }
             currentContent.setMediaType(mediaType);
+
             // Lifecycle information
             DataSetLifecycle metadataLifecycle = metadata.getLifecycle();
             metadataLifecycle.contentIndexed(contentAnalyzed);
             metadataLifecycle.schemaAnalyzed(schemaAnalyzed);
             metadataLifecycle.qualityAnalyzed(qualityAnalyzed);
+            metadataLifecycle.importing(importing);
             return metadata;
         }
     }

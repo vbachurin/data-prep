@@ -220,7 +220,6 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
             }
             // Did not find any cache for retrieve preparation details, starts over from original dataset
             if (Step.ROOT_STEP.id().equals(transformationStartStep)) {
-
                 ctx.content = getDatasetContent(preparation.getDataSetId(), false, true, sample);
             }
         } else {
@@ -239,34 +238,57 @@ public abstract class PreparationCommand<T> extends DataPrepCommand<T> {
         return ctx;
     }
 
+    /**
+     * Internal class that holds the preparation context.
+     */
     public class PreparationContext {
 
+        /** True if the preparation content comes from the cache. */
         boolean fromCache;
 
+        /** The preparation content (may be the dataset one if no action is performed). */
         InputStream content;
 
+        /** The list of actions performed in the preparation. */
         List<Action> actions;
 
+        /** The actual preparation. */
         Preparation preparation;
 
+        /** The preparation version (step). */
         String version;
 
+        /**
+         * @return the preparation content.
+         */
         public InputStream getContent() {
             return content;
         }
 
+        /**
+         * @return the preparation actions.
+         */
         public List<Action> getActions() {
             return actions;
         }
 
+        /**
+         * @return the actual preparation.
+         */
         public Preparation getPreparation() {
             return preparation;
         }
 
+        /**
+         * @return the preparation version.
+         */
         public String getVersion() {
             return version;
         }
 
+        /**
+         * @return true if the preparation comes from the cache.
+         */
         public boolean fromCache() {
             return fromCache;
         }
