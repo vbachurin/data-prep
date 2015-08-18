@@ -227,25 +227,6 @@ public class DataPreparationAPITest {
     }
 
     @Test
-    public void testDataSetCreate_cache_status() throws Exception {
-        // given
-        final String dataSetId = createDataset("dataset/dataset.csv", "tagada", "text/csv");
-        final InputStream expected = DataPreparationAPITest.class.getResourceAsStream("dataset/expected_dataset_with_metadata.json");
-
-        // then
-        final Preparation preparation = new Preparation(dataSetId, ROOT_STEP);
-        ContentCacheKey key = new ContentCacheKey(preparation, ROOT_STEP.id());
-        assertThat(cache.has(key), is(false));
-        when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
-        assertThat(cache.has(key), is(true));
-
-        // then (check if cached content is the expected one).
-        final String contentAsString = when().get("/api/datasets/{id}?metadata=true&columns=false", dataSetId).asString();
-        assertThat(contentAsString, sameJSONAsFile(expected));
-    }
-
-
-    @Test
     public void testDataSetGetWithSample() throws Exception {
         // given
         final String dataSetId = createDataset("t-shirt_100.csv", "test_sample", "text/csv");
